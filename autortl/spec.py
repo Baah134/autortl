@@ -1,0 +1,137 @@
+"""Typed design spec schema. The spec is machine-checkable law.
+
+A design_spec.json describes a module tree. Every field the linter,
+testbench generator, and skill loader rely on is REQUIRED and typed here.
+"""
+from __future__ import annotations
+import json
+from dataclasses import dataclass, field, asdict
+from pathlib import Path
+
+PROTOCOLS = {"none", "valid_ready", "pulse", "level"}
+DIRECTIONS = {"input", "output", "inout"}
+RESET_KINDS = {"sync", "async"}
+COMPARE_MODES = {"fixed_latency", "scoreboard"}   # pulse mode intentionally stubbed
+
+
+@dataclass
+class Port:
+    name: str
+    direction: str            # input|output|inout
+    width: int                # resolved integer width, >=1
+    clock_domain: str = "clk"
+    protocol: str = "none"
+
+    def validate(self) -> list[str]:
+        errs = []
+        if self.direction not in DIRECTIONS:
+            errs.append(f"port {self.name}: bad direction '{self.direction}'")
+        if not isinstance(self.width, int) or self.width < 1:
+            errs.append(f"port {self.name}: width must be int >= 1 (got {self.width})")
+        if self.protocol not in PROTOCOLS:
+            errs.append(f"port {self.name}: unknown protocol '{self.protocol}'")
+        return errs
+
+
+@dataclass
+class ResetSpec:
+    signal: str = "rst"
+    kind: str = "sync"
+    active_high: bool = True
+    duration_cycles: int = 5
+
+    def validate(self) -> list[str]:
+        return [] if self.kind in RESET_KINDS else [f"reset kind '{self.kind}' invalid"]
+
+
+@dataclass
+class IOExample:
+    inputs: dict
+    expected: dict
+    after_cycles: int = 1
+
+
+@dataclass
+class ModuleSpec:
+    name: str
+    behavior: str
+    ports: list[Port]
+    latency: int = 0
+    compare_mode: str = "fixed_latency"
+    reset: ResetSpec = field(default_factory=ResetSpec)
+    clock_domains: list[str] = field(default_factory=lambda: ["clk"])
+    parameters: dict = field(default_factory=dict)
+    examples: list[IOExample] = field(default_factory=list)
+    golden_model: str = ""
+
+    def contract_hash(self) -> str:
+        import hashlib
+        blob = json.dumps({
+            "name": self.name, "behavior": self.behavior,
+            "ports": [asdict(p) for p in self.ports],
+            "latency": self.latency, "compare_mode": self.compare_mode,
+            "reset": asdict(self.reset), "params": self.parameters,
+        }, sort_keys=True)
+        return hashlib.sha256(blob.encode()).hexdigest()[:16]
+
+    def validate(self) -> list[str]:
+        errs = []
+        if not self.name.isidentifier():
+            errs.append(f"module name '{self.name}' is not a valid identifier")
+        if not self.behavior.strip():
+            errs.append(f"module {self.name}: behavior description empty")
+        if self.compare_mode not in COMPARE_MODES:
+            errs.append(f"module {self.name}: compare_mode '{self.compare_mode}' "
+                        f"unsupported (pulse mode is stubbed in v4.0)")
+        names = [p.name for p in self.ports]
+        if len(names) != len(set(names)):
+            errs.append(f"module {self.name}: duplicate port names")
+        for p in self.ports:
+            errs.extend(p.validate())
+            if p.clock_domain not in self.clock_domains:
+                errs.append(f"module {self.name}: port {p.name} references "
+                            f"unknown clock domain '{p.clock_domain}'")
+        errs.extend(self.reset.validate())
+        if self.latency < 0:
+            errs.append(f"module {self.name}: latency must be >= 0")
+        return errs
+
+
+@dataclass
+class Connection:
+    src_module: str
+    src_port: str
+    dst_module: str
+    dst_port: str
+
+
+@dataclass
+class DesignSpec:
+    top_name: str
+    modules: list[ModuleSpec]
+    connections: list[Connection] = field(default_factory=list)
+    external_ports: list[Port] = field(default_factory=list)
+
+    def module(self, name: str) -> ModuleSpec | None:
+        return next((m for m in self.modules if m.name == name), None)
+
+    def to_json(self) -> str:
+        return json.dumps(asdict(self), indent=2)
+
+    @staticmethod
+    def from_json(text: str) -> "DesignSpec":
+        raw = json.loads(text)
+        mods = []
+        for m in raw["modules"]:
+            ports = [Port(**p) for p in m.pop("ports")]
+            reset = ResetSpec(**m.pop("reset", {}))
+            examples = [IOExample(**e) for e in m.pop("examples", [])]
+            mods.append(ModuleSpec(ports=ports, reset=reset, examples=examples, **m))
+        conns = [Connection(**c) for c in raw.get("connections", [])]
+        ext = [Port(**p) for p in raw.get("external_ports", [])]
+        return DesignSpec(top_name=raw["top_name"], modules=mods,
+                          connections=conns, external_ports=ext)
+
+    @staticmethod
+    def load(path: Path) -> "DesignSpec":
+        return DesignSpec.from_json(Path(path).read_text())

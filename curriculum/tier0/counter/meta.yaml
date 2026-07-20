@@ -1,0 +1,11 @@
+mode: optimize
+top: counter
+design: counter.v
+tb: counter_tb.v
+objective: minimize_luts
+target_freq_mhz: 100.0
+iterations: 5
+stresses: "plumbing smoke test; regression vs v3 result (48 LUTs, 37 FFs, WNS 4.092)"
+pass_criteria:
+  max_luts: 67        # must at least match v3's iteration-1 cleanup
+  timing_met: true

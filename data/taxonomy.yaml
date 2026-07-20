@@ -1,0 +1,72 @@
+# Error taxonomy — keyed on official Vivado message IDs.
+# severity_override: ERROR promotes the message (we promote, we NEVER demote).
+# Seeded from every error class hit during AutoRTL v1-v3 development.
+messages:
+  "Synth 8-327":
+    meaning: "Inferred latch — a combinational always block leaves a signal unassigned in some branch"
+    repair: "Add default assignments for every output at the top of the always @(*) block, or complete every if with an else"
+    severity_override: ERROR
+  "Synth 8-3352":
+    meaning: "Multi-driven net — two blocks assign the same signal"
+    repair: "Assign each signal from exactly one always block or one assign statement"
+    severity_override: ERROR
+  "Synth 8-6859":
+    meaning: "Port width mismatch in instantiation"
+    repair: "Regenerate the port connections exactly from the contract's port table; widths must match bit-for-bit"
+    severity_override: null
+  "Synth 8-693":
+    meaning: "Unconnected port on instance"
+    repair: "Connect every port in the contract; tie unused inputs to a defined constant"
+    severity_override: null
+  "Synth 8-7080":
+    meaning: "Parallel synthesis license info (benign)"
+    repair: "Ignore — informational only"
+    severity_override: null
+  "XSIM 43-3225":
+    meaning: "Elaboration failed — usually a port/interface mismatch between DUT and testbench"
+    repair: "Match the module interface (name, port list, widths) exactly to the contract; do not add or rename ports"
+    severity_override: null
+  "XSIM 43-4100":
+    meaning: "Module not found during elaboration"
+    repair: "The module name in the code must equal the contract name exactly (case sensitive)"
+    severity_override: null
+  "Timing 38-282":
+    meaning: "No clock constraint reached some paths"
+    repair: "Ensure the top-level clock port is named clk (contract law) so the auto-generated XDC applies"
+    severity_override: null
+  "Common 17-55":
+    meaning: "Command called with bad arguments — often a path problem"
+    repair: "Infra-class failure — verify forward-slash absolute paths; do not modify the design"
+    severity_override: null
+  "Vivado 12-4473":
+    meaning: "Simulation step failed; see the referenced log for the true cause"
+    repair: "Read compile.log/elaborate.log message IDs and repair those; this ID is only a wrapper"
+    severity_override: null
+
+# Methodology violations (report_methodology, UG1292 IDs). ADVISORY ONLY:
+# these never kill candidates; they are digested into the planner's context.
+methodology:
+  "TIMING-6":
+    meaning: "No common primary clock between related clocks | timing between them is unsafe"
+    advice: "Plan a CDC structure or declare the clock relationship; do not let paths cross unrelated clocks"
+  "TIMING-9":
+    meaning: "Unknown CDC circuitry | a crossing exists without a recognised synchroniser"
+    advice: "Plan an explicit two-flop synchroniser or async FIFO module for the crossing"
+  "TIMING-10":
+    meaning: "Missing input or output delay constraint on a port"
+    advice: "For benchmark runs this is acceptable; for board targets plan set_input_delay/set_output_delay values"
+  "TIMING-18":
+    meaning: "Missing input/output delay on clock-crossing IO"
+    advice: "Same as TIMING-10; note it in the plan if the design will leave simulation"
+  "SYNTH-6":
+    meaning: "Timing-critical register has no direct reset connection pattern the tool likes"
+    advice: "Plan synchronous resets on control state only; avoid resetting wide datapaths"
+  "SYNTH-9":
+    meaning: "Asynchronous reset planned where synchronous is preferred on 7-series"
+    advice: "Prefer sync resets unless the contract demands async; 7-series FFs favour sync"
+  "XDCC-1":
+    meaning: "Clock constraint conflicts or overwrites another"
+    advice: "One create_clock per physical clock; derived clocks via create_generated_clock"
+  "LUTAR-1":
+    meaning: "LUT on a clock or combinational clock path"
+    advice: "Never gate or generate clocks in logic; plan clock enables instead"

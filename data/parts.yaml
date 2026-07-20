@@ -1,0 +1,24 @@
+# Physical budgets per target part. Injected into planner + contract prompts
+# so no contract can exceed physics. Extend as new parts are targeted.
+parts:
+  xc7a35tcpg236-1:      # Artix-7 35T (Basys 3)
+    luts: 20800
+    ffs: 41600
+    dsp48: 90
+    bram_36k: 50
+    max_practical_freq_mhz: 450
+    lut_levels_at_100mhz: 8      # rough logic-level budget per 10 ns period
+  xc7a100tcsg324-1:     # Artix-7 100T (Nexys A7)
+    luts: 63400
+    ffs: 126800
+    dsp48: 240
+    bram_36k: 135
+    max_practical_freq_mhz: 450
+    lut_levels_at_100mhz: 8
+  xc7z020clg400-1:      # Zynq-7020 (PYNQ-Z1/Z2)
+    luts: 53200
+    ffs: 106400
+    dsp48: 220
+    bram_36k: 140
+    max_practical_freq_mhz: 450
+    lut_levels_at_100mhz: 8

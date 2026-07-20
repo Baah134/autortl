@@ -1,0 +1,14 @@
+# Routing is data, not code. Edit chains here; no code changes needed.
+# Entry format: backend.model_alias  (see backends for alias meanings)
+roles:
+  planner:
+    chain: [claude_code.opus, claude_code.sonnet, openrouter.nemotron-ultra, nvidia.nemotron-ultra]
+  generator:
+    chain: [claude_code.sonnet, nvidia.nemotron-super, openrouter.nemotron-super]
+  evaluator:
+    chain: [claude_code.sonnet, openrouter.nemotron-super]
+  timing_doctor:
+    chain: [claude_code.opus, claude_code.sonnet, openrouter.nemotron-ultra]
+defaults:
+  max_retries_per_backend: 2
+  timeout_s: 180
