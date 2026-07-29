@@ -262,16 +262,6 @@ The approach draws from published work on agentic hardware design (CRADLE, VFlow
 
 ---
 
-## Roadmap
-
-- [ ] Tier 3 runs (UART + FIFO build-mode end-to-end)
-- [ ] Tier 4 with RTLLM v2 benchmark designs; publish comparison against CRADLE
-- [ ] Skill harvesting (semi-automatic post-run skill amendments)
-- [ ] Router reordering by observed success (after ~10 runs of data)
-- [ ] Tier 5: AES round, async FIFO CDC exam, RISC-V ALU+decode slice
-
----
-
 ## License
 
 MIT
