@@ -2,6 +2,10 @@
 # severity_override: ERROR promotes the message (we promote, we NEVER demote).
 # Seeded from every error class hit during AutoRTL v1-v3 development.
 messages:
+  "Common 17-53":
+    meaning: "Harness queried design objects before opening a design during constraint-file generation"
+    repair: "For No open design errors, fix Tcl execution order; preserve get_ports literally when writing XDC and do not mutate RTL"
+    severity_override: null
   "Synth 8-327":
     meaning: "Inferred latch — a combinational always block leaves a signal unassigned in some branch"
     repair: "Add default assignments for every output at the top of the always @(*) block, or complete every if with an else"
@@ -45,6 +49,23 @@ messages:
 
 # Methodology violations (report_methodology, UG1292 IDs). ADVISORY ONLY:
 # these never kill candidates; they are digested into the planner's context.
+harness_failures:
+  timing_summary_column_mismatch:
+    meaning: "Combined Vivado timing tables were parsed with setup slack substituted for hold slack"
+    repair: "Map summary header columns to values; require both setup and hold slack to be nonnegative"
+  counter_testbench_clock_and_x_errors:
+    meaning: "Counter testbench counted an extra enabled edge and treated unknown check conditions as nonfailures"
+    repair: "Disable counting before settling flags, drive reset away from the sampling edge, and reject any check condition other than definite one"
+  skipped_verification_rungs:
+    meaning: "A candidate with incomplete compile or simulation checks reached synthesis and received verified metrics"
+    repair: "Require simulation rung 4 before synthesis or metrics cache access; never repair RTL for unknown or infrastructure failures"
+  ambiguous_simulation_verdict:
+    meaning: "Termination alone or a pass marker mixed with errors is not verified success"
+    repair: "Require an explicit standalone TEST PASSED verdict and reject failure diagnostics first"
+  invalid_mutation_qualification:
+    meaning: "Missing mutation, compile failure, infrastructure failure, or timeout does not prove that a testbench detects a bug"
+    repair: "Require a passing control and an explicit testbench failure from the simulated mutant; requalify regenerated testbenches"
+
 methodology:
   "TIMING-6":
     meaning: "No common primary clock between related clocks | timing between them is unsafe"

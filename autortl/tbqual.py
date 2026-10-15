@@ -9,6 +9,7 @@ import re
 from pathlib import Path
 from .config import RunConfig
 from .vivado import xsim_run
+from .triage import FailureKind
 
 _MUTATIONS = [
     (r"(?<![<>=!])<(?![<=])", ">", "flip < to >"),
@@ -31,14 +32,25 @@ def qualify(good_verilog: str, tb_path: Path, module_name: str,
     """Returns (qualified, reason). Qualified means the tb catches an injected bug."""
     m = mutate(good_verilog)
     if m is None:
-        return True, "no applicable mutation operator; qualification skipped"
+        return False, "no applicable mutation operator; qualification not established"
     mutated, desc = m
     qdir = work_dir / "tbqual"
     qdir.mkdir(parents=True, exist_ok=True)
+    control_dir = qdir / "control"
+    control_dir.mkdir(exist_ok=True)
+    control = control_dir / f"{module_name}.v"
+    control.write_text(good_verilog)
+    passed, err, _ = xsim_run([control], tb_path, f"{module_name}_tb", cfg, control_dir)
+    if not passed:
+        return False, f"qualification control did not pass: {err}"
     mv = qdir / f"{module_name}.v"
     mv.write_text(mutated)
-    passed, err, _ = xsim_run([mv], tb_path, f"{module_name}_tb", cfg, qdir)
+    passed, err, kind = xsim_run([mv], tb_path, f"{module_name}_tb", cfg, qdir)
     if passed:
         return False, (f"testbench PASSED a sabotaged design ({desc}) — "
                        f"the oracle cannot detect bugs and must be regenerated")
+    if kind != FailureKind.DESIGN or not (
+        err.startswith("Testbench failures:") or err == "testbench reported failure"
+    ):
+        return False, f"sabotage did not produce a testbench verdict: {err}"
     return True, f"testbench correctly failed sabotage ({desc})"

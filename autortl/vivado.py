@@ -96,7 +96,7 @@ SYNTH_TCL = """\
 set_part {part}
 read_verilog {sources}
 set fp [open "{workdir}/timing.xdc" w]
-puts $fp "create_clock -period {period} -name clk [get_ports clk]"
+puts $fp {{create_clock -period {period} -name clk [get_ports clk]}}
 close $fp
 read_xdc "{workdir}/timing.xdc"
 synth_design -top {top} -flatten_hierarchy rebuilt {extra_synth}

@@ -15,6 +15,7 @@ class FailureKind(Enum):
 
 
 _INFRA_SIGNATURES = [
+    r"\[Common 17-53\].*No open design",
     r"license",                       # license server hiccup
     r"cannot (?:open|create|write).*\.(?:pb|wdb|jou|log)",  # file locks (xsim holds handles)
     r"Permission denied",

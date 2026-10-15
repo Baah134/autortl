@@ -166,6 +166,9 @@ class Orchestrator:
                                              tb, f"{m.name}_tb", self.cfg, mdir)
             if not passed:
                 return None
+            qual_ok, reason = qualify_tb(verilog, tb, m.name, self.cfg, mdir)
+            if not qual_ok:
+                return None
         return verilog
 
     def _write_tmp(self, mdir: Path, name: str, verilog: str) -> Path:
@@ -278,7 +281,7 @@ class Orchestrator:
                                                    self.cfg, cdir)
                 self.budget.charge_vivado(vivado.vivado_seconds())
                 if not ok:
-                    if kind == FailureKind.INFRA:
+                    if kind != FailureKind.DESIGN:
                         c.fail_reason = "infra: " + err[:100]
                         continue  # do not kill on infra; just no rung credit
                     c.alive, c.fail_reason = False, err[:200]
@@ -292,7 +295,7 @@ class Orchestrator:
                         f"{cfg.top_module}_tb", self.cfg, cdir)
                     self.budget.charge_vivado(vivado.vivado_seconds())
                     if not passed:
-                        if kind == FailureKind.INFRA:
+                        if kind != FailureKind.DESIGN:
                             c.fail_reason = "infra: " + err[:100]
                             continue
                         # one taxonomy-guided fix per candidate
@@ -303,10 +306,13 @@ class Orchestrator:
                             c.verilog, diag, err,
                             tb_path.read_text()[:1500], [], self.budget)
                         cv.write_text(c.verilog)
-                        passed, err, _ = vivado.xsim_run(
+                        passed, err, kind = vivado.xsim_run(
                             [cv] + extra_sources, tb_path,
                             f"{cfg.top_module}_tb", self.cfg, cdir)
                         self.budget.charge_vivado(vivado.vivado_seconds())
+                        if not passed and kind != FailureKind.DESIGN:
+                            c.fail_reason = "unverified: " + err[:100]
+                            continue
                     if not passed:
                         c.alive, c.fail_reason = False, err[:200]
                         recent_errors.append(err)
@@ -314,7 +320,7 @@ class Orchestrator:
                     c.ladder_rungs_passed = 4
 
             # rung 5: synthesize survivors (cache-aware)
-            for c in [x for x in cands if x.alive]:
+            for c in [x for x in cands if x.alive and x.ladder_rungs_passed == 4]:
                 cached = self.metrics_cache.get(c.verilog)
                 if cached:
                     c.metrics = cached

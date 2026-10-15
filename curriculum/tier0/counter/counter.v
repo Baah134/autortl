@@ -1,3 +1,4 @@
+`timescale 1ns/1ps
 // AutoRTL starter design: deliberately unoptimised counter.
 // Known slack: dead prev_count register, registered threshold flags,
 // full-width comparisons, redundant count_next.

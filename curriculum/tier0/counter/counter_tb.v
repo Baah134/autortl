@@ -14,7 +14,7 @@ module counter_tb;
     always #5 clk = ~clk;
 
     task check(input cond, input [255:0] msg);
-        if (!cond) begin
+        if (cond !== 1'b1) begin
             $display("FAIL: %0s", msg);
             errors = errors + 1;
         end
@@ -23,7 +23,7 @@ module counter_tb;
     initial begin
         clk = 0; errors = 0; rst = 1; enable = 0; load = 0; load_val = 0;
         repeat (4) @(posedge clk);
-        rst = 0; @(posedge clk); #1;
+        @(negedge clk); rst = 0; @(posedge clk); #1;
 
         // T1 reset state (flags combinational OR registered both settle by here)
         check(count == 0, "count not zero after reset");
@@ -34,7 +34,8 @@ module counter_tb;
         // T2 count up to 150
         enable = 1;
         repeat (150) @(posedge clk);
-        #1; @(posedge clk); #1;   // allow one extra cycle for registered flags
+        #1; enable = 0; // exactly 150 enabled edges, then settle registered flags
+        @(posedge clk); #1;
         check(count == 150, "count should be 150");
         check(below_mid == 1, "below_mid should be 1 when count=150");
         check(below_low == 0, "below_low should be 0 when count=150");
@@ -62,6 +63,11 @@ module counter_tb;
 
         if (errors == 0) $display("TEST PASSED");
         else $display("TEST FAILED: %0d errors", errors);
+        $finish;
+    end
+    initial begin
+        #10000;
+        $display("TEST FAILED: counter watchdog expired");
         $finish;
     end
 endmodule

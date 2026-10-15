@@ -48,16 +48,15 @@ def parse_sim_log(log_path: Path) -> tuple[bool, str]:
     if not log_path.exists():
         return False, "Simulation log not found"
     text = log_path.read_text(errors="replace")
-    if re.search(r"TEST\s+PASSED", text, re.IGNORECASE):
-        return True, ""
     fails = [l.strip() for l in text.splitlines()
              if l.strip().startswith("FAIL") or "mismatch" in l.lower()]
     if re.search(r"TEST\s+FAILED", text, re.IGNORECASE) or fails:
         return False, "Testbench failures:\n" + "\n".join(fails[:15]) if fails \
                else "testbench reported failure"
-    if re.search(r"\$fatal|\*\*\s*Error", text):
+    if re.search(r"\$fatal|\*\*\s*Error|^\s*(?:ERROR|FATAL|CRITICAL WARNING)\s*:",
+                 text, re.IGNORECASE | re.MULTILINE):
         return False, "Fatal error in simulation"
-    if "$finish" in text or "simulation finished" in text.lower():
+    if re.search(r"^\s*TEST\s+PASSED\s*$", text, re.IGNORECASE | re.MULTILINE):
         return True, ""
     return False, "Simulation ended without clear pass/fail"
 
@@ -86,13 +85,29 @@ def parse_timing(rpt_path: Path, m: VivadoMetrics) -> None:
     if not rpt_path.exists():
         return
     text = rpt_path.read_text(errors="replace")
-    mm = re.search(r"WNS\(ns\)\s+TNS\(ns\).*?\n\s*(-?[\d.]+)", text, re.DOTALL)
-    if mm:
-        m.wns_ns = float(mm.group(1))
-    mm = re.search(r"WHS\(ns\)\s+THS\(ns\).*?\n\s*(-?[\d.]+)", text, re.DOTALL)
-    if mm:
-        m.whs_ns = float(mm.group(1))
-    m.timing_met = m.wns_ns >= 0.0
+    lines = text.splitlines()
+    found = set()
+    for i, line in enumerate(lines):
+        header = line.strip().lstrip("| ")
+        if not header.startswith(("WNS(ns)", "WHS(ns)")):
+            continue
+        columns = re.split(r"\s{2,}", header)
+        for row in lines[i + 1:i + 4]:
+            values = row.strip().split()
+            if not values or not re.fullmatch(r"-?\d+(?:\.\d+)?", values[0]):
+                continue
+            for label, attr in (("WNS(ns)", "wns_ns"), ("WHS(ns)", "whs_ns")):
+                if label not in columns or label in found:
+                    continue
+                index = columns.index(label)
+                if index < len(values):
+                    try:
+                        setattr(m, attr, float(values[index]))
+                        found.add(label)
+                    except ValueError:
+                        pass
+            break
+    m.timing_met = m.wns_ns >= 0.0 and m.whs_ns >= 0.0
 
 
 def parse_power(rpt_path: Path, m: VivadoMetrics) -> None:
