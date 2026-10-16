@@ -1,4 +1,4 @@
-# AutoRTL v4 — instructions for Claude Code sessions
+# AutoRTL v4 — project contract (historical filename)
 
 ## What this repo is
 A harness-first agentic system that writes and optimises Verilog through
@@ -19,8 +19,8 @@ source of truth. This file is the standing session contract.
 ## Working protocol
 - One stage per session where possible. Current stage: see docs/DESIGN.md
   build order; update the line below when a stage gate passes.
-- CURRENT STATE: all seven stages implemented; tier0-1 curriculum seeded;
-  84 harness tests passing. Next: first live run on tier0, then grow tiers.
+- CURRENT STATE: see docs/SESSION_HANDOFF.md and docs/PROGRESS.md for verified
+  results and remaining gaps. Runtime model calls use Codex only.
 - Before merging any harness change: `python -m pytest tests/ -q` and
   `python run.py bench --tier 0` (plus the highest held tier).
 - Windows: Vivado lives at C:\AMDDesignTools\2025.2. TCL paths are
@@ -32,5 +32,5 @@ expertise) · data/taxonomy.yaml (message IDs) · curriculum/ (tiered tests) ·
 tests/ (pytest) · run.py (CLI: optimize|build|resume|bench)
 
 ## Env vars
-NVIDIA_API_KEY (NIM fallback), OPENROUTER_API_KEY (free Nemotron fallback).
-Claude Code itself is the primary backend via `claude -p`.
+AUTORTL_CODEX_BIN optionally selects the Codex CLI executable. Otherwise it
+must be on PATH. Use existing Codex login; no external-model fallback.

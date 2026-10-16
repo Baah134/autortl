@@ -1,6 +1,6 @@
 # Session handoff
 
-Updated: 2026-10-15 (America/New_York)
+Updated: 2026-10-16 (America/New_York)
 
 ## Objective and decisions
 
@@ -8,6 +8,8 @@ Build a reliable autonomous RTL improvement loop, starting with small
 designs and increasing complexity only after demonstrated correctness.
 Keep evidence suitable for the owner's CV. Use command-line Vivado now;
 MCP is deferred. No background schedule is configured.
+User replaced all previous model providers with Codex-only workers, supervised
+by the main development agent. Parallel development helpers are authorized.
 
 ## Source state
 
@@ -22,6 +24,9 @@ MCP is deferred. No background schedule is configured.
 - Local repairs now cover simulation verdicts, mutation qualification,
   candidate verification gates, counter stimulus, and XDC generation.
   See PROGRESS for evidence. These changes are not merged or published.
+- Current checkpoint includes Codex CLI adapter/routing, fail-closed baseline,
+  restart winner preservation, finite timing metrics, tool process-tree cleanup,
+  and supervised counter generation trial. Inspect git status before continuing.
 
 ## Verified evidence
 
@@ -46,6 +51,19 @@ MCP is deferred. No background schedule is configured.
   cleanup is unit tested, not separately rerun through all Vivado stages.
 - Autonomous optimization and quantitative improvement remain unestablished.
 - GitHub connector reported push permission; no remote write exercised.
+- Latest full suite: 226 tests passed in 9.10 seconds on 2026-10-16.
+- Actual Codex generator call succeeded using existing ChatGPT login (model
+  identifier not reported). Counter RTL passed initial simulation and stuck-zero
+  mutation check. Trial01 implementation timed out at 300 seconds; old driver
+  left a Vivado child alive. Parent verified its command line and stopped it.
+- Repaired driver kills the owned process tree and preserves partial diagnostics.
+  Replay trial02 passed with the same RTL and stronger synchronous-reset tests.
+  6 LUTs, 8 FFs, WNS 7.806 ns, WHS 0.249 ns at 10 ns on xc7a35tcpg236-1.
+  It made no new model call; raw kind field still says generation but explicit
+  source_import metadata identifies replay. New code corrects this label.
+- Timing Doctor isolated-trial and cache metric-gate repairs passed independent
+  review and integrated tests. Valid cache hits still lack original report
+  provenance. No held-tier or optimization-improvement claim.
 
 ## Local evidence and environment
 
@@ -69,20 +87,19 @@ It preserves source snapshots and hashes, checks simulation and mutation
 qualification, then runs synthesis/implementation and records metrics.
 Separate launcher/license/toolchain failures from RTL failures.
 
-Next repairs: baseline validation still needs to fail closed (including
-missing testbench and infrastructure errors); candidate infra-only rounds
-still count as rejects/stalls; restart can still mismatch source and metrics.
-Do not start unattended optimization before these are covered by regressions.
+Next repairs: candidate infra-only rounds still count as rejects/stalls;
+cache keys still omit full context; resume and build remain incomplete.
+Baseline validation and restart winner preservation
+are now covered by regression tests. Do not start unattended optimization yet.
 
 Then repair the following in small reviewable changes, adding taxonomy or
 curriculum entries and regression coverage as required by CLAUDE.md:
 
-1. Fail closed on simulation/qualification infra errors and ambiguous output.
-2. Preserve a matched winning source and metrics across restart/export.
-3. Repair build's missing generation method and resume configuration/state.
-4. Correct generated testbench latency/scoreboard behavior and interface parsing.
-5. Enforce trustworthy metric gates and correct synthesis Tcl/constraints.
-6. Demonstrate a counter baseline and verified winner before harder designs.
+1. Finish cache context/provenance and infrastructure round accounting.
+2. Repair resume configuration/checkpoints and build's missing generation method.
+3. Correct generated testbench latency/scoreboard behavior and interface parsing.
+4. Demonstrate bounded Codex-driven optimization with trustworthy comparisons.
+5. Progress counter -> mux -> priority encoder, then stateful/protocol designs.
 
 See the full review for reproductions and remaining findings. No tier has
 been newly demonstrated held. Do not merge changes without required gates.

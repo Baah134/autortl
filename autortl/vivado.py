@@ -8,6 +8,8 @@ Message severity promotion (never demotion) is applied from the taxonomy.
 """
 from __future__ import annotations
 import re
+import os
+import signal
 import subprocess
 import time
 from pathlib import Path
@@ -23,24 +25,89 @@ def _tcl_path(p: Path) -> str:
     return s
 
 
-def _run(cmd: list[str], cwd: Path, timeout: int, log_path: Path) -> tuple[int, str]:
-    t0 = time.time()
+def _output_text(value) -> str:
+    # TimeoutExpired can contain bytes even when Popen is in text mode.
+    return value.decode("utf-8", errors="replace") if isinstance(value, bytes) else value or ""
+
+
+def _merge_output(previous, current) -> str:
+    previous, current = _output_text(previous), _output_text(current)
+    # communicate after a timeout normally returns the entire captured stream.
+    return current if current.startswith(previous) else previous + current
+
+
+def _stop_tool(process: subprocess.Popen, stdout="", stderr="") -> tuple[str, str]:
+    """Stop only our process tree and drain it within bounded cleanup deadlines."""
+    notes = []
     try:
-        r = subprocess.run(cmd, capture_output=True, text=True,
-                           timeout=timeout, cwd=str(cwd))
-        out = (r.stdout or "") + "\n" + (r.stderr or "")
-        log_path.write_text(out, errors="replace")
-        return r.returncode, out
-    except subprocess.TimeoutExpired:
-        msg = f"timed out after {timeout}s"
-        log_path.write_text(msg)
-        return 124, msg
-    except FileNotFoundError as e:
-        msg = f"{cmd[0]} not found: {e}"
-        log_path.write_text(msg)
-        return 127, msg
+        if os.name == "nt":
+            result = subprocess.run(["taskkill", "/PID", str(process.pid), "/T", "/F"],
+                                    capture_output=True, timeout=10, shell=False)
+            if result.returncode:
+                notes.append("process-tree cleanup failed: " + _output_text(result.stderr))
+        else:
+            # _run launches a private session; this group contains only our job.
+            os.killpg(process.pid, signal.SIGKILL)
+    except ProcessLookupError:
+        pass
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        notes.append(f"process-tree cleanup failed: {exc}")
+    if process.poll() is None:
+        try:
+            process.kill()
+        except OSError as exc:
+            notes.append(f"launcher cleanup failed: {exc}")
+    try:
+        final_stdout, final_stderr = process.communicate(timeout=5)
+        stdout = _merge_output(stdout, final_stdout)
+        stderr = _merge_output(stderr, final_stderr)
+    except subprocess.TimeoutExpired as exc:
+        stdout = _merge_output(stdout, exc.output)
+        stderr = _merge_output(stderr, exc.stderr)
+        notes.append("process cleanup timed out; output may be incomplete")
+        # On Windows communicate uses reader threads. Closing a pipe here can
+        # block on their read lock if a surviving descendant still owns it.
+        if os.name != "nt":
+            for stream in (process.stdout, process.stderr):
+                if stream is not None:
+                    stream.close()
+        try:
+            process.wait(timeout=5)
+        except (OSError, subprocess.TimeoutExpired) as wait_error:
+            notes.append(f"launcher could not be reaped: {wait_error}")
+    return _output_text(stdout), _output_text(stderr) + "\n" + "\n".join(notes)
+
+
+def _run(cmd: list[str], cwd: Path, timeout: int, log_path: Path) -> tuple[int, str]:
+    t0 = time.monotonic()
+    try:
+        try:
+            process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                       text=True, encoding="utf-8", errors="replace",
+                                       cwd=str(cwd), shell=False,
+                                       start_new_session=os.name != "nt")
+        except OSError as exc:
+            rc = 127 if isinstance(exc, FileNotFoundError) else 126
+            msg = f"{cmd[0]} {'not found' if rc == 127 else 'could not launch'}: {exc}"
+            log_path.write_text(msg, encoding="utf-8", errors="replace")
+            return rc, msg
+        try:
+            stdout, stderr = process.communicate(timeout=timeout)
+            rc = process.returncode
+        except subprocess.TimeoutExpired as exc:
+            stdout, stderr = _stop_tool(process, exc.output, exc.stderr)
+            stderr += f"\ntimed out after {timeout}s"
+            rc = 124
+        except BaseException:
+            stdout, stderr = _stop_tool(process)
+            log_path.write_text(stdout + "\n" + stderr + "\nTool execution cancelled",
+                                encoding="utf-8", errors="replace")
+            raise
+        out = _output_text(stdout) + "\n" + _output_text(stderr)
+        log_path.write_text(out, encoding="utf-8", errors="replace")
+        return rc, out
     finally:
-        _run.last_seconds = time.time() - t0
+        _run.last_seconds = time.monotonic() - t0
 _run.last_seconds = 0.0
 
 
@@ -57,9 +124,9 @@ def promotion_tcl(promotions: dict[str, str]) -> str:
 # ---------------- Rung 2: xvlog compile check ----------------
 
 def xvlog_check(files: list[Path], cfg: RunConfig, work_dir: Path,
-                sv: bool = False) -> tuple[bool, str, FailureKind]:
+                sv: bool = False, timeout: float = 120) -> tuple[bool, str, FailureKind]:
     args = [cfg.xvlog_bin] + (["-sv"] if sv else []) + [str(f) for f in files]
-    rc, out = _run(args, work_dir, 120, work_dir / "xvlog.log")
+    rc, out = _run(args, work_dir, timeout, work_dir / "xvlog.log")
     if rc == 0:
         return True, "", FailureKind.DESIGN
     return False, _error_lines(out), classify(out)
@@ -70,17 +137,27 @@ def xvlog_check(files: list[Path], cfg: RunConfig, work_dir: Path,
 def xsim_run(design_files: list[Path], tb_file: Path, tb_top: str,
              cfg: RunConfig, work_dir: Path,
              timeout: int = 300) -> tuple[bool, str, FailureKind]:
-    """Full batch sim without project creation: xvlog -> xelab -> xsim."""
-    ok, err, kind = xvlog_check(design_files + [tb_file], cfg, work_dir)
+    """Full batch sim with one deadline across xvlog -> xelab -> xsim."""
+    deadline = time.monotonic() + timeout
+    if timeout <= 0:
+        return False, "timed out after 0s", FailureKind.INFRA
+    ok, err, kind = xvlog_check(design_files + [tb_file], cfg, work_dir,
+                                timeout=min(120, timeout))
     if not ok:
         return False, err, kind
     snap = f"{tb_top}_snap"
+    remaining = deadline - time.monotonic()
+    if remaining <= 0:
+        return False, f"timed out after {timeout}s", FailureKind.INFRA
     rc, out = _run([cfg.xelab_bin, tb_top, "-s", snap, "--debug", "off"],
-                   work_dir, timeout, work_dir / "xelab.log")
+                   work_dir, remaining, work_dir / "xelab.log")
     if rc != 0:
         return False, _error_lines(out), classify(out)
+    remaining = deadline - time.monotonic()
+    if remaining <= 0:
+        return False, f"timed out after {timeout}s", FailureKind.INFRA
     rc, out = _run([cfg.xsim_bin, snap, "-runall"],
-                   work_dir, timeout, work_dir / "xsim.log")
+                   work_dir, remaining, work_dir / "xsim.log")
     (work_dir / "sim_log.txt").write_text(out, errors="replace")
     passed, sim_err = parse_sim_log(work_dir / "sim_log.txt")
     if rc != 0 and passed:

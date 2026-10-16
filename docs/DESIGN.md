@@ -33,7 +33,7 @@ model, the design has failed its own requirement.
 7. **Resumable FSM orchestrator** (fsm.py) with budgets, caches, watchdog.
    Crash anywhere, resume from state.json.
 
-## The six potholes and their fixes (all implemented)
+## The six potholes and intended fixes (see handoff for verified status)
 1. Bad blueprint → contract linter + stub elaboration before any generation.
 2. Behavioral-vs-cycle-accurate → latency field + two compare modes;
    spec-is-law via `// @latency N` header (mismatch = graded failure).
@@ -44,7 +44,7 @@ model, the design has failed its own requirement.
 6. Timing gap → Timing Doctor: tool knobs (retiming/phys_opt) first, RTL
    surgery second (slack -0.5/-3.0 ns thresholds), replan last.
 
-## The six defences (all implemented)
+## The six defences (see handoff for verified status)
 7. Testbench qualification by bug injection (tbqual.py) — the oracle must
    FAIL a sabotaged design before it grades anything.
 8. Reset/X discipline — reset per spec + 2-cycle settle before comparing.
@@ -56,11 +56,22 @@ model, the design has failed its own requirement.
 12. Router stats — recording-only (llm/router_stats.jsonl) until ~10 runs.
 
 ## Provider architecture
-`llm/routing.yaml` is the policy: per-role chains over three backends
-(claude_code headless, nvidia NIM, openrouter free Nemotrons). Planner+doctor
-get best-available (opus→sonnet); generator+evaluator pinned sonnet.
-Generator/evaluator run --max-turns 1 (deliberately de-agented); the doctor
-gets max_turns 3. OpenRouter 429s are infra.
+`llm/routing.yaml` routes planner, generator, evaluator and timing doctor to
+`codex.default`. Each call starts a bounded Codex CLI worker with the existing
+login and configured default model. Legacy provider files are historical;
+the active client cannot invoke them. No additional API key is required.
+
+Workers receive prompts over stdin in a temporary working directory with a
+read-only sandbox and ephemeral session. The harness requires a completed
+JSONL turn and nonempty final response. Usage is recorded when reported;
+unknown model/cost stays null. Timeouts and cancellation terminate the owned
+worker, including a Windows process-tree termination attempt. The adapter
+enforces wall time, not the historical max_turns parameter. Read-only is not
+a guarantee that the worker has no tools.
+
+These are independent role invocations. The development-session coordinator
+and its helper agents supervise integration; persistent runtime dialogue and
+fully reliable FSM resume remain separate development work.
 
 ## Modes
 - `optimize`: existing design+tb in, contract negotiated about metrics.

@@ -10,6 +10,7 @@ outputs face deterministic verification before they influence anything.
 from __future__ import annotations
 import json
 import shutil
+import tempfile
 from datetime import datetime
 from pathlib import Path
 
@@ -21,7 +22,7 @@ from .state import RunState
 from .roles import Planner, Generator, Evaluator, TimingDoctor, Evaluation
 from .budget import Budget
 from .cache import MetricsCache, ArtifactCache, code_hash
-from .triage import FailureKind
+from .triage import FailureKind, classify
 from .metrics_gate import validate as gate_metrics, MetricsGateError
 from .watchdog import inspect as watchdog_inspect
 from .taxonomy import Taxonomy
@@ -182,6 +183,9 @@ class Orchestrator:
         cfg, state = self.cfg, self.state
         extra_sources = extra_sources or []
 
+        # Verification is mandatory before even negotiating an optimization.
+        if not cfg.testbench_path or not Path(cfg.testbench_path).is_file():
+            return self._baseline_stop("baseline_blocked", "A baseline testbench is required")
         original = Path(cfg.design_path).read_text()
         # module contract for static checks in optimize mode (interface only)
         contract = self._infer_contract(original, cfg.top_module)
@@ -193,12 +197,22 @@ class Orchestrator:
         tb_path = Path(cfg.testbench_path) if cfg.testbench_path else None
         baseline = self._full_flow([base_v] + extra_sources, tb_path,
                                    cfg.top_module, idir)
-        if not baseline.sim_passed:
-            print(f"[iter 0] baseline failed sim — attempting fixes")
+        if not baseline.sim_passed or baseline.synth_error:
+            print(f"[iter 0] baseline failed verification")
             v, baseline = self._fix_loop(original, baseline, tb_path,
                                          base_v, idir, extra_sources)
-            if baseline.sim_passed:
+            if baseline.sim_passed and not baseline.synth_error:
                 original = v
+        if not baseline.sim_passed or baseline.synth_error:
+            kind = self._flow_failure_kind(baseline)
+            return self._baseline_stop(
+                "baseline_failed" if kind == FailureKind.DESIGN else "baseline_blocked",
+                baseline.sim_error or baseline.synth_error or "Baseline verification incomplete",
+                kind)
+        try:
+            gate_metrics(baseline, synthesis_ran=True)
+        except MetricsGateError as exc:
+            return self._baseline_stop("baseline_blocked", str(exc), FailureKind.INFRA)
         state.append_design({"iteration": 0, "is_best": True,
                              **baseline.to_dict(), "recommendation": "BASELINE"})
         print(f"[iter 0] baseline LUTs={baseline.lut_used} FFs={baseline.ff_used} "
@@ -218,6 +232,8 @@ class Orchestrator:
 
         # ---- main loop ----
         best_v, best_m, best_iter = original, baseline, 0
+        best_artifact_dir = idir
+        generation_seed = original
         stall, replans, knobs_tried = 0, 0, False
         recent_codes: list[str] = []
         recent_errors: list[str] = []
@@ -252,7 +268,7 @@ class Orchestrator:
             n = self.budget.effective_best_of_n(cfg.best_of_n)
             cands: list[Candidate] = []
             for mname, mtext in mutation_prompts(cfg.objective, n):
-                v = self.generator.generate(contract, best_v, instruction,
+                v = self.generator.generate(contract, generation_seed, instruction,
                                             mtext, self.budget)
                 cands.append(Candidate(verilog=v, mutation=mname))
             cands = dedupe(cands)
@@ -323,9 +339,17 @@ class Orchestrator:
             for c in [x for x in cands if x.alive and x.ladder_rungs_passed == 4]:
                 cached = self.metrics_cache.get(c.verilog)
                 if cached:
-                    c.metrics = cached
-                    c.ladder_rungs_passed = 5
-                    continue
+                    try:
+                        cached_metrics = VivadoMetrics.from_dict(cached)
+                        gate_metrics(cached_metrics, synthesis_ran=True)
+                        if not cached_metrics.sim_passed or cached_metrics.synth_error:
+                            raise MetricsGateError("Cache has no verified synthesis result")
+                    except (MetricsGateError, TypeError, ValueError, AttributeError) as exc:
+                        print(f"[cache] invalid metrics ignored: {exc}")
+                    else:
+                        c.metrics = cached_metrics.to_dict()
+                        c.ladder_rungs_passed = 5
+                        continue
                 cdir = idir / f"cand_{c.mutation}"
                 cv = cdir / f"{cfg.top_module}.v"
                 ok, err, kind = vivado.run_synthesis(
@@ -366,36 +390,12 @@ class Orchestrator:
                       f"action={diagd.action}")
                 if diagd.action == "tool_knobs":
                     knobs_tried = True
-                    ok, err, _ = vivado.run_synthesis(
-                        [wdir / f"{cfg.top_module}.v"] + extra_sources,
-                        cfg.top_module, self.cfg, wdir,
-                        promotions=self.taxonomy.promotions(),
-                        retiming=True, phys_opt=True)
-                    self.budget.charge_vivado(vivado.vivado_seconds())
-                    if ok:
-                        wm = vivado.full_metrics(wdir)
-                        wm.sim_passed = True
-                elif diagd.action == "rtl_surgery":
-                    fixed = self.doctor.surgery(winner.verilog, diagd.instruction,
-                                                diagd.detail, self.budget)
-                    sres = static_check(fixed, contract)
-                    if sres.passed:
-                        (wdir / f"{cfg.top_module}.v").write_text(fixed)
-                        # surgery faces the ladder like any candidate
-                        passed = True
-                        if tb_path:
-                            passed, err, _ = vivado.xsim_run(
-                                [wdir / f"{cfg.top_module}.v"] + extra_sources,
-                                tb_path, f"{cfg.top_module}_tb", self.cfg, wdir)
-                        if passed:
-                            ok, err, _ = vivado.run_synthesis(
-                                [wdir / f"{cfg.top_module}.v"] + extra_sources,
-                                cfg.top_module, self.cfg, wdir,
-                                promotions=self.taxonomy.promotions())
-                            if ok:
-                                winner.verilog = fixed
-                                wm = vivado.full_metrics(wdir)
-                                wm.sim_passed = True
+                if diagd.action in ("tool_knobs", "rtl_surgery"):
+                    trial = self._doctor_trial(winner.verilog, wm, contract, tb_path,
+                                                extra_sources, idir, diagd)
+                    if trial is not None:
+                        winner.verilog, wm, wdir = trial
+                        winner.metrics = wm.to_dict()
 
             # ---- evaluation ----
             ladder_summary = "\n".join(
@@ -415,6 +415,8 @@ class Orchestrator:
             is_best = ev.recommendation == "ACCEPT" and improved
             if is_best:
                 best_v, best_m, best_iter = winner.verilog, wm, it
+                best_artifact_dir = wdir
+                generation_seed = best_v
                 stall = 0
                 print(f"[iter {it}] *** NEW BEST *** LUTs={wm.lut_used} "
                       f"FFs={wm.ff_used} WNS={wm.wns_ns}")
@@ -427,6 +429,8 @@ class Orchestrator:
                                   ev.recommendation + (" [NEW BEST]" if is_best else ""))
             state.append_design({"iteration": it, "is_best": is_best,
                                  "recommendation": ev.recommendation,
+                                 "artifact_dir": str(wdir),
+                                 "code_hash": code_hash(winner.verilog),
                                  **wm.to_dict()})
 
             # ---- restart mechanism ----
@@ -442,8 +446,8 @@ class Orchestrator:
                 plan = self.planner.restart_plan(contract_md, stall, tried,
                                                  best_m, self.budget)
                 state.write_plan(plan)
-                best_v_working = original     # restart from baseline
-                best_v = best_v_working if not improved else best_v
+                # A search restart changes the next seed, never the accepted winner.
+                generation_seed = original
                 stall, knobs_tried = 0, False
                 print(f"[restart {replans}/{cfg.max_replans}] new direction planned")
 
@@ -454,6 +458,8 @@ class Orchestrator:
         summary = {"status": "done", "best_iteration": best_iter,
                    "best_metrics": best_m.to_dict(),
                    "baseline_metrics": baseline.to_dict(),
+                   "best_artifact_dir": str(best_artifact_dir),
+                   "best_code_hash": code_hash(best_v),
                    "run_dir": str(state.run_dir)}
         (state.run_dir / "run_summary.json").write_text(
             json.dumps(summary, indent=2, default=str))
@@ -462,26 +468,97 @@ class Orchestrator:
         return summary
 
     # ------------------------------------------------------------------ helpers
+    def _doctor_trial(self, source: str, current: VivadoMetrics, contract: ModuleSpec,
+                      tb: Path | None, extra: list[Path], parent: Path,
+                      diagnosis) -> tuple[str, VivadoMetrics, Path] | None:
+        """Validate an isolated experiment before replacing any verified artifacts."""
+        surgery = diagnosis.action == "rtl_surgery"
+        if surgery:
+            if tb is None:
+                return None
+            source = self.doctor.surgery(source, diagnosis.instruction,
+                                         diagnosis.detail, self.budget)
+            if not static_check(source, contract).passed:
+                return None
+            latency = declared_latency(source)
+            if latency is not None and latency != contract.latency:
+                return None
+        work = Path(tempfile.mkdtemp(prefix=f"doctor_{diagnosis.action}_", dir=parent))
+        vfile = work / f"{self.cfg.top_module}.v"
+        vfile.write_text(source)
+        if surgery:
+            passed, _, _ = vivado.xsim_run([vfile] + extra, tb,
+                                          f"{self.cfg.top_module}_tb", self.cfg, work)
+            self.budget.charge_vivado(vivado.vivado_seconds())
+            if not passed:
+                return None
+        ok, _, _ = vivado.run_synthesis(
+            [vfile] + extra, self.cfg.top_module, self.cfg, work,
+            promotions=self.taxonomy.promotions(),
+            retiming=not surgery, phys_opt=not surgery)
+        self.budget.charge_vivado(vivado.vivado_seconds())
+        if not ok:
+            return None
+        result = vivado.full_metrics(work)
+        result.sim_passed, result.sim_error = True, ""
+        try:
+            gate_metrics(result, synthesis_ran=True)
+            if result.synth_error:
+                raise MetricsGateError(result.synth_error)
+        except MetricsGateError as exc:
+            print(f"[doctor] invalid trial metrics: {exc}")
+            return None
+        objective_field = {"minimize_luts": "lut_used", "minimize_ffs": "ff_used",
+                           "maximize_freq": "wns_ns", "minimize_power": "dynamic_power_w"}[
+                               self.cfg.objective]
+        timing_recovered = (result.timing_met and not current.timing_met
+                            and getattr(result, objective_field) == getattr(current, objective_field))
+        if not self._is_better(result, current) and not timing_recovered:
+            return None
+        return source, result, work
+
+    def _baseline_stop(self, status: str, error: str,
+                       kind: FailureKind | None = None) -> dict:
+        """Persist a non-success outcome without promoting or scoring a design."""
+        summary = {"status": status, "error": error, "best_iteration": None,
+                   "run_dir": str(self.state.run_dir)}
+        if kind is not None:
+            summary["failure_kind"] = kind.value
+        self._snapshot(phase=status.upper(), best_iteration=None, error=error)
+        (self.state.run_dir / "run_summary.json").write_text(
+            json.dumps(summary, indent=2), encoding="utf-8")
+        return summary
+
+    def _flow_failure_kind(self, metrics: VivadoMetrics) -> FailureKind:
+        return getattr(self, "_last_flow_failure_kind", None) or classify(
+            metrics.sim_error or metrics.synth_error)
+
     def _full_flow(self, sources: list[Path], tb: Path | None, top: str,
                    work: Path) -> VivadoMetrics:
+        self._last_flow_failure_kind = None
         m = VivadoMetrics()
         if tb:
-            passed, err, _ = vivado.xsim_run(sources, tb, f"{top}_tb",
+            passed, err, kind = vivado.xsim_run(sources, tb, f"{top}_tb",
                                              self.cfg, work)
             self.budget.charge_vivado(vivado.vivado_seconds())
             m.sim_passed, m.sim_error = passed, err
             if not passed:
+                self._last_flow_failure_kind = kind
                 return m
         else:
-            m.sim_passed = True
-        ok, err, _ = vivado.run_synthesis(sources, top, self.cfg, work,
+            m.sim_error = "A baseline testbench is required"
+            self._last_flow_failure_kind = FailureKind.UNKNOWN
+            return m
+        ok, err, kind = vivado.run_synthesis(sources, top, self.cfg, work,
                                           promotions=self.taxonomy.promotions())
         self.budget.charge_vivado(vivado.vivado_seconds())
         if not ok:
             m.synth_error = err
+            self._last_flow_failure_kind = kind
             return m
         m2 = vivado.full_metrics(work)
         m2.sim_passed = m.sim_passed
+        m2.sim_error = m.sim_error
         return m2
 
     def _fix_loop(self, verilog: str, m: VivadoMetrics, tb: Path | None,
@@ -489,7 +566,9 @@ class Orchestrator:
                   extra: list[Path]) -> tuple[str, VivadoMetrics]:
         previous: list[str] = []
         for _ in range(self.cfg.max_fix_attempts):
-            if m.sim_passed:
+            if m.sim_passed and not m.synth_error:
+                break
+            if self._flow_failure_kind(m) != FailureKind.DESIGN:
                 break
             err = m.sim_error or m.synth_error or "unknown"
             ids = extract_message_ids(err)

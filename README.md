@@ -138,7 +138,7 @@ autortl_v4/
 +-- llm/
 |   +-- routing.yaml            model policy (edit chains per role, no code changes)
 |   +-- client.py               one public function: ask(role, prompt, ...)
-|   +-- backends/               Claude Code | NVIDIA NIM | OpenRouter (free Nemotrons)
+|   +-- backends/               Codex CLI (active); historical adapters retained
 +-- data/
 |   +-- taxonomy.yaml           error + methodology dictionary
 |   +-- parts.yaml              physical budgets per target device
@@ -167,20 +167,18 @@ The system discovered that all three comparison thresholds (100, 500, 1000) fit 
 
 ## Getting started
 
-**Requirements:** Python 3.11+, Vivado 2024.x or 2025.x, Git.
+**Requirements:** Python 3.11+, Vivado 2024.x or 2025.x, Git, and an authenticated Codex CLI.
 
 ```bash
 pip install -r requirements.txt
-python -m pytest tests/ -q          # 91 harness tests should all pass
+python -m pytest tests/ -q
 ```
 
-**Environment variables** (for fallback backends):
-```
-NVIDIA_API_KEY       NVIDIA Build free tier (starts with nvapi-)
-OPENROUTER_API_KEY   OpenRouter free Nemotrons ($10 one-time credit unlocks 1k req/day)
-```
-
-Claude Code is the primary backend. Log in with `claude login` first.
+**Codex-only workers:** run `codex login status` to check the existing login.
+If needed, authenticate with `codex login`. All four roles use `codex.default`
+in `llm/routing.yaml`; the configured Codex model is retained. There are no
+external-provider fallbacks. Optionally set `AUTORTL_CODEX_BIN` to the CLI path.
+See [Codex operation](docs/CODEX_WORKERS.md) for the bounded verification trial.
 
 **Optimize an existing design:**
 ```bash

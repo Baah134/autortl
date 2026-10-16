@@ -6,6 +6,10 @@ Git branch, status, and recent commits before editing. Reconcile these
 records with actual files and tool results; documentation is not proof.
 
 Current user choice: command-line Vivado. MCP integration is deferred.
+Use Codex workers only. The user no longer has access to the previous
+Claude/Gemini/other-provider accounts. Do not enable external fallbacks.
+The coordinating agent supervises bounded workers, reviews their changes,
+and checks tool evidence before continuing the next experiment.
 
 Keep the existing contract and verification requirements in CLAUDE.md.
 Never count infrastructure failures as design failures or successful tests.

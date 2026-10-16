@@ -72,6 +72,61 @@ separately from the owner's project direction and prior implementation.
 - Full tier benchmarks not run; no merge, no held-tier claim, no autonomous
   improvement or area-saving claim. Baseline/resume/restart defects remain.
 
+## 2026-10-16 — Codex-only workers and recovery from interruption
+
+- User no longer has access to previous providers and authorized Codex-only
+  workers with main-agent supervision and iterative implementation/testing.
+- Development helpers implemented provider integration and baseline/restart
+  repairs; independent reviewer checked them. Main agent integrated changes,
+  strengthened metrics checks and authored the supervised generation trial.
+- All active roles route to codex.default. Missing-YAML fallback is Codex-only;
+  legacy adapters cannot be selected through the active registry. Existing
+  login and configured default model are retained; auth/config were not changed.
+- Worker calls use stdin, ephemeral temporary CWD and read-only sandbox.
+  Completed JSONL and nonempty final response required. Unknown model/cost
+  stays null. Attempts charge budget before launch; timeouts are bounded.
+- Baselines without verification or valid metrics cannot be promoted. Exact
+  infrastructure/unknown tool verdicts prevent RTL repair. Restart changes
+  generation seed without overwriting winning source/metrics.
+- Setup/hold sentinel and nonfinite metrics now fail the shared gate.
+- Full suite: 202 tests passed in 6.94 seconds. Initial integration run exposed
+  sandbox temp-directory access and zero-call budget edges; corrected.
+- Live trial01: a Codex generator returned an 8-bit counter in 5.75 seconds;
+  reported usage 15,447 input tokens (12,032 cached), 92 output tokens.
+  Actual model identifier and monetary cost were not reported.
+- Trial01 static checks, 700-cycle reference simulation and stuck-zero mutant
+  detection passed. Implementation timed out after 300 seconds. An orphaned
+  Vivado process was confirmed by exact script path and terminated by parent.
+  No routed result or improvement claimed for trial01.
+- Added Vivado Popen process-tree cleanup, bounded draining and retained partial
+  logs. Codex timeout/cancel cleanup also avoids blocking Windows pipe closure.
+- Independent review strengthened the counter testbench to test reset away
+  from clock edges, added an asynchronous-reset mutant, required timing closure
+  and charged elapsed tool runtime. Replay uses saved RTL, with no model call.
+- Automatic approval review previously prevented trial02 from starting because
+  of a usage limit (not a safety rejection). User continued; bounded retry on
+  2026-10-16 was approved and completed successfully.
+- Trial02 reverified the exact trial01 RTL hash
+  `52533d4a6c66c3e74c0bf1475641d55a25334dba12b304592c34466296900a2f`.
+  All stages passed: static, 700-cycle simulation, stuck-zero detection,
+  asynchronous-reset detection, synthesis/place/route, metrics, timing.
+  Device xc7a35tcpg236-1, 10 ns clock: 6 LUTs, 8 FFs, setup slack 7.806 ns,
+  hold slack 0.249 ns. This is an 8-bit generated design, not an improvement
+  comparison against the earlier 32-bit counter.
+- Trial02 made no model call. Its raw kind field predates the replay-label
+  correction; source_import and imported_source identify it as reverification.
+  New runs label replay supervised_reverification. Raw evidence is preserved.
+- Additional review repairs: total simulation deadline shared across compile,
+  elaboration and simulation; trial timeouts capped by remaining tool/wall budget.
+- Timing Doctor now uses isolated trials and adopts source, metrics and report
+  directory together after verification and metric gates. Invalid cached metrics
+  cause fresh synthesis. Full cache context keys remain future work.
+- Evidence: work/codex_counter_trial_01, work/codex_counter_trial_02,
+  outputs/AutoRTL-codex-tests.txt. Final integrated suite: 226 passed in 9.10s.
+  Independent review found no checkpoint-blocking doctor regression. Valid
+  cache report provenance remains incomplete. Work checkpointed locally on
+  codex/cli-bringup; no remote publication or merge. Full tier gates not run.
+
 ## CV evidence policy
 
 Record failures as well as successes. Quantitative claims require matching

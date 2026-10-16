@@ -14,38 +14,37 @@ try:
 except ImportError:
     yaml = None
 
-from .backends import claude_code, nvidia_nim, openrouter
+from .backends import codex_cli
 
-_BACKENDS = {"claude_code": claude_code, "nvidia": nvidia_nim, "openrouter": openrouter}
+_BACKENDS = {"codex": codex_cli}
 _ROUTING_PATH = Path(__file__).parent / "routing.yaml"
 _STATS_PATH = Path(__file__).parent / "router_stats.jsonl"
-
-_RETRYABLE = ("429", "500", "502", "503", "504", "timed out", "overloaded",
-              "rate limit", "RESOURCE_EXHAUSTED", "UNAVAILABLE")
-
 
 def _load_routing() -> dict:
     if yaml and _ROUTING_PATH.exists():
         return yaml.safe_load(_ROUTING_PATH.read_text())
     # minimal fallback if pyyaml missing
-    return {"roles": {r: {"chain": ["claude_code.sonnet"]} for r in
+    return {"roles": {r: {"chain": ["codex.default"]} for r in
                       ("planner", "generator", "evaluator", "timing_doctor")},
             "defaults": {"max_retries_per_backend": 2, "timeout_s": 180}}
 
 
-def _record(role: str, entry: str, ok: bool, seconds: float) -> None:
+def _record(role: str, entry: str, ok: bool, seconds: float,
+            metadata: dict | None = None, error_type: str | None = None) -> None:
+    _STATS_PATH.parent.mkdir(parents=True, exist_ok=True)
     with open(_STATS_PATH, "a", encoding="utf-8") as f:
         f.write(json.dumps({"ts": datetime.now().isoformat(), "role": role,
-                            "entry": entry, "ok": ok, "seconds": round(seconds, 2)}) + "\n")
+                            "entry": entry, "ok": ok, "seconds": round(seconds, 2),
+                            "metadata": metadata or {}, "error_type": error_type}) + "\n")
 
 
 def ask(role: str, prompt: str, system: str = "",
         budget=None, route_override: str | None = None,
         max_turns: int = 1) -> str:
     cfg = _load_routing()
-    chain = cfg["roles"].get(role, {}).get("chain", ["claude_code.sonnet"])
+    chain = cfg["roles"].get(role, {}).get("chain", ["codex.default"])
     if route_override:
-        chain = [route_override] + [c for c in chain if c != route_override]
+        chain = [route_override]
     retries = cfg.get("defaults", {}).get("max_retries_per_backend", 2)
     timeout = cfg.get("defaults", {}).get("timeout_s", 180)
 
@@ -54,24 +53,35 @@ def ask(role: str, prompt: str, system: str = "",
         backend_name, _, alias = entry.partition(".")
         backend = _BACKENDS.get(backend_name)
         if backend is None:
-            continue
+            raise RuntimeError(f"CODEX_UNAVAILABLE: unsupported backend '{backend_name}'")
         for attempt in range(1, retries + 1):
+            call_timeout = timeout
+            if budget is not None:
+                if budget.exhausted() or budget.llm_calls >= budget.max_llm_calls:
+                    raise RuntimeError("LLM_BUDGET: model call budget exhausted")
+                call_timeout = min(timeout, max(0.001,
+                    (budget.max_wall_minutes - budget.wall_minutes) * 60))
+                budget.charge_llm()
             t0 = time.time()
             try:
                 text, meta = backend.ask(alias, prompt, system,
-                                         timeout_s=timeout, max_turns=max_turns)
-                if budget is not None:
-                    budget.charge_llm()
-                _record(role, entry, True, time.time() - t0)
-                if text:
+                                         timeout_s=call_timeout, max_turns=max_turns)
+                if text and text.strip():
+                    _record(role, entry, True, time.time() - t0, meta)
                     return text
-                last_err = "empty response"
+                raise codex_cli.CodexError("CODEX_PROTOCOL", "empty response", meta)
             except Exception as e:
                 last_err = str(e)
-                _record(role, entry, False, time.time() - t0)
-                if not any(s in last_err for s in _RETRYABLE):
+                _record(role, entry, False, time.time() - t0,
+                        getattr(e, "metadata", None), type(e).__name__)
+                if not isinstance(e, codex_cli.CodexError) or e.code != "CODEX_TIMEOUT":
                     break     # non-retryable on this backend: next chain entry
-                time.sleep(2 ** attempt)
+                if attempt < retries:
+                    delay = 2 ** attempt
+                    if budget is not None:
+                        delay = min(delay, max(0,
+                            (budget.max_wall_minutes - budget.wall_minutes) * 60))
+                    time.sleep(delay)
     raise RuntimeError(f"all backends failed for role '{role}': {last_err[:300]}")
 
 

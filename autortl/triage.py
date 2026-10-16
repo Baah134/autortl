@@ -23,7 +23,7 @@ _INFRA_SIGNATURES = [
     r"Connection (?:refused|reset|timed out)",
     r"No space left on device",
     r"vivado(?:\.bat)? .*not (?:found|recognized)",
-    r"timed out after \d+s",
+    r"timed out after \d+(?:\.\d+)?s",
     r"HTTP (?:429|5\d\d)",
 ]
 
