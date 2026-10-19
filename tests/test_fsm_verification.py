@@ -33,7 +33,13 @@ def test_incomplete_candidate_never_synthesized_or_cached(tmp_path, monkeypatch,
         return_value=failed if stage == "compile" else (True, "", FailureKind.DESIGN)))
     sim = Mock(return_value=failed)
     if stage == "repair":
-        sim.side_effect = [(False, "TEST FAILED", FailureKind.DESIGN), failed]
+        first = [True]
+        def repaired_simulation(*args, **kwargs):
+            if first[0]:
+                first[0] = False
+                return False, "TEST FAILED", FailureKind.DESIGN
+            return failed
+        sim.side_effect = repaired_simulation
     monkeypatch.setattr(fsm.vivado, "xsim_run", sim)
     synth = Mock(side_effect=AssertionError("unverified candidate reached synthesis"))
     cache = Mock(side_effect=AssertionError("unverified candidate reached cache"))
@@ -46,8 +52,8 @@ def test_incomplete_candidate_never_synthesized_or_cached(tmp_path, monkeypatch,
     assert fix.call_count == (1 if stage == "repair" else 0)
 
 
-@pytest.mark.parametrize("second_qualified", [False, True])
-def test_regenerated_testbench_must_be_requalified(tmp_path, monkeypatch, second_qualified):
+@pytest.mark.parametrize("reason", ["missed bug", "license unavailable", "no applicable mutation"])
+def test_unqualified_testbench_cannot_change_its_grading(tmp_path, monkeypatch, reason):
     o = fsm.Orchestrator(RunConfig(mode="build"), tmp_path / "run")
     module = ModuleSpec("m", "test", [])
     work = tmp_path / "module"
@@ -60,9 +66,12 @@ def test_regenerated_testbench_must_be_requalified(tmp_path, monkeypatch, second
     monkeypatch.setattr(fsm, "generate_tb", Mock(return_value=tb))
     monkeypatch.setattr(o, "_generate_verified", Mock(return_value="module m; endmodule"),
                         raising=False)
-    qualification = Mock(side_effect=[(False, "missed bug"), (second_qualified, "retry")])
+    qualification = Mock(return_value=(False, reason))
     monkeypatch.setattr(fsm, "qualify_tb", qualification)
-    monkeypatch.setattr(fsm.vivado, "xsim_run", Mock(return_value=(True, "", FailureKind.DESIGN)))
+    simulation = Mock(side_effect=AssertionError("unqualified stimulus was silently regenerated"))
+    monkeypatch.setattr(fsm.vivado, "xsim_run", simulation)
     result = o._build_module(module, work)
-    assert (result is not None) is second_qualified
-    assert qualification.call_count == 2
+    assert result is None
+    assert qualification.call_count == 1
+    assert fsm.generate_tb.call_count == 1
+    simulation.assert_not_called()

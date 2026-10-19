@@ -6,7 +6,9 @@ and skips replans instead of dying mid-run.
 from __future__ import annotations
 import json
 import time
+import math
 from pathlib import Path
+from .state import atomic_write_text
 
 
 class Budget:
@@ -15,29 +17,46 @@ class Budget:
         self.max_llm_calls = max_llm_calls
         self.max_vivado_minutes = max_vivado_minutes
         self.max_wall_minutes = max_wall_minutes
+        if type(max_llm_calls) is not int or max_llm_calls < 0:
+            raise ValueError("max_llm_calls must be a nonnegative integer")
+        for value in (max_vivado_minutes, max_wall_minutes):
+            if type(value) not in (int, float) or not math.isfinite(value) or value < 0:
+                raise ValueError("time budgets must be finite and nonnegative")
         self.llm_calls = 0
         self.vivado_seconds = 0.0
         self.start = time.time()
-        self.state_path = state_path
-        if state_path and state_path.exists():
-            d = json.loads(state_path.read_text())
-            self.llm_calls = d.get("llm_calls", 0)
-            self.vivado_seconds = d.get("vivado_seconds", 0.0)
-            self.start = time.time() - d.get("elapsed", 0.0)
+        self.state_path = Path(state_path) if state_path else None
+        if self.state_path and self.state_path.exists():
+            d = json.loads(self.state_path.read_text(encoding="utf-8"))
+            self.llm_calls = d["llm_calls"]
+            self.vivado_seconds = d["vivado_seconds"]
+            elapsed = d["elapsed"]
+            if type(self.llm_calls) is not int or self.llm_calls < 0:
+                raise ValueError("invalid saved model-call count")
+            for value in (self.vivado_seconds, elapsed):
+                if type(value) not in (int, float) or not math.isfinite(value) or value < 0:
+                    raise ValueError("invalid saved budget time")
+            self.start = time.time() - elapsed
 
     def charge_llm(self, n: int = 1) -> None:
+        if type(n) is not int or n < 0:
+            raise ValueError("cannot refund model calls")
         self.llm_calls += n
         self._save()
 
     def charge_vivado(self, seconds: float) -> None:
+        if type(seconds) not in (int, float) or not math.isfinite(seconds) or seconds < 0:
+            raise ValueError("cannot refund tool time")
         self.vivado_seconds += seconds
         self._save()
 
     @property
     def wall_minutes(self) -> float:
-        return (time.time() - self.start) / 60.0
+        return max(0.0, time.time() - self.start) / 60.0
 
     def fraction_left(self) -> float:
+        if min(self.max_llm_calls, self.max_vivado_minutes, self.max_wall_minutes) <= 0:
+            return 0.0
         fracs = [
             1 - self.llm_calls / max(self.max_llm_calls, 1),
             1 - (self.vivado_seconds / 60.0) / max(self.max_vivado_minutes, 1e-9),
@@ -63,8 +82,8 @@ class Budget:
     def _save(self) -> None:
         if self.state_path:
             self.state_path.parent.mkdir(parents=True, exist_ok=True)
-            self.state_path.write_text(json.dumps({
+            atomic_write_text(self.state_path, json.dumps({
                 "llm_calls": self.llm_calls,
                 "vivado_seconds": self.vivado_seconds,
-                "elapsed": time.time() - self.start,
+                "elapsed": self.wall_minutes * 60,
             }))

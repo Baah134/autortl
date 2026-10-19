@@ -5,6 +5,7 @@ testbench generator, and skill loader rely on is REQUIRED and typed here.
 """
 from __future__ import annotations
 import json
+import re
 from dataclasses import dataclass, field, asdict
 from pathlib import Path
 
@@ -12,6 +13,10 @@ PROTOCOLS = {"none", "valid_ready", "pulse", "level"}
 DIRECTIONS = {"input", "output", "inout"}
 RESET_KINDS = {"sync", "async"}
 COMPARE_MODES = {"fixed_latency", "scoreboard"}   # pulse mode intentionally stubbed
+
+
+def valid_identifier(value) -> bool:
+    return isinstance(value, str) and re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", value) is not None
 
 
 @dataclass
@@ -24,9 +29,11 @@ class Port:
 
     def validate(self) -> list[str]:
         errs = []
+        if not valid_identifier(self.name):
+            errs.append(f"invalid Verilog port identifier: {self.name}")
         if self.direction not in DIRECTIONS:
             errs.append(f"port {self.name}: bad direction '{self.direction}'")
-        if not isinstance(self.width, int) or self.width < 1:
+        if type(self.width) is not int or not 1 <= self.width <= 65536:
             errs.append(f"port {self.name}: width must be int >= 1 (got {self.width})")
         if self.protocol not in PROTOCOLS:
             errs.append(f"port {self.name}: unknown protocol '{self.protocol}'")
@@ -41,7 +48,12 @@ class ResetSpec:
     duration_cycles: int = 5
 
     def validate(self) -> list[str]:
-        return [] if self.kind in RESET_KINDS else [f"reset kind '{self.kind}' invalid"]
+        errors = [] if self.kind in RESET_KINDS else [f"reset kind '{self.kind}' invalid"]
+        if not valid_identifier(self.signal): errors.append("invalid reset signal identifier")
+        if type(self.active_high) is not bool: errors.append("reset polarity must be boolean")
+        if type(self.duration_cycles) is not int or not 1 <= self.duration_cycles <= 1000:
+            errors.append("reset duration must be 1..1000 cycles")
+        return errors
 
 
 @dataclass
@@ -76,7 +88,7 @@ class ModuleSpec:
 
     def validate(self) -> list[str]:
         errs = []
-        if not self.name.isidentifier():
+        if not valid_identifier(self.name):
             errs.append(f"module name '{self.name}' is not a valid identifier")
         if not self.behavior.strip():
             errs.append(f"module {self.name}: behavior description empty")
@@ -92,8 +104,10 @@ class ModuleSpec:
                 errs.append(f"module {self.name}: port {p.name} references "
                             f"unknown clock domain '{p.clock_domain}'")
         errs.extend(self.reset.validate())
-        if self.latency < 0:
-            errs.append(f"module {self.name}: latency must be >= 0")
+        if type(self.latency) is not int or not 0 <= self.latency <= 1024:
+            errs.append(f"module {self.name}: latency must be an integer in 0..1024")
+        if not all(valid_identifier(name) and type(value) is int for name, value in self.parameters.items()):
+            errs.append(f"module {self.name}: parameter names/defaults must be valid identifiers/integers")
         return errs
 
 

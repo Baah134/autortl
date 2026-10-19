@@ -50,6 +50,51 @@ messages:
 # Methodology violations (report_methodology, UG1292 IDs). ADVISORY ONLY:
 # these never kill candidates; they are digested into the planner's context.
 harness_failures:
+  unsafe_spec_identifier:
+    meaning: "A model-supplied identifier escaped source paths or top-level wiring used an invalid external binding"
+    repair: "Validate ASCII Verilog names and all external bindings before creating files or Tcl"
+  interrupted_persistence:
+    meaning: "A process interruption partially wrote state or lost a durable checkpoint"
+    repair: "Write sibling temporary files, flush, and atomically replace; checkpoint completed stages"
+  resume_config_drift:
+    meaning: "Resume reconstructed defaults or changed input, tool, objective or budget configuration"
+    repair: "Load the saved configuration and verify frozen input hashes before continuing"
+  duplicate_resume_evidence:
+    meaning: "Resuming repeated accepted history or charged completed work twice"
+    repair: "Use stable stage identifiers, immutable completed artifacts and idempotent history writes"
+  stale_context_cache:
+    meaning: "A cached metric belongs to different constraints, tools, dependencies or changed reports"
+    repair: "Key exact source and complete execution context; verify retained report hashes before reuse"
+  zero_budget_execution:
+    meaning: "An exhausted or zero budget still spawned work"
+    repair: "Check counters and remaining wall/tool time before every model and tool stage"
+  tb_latency_alignment:
+    meaning: "Generated fixed-latency testbench sampled the wrong cycle or never drained its tail"
+    repair: "Drive off-edge, use explicit latency convention, compare every sample and bound completion"
+  tb_handshake_alignment:
+    meaning: "A scoreboard sampled updated handshake signals or omitted data ports"
+    repair: "Sample accepted transfers before sequential updates and compare all specified outputs"
+  unsupported_verification_contract:
+    meaning: "An unsupported protocol, reset or malformed contract silently received a testbench"
+    repair: "Reject the contract with an explicit diagnostic before running a design"
+  golden_execution_boundary:
+    meaning: "Generated Python ran inside the supervisor or escaped its intended function interface"
+    repair: "Validate restricted syntax and run pure golden functions in a bounded child with minimal environment"
+  rtl_interface_misparse:
+    meaning: "Parameterized, signed, grouped or non-ANSI ports were parsed with wrong names or widths"
+    repair: "Parse module interface and safe parameter expressions; compare exact typed ports"
+  static_comb_false_positive:
+    meaning: "Substring structural checks or default-first assignments falsely rejected valid RTL"
+    repair: "Use token-aware block checks and assignment coverage"
+  incomplete_build_ladder:
+    meaning: "Build called a missing generation step or promoted a top without integration verification"
+    repair: "Implement bounded generate/repair/qualify and verify integrated top before measurement"
+  infrastructure_round_accounting:
+    meaning: "Infrastructure-only candidate rounds were counted as design rejections or stalls"
+    repair: "Retain candidate stage evidence and stop or retry without changing design history"
+  unheld_curriculum_promotion:
+    meaning: "One aggregate passing run was treated as a held tier or incorrect candidates were accepted"
+    repair: "Enforce three matching consecutive qualifying runs and mandatory individual gates"
   doctor_trial_artifact_mismatch:
     meaning: "An unaccepted Timing Doctor trial overwrote source or reports for a verified candidate"
     repair: "Isolate trials and adopt source, validated metrics and evidence path together"

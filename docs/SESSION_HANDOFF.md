@@ -1,105 +1,102 @@
 # Session handoff
 
-Updated: 2026-10-16 (America/New_York)
+Updated: 2026-10-19 (America/New_York)
 
-## Objective and decisions
+## Start here
 
-Build a reliable autonomous RTL improvement loop, starting with small
-designs and increasing complexity only after demonstrated correctness.
-Keep evidence suitable for the owner's CV. Use command-line Vivado now;
-MCP is deferred. No background schedule is configured.
-User replaced all previous model providers with Codex-only workers, supervised
-by the main development agent. Parallel development helpers are authorized.
+Canonical checkout: C:/Users/prince.baah/Downloads/autortl-work.
+The separate Downloads/autortl folder predates this work and was preserved.
+Read START_HERE.md, AGENTS.md, docs/AGENT_HANDOFF.md and docs/TASKS.md.
+Check git status, git log -1 and python scripts/session.py status before editing.
 
-## Source state
+## User decisions
 
-- Repository: Baah134/autortl; base commit
-  `ee255942452f4d021d289512830f63d1cdb3c035`.
-- Active development branch: `codex/cli-bringup`.
-- Continuity documentation and repairs are checkpointed on this local branch;
-  no remote publication yet. Consult `git log -1` for the checkpoint commit.
-- MCP draft preserved in a local Git stash named
-  `Paused MCP integration draft; user selected CLI`, originating on
-  `codex/vivado-mcp-setup`. It is not a portable remote backup.
-- Local repairs now cover simulation verdicts, mutation qualification,
-  candidate verification gates, counter stimulus, and XDC generation.
-  See PROGRESS for evidence. These changes are not merged or published.
-- Current checkpoint includes Codex CLI adapter/routing, fail-closed baseline,
-  restart winner preservation, finite timing metrics, tool process-tree cleanup,
-  and supervised counter generation trial. Inspect git status before continuing.
+- Use command-line Vivado. MCP remains deferred.
+- Different user-authorized AI coordinators may take turns, each using its own
+  subagents. Claim the coordinator lease and separate worker file scopes.
+- Continue while usage is available. Checkpointing is continuity preparation,
+  not a request to stop or switch now. A returning coordinator reads the latest
+  shared memory and Git state before continuing.
+- The harness runtime currently invokes Codex CLI with the existing login.
+  Changing development coordinator does not change the runtime provider.
+- Commit and push substantive tested progress to GitHub. Keep main protected
+  until required curriculum gates pass. No artificial activity commits.
+- Preserve progress and evidence for Prince Baah's CV. Do not claim unmeasured
+  optimization improvements or autonomous operation from a standalone trial.
 
-## Verified evidence
+## Repository and publication
 
-- Initial review: 91 existing tests passed with Python 3.12 in 4.30 seconds.
-  This is historical baseline evidence, not a new run this session.
-- Controlled review probes exposed false-success, resume, interface, build,
-  qualification, and artifact/metrics consistency defects.
-- Vivado 2025.2 batch Tcl smoke passed this session, exit code 0:
-  version 2025.2; expression `6 * 7` returned 42; success marker emitted.
-- Windows sandbox launch failed; approved execution outside the sandbox
-  succeeded. Future Vivado jobs may also require that execution approval.
-- Follow-up: 128 unit tests passed (37 added to the reviewed 91-test baseline).
-- Real counter simulation passed after fixing an extra enabled clock edge.
-  Real mutation qualification passed: a flipped comparison was detected.
-- Initial synthesis reproduced Common 17-53 (premature get_ports evaluation).
-  XDC generation fixed; counter completed placement/routing at 10 ns on
-  xc7a35tcpg236-1: 54 LUTs, 37 FFs, WNS 5.491 ns, WHS 0.276 ns.
-- Raw timing comparison also exposed and fixed hold-slack column parsing.
-- Reusable counter CLI check passed end to end, exit code 0; evidence in
-  `work/counter_cli_complete`. Raw JSON has a stale simulation-error field
-  explained in PROGRESS; explicit simulation verdict/log passed. Metadata
-  cleanup is unit tested, not separately rerun through all Vivado stages.
-- Autonomous optimization and quantitative improvement remain unestablished.
-- GitHub connector reported push permission; no remote write exercised.
-- Latest full suite: 226 tests passed in 9.10 seconds on 2026-10-16.
-- Actual Codex generator call succeeded using existing ChatGPT login (model
-  identifier not reported). Counter RTL passed initial simulation and stuck-zero
-  mutation check. Trial01 implementation timed out at 300 seconds; old driver
-  left a Vivado child alive. Parent verified its command line and stopped it.
-- Repaired driver kills the owned process tree and preserves partial diagnostics.
-  Replay trial02 passed with the same RTL and stronger synchronous-reset tests.
-  6 LUTs, 8 FFs, WNS 7.806 ns, WHS 0.249 ns at 10 ns on xc7a35tcpg236-1.
-  It made no new model call; raw kind field still says generation but explicit
-  source_import metadata identifies replay. New code corrects this label.
-- Timing Doctor isolated-trial and cache metric-gate repairs passed independent
-  review and integrated tests. Valid cache hits still lack original report
-  provenance. No held-tier or optimization-improvement claim.
+Remote: https://github.com/Baah134/autortl
+Development branch: codex/cli-bringup (tracks origin/codex/cli-bringup).
+Prior tested commits through 68fc5e6 have been pushed. This checkpoint is being
+published on the same branch; inspect git log and origin before resuming.
+No merge to main. MCP draft remains in a local Git stash on the old setup branch.
 
-## Local evidence and environment
+## Completed and validated in this checkpoint
 
-Workspace-relative locations (workspace contains `work/autortl`):
+- Relocated the full Git clone and unfinished files; all 317 hashes matched.
+- Added provider-neutral instructions for Codex/Claude/Gemini, SQLite coordinator
+  leases, exclusive worker scopes, checkpoints, handoffs and a readable export.
+- Atomic config/state/budget/cache persistence; strict saved configuration;
+  zero budgets; contextual cache verifies matching source and retained reports.
+- Journaled build/optimization stages. Interrupted runs replay completed model
+  and tool work without spending it again. Unfinished stages may repeat within
+  remaining budgets. DONE replay verifies final source, summary and reports.
+- Frozen inputs plus implementation/Python/tool identities prevent silent drift.
+- Typed JSON build mode, bounded generation/repair, qualified testbenches and
+  mandatory top verification. Invalid qualification cannot regenerate its own
+  grading. Infrastructure retries preserve RTL and never count as design rejects.
+- Exact parameterized/grouped/signed/non-ANSI interface parsing, static width
+  checks, valid default-first combinational assignments and token-aware blocks.
+- Fixed-latency drain and race-free multiport streaming scoreboard generation.
+- Restricted golden functions run in a separate deadline-bounded process with
+  a minimal environment. Restricted Python is not a general hostile-code sandbox.
+- Real three-run curriculum promotion with cohort and individual evidence gates;
+  counter8 and priority-encoder build fixtures with independent top testbenches.
+- Removed generated bytecode from source control; ignored runtime state stays local.
 
-- `outputs/AutoRTL-review.md`: detailed repository review.
-- `outputs/AutoRTL-review-evidence.json`: controlled probe evidence.
-- `outputs/AutoRTL-progress-log.md`: original progress record.
-- `work/vivado-cli-smoke/check.tcl`: successful smoke source.
-- `work/review_deps`: baseline Python test dependencies.
-- Vivado launcher: `C:/AMDDesignTools/2025.2/Vivado/bin/vivado.bat`.
-- Python: bundled Codex Python 3.12; default Python 3.14 was unsuitable.
+## Validation and evidence
 
-These workspace artifacts are local, not yet committed alongside the repo.
+Final integrated suite: 411 passed in 66.27 seconds.
+Portable evidence: evidence/2026-10-19/ (test log, relocation hashes and nine live
+Vivado simulator cases with source/testbench hashes and raw logs).
+All nine live positive/negative cases matched their expected verdicts.
+Earlier Codex-generated counter: 6 LUTs, 8 FFs, WNS 7.806 ns, WHS 0.249 ns at
+10 ns on xc7a35tcpg236-1. This is a distinct 8-bit design, not a LUT reduction
+against the earlier 32-bit counter (54 LUTs/37 FFs).
 
-## Next action
+The full new build/optimization/resume flow is tested with controlled models
+and tools. It still needs live model-driven campaign validation. No tier is
+claimed newly held. No optimization percentage or unattended operation claimed.
+Workers reached provider usage limits; all edits are saved. The main coordinator
+remains active and is publishing the tested checkpoint before live campaigns.
+The checkpoint command retains ownership; handoff releases it on actual exit.
 
-Use `scripts/check_counter_cli.py --bin-dir <Vivado bin directory> --output
-<fresh directory>` for a bounded model-free counter verification run.
-It preserves source snapshots and hashes, checks simulation and mutation
-qualification, then runs synthesis/implementation and records metrics.
-Separate launcher/license/toolchain failures from RTL failures.
+## Exact next work
 
-Next repairs: candidate infra-only rounds still count as rejects/stalls;
-cache keys still omit full context; resume and build remain incomplete.
-Baseline validation and restart winner preservation
-are now covered by regression tests. Do not start unattended optimization yet.
+1. Continue with the current coordinator. On a later provider switch, open this
+   canonical folder, read shared memory and reconcile ownership and Git state.
+2. Run the bounded tier0 campaign (counter and mux) with one iteration/candidate
+   and explicit tool paths and model/time budgets. Retain all reports and failed
+   attempts. Use scripts/session.py checkpoints during work.
+3. Run counter8_build and encoder8_build separately with their independent TBs.
+   Resolve any reproduced model/tool/harness failure with a regression test and
+   documented taxonomy entry; rerun affected experiments at a fixed revision.
+4. Fault-inject a real interruption and resume using saved config.json. Confirm
+   matching source/report hashes and preserved accounting in actual tool output.
+5. Repeat full tier cohorts only after individual runs hold. Three consecutive
+   qualifying cohorts are required before claiming a tier held and merging.
+6. Advance to PWM/accumulator, synchronous FIFO/skid buffer, MAC/FIR, then UART
+   and integrated peripherals. Add one design class at a time.
 
-Then repair the following in small reviewable changes, adding taxonomy or
-curriculum entries and regression coverage as required by CLAUDE.md:
+## Local execution
 
-1. Finish cache context/provenance and infrastructure round accounting.
-2. Repair resume configuration/checkpoints and build's missing generation method.
-3. Correct generated testbench latency/scoreboard behavior and interface parsing.
-4. Demonstrate bounded Codex-driven optimization with trustworthy comparisons.
-5. Progress counter -> mux -> priority encoder, then stateful/protocol designs.
-
-See the full review for reproductions and remaining findings. No tier has
-been newly demonstrated held. Do not merge changes without required gates.
+Vivado bin: C:/AMDDesignTools/2025.2/Vivado/bin
+Working Python used here:
+C:/Users/prince.baah/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe
+Existing test dependencies:
+C:/Users/prince.baah/Documents/Codex/2026-10-15/hey/work/review_deps
+Use PYTHONDONTWRITEBYTECODE=1, a writable TEMP/TMP, and explicit pytest basetemp.
+Approved execution outside the desktop sandbox may be required by Vivado's
+Windows launcher. Automatic approval-service usage failures mean the command
+was not executed; record the block and retry after access returns.

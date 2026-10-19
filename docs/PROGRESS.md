@@ -136,3 +136,32 @@ autonomy claims. A passing startup check is not an autonomous design result.
 
 For each future entry record: objective, user decision, branch/commit,
 changes, commands, outcomes, evidence locations, limitations, and next action.
+
+## 2026-10-19 — shared memory, Downloads workspace and recoverable stages
+
+- User decision: continue while usage is available; another provider can take
+  over when needed, and returning agents resume from the latest repository.
+  Checkpointing must not itself release the active coordinator or stop work.
+- Canonical clone moved to C:/Users/prince.baah/Downloads/autortl-work;
+  317 file hashes matched. The separate existing Downloads/autortl was preserved.
+- Published earlier tested milestones through 68fc5e6 to origin/codex/cli-bringup.
+  This checkpoint is committed and pushed to the same development branch.
+  Resolve its exact revision with git log; main remains unchanged pending gates.
+- Added provider-neutral START_HERE, decisions/task board, SQLite coordinator
+  leases and worker scope claims, active checkpoints and explicit exit handoffs.
+- Integrated atomic config/state/budget/cache persistence and source/report
+  provenance, replayable model/tool stage journal, bounded infrastructure retries,
+  input/runtime drift checks, validated DONE replay and typed JSON build flow.
+- Repaired fixed-latency and streaming testbench generation, isolated restricted
+  golden execution, exact Verilog interface checks and blueprint identifier/wiring
+  validation. Added three-cohort curriculum governance and counter/encoder fixtures.
+- Validation: bundled Python -m pytest tests/ -q -p no:cacheprovider with explicit
+  writable basetemp, PYTHONDONTWRITEBYTECODE=1 and local review_deps PYTHONPATH.
+  Final outcome: 411 passed in 66.27 seconds. Includes interruption, replay,
+  tampering, infrastructure, config, ownership/concurrency and build regressions.
+- Nine real Vivado simulator cases all matched expected positive/negative verdicts.
+  Portable source/testbench hashes and raw tool logs: evidence/2026-10-19/.
+- These are controlled full-FSM tests plus live testbench cases, not yet proof of
+  a live autonomous optimization campaign. No new held tier or improvement claimed.
+  Next: bounded tier0 counter/mux campaign, then counter8/encoder builds and real
+  interruption/resume checks. Keep recording unsuccessful attempts as evidence.

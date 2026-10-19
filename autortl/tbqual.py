@@ -14,16 +14,35 @@ from .triage import FailureKind
 _MUTATIONS = [
     (r"(?<![<>=!])<(?![<=])", ">", "flip < to >"),
     (r"(?<![=!<>])==(?!=)", "!=", "flip == to !="),
-    (r"\+\s*1\b", "+ 2", "off-by-one increment"),
     (r"&&", "||", "flip && to ||"),
 ]
 
 
 def mutate(verilog: str) -> tuple[str, str] | None:
     """Apply the first applicable mutation once. Returns (mutated, description)."""
+    visible = re.sub(r'//[^\n]*|/\*.*?\*/|"(?:\\.|[^"\\])*"',
+                     lambda match: " " * len(match[0]), verilog, flags=re.S)
     for pat, repl, desc in _MUTATIONS:
-        if re.search(pat, verilog):
-            return re.sub(pat, repl, verilog, count=1), desc
+        match = re.search(pat, visible)
+        if match:
+            return verilog[:match.start()] + repl + verilog[match.end():], desc
+    increment = re.search(r"\+\s*(?:(\d+)'([sS]?)([bBoOdDhH])([0-9a-fA-F_]+)|(1)\b)", visible)
+    if increment:
+        if increment[5]:
+            replacement = "+ 2"
+        else:
+            width, signed, base, digits = increment.group(1, 2, 3, 4)
+            radix = {"b": 2, "o": 8, "d": 10, "h": 16}[base.lower()]
+            try:
+                value = int(digits.replace("_", ""), radix)
+            except ValueError:
+                return None
+            if value != 1:
+                return None
+            new_value = 0 if int(width) == 1 else 2
+            encoded = format(new_value, {2: "b", 8: "o", 10: "d", 16: "x"}[radix])
+            replacement = f"+ {width}'{signed}{base}{encoded}"
+        return verilog[:increment.start()] + replacement + verilog[increment.end():], "change increment"
     return None
 
 

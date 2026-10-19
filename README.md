@@ -1,10 +1,18 @@
 # AutoRTL v4
 
+Start a new coordinator at [START_HERE.md](START_HERE.md). Codex, Claude,
+Gemini and other user-authorized agents share the same handoff and task
+ownership protocol. The canonical local clone is Downloads/autortl-work.
+Tested milestones are pushed to the `codex/cli-bringup` development branch.
+
 **An agentic system that designs and optimises FPGA hardware code by itself.**
 
 AutoRTL writes and improves Verilog for Xilinx FPGAs through Vivado — using a team of AI roles, a multi-rung verification ladder, and a growing library of hardware expertise. It was built around one thesis: **the system should be smart, not the model inside it.** A weak model inside a strong harness beats a strong model working alone. If AutoRTL only works well with the best AI, the design has failed.
 
-The system proved this on its first real test: given a deliberately unoptimised counter design, it discovered a bit-width narrowing trick on its own (thresholds fit in 10 bits, no need for 32-bit comparators) and cut LUT usage by 28% over six iterations.
+The original project reported a 28% LUT reduction on a counter. That historical
+result has not been reproduced during the current review. Current verified
+results and limitations are recorded in [the progress log](docs/PROGRESS.md),
+with source and tool evidence retained for new experiments.
 
 ---
 
@@ -16,7 +24,10 @@ The system proved this on its first real test: given a deliberately unoptimised 
 
 `build` — you give it a plain-English description of what you want ("build a UART transmitter with a 16-entry FIFO buffer"). It plans the modules, writes each one, wires them together mechanically, then optimises the result.
 
-Both modes produce: the best Verilog found, a negotiated contract of what success means, a plan file, a diary of every iteration, and per-attempt Vivado reports. If the process crashes, `resume` picks up exactly where it stopped.
+Both modes retain the best verified Verilog, contract, plan, iteration history
+and tool reports. Completed stages are journaled for recovery; an interrupted
+in-flight stage may run again within the remaining budget. See
+[recovery and validation](docs/RECOVERY.md) for tested behavior and current live-run coverage.
 
 ---
 

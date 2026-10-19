@@ -1,5 +1,10 @@
 # AutoRTL v4 — project contract (historical filename)
 
+For Claude and its subagents: start at `START_HERE.md`, then read `AGENTS.md`
+and `docs/AGENT_HANDOFF.md`. These are the same shared memory and ownership
+rules used by Codex and Gemini. The current runtime client uses Codex, while
+development coordination may use any user-authorized agent.
+
 ## What this repo is
 A harness-first agentic system that writes and optimises Verilog through
 Vivado. Read docs/DESIGN.md before changing anything — it is the single

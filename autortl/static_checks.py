@@ -7,6 +7,7 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 from .spec import ModuleSpec
+from .verilog_interface import infer_module, strip_comments
 
 
 @dataclass
@@ -25,12 +26,14 @@ def check(verilog: str, contract: ModuleSpec | None = None) -> StaticResult:
         errs.append("missing endmodule")
     if re.search(r"\binitial\b", src):
         errs.append("initial block present — not synthesisable on Xilinx, remove it")
-    if src.count("begin") != src.count("end") - src.count("endmodule") - src.count("endcase") \
-       and abs(src.count("begin") - (src.count("end") - src.count("endmodule") - src.count("endcase"))) > 0:
-        # heuristic only; xvlog is the authority. Flag when wildly off.
-        diff = src.count("begin") - (src.count("end") - src.count("endmodule") - src.count("endcase"))
-        if abs(diff) > 0:
-            errs.append(f"begin/end imbalance heuristic tripped (diff={diff}) — verify blocks")
+    tokens = re.findall(r"\b(?:begin|end)\b", re.sub(r'"(?:\\.|[^"\\])*"', '""', src))
+    depth = 0
+    for token in tokens:
+        depth += 1 if token == "begin" else -1
+        if depth < 0:
+            break
+    if depth:
+        errs.append("begin/end imbalance — verify blocks")
 
     if contract is not None:
         errs.extend(_check_interface(src, contract))
@@ -40,22 +43,23 @@ def check(verilog: str, contract: ModuleSpec | None = None) -> StaticResult:
 
 
 def _strip_comments(text: str) -> str:
-    text = re.sub(r"//.*", "", text)
-    text = re.sub(r"/\*.*?\*/", "", text, flags=re.DOTALL)
-    return text
+    return strip_comments(text)
 
 
 def _check_interface(src: str, c: ModuleSpec) -> list[str]:
     errs = []
-    m = re.search(rf"\bmodule\s+({c.name})\b", src)
-    if not m:
-        found = re.search(r"\bmodule\s+(\w+)", src)
-        errs.append(f"module name mismatch: contract says '{c.name}', "
-                    f"code says '{found.group(1) if found else '?'}'")
-        return errs
-    for p in c.ports:
-        if not re.search(rf"\b{re.escape(p.name)}\b", src):
-            errs.append(f"contract port '{p.name}' missing from code")
+    try:
+        actual = {p.name: p for p in infer_module(src, c.name).ports}
+    except ValueError as exc:
+        return [str(exc)]
+    expected = {p.name: p for p in c.ports}
+    for name, port in expected.items():
+        if name not in actual:
+            errs.append(f"contract port '{name}' missing from interface")
+        elif (port.direction, port.width) != (actual[name].direction, actual[name].width):
+            errs.append(f"contract port '{name}' direction/width mismatch: expected {port.direction}[{port.width}], got {actual[name].direction}[{actual[name].width}]")
+    for name in actual.keys() - expected.keys():
+        errs.append(f"unexpected interface port '{name}'")
     return errs
 
 
@@ -66,11 +70,14 @@ def _check_latches(src: str) -> list[str]:
     for block in re.finditer(r"always\s*@\s*\(\s*\*\s*\)\s*(begin(.*?)end|[^;]+;)",
                              src, flags=re.DOTALL):
         body = block.group(0)
-        if "if" in body and "else" not in body:
+        if re.search(r"\bif\b", body) and not re.search(r"\belse\b", body):
             assigned = set(re.findall(r"(\w+)\s*(?:<=|=)\s*", body))
-            if assigned:
+            prefix = re.split(r"\bif\b", body, maxsplit=1)[0]
+            defaults = set(re.findall(r"(\w+)\s*(?:<=|=)\s*", prefix))
+            missing = assigned - defaults
+            if missing:
                 errs.append(
                     "possible inferred latch: combinational always @(*) has 'if' "
-                    f"without 'else' assigning {sorted(assigned)[:3]} — add default "
+                    f"without 'else' assigning {sorted(missing)[:3]} — add default "
                     "assignments at the top of the block")
     return errs

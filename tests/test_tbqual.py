@@ -51,3 +51,14 @@ def test_mutation_changes_behavior():
 
 def test_no_mutation_possible():
     assert mutate("module m; assign y = x; endmodule") is None
+
+
+@pytest.mark.parametrize("increment, mutated", [("1'b1", "1'b0"), ("8'd1", "8'd2"), ("4'h1", "4'h2"), ("1", "+ 2")])
+def test_sized_increment_mutation_changes_value(increment, mutated):
+    source, _ = mutate(f"module m; assign y = x + {increment}; endmodule")
+    assert mutated in source
+    assert "+ 2'b1" not in source
+
+
+def test_comments_do_not_qualify_as_a_mutation():
+    assert mutate("module m; // a < b + 1\nassign y=x; endmodule") is None

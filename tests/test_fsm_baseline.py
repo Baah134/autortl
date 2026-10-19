@@ -93,8 +93,7 @@ def test_repair_stops_immediately_on_infrastructure_failure(harness):
     o = harness
     fsm.vivado.xsim_run.side_effect = [
         (False, "TEST FAILED", FailureKind.DESIGN),
-        (False, "license unavailable", FailureKind.INFRA),
-    ]
+    ] + [(False, "license unavailable", FailureKind.INFRA)] * (o.cfg.max_infra_retries + 1)
     o.generator.fix.side_effect = None
     o.generator.fix.return_value = o.cfg.design_path.read_text()
     result = o.run()

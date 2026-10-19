@@ -1,0 +1,103 @@
+{
+  "top_name": "priority_encoder8",
+  "modules": [
+    {
+      "name": "priority_encoder8_core",
+      "behavior": "At each rising clk edge synchronous active-high rst sets index=0 and valid=0. Otherwise register valid=(request!=0), index=highest set bit position 7 down to 0, or zero when request=0. Outputs hold between edges.",
+      "ports": [
+        {
+          "name": "clk",
+          "direction": "input",
+          "width": 1
+        },
+        {
+          "name": "rst",
+          "direction": "input",
+          "width": 1
+        },
+        {
+          "name": "request",
+          "direction": "input",
+          "width": 8
+        },
+        {
+          "name": "index",
+          "direction": "output",
+          "width": 3
+        },
+        {
+          "name": "valid",
+          "direction": "output",
+          "width": 1
+        }
+      ],
+      "latency": 1,
+      "compare_mode": "fixed_latency",
+      "reset": {
+        "signal": "rst",
+        "kind": "sync",
+        "active_high": true
+      },
+      "examples": [
+        {
+          "inputs": {
+            "rst": 1,
+            "request": 255
+          },
+          "expected": {
+            "index": 0,
+            "valid": 0
+          }
+        },
+        {
+          "inputs": {
+            "rst": 0,
+            "request": 128
+          },
+          "expected": {
+            "index": 7,
+            "valid": 1
+          }
+        },
+        {
+          "inputs": {
+            "rst": 0,
+            "request": 0
+          },
+          "expected": {
+            "index": 0,
+            "valid": 0
+          }
+        }
+      ]
+    }
+  ],
+  "external_ports": [
+    {
+      "name": "clk",
+      "direction": "input",
+      "width": 1
+    },
+    {
+      "name": "rst",
+      "direction": "input",
+      "width": 1
+    },
+    {
+      "name": "request",
+      "direction": "input",
+      "width": 8
+    },
+    {
+      "name": "index",
+      "direction": "output",
+      "width": 3
+    },
+    {
+      "name": "valid",
+      "direction": "output",
+      "width": 1
+    }
+  ],
+  "connections": []
+}

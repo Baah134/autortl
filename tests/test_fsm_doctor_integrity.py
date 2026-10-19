@@ -128,7 +128,8 @@ def test_invalid_cache_falls_back_to_fresh_validated_synthesis(trial, monkeypatc
         cached["synth_error"] = "failed implementation"
     else:
         cached["unexpected"] = "unsupported schema"
-    monkeypatch.setattr(o.metrics_cache, "get", Mock(return_value=cached))
+    monkeypatch.setattr(o.metrics_cache, "get_entry", Mock(return_value={
+        "metrics": cached, "artifact_dir": str(o.state.run_dir / "cached_evidence")}))
     result = o.run()
     assert result["best_metrics"]["lut_used"] == 8
     fsm.vivado.run_synthesis.assert_called_once()
@@ -136,7 +137,10 @@ def test_invalid_cache_falls_back_to_fresh_validated_synthesis(trial, monkeypatc
 
 def test_valid_cache_remains_eligible_after_gate(trial, monkeypatch):
     o = prepare_loop(trial, monkeypatch)
-    monkeypatch.setattr(o.metrics_cache, "get", Mock(return_value=metrics(9, True).to_dict()))
+    evidence = o.state.run_dir / "cached_evidence"
+    evidence.mkdir()
+    monkeypatch.setattr(o.metrics_cache, "get_entry", Mock(return_value={
+        "metrics": metrics(9, True).to_dict(), "artifact_dir": str(evidence)}))
     result = o.run()
     assert result["best_metrics"]["lut_used"] == 9
     fsm.vivado.run_synthesis.assert_not_called()

@@ -6,12 +6,20 @@ and wiring that Vivado itself cannot elaborate (via black-box stubs).
 """
 from __future__ import annotations
 from pathlib import Path
-from .spec import DesignSpec, ModuleSpec
+from .spec import DesignSpec, ModuleSpec, valid_identifier
 
 
 def lint_spec(spec: DesignSpec) -> list[str]:
     """Pure-python structural checks. Returns list of problems (empty = clean)."""
     errs: list[str] = []
+    if not valid_identifier(spec.top_name): errs.append("invalid top module identifier")
+    module_names = [m.name for m in spec.modules]
+    if not spec.modules or len(module_names) != len(set(module_names)):
+        errs.append("design must have uniquely named child modules")
+    if spec.top_name in module_names: errs.append("top module must differ from child module names")
+    external = {p.name: p for p in spec.external_ports}
+    if len(external) != len(spec.external_ports): errs.append("duplicate external ports")
+    for port in spec.external_ports: errs.extend(port.validate())
     for m in spec.modules:
         errs.extend(m.validate())
     for c in spec.connections:
@@ -42,13 +50,22 @@ def lint_spec(spec: DesignSpec) -> list[str]:
                         f"{c.src_module}.{c.src_port} ({sp.clock_domain}) -> "
                         f"{c.dst_module}.{c.dst_port} ({dp.clock_domain})")
     driven = {(c.dst_module, c.dst_port) for c in spec.connections}
+    if len(driven) != len(spec.connections): errs.append("multiple drivers for a module input")
     ext_names = {p.name for p in spec.external_ports}
     for m in spec.modules:
         for p in m.ports:
             if p.direction == "input" and (m.name, p.name) not in driven \
-               and p.name not in ext_names and p.name not in ("clk", m.reset.signal):
+               and p.name not in ext_names:
                 errs.append(f"dangling input: {m.name}.{p.name} is never driven "
                             f"and is not an external port")
+            if p.name in external and (m.name, p.name) not in driven:
+                ext = external[p.name]
+                if (p.direction, p.width, p.protocol) != (ext.direction, ext.width, ext.protocol):
+                    errs.append(f"external binding mismatch: {m.name}.{p.name}")
+    for port in spec.external_ports:
+        matches = [p for m in spec.modules for p in m.ports if p.name == port.name and p.direction == port.direction]
+        if not matches or (port.direction == "output" and len(matches) != 1):
+            errs.append(f"external port {port.name} has missing or multiple bindings")
     return errs
 
 
@@ -88,8 +105,11 @@ def top_verilog(spec: DesignSpec) -> str:
                 conns.append(f".{p.name}(w_{as_dst.src_module}_{as_dst.src_port})")
             elif as_src:
                 conns.append(f".{p.name}(w_{m.name}_{p.name})")
+                if any(ext.name == p.name and ext.direction == "output" for ext in spec.external_ports):
+                    lines.append(f"    assign {p.name} = w_{m.name}_{p.name};")
             else:
-                conns.append(f".{p.name}({p.name})")
+                value = p.name if any(ext.name == p.name for ext in spec.external_ports) else ""
+                conns.append(f".{p.name}({value})")
         lines.append(f"    {m.name} u_{m.name} (\n        "
                      + ",\n        ".join(conns) + "\n    );")
     lines.append("endmodule\n")
