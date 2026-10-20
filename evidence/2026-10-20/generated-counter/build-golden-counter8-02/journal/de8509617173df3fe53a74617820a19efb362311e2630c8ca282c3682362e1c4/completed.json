@@ -1,0 +1,5 @@
+{
+  "stage": "module_counter8_core:model:generator.golden_model:1",
+  "result": "def init():\n    return 0\n\n\ndef step(state, inputs: dict) -> (object, dict):\n    count = int(state) & 0xFF\n    rst = int(inputs.get(\"rst\", 0)) & 1\n    enable = int(inputs.get(\"enable\", 0)) & 1\n\n    if rst:\n        count = 0\n    elif enable:\n        count = (count + 1) & 0xFF\n\n    return count, {\"count\": count}",
+  "artifacts": {}
+}

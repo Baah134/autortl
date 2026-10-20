@@ -88,7 +88,31 @@ def gen_stimulus(spec: ModuleSpec, n_random=100, seed=1234):
 
 
 def expected_outputs(spec, golden, stimulus):
-    return golden.run(stimulus)
+    """Run the oracle under the same reset initialization as the RTL driver.
+
+    Data stimulus stays independent of reset/handshake scheduling. Fixed-latency
+    rows describe logical input steps; scoreboard rows describe accepted input
+    transactions. The TB supplies pipeline timing and backpressure separately.
+    """
+    inputs, _ = _validate(spec)
+    controls = [p for p in spec.ports if p.direction == "input" and p.protocol == "valid_ready"]
+    reset_present = any(p.name == spec.reset.signal and p.direction == "input" for p in spec.ports)
+    asserted = int(spec.reset.active_high)
+    rows = []
+    if reset_present:
+        reset_row = {p.name: 0 for p in inputs + controls}
+        reset_row[spec.reset.signal] = asserted
+        rows = [dict(reset_row) for _ in range(spec.reset.duration_cycles)]
+    prefix = len(rows)
+    for stimulus_row in stimulus:
+        row = dict(stimulus_row)
+        row.update({p.name: 1 for p in controls})
+        if reset_present:
+            row[spec.reset.signal] = 1 - asserted
+        rows.append(row)
+    if len(rows) > 10000:
+        raise ValueError("golden stimulus including reset exceeds 10000 steps")
+    return golden.run(rows)[prefix:]
 
 
 def _header(spec, stimulus, expected, inputs, outputs, extra=""):
@@ -166,8 +190,9 @@ def generate_scoreboard_tb(spec, stimulus, expected):
     if len(controls) != 4 or not inputs:
         raise ValueError("unsupported scoreboard channel shape")
     iv, ir, ov, ore = control("input", "valid"), control("output", "ready"), control("output", "valid"), control("input", "ready")
-    n, cycles = len(stimulus), len(stimulus)*12+32
+    n, cycles = len(stimulus), len(stimulus)*12+32+spec.latency
     extra = "integer _autortl_push, _autortl_pop, _autortl_drain;\nreg _autortl_stalled;\n"
+    extra += f"integer _autortl_accepted_cycle [0:{n-1}];\n"
     extra += "\n".join(port_declaration(p, "reg", name=f"_autortl_held_{p.name}") + ";" for p in outputs)
     lines = _header(spec, stimulus, expected, inputs, outputs, extra)
     lines += ["_autortl_push=0; _autortl_pop=0; _autortl_drain=0; _autortl_stalled=0;",
@@ -183,10 +208,14 @@ def generate_scoreboard_tb(spec, stimulus, expected):
               "if (_autortl_stalled) begin",
               f"if ({ov} !== 1'b1) begin $display(\"FAIL valid dropped under backpressure\"); _autortl_errors=_autortl_errors+1; end"]
     lines += [f"if ({p.name} !== _autortl_held_{p.name}) begin $display(\"FAIL unstable {p.name}\"); _autortl_errors=_autortl_errors+1; end" for p in outputs]
-    lines += ["end", f"if ({iv} === 1'b1 && {ir} === 1'b1) _autortl_push=_autortl_push+1;",
+    lines += ["end", f"if ({iv} === 1'b1 && {ir} === 1'b1) begin",
+              "_autortl_accepted_cycle[_autortl_push]=_autortl_cycle;",
+              "_autortl_push=_autortl_push+1; end",
               f"if ({ov} === 1'b1 && {ore} === 1'b1) begin",
               f"if (_autortl_pop >= _autortl_push || _autortl_pop >= {n}) begin",
               '$display("FAIL unexpected output transaction"); _autortl_errors=_autortl_errors+1;', "end else begin"]
+    lines += [f"if (_autortl_cycle - _autortl_accepted_cycle[_autortl_pop] < {spec.latency}) begin",
+              '$display("FAIL output before minimum transfer latency"); _autortl_errors=_autortl_errors+1; end']
     lines += _checks(outputs, "_autortl_pop")
     lines += ["end", "_autortl_pop=_autortl_pop+1;", "end",
               f"_autortl_stalled=({ov} === 1'b1 && {ore} === 1'b0);"]

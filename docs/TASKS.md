@@ -24,7 +24,7 @@ with Git and states acceptance criteria.
 | Provider/report/legal transformation repairs | Implemented; validating | Typed resumable model blocks, bounded diagnostics, timing manifest, hold diagnosis and physical command, unsupported parallel control rejected |
 | Deterministic contracts and actual prompt conformance | Implemented; validating | Campaign02 reproduced six wasted negotiation calls; fixed contract preserves gates; all roles receive conventions and consistent references |
 | FIFO reference qualification | Live checked:6/6verdicts | Full comparator cycle repaired; AW2/AW4 controls pass and data/full mutants assert; no physicalCDC proof |
-| Build counter8 and priority encoder | Pending | Typed specs, independent module and top tests, negative tests, routed results |
+| Build counter8 and priority encoder | Active live validation | Independent TB controls and eight faults qualified10/10; golden reset and bounded diagnostic retry repaired; counter build02 routing/optimization active; encoder and independent final checks next |
 
 The active coordinator continues with bounded live campaigns after publication.
 Do not treat the previously verified standalone generation trial or controlled
@@ -80,3 +80,16 @@ replay is checked. Receipt/input integrity, unknown latency, UTF8 decoding and
 runtime-bound governance are implemented and live exercised where applicable.
 No heldtier/weak-model claim. Typed golden/build, independent top verification,
 cache/restart ablations and in-flight recovery remain the next coverage work.
+
+
+## Streaming progression
+
+- Two-entry8bit elastic ready/valid buffer fixture: schema/static/unit16tests pass;
+  independent queue TB plus reference/eight faults prepared. Runtime runner adds
+  --suite skid; focused26tests pass, no hardware verdict implied by those tests.
+- Admission: real reference pass and all8faults assert; generated golden/build
+  path without--tb; independent final saved-winner+child check; real routed metrics.
+- Final verification runner copies only the declared winner/children and the
+  independent supplied TB, with byte hashes; never recursively glob buildRTL.
+- Before main integration: finalfullsuite and freshfulltier0 under frozen runtime.
+  Higher-tier design completion does not by itself establish a held tier.

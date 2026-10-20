@@ -229,5 +229,18 @@ specified widths, then mask outputs. Signed declarations do not change this API.
 It must define exactly:
     def init(): return state
     def step(state, inputs: dict) -> (state, outputs: dict)
-inputs/outputs keys are the port names; values are plain ints (masked to port
-width). Model ONE clock cycle per step. Output ONLY python in one ```python fence."""
+Comparison mode: {compare_mode}. Declared RTL latency: {latency}. Reset: {reset_desc}.
+Output keys must be exactly these data outputs: {data_outputs}; do not return
+valid/ready control outputs. Values are masked plain integers. The clock edge
+is implicit; do not read clk. Handle reset input explicitly when supplied;
+init() must represent reset state. Generated comparisons begin with asserted
+reset steps, followed by deasserted reset and data stimulus. Spec examples may
+supply controls explicitly; use suitable inactive defaults for omitted controls.
+For fixed_latency, model one logical input/state transition per step and return
+its behavioral result. The testbench handles the declared pipeline delay; do
+not add a separate pipeline-delay queue in the Python model.
+For scoreboard, each non-reset step is ONE ACCEPTED input transaction: return
+its eventual output payload. Do not simulate buffer occupancy, valid/ready
+scheduling, bubbles or backpressure; the testbench independently schedules and
+checks those RTL behaviors. Supplied handshake inputs are 1 for accepted
+transactions and 0 during reset. Output ONLY python in one ```python fence."""

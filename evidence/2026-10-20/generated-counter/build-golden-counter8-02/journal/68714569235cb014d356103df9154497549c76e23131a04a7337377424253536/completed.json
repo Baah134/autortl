@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Interface and behavioral obligations: PASS \u2014 ports and widths are preserved; synchronous active-high reset, enable behavior, and counter updates match the frozen core.\n- Latency and registered behavior: PASS \u2014 the top source has no numeric latency declaration; the candidate preserves the registered counter behavior.\n- Compilation, elaboration, and simulation: PASS \u2014 required tools exited successfully and the unchanged testbench reported `TEST PASSED`; ladder result is ALIVE.\n- Synthesis completion and severity settings: PASS \u2014 synthesis exited successfully, emitted `SYNTH_COMPLETE`, and required severities remain ERROR.\n- Routed report and metric integrity: PASS \u2014 retained routed report evidence and parsed metrics are provided.\n- Setup and hold timing: PASS \u2014 WNS is 0.555 ns and WHS is 0.051 ns.\n- Strict LUT improvement: FAIL \u2014 candidate LUT usage is 6, equal to the previous best of 6; the objective requires strictly fewer LUTs.\n## Summary\n- Passed: 6 of 7\n- Failed: 1 of 7\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes the behavioral and deterministic verification gates and meets setup and hold timing, but it does not reduce LUT usage below the previous verified best. Strict LUT reduction is required for promotion, so the mandatory objective criterion fails.",
+      "recommendation": "REJECT",
+      "passed": 6,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

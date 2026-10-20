@@ -1,0 +1,791 @@
+........................................................................ [  9%]
+........................................................................ [ 19%]
+........................................................................ [ 29%]
+........................................................................ [ 39%]
+.........FFF............................................................ [ 49%]
+........................................................................ [ 59%]
+........................................................................ [ 69%]
+........................................................................ [ 79%]
+........................................................................ [ 89%]
+........................................................................ [ 98%]
+........                                                                 [100%]
+================================== FAILURES ===================================
+______ test_unqualified_testbench_cannot_change_its_grading[missed bug] _______
+
+model_alias = 'default'
+prompt = 'Write a Python golden model for this module.\nBehavior: test\nPorts:   input wire a (clock=clk, protocol=none)\n  out...plied handshake inputs are 1 for accepted\ntransactions and 0 during reset. Output ONLY python in one ```python fence.'
+system = '# AutoRTL Conventions (LAW � always in force)\n\n## Fixed contract\nThe contract is law. Preserve exact module/port n...ic integrity and independent reference gates all\nremain mandatory. Infrastructure failures are not design failures.\n'
+timeout_s = 180, max_turns = 1
+
+    def ask(model_alias: str, prompt: str, system: str = "",
+            timeout_s: int = 180, max_turns: int = 1) -> tuple[str, dict]:
+        if timeout_s <= 0:
+            raise ValueError("timeout_s must be positive")
+        executable = os.environ.get("AUTORTL_CODEX_BIN") or shutil.which("codex")
+        if not executable:
+            raise CodexError("CODEX_UNAVAILABLE", "set AUTORTL_CODEX_BIN or put codex on PATH")
+        instruction = ("Return only the requested response. Do not use tools or change files.\n"
+                       + (f"\nTask instructions:\n{system}\n" if system else "")
+                       + f"\nRequest:\n{prompt}")
+        with tempfile.TemporaryDirectory(prefix="autortl-codex-") as directory:
+            final = Path(directory) / "final.txt"
+            cmd = [executable, "exec", "--sandbox", "read-only", "--ephemeral",
+                   "--json", "--output-last-message", str(final),
+                   "--skip-git-repo-check", "-C", directory]
+            if model_alias and model_alias != "default":
+                cmd += ["--model", model_alias]
+            cmd += ["-"]
+            try:
+                process = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                                           stderr=subprocess.PIPE, text=True, encoding="utf-8",
+                                           errors="replace", cwd=directory, shell=False,
+                                           start_new_session=os.name != "nt")
+            except OSError as exc:
+                raise CodexError("CODEX_UNAVAILABLE", "worker could not launch") from exc
+            try:
+                stdout, stderr = process.communicate(input=instruction, timeout=timeout_s)
+            except subprocess.TimeoutExpired as exc:
+                _terminate_worker(process)
+                diagnostic = _diagnostics(exc.output, exc.stderr, process.returncode, (prompt, system, instruction))
+                raise CodexError("CODEX_TIMEOUT", "worker timed out", diagnostic) from exc
+            except BaseException:
+                _terminate_worker(process)
+                raise
+            if process.returncode != 0:
+                diagnostic = _diagnostics(stdout, stderr, process.returncode, (prompt, system, instruction))
+                detail = " ".join(item["code"] + " " + item["message"] for item in diagnostic["errors"])
+                code = _failure_code(detail + " " + diagnostic["stderr_tail"], "CODEX_UNAVAILABLE")
+>               raise CodexError(code, f"worker exited {process.returncode}: " + (detail or diagnostic["stderr_tail"]), diagnostic)
+E               llm.backends.codex_cli.CodexError: CODEX_UNAVAILABLE: worker exited 1: stale arg0 temp dirs: Access is denied. (os error 5)
+E               WARNING: proceeding, even though we could not create PATH aliases: Access is denied. (os error 5) at path "C:\\Users\\prince.baah\\.codex\\tmp\\arg0-windows\\codex-arg0AwS4SC"
+E               2026-10-20T19:40:03.732188Z  WARN codex_state::runtime: failed to open state db at C:\Users\prince.baah\.codex\state_5.sqlite: failed to open state DB at
+
+llm\backends\codex_cli.py:213: CodexError
+
+During handling of the above exception, another exception occurred:
+
+path = 'C:\\Users\\prince.baah\\AppData\\Local\\Packages\\sandbox.{a4e17150-ac10-4115-be0d-c0c678ff0add}\\AC\\Temp\\autortl-codex-7yo347a6'
+onexc = <function TemporaryDirectory._rmtree.<locals>.onexc at 0x000001C1A27F42C0>
+
+    def _rmtree_unsafe(path, onexc):
+        def onerror(err):
+            onexc(os.scandir, err.filename, err)
+        results = os.walk(path, topdown=False, onerror=onerror, followlinks=os._walk_symlinks_as_files)
+        for dirpath, dirnames, filenames in results:
+            for name in dirnames:
+                fullname = os.path.join(dirpath, name)
+                try:
+                    os.rmdir(fullname)
+                except OSError as err:
+                    onexc(os.rmdir, fullname, err)
+            for name in filenames:
+                fullname = os.path.join(dirpath, name)
+                try:
+                    os.unlink(fullname)
+                except OSError as err:
+                    onexc(os.unlink, fullname, err)
+        try:
+>           os.rmdir(path)
+E           PermissionError: [WinError 5] Access is denied: 'C:\\Users\\prince.baah\\AppData\\Local\\Packages\\sandbox.{a4e17150-ac10-4115-be0d-c0c678ff0add}\\AC\\Temp\\autortl-codex-7yo347a6'
+
+..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\shutil.py:637: PermissionError
+
+During handling of the above exception, another exception occurred:
+
+role = 'generator'
+prompt = 'Write a Python golden model for this module.\nBehavior: test\nPorts:   input wire a (clock=clk, protocol=none)\n  out...plied handshake inputs are 1 for accepted\ntransactions and 0 during reset. Output ONLY python in one ```python fence.'
+system = '# AutoRTL Conventions (LAW � always in force)\n\n## Fixed contract\nThe contract is law. Preserve exact module/port n...ic integrity and independent reference gates all\nremain mandatory. Infrastructure failures are not design failures.\n'
+budget = <autortl.budget.Budget object at 0x000001C1A29A4200>
+route_override = None, max_turns = 1
+
+    def ask(role: str, prompt: str, system: str = "",
+            budget=None, route_override: str | None = None,
+            max_turns: int = 1) -> str:
+        cfg = _load_routing()
+        chain = cfg["roles"].get(role, {}).get("chain", ["codex.default"])
+        if route_override:
+            chain = [route_override]
+        retries = cfg.get("defaults", {}).get("max_retries_per_backend", 2)
+        timeout = cfg.get("defaults", {}).get("timeout_s", 180)
+    
+        last_error = None
+        for entry in chain:
+            backend_name, _, alias = entry.partition(".")
+            backend = _BACKENDS.get(backend_name)
+            if backend is None:
+                raise ModelCallError(role, "CODEX_UNAVAILABLE", message=f"unsupported backend '{backend_name}'")
+            for attempt in range(1, retries + 1):
+                call_timeout = timeout
+                if budget is not None:
+                    if budget.exhausted() or budget.llm_calls >= budget.max_llm_calls:
+                        raise RuntimeError("LLM_BUDGET: model call budget exhausted")
+                    call_timeout = min(timeout, max(0.001,
+                        (budget.max_wall_minutes - budget.wall_minutes) * 60))
+                    budget.charge_llm()
+                t0 = time.time()
+                try:
+>                   text, meta = backend.ask(alias, prompt, system,
+                                             timeout_s=call_timeout, max_turns=max_turns)
+
+llm\client.py:76: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+llm\backends\codex_cli.py:185: in ask
+    with tempfile.TemporaryDirectory(prefix="autortl-codex-") as directory:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\tempfile.py:950: in __exit__
+    self.cleanup()
+..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\tempfile.py:954: in cleanup
+    self._rmtree(self.name, ignore_errors=self._ignore_cleanup_errors)
+..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\tempfile.py:934: in _rmtree
+    _shutil.rmtree(name, onexc=onexc)
+..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\shutil.py:781: in rmtree
+    return _rmtree_unsafe(path, onexc)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\shutil.py:639: in _rmtree_unsafe
+    onexc(os.rmdir, path, err)
+..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\tempfile.py:906: in onexc
+    _resetperms(path)
+..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\tempfile.py:286: in _resetperms
+    _dont_follow_symlinks(_os.chmod, path, 0o700)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+func = <built-in function chmod>
+path = 'C:\\Users\\prince.baah\\AppData\\Local\\Packages\\sandbox.{a4e17150-ac10-4115-be0d-c0c678ff0add}\\AC\\Temp\\autortl-codex-7yo347a6'
+args = (448,)
+
+    def _dont_follow_symlinks(func, path, *args):
+        # Pass follow_symlinks=False, unless not supported on this platform.
+        if func in _os.supports_follow_symlinks:
+            func(path, *args, follow_symlinks=False)
+        elif _os.name == 'nt' or not _os.path.islink(path):
+>           func(path, *args)
+E           PermissionError: [WinError 5] Access is denied: 'C:\\Users\\prince.baah\\AppData\\Local\\Packages\\sandbox.{a4e17150-ac10-4115-be0d-c0c678ff0add}\\AC\\Temp\\autortl-codex-7yo347a6'
+
+..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\tempfile.py:277: PermissionError
+
+The above exception was the direct cause of the following exception:
+
+tmp_path = WindowsPath('C:/Users/prince.baah/Documents/Codex/2026-10-15/hey/work/build-full-01/test_unqualified_testbench_can0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001C1A29A6A80>
+reason = 'missed bug'
+
+    @pytest.mark.parametrize("reason", ["missed bug", "license unavailable", "no applicable mutation"])
+    def test_unqualified_testbench_cannot_change_its_grading(tmp_path, monkeypatch, reason):
+        o = fsm.Orchestrator(RunConfig(mode="build"), tmp_path / "run")
+        module = ModuleSpec("m", "test", [Port("a", "input", 1), Port("y", "output", 1)], examples=[IOExample({"a": 0}, {"y": 0})])
+        work = tmp_path / "module"
+        work.mkdir()
+        (work / "golden.py").write_text("# mocked golden model")
+        tb = work / "m_tb.v"
+        tb.write_text("// mocked testbench")
+        monkeypatch.setattr(o.generator, "golden_model", Mock(return_value="# mocked golden model"))
+        monkeypatch.setattr(fsm, "GoldenModel", Mock())
+        monkeypatch.setattr(fsm, "qualify_against_examples", Mock(return_value=[]))
+        monkeypatch.setattr(fsm, "generate_tb", Mock(return_value=tb))
+        monkeypatch.setattr(o, "_generate_verified", Mock(return_value="module m; endmodule"),
+                            raising=False)
+        qualification = Mock(return_value=(False, reason))
+        monkeypatch.setattr(fsm, "qualify_tb", qualification)
+        simulation = Mock(side_effect=AssertionError("unqualified stimulus was silently regenerated"))
+>       monkeypatch.setattr(fsm.vivado, "xsim_run", simulation)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_fsm_verification.py:77: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+autortl\fsm.py:473: in _build_module
+    golden_src = self._model("generator", "golden_model", m, self.budget)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+autortl\fsm.py:300: in _model
+    return self._stage("model", role + "." + name,
+autortl\fsm.py:245: in _stage
+    return function()
+           ^^^^^^^^^^
+autortl\fsm.py:301: in <lambda>
+    lambda: getattr(getattr(self, role), name)(*args, **kwargs), args, kwargs)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+autortl\roles.py:138: in golden_model
+    resp = ask("generator", p, system=conventions(), budget=budget)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+role = 'generator'
+prompt = 'Write a Python golden model for this module.\nBehavior: test\nPorts:   input wire a (clock=clk, protocol=none)\n  out...plied handshake inputs are 1 for accepted\ntransactions and 0 during reset. Output ONLY python in one ```python fence.'
+system = '# AutoRTL Conventions (LAW � always in force)\n\n## Fixed contract\nThe contract is law. Preserve exact module/port n...ic integrity and independent reference gates all\nremain mandatory. Infrastructure failures are not design failures.\n'
+budget = <autortl.budget.Budget object at 0x000001C1A29A4200>
+route_override = None, max_turns = 1
+
+    def ask(role: str, prompt: str, system: str = "",
+            budget=None, route_override: str | None = None,
+            max_turns: int = 1) -> str:
+        cfg = _load_routing()
+        chain = cfg["roles"].get(role, {}).get("chain", ["codex.default"])
+        if route_override:
+            chain = [route_override]
+        retries = cfg.get("defaults", {}).get("max_retries_per_backend", 2)
+        timeout = cfg.get("defaults", {}).get("timeout_s", 180)
+    
+        last_error = None
+        for entry in chain:
+            backend_name, _, alias = entry.partition(".")
+            backend = _BACKENDS.get(backend_name)
+            if backend is None:
+                raise ModelCallError(role, "CODEX_UNAVAILABLE", message=f"unsupported backend '{backend_name}'")
+            for attempt in range(1, retries + 1):
+                call_timeout = timeout
+                if budget is not None:
+                    if budget.exhausted() or budget.llm_calls >= budget.max_llm_calls:
+                        raise RuntimeError("LLM_BUDGET: model call budget exhausted")
+                    call_timeout = min(timeout, max(0.001,
+                        (budget.max_wall_minutes - budget.wall_minutes) * 60))
+                    budget.charge_llm()
+                t0 = time.time()
+                try:
+                    text, meta = backend.ask(alias, prompt, system,
+                                             timeout_s=call_timeout, max_turns=max_turns)
+                    if text and text.strip():
+                        _record(role, entry, True, time.time() - t0, meta)
+                        return text
+                    raise codex_cli.CodexError("CODEX_PROTOCOL", "empty response", meta)
+                except Exception as e:
+                    last_error = e
+                    _record(role, entry, False, time.time() - t0,
+                            getattr(e, "metadata", None), type(e).__name__)
+                    if isinstance(e, codex_cli.CodexError) and e.code in ("CODEX_AUTH", "CODEX_QUOTA"):
+                        raise ModelCallError(role, e.code, e.metadata, str(e)) from e
+                    if not isinstance(e, codex_cli.CodexError) or e.code not in ("CODEX_TIMEOUT", "CODEX_NETWORK"):
+                        break     # non-retryable on this backend: next chain entry
+                    if attempt < retries:
+                        delay = 2 ** attempt
+                        if budget is not None:
+                            delay = min(delay, max(0,
+                                (budget.max_wall_minutes - budget.wall_minutes) * 60))
+                        time.sleep(delay)
+>       raise ModelCallError(role, getattr(last_error, "code", "CODEX_UNAVAILABLE"),
+                             getattr(last_error, "metadata", None),
+                             str(last_error) if last_error else "no backend attempts configured") from last_error
+E       llm.client.ModelCallError: CODEX_UNAVAILABLE: role 'generator': [WinError 5] Access is denied: 'C:\\Users\\prince.baah\\AppData\\Local\\Packages\\sandbox.{a4e17150-ac10-4115-be0d-c0c678ff0add}\\AC\\Temp\\autortl-codex-7yo347a6'
+
+llm\client.py:96: ModelCallError
+---------------------------- Captured stdout call -----------------------------
+[module m] golden model + testbench...
+__ test_unqualified_testbench_cannot_change_its_grading[license unavailable] __
+
+model_alias = 'default'
+prompt = 'Write a Python golden model for this module.\nBehavior: test\nPorts:   input wire a (clock=clk, protocol=none)\n  out...plied handshake inputs are 1 for accepted\ntransactions and 0 during reset. Output ONLY python in one ```python fence.'
+system = '# AutoRTL Conventions (LAW � always in force)\n\n## Fixed contract\nThe contract is law. Preserve exact module/port n...ic integrity and independent reference gates all\nremain mandatory. Infrastructure failures are not design failures.\n'
+timeout_s = 180, max_turns = 1
+
+    def ask(model_alias: str, prompt: str, system: str = "",
+            timeout_s: int = 180, max_turns: int = 1) -> tuple[str, dict]:
+        if timeout_s <= 0:
+            raise ValueError("timeout_s must be positive")
+        executable = os.environ.get("AUTORTL_CODEX_BIN") or shutil.which("codex")
+        if not executable:
+            raise CodexError("CODEX_UNAVAILABLE", "set AUTORTL_CODEX_BIN or put codex on PATH")
+        instruction = ("Return only the requested response. Do not use tools or change files.\n"
+                       + (f"\nTask instructions:\n{system}\n" if system else "")
+                       + f"\nRequest:\n{prompt}")
+        with tempfile.TemporaryDirectory(prefix="autortl-codex-") as directory:
+            final = Path(directory) / "final.txt"
+            cmd = [executable, "exec", "--sandbox", "read-only", "--ephemeral",
+                   "--json", "--output-last-message", str(final),
+                   "--skip-git-repo-check", "-C", directory]
+            if model_alias and model_alias != "default":
+                cmd += ["--model", model_alias]
+            cmd += ["-"]
+            try:
+                process = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                                           stderr=subprocess.PIPE, text=True, encoding="utf-8",
+                                           errors="replace", cwd=directory, shell=False,
+                                           start_new_session=os.name != "nt")
+            except OSError as exc:
+                raise CodexError("CODEX_UNAVAILABLE", "worker could not launch") from exc
+            try:
+                stdout, stderr = process.communicate(input=instruction, timeout=timeout_s)
+            except subprocess.TimeoutExpired as exc:
+                _terminate_worker(process)
+                diagnostic = _diagnostics(exc.output, exc.stderr, process.returncode, (prompt, system, instruction))
+                raise CodexError("CODEX_TIMEOUT", "worker timed out", diagnostic) from exc
+            except BaseException:
+                _terminate_worker(process)
+                raise
+            if process.returncode != 0:
+                diagnostic = _diagnostics(stdout, stderr, process.returncode, (prompt, system, instruction))
+                detail = " ".join(item["code"] + " " + item["message"] for item in diagnostic["errors"])
+                code = _failure_code(detail + " " + diagnostic["stderr_tail"], "CODEX_UNAVAILABLE")
+>               raise CodexError(code, f"worker exited {process.returncode}: " + (detail or diagnostic["stderr_tail"]), diagnostic)
+E               llm.backends.codex_cli.CodexError: CODEX_UNAVAILABLE: worker exited 1: stale arg0 temp dirs: Access is denied. (os error 5)
+E               WARNING: proceeding, even though we could not create PATH aliases: Access is denied. (os error 5) at path "C:\\Users\\prince.baah\\.codex\\tmp\\arg0-windows\\codex-arg0ugAfJh"
+E               2026-10-20T19:40:04.991504Z  WARN codex_state::runtime: failed to open state db at C:\Users\prince.baah\.codex\state_5.sqlite: failed to open state DB at
+
+llm\backends\codex_cli.py:213: CodexError
+
+During handling of the above exception, another exception occurred:
+
+path = 'C:\\Users\\prince.baah\\AppData\\Local\\Packages\\sandbox.{a4e17150-ac10-4115-be0d-c0c678ff0add}\\AC\\Temp\\autortl-codex-snor1y25'
+onexc = <function TemporaryDirectory._rmtree.<locals>.onexc at 0x000001C1A27F6660>
+
+    def _rmtree_unsafe(path, onexc):
+        def onerror(err):
+            onexc(os.scandir, err.filename, err)
+        results = os.walk(path, topdown=False, onerror=onerror, followlinks=os._walk_symlinks_as_files)
+        for dirpath, dirnames, filenames in results:
+            for name in dirnames:
+                fullname = os.path.join(dirpath, name)
+                try:
+                    os.rmdir(fullname)
+                except OSError as err:
+                    onexc(os.rmdir, fullname, err)
+            for name in filenames:
+                fullname = os.path.join(dirpath, name)
+                try:
+                    os.unlink(fullname)
+                except OSError as err:
+                    onexc(os.unlink, fullname, err)
+        try:
+>           os.rmdir(path)
+E           PermissionError: [WinError 5] Access is denied: 'C:\\Users\\prince.baah\\AppData\\Local\\Packages\\sandbox.{a4e17150-ac10-4115-be0d-c0c678ff0add}\\AC\\Temp\\autortl-codex-snor1y25'
+
+..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\shutil.py:637: PermissionError
+
+During handling of the above exception, another exception occurred:
+
+role = 'generator'
+prompt = 'Write a Python golden model for this module.\nBehavior: test\nPorts:   input wire a (clock=clk, protocol=none)\n  out...plied handshake inputs are 1 for accepted\ntransactions and 0 during reset. Output ONLY python in one ```python fence.'
+system = '# AutoRTL Conventions (LAW � always in force)\n\n## Fixed contract\nThe contract is law. Preserve exact module/port n...ic integrity and independent reference gates all\nremain mandatory. Infrastructure failures are not design failures.\n'
+budget = <autortl.budget.Budget object at 0x000001C1A26D9190>
+route_override = None, max_turns = 1
+
+    def ask(role: str, prompt: str, system: str = "",
+            budget=None, route_override: str | None = None,
+            max_turns: int = 1) -> str:
+        cfg = _load_routing()
+        chain = cfg["roles"].get(role, {}).get("chain", ["codex.default"])
+        if route_override:
+            chain = [route_override]
+        retries = cfg.get("defaults", {}).get("max_retries_per_backend", 2)
+        timeout = cfg.get("defaults", {}).get("timeout_s", 180)
+    
+        last_error = None
+        for entry in chain:
+            backend_name, _, alias = entry.partition(".")
+            backend = _BACKENDS.get(backend_name)
+            if backend is None:
+                raise ModelCallError(role, "CODEX_UNAVAILABLE", message=f"unsupported backend '{backend_name}'")
+            for attempt in range(1, retries + 1):
+                call_timeout = timeout
+                if budget is not None:
+                    if budget.exhausted() or budget.llm_calls >= budget.max_llm_calls:
+                        raise RuntimeError("LLM_BUDGET: model call budget exhausted")
+                    call_timeout = min(timeout, max(0.001,
+                        (budget.max_wall_minutes - budget.wall_minutes) * 60))
+                    budget.charge_llm()
+                t0 = time.time()
+                try:
+>                   text, meta = backend.ask(alias, prompt, system,
+                                             timeout_s=call_timeout, max_turns=max_turns)
+
+llm\client.py:76: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+llm\backends\codex_cli.py:185: in ask
+    with tempfile.TemporaryDirectory(prefix="autortl-codex-") as directory:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\tempfile.py:950: in __exit__
+    self.cleanup()
+..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\tempfile.py:954: in cleanup
+    self._rmtree(self.name, ignore_errors=self._ignore_cleanup_errors)
+..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\tempfile.py:934: in _rmtree
+    _shutil.rmtree(name, onexc=onexc)
+..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\shutil.py:781: in rmtree
+    return _rmtree_unsafe(path, onexc)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\shutil.py:639: in _rmtree_unsafe
+    onexc(os.rmdir, path, err)
+..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\tempfile.py:906: in onexc
+    _resetperms(path)
+..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\tempfile.py:286: in _resetperms
+    _dont_follow_symlinks(_os.chmod, path, 0o700)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+func = <built-in function chmod>
+path = 'C:\\Users\\prince.baah\\AppData\\Local\\Packages\\sandbox.{a4e17150-ac10-4115-be0d-c0c678ff0add}\\AC\\Temp\\autortl-codex-snor1y25'
+args = (448,)
+
+    def _dont_follow_symlinks(func, path, *args):
+        # Pass follow_symlinks=False, unless not supported on this platform.
+        if func in _os.supports_follow_symlinks:
+            func(path, *args, follow_symlinks=False)
+        elif _os.name == 'nt' or not _os.path.islink(path):
+>           func(path, *args)
+E           PermissionError: [WinError 5] Access is denied: 'C:\\Users\\prince.baah\\AppData\\Local\\Packages\\sandbox.{a4e17150-ac10-4115-be0d-c0c678ff0add}\\AC\\Temp\\autortl-codex-snor1y25'
+
+..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\tempfile.py:277: PermissionError
+
+The above exception was the direct cause of the following exception:
+
+tmp_path = WindowsPath('C:/Users/prince.baah/Documents/Codex/2026-10-15/hey/work/build-full-01/test_unqualified_testbench_can1')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001C1A26DAB40>
+reason = 'license unavailable'
+
+    @pytest.mark.parametrize("reason", ["missed bug", "license unavailable", "no applicable mutation"])
+    def test_unqualified_testbench_cannot_change_its_grading(tmp_path, monkeypatch, reason):
+        o = fsm.Orchestrator(RunConfig(mode="build"), tmp_path / "run")
+        module = ModuleSpec("m", "test", [Port("a", "input", 1), Port("y", "output", 1)], examples=[IOExample({"a": 0}, {"y": 0})])
+        work = tmp_path / "module"
+        work.mkdir()
+        (work / "golden.py").write_text("# mocked golden model")
+        tb = work / "m_tb.v"
+        tb.write_text("// mocked testbench")
+        monkeypatch.setattr(o.generator, "golden_model", Mock(return_value="# mocked golden model"))
+        monkeypatch.setattr(fsm, "GoldenModel", Mock())
+        monkeypatch.setattr(fsm, "qualify_against_examples", Mock(return_value=[]))
+        monkeypatch.setattr(fsm, "generate_tb", Mock(return_value=tb))
+        monkeypatch.setattr(o, "_generate_verified", Mock(return_value="module m; endmodule"),
+                            raising=False)
+        qualification = Mock(return_value=(False, reason))
+        monkeypatch.setattr(fsm, "qualify_tb", qualification)
+        simulation = Mock(side_effect=AssertionError("unqualified stimulus was silently regenerated"))
+>       monkeypatch.setattr(fsm.vivado, "xsim_run", simulation)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_fsm_verification.py:77: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+autortl\fsm.py:473: in _build_module
+    golden_src = self._model("generator", "golden_model", m, self.budget)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+autortl\fsm.py:300: in _model
+    return self._stage("model", role + "." + name,
+autortl\fsm.py:245: in _stage
+    return function()
+           ^^^^^^^^^^
+autortl\fsm.py:301: in <lambda>
+    lambda: getattr(getattr(self, role), name)(*args, **kwargs), args, kwargs)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+autortl\roles.py:138: in golden_model
+    resp = ask("generator", p, system=conventions(), budget=budget)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+role = 'generator'
+prompt = 'Write a Python golden model for this module.\nBehavior: test\nPorts:   input wire a (clock=clk, protocol=none)\n  out...plied handshake inputs are 1 for accepted\ntransactions and 0 during reset. Output ONLY python in one ```python fence.'
+system = '# AutoRTL Conventions (LAW � always in force)\n\n## Fixed contract\nThe contract is law. Preserve exact module/port n...ic integrity and independent reference gates all\nremain mandatory. Infrastructure failures are not design failures.\n'
+budget = <autortl.budget.Budget object at 0x000001C1A26D9190>
+route_override = None, max_turns = 1
+
+    def ask(role: str, prompt: str, system: str = "",
+            budget=None, route_override: str | None = None,
+            max_turns: int = 1) -> str:
+        cfg = _load_routing()
+        chain = cfg["roles"].get(role, {}).get("chain", ["codex.default"])
+        if route_override:
+            chain = [route_override]
+        retries = cfg.get("defaults", {}).get("max_retries_per_backend", 2)
+        timeout = cfg.get("defaults", {}).get("timeout_s", 180)
+    
+        last_error = None
+        for entry in chain:
+            backend_name, _, alias = entry.partition(".")
+            backend = _BACKENDS.get(backend_name)
+            if backend is None:
+                raise ModelCallError(role, "CODEX_UNAVAILABLE", message=f"unsupported backend '{backend_name}'")
+            for attempt in range(1, retries + 1):
+                call_timeout = timeout
+                if budget is not None:
+                    if budget.exhausted() or budget.llm_calls >= budget.max_llm_calls:
+                        raise RuntimeError("LLM_BUDGET: model call budget exhausted")
+                    call_timeout = min(timeout, max(0.001,
+                        (budget.max_wall_minutes - budget.wall_minutes) * 60))
+                    budget.charge_llm()
+                t0 = time.time()
+                try:
+                    text, meta = backend.ask(alias, prompt, system,
+                                             timeout_s=call_timeout, max_turns=max_turns)
+                    if text and text.strip():
+                        _record(role, entry, True, time.time() - t0, meta)
+                        return text
+                    raise codex_cli.CodexError("CODEX_PROTOCOL", "empty response", meta)
+                except Exception as e:
+                    last_error = e
+                    _record(role, entry, False, time.time() - t0,
+                            getattr(e, "metadata", None), type(e).__name__)
+                    if isinstance(e, codex_cli.CodexError) and e.code in ("CODEX_AUTH", "CODEX_QUOTA"):
+                        raise ModelCallError(role, e.code, e.metadata, str(e)) from e
+                    if not isinstance(e, codex_cli.CodexError) or e.code not in ("CODEX_TIMEOUT", "CODEX_NETWORK"):
+                        break     # non-retryable on this backend: next chain entry
+                    if attempt < retries:
+                        delay = 2 ** attempt
+                        if budget is not None:
+                            delay = min(delay, max(0,
+                                (budget.max_wall_minutes - budget.wall_minutes) * 60))
+                        time.sleep(delay)
+>       raise ModelCallError(role, getattr(last_error, "code", "CODEX_UNAVAILABLE"),
+                             getattr(last_error, "metadata", None),
+                             str(last_error) if last_error else "no backend attempts configured") from last_error
+E       llm.client.ModelCallError: CODEX_UNAVAILABLE: role 'generator': [WinError 5] Access is denied: 'C:\\Users\\prince.baah\\AppData\\Local\\Packages\\sandbox.{a4e17150-ac10-4115-be0d-c0c678ff0add}\\AC\\Temp\\autortl-codex-snor1y25'
+
+llm\client.py:96: ModelCallError
+---------------------------- Captured stdout call -----------------------------
+[module m] golden model + testbench...
+_ test_unqualified_testbench_cannot_change_its_grading[no applicable mutation] _
+
+model_alias = 'default'
+prompt = 'Write a Python golden model for this module.\nBehavior: test\nPorts:   input wire a (clock=clk, protocol=none)\n  out...plied handshake inputs are 1 for accepted\ntransactions and 0 during reset. Output ONLY python in one ```python fence.'
+system = '# AutoRTL Conventions (LAW � always in force)\n\n## Fixed contract\nThe contract is law. Preserve exact module/port n...ic integrity and independent reference gates all\nremain mandatory. Infrastructure failures are not design failures.\n'
+timeout_s = 180, max_turns = 1
+
+    def ask(model_alias: str, prompt: str, system: str = "",
+            timeout_s: int = 180, max_turns: int = 1) -> tuple[str, dict]:
+        if timeout_s <= 0:
+            raise ValueError("timeout_s must be positive")
+        executable = os.environ.get("AUTORTL_CODEX_BIN") or shutil.which("codex")
+        if not executable:
+            raise CodexError("CODEX_UNAVAILABLE", "set AUTORTL_CODEX_BIN or put codex on PATH")
+        instruction = ("Return only the requested response. Do not use tools or change files.\n"
+                       + (f"\nTask instructions:\n{system}\n" if system else "")
+                       + f"\nRequest:\n{prompt}")
+        with tempfile.TemporaryDirectory(prefix="autortl-codex-") as directory:
+            final = Path(directory) / "final.txt"
+            cmd = [executable, "exec", "--sandbox", "read-only", "--ephemeral",
+                   "--json", "--output-last-message", str(final),
+                   "--skip-git-repo-check", "-C", directory]
+            if model_alias and model_alias != "default":
+                cmd += ["--model", model_alias]
+            cmd += ["-"]
+            try:
+                process = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                                           stderr=subprocess.PIPE, text=True, encoding="utf-8",
+                                           errors="replace", cwd=directory, shell=False,
+                                           start_new_session=os.name != "nt")
+            except OSError as exc:
+                raise CodexError("CODEX_UNAVAILABLE", "worker could not launch") from exc
+            try:
+                stdout, stderr = process.communicate(input=instruction, timeout=timeout_s)
+            except subprocess.TimeoutExpired as exc:
+                _terminate_worker(process)
+                diagnostic = _diagnostics(exc.output, exc.stderr, process.returncode, (prompt, system, instruction))
+                raise CodexError("CODEX_TIMEOUT", "worker timed out", diagnostic) from exc
+            except BaseException:
+                _terminate_worker(process)
+                raise
+            if process.returncode != 0:
+                diagnostic = _diagnostics(stdout, stderr, process.returncode, (prompt, system, instruction))
+                detail = " ".join(item["code"] + " " + item["message"] for item in diagnostic["errors"])
+                code = _failure_code(detail + " " + diagnostic["stderr_tail"], "CODEX_UNAVAILABLE")
+>               raise CodexError(code, f"worker exited {process.returncode}: " + (detail or diagnostic["stderr_tail"]), diagnostic)
+E               llm.backends.codex_cli.CodexError: CODEX_UNAVAILABLE: worker exited 1: stale arg0 temp dirs: Access is denied. (os error 5)
+E               WARNING: proceeding, even though we could not create PATH aliases: Access is denied. (os error 5) at path "C:\\Users\\prince.baah\\.codex\\tmp\\arg0-windows\\codex-arg0qEMBAH"
+E               2026-10-20T19:40:05.779852Z  WARN codex_state::runtime: failed to open state db at C:\Users\prince.baah\.codex\state_5.sqlite: failed to open state DB at
+
+llm\backends\codex_cli.py:213: CodexError
+
+During handling of the above exception, another exception occurred:
+
+path = 'C:\\Users\\prince.baah\\AppData\\Local\\Packages\\sandbox.{a4e17150-ac10-4115-be0d-c0c678ff0add}\\AC\\Temp\\autortl-codex-o3arkcg5'
+onexc = <function TemporaryDirectory._rmtree.<locals>.onexc at 0x000001C1A2841BC0>
+
+    def _rmtree_unsafe(path, onexc):
+        def onerror(err):
+            onexc(os.scandir, err.filename, err)
+        results = os.walk(path, topdown=False, onerror=onerror, followlinks=os._walk_symlinks_as_files)
+        for dirpath, dirnames, filenames in results:
+            for name in dirnames:
+                fullname = os.path.join(dirpath, name)
+                try:
+                    os.rmdir(fullname)
+                except OSError as err:
+                    onexc(os.rmdir, fullname, err)
+            for name in filenames:
+                fullname = os.path.join(dirpath, name)
+                try:
+                    os.unlink(fullname)
+                except OSError as err:
+                    onexc(os.unlink, fullname, err)
+        try:
+>           os.rmdir(path)
+E           PermissionError: [WinError 5] Access is denied: 'C:\\Users\\prince.baah\\AppData\\Local\\Packages\\sandbox.{a4e17150-ac10-4115-be0d-c0c678ff0add}\\AC\\Temp\\autortl-codex-o3arkcg5'
+
+..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\shutil.py:637: PermissionError
+
+During handling of the above exception, another exception occurred:
+
+role = 'generator'
+prompt = 'Write a Python golden model for this module.\nBehavior: test\nPorts:   input wire a (clock=clk, protocol=none)\n  out...plied handshake inputs are 1 for accepted\ntransactions and 0 during reset. Output ONLY python in one ```python fence.'
+system = '# AutoRTL Conventions (LAW � always in force)\n\n## Fixed contract\nThe contract is law. Preserve exact module/port n...ic integrity and independent reference gates all\nremain mandatory. Infrastructure failures are not design failures.\n'
+budget = <autortl.budget.Budget object at 0x000001C1A295FB30>
+route_override = None, max_turns = 1
+
+    def ask(role: str, prompt: str, system: str = "",
+            budget=None, route_override: str | None = None,
+            max_turns: int = 1) -> str:
+        cfg = _load_routing()
+        chain = cfg["roles"].get(role, {}).get("chain", ["codex.default"])
+        if route_override:
+            chain = [route_override]
+        retries = cfg.get("defaults", {}).get("max_retries_per_backend", 2)
+        timeout = cfg.get("defaults", {}).get("timeout_s", 180)
+    
+        last_error = None
+        for entry in chain:
+            backend_name, _, alias = entry.partition(".")
+            backend = _BACKENDS.get(backend_name)
+            if backend is None:
+                raise ModelCallError(role, "CODEX_UNAVAILABLE", message=f"unsupported backend '{backend_name}'")
+            for attempt in range(1, retries + 1):
+                call_timeout = timeout
+                if budget is not None:
+                    if budget.exhausted() or budget.llm_calls >= budget.max_llm_calls:
+                        raise RuntimeError("LLM_BUDGET: model call budget exhausted")
+                    call_timeout = min(timeout, max(0.001,
+                        (budget.max_wall_minutes - budget.wall_minutes) * 60))
+                    budget.charge_llm()
+                t0 = time.time()
+                try:
+>                   text, meta = backend.ask(alias, prompt, system,
+                                             timeout_s=call_timeout, max_turns=max_turns)
+
+llm\client.py:76: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+llm\backends\codex_cli.py:185: in ask
+    with tempfile.TemporaryDirectory(prefix="autortl-codex-") as directory:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\tempfile.py:950: in __exit__
+    self.cleanup()
+..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\tempfile.py:954: in cleanup
+    self._rmtree(self.name, ignore_errors=self._ignore_cleanup_errors)
+..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\tempfile.py:934: in _rmtree
+    _shutil.rmtree(name, onexc=onexc)
+..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\shutil.py:781: in rmtree
+    return _rmtree_unsafe(path, onexc)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\shutil.py:639: in _rmtree_unsafe
+    onexc(os.rmdir, path, err)
+..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\tempfile.py:906: in onexc
+    _resetperms(path)
+..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\tempfile.py:286: in _resetperms
+    _dont_follow_symlinks(_os.chmod, path, 0o700)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+func = <built-in function chmod>
+path = 'C:\\Users\\prince.baah\\AppData\\Local\\Packages\\sandbox.{a4e17150-ac10-4115-be0d-c0c678ff0add}\\AC\\Temp\\autortl-codex-o3arkcg5'
+args = (448,)
+
+    def _dont_follow_symlinks(func, path, *args):
+        # Pass follow_symlinks=False, unless not supported on this platform.
+        if func in _os.supports_follow_symlinks:
+            func(path, *args, follow_symlinks=False)
+        elif _os.name == 'nt' or not _os.path.islink(path):
+>           func(path, *args)
+E           PermissionError: [WinError 5] Access is denied: 'C:\\Users\\prince.baah\\AppData\\Local\\Packages\\sandbox.{a4e17150-ac10-4115-be0d-c0c678ff0add}\\AC\\Temp\\autortl-codex-o3arkcg5'
+
+..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\tempfile.py:277: PermissionError
+
+The above exception was the direct cause of the following exception:
+
+tmp_path = WindowsPath('C:/Users/prince.baah/Documents/Codex/2026-10-15/hey/work/build-full-01/test_unqualified_testbench_can2')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001C1A295D2E0>
+reason = 'no applicable mutation'
+
+    @pytest.mark.parametrize("reason", ["missed bug", "license unavailable", "no applicable mutation"])
+    def test_unqualified_testbench_cannot_change_its_grading(tmp_path, monkeypatch, reason):
+        o = fsm.Orchestrator(RunConfig(mode="build"), tmp_path / "run")
+        module = ModuleSpec("m", "test", [Port("a", "input", 1), Port("y", "output", 1)], examples=[IOExample({"a": 0}, {"y": 0})])
+        work = tmp_path / "module"
+        work.mkdir()
+        (work / "golden.py").write_text("# mocked golden model")
+        tb = work / "m_tb.v"
+        tb.write_text("// mocked testbench")
+        monkeypatch.setattr(o.generator, "golden_model", Mock(return_value="# mocked golden model"))
+        monkeypatch.setattr(fsm, "GoldenModel", Mock())
+        monkeypatch.setattr(fsm, "qualify_against_examples", Mock(return_value=[]))
+        monkeypatch.setattr(fsm, "generate_tb", Mock(return_value=tb))
+        monkeypatch.setattr(o, "_generate_verified", Mock(return_value="module m; endmodule"),
+                            raising=False)
+        qualification = Mock(return_value=(False, reason))
+        monkeypatch.setattr(fsm, "qualify_tb", qualification)
+        simulation = Mock(side_effect=AssertionError("unqualified stimulus was silently regenerated"))
+>       monkeypatch.setattr(fsm.vivado, "xsim_run", simulation)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_fsm_verification.py:77: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+autortl\fsm.py:473: in _build_module
+    golden_src = self._model("generator", "golden_model", m, self.budget)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+autortl\fsm.py:300: in _model
+    return self._stage("model", role + "." + name,
+autortl\fsm.py:245: in _stage
+    return function()
+           ^^^^^^^^^^
+autortl\fsm.py:301: in <lambda>
+    lambda: getattr(getattr(self, role), name)(*args, **kwargs), args, kwargs)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+autortl\roles.py:138: in golden_model
+    resp = ask("generator", p, system=conventions(), budget=budget)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+role = 'generator'
+prompt = 'Write a Python golden model for this module.\nBehavior: test\nPorts:   input wire a (clock=clk, protocol=none)\n  out...plied handshake inputs are 1 for accepted\ntransactions and 0 during reset. Output ONLY python in one ```python fence.'
+system = '# AutoRTL Conventions (LAW � always in force)\n\n## Fixed contract\nThe contract is law. Preserve exact module/port n...ic integrity and independent reference gates all\nremain mandatory. Infrastructure failures are not design failures.\n'
+budget = <autortl.budget.Budget object at 0x000001C1A295FB30>
+route_override = None, max_turns = 1
+
+    def ask(role: str, prompt: str, system: str = "",
+            budget=None, route_override: str | None = None,
+            max_turns: int = 1) -> str:
+        cfg = _load_routing()
+        chain = cfg["roles"].get(role, {}).get("chain", ["codex.default"])
+        if route_override:
+            chain = [route_override]
+        retries = cfg.get("defaults", {}).get("max_retries_per_backend", 2)
+        timeout = cfg.get("defaults", {}).get("timeout_s", 180)
+    
+        last_error = None
+        for entry in chain:
+            backend_name, _, alias = entry.partition(".")
+            backend = _BACKENDS.get(backend_name)
+            if backend is None:
+                raise ModelCallError(role, "CODEX_UNAVAILABLE", message=f"unsupported backend '{backend_name}'")
+            for attempt in range(1, retries + 1):
+                call_timeout = timeout
+                if budget is not None:
+                    if budget.exhausted() or budget.llm_calls >= budget.max_llm_calls:
+                        raise RuntimeError("LLM_BUDGET: model call budget exhausted")
+                    call_timeout = min(timeout, max(0.001,
+                        (budget.max_wall_minutes - budget.wall_minutes) * 60))
+                    budget.charge_llm()
+                t0 = time.time()
+                try:
+                    text, meta = backend.ask(alias, prompt, system,
+                                             timeout_s=call_timeout, max_turns=max_turns)
+                    if text and text.strip():
+                        _record(role, entry, True, time.time() - t0, meta)
+                        return text
+                    raise codex_cli.CodexError("CODEX_PROTOCOL", "empty response", meta)
+                except Exception as e:
+                    last_error = e
+                    _record(role, entry, False, time.time() - t0,
+                            getattr(e, "metadata", None), type(e).__name__)
+                    if isinstance(e, codex_cli.CodexError) and e.code in ("CODEX_AUTH", "CODEX_QUOTA"):
+                        raise ModelCallError(role, e.code, e.metadata, str(e)) from e
+                    if not isinstance(e, codex_cli.CodexError) or e.code not in ("CODEX_TIMEOUT", "CODEX_NETWORK"):
+                        break     # non-retryable on this backend: next chain entry
+                    if attempt < retries:
+                        delay = 2 ** attempt
+                        if budget is not None:
+                            delay = min(delay, max(0,
+                                (budget.max_wall_minutes - budget.wall_minutes) * 60))
+                        time.sleep(delay)
+>       raise ModelCallError(role, getattr(last_error, "code", "CODEX_UNAVAILABLE"),
+                             getattr(last_error, "metadata", None),
+                             str(last_error) if last_error else "no backend attempts configured") from last_error
+E       llm.client.ModelCallError: CODEX_UNAVAILABLE: role 'generator': [WinError 5] Access is denied: 'C:\\Users\\prince.baah\\AppData\\Local\\Packages\\sandbox.{a4e17150-ac10-4115-be0d-c0c678ff0add}\\AC\\Temp\\autortl-codex-o3arkcg5'
+
+llm\client.py:96: ModelCallError
+---------------------------- Captured stdout call -----------------------------
+[module m] golden model + testbench...
+=========================== short test summary info ===========================
+FAILED tests/test_fsm_verification.py::test_unqualified_testbench_cannot_change_its_grading[missed bug]
+FAILED tests/test_fsm_verification.py::test_unqualified_testbench_cannot_change_its_grading[license unavailable]
+FAILED tests/test_fsm_verification.py::test_unqualified_testbench_cannot_change_its_grading[no applicable mutation]
+3 failed, 725 passed in 261.52s (0:04:21)

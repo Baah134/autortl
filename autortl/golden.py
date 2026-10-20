@@ -62,9 +62,44 @@ class GoldenModel:
         return outputs
 
 
+def validate_examples(spec: ModuleSpec, *, require_anchors=False) -> list[str]:
+    """Validate before allocating repeated stimulus or launching any oracle worker."""
+    errors = []
+    examples = spec.examples
+    if not isinstance(examples, list) or len(examples) > 100:
+        return ["examples must be a list with at most 100 entries"]
+    if require_anchors and not examples:
+        return ["generated oracle requires at least one concrete specification example"]
+    inputs = {p.name:p for p in spec.ports if p.direction == "input" and p.name != "clk"}
+    outputs = {p.name:p for p in spec.ports if p.direction == "output" and p.protocol == "none"}
+    steps = 0
+    for index, example in enumerate(examples):
+        label = f"example {index}"
+        cycles = getattr(example, "after_cycles", None)
+        if type(cycles) is not int or not 1 <= cycles <= 10000:
+            errors.append(label + ": after_cycles must be an integer in 1..10000")
+        else:
+            steps += cycles
+        given, expected = getattr(example, "inputs", None), getattr(example, "expected", None)
+        if not isinstance(given, dict) or not set(given).issubset(inputs):
+            errors.append(label + ": inputs must contain only declared non-clock input ports")
+        if not isinstance(expected, dict) or not expected or set(expected) != set(outputs):
+            errors.append(label + ": expected must cover exactly all data output ports and be nonempty")
+        for mapping, ports, kind in ((given,inputs,"input"),(expected,outputs,"expected")):
+            if isinstance(mapping, dict):
+                for name, value in mapping.items():
+                    if name in ports and (type(value) is not int or not 0 <= value < (1 << ports[name].width)):
+                        errors.append(f"{label}: {kind} {name} must be a masked port integer")
+    if steps > 10000:
+        errors.append("combined example execution exceeds 10000 steps")
+    return errors
+
+
 def qualify_against_examples(gm: GoldenModel, spec: ModuleSpec) -> list[str]:
     """Run the spec's concrete IO examples through the golden model."""
-    errs = []
+    errs = validate_examples(spec)
+    if errs:
+        return errs
     for i, ex in enumerate(spec.examples):
         stim = [dict(ex.inputs)] + [dict(ex.inputs)] * max(0, ex.after_cycles - 1)
         outs = gm.run(stim)

@@ -36,9 +36,9 @@ from .timing_doctor import diagnose, TimingCategory
 from . import vivado
 from .vivado import advisor_digest
 from .report_parser import VivadoMetrics, extract_message_ids
-from .golden import GoldenModel, qualify_against_examples
+from .golden import GoldenModel, qualify_against_examples, validate_examples
 from .tbgen import generate as generate_tb
-from .tbqual import qualify as qualify_tb, mutate
+from .tbqual import qualify as qualify_tb, mutate, assertion_failure_proof
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from llm.client import declared_latency, ModelCallError
@@ -368,7 +368,10 @@ class Orchestrator:
             if label == "mutant":
                 qualified = not passed and kind == FailureKind.DESIGN and (
                     error.startswith("Testbench failures:") or error == "testbench reported failure")
-                return qualified, ("detected " + mutation[1]) if qualified else "qualification not established: " + error
+                if qualified:
+                    qualified, detail = assertion_failure_proof(directory)
+                    return qualified, ("detected " + mutation[1]) if qualified else "qualification not established: " + detail
+                return False, "qualification not established: " + error
 
     # ------------------------------------------------------------- build mode
     def _run_build(self, saved: dict | None) -> dict:
@@ -454,21 +457,42 @@ class Orchestrator:
                 return None
             qualified, _ = self._qualify_source(verilog, tb, m.name, mdir)
             return verilog if qualified else None
+        example_errors = validate_examples(m, require_anchors=True)
+        if example_errors:
+            atomic_write_text(mdir / "golden_qualification.log", json.dumps({
+                "status": "invalid_spec_examples", "errors": [error[:1000] for error in example_errors[:20]],
+                "model_calls": 0}, indent=2))
+            return None
         golden_path = mdir / "golden.py"
-        if self._journal_enabled or not golden_path.exists():
-            golden_src = self._model("generator", "golden_model", m, self.budget)
-            golden_path.write_text(golden_src)
-        gm = GoldenModel(golden_path)
-        gerrs = qualify_against_examples(gm, m)
-        if gerrs:
-            print(f"[module {m.name}] golden model failed spec examples: {gerrs}")
-            # one regeneration attempt with the failures shown
-            golden_src = self._model("generator", "golden_model", m, self.budget)
-            golden_path.write_text(golden_src)
-            gm = GoldenModel(golden_path)
-            if qualify_against_examples(gm, m):
-                return None
-        tb = generate_tb(m, gm, mdir)
+        feedback = ""
+        tb = None
+        for attempt in range(1, 3):
+            # Provider and storage failures propagate; only generated-program errors
+            # enter this bounded oracle repair loop.
+            if attempt == 1:
+                golden_src = self._model("generator", "golden_model", m, self.budget)
+            else:
+                golden_src = self._model("generator", "golden_model", m, self.budget, feedback=feedback)
+            golden_path.write_text(golden_src, encoding="utf-8")
+            digest = hashlib.sha256(golden_path.read_bytes()).hexdigest()
+            try:
+                gm = GoldenModel(golden_path)
+                errors = qualify_against_examples(gm, m)
+                if errors:
+                    raise ValueError("; ".join(errors[:10]))
+                tb = generate_tb(m, gm, mdir)
+            except (SyntaxError, ValueError, KeyError, TypeError) as exc:
+                feedback = f"{type(exc).__name__}: {str(exc)[:2000]}"
+                atomic_write_text(mdir / f"golden_attempt_{attempt}.log", json.dumps({
+                    "attempt": attempt, "source_sha256": digest, "status": "oracle_rejected",
+                    "diagnostic": feedback}, indent=2))
+                continue
+            atomic_write_text(mdir / f"golden_attempt_{attempt}.log", json.dumps({
+                "attempt": attempt, "source_sha256": digest, "status": "oracle_qualified",
+                "scope": "Specification examples and generated stimulus; not formal equivalence or reset-kind proof."}, indent=2))
+            break
+        else:
+            return None
         verilog = self._generate_verified(m, "(initial implementation)",
                                           "", tb, mdir)
         if verilog is None:

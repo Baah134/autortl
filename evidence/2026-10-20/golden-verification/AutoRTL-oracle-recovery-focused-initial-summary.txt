@@ -1,0 +1,8 @@
+Oracle-recovery focused run 01 (summary; not a complete raw pytest transcript)
+Command: python -m pytest tests/test_tbqual.py tests/test_qualification_interfaces.py tests/test_golden.py tests/test_golden_recovery.py tests/test_fsm_build.py tests/test_fsm_verification.py -q --basetemp .../pytest-oracle-recovery-final-01
+Outcome: 3 failed, 57 passed in 41.96s.
+Failures: tests/test_fsm_verification.py::test_unqualified_testbench_cannot_change_its_grading for missed bug / license unavailable / no applicable mutation.
+Cause: the legacy unit fixture did not mock Generator.golden_model after the recovered generated-oracle path began requesting an oracle. Codex worker launches were attempted and failed with sandbox Access Denied / CODEX_UNAVAILABLE; no useful model response or live experiment was obtained.
+The parent corrected only the fixture by explicitly mocking golden_model. Runtime source remained frozen. The new assertions and qualification gates were retained.
+Original stdout was returned through the tool transcript and truncated by its output limit; it was not redirected to a file. This file preserves the outcome and provenance honestly and must not be described as complete raw output.
+Run 02 is separately recorded in AutoRTL-oracle-recovery-focused-final.txt.

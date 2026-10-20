@@ -18,7 +18,11 @@ from autortl.triage import FailureKind
 def test_qualification_requires_control_and_explicit_mutant_failure(
         monkeypatch, tmp_path, outcome, expected):
     results = iter([(True, "", FailureKind.DESIGN), outcome])
-    monkeypatch.setattr(tbqual, "xsim_run", lambda *a: next(results))
+    def simulate(*args):
+        result = next(results)
+        (args[-1] / "sim_log.txt").write_text("TEST PASSED\n" if result[0] else "FAIL index=1 expected=2 got=3\nTEST FAILED: 1 errors\n")
+        return result
+    monkeypatch.setattr(tbqual, "xsim_run", simulate)
     ok, _ = tbqual.qualify("assign y = a + 1;", tmp_path / "tb.v", "m",
                            RunConfig(mode="build"), tmp_path)
     assert ok is expected
@@ -62,3 +66,21 @@ def test_sized_increment_mutation_changes_value(increment, mutated):
 
 def test_comments_do_not_qualify_as_a_mutation():
     assert mutate("module m; // a < b + 1\nassign y=x; endmodule") is None
+
+
+@pytest.mark.parametrize("raw,expected",[
+    ("FAIL index=3 expected=7 got=9\nTEST FAILED: 1 errors\n",True),
+    (None,False), ("TEST FAILED: watchdog\n",False),
+    ("FAIL index=3 expected=7 got=9\nTEST FAILED: watchdog\n",False),
+    ("FAIL timeout\nTEST FAILED: 1 errors\n",False),
+    ("FAIL mismatch\nTEST FAILED: 1 errors\nTEST PASSED\n",False),
+    ("TEST FAILED: 1 errors\n",False),("FAIL mismatch\n",False)])
+def test_raw_assertion_proof_rejects_generic_or_ambiguous_failure(tmp_path,raw,expected):
+    if raw is not None: (tmp_path/"sim_log.txt").write_text(raw)
+    assert tbqual.assertion_failure_proof(tmp_path)[0] is expected
+
+
+def test_qualification_wrapper_failure_without_raw_assertions_is_not_proof(tmp_path,monkeypatch):
+    results=iter([(True,"",FailureKind.DESIGN),(False,"testbench reported failure",FailureKind.DESIGN)])
+    monkeypatch.setattr(tbqual,"xsim_run",lambda *args:next(results))
+    assert not tbqual.qualify("assign y=a+1;",tmp_path/"tb.v","m",RunConfig(mode="build"),tmp_path)[0]

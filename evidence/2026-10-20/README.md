@@ -45,3 +45,11 @@
 Raw reports, source/testbench hashes and manifests preserve evidence. All failed
 campaigns remain in the record. One bounded accepted counter gain is recorded;
 no held tier or weaker-model performance is claimed.
+
+
+- `golden-verification/`:743passingregressiontests; real reset-input failure;
+  ten trusted counter/encoder qualification verdicts; zero-cycle false positive
+  before/after, raw assertions, exact intermediate runtime source and manifests.
+- `generated-counter/`: fresh generated-golden counter build and independent
+  final700-cyclecheck,6LUT/8FF; automatic oracle syntax repair exercised. Same-area
+  optimization rejected; no new PPA gain claimed.

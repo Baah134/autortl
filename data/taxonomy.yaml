@@ -58,6 +58,24 @@ messages:
 # Methodology violations (report_methodology, UG1292 IDs). ADVISORY ONLY:
 # these never kill candidates; they are digested into the planner's context.
 harness_failures:
+  scoreboard_early_output:
+    meaning: "A combinational bypass passed scoreboard verification despite a nonzero declared minimum transfer latency"
+    repair: "Track each accepted transaction cycle and reject outputs before its contract latency; keep legal simultaneous queued transfers"
+  unanchored_or_unbounded_golden_examples:
+    meaning: "Empty oracle anchors qualified vacuously or after_cycles allocated an unbounded supervisor list"
+    repair: "Validate bounded concrete examples before oracle execution or generation; retain trusted-TB-only compatibility"
+  golden_repair_without_feedback:
+    meaning: "Invalid Python references escaped bounded repair or retries omitted the concrete failure"
+    repair: "Retry invalid oracle source at most once with bounded diagnostic feedback; preserve provider and storage failures separately"
+  watchdog_false_qualification:
+    meaning: "A watchdog-only testbench failure was counted as detection of an injected behavioral defect"
+    repair: "Require retained concrete assertion failure evidence; reject timeout, watchdog, missing and contradictory logs"
+  golden_control_input_omission:
+    meaning: "Generated oracle stimulus omitted reset/control inputs required by a correctly generated Python reference"
+    repair: "Align reference inputs with actual reset initialization and comparison mode; qualify strict-key references through the real generated-build path"
+  golden_temporal_contract_ambiguity:
+    meaning: "A transaction oracle was instructed to model cycle scheduling already handled by the generated testbench"
+    repair: "State fixed-latency and accepted-transaction oracle semantics explicitly; preserve independent RTL latency and handshake checks"
   malformed_evaluation_acceptance:
     meaning: "An incomplete or contradictory evaluator response was parsed as ACCEPT with zero failed criteria"
     repair: "Require a consistent nonempty summary and reject FAIL or INVESTIGATE criteria before promotion"

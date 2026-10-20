@@ -1,8 +1,7 @@
 """Testbench qualification by bug injection (defence #7 — the untested oracle).
 
 A generated testbench must FAIL a sabotaged copy of a known-good module
-before it is allowed to grade anything. Mutation operators are simple and
-guaranteed-behavior-changing.
+before it is allowed to grade anything. Mutation operators are simple; qualification requires an observed assertion failure.
 """
 from __future__ import annotations
 import re
@@ -46,6 +45,23 @@ def mutate(verilog: str) -> tuple[str, str] | None:
     return None
 
 
+def assertion_failure_proof(work_dir: Path) -> tuple[bool, str]:
+    """Require retained assertion evidence, not a wrapper's generic failure label."""
+    path = Path(work_dir) / "sim_log.txt"
+    if not path.is_file():
+        return False, "raw simulation log is missing"
+    raw = path.read_text(encoding="utf-8", errors="replace")
+    if re.search(r"\b(?:watchdog|timeout|timed\s+out)\b", raw, re.I):
+        return False, "watchdog/timeout is not an assertion detection"
+    if re.search(r"(?m)^\s*TEST PASSED\b", raw):
+        return False, "contradictory or successful verdict in mutant log"
+    if not re.search(r"(?m)^\s*FAIL(?:\s|:)\s*\S", raw):
+        return False, "raw assertion FAIL detail is missing"
+    if not re.search(r"(?m)^\s*TEST FAILED(?:\s|:)\s*\S", raw):
+        return False, "raw TEST FAILED verdict is missing"
+    return True, "raw assertion detail and failure verdict retained"
+
+
 def qualify(good_verilog: str, tb_path: Path, module_name: str,
             cfg: RunConfig, work_dir: Path) -> tuple[bool, str]:
     """Returns (qualified, reason). Qualified means the tb catches an injected bug."""
@@ -72,4 +88,5 @@ def qualify(good_verilog: str, tb_path: Path, module_name: str,
         err.startswith("Testbench failures:") or err == "testbench reported failure"
     ):
         return False, f"sabotage did not produce a testbench verdict: {err}"
-    return True, f"testbench correctly failed sabotage ({desc})"
+    proven, reason = assertion_failure_proof(qdir)
+    return (True, f"testbench correctly failed sabotage ({desc})") if proven else (False, reason)

@@ -1,0 +1,291 @@
+# Error taxonomy — keyed on official Vivado message IDs.
+# severity_override: ERROR promotes the message (we promote, we NEVER demote).
+# Seeded from every error class hit during AutoRTL v1-v3 development.
+messages:
+  "Designutils 20-1307":
+    meaning: "Unsupported Tcl control flow in an XDC file caused constraints to be skipped"
+    repair: "Run conditional constraints as Tcl after synthesis, and retain the effective commands and timing reports"
+    severity_override: ERROR
+  "XSIM 43-4099":
+    meaning: "A generated module omitted a timescale while another simulation module declared one"
+    repair: "Give generated RTL a default 1ns/1ps timescale before verification; preserve explicit declarations"
+    severity_override: null
+  "Common 17-53":
+    meaning: "Harness queried design objects before opening a design during constraint-file generation"
+    repair: "For No open design errors, fix Tcl execution order; preserve get_ports literally when writing XDC and do not mutate RTL"
+    severity_override: null
+  "Synth 8-327":
+    meaning: "Inferred latch — a combinational always block leaves a signal unassigned in some branch"
+    repair: "Add default assignments for every output at the top of the always @(*) block, or complete every if with an else"
+    severity_override: ERROR
+  "Synth 8-3352":
+    meaning: "Multi-driven net — two blocks assign the same signal"
+    repair: "Assign each signal from exactly one always block or one assign statement"
+    severity_override: ERROR
+  "Synth 8-6859":
+    meaning: "Port width mismatch in instantiation"
+    repair: "Regenerate the port connections exactly from the contract's port table; widths must match bit-for-bit"
+    severity_override: null
+  "Synth 8-693":
+    meaning: "Unconnected port on instance"
+    repair: "Connect every port in the contract; tie unused inputs to a defined constant"
+    severity_override: null
+  "Synth 8-7080":
+    meaning: "Parallel synthesis license info (benign)"
+    repair: "Ignore — informational only"
+    severity_override: null
+  "XSIM 43-3225":
+    meaning: "Elaboration failed — usually a port/interface mismatch between DUT and testbench"
+    repair: "Match the module interface (name, port list, widths) exactly to the contract; do not add or rename ports"
+    severity_override: null
+  "XSIM 43-4100":
+    meaning: "Module not found during elaboration"
+    repair: "The module name in the code must equal the contract name exactly (case sensitive)"
+    severity_override: null
+  "Timing 38-282":
+    meaning: "No clock constraint reached some paths"
+    repair: "Ensure the top-level clock port is named clk (contract law) so the auto-generated XDC applies"
+    severity_override: null
+  "Common 17-55":
+    meaning: "Command called with bad arguments — often a path problem"
+    repair: "Infra-class failure — verify forward-slash absolute paths; do not modify the design"
+    severity_override: null
+  "Vivado 12-4473":
+    meaning: "Simulation step failed; see the referenced log for the true cause"
+    repair: "Read compile.log/elaborate.log message IDs and repair those; this ID is only a wrapper"
+    severity_override: null
+
+# Methodology violations (report_methodology, UG1292 IDs). ADVISORY ONLY:
+# these never kill candidates; they are digested into the planner's context.
+harness_failures:
+  scoreboard_early_output:
+    meaning: "A combinational bypass passed scoreboard verification despite a nonzero declared minimum transfer latency"
+    repair: "Track each accepted transaction cycle and reject outputs before its contract latency; keep legal simultaneous queued transfers"
+  unanchored_or_unbounded_golden_examples:
+    meaning: "Empty oracle anchors qualified vacuously or after_cycles allocated an unbounded supervisor list"
+    repair: "Validate bounded concrete examples before oracle execution or generation; retain trusted-TB-only compatibility"
+  golden_repair_without_feedback:
+    meaning: "Invalid Python references escaped bounded repair or retries omitted the concrete failure"
+    repair: "Retry invalid oracle source at most once with bounded diagnostic feedback; preserve provider and storage failures separately"
+  watchdog_false_qualification:
+    meaning: "A watchdog-only testbench failure was counted as detection of an injected behavioral defect"
+    repair: "Require retained concrete assertion failure evidence; reject timeout, watchdog, missing and contradictory logs"
+  golden_control_input_omission:
+    meaning: "Generated oracle stimulus omitted reset/control inputs required by a correctly generated Python reference"
+    repair: "Align reference inputs with actual reset initialization and comparison mode; qualify strict-key references through the real generated-build path"
+  golden_temporal_contract_ambiguity:
+    meaning: "A transaction oracle was instructed to model cycle scheduling already handled by the generated testbench"
+    repair: "State fixed-latency and accepted-transaction oracle semantics explicitly; preserve independent RTL latency and handshake checks"
+  malformed_evaluation_acceptance:
+    meaning: "An incomplete or contradictory evaluator response was parsed as ACCEPT with zero failed criteria"
+    repair: "Require a consistent nonempty summary and reject FAIL or INVESTIGATE criteria before promotion"
+  baseline_testbench_coverage_gap:
+    meaning: "Sparse counter tests accepted changed flag latency or incorrect high-bit comparisons"
+    repair: "Check all outputs against an independent cycle reference across boundaries, controls and deterministic random stimulus"
+  contract_context_starvation:
+    meaning: "Contract roles invented tool settings, thresholds or grading requirements without run evidence"
+    repair: "Supply immutable source, testbench, constraints and measured baseline context to every contract role"
+  evaluation_evidence_gap:
+    meaning: "An evaluator graded code or improvement without candidate RTL and previous-best metrics"
+    repair: "Persist exact candidate evidence and previous-best metrics; reject contradictory ACCEPT with failed criteria"
+  unsafe_spec_identifier:
+    meaning: "A model-supplied identifier escaped source paths or top-level wiring used an invalid external binding"
+    repair: "Validate ASCII Verilog names and all external bindings before creating files or Tcl"
+  interrupted_persistence:
+    meaning: "A process interruption partially wrote state or lost a durable checkpoint"
+    repair: "Write sibling temporary files, flush, and atomically replace; checkpoint completed stages"
+  resume_config_drift:
+    meaning: "Resume reconstructed defaults or changed input, tool, objective or budget configuration"
+    repair: "Load the saved configuration and verify frozen input hashes before continuing"
+  duplicate_resume_evidence:
+    meaning: "Resuming repeated accepted history or charged completed work twice"
+    repair: "Use stable stage identifiers, immutable completed artifacts and idempotent history writes"
+  stale_context_cache:
+    meaning: "A cached metric belongs to different constraints, tools, dependencies or changed reports"
+    repair: "Key exact source and complete execution context; verify retained report hashes before reuse"
+  zero_budget_execution:
+    meaning: "An exhausted or zero budget still spawned work"
+    repair: "Check counters and remaining wall/tool time before every model and tool stage"
+  rejected_contract_execution:
+    meaning: "Negotiation exhausted its rounds and executed a contract the reviewer never accepted"
+    repair: "Stop with contract_blocked after the final reviewed proposal; never execute an unreviewed refinement"
+  unconstrained_boundary_timing:
+    meaning: "Clock-only constraints left a registered I/O design without any timed data paths"
+    repair: "Constrain boundary inputs and outputs against clk with explicit ideal zero-delay assumptions; retain missing-timing rejection"
+  tb_latency_alignment:
+    meaning: "Generated fixed-latency testbench sampled the wrong cycle or never drained its tail"
+    repair: "Drive off-edge, use explicit latency convention, compare every sample and bound completion"
+  tb_handshake_alignment:
+    meaning: "A scoreboard sampled updated handshake signals or omitted data ports"
+    repair: "Sample accepted transfers before sequential updates and compare all specified outputs"
+  unsupported_verification_contract:
+    meaning: "An unsupported protocol, reset or malformed contract silently received a testbench"
+    repair: "Reject the contract with an explicit diagnostic before running a design"
+  golden_execution_boundary:
+    meaning: "Generated Python ran inside the supervisor or escaped its intended function interface"
+    repair: "Validate restricted syntax and run pure golden functions in a bounded child with minimal environment"
+  rtl_interface_misparse:
+    meaning: "Parameterized, signed, grouped or non-ANSI ports were parsed with wrong names or widths"
+    repair: "Parse module interface and safe parameter expressions; compare exact typed ports"
+  static_comb_false_positive:
+    meaning: "Substring structural checks or default-first assignments falsely rejected valid RTL"
+    repair: "Use token-aware block checks and assignment coverage"
+  incomplete_build_ladder:
+    meaning: "Build called a missing generation step or promoted a top without integration verification"
+    repair: "Implement bounded generate/repair/qualify and verify integrated top before measurement"
+  infrastructure_round_accounting:
+    meaning: "Infrastructure-only candidate rounds were counted as design rejections or stalls"
+    repair: "Retain candidate stage evidence and stop or retry without changing design history"
+  unheld_curriculum_promotion:
+    meaning: "One aggregate passing run was treated as a held tier or incorrect candidates were accepted"
+    repair: "Enforce three matching consecutive qualifying runs and mandatory individual gates"
+  doctor_trial_artifact_mismatch:
+    meaning: "An unaccepted Timing Doctor trial overwrote source or reports for a verified candidate"
+    repair: "Isolate trials and adopt source, validated metrics and evidence path together"
+  doctor_invalid_metrics:
+    meaning: "Successful doctor tool exit was accepted despite invalid parsed metrics"
+    repair: "Run shared metrics gate and retain verified original on failure"
+  cached_metrics_invalid:
+    meaning: "A cache hit bypassed metric integrity checks"
+    repair: "Validate cached schema and metrics; recompute when invalid"
+  stage_budget_overrun:
+    meaning: "A stage timeout exceeded remaining run budget or reset for each simulation subprocess"
+    repair: "Cap stages to remaining budgets and enforce one simulation deadline across compile, elaboration and execution"
+  tool_launch_failure:
+    meaning: "Tool executable is missing or the operating system rejects process creation"
+    repair: "Report unavailable infrastructure with the launch error; never repair RTL for a launch failure"
+  vivado_timeout_cleanup:
+    meaning: "A timed-out Windows tool launcher left descendant jobs alive or discarded partial diagnostics"
+    repair: "Terminate the owned process tree, preserve partial stdout/stderr, and report infrastructure timeout without RTL repair"
+  missing_timing_metrics:
+    meaning: "Default sentinel or nonfinite setup/hold slack was accepted as implementation evidence"
+    repair: "Reject absent or nonfinite setup and hold metrics before scoring"
+  codex_worker_unavailable:
+    meaning: "Codex executable, authentication, or launch is unavailable"
+    repair: "Surface infrastructure failure; restore Codex access without editing RTL or falling back to external providers"
+  codex_worker_timeout:
+    meaning: "Codex worker exceeded its bounded wall time"
+    repair: "Terminate the worker, retain diagnostic evidence, and apply bounded infrastructure retry"
+  codex_worker_protocol:
+    meaning: "Codex returned malformed events, an incomplete/failed turn, or no final response"
+    repair: "Reject the response as infrastructure failure; never accept partial RTL"
+  model_call_budget_exhausted:
+    meaning: "No model-call budget remains"
+    repair: "Stop before spawning a worker; checkpoint and report budget exhaustion"
+  baseline_verification_missing:
+    meaning: "Missing baseline testbench leaves correctness unverified"
+    repair: "Block before tool or model calls; require a real testbench"
+  baseline_infrastructure_failure:
+    meaning: "Baseline simulation or synthesis failed for an infrastructure or unknown reason"
+    repair: "Block without RTL repair, design-rejection history, or best promotion"
+  baseline_invalid:
+    meaning: "A failing baseline or invalid baseline metrics were promoted as best"
+    repair: "Only record a baseline winner after all mandatory verification and metric gates pass"
+  restart_artifact_mismatch:
+    meaning: "A restart replaced winning RTL while keeping the old winning metrics"
+    repair: "Keep generation seed separate from immutable winning source and metrics"
+  timing_summary_column_mismatch:
+    meaning: "Combined Vivado timing tables were parsed with setup slack substituted for hold slack"
+    repair: "Map summary header columns to values; require both setup and hold slack to be nonnegative"
+  counter_testbench_clock_and_x_errors:
+    meaning: "Counter testbench counted an extra enabled edge and treated unknown check conditions as nonfailures"
+    repair: "Disable counting before settling flags, drive reset away from the sampling edge, and reject any check condition other than definite one"
+  skipped_verification_rungs:
+    meaning: "A candidate with incomplete compile or simulation checks reached synthesis and received verified metrics"
+    repair: "Require simulation rung 4 before synthesis or metrics cache access; never repair RTL for unknown or infrastructure failures"
+  ambiguous_simulation_verdict:
+    meaning: "Termination alone or a pass marker mixed with errors is not verified success"
+    repair: "Require an explicit standalone TEST PASSED verdict and reject failure diagnostics first"
+  invalid_mutation_qualification:
+    meaning: "Missing mutation, compile failure, infrastructure failure, or timeout does not prove that a testbench detects a bug"
+    repair: "Require a passing control and an explicit testbench failure from the simulated mutant; requalify regenerated testbenches"
+
+
+  provider_diagnostic_loss:
+    meaning: "A model worker exit discarded actionable error evidence"
+    repair: "Retain bounded redacted error events and stderr diagnostics; classify auth, quota, network and protocol failures"
+  model_failure_checkpoint:
+    meaning: "A provider failure escaped without a resumable explicit outcome"
+    repair: "Checkpoint model_blocked without design rejection, preserve completed stages and charge all attempts"
+  report_evidence_omission:
+    meaning: "Role context omitted timing or utilization report identities even though files existed"
+    repair: "Supply bounded previews plus complete-file hashes and explicit parsed metric provenance"
+  illegal_latency_transformation:
+    meaning: "Optimization advice proposed extra observable cycles or changed contract behavior"
+    repair: "Preserve exact latency, throughput, reset, ports and parameters through every mutation and doctor action"
+  hold_only_diagnosis:
+    meaning: "Setup slack was nonnegative but a hold violation was diagnosed as timing closure"
+    repair: "Use canonical setup/hold parsing; prefer physical hold repair without RTL delays or clock relaxation"
+  missing_timing_diagnostic:
+    meaning: "Timing diagnosis lacked complete setup or hold evidence"
+    repair: "Replan for retained report and constraint inspection; never infer closure from missing metrics"
+
+  unsupported_execution_option:
+    meaning: "An execution control was accepted but silently ignored"
+    repair: "Reject unsupported enabled settings explicitly and remove unreachable cache branches"
+
+  contradictory_injected_guidance:
+    meaning: "Active skill instructions contradicted immutable latency, reset or parameter contracts"
+    repair: "Align actual injected references and test assembled role prompts, not only template fragments"
+  missing_role_conventions:
+    meaning: "Some role calls omitted mandatory system conventions or requested a missing skill"
+    repair: "Use one system-prompt helper, provide selected skills, and test every role call"
+  cyclic_fifo_reference:
+    meaning: "A referenced async FIFO full flag depended combinationally on its gated next pointer"
+    repair: "Compare current registered write-gray pointer and qualify capacity/data behavior with independent dual-clock tests"
+  contract_negotiation_overhead:
+    meaning: "Repeated model contract reviews blocked a task over wording of fixed harness checks"
+    repair: "Render optimization contracts mechanically from immutable evidence and keep verification gates unchanged"
+
+  tool_exit_evidence_omission:
+    meaning: "Evaluator lacked actual subprocess exit records despite successful wrapper gates"
+    repair: "Persist actual process and driver outcomes separately; validate receipts and retain their hashes through evaluation, cache and DONE"
+  malformed_tool_exit_evidence:
+    meaning: "Missing or invalid tool receipt history could conceal failed or unknown process outcomes"
+    repair: "Expose evidence as unknown or invalid; never infer zero exits from log markers or select older successful attempts"
+
+  locale_dependent_skill_decoding:
+    meaning: "UTF8 guidance failed or changed meaning under Windows default text decoding"
+    repair: "Read injected skill files with explicit UTF8 and test Unicode content independent of system locale"
+  inferred_latency_ambiguity:
+    meaning: "An absent source annotation was presented as a known zero-cycle behavioral contract"
+    repair: "Mark absent annotations unknown, preserve observed source cycles, and require explicit numeric latency for typed builds"
+  mixed_runtime_cohort:
+    meaning: "A curriculum streak combined task-identical runs from different or unknown harness implementations"
+    repair: "Bind cohort identity to frozen runtime and governance implementation; missing provenance cannot qualify a tier"
+
+  windows_atomic_contention:
+    meaning: "Windows denied an atomic checkpoint replacement while the old file remained intact"
+    repair: "Retry only recognized Windows contention errors with bounded backoff; preserve the original target and error on exhaustion"
+  structural_interface_drift:
+    meaning: "Resolved default width concealed changed signedness, packed shape, public defaults or symbolic parameter dependencies"
+    repair: "Preserve explicit signed port types and canonical inferred interface declarations; separate public parameters from internal constants"
+  qualification_interface_drift:
+    meaning: "A fallback qualification mutant dropped parameters or changed declared port shapes"
+    repair: "Generate the mutant from the same typed interface stub and require real assertion detection"
+
+methodology:
+  "TIMING-6":
+    meaning: "No common primary clock between related clocks | timing between them is unsafe"
+    advice: "Plan a CDC structure or declare the clock relationship; do not let paths cross unrelated clocks"
+  "TIMING-9":
+    meaning: "Unknown CDC circuitry | a crossing exists without a recognised synchroniser"
+    advice: "Plan an explicit two-flop synchroniser or async FIFO module for the crossing"
+  "TIMING-10":
+    meaning: "Missing input or output delay constraint on a port"
+    advice: "For benchmark runs this is acceptable; for board targets plan set_input_delay/set_output_delay values"
+  "TIMING-18":
+    meaning: "Missing input/output delay on clock-crossing IO"
+    advice: "Same as TIMING-10; note it in the plan if the design will leave simulation"
+  "SYNTH-6":
+    meaning: "Timing-critical register has no direct reset connection pattern the tool likes"
+    advice: "Plan synchronous resets on control state only; avoid resetting wide datapaths"
+  "SYNTH-9":
+    meaning: "Asynchronous reset planned where synchronous is preferred on 7-series"
+    advice: "Prefer sync resets unless the contract demands async; 7-series FFs favour sync"
+  "XDCC-1":
+    meaning: "Clock constraint conflicts or overwrites another"
+    advice: "One create_clock per physical clock; derived clocks via create_generated_clock"
+  "LUTAR-1":
+    meaning: "LUT on a clock or combinational clock path"
+    advice: "Never gate or generate clocks in logic; plan clock enables instead"

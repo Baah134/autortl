@@ -32,8 +32,11 @@ def create(tmp_path, monkeypatch, mutant_kind=FailureKind.DESIGN):
     monkeypatch.setattr(fsm.vivado, "xvlog_check", Mock(side_effect=compile))
     def sim(files, tb, top, config, work, **kwargs):
         if "mutant" in work.parts:
+            work.mkdir(parents=True, exist_ok=True)
+            (work / "sim_log.txt").write_text("FAIL wrong count\nTEST FAILED: 1 errors\n" if mutant_kind == FailureKind.DESIGN else "license unavailable", encoding="utf-8")
             return False, "Testbench failures:\nFAIL wrong count" if mutant_kind == FailureKind.DESIGN else "license unavailable", mutant_kind
         write_mock_tool_receipts(work, ("xvlog", "xelab", "xsim"))
+        (work / "sim_log.txt").write_text("TEST PASSED\n", encoding="utf-8")
         return True, "", FailureKind.DESIGN
     monkeypatch.setattr(fsm.vivado, "xsim_run", sim)
     def synthesize(files, top, config, work, **kwargs):
@@ -83,3 +86,23 @@ def test_multi_module_build_requires_independent_top_testbench(tmp_path, monkeyp
     result = o.run()
     assert result["status"] == "build_blocked"
     synthesis.assert_not_called()
+
+
+def test_generated_golden_path_handles_reference_requiring_reset_inputs(tmp_path,monkeypatch):
+    from tests.test_golden_reset_protocol import COUNTER
+    o,synthesis=create(tmp_path,monkeypatch)
+    o.cfg.testbench_path=None
+    source=COUNTER.replace('"count": 99','"count": 0')
+    model=Mock(return_value=source)
+    monkeypatch.setattr(o.generator,"golden_model",model)
+    result=o.run()
+    assert result["status"]=="done"
+    model.assert_called_once()
+    folder=o.state.run_dir/"modules/counter8_core"
+    facts=json.loads((folder/"stimulus.json").read_text())
+    assert facts["expected"][0]=={"count":0}
+    assert (folder/"golden.py").read_text()==source
+    assert (folder/"counter8_core_tb.v").is_file()
+    assert (folder/"tbqual/control/verification_inputs.log").is_file()
+    assert (folder/"tbqual/mutant").is_dir()
+    assert synthesis.call_count==1

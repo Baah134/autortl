@@ -1,0 +1,26 @@
+[module counter8_core] golden model + testbench...
+Traceback (most recent call last):
+  File "C:\Users\prince.baah\Downloads\autortl-work\run.py", line 111, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "C:\Users\prince.baah\Downloads\autortl-work\run.py", line 104, in main
+    summary = orch.run()
+              ^^^^^^^^^^
+  File "C:\Users\prince.baah\Downloads\autortl-work\autortl\fsm.py", line 137, in run
+    result = self._run_build(saved)
+             ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\prince.baah\Downloads\autortl-work\autortl\fsm.py", line 411, in _run_build
+    result = self._build_module(m, mdir)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\prince.baah\Downloads\autortl-work\autortl\fsm.py", line 471, in _build_module
+    tb = generate_tb(m, gm, mdir)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\prince.baah\Downloads\autortl-work\autortl\tbgen.py", line 203, in generate
+    expected = expected_outputs(spec, golden, stimulus)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\prince.baah\Downloads\autortl-work\autortl\tbgen.py", line 91, in expected_outputs
+    return golden.run(stimulus)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\prince.baah\Downloads\autortl-work\autortl\golden.py", line 58, in run
+    raise ValueError(response.get("error", "golden worker failed"))
+ValueError: KeyError: 'rst'

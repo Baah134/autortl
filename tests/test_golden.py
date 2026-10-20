@@ -36,3 +36,29 @@ def test_missing_step_rejected(tmp_path):
     import pytest
     with pytest.raises(ValueError):
         GoldenModel(p)
+
+
+
+def test_invalid_examples_are_rejected_before_any_oracle_call():
+    from unittest.mock import Mock
+    from autortl.golden import validate_examples
+    for cycles in (0,-1,True,10001,10**12,"1"):
+        spec=spec_with_examples(); spec.examples[0].after_cycles=cycles
+        gm=Mock()
+        assert validate_examples(spec)
+        assert qualify_against_examples(gm,spec)
+        gm.run.assert_not_called()
+
+
+def test_generated_oracle_requires_nonempty_complete_bounded_anchors():
+    from autortl.golden import validate_examples
+    spec=spec_with_examples(); spec.examples=[]
+    assert validate_examples(spec,require_anchors=True)
+    assert validate_examples(spec)==[]
+    for example in (IOExample({"x":1},{}),IOExample({"x":1},{"bad":2}),
+                    IOExample({"unknown":1},{"y":2}),IOExample({"x":-1},{"y":2}),
+                    IOExample({"x":1},{"y":256})):
+        spec.examples=[example]
+        assert validate_examples(spec,require_anchors=True)
+    spec.examples=[IOExample({"x":1},{"y":2},after_cycles=6000)]*2
+    assert any('combined' in error for error in validate_examples(spec))

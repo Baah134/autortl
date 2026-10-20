@@ -42,6 +42,30 @@ README is the concise public overview. Agent continuity belongs here and in
 START_HERE, AGENTS and the progress log. Preserve unsuccessful attempts and
 honest CV evidence. Never modify tests/contracts to publish a gain.
 
+## Active continuation: generated builds and streaming
+
+Uncommitted harness fixes and new fixtures are being validated; the published
+checkpoint above remains the latest integrated main result. Current coordinator
+retains the lease and is working. Do not start a second vendor job or edit runtime
+while the live build is active.
+
+- Runtime edits: explicit oracle reset/transaction protocol; bounded concrete
+  example anchors; single diagnostic oracle retry; raw assertion proof for fault
+  qualification; minimum scoreboard transfer age.
+- Fullsuite01: 725passed/3failed in261.52s; three legacy missing model mocks were
+  corrected and focused60tests pass. Corrected fullsuite02:743passed in203.40s.
+- Live trusted counter/encoder qualification10/10 expected verdicts complete.
+- Scoreboard before/after: forbidden zero-cycle falsely passed before; now asserts,
+  registered control still passes. Keep both runs.
+- Counter02 completed:6LUT/8FF,setup0.424ns,hold0.226ns;6calls. Actual oracle
+  syntax repair, generatedTB qualification and independent700-cyclefinalcheck pass.
+- Active vendor run: logs/skid-tb-qualification-01 (nine supervised expected verdicts).
+- Next: qualify skid suite9cases, finish fresh counter/encoder builds and independently
+  check exact saved winner plus declared child; run generated streaming build.
+- Reviewer found high-latency serial scoreboard drain bound needs latency per
+  transaction. Wait for active build to finish before changing runtime, add unit
+  regression and taxonomy, then freeze, finalfulltests and freshfulltier0 beforemerge.
+
 ## Latest completed milestone
 
 - **655 regression tests passed in 207.64 seconds.** Initial run: 648 passed,

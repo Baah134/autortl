@@ -13,13 +13,16 @@ module counter8_tb;
         for (i = 0; i < 700; i = i + 1) begin
             @(negedge clk);
             rst = (i < 3) || (i == 420);
-            enable = (i < 310) || (i % 7 != 0);
-            if (i == 420) begin
-                #1;
-                if (count !== expected) begin
-                    errors = errors + 1;
-                    $display("FAIL reset changed count before clock edge");
-                end
+            enable = (i == 420) || (i < 310) || (i % 7 != 0);
+            // Reset priority is tested with enable high after a nonzero state.
+            if (i == 420 && expected == 0) begin
+                errors = errors + 1;
+                $display("FAIL reset-priority coverage requires nonzero count");
+            end
+            #1;
+            if (count !== expected) begin
+                errors = errors + 1;
+                if (errors <= 8) $display("FAIL cycle=%0d count changed before rising clock edge", i);
             end
             @(posedge clk);
             if (rst) expected = 0;

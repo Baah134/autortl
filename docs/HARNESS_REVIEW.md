@@ -163,3 +163,30 @@ Completed-run replay is now live checked; in-flight hard-kill accounting is
 still unproven. Keep improving independent verification before population search,
 extra roles or a framework migration. Generated golden/build integration and
 behavior-specific trusted-TB mutations are the next necessary coverage work.
+
+
+## Generated-build review and streaming admission
+
+- **Keep:** deterministic ladder, isolated Python oracle, immutable examples,
+  source-bound tool receipts, one coordinator/vendor queue and independent TBs.
+- **Improve (observed failures):** missing reset keys broke a real counter oracle;
+  the startup prefix and explicit model protocol repair that boundary. A first
+  malformed Python answer now gets one bounded retry with the actual diagnostic.
+  Empty/unbounded examples stop before calls/allocations; provider/storage failures
+  do not consume RTL repair attempts or appear as rejected designs.
+- **Improve (demonstrated false positive):** scoreboard accepted a reset-gated
+  combinational implementation under latency1. Track accepted transaction ages;
+  matching a latency comment is insufficient. Actual simulator before/after logs
+  retain this failure. Minimum age does not prove exact queue capacity/readiness.
+- **Improve:** mutation qualification requires raw assertion detail plus a failure
+  verdict; generic simulator failure, compilation, watchdogs and missing logs are
+  insufficient. Independent counter/encoder controls and eight distinct faults
+  have real expected verdicts. Streaming qualification remains a separate gate.
+- **Maintain limits:** generated examples anchor Python, not separately injected
+  temporal RTL sequences; generated startup reset does not establish reset kind or
+  midstream reset. Independent queue tests check these properties for the new
+  two-entry buffer. Read docs/GOLDEN_VERIFICATION.md before interpreting results.
+- **Defer:** population search, new framework/provider and extra semantic roles.
+  The measured need is stronger deterministic verification, not another model
+  opinion. The next design adds state, capacity and backpressure with a bounded
+  independent oracle; full UART/processor generation would outrun current evidence.

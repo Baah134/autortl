@@ -4,7 +4,7 @@ from autortl import fsm
 from autortl.config import RunConfig
 from autortl.report_parser import VivadoMetrics
 from autortl.triage import FailureKind
-from autortl.spec import ModuleSpec
+from autortl.spec import ModuleSpec, Port, IOExample
 from tests.test_fsm_resume import write_mock_tool_receipts
 
 
@@ -59,12 +59,13 @@ def test_incomplete_candidate_never_synthesized_or_cached(tmp_path, monkeypatch,
 @pytest.mark.parametrize("reason", ["missed bug", "license unavailable", "no applicable mutation"])
 def test_unqualified_testbench_cannot_change_its_grading(tmp_path, monkeypatch, reason):
     o = fsm.Orchestrator(RunConfig(mode="build"), tmp_path / "run")
-    module = ModuleSpec("m", "test", [])
+    module = ModuleSpec("m", "test", [Port("a", "input", 1), Port("y", "output", 1)], examples=[IOExample({"a": 0}, {"y": 0})])
     work = tmp_path / "module"
     work.mkdir()
     (work / "golden.py").write_text("# mocked golden model")
     tb = work / "m_tb.v"
     tb.write_text("// mocked testbench")
+    monkeypatch.setattr(o.generator, "golden_model", Mock(return_value="# mocked golden model"))
     monkeypatch.setattr(fsm, "GoldenModel", Mock())
     monkeypatch.setattr(fsm, "qualify_against_examples", Mock(return_value=[]))
     monkeypatch.setattr(fsm, "generate_tb", Mock(return_value=tb))

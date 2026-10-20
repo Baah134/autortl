@@ -425,3 +425,45 @@ changes, commands, outcomes, evidence locations, limitations, and next action.
   tier0 2/2 satisfy the current integration gate; no higher tier is held.
   All campaign jobs finished, archive manifests verified, and working source
   matches the tested runtime. Next work is independent typed-build verification.
+
+
+## 2026-10-20: generated build and streaming progression (active)
+
+- User requested continued harness improvements followed by more complex designs.
+  Followed RESEARCH's independent-verification priority rather than adding agent
+  frameworks. Three bounded workers handled distinct fixture/qualification scopes;
+  the coordinator owns the serial Vivado queue and integration review.
+- Independent counter/encoder testbenches: ten actual simulator cases matched
+  expected verdicts (two controls, eight compiling faults). Counter checks now
+  include pre-edge hold and reset priority from a nonzero state. Raw logs and
+  receipts are in logs/build-tb-qualification-01 pending portable archive.
+- First generated counter build (build-golden-counter8-01) failed after one model
+  call: generated reference required rst but expected_outputs omitted it. Preserved
+  failure; added reset-prefix/deasserted control protocol, explicit temporal model
+  prompts, bounded example anchors and one diagnostic oracle repair attempt.
+  Provider/storage failures stay separate from generated-program errors.
+- Actual scoreboard regression reproduced: a reset-gated combinational pass-through
+  passed a latency=1 contract. After accepted-transfer age checking, the registered
+  control still passes and the same forbidden design raises eight real assertions.
+  Before/after raw evidence remains under logs/scoreboard-latency-{before,after}.
+- Added independently authored two-entry eight-bit ready/valid buffer fixture,
+  queue TB and eight faults. Ready is explicitly combinational; no registered-ready
+  isolation claim. Unit tests establish fixture construction only; live qualification
+  and generated build are pending.
+- Focused runtime/qualification tests: 60 passed in40.69s; latency/reset/TB tests:
+  35 passed in2.37s. Initial full suite: 725 passed, three legacy unmocked-oracle
+  fixtures failed in261.52s. Added explicit model mock, preserving negative assertions;
+  final full-suite rerun pending. Initial raw failure output retained.
+- Counter build02 has already exercised a real syntax-error oracle rejection and
+  successful single diagnostic retry, then passed child simulation and injected
+  increment fault. Final routing/independent integration verdict still pending.
+
+
+- Corrected full suite: **743 passed in203.40seconds**. Counter build02 completed
+  with baseline retained6LUT/8FF,setup0.424ns,hold0.226ns; same-area candidate
+  rejected. Six calls and300.515chargedtoolseconds. Exact saved winner+child
+  passed the independently qualified700-cyclecounterTB. Archives: golden-verification
+  and generated-counter (including firstbadPython and actual diagnostic retry).
+- Publishing this tested development checkpoint. Main remains at the previous
+  fully gated campaign until freshfulltier0 and remaining final fixes are validated.
+  Skid qualification is running serially; no final streaming result yet claimed.

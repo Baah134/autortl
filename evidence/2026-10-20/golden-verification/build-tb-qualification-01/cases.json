@@ -1,0 +1,102 @@
+[
+  {
+    "case": "counter-control",
+    "module": "counter8",
+    "top": "counter8_tb",
+    "expected_pass": true,
+    "mutation": "supervised modulo counter reference",
+    "source_sha256": "396b8a1748ba285043f388acb7cd440588d2f5adeed9b1d27d88ae88c3e5ff27",
+    "tb_sha256": "71e7d6f2664cc00749077b18c6cd4cdaa05ea38f893a321767c58f2bca7b76ae",
+    "trusted_tb_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\curriculum\\tier1\\counter8_build\\counter8_tb.v"
+  },
+  {
+    "case": "counter-saturation",
+    "module": "counter8",
+    "top": "counter8_tb",
+    "expected_pass": false,
+    "mutation": "saturates instead of wrapping",
+    "source_sha256": "fe9be20b010d6e0a70e3bcb8ab4bd61b87fb21db2e97ad7869c468bb2a661095",
+    "tb_sha256": "71e7d6f2664cc00749077b18c6cd4cdaa05ea38f893a321767c58f2bca7b76ae",
+    "trusted_tb_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\curriculum\\tier1\\counter8_build\\counter8_tb.v"
+  },
+  {
+    "case": "counter-disabled-hold",
+    "module": "counter8",
+    "top": "counter8_tb",
+    "expected_pass": false,
+    "mutation": "increments while disabled",
+    "source_sha256": "b759065b48d6d42638c271fd4de913a3d28da498225f7cdc9210e145a26d0a6c",
+    "tb_sha256": "71e7d6f2664cc00749077b18c6cd4cdaa05ea38f893a321767c58f2bca7b76ae",
+    "trusted_tb_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\curriculum\\tier1\\counter8_build\\counter8_tb.v"
+  },
+  {
+    "case": "counter-async-reset",
+    "module": "counter8",
+    "top": "counter8_tb",
+    "expected_pass": false,
+    "mutation": "reset changes outputs between clock edges",
+    "source_sha256": "17b37df7cb172a2fd22b73a44b3f67e235ed025c6fb5d12f9f4c93ffb6754b16",
+    "tb_sha256": "71e7d6f2664cc00749077b18c6cd4cdaa05ea38f893a321767c58f2bca7b76ae",
+    "trusted_tb_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\curriculum\\tier1\\counter8_build\\counter8_tb.v"
+  },
+  {
+    "case": "counter-extra-cycle",
+    "module": "counter8",
+    "top": "counter8_tb",
+    "expected_pass": false,
+    "mutation": "adds one observable output cycle",
+    "source_sha256": "6a720843cdc6ee5dfc72aa610e18c48b02164be2dcefde081973dc6c6362d43e",
+    "tb_sha256": "71e7d6f2664cc00749077b18c6cd4cdaa05ea38f893a321767c58f2bca7b76ae",
+    "trusted_tb_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\curriculum\\tier1\\counter8_build\\counter8_tb.v"
+  },
+  {
+    "case": "encoder-control",
+    "module": "priority_encoder8",
+    "top": "priority_encoder8_tb",
+    "expected_pass": true,
+    "mutation": "supervised highest-bit priority reference",
+    "source_sha256": "28b6e87c41c43a55330ea3a26c336b866e021b52a3d5b43f38e472de5dc20ced",
+    "tb_sha256": "78e0aa7197f53ef5f90555c576df584efef54bef2ea14caa900160c52577d99c",
+    "trusted_tb_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\curriculum\\tier1\\encoder8_build\\priority_encoder8_tb.v"
+  },
+  {
+    "case": "encoder-wrong-priority",
+    "module": "priority_encoder8",
+    "top": "priority_encoder8_tb",
+    "expected_pass": false,
+    "mutation": "lowest set bit wins",
+    "source_sha256": "10effc54a2552a2668b020c6ae13b35330893d44f95b2eae8c24efb1e7458dfb",
+    "tb_sha256": "78e0aa7197f53ef5f90555c576df584efef54bef2ea14caa900160c52577d99c",
+    "trusted_tb_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\curriculum\\tier1\\encoder8_build\\priority_encoder8_tb.v"
+  },
+  {
+    "case": "encoder-valid",
+    "module": "priority_encoder8",
+    "top": "priority_encoder8_tb",
+    "expected_pass": false,
+    "mutation": "valid asserted for zero request",
+    "source_sha256": "f8312289b7c5faa4f0d012b6cec2a54b92d33a1442f607cb5e03c26149cd0a6a",
+    "tb_sha256": "78e0aa7197f53ef5f90555c576df584efef54bef2ea14caa900160c52577d99c",
+    "trusted_tb_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\curriculum\\tier1\\encoder8_build\\priority_encoder8_tb.v"
+  },
+  {
+    "case": "encoder-combinational",
+    "module": "priority_encoder8",
+    "top": "priority_encoder8_tb",
+    "expected_pass": false,
+    "mutation": "outputs respond before active clock edge",
+    "source_sha256": "e49cb5092bb271a17563ceb23c90e67efa6f6f02e6c26b2b798036deb201b464",
+    "tb_sha256": "78e0aa7197f53ef5f90555c576df584efef54bef2ea14caa900160c52577d99c",
+    "trusted_tb_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\curriculum\\tier1\\encoder8_build\\priority_encoder8_tb.v"
+  },
+  {
+    "case": "encoder-extra-cycle",
+    "module": "priority_encoder8",
+    "top": "priority_encoder8_tb",
+    "expected_pass": false,
+    "mutation": "adds one observable output cycle",
+    "source_sha256": "586bfb244ac9aef3cb30bc79fcefb481ec1ea4e519be04e0455cefc9240a4092",
+    "tb_sha256": "78e0aa7197f53ef5f90555c576df584efef54bef2ea14caa900160c52577d99c",
+    "trusted_tb_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\curriculum\\tier1\\encoder8_build\\priority_encoder8_tb.v"
+  }
+]

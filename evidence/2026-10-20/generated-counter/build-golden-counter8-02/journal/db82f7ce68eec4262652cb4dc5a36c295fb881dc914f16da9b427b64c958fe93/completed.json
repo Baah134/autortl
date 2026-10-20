@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_1:model:planner.plan:0",
+  "result": "# PLAN \u2014 iteration 1\n## Current state assessment\nThe verified baseline uses 6 LUTs, 8 FFs, no DSPs or BRAMs, and meets the 10 ns clock with routed WNS 0.424 ns and WHS 0.226 ns. Simulation and synthesis passed. The frozen counter synchronously resets to zero, increments modulo 256 only when enabled, and otherwise holds its value; preserve that behavior and the source\u2019s unknown declared latency.\n\n## Hypothesis\nReplacing the conditional increment with an enabled addend may let Vivado use the 7-series carry chain without a separate enable hold mux, reducing LUT use while retaining timing closure.\n\n## Instruction for generator\nIn `counter8_core`, keep the synchronous `if (rst)` reset branch unchanged, and replace the `else if (enable)` increment branch with an `else` branch that assigns `count_reg <= count_reg + {7'b0, enable};`. Preserve the 8-bit unsigned modulo-256 result, reset priority, registered output, and hold behavior when `enable` is low. Do not change the interface or latency.",
+  "artifacts": {}
+}

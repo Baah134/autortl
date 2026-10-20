@@ -126,10 +126,15 @@ class Generator:
                    budget=budget)
         return generated_rtl(resp)
 
-    def golden_model(self, module: ModuleSpec, budget) -> str:
+    def golden_model(self, module: ModuleSpec, budget, feedback: str = "") -> str:
         p = prompts.GOLDEN_MODEL.format(behavior=module.behavior,
                                         ports_table=_ports_table(module),
-                                        parameters=json.dumps(module.parameters))
+                                        parameters=json.dumps(module.parameters),
+                                        compare_mode=module.compare_mode, latency=module.latency,
+                                        reset_desc=f"{module.reset.kind}, active_{'high' if module.reset.active_high else 'low'} '{module.reset.signal}'",
+                                        data_outputs=json.dumps([p.name for p in module.ports if p.direction == "output" and p.protocol == "none"]))
+        if feedback:
+            p += "\n\nThe previous Python reference failed validation. Repair this specific failure " + str(feedback)[:1800]
         resp = ask("generator", p, system=conventions(), budget=budget)
         m = re.search(r"```python\s*\n(.*?)```", resp, re.DOTALL)
         return m.group(1).strip() if m else resp.strip()
