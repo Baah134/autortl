@@ -21,6 +21,19 @@ commits with accurate validation notes. Keep unfinished integration work visible
 and preserve main until required gates pass. Activity follows engineering
 milestones rather than artificial commit frequency.
 
+## 2026-10-19 — Integrate the completed checkpoint into main
+
+The user explicitly requested: "merge everything so we improve as we go".
+Fast-forward integrate the six completed development commits through 387fe0e
+into main, preserving their implementation, tests and full failure evidence.
+This instruction authorizes integrating the current tested checkpoint before
+the previously documented full-campaign/held-tier merge gate. It does not waive
+RTL verification, change any hardware acceptance result or declare a tier held.
+The existing evidence is 423 passing tests, nine live testbench cases, a passing
+counter repair simulation and passing mux routed timing. The first autonomous
+cohort remains 0/2. Next is authoritative contract context and a fresh cohort.
+Future harness changes retain the default test/benchmark review requirements.
+
 ## Continuing contracts
 
 Use command-line Vivado. Specifications and independent verification control

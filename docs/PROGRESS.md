@@ -207,3 +207,26 @@ changes, commands, outcomes, evidence locations, limitations, and next action.
   tier0 experiments with new I/O-constrained baselines, then independent build
   fixtures and real interruption/resume. A successful autonomous cohort is still
   pending. Required main-merge tier gates have not passed.
+
+## 2026-10-19 — user-requested integration into main
+
+- User requested the next plan and explicitly instructed merging all completed
+  work so the project can improve incrementally. This authorizes integrating
+  the current tested checkpoint before the previously documented held-tier gate.
+  Hardware acceptance and tier promotion results remain unchanged.
+- Fetched origin and confirmed main had no independent remote commits. Used
+  fast-forward-only merges, preserving all six development commits through
+  387fe0e. No history rewriting or source conflict resolution was needed.
+- Pushed main from ee25594 to 387fe0e and verified its exact remote hash.
+  Existing development branch remains available. The paused MCP stash was not
+  part of this completed CLI checkpoint and remains preserved.
+- Reran the full unchanged implementation on main: 423 passed in 84.05 seconds.
+  Evidence: evidence/2026-10-19/main-integration-tests.txt. This merge performs
+  no new Vivado benchmark; prior supervised replay evidence remains applicable.
+  The first autonomous cohort remains 0/2; no tier or optimization gain claimed.
+- Updated README, START_HERE, session handoff, decisions and task board to use
+  current main and preserve the exact known validation gaps.
+- Next sequence: provide authoritative harness context to contract proposal and
+  review; run a fresh bounded counter/mux cohort under the same explicit I/O
+  assumptions; fault-inject and resume a real run; validate counter8 and priority
+  encoder builds before progressing to PWM, buffering and larger datapaths.

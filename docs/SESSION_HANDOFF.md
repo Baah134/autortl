@@ -19,19 +19,22 @@ Check git status, git log -1 and python scripts/session.py status before editing
   shared memory and Git state before continuing.
 - The harness runtime currently invokes Codex CLI with the existing login.
   Changing development coordinator does not change the runtime provider.
-- Commit and push substantive tested progress to GitHub. Keep main protected
-  until required curriculum gates pass. No artificial activity commits.
+- Commit and push substantive tested progress to GitHub. The user explicitly
+  requested merging the completed checkpoint into main and continuing to improve
+  incrementally. Preserve all experiment verdicts and tier promotion gates.
 - Preserve progress and evidence for Prince Baah's CV. Do not claim unmeasured
   optimization improvements or autonomous operation from a standalone trial.
 
 ## Repository and publication
 
 Remote: https://github.com/Baah134/autortl
-Development branch: codex/cli-bringup (tracks origin/codex/cli-bringup).
-Tested checkpoint 8d5eb09 and byte-preserving evidence correction d1a02fb are
-pushed. The remote branch hash was verified against local Git. Inspect git log
-and origin before resuming; later campaign evidence may add another checkpoint.
-No merge to main. MCP draft remains in a local Git stash on the old setup branch.
+Current integration branch: main (tracks origin/main).
+The user requested integration of all completed work. All six development
+commits through 387fe0e were fast-forward merged into main, preserving history.
+The remote main hash was verified as 387fe0e after publication. The development
+branch remains available. Integration documentation follows in another commit;
+inspect git log and origin/main, and start future branches from current main.
+The paused MCP draft remains in its existing local stash.
 
 ## Completed and validated in this checkpoint
 
@@ -58,8 +61,9 @@ No merge to main. MCP draft remains in a local Git stash on the old setup branch
 
 ## Validation and evidence
 
-Latest integrated suite: 423 passed in 62.33 seconds. The earlier 411-test
-published checkpoint remains separately retained.
+Fresh main integration suite: 423 passed in 84.05 seconds, retained in
+evidence/2026-10-19/main-integration-tests.txt. The prior 423-test repair run
+and earlier 411-test checkpoint remain separately retained.
 Portable evidence: evidence/2026-10-19/ (test log, relocation hashes and nine live
 Vivado simulator cases with source/testbench hashes and raw logs).
 All nine live positive/negative cases matched their expected verdicts.
@@ -105,7 +109,8 @@ The checkpoint command retains ownership; handoff releases it on actual exit.
 4. Fault-inject a real interruption and resume using saved config.json. Confirm
    matching source/report hashes and preserved accounting in actual tool output.
 5. Repeat full tier cohorts only after individual runs hold. Three consecutive
-   qualifying cohorts are required before claiming a tier held and merging.
+   qualifying cohorts are required before claiming a tier held. The user's
+   integration request does not turn the previous 0/2 campaign into a pass.
 6. Advance to PWM/accumulator, synchronous FIFO/skid buffer, MAC/FIR, then UART
    and integrated peripherals. Add one design class at a time.
 

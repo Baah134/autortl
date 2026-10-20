@@ -3,7 +3,13 @@
 Start a new coordinator at [START_HERE.md](START_HERE.md). Codex, Claude,
 Gemini and other user-authorized agents share the same handoff and task
 ownership protocol. The canonical local clone is Downloads/autortl-work.
-Tested milestones are pushed to the `codex/cli-bringup` development branch.
+The completed CLI harness checkpoint is integrated into `main`. New work uses
+short development branches and is integrated after review and recorded validation.
+
+**Verified status:** 423 automated tests pass. Supervised counter and mux Vivado
+checks passed. A successful autonomous optimization campaign is still pending;
+the first bounded cohort and its repairs are retained in
+[the evidence archive](evidence/2026-10-19/live-tier0/README.md).
 
 **An agentic system that designs and optimises FPGA hardware code by itself.**
 

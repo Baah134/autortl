@@ -17,7 +17,7 @@ with Git and states acceptance criteria.
 | Recoverable optimize/build FSM | Tested with controlled tools | Interruption, DONE replay, config/report/source drift, budgets, infra retries and build integration tests pass; live campaign next |
 | Curriculum governance and fixtures | Tested | Three matching full cohorts and mandatory gates covered; no newly held tier claimed |
 | First live counter/mux campaign | Recorded: 0/2 | Counter baseline 54 LUTs/37 FFs, WNS 5.491 ns; model budget/timescale failure; mux boundary timing missing; no tier held |
-| Live regression repairs | Validated, publishing | 423 tests pass; counter replay passes; mux simulation/routing passes: 8 LUTs/8 FFs, WNS 0.579 ns, WHS 0.052 ns; all failed attempts retained |
+| Live regression repairs | Integrated into main | 387fe0e; 423 tests pass; counter replay passes; mux simulation/routing passes: 8 LUTs/8 FFs, WNS 0.579 ns, WHS 0.052 ns; all failed attempts retained |
 | Fresh model-driven tier0 campaign | Pending | Authoritative contract context, fresh baselines under explicit I/O assumptions, bounded calls/time; accepted candidate required |
 | Build counter8 and priority encoder | Pending | Typed specs, independent module and top tests, negative tests, routed results |
 

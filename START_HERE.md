@@ -4,7 +4,8 @@ This repository is the shared workspace for every coordinator and its workers.
 You can continue without access to the previous provider's conversation.
 
 Canonical checkout: `C:/Users/prince.baah/Downloads/autortl-work`.
-GitHub development branch: `codex/cli-bringup`.
+GitHub integration branch: `main`. The completed `codex/cli-bringup` checkpoint
+has been merged. Start new development branches from the current remote main.
 
 1. Read `AGENTS.md` and `docs/AGENT_HANDOFF.md` for the working contract.
 2. Read `docs/SESSION_HANDOFF.md` for current state and exact next actions.

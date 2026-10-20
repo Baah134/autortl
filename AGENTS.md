@@ -17,7 +17,9 @@ just because that provider is coordinating the development session.
 
 The coordinator reviews worker changes and checks evidence before continuing.
 When a tested milestone is ready, commit and push the development branch as
-authorized by the user. Push meaningful progress, not artificial activity.
+authorized by the user. The user also requested integrating the completed CLI
+checkpoint into main on 2026-10-19; see docs/DECISIONS.md for its validation and
+remaining experiment gaps. Push meaningful progress, not artificial activity.
 Do not merge failed or incomplete work into main. Record the remote commit in
 the handoff. Keep source and test evidence honest even when an agent changes.
 
