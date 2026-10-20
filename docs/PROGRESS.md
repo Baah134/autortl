@@ -418,3 +418,10 @@ changes, commands, outcomes, evidence locations, limitations, and next action.
 - Integration gate now has655passingtests plus a fresh qualifying fulltier0
   campaign; no higher tier is held. Main will fast-forward to the reviewed
   source/evidence checkpoint, preserving all earlier failed cohorts.
+
+- Main integration completed: both remote main and codex/contract-context
+  verified at251666d538cc0e7d51bd5b6994626ec280274471. Local main was advanced
+  without checking out or rewriting the frozen runtime. Tests655/655 and full
+  tier0 2/2 satisfy the current integration gate; no higher tier is held.
+  All campaign jobs finished, archive manifests verified, and working source
+  matches the tested runtime. Next work is independent typed-build verification.

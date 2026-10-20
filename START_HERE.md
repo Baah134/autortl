@@ -4,10 +4,11 @@ This repository is the shared workspace for every coordinator and its workers.
 You can continue without access to the previous provider's conversation.
 
 Canonical checkout: `C:/Users/prince.baah/Downloads/autortl-work`.
-GitHub integration branch: `main`. Active harness work is on
-`codex/contract-context`; read the current session handoff and inspect both
-branches before switching. The earlier CLI checkpoint was merged; subsequent
-reviewed milestones are published to the development branch until integration.
+GitHub integration branch: `main`. Tested runtime source `5d285c0` and the
+complete accepted campaign05 were integrated at `251666d`. The active
+working branch is `codex/contract-context`; both published branches contain
+that checkpoint. Later documentation commits may extend it. Inspect actual
+heads, status and the session record before editing or switching branches.
 
 1. Read `AGENTS.md` and `docs/AGENT_HANDOFF.md` for the working contract.
 2. Read `docs/SESSION_HANDOFF.md` for current state and exact next actions.

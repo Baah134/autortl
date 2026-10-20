@@ -11,7 +11,9 @@ coordination state and actual processes. Notes are not execution evidence.
 - Tested runtime source: **5d285c0** (71910e5 plus the previously unstaged,
   already-tested conventions file). No runtime bytes changed during campaign05;
   all 54 test/runtime/governance file identities matched.
-- Main integrates that runtime and the complete campaign05 evidence. The active
+- Verified publication: main and development both reached
+  **251666d538cc0e7d51bd5b6994626ec280274471**, integrating the runtime and
+  complete campaign05 evidence. Later continuity-only commits may extend it. The active
   development branch is codex/contract-context. Inspect actual remote heads and
   Git history before the next edit; later evidence/docs commits extend the
   runtime source commit without changing its tested implementation.
