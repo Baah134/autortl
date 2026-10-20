@@ -89,7 +89,8 @@ class MetricsCache:
             artifacts = {}
             if root and root.is_dir():
                 for path in sorted(root.rglob("*")):
-                    if path.is_file() and path.suffix in (".v", ".sv", ".rpt", ".xdc", ".tcl"):
+                    if path.is_file() and (path.suffix in (".v", ".sv", ".rpt", ".xdc", ".tcl", ".log")
+                                           or path.name in ("tool_exit_records.log", "verification_provenance.json", "verification_inputs.log", "sim_log.txt")):
                         if not path.resolve().is_relative_to(root):
                             continue
                         artifacts[path.relative_to(root).as_posix()] = hashlib.sha256(path.read_bytes()).hexdigest()

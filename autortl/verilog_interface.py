@@ -370,4 +370,5 @@ def infer_module(verilog: str, top: str) -> ModuleSpec:
     return ModuleSpec(top, "existing design under optimization", ports,
                       latency=int(latency[1]) if latency else 0,
                       reset=ResetSpec(signal=reset, active_high=reset != "rst_n"),
-                      parameters={n:values[n] for n in public}, interface_signature=signature)
+                      parameters={n:values[n] for n in public}, interface_signature=signature,
+                      latency_known=latency is not None)

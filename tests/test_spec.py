@@ -1,3 +1,5 @@
+import json
+import pytest
 from autortl.spec import DesignSpec, ModuleSpec, Port, ResetSpec, Connection, IOExample
 
 
@@ -54,3 +56,26 @@ def test_json_roundtrip():
     assert spec2.top_name == "top"
     assert spec2.modules[0].name == "adder"
     assert spec2.modules[0].ports[2].width == 8
+
+
+def test_latency_known_defaults_true_for_existing_typed_specs():
+    spec = DesignSpec(top_name="top", modules=[make_module()])
+    raw = json.loads(spec.to_json())
+    raw["modules"][0].pop("latency_known")
+    restored = DesignSpec.from_json(json.dumps(raw)).modules[0]
+    assert restored.latency_known is True and restored.validate() == []
+
+
+@pytest.mark.parametrize("known", [False, 0, 1, "false", None])
+def test_typed_build_requires_explicitly_known_boolean_latency(known):
+    module = make_module(latency_known=known)
+    errors = module.validate()
+    assert any("latency" in error for error in errors)
+
+
+def test_latency_known_changes_contract_hash_and_roundtrips_without_coercion():
+    known = make_module()
+    unknown = make_module(latency_known=False)
+    assert known.contract_hash() != unknown.contract_hash()
+    restored = DesignSpec.from_json(DesignSpec(top_name="top", modules=[unknown]).to_json())
+    assert restored.modules[0].latency_known is False

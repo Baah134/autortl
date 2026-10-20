@@ -13,7 +13,8 @@ reviewed milestones are published to the development branch until integration.
 2. Read `docs/SESSION_HANDOFF.md` for current state and exact next actions.
 3. Inspect `git status --short`, recent commits, and `python scripts/session.py status`.
 4. Claim the coordinator lease. Respect existing worker file ownership.
-5. Read `docs/DECISIONS.md`, `docs/TASKS.md`, and `docs/DESIGN.md` before changes.
+5. Read `docs/DECISIONS.md`, `docs/TASKS.md`, `docs/DESIGN.md` and
+   `docs/RESEARCH.md` before substantial harness changes.
 6. Implement, test, review, and retain evidence. Update shared memory and push
    tested progress. Before switching providers, run the handoff command.
 

@@ -50,3 +50,12 @@ def test_injection_budget_includes_reference_headers():
     assert inject(['verilog-idioms'],limit_chars=len(body)+len(heading)) == heading+body
     for size in (0,1,50,1000,12000):
         assert len(inject(['verilog-idioms','cdc','timing-closure'],size)) <= size
+
+
+def test_actual_conventions_distinguish_unknown_latency():
+    from autortl.skill_loader import conventions
+    guidance = conventions()
+    assert "known numeric latency" in guidance
+    assert "Unknown does not mean zero or combinational" in guidance
+    assert "Typed builds\nrequire an explicit numeric latency" in guidance
+    assert "Every generated module declares" not in guidance

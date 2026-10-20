@@ -32,7 +32,7 @@ should not substitute for explicit machine predicates.
 | Keep | Verification ladder and metric integrity | Exercised on real baselines/candidates. Reject missing metrics and failed setup/hold; preserve exact source-to-report linkage. |
 | Keep | Independent reference tests and mutation qualification | Actual bug detection catches changed latency, high-bit comparisons, reset and overflow semantics. Expand before increasing complexity. Mutation coverage is not a proof of all behavior. |
 | Keep | Atomic journals and immutable context | Controlled interruption/tamper tests and real provider recovery exist. Add real process interruption coverage and preserve accounting. |
-| Improve now | Report evidence delivered to roles | Implemented timing/utilization/power manifests, file hashes, bounded previews and explicit metric provenance; fresh live evaluation next. |
+| Improve now | Report evidence delivered to roles | Timing/utilization/power identities now reach live review. Campaign04 exposed a further missing actual-process-exit proof; durable receipts and deterministic gates close that boundary. |
 | Improve now | Worker diagnostics and blocked outcomes | Implemented bounded redacted diagnostics, typed provider failures and resumable model-blocked outcomes. Budget stops retain the verified best pointer. Controlled replay tests validate recovery; live provider recovery was already observed at the prior revision. |
 | Simplify | Prose contract negotiation | Campaign02 spent six calls on wording and blocked counter before generation. Replaced optimization negotiation with a deterministic contract from immutable evidence; preserve all verification and final promotion gates. |
 | Improve next | Acceptance policy | Define machine-checkable mandatory predicates and make model review advisory for their measurable portions. Preserve genuine semantic checks; add tests for any bug a reviewer finds. Do not simply bypass a rejection to publish a gain. |
@@ -112,3 +112,34 @@ new paths. These checks preserve declarations, not all parameterized behavior.
 Retain the verification ladder and deterministic contracts. Next live coverage
 still needs typed build/golden integration, cache/restart and complete Doctor
 invocation; optional planning/skill/best-of-N benefits need controlled ablation.
+
+## Campaign04 evidence audit
+
+Frozen2318e42 completed tier0 **2/2 mandatory gates**, the first qualifying
+cohort; not a held tier. Both runs used three model calls. Neither promoted a
+candidate. Counter measured53vs55LUT but its evaluator lacked actual process
+exit codes. A log marker is not an exit record. The next repair retains actual
+process/driver outcomes separately and carries their hashes through evaluation,
+cache and DONE. Tool-only Doctor trials must identify reused simulation evidence
+against unchanged source, without implying simulation reran.
+
+The mux had no objective gain and exposed absent latency metadata being
+presented as zero. An unannotated existing design has unknown declared latency;
+its observable cycles remain fixed by source and independent tests. Typed
+builds still need an explicit numeric latency. This distinction must reach
+generation, checks and evaluation.
+
+Curriculum task/config identity alone cannot establish a frozen three-run
+streak. Runtime and governance implementation identity must also match; unknown
+provenance cannot support qualification. CLI model identity remains unobserved,
+so no controlled comparison between model strengths follows from a held tier.
+
+## Research policy (2026-10-20 user direction)
+
+[Research ledger](RESEARCH.md) maps primary literature and engineering reports
+to observed AutoRTL needs, simple alternatives, adoption triggers and tests.
+Reviewed workflow/evaluator patterns, long-running continuity, SWE-agent's tool
+interface, AutoChip/MAGE RTL feedback, AlphaEvolve's measured search, VerilogEval
+and execution-versus-knowledge persistence. No new framework, provider, memory
+service or agent layer is justified solely by this review. First strengthen
+evidence and independent verification, then ablate existing optional features.

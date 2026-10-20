@@ -33,7 +33,7 @@ def _body(text: str) -> str:
 
 def load_skill(name: str) -> str:
     p = SKILLS_DIR / name / "SKILL.md"
-    return _body(p.read_text()) if p.exists() else ""
+    return _body(p.read_text(encoding="utf-8")) if p.exists() else ""
 
 
 def conventions() -> str:

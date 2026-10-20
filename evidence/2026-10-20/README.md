@@ -1,5 +1,13 @@
 # Verification evidence - 2026-10-20
 
+- `process-exit-tests.txt`: **655 passed in207.64seconds**, covering actual
+  exit/driver distinction, immutable verification inputs/replay, receipt/log
+  integrity, unknown latency and frozen-runtime cohort identity. Runtime file
+  identities are in process-exit-runtime.json. Initial648pass/7fixture-failure
+  log is retained in process-exit-tests-initial.txt.
+- `contract-campaign-04/`: **2/2 mandatory gates passed** at2318e42; no
+  candidate promoted. Counter53vs55LUT rejected for omitted process exit proof;
+  mux8LUT had no gain. First qualifying cohort, not a held tier.
 - `interface-atomic-tests.txt`: **554 tests passed in 148.80 seconds**, including
   structural interface drift and real Windows sharing-lock recovery.
 - `signed-interface/`: four actual signed/symbolic controls and mutants matched

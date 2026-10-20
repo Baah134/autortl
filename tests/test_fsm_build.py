@@ -7,6 +7,7 @@ from autortl.config import RunConfig
 from autortl.report_parser import VivadoMetrics
 from autortl.roles import Evaluation
 from autortl.triage import FailureKind
+from tests.test_fsm_resume import write_mock_tool_receipts
 
 ROOT = Path(__file__).resolve().parents[1]
 RTL = "module counter8_core(input clk,input rst,input enable,output reg [7:0] count); always @(posedge clk) if(rst) count<=0; else if(enable) count<=count+1'b1; endmodule"
@@ -25,13 +26,20 @@ def create(tmp_path, monkeypatch, mutant_kind=FailureKind.DESIGN):
     monkeypatch.setattr(o.planner, "plan", Mock(return_value="plan"))
     monkeypatch.setattr(o.evaluator, "review_contract", Mock(return_value="ACCEPT"))
     monkeypatch.setattr(o.evaluator, "evaluate", Mock(return_value=Evaluation("REJECT", "REJECT", 1, 0)))
-    monkeypatch.setattr(fsm.vivado, "xvlog_check", Mock(return_value=(True, "", FailureKind.DESIGN)))
+    def compile(files, config, work, **kwargs):
+        write_mock_tool_receipts(work, ("xvlog",))
+        return True, "", FailureKind.DESIGN
+    monkeypatch.setattr(fsm.vivado, "xvlog_check", Mock(side_effect=compile))
     def sim(files, tb, top, config, work, **kwargs):
         if "mutant" in work.parts:
             return False, "Testbench failures:\nFAIL wrong count" if mutant_kind == FailureKind.DESIGN else "license unavailable", mutant_kind
+        write_mock_tool_receipts(work, ("xvlog", "xelab", "xsim"))
         return True, "", FailureKind.DESIGN
     monkeypatch.setattr(fsm.vivado, "xsim_run", sim)
-    synth = Mock(return_value=(True, "", FailureKind.DESIGN))
+    def synthesize(files, top, config, work, **kwargs):
+        write_mock_tool_receipts(work, ("vivado",))
+        return True, "", FailureKind.DESIGN
+    synth = Mock(side_effect=synthesize)
     monkeypatch.setattr(fsm.vivado, "run_synthesis", synth)
     monkeypatch.setattr(fsm.vivado, "full_metrics", Mock(return_value=VivadoMetrics(
         sim_passed=True, lut_used=6, lut_total=20800, ff_used=8, ff_total=41600,

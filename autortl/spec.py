@@ -112,13 +112,14 @@ class ModuleSpec:
     examples: list[IOExample] = field(default_factory=list)
     golden_model: str = ""
     interface_signature: dict | None = None
+    latency_known: bool = True
 
     def contract_hash(self) -> str:
         import hashlib
         blob = json.dumps({
             "name": self.name, "behavior": self.behavior,
             "ports": [asdict(p) for p in self.ports],
-            "latency": self.latency, "compare_mode": self.compare_mode,
+            "latency": self.latency, "latency_known": self.latency_known, "compare_mode": self.compare_mode,
             "reset": asdict(self.reset), "params": list(self.parameters.items()),
             "interface_signature": self.interface_signature,
         }, sort_keys=True)
@@ -144,6 +145,10 @@ class ModuleSpec:
         errs.extend(self.reset.validate())
         if type(self.latency) is not int or not 0 <= self.latency <= 1024:
             errs.append(f"module {self.name}: latency must be an integer in 0..1024")
+        if type(self.latency_known) is not bool:
+            errs.append(f"module {self.name}: latency_known must be boolean")
+        elif not self.latency_known:
+            errs.append(f"module {self.name}: typed build specs require a known numeric latency")
         if not all(valid_identifier(name) and type(value) is int for name, value in self.parameters.items()):
             errs.append(f"module {self.name}: parameter names/defaults must be valid identifiers/integers")
         if self.interface_signature is not None:

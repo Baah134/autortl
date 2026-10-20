@@ -1,4 +1,5 @@
 import json
+import sys
 from pathlib import Path
 from unittest.mock import Mock
 
@@ -16,6 +17,13 @@ def successful_metrics():
             "lut_used": 5, "lut_total": 100, "ff_used": 5, "ff_total": 100}
 
 
+def frozen_runtime(code="a"):
+    return {"schema_version":1,"python":"test-python-3.12",
+            "implementation":{"autortl/fsm.py":code*64,"autortl/spec.py":"b"*64},
+            "tools":{name:{"path":"C:/tools/"+name,"sha256":"c"*64}
+                     for name in ("vivado_bin","xvlog_bin","xelab_bin","xsim_bin")}}
+
+
 @pytest.fixture
 def curriculum(monkeypatch, tmp_path):
     root = tmp_path / "curriculum"
@@ -29,6 +37,11 @@ def curriculum(monkeypatch, tmp_path):
     monkeypatch.setattr(runner, "ROOT", root)
     monkeypatch.setattr(runner, "RESULTS", root / "results.jsonl")
     orch = Mock()
+    def construct(cfg, run_dir):
+        run_dir.mkdir(parents=True, exist_ok=True)
+        (run_dir / "runtime.json").write_text(json.dumps(frozen_runtime()))
+        return orch.return_value
+    orch.side_effect = construct
     orch.return_value.run.side_effect = lambda: {"status": "done", "best_metrics": successful_metrics()}
     monkeypatch.setattr(runner, "Orchestrator", orch)
     return root, orch, tmp_path / "outputs"
@@ -181,3 +194,105 @@ def test_checked_in_build_fixtures_have_valid_constructor_and_ports():
         found[spec.top_name] = {port.name: port.width for port in spec.external_ports}
     assert found["counter8"] == {"clk": 1, "rst": 1, "enable": 1, "count": 8}
     assert found["priority_encoder8"] == {"clk": 1, "rst": 1, "request": 8, "valid": 1, "index": 3}
+
+
+
+def test_runtime_implementation_change_resets_streak(curriculum, monkeypatch):
+    _, _, output=curriculum
+    runner.run_tier(0,output_root=output)
+    runner.run_tier(0,output_root=output)
+    monkeypatch.setattr(sys.modules[__name__],"frozen_runtime",lambda:frozen_changed())
+    runner.run_tier(0,output_root=output)
+    assert records()[-1]["consecutive_qualifying_runs"]==1
+    assert records()[-1]["cohort"]!=records()[-2]["cohort"]
+    assert records()[-1]["runtime_identity"]["model_identity"] is None
+
+
+def frozen_changed():
+    return {"schema_version":1,"python":"test-python-3.12",
+            "implementation":{"autortl/fsm.py":"d"*64,"autortl/spec.py":"b"*64},
+            "tools":{name:{"path":"C:/tools/"+name,"sha256":"c"*64}
+                     for name in ("vivado_bin","xvlog_bin","xelab_bin","xsim_bin")}}
+
+
+@pytest.mark.parametrize("manifest",[None,{}, {"schema_version":1,"implementation":{}}, frozen_runtime() | {"tools":{}}])
+def test_unknown_runtime_provenance_blocks_promotion_with_measured_results(curriculum,manifest):
+    _, orch, output=curriculum
+    def construct(cfg,run_dir):
+        run_dir.mkdir(parents=True,exist_ok=True)
+        if manifest is not None:
+            (run_dir/"runtime.json").write_text(json.dumps(manifest))
+        return orch.return_value
+    orch.side_effect=construct
+    for _ in range(3):
+        assert runner.run_tier(0,output_root=output)==1
+    result=records()[-1]
+    assert result["passed"]==5
+    assert not result["held"] and not result["qualified"]
+    assert result["consecutive_qualifying_runs"]==0
+    assert result["runtime_identity"]["status"]=="unknown"
+    assert all(r["runtime_identity"]["status"]=="unknown" for r in result["results"])
+
+
+def test_governance_code_identity_resets_streak(curriculum,monkeypatch):
+    _, _, output=curriculum
+    runner.run_tier(0,output_root=output)
+    original=runner._hash
+    def changed(path):
+        return "d"*64 if path==Path(runner.__file__).resolve() else original(path)
+    monkeypatch.setattr(runner,"_hash",changed)
+    runner.run_tier(0,output_root=output)
+    assert records()[-1]["consecutive_qualifying_runs"]==1
+    assert records()[-1]["cohort"]!=records()[-2]["cohort"]
+
+
+def test_mixed_runtime_versions_in_campaign_cannot_hold(curriculum):
+    _, orch, output=curriculum
+    def construct(cfg,run_dir):
+        run_dir.mkdir(parents=True,exist_ok=True)
+        (run_dir/"runtime.json").write_text(json.dumps(frozen_runtime("a" if run_dir.name=="a" else "d")))
+        return orch.return_value
+    orch.side_effect=construct
+    assert runner.run_tier(0,output_root=output)==1
+    assert records()[-1]["runtime_identity"]["status"]=="unknown"
+
+
+@pytest.mark.parametrize("field",["python","tools"])
+def test_frozen_python_and_tool_identity_changes_reset_cohort(curriculum,monkeypatch,field):
+    _, _, output=curriculum
+    runner.run_tier(0,output_root=output)
+    original=frozen_runtime
+    def changed():
+        manifest=original()
+        if field=="python":
+            manifest["python"]="test-python-3.13"
+        else:
+            manifest["tools"]["vivado_bin"]["sha256"]="e"*64
+        return manifest
+    monkeypatch.setattr(sys.modules[__name__],"frozen_runtime",changed)
+    runner.run_tier(0,output_root=output)
+    assert records()[-1]["cohort"]!=records()[-2]["cohort"]
+    assert records()[-1]["consecutive_qualifying_runs"]==1
+
+
+def test_unhashed_executable_fallback_is_unknown_provenance(tmp_path):
+    manifest=frozen_runtime()
+    manifest["tools"]["vivado_bin"]={"executable":"vivado"}
+    (tmp_path/"runtime.json").write_text(json.dumps(manifest))
+    identity=runner._runtime_identity(tmp_path)
+    assert identity["status"]=="unknown" and identity["sha256"] is None
+
+
+def test_governance_edits_during_campaign_fail_closed(curriculum,monkeypatch):
+    _, _, output=curriculum
+    original=runner._hash
+    calls=[]
+    def changing(path):
+        if path==Path(runner.__file__).resolve():
+            calls.append(path)
+            return "a"*64 if len(calls)==1 else "b"*64
+        return original(path)
+    monkeypatch.setattr(runner,"_hash",changing)
+    assert runner.run_tier(0,output_root=output)==1
+    assert not records()[-1]["qualified"]
+    assert "changed during campaign" in records()[-1]["runtime_identity"]["reason"]

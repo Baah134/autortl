@@ -2,7 +2,8 @@
 
 States: PLANNING -> SCAFFOLDING -> GENERATING -> LADDER -> INTEGRATING
         -> SYNTHESIZING -> TIMING_DOCTOR -> EVALUATING -> (loop) -> DONE
-Crash anywhere, resume exactly there via state.json (Karpathy rule IV/V).
+Replay verified completed stages from durable checkpoints. External processes,
+hard termination and budget accounting are not one atomic transaction.
 
 The harness owns every decision below; LLM calls are function calls whose
 outputs face deterministic verification before they influence anything.
@@ -18,7 +19,7 @@ from datetime import datetime
 from pathlib import Path
 
 from .config import RunConfig
-from .contract_context import run_evidence, file_evidence, flow_evidence, save_evidence, render_fixed_optimize_contract
+from .contract_context import run_evidence, file_evidence, flow_evidence, save_evidence, render_fixed_optimize_contract, tool_exit_evidence
 from .spec import DesignSpec, ModuleSpec, Port, ResetSpec
 from .linter import lint_spec, write_stub_project, top_verilog, stub_verilog
 from .static_checks import check as static_check
@@ -41,6 +42,44 @@ from .tbqual import qualify as qualify_tb, mutate
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from llm.client import declared_latency, ModelCallError
+
+
+class VerificationEvidenceError(ValueError):
+    """Previously verified inputs or receipts no longer establish a valid lineage."""
+
+
+def _verification_inputs(sources, tb):
+    def identity(path):
+        path = Path(path)
+        return {"path": str(path.resolve()), "sha256": hashlib.sha256(path.read_bytes()).hexdigest()}
+    return {"schema_version": 1, "sources": [identity(path) for path in sources],
+            "testbench": identity(tb) if tb is not None else None}
+
+
+def _process_exit_gate(directory, provenance=None):
+    """Require actual latest successful exits; model judgment cannot waive these."""
+    reasons = []
+    scopes = [(Path(directory), ("vivado",))] if provenance else [(Path(directory), ("xvlog", "xelab", "xsim", "vivado"))]
+    if provenance:
+        scopes.append((Path(provenance["prior_directory"]), ("xvlog", "xelab", "xsim")))
+    for root, required in scopes:
+        evidence = tool_exit_evidence(root)
+        if not evidence["schema_valid"]:
+            reasons.append(f"{root}: process exit receipts {evidence['status']}")
+            continue
+        records = [json.loads(line) for line in Path(evidence["path"]).read_bytes().splitlines()]
+        for name in required:
+            latest = next((item for item in reversed(records) if item["tool"] == name), None)
+            if latest is None or not evidence["latest_by_tool"].get(name, {}).get("successful"):
+                reasons.append(f"{root}: latest {name} exit is missing or unsuccessful")
+                continue
+            log = Path(latest["output_log_path"])
+            if Path(latest["cwd"]).resolve() != root.resolve():
+                reasons.append(f"{root}: {name} receipt belongs to another work directory")
+            if not log.is_file() or hashlib.sha256(log.read_bytes()).hexdigest() != latest["output_log_sha256"]:
+                reasons.append(f"{root}: {name} output evidence is missing or modified")
+    return {"passed": not reasons, "reasons": reasons,
+            "policy": "Every required tool's latest actual process exit must be zero with retained matching output; physical-only Doctor may reuse source-bound prior compile/simulation."}
 
 
 class Orchestrator:
@@ -98,6 +137,13 @@ class Orchestrator:
                 result = self._run_build(saved)
             else:
                 result = self._run_optimize(saved)
+        except VerificationEvidenceError as exc:
+            best = self._verified_best_iteration()
+            result = {"status": "infra_blocked", "failure_kind": FailureKind.INFRA.value,
+                      "error": str(exc), "best_iteration": best, "run_dir": str(self.state.run_dir)}
+            self._snapshot(phase="INFRA_BLOCKED", best_iteration=best, evidence_failure=[str(exc)])
+            self.state.append_event({"stage": "verification_input_integrity", "outcome": "infra_blocked",
+                                     "reason": str(exc)})
         except ModelCallError as exc:
             checkpoint = self.state.load_fsm() or {}
             # Baseline planning can fail before the first iteration snapshot.
@@ -260,6 +306,7 @@ class Orchestrator:
     def _tool(self, name, *args, **kwargs):
         work_index = {"xvlog_check": 2, "xsim_run": 4, "run_synthesis": 3, "full_metrics": 0}[name]
         work = Path(args[work_index])
+        inputs_before = _verification_inputs(args[0], args[1]) if name == "xsim_run" else None
         def execute():
             if name != "full_metrics" and self._journal_enabled:
                 if self.budget.wall_minutes >= self.budget.max_wall_minutes or self.budget.vivado_seconds >= self.budget.max_vivado_minutes * 60:
@@ -270,12 +317,34 @@ class Orchestrator:
                 kwargs["timeout"] = min(kwargs.get("timeout", default), remaining)
             started = time.monotonic()
             try:
-                return getattr(vivado, name)(*args, **kwargs)
+                result = getattr(vivado, name)(*args, **kwargs)
+                if name == "xsim_run" and result[0]:
+                    # Commit verified inputs before the journal snapshots this stage.
+                    if _verification_inputs(args[0], args[1]) != inputs_before:
+                        raise VerificationEvidenceError("Simulation inputs changed during verification")
+                    atomic_write_text(work / "verification_inputs.log", json.dumps(
+                        inputs_before, sort_keys=True, indent=2))
+                return result
             finally:
                 if name != "full_metrics":
                     self.budget.charge_vivado(max(time.monotonic() - started, vivado.vivado_seconds()))
-        return self._stage("tool", name, execute, args, kwargs, work,
-                           attempts=1 if name == "full_metrics" else self.cfg.max_infra_retries + 1)
+        result = self._stage("tool", name, execute, args, kwargs, work,
+                             attempts=1 if name == "full_metrics" else self.cfg.max_infra_retries + 1)
+        if name == "xsim_run" and result[0]:
+            # A replay restores the original manifest; never restamp changed inputs
+            # using an old success. Check pre-call inputs too, since stage replay
+            # may restore an earlier source file into the working directory.
+            manifest = work / "verification_inputs.log"
+            if not manifest.is_file():
+                raise VerificationEvidenceError("Simulation verified input manifest is missing")
+            try:
+                verified_inputs = json.loads(manifest.read_text(encoding="utf-8"))
+                current_inputs = _verification_inputs(args[0], args[1])
+            except (OSError, ValueError) as exc:
+                raise VerificationEvidenceError("Simulation verified input manifest is invalid") from exc
+            if verified_inputs != inputs_before or current_inputs != inputs_before:
+                raise VerificationEvidenceError("Simulation replay inputs differ from verified input manifest")
+        return result
 
     def _qualify_source(self, source, tb, name, work):
         """Record control and sabotage separately, without grading infra failures."""
@@ -418,7 +487,7 @@ class Orchestrator:
             for attempt in range(self.cfg.max_fix_attempts + 1):
                 result = static_check(source, contract)
                 latency = declared_latency(source)
-                if not result.passed or (latency is not None and latency != contract.latency):
+                if not result.passed or (getattr(contract, "latency_known", True) and latency is not None and latency != contract.latency):
                     break
                 if "`timescale" not in source:
                     source = "`timescale 1ns/1ps\n" + source
@@ -480,6 +549,9 @@ class Orchestrator:
             gate_metrics(baseline, synthesis_ran=True)
         except MetricsGateError as exc:
             return self._baseline_stop("baseline_blocked", str(exc), FailureKind.INFRA)
+        baseline_receipts = _process_exit_gate(idir)
+        if not baseline_receipts["passed"]:
+            return self._baseline_stop("baseline_blocked", "; ".join(baseline_receipts["reasons"]), FailureKind.INFRA)
         state.append_design({"iteration": 0, "is_best": True,
                              **baseline.to_dict(), "recommendation": "BASELINE"})
         print(f"[iter 0] baseline LUTs={baseline.lut_used} FFs={baseline.ff_used} "
@@ -554,7 +626,7 @@ class Orchestrator:
                 c.ladder_rungs_passed = 1
                 # latency law
                 dl = declared_latency(c.verilog)
-                if dl is not None and dl != contract.latency:
+                if getattr(contract, "latency_known", True) and dl is not None and dl != contract.latency:
                     c.alive = False
                     c.fail_reason = (f"declared @latency {dl} != contract "
                                      f"{contract.latency} (spec is law)")
@@ -592,7 +664,7 @@ class Orchestrator:
                             tb_path.read_text()[:1500], [], self.budget)
                         repaired_static = static_check(c.verilog, contract)
                         repaired_latency = declared_latency(c.verilog)
-                        if not repaired_static.passed or (repaired_latency is not None and repaired_latency != contract.latency):
+                        if not repaired_static.passed or (getattr(contract, "latency_known", True) and repaired_latency is not None and repaired_latency != contract.latency):
                             c.alive, c.fail_reason = False, "repair violated static/interface/latency contract"
                             continue
                         cv.write_text(c.verilog)
@@ -676,8 +748,18 @@ class Orchestrator:
                 if diagd.action == "tool_knobs":
                     knobs_tried = True
                 if diagd.action in ("tool_knobs", "rtl_surgery"):
-                    trial = self._doctor_trial(winner.verilog, wm, contract, tb_path,
-                                                extra_sources, idir, diagd)
+                    try:
+                        trial = self._doctor_trial(winner.verilog, wm, contract, tb_path,
+                                                    extra_sources, idir, diagd, verification_dir=Path(wdir))
+                    except VerificationEvidenceError as exc:
+                        self._snapshot(phase="INFRA_BLOCKED", iteration=it, best_iteration=best_iter,
+                                       evidence_failure=[str(exc)])
+                        state.append_event({"stage": "doctor_verification_lineage", "iteration": it,
+                                            "outcome": "infra_blocked", "reason": str(exc)},
+                                           event_id=f"doctor-evidence:{it}")
+                        return {"status": "infra_blocked", "iteration": it,
+                                "best_iteration": best_iter, "best_metrics": best_m.to_dict(),
+                                "evidence_failure": [str(exc)], "run_dir": str(state.run_dir)}
                     if trial is not None:
                         winner.verilog, wm, wdir = trial
                         winner.metrics = wm.to_dict()
@@ -699,7 +781,29 @@ class Orchestrator:
                 "candidate_metrics": wm.to_dict(), "previous_best_metrics": best_m.to_dict(),
                 "objective": cfg.objective, "measured_improvement": self._is_better(wm, best_m),
             }
+            provenance = None
+            provenance_path = Path(wdir) / "verification_provenance.json"
+            if provenance_path.is_file():
+                provenance = json.loads(provenance_path.read_text(encoding="utf-8"))
+                if provenance.get("source_sha256") != hashlib.sha256(candidate_path.read_bytes()).hexdigest():
+                    raise ValueError("Reused verification source does not match candidate evidence")
+                for evidence in provenance["evidence"]:
+                    path = Path(evidence["path"])
+                    if not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest() != evidence["sha256"]:
+                        raise ValueError("Reused verification evidence is missing or modified")
+                candidate_facts["verification_reuse"] = provenance
+            receipt_gate = _process_exit_gate(wdir, provenance)
+            candidate_facts["process_exit_gate"] = receipt_gate
             self.evaluator.candidate_context = save_evidence(idir / "evaluation_facts.json", candidate_facts)
+            if not receipt_gate["passed"]:
+                self._snapshot(phase="INFRA_BLOCKED", iteration=it, best_iteration=best_iter,
+                               evidence_failure=receipt_gate["reasons"])
+                state.append_event({"stage": "process_exit_gate", "iteration": it,
+                                    "outcome": "infra_blocked", "reasons": receipt_gate["reasons"]},
+                                   event_id=f"exit-evidence:{it}")
+                return {"status": "infra_blocked", "iteration": it,
+                        "best_iteration": best_iter, "best_metrics": best_m.to_dict(),
+                        "evidence_failure": receipt_gate["reasons"], "run_dir": str(state.run_dir)}
             ev = self._model("evaluator", "evaluate", it, contract_md, ladder_summary, wm,
                                          vnotes, stall,
                                          cfg.stall_restart_threshold, self.budget)
@@ -709,7 +813,7 @@ class Orchestrator:
                 last_advisor = fresh
 
             improved = self._is_better(wm, best_m)
-            is_best = (ev.recommendation == "ACCEPT" and ev.failed == 0 and improved
+            is_best = (receipt_gate["passed"] and ev.recommendation == "ACCEPT" and ev.failed == 0 and improved
                        and wm.timing_met is True and wm.wns_ns >= 0 and wm.whs_ns >= 0)
             if is_best:
                 best_v, best_m, best_iter = winner.verilog, wm, it
@@ -765,8 +869,24 @@ class Orchestrator:
               f"FFs={best_m.ff_used} WNS={best_m.wns_ns}")
         final_artifacts = {str(path.resolve()): hashlib.sha256(path.read_bytes()).hexdigest()
                            for path in Path(best_artifact_dir).glob("*")
-                           if path.is_file() and path.suffix in (".v", ".sv", ".rpt", ".xdc", ".tcl")}
-        for evidence_path in [state.contract_path, state.run_dir / "harness_facts.json", *state.run_dir.glob("iter_*/evaluation_facts.json")]:
+                           if path.is_file() and (path.suffix in (".v", ".sv", ".rpt", ".xdc", ".tcl", ".log")
+                                                 or path.name in ("tool_exit_records.log", "verification_provenance.json", "verification_inputs.log", "sim_log.txt"))}
+        # Exit receipts remain mandatory evidence even when baseline wins or
+        # Doctor only changes physical tool options in a separate directory.
+        retained = list(state.run_dir.rglob("tool_exit_records.log"))
+        for receipt in list(retained):
+            retained.extend(path for path in receipt.parent.glob("*.log") if path.is_file())
+            if (receipt.parent / "sim_log.txt").is_file():
+                retained.append(receipt.parent / "sim_log.txt")
+        for provenance_path in state.run_dir.rglob("verification_provenance.json"):
+            retained.append(provenance_path)
+            provenance = json.loads(provenance_path.read_text(encoding="utf-8"))
+            for evidence in provenance["evidence"]:
+                path = Path(evidence["path"])
+                if not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest() != evidence["sha256"]:
+                    raise ValueError("Reused verification evidence is missing or modified")
+                retained.append(path)
+        for evidence_path in [state.contract_path, state.run_dir / "harness_facts.json", *state.run_dir.glob("iter_*/evaluation_facts.json"), *retained]:
             if evidence_path.is_file():
                 final_artifacts[str(evidence_path.resolve())] = hashlib.sha256(evidence_path.read_bytes()).hexdigest()
         self._snapshot(phase="DONE", best_iteration=best_iter,
@@ -778,7 +898,7 @@ class Orchestrator:
     # ------------------------------------------------------------------ helpers
     def _doctor_trial(self, source: str, current: VivadoMetrics, contract: ModuleSpec,
                       tb: Path | None, extra: list[Path], parent: Path,
-                      diagnosis) -> tuple[str, VivadoMetrics, Path] | None:
+                      diagnosis, verification_dir: Path | None = None) -> tuple[str, VivadoMetrics, Path] | None:
         """Validate an isolated experiment before replacing any verified artifacts."""
         surgery = diagnosis.action == "rtl_surgery"
         if surgery:
@@ -789,12 +909,48 @@ class Orchestrator:
             if not static_check(source, contract).passed:
                 return None
             latency = declared_latency(source)
-            if latency is not None and latency != contract.latency:
+            if getattr(contract, "latency_known", True) and latency is not None and latency != contract.latency:
                 return None
         work = parent / f"doctor_{diagnosis.action}_trial"
         work.mkdir(parents=True, exist_ok=True)
         vfile = work / f"{self.cfg.top_module}.v"
         vfile.write_text(source)
+        if not surgery and verification_dir is not None:
+            origin = Path(verification_dir)
+            origin_source = origin / f"{self.cfg.top_module}.v"
+            if not origin_source.is_file() or origin_source.read_text() != source:
+                raise VerificationEvidenceError("Doctor verification reuse requires identical prior source")
+            input_manifest = origin / "verification_inputs.log"
+            if not input_manifest.is_file():
+                raise VerificationEvidenceError("Doctor prior simulation input manifest is missing")
+            try:
+                verified_inputs = json.loads(input_manifest.read_text(encoding="utf-8"))
+                current_inputs = _verification_inputs([origin_source, *extra], tb)
+            except (OSError, ValueError) as exc:
+                raise VerificationEvidenceError("Doctor prior simulation input evidence is invalid") from exc
+            if verified_inputs != current_inputs:
+                raise VerificationEvidenceError("Doctor prior simulation sources/testbench changed after verification")
+            if hashlib.sha256(vfile.read_bytes()).hexdigest() != verified_inputs["sources"][0]["sha256"]:
+                raise VerificationEvidenceError("Doctor trial bytes differ from verified source")
+            prior_flow = flow_evidence(origin)
+            evidence_paths = [input_manifest, origin_source, *extra]
+            if tb is not None:
+                evidence_paths.append(tb)
+            evidence_paths += [path for path in origin.glob("*") if path.is_file() and
+                (path.name == "tool_exit_records.log" or path.name.endswith("_log.txt") or path.name.endswith(".log"))]
+            provenance = {
+                "schema_version": 1, "mode": "source_identical_prior_verification",
+                "source_sha256": hashlib.sha256(vfile.read_bytes()).hexdigest(),
+                "prior_source_sha256": hashlib.sha256(origin_source.read_bytes()).hexdigest(),
+                "prior_directory": str(origin.resolve()),
+                "statement": "Only physical tool options changed. Compile/simulation were not rerun "
+                             "in this directory; their actual prior evidence is reused for identical RTL, "
+                             "testbench and companion sources. Missing prior exit receipts remain unknown.",
+                "prior_flow_evidence": prior_flow,
+                "evidence": [{"path": str(path.resolve()), "sha256": hashlib.sha256(path.read_bytes()).hexdigest()}
+                             for path in dict.fromkeys(evidence_paths)],
+            }
+            save_evidence(work / "verification_provenance.json", provenance)
         if surgery:
             passed, _, _ = self._tool("xsim_run", [vfile] + extra, tb,
                                           f"{self.cfg.top_module}_tb", self.cfg, work)
@@ -893,7 +1049,7 @@ class Orchestrator:
                                          previous, self.budget)
             latency = declared_latency(repaired)
             if not static_check(repaired, original_contract).passed or (
-                    latency is not None and latency != original_contract.latency):
+                    getattr(original_contract, "latency_known", True) and latency is not None and latency != original_contract.latency):
                 m.sim_passed = False
                 m.sim_error = "Repair violated static/interface/latency contract"
                 self._last_flow_failure_kind = FailureKind.DESIGN

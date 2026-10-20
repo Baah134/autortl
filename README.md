@@ -14,7 +14,7 @@ learn from failures, and retain the best correct design within a fixed budget.
 
 | Validation | Recorded result |
 |---|---|
-| Harness regression suite | **554 tests passed** |
+| Harness regression suite | **655 tests passed** |
 | Live Vivado testbench checks | **24 generated-testbench, counter, FIFO and signed-interface cases matched expected verdicts** |
 | Supervised mux simulation and routing | **8 LUTs · 8 FFs · setup slack 0.579 ns · hold slack 0.052 ns** |
 
@@ -29,7 +29,7 @@ The first bounded optimization cohort finished **0/2**, with failures preserved
 and followed by targeted repairs.
 
 See the [test evidence](evidence/2026-10-20/README.md),
-[full-suite result](evidence/2026-10-20/interface-atomic-tests.txt) and
+[full-suite result](evidence/2026-10-20/process-exit-tests.txt) and
 [live experiment reports](evidence/2026-10-19/live-tier0/README.md).
 
 ## The design loop
@@ -125,5 +125,6 @@ same experiment cohort. Subset runs cannot promote a tier, and regressions in
 previously passing entries of a held cohort block qualification.
 
 Read the [architecture](docs/DESIGN.md), [recovery and validation guide](docs/RECOVERY.md)
+[research and adoption decisions](docs/RESEARCH.md),
 and [engineering evidence log](docs/PROGRESS.md) for implementation details,
 tested guarantees and remaining work.

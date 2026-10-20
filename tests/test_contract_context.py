@@ -278,3 +278,17 @@ def test_short_verification_log_is_not_truncated(tmp_path):
     assert item["head"] == (tmp_path / "sim_log.txt").read_bytes().decode("utf-8")
     assert item["tail"] == ""
     assert item["truncated"] is False
+
+
+@pytest.mark.parametrize("annotation,known,cycles", [("", False, None), ("// @latency 0\n", True, 0), ("// @latency 2\n", True, 2)])
+def test_run_evidence_latency_is_source_declared_not_assumed_zero(tmp_path, annotation, known, cycles):
+    cfg = configuration(tmp_path)
+    cfg.design_path.write_text(annotation + cfg.design_path.read_text())
+    facts = run_evidence(cfg, VivadoMetrics(), [cfg.design_path], cfg.testbench_path, tmp_path, {})
+    latency = facts["declared_latency"]
+    assert latency["known"] is known and latency["cycles"] == cycles
+    assert latency["source_sha256"] == hashlib.sha256(cfg.design_path.read_bytes()).hexdigest()
+    assert "UNKNOWN, not zero" in latency["meaning"]
+    assert "not independent proof" in latency["meaning"]
+    contract = render_fixed_optimize_contract(facts)
+    assert '"declared_latency"' in contract and "Unannotated numeric latency is UNKNOWN" in contract

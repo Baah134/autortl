@@ -35,3 +35,40 @@ Latest interface/storage checkpoint: 554 regression tests pass; real Windows
 sharing-lock recovery and four signed/symbolic Vivado cases pass expected
 verdicts. Original campaign03 remains1/2. Structural declaration safeguards
 supplement independent verification; they do not establish full equivalence.
+
+## Current evidence boundary (2026-10-20)
+
+Published2318e42:554fullregressiontests,24actual simulation verdict checks,
+Windows sharing-lock recovery and structural interface safeguards. Earlier
+focused counts are historical. Campaign04 completed2/2 under historical
+governance with baselines retained; no accepted gain/held tier. Fixed contracts,
+role conventions and provider diagnostics are published and live exercised.
+
+Active milestone: actual exit receipts and deterministic gates; cache/DONE
+raw-log integrity; source/TB/companion-bound Doctor reuse; unknown source
+latency; explicit UTF8 guidance; runtime-bound curriculum streaks. Run full
+tests and a fresh frozen campaign before integration.
+
+### Next live build coverage
+
+Run serial fresh builds for counter8_build/design_spec.json (top counter8) and
+encoder8_build/design_spec.json (top priority_encoder8), deliberately without
+--tb to exercise golden generation, example qualification and generated module
+TBs. Use one iteration/candidate,16calls,20toolminutes,30wallminutes,oneinfra
+retry and the same explicit Vivado binaries. Supplying the independent top TB
+currently takes the trusted-test branch and bypasses golden generation.
+
+Afterward independently simulate only the saved <top>_best.v plus its child
+modules/<top>_core/<top>_core.v against the corresponding checked-in <top>_tb.v
+in a fresh output directory. Do not recursively glob RTL (duplicate tops,
+stubs and TBs). Generated child-derived top verification is not independent.
+
+Counter trusted TB covers700cycles, wrap/hold/midrun reset; encoder covers all
+256patterns ascending/descending plus valid and edge behavior. Generated default
+counter stimulus is too short for8bitwrap and has only initial reset; sparse
+IOexamples do not establish oracle correctness. Qualify the independent top TBs
+with behavior-specific overflow/hold/reset and priority/valid/latency mutants
+before interpreting success as broad build coverage.
+
+Current receipt/latency/runtime-identity milestone: **655tests passed**. Source
+is frozen for fresh campaign05; initialfixturefailures are preserved separately.

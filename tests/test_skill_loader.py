@@ -104,3 +104,21 @@ def test_fifo_legacy_loop_is_not_qualified_as_behavioral_mutant(tmp_path):
     source.write_text(rtl.replace("assign full = (wptr_gray ==", "assign full = (wptr_gray_n =="))
     with pytest.raises(ValueError, match="combinational"):
         save(tmp_path / "cases", source)
+
+
+def test_skill_loader_uses_explicit_utf8(monkeypatch, tmp_path):
+    from pathlib import Path
+    from autortl import skill_loader
+    root=tmp_path / "skills"
+    path=root / "encoding" / "SKILL.md"
+    path.parent.mkdir(parents=True)
+    body="Unicode guidance: \u201cprecise\u201d \u2014 \u03bb\n"
+    path.write_text("---\nname: encoding\n---\n"+body, encoding="utf-8")
+    original=Path.read_text
+    def require_encoding(self, *args, **kwargs):
+        if self == path:
+            assert kwargs.get("encoding") == "utf-8"
+        return original(self,*args,**kwargs)
+    monkeypatch.setattr(skill_loader,"SKILLS_DIR",root)
+    monkeypatch.setattr(Path,"read_text",require_encoding)
+    assert skill_loader.load_skill("encoding") == body

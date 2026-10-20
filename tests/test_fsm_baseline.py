@@ -27,6 +27,8 @@ def harness(tmp_path, monkeypatch):
     cfg = RunConfig(mode="optimize", top_module="m", design_path=design,
                     testbench_path=tb, max_iterations=0, max_fix_attempts=2)
     o = fsm.Orchestrator(cfg, tmp_path / "run")
+    from tests.test_fsm_resume import write_mock_tool_receipts
+    write_mock_tool_receipts(o.state.iter_dir(0))
     # Every external model/tool path is mocked; accidental calls fail the test.
     for role in ("planner", "generator", "evaluator", "doctor"):
         obj = getattr(o, role)
@@ -36,6 +38,17 @@ def harness(tmp_path, monkeypatch):
     for name in ("xsim_run", "xvlog_check", "run_synthesis", "full_metrics"):
         monkeypatch.setattr(fsm.vivado, name, Mock(side_effect=AssertionError("unexpected tool call")))
     monkeypatch.setattr(fsm.vivado, "vivado_seconds", Mock(return_value=0))
+    from tests.test_fsm_resume import write_mock_tool_receipts
+    actual_tool = o._tool
+    def mocked_tool_with_receipts(name, *args, **kwargs):
+        result = actual_tool(name, *args, **kwargs)
+        mapping = {"xvlog_check": (2, ("xvlog",)), "xsim_run": (4, ("xvlog", "xelab", "xsim")),
+                   "run_synthesis": (3, ("vivado",))}
+        if name in mapping and result[0]:
+            index, tools = mapping[name]
+            write_mock_tool_receipts(args[index], tools)
+        return result
+    monkeypatch.setattr(o, "_tool", mocked_tool_with_receipts)
     return o
 
 

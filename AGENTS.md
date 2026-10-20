@@ -48,3 +48,12 @@ The root README is the public project overview: purpose, usage and concise
 verified results. Keep coordinator messages, local paths, handoff instructions,
 branch/session status and quotas in START_HERE or docs/AGENT_HANDOFF.md,
 docs/SESSION_HANDOFF.md and docs/PROGRESS.md instead.
+
+## Research-informed changes
+
+The user requests ongoing study of comparable agentic systems and research.
+Read docs/RESEARCH.md before substantial harness design changes. Consult primary
+sources, map an idea to an observed AutoRTL need, and compare it against a
+simpler existing approach. Add complexity only with a concrete justification,
+tests and a measurable experiment; record keep/revise/remove decisions. Do not
+add roles, memory stores or frameworks solely because another system uses them.

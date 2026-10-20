@@ -2,6 +2,8 @@
 from __future__ import annotations
 import hashlib
 import json
+import math
+import re
 from pathlib import Path
 from .state import atomic_write_text
 
@@ -12,6 +14,103 @@ def file_evidence(path: Path, limit: int = 16000) -> dict:
     content = data.decode("utf-8", errors="replace")
     return {"path": str(path.resolve()), "sha256": hashlib.sha256(data).hexdigest(),
             "text": content[:limit], "truncated": len(content) > limit}
+
+
+_REQUIRED_TOOLS = ("xvlog", "xelab", "xsim", "vivado")
+
+
+def _valid_tool_exit_record(record) -> bool:
+    if not isinstance(record, dict):
+        return False
+    required = {"schema_version", "tool", "executable", "cwd", "pid", "status",
+                "returncode", "driver_returncode", "elapsed_seconds", "output_log_path",
+                "output_log_sha256"}
+    if set(record) != required or type(record["schema_version"]) is not int or record["schema_version"] != 1:
+        return False
+    for name in ("executable", "cwd", "output_log_path"):
+        if not isinstance(record[name], str) or not record[name]:
+            return False
+    if not isinstance(record["tool"], str) or not re.fullmatch(r"[a-z0-9_.-]+", record["tool"]):
+        return False
+    if record["status"] not in ("exited", "timed_out", "launch_failed", "cancelled"):
+        return False
+    if record["pid"] is not None and (type(record["pid"]) is not int or record["pid"] <= 0):
+        return False
+    for name in ("returncode", "driver_returncode"):
+        if record[name] is not None and type(record[name]) is not int:
+            return False
+    elapsed = record["elapsed_seconds"]
+    if type(elapsed) not in (int, float) or not math.isfinite(elapsed) or elapsed < 0:
+        return False
+    digest = record["output_log_sha256"]
+    if digest is not None and (not isinstance(digest, str) or not re.fullmatch(r"[a-f0-9]{64}", digest)):
+        return False
+    if record["status"] == "launch_failed" and (record["returncode"] is not None or record["pid"] is not None
+                                                  or record["driver_returncode"] not in (126, 127)):
+        return False
+    if record["status"] == "timed_out" and record["driver_returncode"] != 124:
+        return False
+    if record["status"] == "cancelled" and record["driver_returncode"] is not None:
+        return False
+    if record["status"] == "exited":
+        if record["driver_returncode"] is None:
+            return False
+        if record["returncode"] is not None and record["returncode"] != record["driver_returncode"]:
+            return False
+    return True
+
+
+def tool_exit_evidence(directory: Path) -> dict:
+    """Expose actual process receipts; missing/malformed evidence stays unknown.
+
+    No prior success is substituted for a later failure or malformed record.
+    Full history remains in the hashed raw file; context includes at most 32.
+    """
+    path = Path(directory) / "tool_exit_records.log"
+    result = {"path": str(path.resolve()), "sha256": None, "status": "missing",
+              "schema_valid": False, "history_count": 0, "records": [], "truncated": False,
+              "latest_by_tool": {}, "missing_required_tools": list(_REQUIRED_TOOLS)}
+    if not path.is_file():
+        return result
+    data = path.read_bytes()
+    result["sha256"] = hashlib.sha256(data).hexdigest()
+    lines = data.splitlines()
+    result["history_count"] = len(lines)
+    result["truncated"] = len(lines) > 32
+    try:
+        records = [json.loads(line) for line in lines]
+    except (ValueError, UnicodeError):
+        result["status"] = "invalid"
+        return result
+    if not records or not all(_valid_tool_exit_record(item) for item in records):
+        result["status"] = "invalid"
+        return result
+    latest_records = {item["tool"]: item for item in records if item["tool"] in _REQUIRED_TOOLS}
+    latest = {}
+    for name, item in latest_records.items():
+        # Earlier invocations may legitimately overwrite the same log path.
+        # Only the latest receipt per tool must match the retained current log.
+        log_status = "missing_hash"
+        if item["output_log_sha256"] is not None:
+            output = Path(item["output_log_path"])
+            if not output.is_file():
+                log_status = "missing"
+            else:
+                try:
+                    digest = hashlib.sha256(output.read_bytes()).hexdigest()
+                    log_status = "verified" if digest == item["output_log_sha256"] else "mismatch"
+                except OSError:
+                    log_status = "unreadable"
+        latest[name] = {"status": item["status"], "returncode": item["returncode"],
+            "driver_returncode": item["driver_returncode"],
+            "output_log_path": item["output_log_path"],
+            "output_log_sha256": item["output_log_sha256"],
+            "log_status": log_status, "log_verified": log_status == "verified",
+            "successful": item["status"] == "exited" and item["returncode"] == 0
+                          and item["driver_returncode"] == 0 and log_status == "verified"}
+    result.update(status="recorded", schema_valid=True, records=records[-32:], latest_by_tool=latest,
+                  missing_required_tools=[name for name in _REQUIRED_TOOLS if name not in latest])
+    return result
 
 
 def flow_evidence(directory) -> dict:
@@ -39,6 +138,7 @@ def flow_evidence(directory) -> dict:
                             for item in headers],
         "report_headers": headers,
         "verification_logs": verification_logs,
+        "tool_exit_evidence": tool_exit_evidence(directory),
         "metric_provenance": "Structured metrics are parsed from retained reports; routed "
                              "utilization/timing reports take precedence when present. "
                              "The manifest identifies complete files by hash. Header excerpts "
@@ -47,14 +147,27 @@ def flow_evidence(directory) -> dict:
 
 
 def run_evidence(cfg, baseline, sources, tb, directory, execution_context) -> dict:
+    from .verilog_interface import infer_module
     directory = Path(directory)
+    source_facts = [file_evidence(path) for path in sources]
+    source_contract = infer_module(Path(sources[0]).read_text(), cfg.top_module)
+    declared_latency = {
+        "known": source_contract.latency_known,
+        "cycles": source_contract.latency if source_contract.latency_known else None,
+        "source_path": source_facts[0]["path"], "source_sha256": source_facts[0]["sha256"],
+        "meaning": "A source annotation declares numeric latency only when present. "
+                   "Unannotated numeric latency is UNKNOWN, not zero. Preserve the source's "
+                   "exact observable cycles and registered behavior. Annotation presence or "
+                   "absence alone is not independent proof of behavioral correctness; use the "
+                   "fixed source contract and deterministic verification, without inventing a numeric requirement.",
+    }
     return {
         "schema_version": 1,
         "authority": "Harness evidence is fixed. Proposed architectural goals cannot redefine it.",
         "top_module": cfg.top_module, "part": cfg.target_part,
         "objective": cfg.objective, "clock_period_ns": cfg.target_period_ns,
         "baseline_metrics": baseline.to_dict(),
-        "sources": [file_evidence(path) for path in sources],
+        "sources": source_facts, "declared_latency": declared_latency,
         "testbench": file_evidence(tb), "testbench_top": cfg.top_module + "_tb",
         "simulation": {"tools": ["xvlog", "xelab", "xsim -runall"],
                        "required_verdict": "TEST PASSED", "failure_verdict": "TEST FAILED",
@@ -108,6 +221,7 @@ def render_fixed_optimize_contract(evidence: dict) -> str:
         "testbench": identity(evidence["testbench"]),
         "testbench_top": evidence["testbench_top"],
         "baseline_metrics": evidence["baseline_metrics"],
+        "declared_latency": evidence["declared_latency"],
         "execution_context": evidence["execution_context"],
         "flow_and_constraints": evidence["flow_and_constraints"],
         "report_manifest": evidence["report_manifest"],
@@ -125,7 +239,9 @@ def render_fixed_optimize_contract(evidence: dict) -> str:
         "For build mode, the integrated design remains subject to its module specs.\n\n"
         "## Verification gates\n\n"
         "Use the frozen testbench unchanged. Pass static/interface and declared "
-        "latency checks, xvlog compilation, xelab elaboration and xsim -runall. "
+        "latency checks when a numeric declaration is known, xvlog compilation, "
+        "xelab elaboration and xsim -runall. Unannotated numeric latency is UNKNOWN, "
+        "not zero; an annotation alone is not independent behavioral proof. "
         "Tool stages require successful exit codes; synthesis also requires the "
         "SYNTH_COMPLETE marker. Simulation requires the exact standalone TEST PASSED verdict and rejects "
         "TEST FAILED, missing verdicts, tool errors and timeouts. Provided testbench "

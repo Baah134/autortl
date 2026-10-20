@@ -4,6 +4,7 @@ from dataclasses import asdict
 from datetime import datetime, timezone
 import hashlib
 import json
+import re
 from pathlib import Path
 import tempfile
 import yaml
@@ -22,6 +23,41 @@ OVERRIDES = {"vivado_bin", "xvlog_bin", "xelab_bin", "xsim_bin", "target_part",
 
 def _hash(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def _runtime_identity(run_dir):
+    """Read evidence frozen by Orchestrator, without guessing the CLI model."""
+    path = run_dir / "runtime.json"
+    try:
+        runtime = json.loads(path.read_text(encoding="utf-8"))
+        if not isinstance(runtime, dict) or runtime.get("schema_version") != 1:
+            raise ValueError("unsupported runtime manifest")
+        implementation = runtime.get("implementation")
+        if (not isinstance(implementation, dict) or "autortl/fsm.py" not in implementation
+                or any(not isinstance(name, str) or not isinstance(digest, str)
+                       or re.fullmatch(r"[0-9a-f]{64}", digest) is None
+                       for name, digest in implementation.items())):
+            raise ValueError("missing or invalid frozen implementation hashes")
+        if not isinstance(runtime.get("python"), str) or not runtime["python"].strip():
+            raise ValueError("missing frozen Python identity")
+        tools = runtime.get("tools")
+        if not isinstance(tools, dict) or set(tools) != {"vivado_bin", "xvlog_bin", "xelab_bin", "xsim_bin"}:
+            raise ValueError("missing frozen tool identity")
+        for tool in tools.values():
+            if not isinstance(tool, dict) or set(tool) != {"path", "sha256"}:
+                raise ValueError("invalid frozen tool identity")
+            if not isinstance(tool["path"], str) or not tool["path"]:
+                raise ValueError("missing frozen tool path")
+            if tool["sha256"] is None:
+                raise ValueError("unavailable frozen tool hash")
+            if not isinstance(tool["sha256"], str) or re.fullmatch(r"[0-9a-f]{64}", tool["sha256"]) is None:
+                raise ValueError("invalid frozen tool hash")
+        digest = hashlib.sha256(json.dumps(runtime, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+        return {"status": "known", "sha256": digest, "manifest_sha256": _hash(path),
+                "model_identity": None, "model_identity_status": "unobserved_cli_default"}
+    except (OSError, ValueError, TypeError) as exc:
+        return {"status": "unknown", "sha256": None, "reason": str(exc)[:300],
+                "model_identity": None, "model_identity_status": "unobserved_cli_default"}
 
 
 def _accepted(summary, criteria):
@@ -96,13 +132,13 @@ def _history():
     return records
 
 
-def _govern(history, tier, cohort, results, full):
+def _govern(history, tier, cohort, results, full, provenance_known=True):
     previous_runs = [r for r in history if r.get("tier") == tier]
     held_records = [r for r in previous_runs if full and r.get("full_tier") is True
                     and r.get("cohort") == cohort and r.get("held")]
     protected = {e["entry"] for r in held_records for e in r.get("results", []) if e.get("ok")}
     regressions = sorted(e["entry"] for e in results if not e["ok"] and e["entry"] in protected)
-    qualified = bool(results) and sum(e["ok"] for e in results) / len(results) >= 0.8 and not regressions
+    qualified = provenance_known and bool(results) and sum(e["ok"] for e in results) / len(results) >= 0.8 and not regressions
     streak = 1 if qualified else 0
     if qualified:
         for previous in reversed(previous_runs):
@@ -139,6 +175,7 @@ def run_tier(tier: int, **overrides) -> int:
         print(f"[bench] tier {tier}: no entries")
         return 1
     history = _history()
+    governance_sha256 = _hash(Path(__file__).resolve())
     records, cohort_inputs, prepared = [], [], []
     for entry in entries:
         meta = _metadata(entry)
@@ -172,14 +209,28 @@ def run_tier(tier: int, **overrides) -> int:
         winner = run_dir / f"{cfg.top_module}_best.v"
         record = {"entry": entry.name, "ok": ok, "reason": reason,
                   "source_sha256": hashes, "config": snapshot, "summary": summary,
+                  "runtime_identity": _runtime_identity(run_dir),
                   "evidence_dir": str(run_dir),
                   "winner_sha256": _hash(winner) if winner.is_file() else None}
         records.append(record)
         atomic_write_text(campaign / "entries.json", json.dumps(records, indent=2, default=str))
         print(f"[bench] {entry.name}: {'PASS' if ok else 'FAIL'} ({reason})", flush=True)
-    cohort = hashlib.sha256(json.dumps(cohort_inputs, sort_keys=True).encode()).hexdigest()
-    governance = _govern(history, tier, cohort, records, selection is None)
+    frozen_identities = [r["runtime_identity"] for r in records]
+    governance_unchanged = governance_sha256 == _hash(Path(__file__).resolve())
+    known = (governance_unchanged and all(r["status"] == "known" for r in frozen_identities)
+             and len({r["sha256"] for r in frozen_identities}) == 1)
+    identity = {"schema_version": 1, "status": "known" if known else "unknown",
+                "runtime_sha256": frozen_identities[0]["sha256"] if known else None,
+                "governance_sha256": governance_sha256,
+                "model_identity": None, "model_identity_status": "unobserved_cli_default"}
+    if not known:
+        identity["reason"] = ("governance implementation changed during campaign" if not governance_unchanged
+                              else "runtime provenance missing, invalid or inconsistent across entries")
+    cohort_material = {"entries": cohort_inputs, "runtime_identity": identity}
+    cohort = hashlib.sha256(json.dumps(cohort_material, sort_keys=True).encode()).hexdigest()
+    governance = _govern(history, tier, cohort, records, selection is None, provenance_known=known)
     rec = {"ts": datetime.now(timezone.utc).isoformat(), "tier": tier, "cohort": cohort,
+           "runtime_identity": identity,
            "passed": sum(r["ok"] for r in records), "total": len(records),
            "results": records, "evidence_dir": str(campaign), **governance}
     atomic_write_text(campaign / "summary.json", json.dumps(rec, indent=2, default=str))

@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Behavioral and parameter semantics: PASS \u2014 The candidate preserves reset priority, load and enable behavior, overflow hold and wrap behavior, flag timing, and parameterized widths; the authoritative ladder reports ALIVE.\n- Ports and declared latency: PASS \u2014 Port names, directions, widths, parameters, and defaults match the frozen source; the candidate declares `// @latency 0`.\n- Frozen testbench simulation: PASS \u2014 The retained log shows the exact `TEST PASSED` verdict; candidate metrics report simulation passed.\n- Synthesis completion: PASS \u2014 `SYNTH_COMPLETE` is present and `synth_error` is empty.\n- Routed metrics and objective: PASS \u2014 Retained routed reports are listed; LUTs improve from 55 to 53, with WNS 0.456 ns and WHS 0.282 ns, both nonnegative.\n- Required tool exit codes: INVESTIGATE \u2014 The evidence previews show successful stage output, but do not establish successful exit codes for every required tool stage.\n## Summary\n- Passed: 5 of 6\n- Failed: 0 of 6\n- Improved over previous best: YES\n## Recommendation\nREJECT\n## Reason\nThe candidate shows a measured LUT improvement and passes the reported behavioral, simulation, synthesis, and routed timing gates. However, the evidence does not establish successful exit codes for every required tool stage, and unknown mandatory evidence cannot count as success.",
+      "recommendation": "REJECT",
+      "passed": 5,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

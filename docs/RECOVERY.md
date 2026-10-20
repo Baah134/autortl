@@ -82,3 +82,21 @@ storage failure or hard process kill can leave tool work beyond the last saved
 budget. Preserve its logs and do not claim exact accounting or silently treat
 that work as free. Full process-interruption accounting remains a separate live
 validation requirement.
+
+## Process exit receipts
+
+New invocations retain append-only logical history in tool_exit_records.log,
+written by atomic replacement. Records separate actual returncode from the
+driver code and status (exited, timed_out, launch_failed, cancelled). Successful
+log markers cannot convert timeout or failed launch into success. Missing or
+malformed evidence remains unknown/invalid; no older successful attempt replaces
+a later failed attempt. No command arguments or tool output are copied into
+receipts. Raw output remains in its separately hashed log.
+
+Cache entries and DONE checkpoints retain receipt hashes. Changing or removing
+retained receipts invalidates reuse. A physical-only Doctor trial can reuse
+source-identical simulation evidence with explicit source, testbench, companion
+source and original log identities. It does not pretend to rerun simulation.
+
+Receipt persistence improves traceability. It does not make process execution
+and budget charging a single external transaction, or prove hard-kill recovery.

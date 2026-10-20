@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Ports and interface: PASS \u2014 Names, directions, and widths match the frozen source.\n- Reset and registered mux behavior: PASS \u2014 Synchronous active-high reset and one-cycle registered output behavior are preserved.\n- Declared latency: FAIL \u2014 `// @latency 0` does not match the registered output\u2019s one-cycle latency.\n- Verification and routed evidence: PASS \u2014 Ladder is ALIVE; simulation reports `TEST PASSED`; synthesis completion and routed metrics are provided, with WNS 0.579 ns and WHS 0.057 ns.\n- LUT objective: FAIL \u2014 Candidate uses 8 LUTs, equal to the previous best\u2019s 8; strict reduction is required.\n## Summary\n- Passed: 3 of 5\n- Failed: 2 of 5\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate preserves the mux\u2019s interface and registered behavior, and the provided verification and routed timing evidence pass. It fails the fixed latency declaration requirement and does not reduce LUT usage below the previous best, so it cannot be accepted.",
+      "recommendation": "REJECT",
+      "passed": 3,
+      "failed": 2
+    }
+  },
+  "artifacts": {}
+}

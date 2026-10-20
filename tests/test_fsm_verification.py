@@ -5,6 +5,7 @@ from autortl.config import RunConfig
 from autortl.report_parser import VivadoMetrics
 from autortl.triage import FailureKind
 from autortl.spec import ModuleSpec
+from tests.test_fsm_resume import write_mock_tool_receipts
 
 
 @pytest.mark.parametrize("stage", ["compile", "sim", "repair", "missing_tb"])
@@ -20,6 +21,9 @@ def test_incomplete_candidate_never_synthesized_or_cached(tmp_path, monkeypatch,
     o = fsm.Orchestrator(cfg, tmp_path / "run")
     baseline = VivadoMetrics(sim_passed=True, lut_used=20, lut_total=20800,
                              ff_total=41600, wns_ns=1, whs_ns=0.1, timing_met=True)
+    # This test deliberately replaces the entire known-good baseline flow.
+    # Supply synthetic unit-test receipts; real process evidence is tested elsewhere.
+    write_mock_tool_receipts(o.state.iter_dir(0))
     monkeypatch.setattr(o, "_full_flow", Mock(return_value=baseline))
     monkeypatch.setattr(o.planner, "propose_contract", Mock(return_value="contract"))
     monkeypatch.setattr(o.evaluator, "review_contract", Mock(return_value="ACCEPT"))

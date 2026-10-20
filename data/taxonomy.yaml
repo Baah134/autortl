@@ -219,6 +219,23 @@ harness_failures:
     meaning: "Repeated model contract reviews blocked a task over wording of fixed harness checks"
     repair: "Render optimization contracts mechanically from immutable evidence and keep verification gates unchanged"
 
+  tool_exit_evidence_omission:
+    meaning: "Evaluator lacked actual subprocess exit records despite successful wrapper gates"
+    repair: "Persist actual process and driver outcomes separately; validate receipts and retain their hashes through evaluation, cache and DONE"
+  malformed_tool_exit_evidence:
+    meaning: "Missing or invalid tool receipt history could conceal failed or unknown process outcomes"
+    repair: "Expose evidence as unknown or invalid; never infer zero exits from log markers or select older successful attempts"
+
+  locale_dependent_skill_decoding:
+    meaning: "UTF8 guidance failed or changed meaning under Windows default text decoding"
+    repair: "Read injected skill files with explicit UTF8 and test Unicode content independent of system locale"
+  inferred_latency_ambiguity:
+    meaning: "An absent source annotation was presented as a known zero-cycle behavioral contract"
+    repair: "Mark absent annotations unknown, preserve observed source cycles, and require explicit numeric latency for typed builds"
+  mixed_runtime_cohort:
+    meaning: "A curriculum streak combined task-identical runs from different or unknown harness implementations"
+    repair: "Bind cohort identity to frozen runtime and governance implementation; missing provenance cannot qualify a tier"
+
   windows_atomic_contention:
     meaning: "Windows denied an atomic checkpoint replacement while the old file remained intact"
     repair: "Retry only recognized Windows contention errors with bounded backoff; preserve the original target and error on exhaustion"

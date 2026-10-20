@@ -94,9 +94,16 @@ class Generator:
                  mutation_text: str, budget) -> str:
         skills = inject(select_for_module(module))
         r = module.reset
+        latency = (f"{module.latency} cycles (fixed numeric contract)" if module.latency_known else
+                   "UNKNOWN numeric latency: preserve the exact frozen source's observable cycles; "
+                   "an absent annotation does not mean zero cycles")
+        latency_header = (f"Include a '// @latency {module.latency}' header matching the fixed numeric contract."
+                          if module.latency_known else
+                          "Do not invent an @latency header or infer zero latency from its absence. "
+                          "Preserve exact source cycle behavior, including registered outputs.")
         p = prompts.GENERATE.format(
             skills=skills, name=module.name, behavior=module.behavior,
-            ports_table=_ports_table(module), latency=module.latency,
+            ports_table=_ports_table(module), latency=latency, latency_header=latency_header,
             parameters=json.dumps(module.parameters),
             interface_signature=json.dumps(module.interface_signature, sort_keys=True),
             reset_desc=f"{r.kind}, active_{'high' if r.active_high else 'low'} '{r.signal}'",

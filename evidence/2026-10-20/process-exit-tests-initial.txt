@@ -1,0 +1,332 @@
+........................................................................ [ 10%]
+........................................................................ [ 21%]
+........................................................................ [ 32%]
+......F.............................................FFF.FFF............. [ 43%]
+........................................................................ [ 54%]
+........................................................................ [ 65%]
+........................................................................ [ 76%]
+........................................................................ [ 87%]
+........................................................................ [ 98%]
+.......                                                                  [100%]
+================================== FAILURES ===================================
+______ test_typed_build_generates_qualifies_integrates_and_done_resumes _______
+
+tmp_path = WindowsPath('C:/Users/prince.baah/Documents/Codex/2026-10-15/hey/work/process-evidence-full-01/test_typed_build_generates_qua0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001CB601C4E00>
+
+    def test_typed_build_generates_qualifies_integrates_and_done_resumes(tmp_path, monkeypatch):
+        o, synthesis = create(tmp_path, monkeypatch)
+        result = o.run()
+>       assert result["status"] == "done"
+E       AssertionError: assert 'baseline_blocked' == 'done'
+E         
+E         - done
+E         + baseline_blocked
+
+tests\test_fsm_build.py:46: AssertionError
+---------------------------- Captured stdout call -----------------------------
+[module counter8_core] golden model + testbench...
+[build] integrated design compiles; entering optimize loop as baseline
+_ test_incomplete_candidate_never_synthesized_or_cached[FailureKind.INFRA-compile] _
+
+tmp_path = WindowsPath('C:/Users/prince.baah/Documents/Codex/2026-10-15/hey/work/process-evidence-full-01/test_incomplete_candidate_neve0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001CB601C46E0>
+stage = 'compile', kind = <FailureKind.INFRA: 'infra'>
+
+    @pytest.mark.parametrize("stage", ["compile", "sim", "repair", "missing_tb"])
+    @pytest.mark.parametrize("kind", [FailureKind.INFRA, FailureKind.UNKNOWN])
+    def test_incomplete_candidate_never_synthesized_or_cached(tmp_path, monkeypatch, stage, kind):
+        design = tmp_path / "m.v"
+        design.write_text("module m(input clk, input rst, output y); assign y=0; endmodule")
+        tb = tmp_path / "tb.v"
+        tb.write_text("// simulator mocked")
+        cfg = RunConfig(mode="optimize", top_module="m", design_path=design,
+                        testbench_path=None if stage == "missing_tb" else tb,
+                        max_iterations=1, best_of_n=1)
+        o = fsm.Orchestrator(cfg, tmp_path / "run")
+        baseline = VivadoMetrics(sim_passed=True, lut_used=20, lut_total=20800,
+                                 ff_total=41600, wns_ns=1, whs_ns=0.1, timing_met=True)
+        monkeypatch.setattr(o, "_full_flow", Mock(return_value=baseline))
+        monkeypatch.setattr(o.planner, "propose_contract", Mock(return_value="contract"))
+        monkeypatch.setattr(o.evaluator, "review_contract", Mock(return_value="ACCEPT"))
+        monkeypatch.setattr(o.planner, "plan", Mock(return_value="plan"))
+        candidate = design.read_text().replace("y=0", "y=1")
+        monkeypatch.setattr(o.generator, "generate", Mock(return_value=candidate))
+        fix = Mock(return_value=candidate)
+        monkeypatch.setattr(o.generator, "fix", fix)
+        failed = (False, "tool unavailable", kind)
+        monkeypatch.setattr(fsm.vivado, "xvlog_check", Mock(
+            return_value=failed if stage == "compile" else (True, "", FailureKind.DESIGN)))
+        sim = Mock(return_value=failed)
+        if stage == "repair":
+            first = [True]
+            def repaired_simulation(*args, **kwargs):
+                if first[0]:
+                    first[0] = False
+                    return False, "TEST FAILED", FailureKind.DESIGN
+                return failed
+            sim.side_effect = repaired_simulation
+        monkeypatch.setattr(fsm.vivado, "xsim_run", sim)
+        synth = Mock(side_effect=AssertionError("unverified candidate reached synthesis"))
+        cache = Mock(side_effect=AssertionError("unverified candidate reached cache"))
+        monkeypatch.setattr(fsm.vivado, "run_synthesis", synth)
+        monkeypatch.setattr(o.metrics_cache, "get", cache)
+        result = o.run()
+>       assert result["best_iteration"] == (None if stage == "missing_tb" else 0)
+E       assert None == 0
+
+tests\test_fsm_verification.py:49: AssertionError
+_ test_incomplete_candidate_never_synthesized_or_cached[FailureKind.INFRA-sim] _
+
+tmp_path = WindowsPath('C:/Users/prince.baah/Documents/Codex/2026-10-15/hey/work/process-evidence-full-01/test_incomplete_candidate_neve1')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001CB601908F0>
+stage = 'sim', kind = <FailureKind.INFRA: 'infra'>
+
+    @pytest.mark.parametrize("stage", ["compile", "sim", "repair", "missing_tb"])
+    @pytest.mark.parametrize("kind", [FailureKind.INFRA, FailureKind.UNKNOWN])
+    def test_incomplete_candidate_never_synthesized_or_cached(tmp_path, monkeypatch, stage, kind):
+        design = tmp_path / "m.v"
+        design.write_text("module m(input clk, input rst, output y); assign y=0; endmodule")
+        tb = tmp_path / "tb.v"
+        tb.write_text("// simulator mocked")
+        cfg = RunConfig(mode="optimize", top_module="m", design_path=design,
+                        testbench_path=None if stage == "missing_tb" else tb,
+                        max_iterations=1, best_of_n=1)
+        o = fsm.Orchestrator(cfg, tmp_path / "run")
+        baseline = VivadoMetrics(sim_passed=True, lut_used=20, lut_total=20800,
+                                 ff_total=41600, wns_ns=1, whs_ns=0.1, timing_met=True)
+        monkeypatch.setattr(o, "_full_flow", Mock(return_value=baseline))
+        monkeypatch.setattr(o.planner, "propose_contract", Mock(return_value="contract"))
+        monkeypatch.setattr(o.evaluator, "review_contract", Mock(return_value="ACCEPT"))
+        monkeypatch.setattr(o.planner, "plan", Mock(return_value="plan"))
+        candidate = design.read_text().replace("y=0", "y=1")
+        monkeypatch.setattr(o.generator, "generate", Mock(return_value=candidate))
+        fix = Mock(return_value=candidate)
+        monkeypatch.setattr(o.generator, "fix", fix)
+        failed = (False, "tool unavailable", kind)
+        monkeypatch.setattr(fsm.vivado, "xvlog_check", Mock(
+            return_value=failed if stage == "compile" else (True, "", FailureKind.DESIGN)))
+        sim = Mock(return_value=failed)
+        if stage == "repair":
+            first = [True]
+            def repaired_simulation(*args, **kwargs):
+                if first[0]:
+                    first[0] = False
+                    return False, "TEST FAILED", FailureKind.DESIGN
+                return failed
+            sim.side_effect = repaired_simulation
+        monkeypatch.setattr(fsm.vivado, "xsim_run", sim)
+        synth = Mock(side_effect=AssertionError("unverified candidate reached synthesis"))
+        cache = Mock(side_effect=AssertionError("unverified candidate reached cache"))
+        monkeypatch.setattr(fsm.vivado, "run_synthesis", synth)
+        monkeypatch.setattr(o.metrics_cache, "get", cache)
+        result = o.run()
+>       assert result["best_iteration"] == (None if stage == "missing_tb" else 0)
+E       assert None == 0
+
+tests\test_fsm_verification.py:49: AssertionError
+_ test_incomplete_candidate_never_synthesized_or_cached[FailureKind.INFRA-repair] _
+
+tmp_path = WindowsPath('C:/Users/prince.baah/Documents/Codex/2026-10-15/hey/work/process-evidence-full-01/test_incomplete_candidate_neve2')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001CB603BC3B0>
+stage = 'repair', kind = <FailureKind.INFRA: 'infra'>
+
+    @pytest.mark.parametrize("stage", ["compile", "sim", "repair", "missing_tb"])
+    @pytest.mark.parametrize("kind", [FailureKind.INFRA, FailureKind.UNKNOWN])
+    def test_incomplete_candidate_never_synthesized_or_cached(tmp_path, monkeypatch, stage, kind):
+        design = tmp_path / "m.v"
+        design.write_text("module m(input clk, input rst, output y); assign y=0; endmodule")
+        tb = tmp_path / "tb.v"
+        tb.write_text("// simulator mocked")
+        cfg = RunConfig(mode="optimize", top_module="m", design_path=design,
+                        testbench_path=None if stage == "missing_tb" else tb,
+                        max_iterations=1, best_of_n=1)
+        o = fsm.Orchestrator(cfg, tmp_path / "run")
+        baseline = VivadoMetrics(sim_passed=True, lut_used=20, lut_total=20800,
+                                 ff_total=41600, wns_ns=1, whs_ns=0.1, timing_met=True)
+        monkeypatch.setattr(o, "_full_flow", Mock(return_value=baseline))
+        monkeypatch.setattr(o.planner, "propose_contract", Mock(return_value="contract"))
+        monkeypatch.setattr(o.evaluator, "review_contract", Mock(return_value="ACCEPT"))
+        monkeypatch.setattr(o.planner, "plan", Mock(return_value="plan"))
+        candidate = design.read_text().replace("y=0", "y=1")
+        monkeypatch.setattr(o.generator, "generate", Mock(return_value=candidate))
+        fix = Mock(return_value=candidate)
+        monkeypatch.setattr(o.generator, "fix", fix)
+        failed = (False, "tool unavailable", kind)
+        monkeypatch.setattr(fsm.vivado, "xvlog_check", Mock(
+            return_value=failed if stage == "compile" else (True, "", FailureKind.DESIGN)))
+        sim = Mock(return_value=failed)
+        if stage == "repair":
+            first = [True]
+            def repaired_simulation(*args, **kwargs):
+                if first[0]:
+                    first[0] = False
+                    return False, "TEST FAILED", FailureKind.DESIGN
+                return failed
+            sim.side_effect = repaired_simulation
+        monkeypatch.setattr(fsm.vivado, "xsim_run", sim)
+        synth = Mock(side_effect=AssertionError("unverified candidate reached synthesis"))
+        cache = Mock(side_effect=AssertionError("unverified candidate reached cache"))
+        monkeypatch.setattr(fsm.vivado, "run_synthesis", synth)
+        monkeypatch.setattr(o.metrics_cache, "get", cache)
+        result = o.run()
+>       assert result["best_iteration"] == (None if stage == "missing_tb" else 0)
+E       assert None == 0
+
+tests\test_fsm_verification.py:49: AssertionError
+_ test_incomplete_candidate_never_synthesized_or_cached[FailureKind.UNKNOWN-compile] _
+
+tmp_path = WindowsPath('C:/Users/prince.baah/Documents/Codex/2026-10-15/hey/work/process-evidence-full-01/test_incomplete_candidate_neve4')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001CB60187E00>
+stage = 'compile', kind = <FailureKind.UNKNOWN: 'unknown'>
+
+    @pytest.mark.parametrize("stage", ["compile", "sim", "repair", "missing_tb"])
+    @pytest.mark.parametrize("kind", [FailureKind.INFRA, FailureKind.UNKNOWN])
+    def test_incomplete_candidate_never_synthesized_or_cached(tmp_path, monkeypatch, stage, kind):
+        design = tmp_path / "m.v"
+        design.write_text("module m(input clk, input rst, output y); assign y=0; endmodule")
+        tb = tmp_path / "tb.v"
+        tb.write_text("// simulator mocked")
+        cfg = RunConfig(mode="optimize", top_module="m", design_path=design,
+                        testbench_path=None if stage == "missing_tb" else tb,
+                        max_iterations=1, best_of_n=1)
+        o = fsm.Orchestrator(cfg, tmp_path / "run")
+        baseline = VivadoMetrics(sim_passed=True, lut_used=20, lut_total=20800,
+                                 ff_total=41600, wns_ns=1, whs_ns=0.1, timing_met=True)
+        monkeypatch.setattr(o, "_full_flow", Mock(return_value=baseline))
+        monkeypatch.setattr(o.planner, "propose_contract", Mock(return_value="contract"))
+        monkeypatch.setattr(o.evaluator, "review_contract", Mock(return_value="ACCEPT"))
+        monkeypatch.setattr(o.planner, "plan", Mock(return_value="plan"))
+        candidate = design.read_text().replace("y=0", "y=1")
+        monkeypatch.setattr(o.generator, "generate", Mock(return_value=candidate))
+        fix = Mock(return_value=candidate)
+        monkeypatch.setattr(o.generator, "fix", fix)
+        failed = (False, "tool unavailable", kind)
+        monkeypatch.setattr(fsm.vivado, "xvlog_check", Mock(
+            return_value=failed if stage == "compile" else (True, "", FailureKind.DESIGN)))
+        sim = Mock(return_value=failed)
+        if stage == "repair":
+            first = [True]
+            def repaired_simulation(*args, **kwargs):
+                if first[0]:
+                    first[0] = False
+                    return False, "TEST FAILED", FailureKind.DESIGN
+                return failed
+            sim.side_effect = repaired_simulation
+        monkeypatch.setattr(fsm.vivado, "xsim_run", sim)
+        synth = Mock(side_effect=AssertionError("unverified candidate reached synthesis"))
+        cache = Mock(side_effect=AssertionError("unverified candidate reached cache"))
+        monkeypatch.setattr(fsm.vivado, "run_synthesis", synth)
+        monkeypatch.setattr(o.metrics_cache, "get", cache)
+        result = o.run()
+>       assert result["best_iteration"] == (None if stage == "missing_tb" else 0)
+E       assert None == 0
+
+tests\test_fsm_verification.py:49: AssertionError
+_ test_incomplete_candidate_never_synthesized_or_cached[FailureKind.UNKNOWN-sim] _
+
+tmp_path = WindowsPath('C:/Users/prince.baah/Documents/Codex/2026-10-15/hey/work/process-evidence-full-01/test_incomplete_candidate_neve5')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001CB60191E20>
+stage = 'sim', kind = <FailureKind.UNKNOWN: 'unknown'>
+
+    @pytest.mark.parametrize("stage", ["compile", "sim", "repair", "missing_tb"])
+    @pytest.mark.parametrize("kind", [FailureKind.INFRA, FailureKind.UNKNOWN])
+    def test_incomplete_candidate_never_synthesized_or_cached(tmp_path, monkeypatch, stage, kind):
+        design = tmp_path / "m.v"
+        design.write_text("module m(input clk, input rst, output y); assign y=0; endmodule")
+        tb = tmp_path / "tb.v"
+        tb.write_text("// simulator mocked")
+        cfg = RunConfig(mode="optimize", top_module="m", design_path=design,
+                        testbench_path=None if stage == "missing_tb" else tb,
+                        max_iterations=1, best_of_n=1)
+        o = fsm.Orchestrator(cfg, tmp_path / "run")
+        baseline = VivadoMetrics(sim_passed=True, lut_used=20, lut_total=20800,
+                                 ff_total=41600, wns_ns=1, whs_ns=0.1, timing_met=True)
+        monkeypatch.setattr(o, "_full_flow", Mock(return_value=baseline))
+        monkeypatch.setattr(o.planner, "propose_contract", Mock(return_value="contract"))
+        monkeypatch.setattr(o.evaluator, "review_contract", Mock(return_value="ACCEPT"))
+        monkeypatch.setattr(o.planner, "plan", Mock(return_value="plan"))
+        candidate = design.read_text().replace("y=0", "y=1")
+        monkeypatch.setattr(o.generator, "generate", Mock(return_value=candidate))
+        fix = Mock(return_value=candidate)
+        monkeypatch.setattr(o.generator, "fix", fix)
+        failed = (False, "tool unavailable", kind)
+        monkeypatch.setattr(fsm.vivado, "xvlog_check", Mock(
+            return_value=failed if stage == "compile" else (True, "", FailureKind.DESIGN)))
+        sim = Mock(return_value=failed)
+        if stage == "repair":
+            first = [True]
+            def repaired_simulation(*args, **kwargs):
+                if first[0]:
+                    first[0] = False
+                    return False, "TEST FAILED", FailureKind.DESIGN
+                return failed
+            sim.side_effect = repaired_simulation
+        monkeypatch.setattr(fsm.vivado, "xsim_run", sim)
+        synth = Mock(side_effect=AssertionError("unverified candidate reached synthesis"))
+        cache = Mock(side_effect=AssertionError("unverified candidate reached cache"))
+        monkeypatch.setattr(fsm.vivado, "run_synthesis", synth)
+        monkeypatch.setattr(o.metrics_cache, "get", cache)
+        result = o.run()
+>       assert result["best_iteration"] == (None if stage == "missing_tb" else 0)
+E       assert None == 0
+
+tests\test_fsm_verification.py:49: AssertionError
+_ test_incomplete_candidate_never_synthesized_or_cached[FailureKind.UNKNOWN-repair] _
+
+tmp_path = WindowsPath('C:/Users/prince.baah/Documents/Codex/2026-10-15/hey/work/process-evidence-full-01/test_incomplete_candidate_neve6')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001CB60174950>
+stage = 'repair', kind = <FailureKind.UNKNOWN: 'unknown'>
+
+    @pytest.mark.parametrize("stage", ["compile", "sim", "repair", "missing_tb"])
+    @pytest.mark.parametrize("kind", [FailureKind.INFRA, FailureKind.UNKNOWN])
+    def test_incomplete_candidate_never_synthesized_or_cached(tmp_path, monkeypatch, stage, kind):
+        design = tmp_path / "m.v"
+        design.write_text("module m(input clk, input rst, output y); assign y=0; endmodule")
+        tb = tmp_path / "tb.v"
+        tb.write_text("// simulator mocked")
+        cfg = RunConfig(mode="optimize", top_module="m", design_path=design,
+                        testbench_path=None if stage == "missing_tb" else tb,
+                        max_iterations=1, best_of_n=1)
+        o = fsm.Orchestrator(cfg, tmp_path / "run")
+        baseline = VivadoMetrics(sim_passed=True, lut_used=20, lut_total=20800,
+                                 ff_total=41600, wns_ns=1, whs_ns=0.1, timing_met=True)
+        monkeypatch.setattr(o, "_full_flow", Mock(return_value=baseline))
+        monkeypatch.setattr(o.planner, "propose_contract", Mock(return_value="contract"))
+        monkeypatch.setattr(o.evaluator, "review_contract", Mock(return_value="ACCEPT"))
+        monkeypatch.setattr(o.planner, "plan", Mock(return_value="plan"))
+        candidate = design.read_text().replace("y=0", "y=1")
+        monkeypatch.setattr(o.generator, "generate", Mock(return_value=candidate))
+        fix = Mock(return_value=candidate)
+        monkeypatch.setattr(o.generator, "fix", fix)
+        failed = (False, "tool unavailable", kind)
+        monkeypatch.setattr(fsm.vivado, "xvlog_check", Mock(
+            return_value=failed if stage == "compile" else (True, "", FailureKind.DESIGN)))
+        sim = Mock(return_value=failed)
+        if stage == "repair":
+            first = [True]
+            def repaired_simulation(*args, **kwargs):
+                if first[0]:
+                    first[0] = False
+                    return False, "TEST FAILED", FailureKind.DESIGN
+                return failed
+            sim.side_effect = repaired_simulation
+        monkeypatch.setattr(fsm.vivado, "xsim_run", sim)
+        synth = Mock(side_effect=AssertionError("unverified candidate reached synthesis"))
+        cache = Mock(side_effect=AssertionError("unverified candidate reached cache"))
+        monkeypatch.setattr(fsm.vivado, "run_synthesis", synth)
+        monkeypatch.setattr(o.metrics_cache, "get", cache)
+        result = o.run()
+>       assert result["best_iteration"] == (None if stage == "missing_tb" else 0)
+E       assert None == 0
+
+tests\test_fsm_verification.py:49: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_fsm_build.py::test_typed_build_generates_qualifies_integrates_and_done_resumes
+FAILED tests/test_fsm_verification.py::test_incomplete_candidate_never_synthesized_or_cached[FailureKind.INFRA-compile]
+FAILED tests/test_fsm_verification.py::test_incomplete_candidate_never_synthesized_or_cached[FailureKind.INFRA-sim]
+FAILED tests/test_fsm_verification.py::test_incomplete_candidate_never_synthesized_or_cached[FailureKind.INFRA-repair]
+FAILED tests/test_fsm_verification.py::test_incomplete_candidate_never_synthesized_or_cached[FailureKind.UNKNOWN-compile]
+FAILED tests/test_fsm_verification.py::test_incomplete_candidate_never_synthesized_or_cached[FailureKind.UNKNOWN-sim]
+FAILED tests/test_fsm_verification.py::test_incomplete_candidate_never_synthesized_or_cached[FailureKind.UNKNOWN-repair]
+7 failed, 648 passed in 205.97s (0:03:25)

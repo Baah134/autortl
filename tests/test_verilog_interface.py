@@ -53,3 +53,12 @@ def test_default_first_comb_and_identifier_substrings_are_valid():
 def test_unsupported_interfaces_fail_closed(source):
     with pytest.raises(ValueError):
         infer_module(source, "m")
+
+
+@pytest.mark.parametrize("annotation,known,cycles", [("", False, 0), ("// @latency 0\n", True, 0), ("// @latency 2\n", True, 2)])
+def test_inferred_latency_distinguishes_absent_annotation_from_zero(annotation, known, cycles):
+    source = annotation + "module m(input clk,input a,output reg y); always @(posedge clk) y<=a; endmodule"
+    contract = infer_module(source, "m")
+    assert contract.latency_known is known and contract.latency == cycles
+    # Numeric metadata records a declaration; it does not analyze the RTL's cycles.
+    assert contract.interface_signature is not None

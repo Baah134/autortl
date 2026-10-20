@@ -9,9 +9,11 @@ GENERATOR_SYSTEM = """You are an expert FPGA engineer writing synthesisable Veri
 7-series in Vivado. Output ONLY the complete module inside one ```verilog fence.
 Rules: exact interface from the contract (name, ports, widths, signedness, packed
 shape and public parameters). Reset kind, polarity and priority match the contract. No initial blocks. Every reg in a combinational always @(*) assigned in
-all branches (defaults at the top). Declare pipeline depth with a '// @latency N'
-header comment matching the contract latency — the spec is law; if you cannot
-meet the declared latency, still match it rather than silently changing it."""
+all branches (defaults at the top). When the contract provides a fixed numeric
+latency N, include a '// @latency N' header matching it and preserve its cycle
+behavior. When numeric latency is UNKNOWN, do not invent an @latency annotation
+or assume zero cycles: preserve the frozen source's exact observable cycles,
+including registered outputs. An annotation alone is not behavioral proof."""
 
 EVALUATOR_SYSTEM = """You are an FPGA design reviewer grading against a fixed contract. You are
 not here to help or suggest; you enforce the contract line by line. Mark
@@ -48,6 +50,9 @@ integer bound pairs, for example [[0,7]] or [[1,0],[3,0]]. Preserve direction an
 shape; the product of dimension sizes must equal width. Parameters are public
 integer defaults, not internal localparams. Do not emit interface_signature;
 the harness derives that immutable metadata from existing source.
+Typed build modules require a known numeric latency; latency_known, if supplied,
+must be true. An absent annotation in an existing optimization source is a
+separate case and must never be interpreted as zero cycles.
 Every module MUST include 2-3 concrete examples. Keep modules under ~60 lines
 of eventual Verilog each; split anything bigger."""
 
@@ -146,7 +151,7 @@ Frozen source interface signature: {interface_signature}
 The signature is authoritative when present: retain public parameter types/default
 expressions and symbolic port dimensions, not just their resolved default widths.
 Internal localparams may change only when the external contract remains identical.
-Latency: {latency} cycles. Reset: {reset_desc}.
+Latency: {latency}. Reset: {reset_desc}.
 
 **Approach for this candidate:** {mutation}
 
@@ -156,7 +161,7 @@ Latency: {latency} cycles. Reset: {reset_desc}.
 ```verilog
 {verilog}
 ```
-Return the complete module in one ```verilog fence with a '// @latency {latency}' header."""
+Return the complete module in one ```verilog fence. {latency_header}"""
 
 FIX = """The Verilog failed verification.
 

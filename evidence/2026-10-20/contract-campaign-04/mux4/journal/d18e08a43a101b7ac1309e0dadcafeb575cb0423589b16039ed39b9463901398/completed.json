@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_1:model:generator.generate:0",
+  "result": "`timescale 1ns/1ps\n// @latency 0\nmodule mux4 (\n    input  wire       clk,\n    input  wire       rst,\n    input  wire [7:0] a,\n    input  wire [7:0] b,\n    input  wire [7:0] c,\n    input  wire [7:0] d,\n    input  wire [1:0] sel,\n    output wire [7:0] y\n);\n    reg [7:0] y_reg;\n\n    assign y = y_reg;\n\n    always @(posedge clk) begin\n        if (rst)\n            y_reg <= 8'd0;\n        else\n            y_reg <= sel[1] ? (sel[0] ? d : c) : (sel[0] ? b : a);\n    end\nendmodule",
+  "artifacts": {}
+}

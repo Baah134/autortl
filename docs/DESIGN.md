@@ -84,7 +84,7 @@ and its helper agents supervise integration; persistent runtime dialogue and
 fully reliable FSM resume remain separate development work.
 
 ## Modes
-- `optimize`: existing design+tb in, contract negotiated about metrics.
+- `optimize`: existing design+tb in, fixed contract rendered from frozen evidence.
 - `build`: intent → spec → lint → stubs → per-module build → mechanical
   integration → flows into optimize as its baseline.
 - `resume`, `bench` complete the CLI.
@@ -103,3 +103,22 @@ harness templates only.
 ## Deferred by decision (not forgotten)
 Pulse compare mode; LLM watchdog-diagnosis layer; router reordering (after
 10 runs); Tier-3 skill regression evals; formal verification rung.
+
+## Exit evidence and latency authority
+
+Each tool invocation writes tool_exit_records.log with actual process exits,
+distinct driver outcomes, process identity, duration and output-log hash.
+Timeout124 and launch126/127 are driver codes, never successful process exits.
+Context validates the full receipt history and exposes bounded records plus
+latest outcomes. Cache and DONE retain evidence hashes; source-identical physical
+Doctor trials explicitly cite prior simulation evidence rather than claim reruns.
+
+Unannotated optimization inputs have unknown declared numeric latency. They do
+not acquire a zero-cycle contract; every observable source cycle remains fixed.
+Typed builds require known numeric latency for generated reference comparisons.
+An annotation alone is never independent proof of behavior.
+
+Curriculum cohorts bind tasks, configuration, frozen implementation/Python/tool
+identity and governance code. Missing or mixed runtime provenance cannot qualify
+a tier. CLI model identity remains unobserved; a tier result does not establish
+a frozen-model experiment or weaker-model robustness.

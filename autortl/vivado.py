@@ -8,12 +8,15 @@ Message severity promotion (never demotion) is applied from the taxonomy.
 """
 from __future__ import annotations
 import re
+import json
+import hashlib
 import os
 import signal
 import subprocess
 import time
 from pathlib import Path
 from .config import RunConfig
+from .state import atomic_write_text
 from .report_parser import VivadoMetrics, parse_sim_log, parse_all, extract_message_ids
 from .triage import classify, FailureKind
 
@@ -78,8 +81,19 @@ def _stop_tool(process: subprocess.Popen, stdout="", stderr="") -> tuple[str, st
     return _output_text(stdout), _output_text(stderr) + "\n" + "\n".join(notes)
 
 
+def _append_tool_exit_record(cwd: Path, record: dict) -> None:
+    """Durably retain every invocation without recording arguments or output."""
+    path = Path(cwd) / "tool_exit_records.log"
+    previous = path.read_text(encoding="utf-8") if path.exists() else ""
+    separator = "\n" if previous and not previous.endswith("\n") else ""
+    atomic_write_text(path, previous + separator + json.dumps(record, sort_keys=True,
+                                                             allow_nan=False) + "\n")
+
+
 def _run(cmd: list[str], cwd: Path, timeout: int, log_path: Path) -> tuple[int, str]:
     t0 = time.monotonic()
+    process, primary_error = None, None
+    status, driver_rc, log_written = "launch_failed", None, False
     try:
         try:
             process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
@@ -87,27 +101,62 @@ def _run(cmd: list[str], cwd: Path, timeout: int, log_path: Path) -> tuple[int, 
                                        cwd=str(cwd), shell=False,
                                        start_new_session=os.name != "nt")
         except OSError as exc:
-            rc = 127 if isinstance(exc, FileNotFoundError) else 126
-            msg = f"{cmd[0]} {'not found' if rc == 127 else 'could not launch'}: {exc}"
+            driver_rc = 127 if isinstance(exc, FileNotFoundError) else 126
+            msg = f"{cmd[0]} {'not found' if driver_rc == 127 else 'could not launch'}: {exc}"
             log_path.write_text(msg, encoding="utf-8", errors="replace")
-            return rc, msg
+            log_written = True
+            return driver_rc, msg
+        except BaseException:
+            status = "cancelled"
+            raise
         try:
             stdout, stderr = process.communicate(timeout=timeout)
-            rc = process.returncode
+            status = "exited"
+            # A mocked, missing or malformed process code cannot become zero.
+            driver_rc = process.returncode if type(process.returncode) is int else 126
         except subprocess.TimeoutExpired as exc:
+            status, driver_rc = "timed_out", 124
             stdout, stderr = _stop_tool(process, exc.output, exc.stderr)
             stderr += f"\ntimed out after {timeout}s"
-            rc = 124
-        except BaseException:
-            stdout, stderr = _stop_tool(process)
-            log_path.write_text(stdout + "\n" + stderr + "\nTool execution cancelled",
-                                encoding="utf-8", errors="replace")
+        except BaseException as cancelled:
+            status, driver_rc = "cancelled", None
+            try:
+                stdout, stderr = _stop_tool(process)
+                log_path.write_text(stdout + "\n" + stderr + "\nTool execution cancelled",
+                                    encoding="utf-8", errors="replace")
+                log_written = True
+            except BaseException as cleanup_error:
+                cancelled.add_note("Tool cancellation cleanup failed: " + type(cleanup_error).__name__)
             raise
         out = _output_text(stdout) + "\n" + _output_text(stderr)
         log_path.write_text(out, encoding="utf-8", errors="replace")
-        return rc, out
+        log_written = True
+        return driver_rc, out
+    except BaseException as exc:
+        primary_error = exc
+        raise
     finally:
-        _run.last_seconds = time.monotonic() - t0
+        _run.last_seconds = max(0.0, time.monotonic() - t0)
+        try:
+            actual_rc = getattr(process, "returncode", None)
+            pid = getattr(process, "pid", None)
+            executable = str(cmd[0])
+            basename = executable.replace("\\", "/").rsplit("/", 1)[-1].lower()
+            tool = re.sub(r"\.(?:exe|bat|cmd)$", "", basename)
+            record = {"schema_version": 1, "tool": tool, "executable": executable,
+                      "cwd": str(Path(cwd).resolve()),
+                      "pid": pid if type(pid) is int and pid > 0 else None,
+                      "status": status,
+                      "returncode": actual_rc if type(actual_rc) is int else None,
+                      "driver_returncode": driver_rc, "elapsed_seconds": _run.last_seconds,
+                      "output_log_path": str(Path(log_path).resolve()),
+                      "output_log_sha256": hashlib.sha256(log_path.read_bytes()).hexdigest()
+                                           if log_written else None}
+            _append_tool_exit_record(cwd, record)
+        except BaseException as receipt_error:
+            if primary_error is None:
+                raise
+            primary_error.add_note("Tool exit receipt could not be saved: " + type(receipt_error).__name__)
 _run.last_seconds = 0.0
 
 

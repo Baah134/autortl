@@ -8,6 +8,8 @@ def evidence(tmp_path):
     root.mkdir()
     (root / "m.v").write_text("module m; endmodule", encoding="utf-8")
     (root / "timing.rpt").write_text("WNS 1.0", encoding="utf-8")
+    (root / "tool_exit_records.log").write_text('{"tool":"xsim","returncode":0}\n', encoding="utf-8")
+    (root / "sim_log.txt").write_text("TEST PASSED\n", encoding="utf-8")
     return root
 
 
@@ -57,7 +59,7 @@ def test_context_changes_and_legacy_cache_never_hit(tmp_path, evidence):
     assert c.get(source + " // cosmetic", {"part": "a"}) is None
 
 
-@pytest.mark.parametrize("target", ["m.v", "timing.rpt"])
+@pytest.mark.parametrize("target", ["m.v", "timing.rpt", "tool_exit_records.log", "sim_log.txt"])
 @pytest.mark.parametrize("change", ["edit", "delete"])
 def test_changed_or_missing_evidence_invalidates_cache(tmp_path, evidence, target, change):
     c = MetricsCache(tmp_path / "m.json")

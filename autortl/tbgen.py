@@ -25,6 +25,8 @@ def _validate(spec, stimulus=None, expected=None):
     names = [p.name for p in spec.ports]
     if len(names) != len(set(names)):
         raise ValueError("duplicate testbench ports")
+    if spec.latency_known is not True:
+        raise ValueError("testbench generation requires latency_known to be True; unknown numeric latency is not zero")
     if type(spec.latency) is not int or not 0 <= spec.latency <= 1024:
         raise ValueError("unsupported latency")
     if spec.compare_mode not in ("fixed_latency", "scoreboard"):

@@ -34,6 +34,17 @@ def trial(tmp_path, monkeypatch):
     monkeypatch.setattr(fsm.vivado, "run_synthesis", Mock(return_value=(True, "", FailureKind.DESIGN)))
     monkeypatch.setattr(fsm.vivado, "full_metrics", Mock(return_value=metrics(8, True)))
     monkeypatch.setattr(fsm.vivado, "vivado_seconds", Mock(return_value=2))
+    from tests.test_fsm_resume import write_mock_tool_receipts
+    actual_tool = o._tool
+    def mocked_tool_with_receipts(name, *args, **kwargs):
+        result = actual_tool(name, *args, **kwargs)
+        mapping = {"xvlog_check": (2, ("xvlog",)), "xsim_run": (4, ("xvlog", "xelab", "xsim")),
+                   "run_synthesis": (3, ("vivado",))}
+        if name in mapping and result[0]:
+            index, tools = mapping[name]
+            write_mock_tool_receipts(args[index], tools)
+        return result
+    monkeypatch.setattr(o, "_tool", mocked_tool_with_receipts)
     return o, parent, original, source, tb
 
 
@@ -111,6 +122,8 @@ def prepare_loop(trial, monkeypatch):
     monkeypatch.setattr(o.evaluator, "evaluate", Mock(return_value=Evaluation("accepted", "ACCEPT", 1, 0)))
     monkeypatch.setattr(o.generator, "generate", Mock(return_value=source.replace("y=0", "y=1")))
     monkeypatch.setattr(fsm.vivado, "xvlog_check", Mock(return_value=(True, "", FailureKind.DESIGN)))
+    from tests.test_fsm_resume import write_mock_tool_receipts
+    write_mock_tool_receipts(o.state.iter_dir(0))
     return o
 
 
@@ -139,6 +152,8 @@ def test_valid_cache_remains_eligible_after_gate(trial, monkeypatch):
     o = prepare_loop(trial, monkeypatch)
     evidence = o.state.run_dir / "cached_evidence"
     evidence.mkdir()
+    from tests.test_fsm_resume import write_mock_tool_receipts
+    write_mock_tool_receipts(evidence)
     monkeypatch.setattr(o.metrics_cache, "get_entry", Mock(return_value={
         "metrics": metrics(9, True).to_dict(), "artifact_dir": str(evidence)}))
     result = o.run()

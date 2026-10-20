@@ -344,3 +344,43 @@ changes, commands, outcomes, evidence locations, limitations, and next action.
   remains a separate supervised experiment. No general parameter proof claimed.
 - Portable evidence: interface-atomic-tests.txt, signed-interface/ and
   contract-campaign-03/. Fresh full tier0 campaign follows at the new revision.
+
+
+## 2026-10-20 - Fresh complete cohort and evidence feedback
+
+- Frozen2318e42 campaign04 finished **2/2 mandatory gates**, first qualifying
+  cohort, not a held tier. Counter and mux each used three model calls. No
+  Windows checkpoint error recurred; no candidate was promoted.
+- Counter candidate53LUT/37FF, WNS0.456ns/WHS0.282ns passed the physical
+  ladder but was rejected because evaluator context lacked actual process exits.
+  Baseline55 retained. Mux8LUT matched its baseline and was rejected.
+- Mux review also exposed unknown source latency being presented as zero.
+  Repairs are in progress for explicit unknown metadata and process receipts;
+  original decisions are preserved, never retroactively regraded.
+- Archived185 files under evidence/2026-10-20/contract-campaign-04 with raw
+  source/reports/contracts/budgets/journals/runtime hashes and console output.
+
+- Implemented actual subprocess receipts, strict latest-exit/raw-log checks,
+  baseline/candidate deterministic evidence gates, cache/DONE integrity and
+  source/TB/ordered-companion verification input manifests captured inside the
+  successful journaled stage. Replay cannot restamp changed files as verified.
+- Physical-only Doctor evidence cites prior source-identical simulation and
+  checks its original inputs; missing or changed proof blocks as infrastructure,
+  not a scored RTL rejection. Typed builds/TB generation require known latency.
+- Fixed locale-dependent guidance loading with explicit UTF8 and a Unicode
+  fixture. Curriculum identity binds runtime/Python/tools and governance code;
+  missing or mixed identity cannot qualify. CLI model identity stays unobserved.
+- Initial combined suite:648passed/7failed in205.97seconds. All seven old
+  fixtures claimed successful tool results without supplying the newly required
+  receipt evidence; retain the log and adapt fixtures without weakening gates.
+
+- User requested ongoing research into comparable harnesses, with additions
+  only after careful reasoning about an actual need. Reviewed nine primary
+  source groups; docs/RESEARCH.md records mechanisms, fit, adoption triggers
+  and experiment criteria. AGENTS/START_HERE preserve this policy for later
+  coordinators. No external code, framework or dependency imported.
+
+- Final combined suite: **655 passed in207.64seconds**. The seven controlled
+  fixtures now emit explicit synthetic receipts; negative assertions and
+  production evidence gates remain intact. All54frozen runtime/governance
+  hashes match the tested source. Publishing the checkpoint before fresh05.

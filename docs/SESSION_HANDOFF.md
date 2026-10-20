@@ -8,7 +8,7 @@ status and actual process state; documentation is not execution evidence.
 - Canonical checkout: `C:/Users/prince.baah/Downloads/autortl-work`.
 - Separate preexisting `Downloads/autortl` is preserved; do not edit it.
 - Remote: https://github.com/Baah134/autortl
-- Active branch: `codex/contract-context`, published through `1243e2e`.
+- Active branch: `codex/contract-context`, published through `2318e42`.
 - Main currently includes `f08cb76`, the public README rewrite after the earlier
   CLI integration. Inspect remote hashes before integrating newer milestones.
 - Paused MCP work remains in its original stash; command-line Vivado is active.
@@ -34,7 +34,11 @@ here, in AGENTS/START_HERE and the progress log. Preserve honest CV evidence.
 
 ## Latest completed source checkpoint
 
-`1243e2e` contains fixed, mechanically rendered optimization contracts. No model
+Latest published source is `2318e42`: **554 tests passed in148.80seconds**,
+plus24actual simulation verdict checks. It adds bounded Windows checkpoint
+retries and structural parameter/signed/packed interface preservation.
+
+Its foundation `1243e2e` contains fixed, mechanically rendered optimization contracts. No model
 proposes/refines/reviews their wording. Planning, generation and final evaluator
 remain; all deterministic promotion gates remain mandatory. Immutable contract,
 source, config, runtime and report identities protect replay and DONE reuse.
@@ -44,7 +48,7 @@ cycles, resets, widths and parameter semantics. Missing planning guidance is
 provided; skill budgets count headers and separators. The referenced FIFO's
 combinational full/next-pointer loop is repaired and independently checked.
 
-- Full suite: **497 passed in 100.04 seconds**.
+- Foundation suite at1243e2e: **497 passed in100.04seconds**.
 - Initial suite: 496 passed/one Windows CRLF-vs-LF fixture assertion. Corrected
   fixture compares raw decoded bytes; the original failed log is retained.
 - Live simulation qualification: nine generated-testbench cases, five counter32
@@ -69,14 +73,28 @@ at the frozen 1243e2e runtime. Mux completed with three model calls and retained
 its baseline; counter stopped after passing simulation when a budget checkpoint
 replacement raised WinError5. Original results are archived in contract-campaign-03.
 
-Current uncommitted runtime repairs add bounded Windows checkpoint retries and
-structural parameter/signed/packed interface preservation. Full regression and
-new signed-interface live checks are in progress; keep sources unchanged until
-those finish and inspect output logs before further edits.
-Budgets per design: one iteration/candidate, 16 model calls, 12 tool minutes,
-18 wall minutes, one infrastructure retry. Device xc7a35tcpg236-1, Vivado2025.2,
-10 ns clock and explicit ideal zero I/O assumptions. Do not edit runtime source
-during a run or resume a previous run after implementation changes.
+Checkpoint `2318e42` publishes bounded Windows checkpoint retries and structural
+parameter/signed/packed interface preservation. **554 tests passed in148.80s**;
+all four new signed/parameter live checks match expected verdicts.
+
+Campaign04 completed at frozen2318e42 under
+`logs/contract-campaign-04/tier0_2_c6uspo`: **2/2 mandatory gates**, first
+qualifying cohort under its historical governance, not held. Three model calls
+each; neither candidate promoted. It cannot count toward a new runtime-bound
+streak after the current governance repair.
+Counter53vs55LUT passed physical verification but review rejected missing actual
+process exits in context. Mux8LUT had no gain; its review exposed inferred
+zero-latency metadata despite an unannotated registered original. Raw outcomes
+are archived in evidence/2026-10-20/contract-campaign-04 (185 hashed files).
+
+Current uncommitted work closes those gaps: durable actual process receipts,
+deterministic receipt gating, cache/DONE retention, source-bound Doctor
+verification reuse, explicit unknown source latency, UTF8 skill loading, and
+frozen-runtime curriculum identity. All runtime edits and fixtures are frozen. **655 tests passed in207.64seconds**
+after the seven legacy fixture updates; initial648pass/7fail log is preserved.
+All54runtime/governance identities match the frozen test manifest. Publishing
+this tested development checkpoint, then launch fresh campaign05 with the same
+bounded counter/mux tasks. No runtime edits during that campaign.
 
 Earlier original cohorts remain failures:
 
@@ -95,9 +113,9 @@ held tier is established by these results.
 
 ## Exact next actions
 
-1. Finish and inspect the combined interface/storage tests and signed-interface
-   live checks. Publish the tested checkpoint, then run a fresh bounded tier0
-   campaign under the new runtime. Do not resume campaign03 across code changes.
+1. Collect receipt/latency/governance worker results; independently review, run
+   the full regression suite, publish a tested checkpoint, then fresh campaign05.
+   Never resume campaign03/04 across implementation changes.
 2. Fix reproduced harness defects with tests and taxonomy, using a fresh run
    directory after changes. Never weaken independent tests or acceptance gates.
 3. Exercise typed counter8/encoder8 builds with independent top tests, then the

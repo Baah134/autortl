@@ -1,3 +1,4 @@
+import pytest
 from pathlib import Path
 from autortl.spec import ModuleSpec, Port, ResetSpec
 from autortl.golden import GoldenModel
@@ -63,3 +64,18 @@ def test_pulse_mode_raises(tmp_path):
     import pytest
     with pytest.raises(Exception):
         generate(spec, GoldenModel(g), tmp_path)
+
+
+@pytest.mark.parametrize("known", [False, 0, 1, "true", "false", None])
+@pytest.mark.parametrize("entry", ["stimulus", "fixed_tb", "generate"])
+def test_direct_testbench_apis_reject_unknown_or_nonboolean_latency(tmp_path, known, entry):
+    spec = adder_spec()
+    spec.latency = 0
+    spec.latency_known = known
+    with pytest.raises(ValueError, match="requires latency_known to be True"):
+        if entry == "stimulus":
+            gen_stimulus(spec, n_random=0)
+        elif entry == "fixed_tb":
+            generate_fixed_latency_tb(spec, [{"a": 1, "b": 2}], [{"y": 3}])
+        else:
+            generate(spec, None, tmp_path, n_random=0)
