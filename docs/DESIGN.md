@@ -1,11 +1,14 @@
 # AutoRTL v4 — Design Document (single source of truth)
 
-When implementation questions arise, the answer is what this document says.
+This document describes the intended architecture. Runtime code and retained
+verification evidence establish implemented behavior; docs/HARNESS_REVIEW.md
+records feature coverage, limits and simplification decisions.
 
 ## Thesis
 The harness carries the intelligence; the models are replaceable function
-calls. Every LLM call is shrunk until a weak model can't fail it; everything
-else is deterministic tooling. If the system only performs well with the best
+calls. The goal is small, explicit model tasks backed by deterministic
+verification and actionable repair feedback. Weak-model reliability is an
+experimental target, not an established result. If the system only performs well with the best
 model, the design has failed its own requirement.
 
 ## The seven pillars

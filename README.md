@@ -14,7 +14,7 @@ learn from failures, and retain the best correct design within a fixed budget.
 
 | Validation | Recorded result |
 |---|---|
-| Harness regression suite | **436 tests passed** |
+| Harness regression suite | **468 tests passed** |
 | Live Vivado testbench checks | **9 generated-testbench cases plus 5 counter reference/mutation cases matched expected verdicts** |
 | Supervised mux simulation and routing | **8 LUTs · 8 FFs · setup slack 0.579 ns · hold slack 0.052 ns** |
 
@@ -29,7 +29,7 @@ The first bounded optimization cohort finished **0/2**, with failures preserved
 and followed by targeted repairs.
 
 See the [test evidence](evidence/2026-10-19/README.md),
-[full-suite result](evidence/2026-10-20/harness-tests.txt) and
+[full-suite result](evidence/2026-10-20/harness-audit-tests.txt) and
 [live experiment reports](evidence/2026-10-19/live-tier0/README.md).
 
 ## The design loop

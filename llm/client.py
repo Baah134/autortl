@@ -20,6 +20,15 @@ _BACKENDS = {"codex": codex_cli}
 _ROUTING_PATH = Path(__file__).parent / "routing.yaml"
 _STATS_PATH = Path(__file__).parent / "router_stats.jsonl"
 
+
+class ModelCallError(RuntimeError):
+    """Typed provider failure; deterministic verification must not grade it as RTL."""
+    def __init__(self, role: str, code: str, metadata: dict | None = None, message: str = "model worker failed"):
+        self.role = role
+        self.code = code
+        self.metadata = metadata or {}
+        super().__init__(f"{code}: role '{role}': {codex_cli.redact(message)[:400]}")
+
 def _load_routing() -> dict:
     if yaml and _ROUTING_PATH.exists():
         return yaml.safe_load(_ROUTING_PATH.read_text())
@@ -48,12 +57,12 @@ def ask(role: str, prompt: str, system: str = "",
     retries = cfg.get("defaults", {}).get("max_retries_per_backend", 2)
     timeout = cfg.get("defaults", {}).get("timeout_s", 180)
 
-    last_err = ""
+    last_error = None
     for entry in chain:
         backend_name, _, alias = entry.partition(".")
         backend = _BACKENDS.get(backend_name)
         if backend is None:
-            raise RuntimeError(f"CODEX_UNAVAILABLE: unsupported backend '{backend_name}'")
+            raise ModelCallError(role, "CODEX_UNAVAILABLE", message=f"unsupported backend '{backend_name}'")
         for attempt in range(1, retries + 1):
             call_timeout = timeout
             if budget is not None:
@@ -71,10 +80,12 @@ def ask(role: str, prompt: str, system: str = "",
                     return text
                 raise codex_cli.CodexError("CODEX_PROTOCOL", "empty response", meta)
             except Exception as e:
-                last_err = str(e)
+                last_error = e
                 _record(role, entry, False, time.time() - t0,
                         getattr(e, "metadata", None), type(e).__name__)
-                if not isinstance(e, codex_cli.CodexError) or e.code != "CODEX_TIMEOUT":
+                if isinstance(e, codex_cli.CodexError) and e.code in ("CODEX_AUTH", "CODEX_QUOTA"):
+                    raise ModelCallError(role, e.code, e.metadata, str(e)) from e
+                if not isinstance(e, codex_cli.CodexError) or e.code not in ("CODEX_TIMEOUT", "CODEX_NETWORK"):
                     break     # non-retryable on this backend: next chain entry
                 if attempt < retries:
                     delay = 2 ** attempt
@@ -82,7 +93,9 @@ def ask(role: str, prompt: str, system: str = "",
                         delay = min(delay, max(0,
                             (budget.max_wall_minutes - budget.wall_minutes) * 60))
                     time.sleep(delay)
-    raise RuntimeError(f"all backends failed for role '{role}': {last_err[:300]}")
+    raise ModelCallError(role, getattr(last_error, "code", "CODEX_UNAVAILABLE"),
+                         getattr(last_error, "metadata", None),
+                         str(last_error) if last_error else "no backend attempts configured") from last_error
 
 
 def extract_verilog(response_text: str) -> str:

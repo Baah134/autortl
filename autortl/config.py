@@ -52,6 +52,8 @@ class RunConfig:
             raise ValueError("target_freq_mhz must be positive")
         if type(self.parallel_candidates) is not bool:
             raise ValueError("parallel_candidates must be boolean")
+        if self.parallel_candidates:
+            raise ValueError("parallel_candidates=True is unsupported; candidates execute sequentially")
         if self.work_dir is None:
             raise ValueError("work_dir is required")
         for name in ("target_part", "vivado_bin", "xvlog_bin", "xelab_bin", "xsim_bin"):

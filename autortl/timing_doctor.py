@@ -1,20 +1,23 @@
 """Timing Doctor (Pothole 6): deterministic triage of timing failures with a
 tool-knobs-first escalation ladder.
 
-Escalation: tool knobs (free, zero-risk) -> RTL surgery -> replan.
-Slack magnitude picks the rung: small deficits get knobs, big ones get surgery.
+Setup escalation: tool knobs -> behavior-preserving RTL surgery -> replan.
+Hold violations require physical fixes or review of the real constraints.
 """
 from __future__ import annotations
 import re
+import math
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
+from .report_parser import VivadoMetrics, parse_timing
 
 
 class TimingCategory(Enum):
-    LOGIC_DEPTH = "logic_depth"     # too many logic levels between FFs -> pipeline
+    LOGIC_DEPTH = "logic_depth"     # rebalance existing stages without new latency
     HIGH_FANOUT = "high_fanout"     # one net drives too much -> replicate / max_fanout
     CDC = "cdc"                     # cross-clock path -> synchroniser / constraint
+    HOLD = "hold"                   # physical minimum-delay violation
     UNKNOWN = "unknown"
 
 
@@ -36,10 +39,9 @@ def parse_worst_path(timing_rpt: Path) -> tuple[float, int, int, str]:
     if not timing_rpt.exists():
         return -999.0, 0, 0, ""
     text = timing_rpt.read_text(errors="replace")
-    wns = -999.0
-    m = re.search(r"WNS\(ns\)\s+TNS\(ns\).*?\n\s*(-?[\d.]+)", text, re.DOTALL)
-    if m:
-        wns = float(m.group(1))
+    metrics = VivadoMetrics()
+    parse_timing(timing_rpt, metrics)
+    wns = metrics.wns_ns
     levels = 0
     m = re.search(r"Logic Levels:\s*(\d+)", text)
     if m:
@@ -60,16 +62,32 @@ def diagnose(work_dir: Path, already_tried_knobs: bool) -> Diagnosis:
     if not rpt.exists():
         rpt = work_dir / "timing.rpt"
     wns, levels, fanout, snippet = parse_worst_path(rpt)
+    metrics = VivadoMetrics()
+    parse_timing(rpt, metrics)
+    whs = metrics.whs_ns
 
-    if wns >= 0:
+    if any(not math.isfinite(value) or value == -999.0 for value in (wns, whs)):
+        return Diagnosis(TimingCategory.UNKNOWN, wns,
+                         "setup/hold report is missing or invalid", "replan",
+                         "Restore complete timing reports and verify the real clock and I/O constraints. "
+                         "Do not change RTL, clock requirements, or observable latency to hide missing evidence.")
+
+    if whs < 0:
+        action = "replan" if already_tried_knobs else "tool_knobs"
+        return Diagnosis(TimingCategory.HOLD, wns, f"hold slack {whs} ns\n{snippet}", action,
+                         "Use physical placement/routing hold-fix options first. If hold still fails, "
+                         "replan after checking the real clock and I/O constraints against the design contract. "
+                         "Do not relax the clock, change latency or throughput, or add RTL delay chains.")
+
+    if metrics.timing_met:
         return Diagnosis(TimingCategory.UNKNOWN, wns, "timing met", "none", "")
 
     # categorise
     if levels >= 8:
         cat = TimingCategory.LOGIC_DEPTH
-        surgery = (f"The critical path has {levels} logic levels. Insert a pipeline "
-                   f"register mid-path to cut combinational depth roughly in half; "
-                   f"update the '// @latency' header accordingly.")
+        surgery = (f"The critical path has {levels} logic levels. Rebalance existing pipeline "
+                   "stages, retime existing registers where behavior is preserved, or factor logic "
+                   "within the current cycle budget. Keep the @latency declaration unchanged.")
     elif fanout >= 64:
         cat = TimingCategory.HIGH_FANOUT
         surgery = (f"A net on the critical path has fanout {fanout}. Replicate the "
@@ -77,12 +95,17 @@ def diagnose(work_dir: Path, already_tried_knobs: bool) -> Diagnosis:
                    f"reduce fanout per copy.")
     elif re.search(r"clk\w*\s*->\s*clk\w*", snippet) and "clk ->" not in snippet:
         cat = TimingCategory.CDC
-        surgery = ("The failing path crosses clock domains. Insert a two-flop "
-                   "synchroniser for single-bit signals or an async FIFO for buses.")
+        return Diagnosis(cat, wns, snippet, "replan",
+                         "Check the actual clock-domain relationship and specified CDC protocol. "
+                         "Do not insert synchronizers, change latency, or waive real timing paths "
+                         "without an independently approved contract change.")
     else:
         cat = TimingCategory.UNKNOWN
-        surgery = ("Shorten the worst combinational path shown below by splitting "
-                   "the computation across two cycles:\n" + snippet)
+        surgery = ("Shorten the worst combinational path by factoring or restructuring logic "
+                   "within its existing cycle budget:\n" + snippet)
+
+    surgery += (" Preserve observable latency, throughput, interface, reset semantics, and parameter behavior. "
+                "Do not add pipeline stages, extra cycles, new clocks, or RTL delay chains.")
 
     # escalation ladder
     if wns > KNOB_THRESHOLD_NS and not already_tried_knobs:

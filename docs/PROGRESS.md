@@ -230,3 +230,42 @@ changes, commands, outcomes, evidence locations, limitations, and next action.
   review; run a fresh bounded counter/mux cohort under the same explicit I/O
   assumptions; fault-inject and resume a real run; validate counter8 and priority
   encoder builds before progressing to PWM, buffering and larger datapaths.
+
+
+## 2026-10-20 - Harness evidence, real recovery and feature audit
+
+- User reiterated that the harness is the product; designs are experiments.
+  Published README rewrite f08cb76 keeps public purpose/results separate from
+  provider continuity. Checkpoint4091a4b (436 tests in118.53s) is on development.
+- Independent counter32 reference checks all outputs, reset/load/enable priority,
+  threshold highbits, registered flags and overflow over880+checked edges.
+  Five actual Vivado cases matched verdicts: original passes, four mutants
+  trigger assertions. Archive counter32-reference includes raw logs/hashes.
+- Fresh cohort tier0_fkxbmmwe originally0/2 after unknown worker exit1; baseline
+  counter55LUT/37FF WNS.494/WHS.113; physically valid candidate53LUT/37FF
+  WNS.456/WHS.282. No candidate accepted. Both same10ns/idealzeroI/O constraints.
+- At unchanged4091 implementation, counter recovery repeated only evaluator
+  (7->8model calls), no completed tool stage and unchanged267.641s physical time.
+  Evaluator rejected due omitted timing-report identity, which exists in archive.
+  Mux recovered DONE with8LUT baseline retained. Original cohort stays0/2.
+- Feature audit docs/HARNESS_REVIEW.md keeps deterministic verification,
+  independent mutation checks, metric integrity, journals and immutable facts;
+  prioritizes provider/evidence boundaries, legal transformations and eventually
+  machine-defined optimize contracts. N=1 does not establish best-of-N benefit.
+  Golden/build/cache/restart/Doctor paths still need separate live experiments.
+- Provider worker now retains bounded redacted error diagnostics; quota/auth
+  stops immediately, network/timeout retries remain bounded. Typed failure
+  checkpoints record model_blocked without changing RTL/design rejection history.
+- Timing/utilization manifests include complete file identities and bounded
+  previews; legal mutation/Doctor advice preserves cycle/reset/parameter behavior.
+  Canonical setup/hold diagnosis selects physical hold fixing, not extra RTL cycles.
+  Removed dead module-cache read/write path; journal reuse remains. Unsupported
+  parallel execution is rejected explicitly. Weak-model performance unmeasured.
+- Initial integrated focused tests83passed51.62s; final full-suite validation
+  follows review fixes. No live optimization gain or new tier is claimed here.
+
+- Final full suite at frozen repaired implementation: **468 passed in134.47s**;
+  evidence/2026-10-20/harness-audit-tests.txt. Includes model-blocked early/late
+  replay with preserved budgets, budget-stop best pointer, power provenance,
+  hold-fix command selection and all prior regressions. Staged diff passes
+  whitespace checks. New live campaign follows at this tested revision.

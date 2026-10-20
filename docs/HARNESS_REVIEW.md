@@ -6,7 +6,7 @@ system. No weaker-model performance has been demonstrated yet.
 
 ## What the latest experiments establish
 
-- 436 regression tests passed. The counter32 reference checks every output and
+- 468 regression tests passed at the repaired implementation. The counter32 reference checks every output and
   detects all four selected mutants in real Vivado simulation. Earlier nine
   generated-testbench cases cover positive and negative timing/streaming cases.
 - Cohort tier0_fkxbmmwe originally finished 0/2 after worker exits, not failed
@@ -32,21 +32,22 @@ should not substitute for explicit machine predicates.
 | Keep | Verification ladder and metric integrity | Exercised on real baselines/candidates. Reject missing metrics and failed setup/hold; preserve exact source-to-report linkage. |
 | Keep | Independent reference tests and mutation qualification | Actual bug detection catches changed latency, high-bit comparisons, reset and overflow semantics. Expand before increasing complexity. Mutation coverage is not a proof of all behavior. |
 | Keep | Atomic journals and immutable context | Controlled interruption/tamper tests and real provider recovery exist. Add real process interruption coverage and preserve accounting. |
-| Improve now | Report evidence delivered to roles | Supply timing as well as utilization report identities. Make parsed metric provenance explicit and bounded. A model should not have to guess which reports exist. |
-| Improve now | Worker diagnostics and blocked outcomes | Nonzero exit currently discards diagnostics. Retain bounded error evidence and save an explicit resumable model-blocked outcome; never turn this into an RTL rejection. |
+| Improve now | Report evidence delivered to roles | Implemented timing/utilization/power manifests, file hashes, bounded previews and explicit metric provenance; fresh live evaluation next. |
+| Improve now | Worker diagnostics and blocked outcomes | Implemented bounded redacted diagnostics, typed provider failures and resumable model-blocked outcomes. Budget stops retain the verified best pointer. Controlled replay tests validate recovery; live provider recovery was already observed at the prior revision. |
 | Simplify next | Prose contract negotiation | Four successful calls preceded counter planning/generation. Build fixed optimize-mode contracts mechanically; spend model calls on architectural hypotheses and repairs. |
 | Improve next | Acceptance policy | Define machine-checkable mandatory predicates and make model review advisory for their measurable portions. Preserve genuine semantic checks; add tests for any bug a reviewer finds. Do not simply bypass a rejection to publish a gain. |
-| Improve | Legal mutation portfolio and Doctor | Suggestions must respect latency/reset constraints. Validate tool-only retiming, RTL surgery and hold-only failures separately. Candidate context must show actual tool settings. |
+| Improve | Legal mutation portfolio and Doctor | Mutation and surgery prompts now preserve latency/reset/parameter semantics. Canonical setup/hold diagnosis maps hold failures to physical hold fixing, then replan. Live Doctor repair remains unproven. |
 | Validate live | Contextual cache, build, golden process and restart | Regression coverage exists. This cohort does not prove live build, cache reuse, restart or general interruption recovery. Exercise each explicitly. |
 | Measure | Best-of-N diversity, skills, watchdog and advisor | Current cohort uses N=1. Their marginal benefit has not been measured; do not present them as established gains. |
-| Remove or disable clearly | Dead module-cache branch and unused controls | Build uses a disabled cache read branch while still writing entries. parallel_candidates has no execution consumer. Preserve config compatibility while rejecting unsupported settings or deleting dead branches with regression coverage. |
+| Remove or disable clearly | Dead module-cache branch and unused controls | Removed unreachable module-cache branch and writes; verified journal reuse remains. False parallel_candidates stays compatible; True now errors explicitly because execution is sequential. |
 | Keep historical only | Legacy provider adapters and max_turns argument | Active runtime is Codex-only. max_turns is not enforced. Do not advertise these as working runtime capabilities. |
 
 ## Next feature coverage experiments
 
-1. Finish recovery and archive the current cohort honestly. Keep original
-   failed-attempt records separate from successful follow-up recovery.
-2. Close report-provenance and worker-diagnostic gaps with regression tests.
+1. Recovery and archival completed. Original cohort 0/2 and recovered per-run
+   outcomes remain separate; neither recovered run promoted a candidate.
+2. Validate repaired report-provenance and worker-diagnostic boundaries with
+   regression tests and a fresh bounded campaign.
 3. Run counter8 and encoder8 typed builds to exercise golden execution,
    generated TBs, qualification, integration and final physical measurement.
 4. Use a pipeline/streaming case to exercise latency and backpressure; inject
@@ -66,3 +67,11 @@ Use repeated runs and an actually available weaker model before making model
 robustness claims. Mutation tests establish verifier sensitivity, not weak-model
 success. Keep unsuccessful attempts in the denominator. A layer should remain
 only when it improves reliability, verification strength or measured efficiency.
+
+## Timing repair implementation references
+
+Physical hold fixing uses `phys_opt_design -hold_fix` after placement and before
+routing, without RTL delay chains or synthesis retiming for hold-only trials.
+AMD documents the physical option in [UG835](https://docs.amd.com/r/2024.2-English/ug835-vivado-tcl-commands/phys_opt_design).
+Local Vivado 2025.2 execution remains the acceptance evidence for this environment;
+command-generation tests alone are not proof that a hold violation was repaired.

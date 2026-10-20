@@ -28,6 +28,14 @@ stall history. A later explicit resume can retry an uncommitted blocked stage,
 within remaining budgets. Design failures can invoke bounded repairs, with
 interface and latency checks repeated before simulation.
 
+Model workers expose typed provider failures. Bounded, credential-redacted
+error events and diagnostic stderr are retained without ordinary generated
+stdout. Quota/auth failures stop immediately; timeout/network retries remain
+bounded. Exhausted failures save status `model_blocked` with role/code/diagnostics
+and the previous best pointer. They do not create a design rejection. Resume
+retries only uncommitted stages within the existing budget; restoring access
+does not reset spent calls or time.
+
 Typed JSON specs bypass model planning. Build mode generates/verifies child
 modules, qualifies their testbenches and mechanically integrates the top.
 Multiple modules require an independent top testbench. For a single module,
@@ -46,9 +54,12 @@ accepted transfers before sequential updates, compare every data port, and
 check output stability under backpressure. All cases have finite completion.
 
 Live Vivado validation has exercised nine positive/negative testbench cases
-and the separate Codex-generated counter trial. Complete build/optimization
-campaigns using the new journal still need live end-to-end validation. Passing
-mocked recovery tests does not establish autonomous optimization improvement.
+plus five counter32 reference/mutation cases and the separate generated counter
+trial. A real failed evaluator was resumed with one additional model call,
+unchanged physical tool time and no repeated completed physical stages. Both
+runs in that original failed cohort later reached DONE with baselines retained.
+Full live build campaigns, process-kill recovery and accepted autonomous gains
+still need validation; model-worker recovery does not prove those paths.
 
 Reproduce the live testbench cases:
 

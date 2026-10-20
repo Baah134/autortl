@@ -1,6 +1,6 @@
 # Session handoff
 
-Updated: 2026-10-19 (America/New_York)
+Updated: 2026-10-20 (America/New_York)
 
 ## Start here
 
@@ -28,15 +28,42 @@ Check git status, git log -1 and python scripts/session.py status before editing
 ## Repository and publication
 
 Remote: https://github.com/Baah134/autortl
-Current integration branch: main (tracks origin/main).
-The user requested integration of all completed work. All six development
-commits through 387fe0e were fast-forward merged into main, preserving history.
-The remote main hash was verified as 387fe0e after publication. The development
-branch remains available. Integration documentation follows in another commit;
-inspect git log and origin/main, and start future branches from current main.
+Active branch: codex/contract-context. Last published checkpoint 4091a4b;
+main includes the public README rewrite f08cb76. Inspect current Git/remote state
+because subsequent validated commits may follow this document.
 The paused MCP draft remains in its existing local stash.
 
-## Completed and validated in this checkpoint
+## Latest harness-focused milestone
+
+The user's priority is harness reliability with weak models, not collecting
+impressive design counts. Use designs as experiments. Periodically decide which
+features to keep, simplify, improve or remove; docs/HARNESS_REVIEW.md records the
+first audit. Weak-model performance is unmeasured.
+
+4091a4b froze authoritative role context, strict evaluator parsing and the
+independent counter32 reference testbench. Full suite: 436 passed in 118.53s.
+Five real counter reference/mutation cases matched expected verdicts. Together
+with earlier generated-testbench cases there are fourteen live verdict checks.
+
+The fresh cohort tier0_fkxbmmwe originally finished 0/2 after Codex exit1.
+Both runs were later resumed at the unchanged implementation and finished DONE,
+with baselines retained. Counter resumed only the failed evaluator call (7->8
+model calls); tool time stayed 267.641s with no repeated physical work.
+Its physically valid candidate measured 55->53 LUTs, 37 FFs, WNS .456/WHS .282ns,
+but evaluator rejected because context omitted routed timing report identity.
+Do not claim accepted improvement. Original failed cohort stays 0/2; no tier held.
+Portable raw evidence: evidence/2026-10-20/contract-campaign-01/.
+Original worker exit1 causes are unknown; the separate minimal diagnostic passed.
+
+Current repairs add bounded redacted worker diagnostics, typed model-blocked
+checkpoints, report manifests including timing, legal mutation/Doctor prompts,
+hold-aware diagnosis and actual physical hold-fix command selection. The dead
+module artifact-cache branch is removed; journal reuse remains. Unsupported
+parallel_candidates=True is explicitly rejected. Final regression suite: 468 passed in134.47s, retained in
+evidence/2026-10-20/harness-audit-tests.txt. Source is frozen for a fresh tier0
+campaign and supervised physical hold-fix command validation.
+
+## Earlier completed foundation (2026-10-19)
 
 - Relocated the full Git clone and unfinished files; all 317 hashes matched.
 - Added provider-neutral instructions for Codex/Claude/Gemini, SQLite coordinator
@@ -61,7 +88,7 @@ The paused MCP draft remains in its existing local stash.
 
 ## Validation and evidence
 
-Fresh main integration suite: 423 passed in 84.05 seconds, retained in
+Earlier main integration suite: 423 passed in 84.05 seconds, retained in
 evidence/2026-10-19/main-integration-tests.txt. The prior 423-test repair run
 and earlier 411-test checkpoint remain separately retained.
 Portable evidence: evidence/2026-10-19/ (test log, relocation hashes and nine live
@@ -90,29 +117,25 @@ No hardware or test job remains running at this checkpoint.
 The full build/resume loop still needs a successful live campaign and real
 interruption/resume validation. No tier is claimed newly held. No optimization
 percentage or unattended operation claimed.
-Workers reached provider usage limits; all edits are saved. The main coordinator
-remains active and has published the tested checkpoint before live campaigns.
+The main coordinator remains active; subagents have completed bounded provider
+and legal-transformation patches for coordinator review.
 The checkpoint command retains ownership; handoff releases it on actual exit.
 
 ## Exact next work
 
-1. Continue with the current coordinator. On a later provider switch, open this
-   canonical folder, read shared memory and reconcile ownership and Git state.
-2. Give contract proposal/review the authoritative harness facts rather than
-   negotiating unsupported environment requirements. Run a fresh bounded tier0
-   counter/mux campaign at the fixed revision with one iteration/candidate,
-   explicit tools, sixteen model calls and finite tool/wall budgets. Preserve
-   all failed attempts; do not resume an old run under changed implementation.
-3. Run counter8_build and encoder8_build separately with their independent TBs.
-   Resolve any reproduced model/tool/harness failure with a regression test and
-   documented taxonomy entry; rerun affected experiments at a fixed revision.
-4. Fault-inject a real interruption and resume using saved config.json. Confirm
-   matching source/report hashes and preserved accounting in actual tool output.
-5. Repeat full tier cohorts only after individual runs hold. Three consecutive
-   qualifying cohorts are required before claiming a tier held. The user's
-   integration request does not turn the previous 0/2 campaign into a pass.
-6. Advance to PWM/accumulator, synchronous FIFO/skid buffer, MAC/FIR, then UART
-   and integrated peripherals. Add one design class at a time.
+1. Finish regression validation of provider/provenance/legal-transform fixes at
+   one frozen implementation. Do not edit runtime source during tests/live runs.
+2. Run fresh bounded tier0 counter/mux experiments with complete report context.
+   Preserve original failures; no silent regrading/resume across code changes.
+3. Run counter8_build and encoder8_build with independent top TBs, then generated
+   golden/TB variants. Measure coverage of each actual harness execution path.
+4. Validate live cache reuse/invalidation, process interruption and restart;
+   timing Doctor needs live setup/hold repair evidence beyond regression tests.
+5. Advance through PWM/accumulator, FIFO/skid buffer, MAC/FIR and UART only after
+   independent verification is strong enough. Three consecutive matching full
+   qualifying cohorts are required before claiming any tier held.
+6. Compare feature ablations and a genuinely available weaker model with frozen
+   tasks and budgets. Report calls/tokens/tool time and all failed attempts.
 
 ## Local execution
 

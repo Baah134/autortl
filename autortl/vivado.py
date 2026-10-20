@@ -202,7 +202,7 @@ puts "SYNTH_COMPLETE"
 def run_synthesis(design_files: list[Path], top: str, cfg: RunConfig,
                   work_dir: Path, promotions: dict[str, str] | None = None,
                   retiming: bool = False, phys_opt: bool = False,
-                  timeout: int = 900) -> tuple[bool, str, FailureKind]:
+                  timeout: int = 900, hold_fix: bool = False) -> tuple[bool, str, FailureKind]:
     tcl = SYNTH_TCL.format(
         promotions=promotion_tcl(promotions or {}),
         part=cfg.target_part,
@@ -211,7 +211,7 @@ def run_synthesis(design_files: list[Path], top: str, cfg: RunConfig,
         period=f"{cfg.target_period_ns:.3f}",
         top=top,
         extra_synth="-retiming" if retiming else "",
-        phys_opt="phys_opt_design" if phys_opt else "",
+        phys_opt="phys_opt_design -hold_fix" if hold_fix else ("phys_opt_design" if phys_opt else ""),
     )
     script = work_dir / "synth.tcl"
     script.write_text(tcl)

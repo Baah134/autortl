@@ -182,6 +182,30 @@ harness_failures:
     meaning: "Missing mutation, compile failure, infrastructure failure, or timeout does not prove that a testbench detects a bug"
     repair: "Require a passing control and an explicit testbench failure from the simulated mutant; requalify regenerated testbenches"
 
+
+  provider_diagnostic_loss:
+    meaning: "A model worker exit discarded actionable error evidence"
+    repair: "Retain bounded redacted error events and stderr diagnostics; classify auth, quota, network and protocol failures"
+  model_failure_checkpoint:
+    meaning: "A provider failure escaped without a resumable explicit outcome"
+    repair: "Checkpoint model_blocked without design rejection, preserve completed stages and charge all attempts"
+  report_evidence_omission:
+    meaning: "Role context omitted timing or utilization report identities even though files existed"
+    repair: "Supply bounded previews plus complete-file hashes and explicit parsed metric provenance"
+  illegal_latency_transformation:
+    meaning: "Optimization advice proposed extra observable cycles or changed contract behavior"
+    repair: "Preserve exact latency, throughput, reset, ports and parameters through every mutation and doctor action"
+  hold_only_diagnosis:
+    meaning: "Setup slack was nonnegative but a hold violation was diagnosed as timing closure"
+    repair: "Use canonical setup/hold parsing; prefer physical hold repair without RTL delays or clock relaxation"
+  missing_timing_diagnostic:
+    meaning: "Timing diagnosis lacked complete setup or hold evidence"
+    repair: "Replan for retained report and constraint inspection; never infer closure from missing metrics"
+
+  unsupported_execution_option:
+    meaning: "An execution control was accepted but silently ignored"
+    repair: "Reject unsupported enabled settings explicitly and remove unreachable cache branches"
+
 methodology:
   "TIMING-6":
     meaning: "No common primary clock between related clocks | timing between them is unsafe"

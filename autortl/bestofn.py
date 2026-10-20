@@ -10,12 +10,18 @@ from .cache import code_hash
 
 MUTATIONS = {
     "standard":    "Implement using clean, standard sequential logic.",
-    "pipeline":    "Implement heavily pipelined to maximise clock frequency; add pipeline registers on long combinational paths and declare the new latency in a '// @latency N' header comment.",
-    "share":       "Implement minimising area by sharing resources: reuse one arithmetic operator across cycles with a small FSM where possible.",
-    "narrow":      "Implement minimising LUTs by narrowing every comparison and arithmetic operation to the fewest bits mathematically required.",
+    "pipeline":    "Improve frequency by balancing logic within the existing pipeline stages, retiming existing registers only where cycle behavior is preserved, and factoring the critical path within the current cycle budget. Keep the existing @latency declaration unchanged.",
+    "share":       "Minimise area by factoring common expressions or sharing mutually exclusive operations within the current cycle budget. Share across cycles only when the original schedule already permits it without changing any accepted input or output cycle.",
+    "narrow":      "Minimise LUTs using mathematically proven width reductions across the full legal input and parameter range. Preserve high-bit effects on comparisons, signedness, wraparound, and overflow.",
     "infer":       "Implement using behavioral inference so Vivado maps arithmetic to DSP48 and memories to BRAM (e.g. (* ram_style = \"block\" *)); follow Xilinx inference coding patterns.",
     "wildcard":    "Implement from scratch with a fundamentally different structure than the obvious one; do not reference any provided template.",
 }
+
+TRANSFORMATION_CONTRACT = (
+    " Preserve observable latency, throughput, interface, reset semantics, and parameter behavior."
+    " Preserve registered versus combinational outputs and cycle-by-cycle control priorities."
+    " Do not add pipeline stages, extra cycles, new clock domains, or RTL delay chains."
+)
 
 PORTFOLIO = {
     "minimize_luts":  ["standard", "narrow", "share", "wildcard"],
@@ -37,7 +43,7 @@ class Candidate:
 
 def mutation_prompts(objective: str, n: int) -> list[tuple[str, str]]:
     names = PORTFOLIO.get(objective, PORTFOLIO["minimize_luts"])[:max(1, n)]
-    return [(name, MUTATIONS[name]) for name in names]
+    return [(name, MUTATIONS[name] + TRANSFORMATION_CONTRACT) for name in names]
 
 
 def dedupe(cands: list[Candidate]) -> list[Candidate]:

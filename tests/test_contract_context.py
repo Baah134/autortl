@@ -119,3 +119,92 @@ def test_complete_valid_evaluation_accepts():
 def test_investigation_does_not_count_as_success():
     raw = (Path(__file__).parent / "fixtures/evaluation_contradiction.md").read_text(encoding="utf-8")
     assert Evaluation.parse(raw.replace("FAIL", "INVESTIGATE")).recommendation == "REJECT"
+
+
+def test_timing_reports_have_complete_file_identity_and_bounded_preview(tmp_path):
+    report = tmp_path / "timing_routed.rpt"
+    report.write_text("Timing Summary\n" + "x" * 3000)
+    context = flow_evidence(tmp_path)
+    assert context["report_manifest"] == [{"path": str(report.resolve()),
+        "sha256": hashlib.sha256(report.read_bytes()).hexdigest()}]
+    assert context["report_headers"][0]["truncated"] is True
+    assert len(context["report_headers"][0]["text"]) == 1800
+    assert "routed" in context["metric_provenance"]
+    assert "not complete reports" in context["metric_provenance"]
+
+
+@pytest.mark.parametrize("role,method", [("planner", "propose_contract"), ("evaluator", "evaluate")])
+def test_model_failure_is_blocked_and_resume_retries_only_failed_call(tmp_path, monkeypatch, role, method):
+    from autortl.config import RunConfig
+    from llm.client import ModelCallError
+    o = fsm.Orchestrator(configuration(tmp_path), tmp_path / "run")
+    install_models(o)
+    install_tools(monkeypatch)
+    def fail(*args, **kwargs):
+        o.budget.charge_llm()
+        raise ModelCallError(role, "CODEX_QUOTA", {"returncode": 1}, "quota exhausted")
+    setattr(getattr(o, role), method, fail)
+    summary = o.run()
+    assert summary["status"] == "model_blocked"
+    assert summary["failure_kind"] == "infra"
+    assert summary["best_iteration"] == 0
+    assert summary["role"] == role and summary["error_code"] == "CODEX_QUOTA"
+    assert summary["diagnostics"]["returncode"] == 1
+    assert [entry["iteration"] for entry in o.state.read_designs()] == [0]
+    assert "REJECT" not in o.state.read_progress()
+    assert o.state.load_fsm()["phase"] == "MODEL_BLOCKED"
+    assert o.state.read_events()[-1]["outcome"] == "INFRA_FAIL"
+    assert json.loads((o.state.run_dir / "run_summary.json").read_text()) == summary
+    calls = o.budget.llm_calls
+    resumed = fsm.Orchestrator(RunConfig.load(o.state.run_dir / "config.json"), o.state.run_dir)
+    models = install_models(resumed)
+    tools = install_tools(monkeypatch)
+    assert resumed.run()["best_iteration"] == 1
+    assert models[(role, method)].call_count == 1
+    if role == "evaluator":
+        assert not tools
+        assert resumed.budget.llm_calls == calls + 1
+        assert models[("generator", "generate")].call_count == 0
+    else:
+        assert resumed.budget.llm_calls == calls + 5
+
+
+def test_unsupported_parallel_execution_is_explicit(tmp_path):
+    cfg = configuration(tmp_path)
+    cfg.parallel_candidates = True
+    with pytest.raises(ValueError, match="unsupported"):
+        cfg.to_dict()
+    cfg.parallel_candidates = False
+    assert cfg.to_dict()["parallel_candidates"] is False
+
+
+def test_power_metric_report_provenance_is_retained(tmp_path):
+    report = tmp_path / "power.rpt"
+    report.write_text("Total On-Chip Power (W) | 0.1")
+    context = flow_evidence(tmp_path)
+    assert context["report_manifest"][0]["sha256"] == hashlib.sha256(report.read_bytes()).hexdigest()
+    assert context["report_headers"][0]["text"] == report.read_text()
+
+
+def test_budget_exhaustion_after_model_block_preserves_verified_best(tmp_path, monkeypatch):
+    from autortl.config import RunConfig
+    from llm.client import ModelCallError
+    cfg = configuration(tmp_path)
+    cfg.max_llm_calls = 1
+    o = fsm.Orchestrator(cfg, tmp_path / "run")
+    install_models(o)
+    install_tools(monkeypatch)
+    def fail(*args, **kwargs):
+        o.budget.charge_llm()
+        raise ModelCallError("planner", "CODEX_QUOTA")
+    o.planner.propose_contract = fail
+    assert o.run()["best_iteration"] == 0
+    resumed = fsm.Orchestrator(RunConfig.load(o.state.run_dir / "config.json"), o.state.run_dir)
+    install_models(resumed)
+    tools = install_tools(monkeypatch)
+    resumed.planner.propose_contract = Mock(side_effect=RuntimeError("LLM_BUDGET: exhausted"))
+    result = resumed.run()
+    assert result["status"] == "budget_exhausted" and result["best_iteration"] == 0
+    assert resumed.state.load_fsm()["best_iteration"] == 0
+    assert resumed.budget.llm_calls == 1 and not tools
+    assert [row["iteration"] for row in resumed.state.read_designs()] == [0]

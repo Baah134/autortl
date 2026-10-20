@@ -164,3 +164,14 @@ def test_loop_promotes_matching_doctor_artifact_and_evaluates_trial_metrics(tria
     recorded = o.state.read_designs()[-1]
     assert recorded["artifact_dir"] == result["best_artifact_dir"]
     assert recorded["code_hash"] == result["best_code_hash"]
+
+
+def test_hold_trial_requests_physical_fix_without_retiming_or_rtl_surgery(trial):
+    from autortl.timing_doctor import TimingCategory
+    o, parent, _, source, tb = trial
+    diagnosis = SimpleNamespace(action="tool_knobs", category=TimingCategory.HOLD)
+    assert o._doctor_trial(source, metrics(), SimpleNamespace(latency=0), tb, [], parent, diagnosis)
+    options = fsm.vivado.run_synthesis.call_args.kwargs
+    assert options["hold_fix"] is True and options["retiming"] is False
+    o.doctor.surgery.assert_not_called()
+    assert_original_unchanged(trial)

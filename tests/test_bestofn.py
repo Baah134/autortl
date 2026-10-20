@@ -27,3 +27,27 @@ def test_selection_prefers_more_rungs_then_metric():
 def test_selection_none_when_all_dead():
     a = Candidate("x", "standard"); a.alive = False
     assert select([a], "minimize_luts") is None
+
+
+def test_every_mutation_preserves_the_observable_contract():
+    for objective in ("minimize_luts", "minimize_ffs", "maximize_freq", "minimize_power"):
+        for name, prompt in mutation_prompts(objective, 4):
+            for requirement in ("observable latency", "throughput", "interface", "reset semantics", "parameter behavior"):
+                assert requirement in prompt, (name, requirement)
+            assert "Do not add pipeline stages" in prompt
+
+
+def test_pipeline_and_sharing_do_not_propose_a_new_schedule():
+    frequency = dict(mutation_prompts("maximize_freq", 4))["pipeline"]
+    sharing = dict(mutation_prompts("minimize_luts", 4))["share"]
+    assert "retiming existing registers" in frequency
+    assert "@latency declaration unchanged" in frequency
+    assert "declare the new latency" not in frequency
+    assert "original schedule already permits" in sharing
+    assert "without changing any accepted input or output cycle" in sharing
+
+
+def test_narrowing_preserves_high_bits_and_parameter_range():
+    prompt = dict(mutation_prompts("minimize_luts", 4))["narrow"]
+    assert "full legal input and parameter range" in prompt
+    assert "high-bit effects" in prompt

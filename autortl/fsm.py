@@ -25,13 +25,13 @@ from .static_checks import check as static_check
 from .state import RunState, atomic_write_text
 from .roles import Planner, Generator, Evaluator, TimingDoctor, Evaluation
 from .budget import Budget
-from .cache import MetricsCache, ArtifactCache, code_hash
+from .cache import MetricsCache, code_hash
 from .triage import FailureKind, classify
 from .metrics_gate import validate as gate_metrics, MetricsGateError
 from .watchdog import inspect as watchdog_inspect
 from .taxonomy import Taxonomy
 from .bestofn import Candidate, mutation_prompts, dedupe, select
-from .timing_doctor import diagnose
+from .timing_doctor import diagnose, TimingCategory
 from . import vivado
 from .vivado import advisor_digest
 from .report_parser import VivadoMetrics, extract_message_ids
@@ -40,7 +40,7 @@ from .tbgen import generate as generate_tb
 from .tbqual import qualify as qualify_tb, mutate
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from llm.client import declared_latency
+from llm.client import declared_latency, ModelCallError
 
 
 class Orchestrator:
@@ -58,7 +58,6 @@ class Orchestrator:
         self.budget = Budget(cfg.max_llm_calls, cfg.max_vivado_minutes,
                              cfg.max_wall_minutes, run_dir / "budget.json")
         self.metrics_cache = MetricsCache(run_dir / "metrics_cache.json")
-        self.artifact_cache = ArtifactCache(run_dir / "artifact_cache.json")
         self.taxonomy = Taxonomy(Path(__file__).resolve().parent.parent
                                  / "data" / "taxonomy.yaml")
         self.planner = Planner()
@@ -99,6 +98,18 @@ class Orchestrator:
                 result = self._run_build(saved)
             else:
                 result = self._run_optimize(saved)
+        except ModelCallError as exc:
+            checkpoint = self.state.load_fsm() or {}
+            # Baseline planning can fail before the first iteration snapshot.
+            best = self._verified_best_iteration()
+            result = {"status": "model_blocked", "failure_kind": FailureKind.INFRA.value,
+                      "role": exc.role, "error_code": exc.code, "error": str(exc),
+                      "diagnostics": exc.metadata, "run_dir": str(self.state.run_dir),
+                      "best_iteration": best, "llm_calls": self.budget.llm_calls}
+            self._snapshot(phase="MODEL_BLOCKED", blocked_phase=checkpoint.get("phase"),
+                           best_iteration=best, error_code=exc.code, role=exc.role)
+            self.state.append_event({"stage": "model_worker", "scope": self._scope,
+                                     "outcome": "INFRA_FAIL", **result})
         except RuntimeError as exc:
             if not str(exc).startswith(("LLM_BUDGET:", "TOOL_BUDGET:")):
                 raise
@@ -319,20 +330,13 @@ class Orchestrator:
         if not ok:
             return {"status": "stub_elaboration_failed" if kind == FailureKind.DESIGN else "build_blocked", "error": err}
 
-        # PHASE: PER-MODULE GENERATE + VERIFY (with artifact cache)
+        # PHASE: PER-MODULE GENERATE + VERIFY (journal-backed evidence)
         module_files: dict[str, Path] = {}
         for m in spec.modules:
             self._scope = "module_" + m.name
-            chash = m.contract_hash()
-            cached = None  # completion journal retains verification; legacy cache cannot prove it
             mdir = self.state.run_dir / "modules" / m.name
             mdir.mkdir(parents=True, exist_ok=True)
             vfile = mdir / f"{m.name}.v"
-            if cached:
-                print(f"[cache] module {m.name} imported (contract hash {chash})")
-                vfile.write_text(cached["verilog"])
-                module_files[m.name] = vfile
-                continue
             self._build_single = len(spec.modules) == 1
             self._build_top = spec.top_name
             result = self._build_module(m, mdir)
@@ -340,7 +344,6 @@ class Orchestrator:
                 return {"status": "module_failed", "module": m.name}
             vfile.write_text(result)
             module_files[m.name] = vfile
-            self.artifact_cache.put(chash, result, {})
 
         # PHASE: MECHANICAL INTEGRATION (zero LLM)
         self._scope = "build_integration"
@@ -800,10 +803,12 @@ class Orchestrator:
                                           f"{self.cfg.top_module}_tb", self.cfg, work)
             if not passed:
                 return None
+        hold = getattr(diagnosis, "category", None) == TimingCategory.HOLD
+        knobs = {"hold_fix": True} if hold else {}
         ok, _, _ = self._tool("run_synthesis",
             [vfile] + extra, self.cfg.top_module, self.cfg, work,
             promotions=self.taxonomy.promotions(),
-            retiming=not surgery, phys_opt=not surgery)
+            retiming=not surgery and not hold, phys_opt=not surgery, **knobs)
         if not ok:
             return None
         result = self._tool("full_metrics", work)
@@ -824,14 +829,21 @@ class Orchestrator:
             return None
         return source, result, work
 
+    def _verified_best_iteration(self):
+        for row in reversed(self.state.read_designs()):
+            if row.get("is_best"):
+                return row["iteration"]
+        return (self.state.load_fsm() or {}).get("best_iteration")
+
     def _baseline_stop(self, status: str, error: str,
                        kind: FailureKind | None = None) -> dict:
         """Persist a non-success outcome without promoting or scoring a design."""
-        summary = {"status": status, "error": error, "best_iteration": None,
+        best = self._verified_best_iteration()
+        summary = {"status": status, "error": error, "best_iteration": best,
                    "run_dir": str(self.state.run_dir)}
         if kind is not None:
             summary["failure_kind"] = kind.value
-        self._snapshot(phase=status.upper(), best_iteration=None, error=error)
+        self._snapshot(phase=status.upper(), best_iteration=best, error=error)
         atomic_write_text(self.state.run_dir / "run_summary.json", json.dumps(summary, indent=2))
         return summary
 

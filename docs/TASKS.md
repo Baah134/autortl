@@ -18,7 +18,10 @@ with Git and states acceptance criteria.
 | Curriculum governance and fixtures | Tested | Three matching full cohorts and mandatory gates covered; no newly held tier claimed |
 | First live counter/mux campaign | Recorded: 0/2 | Counter baseline 54 LUTs/37 FFs, WNS 5.491 ns; model budget/timescale failure; mux boundary timing missing; no tier held |
 | Live regression repairs | Integrated into main | 387fe0e; 423 tests pass; counter replay passes; mux simulation/routing passes: 8 LUTs/8 FFs, WNS 0.579 ns, WHS 0.052 ns; all failed attempts retained |
-| Fresh model-driven tier0 campaign | Pending | Authoritative contract context, fresh baselines under explicit I/O assumptions, bounded calls/time; accepted candidate required |
+| Authoritative context and counter reference | Published 4091a4b | 436 tests, five real counter cases; stronger context preserves source/constraints and evaluation facts |
+| Fresh model-driven tier0 campaign | Recorded 0/2, recovered DONE | Worker exits preserved; counter physical 55->53 LUT candidate rejected due missing report context; no accepted gain/tier |
+| Harness feature audit | Active | docs/HARNESS_REVIEW.md: keep verification/journals, improve evidence/provider boundaries, constrain legal transformations, remove dead controls |
+| Provider/report/legal transformation repairs | Implemented; validating | Typed resumable model blocks, bounded diagnostics, timing manifest, hold diagnosis and physical command, unsupported parallel control rejected |
 | Build counter8 and priority encoder | Pending | Typed specs, independent module and top tests, negative tests, routed results |
 
 The active coordinator continues with bounded live campaigns after publication.

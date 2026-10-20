@@ -73,3 +73,16 @@ def test_synthesis_constraints_time_io_without_changing_clock():
     for direction in ("input", "output"):
         for corner in ("max", "min"):
             assert f"set_{direction}_delay -clock clk -{corner} 0.000" in script
+
+
+def test_hold_fix_maps_to_physical_command_without_changing_source_or_clock(tmp_path, monkeypatch):
+    cfg = configuration(tmp_path)
+    work = tmp_path / "hold"
+    work.mkdir()
+    monkeypatch.setattr(vivado, "_run", Mock(return_value=(0, "SYNTH_COMPLETE")))
+    assert vivado.run_synthesis([cfg.design_path], "m", cfg, work, hold_fix=True)[0]
+    script = (work / "synth.tcl").read_text()
+    assert "phys_opt_design -hold_fix" in script
+    assert script.index("place_design") < script.index("phys_opt_design -hold_fix") < script.index("route_design")
+    assert "-retiming" not in script
+    assert "create_clock -period 10.000" in script

@@ -16,12 +16,20 @@ def file_evidence(path: Path, limit: int = 16000) -> dict:
 
 def flow_evidence(directory) -> dict:
     directory = Path(directory)
+    reports = sorted({path for pattern in ("*utilization*.rpt", "*timing*.rpt", "power.rpt")
+                      for path in directory.glob(pattern) if path.is_file()})
+    headers = [file_evidence(path, 1800) for path in reports]
     return {
         "flow_and_constraints": [file_evidence(directory / name) for name in
                                  ("synth.tcl", "timing.xdc", "timing_io.tcl")
                                  if (directory / name).is_file()],
-        "report_headers": [file_evidence(path, 1800) for path in
-                           sorted(directory.glob("*utilization*.rpt"))],
+        "report_manifest": [{"path": item["path"], "sha256": item["sha256"]}
+                            for item in headers],
+        "report_headers": headers,
+        "metric_provenance": "Structured metrics are parsed from retained reports; routed "
+                             "utilization/timing reports take precedence when present. "
+                             "The manifest identifies complete files by hash. Header excerpts "
+                             "are bounded previews, not complete reports or an independent metric source.",
     }
 
 
