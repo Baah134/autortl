@@ -165,3 +165,45 @@ changes, commands, outcomes, evidence locations, limitations, and next action.
   a live autonomous optimization campaign. No new held tier or improvement claimed.
   Next: bounded tier0 counter/mux campaign, then counter8/encoder builds and real
   interruption/resume checks. Keep recording unsuccessful attempts as evidence.
+
+## 2026-10-19 — first live cohort, reproduced failures and verified repairs
+
+- Continued after publishing 8d5eb09 and d1a02fb; no provider handoff requested
+  or performed. Remote and local development hashes matched; all 69 first
+  checkpoint evidence files were restaged to preserve exact original bytes.
+- Executed run.py bench --tier 0 --iterations 1 --best-of-n 1 with explicit
+  Vivado 2025.2 paths, eight model calls, twelve Vivado minutes, eighteen wall
+  minutes and one infrastructure retry per design. Original cohort result 0/2;
+  no tier held and no optimization claimed. Raw inputs, stage responses, budgets,
+  events, reports, source hashes and manifests are archived in live-tier0/.
+- Counter baseline reproduced: 54 LUTs, 37 FFs, WNS 5.491 ns under the old
+  clock-only constraints. Rejected contract revisions consumed the model budget;
+  its candidate hit XSIM 43-4099 for an omitted timescale. No candidate promoted.
+- Mux baseline simulated/routed but its boundary paths were unconstrained;
+  missing timing was correctly rejected. Kept the fail-closed metric policy.
+- Fixed three-review negotiation to require actual ACCEPT; no unreviewed final
+  refinement executes. Explicit model/tool budget exhaustion saves a non-success
+  summary. Generated/fixed/doctor RTL gets a default timescale while explicit
+  timescales and raw latency headers are preserved. Added vendor error fixtures.
+- Added ideal synchronous zero min/max I/O delay assumptions relative to clk.
+  The first replay exposed unsupported `if` in XDC (Designutils 20-1307).
+  Stopped only the verified owned second launcher when the same invalid script
+  was recognized. Preserved both attempts. Corrected to source conditional Tcl
+  after synthesis, promoted the unsupported-XDC diagnostic to ERROR, and added
+  a command-order regression test. Never reduced a tool severity.
+- Supervised replay03, with zero model calls: counter candidate simulation
+  passed after timescale preparation. Mux simulation, synthesis, routing and
+  timing passed: 8 LUTs, 8 FFs, WNS 0.579 ns, WHS 0.052 ns at 10 ns on
+  xc7a35tcpg236-1. Both missing input/output delay counts are zero. Synthesized
+  hold violations were repaired during routing. This is validation, not an
+  autonomous optimization or a comparison with the 32-bit counter.
+- Full pytest at unchanged implementation: 423 passed in 62.33 seconds.
+  An earlier overlapping test attempt was invalidated when implementation
+  changed; its resume drift check correctly refused replay. That log is retained.
+- Evidence: evidence/2026-10-19/live-regression-tests.txt and live-tier0/.
+  Four archives have SHA256 manifests; raw bytes are preserved in Git. No Vivado
+  or test process remains running. Checkpoint keeps coordinator ownership.
+- Next: supply authoritative harness facts to contract roles; run fresh bounded
+  tier0 experiments with new I/O-constrained baselines, then independent build
+  fixtures and real interruption/resume. A successful autonomous cohort is still
+  pending. Required main-merge tier gates have not passed.

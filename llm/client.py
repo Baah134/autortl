@@ -97,7 +97,7 @@ def extract_verilog(response_text: str) -> str:
         s = b.strip()
         if "module " in s and "endmodule" in s:
             return s
-    m = re.search(r"(module\s+\w+.*?endmodule)", text, re.DOTALL)
+    m = re.search(r"(?m)^[ \t]*((?:(?:`timescale[^\n]*|//[^\n]*)\n[ \t]*)*module\s+\w+.*?endmodule)", text, re.DOTALL)
     if m:
         return m.group(1).strip()
     return text.strip()

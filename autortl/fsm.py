@@ -93,10 +93,15 @@ class Orchestrator:
         if saved and saved.get("phase") not in (None, "DONE"):
             print(f"[resume] continuing from phase={saved['phase']} "
                   f"iter={saved.get('iteration', '?')}")
-        if self.cfg.mode == "build":
-            result = self._run_build(saved)
-        else:
-            result = self._run_optimize(saved)
+        try:
+            if self.cfg.mode == "build":
+                result = self._run_build(saved)
+            else:
+                result = self._run_optimize(saved)
+        except RuntimeError as exc:
+            if not str(exc).startswith(("LLM_BUDGET:", "TOOL_BUDGET:")):
+                raise
+            result = self._baseline_stop("budget_exhausted", str(exc))
         if result.get("status") != "done":
             atomic_write_text(self.state.run_dir / "run_summary.json", json.dumps(result, indent=2))
         return result
@@ -479,10 +484,13 @@ class Orchestrator:
         # ---- contract negotiation ----
         c = self._model("planner", "propose_contract", cfg.mode, cfg, baseline,
                                           original[:4000], self.budget)
-        for _ in range(3):
+        for review_round in range(3):
             fb = self._model("evaluator", "review_contract", c, self.budget)
-            if fb.upper().startswith("ACCEPT"):
+            if re.match(r"^\s*ACCEPT(?:\s*:|\s*$)", fb, re.IGNORECASE):
                 break
+            if review_round == 2:
+                state.write_contract(c)
+                return self._baseline_stop("contract_blocked", "Contract rejected after three reviews: " + fb[:2000])
             c = self._model("planner", "refine_contract", c, fb, self.budget)
         state.write_contract(c)
         contract_md = state.read_contract()
@@ -803,8 +811,7 @@ class Orchestrator:
         if kind is not None:
             summary["failure_kind"] = kind.value
         self._snapshot(phase=status.upper(), best_iteration=None, error=error)
-        (self.state.run_dir / "run_summary.json").write_text(
-            json.dumps(summary, indent=2), encoding="utf-8")
+        atomic_write_text(self.state.run_dir / "run_summary.json", json.dumps(summary, indent=2))
         return summary
 
     def _flow_failure_kind(self, metrics: VivadoMetrics) -> FailureKind:

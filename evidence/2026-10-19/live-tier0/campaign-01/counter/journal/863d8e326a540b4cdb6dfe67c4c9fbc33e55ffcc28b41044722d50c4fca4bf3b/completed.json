@@ -1,0 +1,5 @@
+{
+  "stage": "baseline:model:evaluator.review_contract:1",
+  "result": "- **Timing flow is underspecified.** \u201cAfter implementation and routing\u201d does not define the implementation commands or settings, and \u201cslow process corner\u201d does not identify the timing model. **Rewrite:** Specify the Vivado implementation commands/settings and the exact voltage, temperature, and timing corner used for `report_timing_summary`.\n- **Testbench coverage is subjective.** \u201cMust exercise\u201d does not require checks, so a testbench could print `PASS` without verifying behavior. **Rewrite:** Require assertions or expected-value checks for each listed behavior, including exact stimulus and the cycle on which threshold flags are checked.\n- **\u201cExactly one sequential assignment statement\u201d is ambiguous.** It is unclear whether this means one source-level assignment or one assignment on each control-flow branch. **Rewrite:** Define how assignments are counted, for example: \u201cThere must be exactly one nonblocking assignment to `count` in the entire RTL source.\u201d",
+  "artifacts": {}
+}

@@ -16,8 +16,11 @@ trial. Its old `kind` label predates the replay correction; source_import metada
 identifies it as reverification without another model call. This design used
 6 LUTs/8 FFs at a 10 ns clock. It is not a comparison with the 32-bit baseline.
 
-`checkpoint-tests.txt` is the final integrated result: 411 tests passed. Tests
+`checkpoint-tests.txt` records the first published checkpoint: 411 tests passed.
+`live-regression-tests.txt` records the subsequent repairs: 423 passed.
+`live-tier0/` retains the unsuccessful first campaign and supervised repair
+replays; read its README before interpreting those results. Tests
 for full FSM recovery/build use controlled model/tool fixtures; the new full
-build/optimization journal has not yet completed a live model-driven campaign.
+build/optimization journal has not yet completed a successful live model-driven campaign.
 Raw logs contain original absolute source paths because they preserve actual
 tool output. Reproduction commands use the current checkout, not those old paths.

@@ -1,0 +1,24 @@
+........................................................................ [ 17%]
+........................................................................ [ 34%]
+.........................................F.............................. [ 51%]
+........................................................................ [ 68%]
+........................................................................ [ 85%]
+..............................................................           [100%]
+================================== FAILURES ===================================
+_________ test_done_resume_is_idempotent_and_tampered_winner_rejected _________
+tests\test_fsm_resume.py:103: in test_done_resume_is_idempotent_and_tampered_winner_rejected
+    assert resumed.run() == summary
+           ^^^^^^^^^^^^^
+autortl\fsm.py:76: in run
+    self._prepare_inputs()
+autortl\fsm.py:122: in _prepare_inputs
+    raise ValueError("Harness or Python changed since checkpoint; do not silently regrade an existing run")
+E   ValueError: Harness or Python changed since checkpoint; do not silently regrade an existing run
+---------------------------- Captured stdout call -----------------------------
+[iter 0] baseline LUTs=20 FFs=8 WNS=1
+[iter 1] *** NEW BEST *** LUTs=10 FFs=8 WNS=1
+
+DONE � best from iter 1: LUTs=10 FFs=8 WNS=1
+=========================== short test summary info ===========================
+FAILED tests/test_fsm_resume.py::test_done_resume_is_idempotent_and_tampered_winner_rejected
+1 failed, 421 passed in 78.45s (0:01:18)

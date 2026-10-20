@@ -28,8 +28,9 @@ Check git status, git log -1 and python scripts/session.py status before editing
 
 Remote: https://github.com/Baah134/autortl
 Development branch: codex/cli-bringup (tracks origin/codex/cli-bringup).
-Prior tested commits through 68fc5e6 have been pushed. This checkpoint is being
-published on the same branch; inspect git log and origin before resuming.
+Tested checkpoint 8d5eb09 and byte-preserving evidence correction d1a02fb are
+pushed. The remote branch hash was verified against local Git. Inspect git log
+and origin before resuming; later campaign evidence may add another checkpoint.
 No merge to main. MCP draft remains in a local Git stash on the old setup branch.
 
 ## Completed and validated in this checkpoint
@@ -57,7 +58,8 @@ No merge to main. MCP draft remains in a local Git stash on the old setup branch
 
 ## Validation and evidence
 
-Final integrated suite: 411 passed in 66.27 seconds.
+Latest integrated suite: 423 passed in 62.33 seconds. The earlier 411-test
+published checkpoint remains separately retained.
 Portable evidence: evidence/2026-10-19/ (test log, relocation hashes and nine live
 Vivado simulator cases with source/testbench hashes and raw logs).
 All nine live positive/negative cases matched their expected verdicts.
@@ -65,20 +67,38 @@ Earlier Codex-generated counter: 6 LUTs, 8 FFs, WNS 7.806 ns, WHS 0.249 ns at
 10 ns on xc7a35tcpg236-1. This is a distinct 8-bit design, not a LUT reduction
 against the earlier 32-bit counter (54 LUTs/37 FFs).
 
-The full new build/optimization/resume flow is tested with controlled models
-and tools. It still needs live model-driven campaign validation. No tier is
-claimed newly held. No optimization percentage or unattended operation claimed.
+The first live tier0 campaign finished 0/2: counter exhausted eight model calls
+after rejected contract revisions and a missing-timescale candidate; mux4 was
+blocked by missing boundary timing. Both original baselines simulated and routed.
+The counter baseline measured 54 LUTs/37 FFs, WNS 5.491 ns with clock-only timing.
+New fixes stop unaccepted contracts, save budget stops, prepare timescales and
+apply boundary timing in supported Tcl after synthesis. Unsupported XDC control
+flow is promoted to ERROR. I/O delay defaults are ideal zero min/max relative
+to clk; these are experiment assumptions, not board constraints. Remeasure every
+baseline under the new constraints. Counter timescale replay passed without a
+model call. Supervised timing replays retain failures as well as successes.
+See evidence/2026-10-19/live-tier0/ for exact outcomes and raw reports.
+Final supervised mux replay passed with 8 LUTs/8 FFs, WNS 0.579 ns and WHS
+0.052 ns at 10 ns. Both boundary missing-delay counts are zero. Replay01 was
+rejected and replay02 cancelled before the corrected replay03 passed.
+No hardware or test job remains running at this checkpoint.
+
+The full build/resume loop still needs a successful live campaign and real
+interruption/resume validation. No tier is claimed newly held. No optimization
+percentage or unattended operation claimed.
 Workers reached provider usage limits; all edits are saved. The main coordinator
-remains active and is publishing the tested checkpoint before live campaigns.
+remains active and has published the tested checkpoint before live campaigns.
 The checkpoint command retains ownership; handoff releases it on actual exit.
 
 ## Exact next work
 
 1. Continue with the current coordinator. On a later provider switch, open this
    canonical folder, read shared memory and reconcile ownership and Git state.
-2. Run the bounded tier0 campaign (counter and mux) with one iteration/candidate
-   and explicit tool paths and model/time budgets. Retain all reports and failed
-   attempts. Use scripts/session.py checkpoints during work.
+2. Give contract proposal/review the authoritative harness facts rather than
+   negotiating unsupported environment requirements. Run a fresh bounded tier0
+   counter/mux campaign at the fixed revision with one iteration/candidate,
+   explicit tools, sixteen model calls and finite tool/wall budgets. Preserve
+   all failed attempts; do not resume an old run under changed implementation.
 3. Run counter8_build and encoder8_build separately with their independent TBs.
    Resolve any reproduced model/tool/harness failure with a regression test and
    documented taxonomy entry; rerun affected experiments at a fixed revision.

@@ -14,6 +14,15 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from llm.client import ask, extract_verilog
 
 
+def generated_rtl(response: str) -> str:
+    """Generated sources use the harness simulation unit unless explicit."""
+    source = extract_verilog(response)
+    uncommented = re.sub(r"/\*.*?\*/|//[^\n]*", "", source, flags=re.DOTALL)
+    if not re.search(r"(?m)^\s*`timescale\b", uncommented):
+        source = "`timescale 1ns/1ps\n" + source
+    return source
+
+
 def _ports_table(spec: ModuleSpec) -> str:
     return "\n".join(f"  {p.direction:6} [{p.width-1}:0] {p.name} "
                      f"(clock={p.clock_domain}, protocol={p.protocol})"
@@ -76,7 +85,7 @@ class Generator:
             mutation=mutation_text, instruction=instruction, verilog=verilog)
         resp = ask("generator", p, system=prompts.GENERATOR_SYSTEM + "\n" + conventions(),
                    budget=budget)
-        return extract_verilog(resp)
+        return generated_rtl(resp)
 
     def fix(self, verilog: str, diagnosis: str, error: str, tb_excerpt: str,
             previous: list[str], budget) -> str:
@@ -90,7 +99,7 @@ class Generator:
                                previous_attempts=prev)
         resp = ask("generator", p, system=prompts.GENERATOR_SYSTEM + "\n" + conventions(),
                    budget=budget)
-        return extract_verilog(resp)
+        return generated_rtl(resp)
 
     def golden_model(self, module: ModuleSpec, budget) -> str:
         p = prompts.GOLDEN_MODEL.format(behavior=module.behavior,
@@ -145,4 +154,4 @@ class TimingDoctor:
              f"**Current module:**\n```verilog\n{verilog}\n```")
         resp = ask("timing_doctor", p, system=prompts.DOCTOR_SYSTEM + "\n" + conventions(),
                    budget=budget, max_turns=3)
-        return extract_verilog(resp)
+        return generated_rtl(resp)

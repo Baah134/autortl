@@ -2,6 +2,14 @@
 # severity_override: ERROR promotes the message (we promote, we NEVER demote).
 # Seeded from every error class hit during AutoRTL v1-v3 development.
 messages:
+  "Designutils 20-1307":
+    meaning: "Unsupported Tcl control flow in an XDC file caused constraints to be skipped"
+    repair: "Run conditional constraints as Tcl after synthesis, and retain the effective commands and timing reports"
+    severity_override: ERROR
+  "XSIM 43-4099":
+    meaning: "A generated module omitted a timescale while another simulation module declared one"
+    repair: "Give generated RTL a default 1ns/1ps timescale before verification; preserve explicit declarations"
+    severity_override: null
   "Common 17-53":
     meaning: "Harness queried design objects before opening a design during constraint-file generation"
     repair: "For No open design errors, fix Tcl execution order; preserve get_ports literally when writing XDC and do not mutate RTL"
@@ -68,6 +76,12 @@ harness_failures:
   zero_budget_execution:
     meaning: "An exhausted or zero budget still spawned work"
     repair: "Check counters and remaining wall/tool time before every model and tool stage"
+  rejected_contract_execution:
+    meaning: "Negotiation exhausted its rounds and executed a contract the reviewer never accepted"
+    repair: "Stop with contract_blocked after the final reviewed proposal; never execute an unreviewed refinement"
+  unconstrained_boundary_timing:
+    meaning: "Clock-only constraints left a registered I/O design without any timed data paths"
+    repair: "Constrain boundary inputs and outputs against clk with explicit ideal zero-delay assumptions; retain missing-timing rejection"
   tb_latency_alignment:
     meaning: "Generated fixed-latency testbench sampled the wrong cycle or never drained its tail"
     repair: "Drive off-edge, use explicit latency convention, compare every sample and bound completion"

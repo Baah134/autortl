@@ -177,6 +177,12 @@ puts $fp {{create_clock -period {period} -name clk [get_ports clk]}}
 close $fp
 read_xdc "{workdir}/timing.xdc"
 synth_design -top {top} -flatten_hierarchy rebuilt {extra_synth}
+set fp [open "{workdir}/timing_io.tcl" w]
+puts $fp {{set data_inputs [get_ports -filter {{DIRECTION == IN && NAME != clk}}]}}
+puts $fp {{if {{[llength $data_inputs] > 0}} {{set_input_delay -clock clk -max 0.000 $data_inputs; set_input_delay -clock clk -min 0.000 $data_inputs}}}}
+puts $fp {{if {{[llength [all_outputs]] > 0}} {{set_output_delay -clock clk -max 0.000 [all_outputs]; set_output_delay -clock clk -min 0.000 [all_outputs]}}}}
+close $fp
+source "{workdir}/timing_io.tcl"
 report_utilization -file "{workdir}/utilization.rpt"
 report_timing_summary -file "{workdir}/timing.rpt"
 opt_design
