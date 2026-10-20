@@ -375,7 +375,7 @@ changes, commands, outcomes, evidence locations, limitations, and next action.
   receipt evidence; retain the log and adapt fixtures without weakening gates.
 
 - User requested ongoing research into comparable harnesses, with additions
-  only after careful reasoning about an actual need. Reviewed nine primary
+  only after careful reasoning about an actual need. Reviewed ten primary
   source groups; docs/RESEARCH.md records mechanisms, fit, adoption triggers
   and experiment criteria. AGENTS/START_HERE preserve this policy for later
   coordinators. No external code, framework or dependency imported.
@@ -384,3 +384,37 @@ changes, commands, outcomes, evidence locations, limitations, and next action.
   fixtures now emit explicit synthetic receipts; negative assertions and
   production evidence gates remain intact. All54frozen runtime/governance
   hashes match the tested source. Publishing the checkpoint before fresh05.
+
+- Published71910e5, then5d285c0 to include the already-tested conventions file
+  omitted from the first staging set. No runtime bytes changed during the live
+  run: all54test identities and the active runtime manifest were compared and
+  matched. Campaign05 started over71910e5 with that unstaged file;5d285c0
+  publishes the complete tested runtime. Preserve this provenance distinction.
+
+- Fresh05 counter completed with an **accepted55to53LUT reduction (3.64%)**,
+  FF37unchanged, WNS0.456ns/WHS0.282ns. Static/interface, independent frozenTB,
+  actualtool exits, routed reports, machineevidencegate and8/8finalreview
+  criteria passed. Three model calls;486.673toolseconds. This is one bounded
+  Artix7/Vivado2025.2/10ns/ideal-zero-I/O experiment, not general weak-model proof.
+- Actual CLI DONE replay returned the same accepted winner with exact unchanged
+  budget, summary and winner hashes; no further model/tool calls. This validates
+  completed-run replay only, not hard-kill/in-flight process recovery.
+- Full05 mux outcome is still pending. Preserve that distinction before a
+  cohort claim or main integration.
+
+- Related-work review also checked CRADLE's actual setup: LatticeECP5 with
+  Yosys/nextpnr and ModelSim. Removed DESIGN's direct numerical target against
+  those unmatched benchmark averages; retained the relevant bounded optimizer/
+  rewriter pattern and explicit comparability requirements in RESEARCH.
+
+- Full fresh05 finished **2/2**, runtime-boundstreak1/heldfalse. Mux candidate
+  used8LUT with WNS0.579ns/WHS0.057ns and was correctly rejected for no area
+  gain; retainedbaseline8LUT/8FF WNS0.579ns/WHS0.052ns. Three calls and
+ 381.297chargedtoolseconds for mux; six role calls across the whole cohort.
+- Archived and hash-verified203files in contract-campaign-05, including actual
+  source/TB/metadata, receipts, verified-input manifests, routed reports,
+  evaluator decisions, budgets, runtime identity and actual DONE replay records.
+  Runtime identity is known; CLI model identity remains explicitly unobserved.
+- Integration gate now has655passingtests plus a fresh qualifying fulltier0
+  campaign; no higher tier is held. Main will fast-forward to the reviewed
+  source/evidence checkpoint, preserving all earlier failed cohorts.

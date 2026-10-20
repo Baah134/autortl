@@ -1,5 +1,10 @@
 # Verification evidence - 2026-10-20
 
+- `contract-campaign-05/`: **2/2 mandatory gates**, one accepted counter
+  improvement55to53LUT (3.6%), FF37, WNS0.456ns/WHS0.282ns; mux8LUT
+  baseline retained. Three model calls each; actual DONE replay preserves
+  counter budget/summary/winner hashes.203archived files verified. First
+  runtime-bound qualifying cohort, not a held tier.
 - `process-exit-tests.txt`: **655 passed in207.64seconds**, covering actual
   exit/driver distinction, immutable verification inputs/replay, receipt/log
   integrity, unknown latency and frozen-runtime cohort identity. Runtime file
@@ -38,4 +43,5 @@
   exit-code-1 causes remain unknown.
 
 Raw reports, source/testbench hashes and manifests preserve evidence. All failed
-campaigns remain in the record. No held tier or accepted gain is claimed here.
+campaigns remain in the record. One bounded accepted counter gain is recorded;
+no held tier or weaker-model performance is claimed.

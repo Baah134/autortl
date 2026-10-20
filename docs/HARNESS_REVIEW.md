@@ -6,10 +6,16 @@ system. No weaker-model performance has been demonstrated yet.
 
 ## What the latest experiments establish
 
-- 554 regression tests passed at the repaired implementation. The counter32 reference checks every output and
+- Latest source: **655 regression tests passed**. Fresh campaign05 completed
+  **2/2**, with accepted counter55to53LUT (3.6%), FF37, WNS0.456ns/
+  WHS0.282ns. Mux8LUT baseline retained because its candidate had no gain.
+  Three model calls per design; actual DONE replay preserved the counter
+  winner/budget/summary without added tool/model calls. One bounded accepted
+  gain, no held tier and no weaker-model claim.
+- At the preceding checkpoint,554 regression tests passed. The counter32 reference checks every output and
   detects all four selected mutants in real Vivado simulation. Earlier nine
   generated-testbench cases cover positive and negative timing/streaming cases.
-- Cohort tier0_fkxbmmwe originally finished 0/2 after worker exits, not failed
+- Earlier cohort tier0_fkxbmmwe originally finished 0/2 after worker exits, not failed
   RTL. Counter generation and the complete physical ladder succeeded before its
   evaluator failed; mux completed its baseline before its planner failed.
 - Counter baseline: 55 LUTs/37 FFs, setup slack 0.494 ns, hold slack 0.113 ns.
@@ -32,7 +38,7 @@ should not substitute for explicit machine predicates.
 | Keep | Verification ladder and metric integrity | Exercised on real baselines/candidates. Reject missing metrics and failed setup/hold; preserve exact source-to-report linkage. |
 | Keep | Independent reference tests and mutation qualification | Actual bug detection catches changed latency, high-bit comparisons, reset and overflow semantics. Expand before increasing complexity. Mutation coverage is not a proof of all behavior. |
 | Keep | Atomic journals and immutable context | Controlled interruption/tamper tests and real provider recovery exist. Add real process interruption coverage and preserve accounting. |
-| Improve now | Report evidence delivered to roles | Timing/utilization/power identities now reach live review. Campaign04 exposed a further missing actual-process-exit proof; durable receipts and deterministic gates close that boundary. |
+| Improve now | Report evidence delivered to roles | Timing/utilization/power identities now reach live review. Campaign04 exposed a further missing actual-process-exit proof; durable receipts and deterministic gates pass fresh live campaign05. |
 | Improve now | Worker diagnostics and blocked outcomes | Implemented bounded redacted diagnostics, typed provider failures and resumable model-blocked outcomes. Budget stops retain the verified best pointer. Controlled replay tests validate recovery; live provider recovery was already observed at the prior revision. |
 | Simplify | Prose contract negotiation | Campaign02 spent six calls on wording and blocked counter before generation. Replaced optimization negotiation with a deterministic contract from immutable evidence; preserve all verification and final promotion gates. |
 | Improve next | Acceptance policy | Define machine-checkable mandatory predicates and make model review advisory for their measurable portions. Preserve genuine semantic checks; add tests for any bug a reviewer finds. Do not simply bypass a rejection to publish a gain. |
@@ -143,3 +149,17 @@ interface, AutoChip/MAGE RTL feedback, AlphaEvolve's measured search, VerilogEva
 and execution-versus-knowledge persistence. No new framework, provider, memory
 service or agent layer is justified solely by this review. First strengthen
 evidence and independent verification, then ablate existing optional features.
+
+## Fresh05 result and next feature decision
+
+The counter now passes the exact evidence requirement that blocked campaign04:
+all actual latest tool exits are successful and raw logs match their hashes.
+The evaluator passes8/8criteria and the deterministic gates promote iteration1.
+Mux review passes behavioral/physical criteria and rejects its unchanged8LUT
+objective; baseline retention is the expected outcome. Full tier0 is2/2,
+runtime-bound streak1, not held. No gate was removed to obtain the counter gain.
+
+Completed-run replay is now live checked; in-flight hard-kill accounting is
+still unproven. Keep improving independent verification before population search,
+extra roles or a framework migration. Generated golden/build integration and
+behavior-specific trusted-TB mutations are the next necessary coverage work.

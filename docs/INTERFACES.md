@@ -77,3 +77,17 @@ legal parameter override. Independent references must cover relevant sizes,
 thresholds, signed extremes, overflow, reset, stalls and timing. Finite simulation
 is not a formal equivalence or physical CDC proof. Parser rejection is an
 unsupported-interface outcome, not evidence of a successful optimization.
+
+## Declared latency metadata
+
+ModuleSpec.latency_known defaults to true for typed JSON compatibility. Typed
+build validation and every generated-TB entry point require it to be exactly
+true and latency to be a supported integer. A numeric annotation is metadata,
+not independent proof that a circuit has that behavior.
+
+When optimization source has no @latency annotation, inference records
+latency_known=false. The internal legacy numeric placeholder is not a known
+zero-cycle or combinational contract. Authoritative source evidence instead
+exposes known=false/cycles=null and binds that observation to the source hash.
+Generators preserve the original cycles and do not invent a numeric annotation.
+The original source and frozen testbench remain behavioral authorities.

@@ -16,21 +16,23 @@ learn from failures, and retain the best correct design within a fixed budget.
 |---|---|
 | Harness regression suite | **655 tests passed** |
 | Live Vivado testbench checks | **24 generated-testbench, counter, FIFO and signed-interface cases matched expected verdicts** |
-| Supervised mux simulation and routing | **8 LUTs · 8 FFs · setup slack 0.579 ns · hold slack 0.052 ns** |
+| Accepted autonomous counter optimization | **55 → 53 LUTs (3.6%) · 37 FFs · setup slack 0.456 ns · hold slack 0.282 ns** |
+| Fresh full tier 0 campaign | **2/2 passed · counter improved, mux baseline retained** |
 
-Mux measurements use Vivado 2025.2, `xc7a35tcpg236-1` and a 10 ns clock,
+Measurements use Vivado 2025.2, `xc7a35tcpg236-1` and a 10 ns clock,
 with explicit ideal zero minimum/maximum I/O delays. These are experiment
 constraints, not board timing requirements.
 
-These results demonstrate supervised harness validation. Model-worker recovery has been exercised; accepted autonomous optimization
-and full process-interruption campaigns remain under validation. No
-optimization percentage or held curriculum tier is claimed.
-The first bounded optimization cohort finished **0/2**, with failures preserved
-and followed by targeted repairs.
+The counter result passed the independent frozen testbench, actual tool-exit
+checks, routed timing and final review in three model calls. Completed-run
+replay retained its winner and budget without additional model or tool calls.
+Broader build, weaker-model and in-flight interruption coverage remains under
+validation. No held curriculum tier is claimed. Earlier unsuccessful cohorts
+remain in the evidence record.
 
 See the [test evidence](evidence/2026-10-20/README.md),
 [full-suite result](evidence/2026-10-20/process-exit-tests.txt) and
-[live experiment reports](evidence/2026-10-19/live-tier0/README.md).
+[latest autonomous experiment](evidence/2026-10-20/contract-campaign-05/README.md).
 
 ## The design loop
 

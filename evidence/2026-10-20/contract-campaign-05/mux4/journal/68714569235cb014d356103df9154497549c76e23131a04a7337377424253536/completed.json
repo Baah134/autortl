@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Interface and supported behavior: PASS \u2014 candidate preserves the ports, widths, reset behavior, and registered mux behavior.\n- Latency: PASS \u2014 source latency is unannotated and remains unknown; candidate preserves the source\u2019s observable cycle behavior.\n- Static checks, compilation, and elaboration: PASS \u2014 ladder is ALIVE; xvlog and xelab exited successfully.\n- Simulation: PASS \u2014 xsim exited successfully and reported `TEST PASSED`.\n- Synthesis completion: PASS \u2014 Vivado exited successfully and the log contains `SYNTH_COMPLETE`.\n- Routed metric integrity: PASS \u2014 retained routed utilization and timing reports are present.\n- Setup and hold timing: PASS \u2014 WNS is 0.579 ns and WHS is 0.057 ns.\n- LUT objective: FAIL \u2014 candidate uses 8 LUTs, equal to the previous best; strict reduction is required.\n## Summary\n- Passed: 7 of 8\n- Failed: 1 of 8\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate satisfies the behavioral and deterministic verification gates, and its routed setup and hold slack are nonnegative. It does not meet the required LUT objective: usage remains at 8, equal to the previous best, so there is no strictly lower LUT count.",
+      "recommendation": "REJECT",
+      "passed": 7,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

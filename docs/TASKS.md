@@ -72,3 +72,11 @@ before interpreting success as broad build coverage.
 
 Current receipt/latency/runtime-identity milestone: **655tests passed**. Source
 is frozen for fresh campaign05; initialfixturefailures are preserved separately.
+
+## Fresh05 completed
+
+**655tests; fulltier0 2/2; one accepted55to53LUT counter gain.** Actual DONE
+replay is checked. Receipt/input integrity, unknown latency, UTF8 decoding and
+runtime-bound governance are implemented and live exercised where applicable.
+No heldtier/weak-model claim. Typed golden/build, independent top verification,
+cache/restart ablations and in-flight recovery remain the next coverage work.

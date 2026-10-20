@@ -92,8 +92,9 @@ fully reliable FSM resume remain separate development work.
 ## Curriculum governance
 Tier held = 3 consecutive runs ≥80%. Regressions on held tiers block harness
 changes. Stage gates: S1-2→tier0-1, S3-4→tier2, S5→tier3, S6-7→tier4-5.
-Tier 4 = RTLLM v2 / VerilogEval; CRADLE's 48% LUT / 40% FF is the number to
-beat.
+Tier 4 targets RTLLM v2 / VerilogEval. External optimization percentages require
+matched tasks, technology, tools, contracts and budgets before comparison; see
+[research decisions](RESEARCH.md) for CRADLE and other related systems.
 
 ## Conventions (enforced by autortl-conventions skill + code)
 Spec is law (latency, interfaces). Promote never demote. One driver per
