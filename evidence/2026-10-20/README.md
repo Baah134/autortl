@@ -53,3 +53,7 @@ no held tier or weaker-model performance is claimed.
 - `generated-counter/`: fresh generated-golden counter build and independent
   final700-cyclecheck,6LUT/8FF; automatic oracle syntax repair exercised. Same-area
   optimization rejected; no new PPA gain claimed.
+
+- `streaming-qualification/`: **746 passing regression tests**, independent queue
+  control plus eight assertion-detected faults, and serial100-cycle drain-budget
+  false rejection reproduced and repaired on the same RTL.

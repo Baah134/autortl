@@ -59,12 +59,15 @@ while the live build is active.
   registered control still passes. Keep both runs.
 - Counter02 completed:6LUT/8FF,setup0.424ns,hold0.226ns;6calls. Actual oracle
   syntax repair, generatedTB qualification and independent700-cyclefinalcheck pass.
-- Active vendor run: logs/skid-tb-qualification-01 (nine supervised expected verdicts).
+- Streaming qualification complete:9/9 actual expected verdicts, including eight faults.
+- Active vendor run: logs/build-golden-encoder8-01, generated-oracle path, baseline routed.
 - Next: qualify skid suite9cases, finish fresh counter/encoder builds and independently
   check exact saved winner plus declared child; run generated streaming build.
-- Reviewer found high-latency serial scoreboard drain bound needs latency per
-  transaction. Wait for active build to finish before changing runtime, add unit
-  regression and taxonomy, then freeze, finalfulltests and freshfulltier0 beforemerge.
+- Serial drain/reset-count fixes are complete: real old-bound false failure repaired;
+  fullsuite03:746passed in272.44s. Source frozen for encoder.
+- Next investigate capacity-one fault under payload scoreboard; if accepted, add
+  an explicit generated-golden + independent-TB mode before streaming build. Keep
+  independent child failure feedback and qualification; do not merely postcheck winner.
 
 ## Latest completed milestone
 

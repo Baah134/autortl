@@ -58,6 +58,12 @@ messages:
 # Methodology violations (report_methodology, UG1292 IDs). ADVISORY ONLY:
 # these never kill candidates; they are digested into the planner's context.
 harness_failures:
+  scoreboard_serial_drain_budget:
+    meaning: "One-time latency allowance prematurely ends valid serial streaming transactions"
+    repair: "Budget the declared latency for each transaction, plus bounded backpressure/drain allowance"
+  golden_reset_step_budget:
+    meaning: "Maximum data stimulus count leaves no room for mandatory reset initialization"
+    repair: "Validate the combined data/reset step count before allocating random stimulus"
   scoreboard_early_output:
     meaning: "A combinational bypass passed scoreboard verification despite a nonzero declared minimum transfer latency"
     repair: "Track each accepted transaction cycle and reject outputs before its contract latency; keep legal simultaneous queued transfers"

@@ -19,7 +19,9 @@ and returns its eventual payload. It does not model queue occupancy or output
 scheduling. The Verilog scoreboard drives backpressure, checks order and stalled
 payload stability, and records acceptance cycles. Output transfers earlier than
 `latency` cycles after input acceptance fail; stalls may increase that age. A
-zero-latency contract permits same-edge forwarding. This minimum transfer age does
+zero-latency contract permits same-edge forwarding. The finite drain budget reserves
+latency per transaction plus backpressure allowance; it is not a liveness proof
+for arbitrary initiation intervals or unbounded internal stalls. This minimum transfer age does
 not by itself prove exact capacity, readiness, or earliest valid assertion.
 
 ## Independent authority and limits

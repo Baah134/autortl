@@ -467,3 +467,24 @@ changes, commands, outcomes, evidence locations, limitations, and next action.
 - Publishing this tested development checkpoint. Main remains at the previous
   fully gated campaign until freshfulltier0 and remaining final fixes are validated.
   Skid qualification is running serially; no final streaming result yet claimed.
+
+
+- Streaming independent TB admission completed: **9/9 expected verdicts**. Correct
+  ring-buffer control passes; eight faults assert. Control checks893cycles,
+  679accepted/675retired/4resetdiscarded,580simultaneoustransfers and3occupiedresets.
+- Read-only worker review caught a general long-latency serial drain bound and
+  maximum-batch reset overhead issue. Added taxonomy first, budget per transaction,
+  validate data+reset before allocation; focused38tests pass in2.36seconds.
+- Real serial100-cycle device: same DUT fails reproduced old168-cycle limit, passes
+  corrected368-cycle allowance. This is a repaired harness false rejection, not a
+  mutant kill. Source frozen for fullsuite03 and fresh encoder build01. Portable
+  evidence streaming-qualification includes raw sources/TBs/logs/receipts/helpers.
+
+
+- Final serial/reset-budget full suite: **746 passed in272.44seconds**. Publishing
+  tested source and streaming qualification; source frozen during encoder live run.
+- Next necessary acceptance check: a payload-only streaming scoreboard may accept
+  a capacity-one implementation of the capacity-two contract. Independent TB must
+  gate child repair and every integrated optimization candidate, while generated
+  golden models still run. Plan an explicit opt-in combined mode after reproducing
+  that gap; retain default trusted-only behavior and configuration/resume identity.

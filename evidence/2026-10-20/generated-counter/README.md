@@ -9,11 +9,11 @@ The exact saved winner plus declared child then passed the independently qualifi
 - First Python reference had invalid syntax. Its retained source and failure hash
   are in the stage journal/golden_attempt_1.log; actual diagnostic repair produced
   a qualified second reference. No manual RTL seed or oracle answer was supplied.
-- Baseline retained:6LUTs,8FFs,setup0.424ns,hold0.226ns. Candidate also6LUTs,
+- Baseline retained:6 LUTs, 8 FFs, setup 0.424 ns, hold 0.226 ns. Candidate also 6 LUTs,
   correctly rejected for no objective gain. No optimization improvement claimed.
-- Six model calls,300.515chargedtoolseconds. Vivado2025.2,xc7a35tcpg236-1,
-  10ns,explicit ideal zero minimum/maximum I/O constraints. CLI model unspecified.
-- Runtime is the intermediate reset/minimum-latency source retained in
+- Six model calls, 300.515 charged tool seconds. Vivado 2025.2, xc7a35tcpg236-1,
+  10 ns, explicit ideal zero minimum/maximum I/O constraints. CLI model unspecified.
+- Runtime source was published at8b6a162 and is retained in
   ../golden-verification/runtime-source-before-serial-bound; compare runtime.json.
   Later general serial-latency drain-bound changes do not retroactively change
   this run's identity. Source bytes were frozen throughout this completed build.

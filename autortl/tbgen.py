@@ -78,8 +78,9 @@ def _validate(spec, stimulus=None, expected=None):
 
 def gen_stimulus(spec: ModuleSpec, n_random=100, seed=1234):
     inputs, _ = _validate(spec)
-    if type(n_random) is not int or not 0 <= n_random <= 9997:
-        raise ValueError("invalid stimulus count")
+    reset_steps = spec.reset.duration_cycles if any(p.name == spec.reset.signal for p in spec.ports) else 0
+    if type(n_random) is not int or not 0 <= n_random <= 9997 - reset_steps:
+        raise ValueError("invalid stimulus count including reset prefix")
     rng = random.Random(seed)
     stimulus = [{p.name: fn(p.width) for p in inputs} for fn in
                 (lambda w: 0, lambda w: (1 << w)-1, lambda w: 1 << (w-1))]
@@ -98,6 +99,8 @@ def expected_outputs(spec, golden, stimulus):
     controls = [p for p in spec.ports if p.direction == "input" and p.protocol == "valid_ready"]
     reset_present = any(p.name == spec.reset.signal and p.direction == "input" for p in spec.ports)
     asserted = int(spec.reset.active_high)
+    if not isinstance(stimulus, list) or len(stimulus) + (spec.reset.duration_cycles if reset_present else 0) > 10000:
+        raise ValueError("golden stimulus including reset exceeds 10000 steps")
     rows = []
     if reset_present:
         reset_row = {p.name: 0 for p in inputs + controls}
@@ -190,7 +193,7 @@ def generate_scoreboard_tb(spec, stimulus, expected):
     if len(controls) != 4 or not inputs:
         raise ValueError("unsupported scoreboard channel shape")
     iv, ir, ov, ore = control("input", "valid"), control("output", "ready"), control("output", "valid"), control("input", "ready")
-    n, cycles = len(stimulus), len(stimulus)*12+32+spec.latency
+    n, cycles = len(stimulus), len(stimulus)*(12+spec.latency)+32
     extra = "integer _autortl_push, _autortl_pop, _autortl_drain;\nreg _autortl_stalled;\n"
     extra += f"integer _autortl_accepted_cycle [0:{n-1}];\n"
     extra += "\n".join(port_declaration(p, "reg", name=f"_autortl_held_{p.name}") + ";" for p in outputs)

@@ -27,5 +27,11 @@ def test_zero_latency_still_allows_same_edge_transfer():
 
 def test_supported_large_latency_extends_drain_window():
     text = rendered(1024)
-    assert "_autortl_cycle<1080" in text
+    assert "_autortl_cycle<2104" in text
     assert "_autortl_accepted_cycle[_autortl_pop] < 1024" in text
+
+
+def test_serial_device_gets_latency_allowance_for_every_transaction():
+    text = rendered(100)
+    # Two serial operations each need their own100-cycle computation budget.
+    assert "_autortl_cycle<256" in text

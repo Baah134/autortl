@@ -94,3 +94,21 @@ def test_reset_prefix_counts_toward_golden_execution_bound():
     with pytest.raises(ValueError,match="including reset exceeds"):
         expected_outputs(counter_spec(),gm,[{"enable":0}]*10000)
     gm.run.assert_not_called()
+
+
+def test_random_stimulus_budget_reserves_reset_steps_before_allocation():
+    from autortl.tbgen import gen_stimulus
+    spec = counter_spec()
+    assert len(gen_stimulus(spec, n_random=9992)) + spec.reset.duration_cycles == 10000
+    with pytest.raises(ValueError, match="including reset prefix"):
+        gen_stimulus(spec, n_random=9993)
+
+
+def test_retry_prompt_contains_bounded_actual_diagnostic(monkeypatch):
+    ask = Mock(return_value="def init(): return {}")
+    monkeypatch.setattr(roles, "ask", ask)
+    roles.Generator().golden_model(counter_spec(), None, feedback="SyntaxError: " + "x" * 3000)
+    prompt = ask.call_args.args[1]
+    assert "previous Python reference failed validation" in prompt
+    assert "SyntaxError: " + "x" * 1787 in prompt
+    assert "x" * 1800 not in prompt
