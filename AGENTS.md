@@ -43,3 +43,8 @@ the harness's interruption/resume behavior must itself be repaired and tested.
 
 Canonical local checkout: `C:/Users/prince.baah/Downloads/autortl-work`.
 `Downloads/autortl` is a separate preexisting copy; do not edit it by accident.
+
+The root README is the public project overview: purpose, usage and concise
+verified results. Keep coordinator messages, local paths, handoff instructions,
+branch/session status and quotas in START_HERE or docs/AGENT_HANDOFF.md,
+docs/SESSION_HANDOFF.md and docs/PROGRESS.md instead.

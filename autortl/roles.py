@@ -29,12 +29,22 @@ def _ports_table(spec: ModuleSpec) -> str:
                      for p in spec.ports)
 
 
+def evidence_prompt(role, prompt, include_candidate=False):
+    facts = getattr(role, "run_context", "")
+    candidate = getattr(role, "candidate_context", "")
+    if facts:
+        prompt += "\n\n# AUTHORITATIVE HARNESS FACTS (immutable)\n" + facts
+    if candidate and include_candidate:
+        prompt += "\n\n# CURRENT CANDIDATE EVIDENCE (immutable)\n" + candidate
+    return prompt
+
+
 class Planner:
     def make_spec(self, intent: str, cfg, budget) -> str:
         p = prompts.SPEC_PROMPT.format(intent=intent, target_part=cfg.target_part,
                                        target_freq_mhz=cfg.target_freq_mhz,
                                        objective=cfg.objective)
-        return ask("planner", p, system=prompts.PLANNER_SYSTEM + "\n" + conventions(),
+        return ask("planner", evidence_prompt(self, p), system=prompts.PLANNER_SYSTEM + "\n" + conventions(),
                    budget=budget)
 
     def propose_contract(self, mode, cfg, baseline: VivadoMetrics,
@@ -44,13 +54,13 @@ class Planner:
             target_freq_mhz=cfg.target_freq_mhz,
             sim_status="PASSED" if baseline.sim_passed else "FAILED",
             lut_used=baseline.lut_used, ff_used=baseline.ff_used,
-            wns_ns=baseline.wns_ns, design_context=design_context[:6000],
+            wns_ns=baseline.wns_ns, design_context=design_context,
             device_budget=budget_text(cfg.target_part))
-        return ask("planner", p, system=prompts.PLANNER_SYSTEM, budget=budget)
+        return ask("planner", evidence_prompt(self, p), system=prompts.PLANNER_SYSTEM, budget=budget)
 
     def refine_contract(self, contract, feedback, budget) -> str:
         p = prompts.CONTRACT_REFINE.format(feedback=feedback, contract=contract)
-        return ask("planner", p, system=prompts.PLANNER_SYSTEM, budget=budget)
+        return ask("planner", evidence_prompt(self, p), system=prompts.PLANNER_SYSTEM, budget=budget)
 
     def plan(self, iteration, contract, progress, evaluations, best: VivadoMetrics,
              signals, budget, target_part="", advisor="") -> str:
@@ -63,14 +73,14 @@ class Planner:
             lut_used=best.lut_used, ff_used=best.ff_used, wns_ns=best.wns_ns,
             dsp_used=best.dsp_used, bram_used=best.bram_used,
             signals="\n".join(f"- {s.kind}: {s.detail}" for s in signals) or "(none)")
-        return ask("planner", p, system=prompts.PLANNER_SYSTEM, budget=budget)
+        return ask("planner", evidence_prompt(self, p), system=prompts.PLANNER_SYSTEM, budget=budget)
 
     def restart_plan(self, contract, stall_count, tried, best: VivadoMetrics,
                      budget) -> str:
         p = prompts.RESTART_PLAN.format(contract=contract, stall_count=stall_count,
                                         tried=tried, lut_used=best.lut_used,
                                         ff_used=best.ff_used, wns_ns=best.wns_ns)
-        return ask("planner", p, system=prompts.PLANNER_SYSTEM, budget=budget)
+        return ask("planner", evidence_prompt(self, p), system=prompts.PLANNER_SYSTEM, budget=budget)
 
 
 class Generator:
@@ -120,15 +130,21 @@ class Evaluation:
     def parse(raw: str) -> "Evaluation":
         rec = re.search(r"##\s*Recommendation\s*\n\s*(ACCEPT|REJECT|RESTART)",
                         raw, re.IGNORECASE)
-        p = re.search(r"Passed:\s*(\d+)", raw)
-        f = re.search(r"Failed:\s*(\d+)", raw)
-        return Evaluation(raw, rec.group(1).upper() if rec else "REJECT",
-                          int(p.group(1)) if p else 0, int(f.group(1)) if f else 0)
+        p = re.search(r"Passed:\s*(\d+)\s+of\s+(\d+)", raw, re.IGNORECASE)
+        f = re.search(r"Failed:\s*(\d+)", raw, re.IGNORECASE)
+        passed, failed = int(p.group(1)) if p else 0, int(f.group(1)) if f else 1
+        consistent = p and f and passed > 0 and passed + failed == int(p.group(2))
+        unresolved = re.search(r"(?m)^\s*-\s+.*?:\s*(?:FAIL|INVESTIGATE)\b", raw, re.IGNORECASE)
+        recommendation = rec.group(1).upper() if rec else "REJECT"
+        if not consistent or unresolved or (recommendation == "ACCEPT" and failed):
+            recommendation = "REJECT"
+            failed = max(failed, 1)
+        return Evaluation(raw, recommendation, passed, failed)
 
 
 class Evaluator:
     def review_contract(self, contract: str, budget) -> str:
-        return ask("evaluator", prompts.CONTRACT_REVIEW.format(contract=contract),
+        return ask("evaluator", evidence_prompt(self, prompts.CONTRACT_REVIEW.format(contract=contract)),
                    system=prompts.EVALUATOR_SYSTEM, budget=budget)
 
     def evaluate(self, iteration, contract, ladder_summary, m: VivadoMetrics,
@@ -140,7 +156,7 @@ class Evaluator:
             timing_met=m.timing_met, dsp_used=m.dsp_used, bram_used=m.bram_used,
             vivado_notes=vivado_notes or "(none)", stall_count=stall_count,
             restart_threshold=restart_threshold)
-        return Evaluation.parse(ask("evaluator", p, system=prompts.EVALUATOR_SYSTEM,
+        return Evaluation.parse(ask("evaluator", evidence_prompt(self, p, include_candidate=True), system=prompts.EVALUATOR_SYSTEM,
                                     budget=budget))
 
 

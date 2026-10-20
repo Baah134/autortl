@@ -51,7 +51,13 @@ Baseline: sim={sim_status} LUTs={lut_used} FFs={ff_used} WNS={wns_ns}ns
 
 {design_context}
 
-Output 8-15 criteria in exactly this markdown structure:
+The attached authoritative harness facts define tool versions, sources, provided
+verification, constraints and baseline measurements. Use their actual values.
+Keep a concise checklist of the fixed hard gates and a separate advisory
+optimization goal. Do not invent mandatory savings/slack targets, testbench names,
+versions, comparison thresholds, timing corners or code-style quotas. Preserve
+all observable baseline behavior. Include no requirement to modify the harness.
+Output 5-8 criteria in exactly this markdown structure:
 # CONTRACT
 ## Resource targets
 - [ ] ...
@@ -67,12 +73,19 @@ Every criterion must be verifiable from Vivado output or the code alone."""
 
 CONTRACT_REVIEW = """Review this contract for testability. Push back on vague terms, missing
 thresholds, and unverifiable judgment. Under 200 words.
+Review using the attached authoritative harness facts. They are fixed and already
+implemented; do not demand extra tool settings, board constraints, corner values,
+new tests or naming/style conventions. Unknown facts must stay unknown. Reject
+criteria that contradict these facts or make an advisory improvement goal a
+mandatory success threshold. A correct completed experiment may find no gain.
 Output "ACCEPT: ..." if testable as written, else bullet criticisms with rewrites.
 
 {contract}"""
 
 CONTRACT_REFINE = """Revise the contract to address this feedback. Same format. Every criterion
-objectively testable.
+objectively testable under the attached immutable harness facts. Do not invent
+new environment requirements or guaranteed savings. Output only the revised
+checklist, without rewriting or copying the authoritative facts.
 Feedback:
 {feedback}
 Original:
@@ -158,6 +171,11 @@ the contract exactly."""
 
 EVALUATE = """Grade this design against the contract. Deterministic ladder results are
 authoritative for correctness; you rule only on the subjective residue.
+Use the attached candidate source, complete current and previous-best metrics
+and immutable run facts. Judge improvement from those metrics. Extra savings or
+slack margins are advisory goals, not mandatory gates. Do not invent missing
+measurements or change the provided testbench, latency, constraints or tools.
+ACCEPT requires zero failed mandatory criteria; otherwise REJECT.
 
 # Contract
 {contract}

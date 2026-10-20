@@ -1,0 +1,84 @@
+{
+  "candidate_metrics": {
+    "bram_total": 50.0,
+    "bram_used": 0.0,
+    "dsp_total": 90,
+    "dsp_used": 0,
+    "dynamic_power_w": 0.05,
+    "ff_pct": 0.0889423076923077,
+    "ff_total": 41600,
+    "ff_used": 37,
+    "lut_pct": 0.2548076923076923,
+    "lut_total": 20800,
+    "lut_used": 53,
+    "sim_error": "",
+    "sim_passed": true,
+    "synth_error": "",
+    "timing_met": true,
+    "total_power_w": 0.12,
+    "whs_ns": 0.282,
+    "wns_ns": 0.456
+  },
+  "candidate_source": {
+    "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\curriculum\\tier0_fkxbmmwe\\counter\\iter_001\\cand_standard\\counter.v",
+    "sha256": "64229a054890006e5ef5d7cfa570d12f2912fcde51f89e644fff2bf05f565950",
+    "text": "`timescale 1ns/1ps\r\n// @latency 0\r\nmodule counter #(\r\n    parameter WIDTH       = 32,\r\n    parameter THRESH_LOW  = 100,\r\n    parameter THRESH_MID  = 500,\r\n    parameter THRESH_HIGH = 1000\r\n)(\r\n    input  wire             clk,\r\n    input  wire             rst,\r\n    input  wire             enable,\r\n    input  wire             load,\r\n    input  wire [WIDTH-1:0] load_val,\r\n    output reg  [WIDTH-1:0] count,\r\n    output reg              at_zero,\r\n    output reg              below_low,\r\n    output reg              below_mid,\r\n    output reg              below_high,\r\n    output reg              overflow\r\n);\r\n    always @(posedge clk) begin\r\n        if (rst) begin\r\n            count    <= {WIDTH{1'b0}};\r\n            overflow <= 1'b0;\r\n        end else if (load) begin\r\n            count    <= load_val;\r\n            overflow <= 1'b0;\r\n        end else if (enable) begin\r\n            count    <= count + 1'b1;\r\n            overflow <= &count;\r\n        end\r\n    end\r\n\r\n    always @(posedge clk) begin\r\n        if (rst) begin\r\n            at_zero    <= 1'b1;\r\n            below_low  <= 1'b1;\r\n            below_mid  <= 1'b1;\r\n            below_high <= 1'b1;\r\n        end else begin\r\n            at_zero    <= (count == {WIDTH{1'b0}});\r\n            below_low  <= (count < THRESH_LOW);\r\n            below_mid  <= (count < THRESH_MID);\r\n            below_high <= (count < THRESH_HIGH);\r\n        end\r\n    end\r\nendmodule",
+    "truncated": false
+  },
+  "flow_and_constraints": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\curriculum\\tier0_fkxbmmwe\\counter\\iter_001\\cand_standard\\synth.tcl",
+      "sha256": "da343f43212cceedae92e20a14d6757da54d497e752debf202b10d37d63c4bd5",
+      "text": "set_msg_config -id {Designutils 20-1307} -new_severity ERROR\r\nset_msg_config -id {Synth 8-327} -new_severity ERROR\r\nset_msg_config -id {Synth 8-3352} -new_severity ERROR\r\nset_part xc7a35tcpg236-1\r\nread_verilog \"C:/Users/prince.baah/Downloads/autortl-work/logs/curriculum/tier0_fkxbmmwe/counter/iter_001/cand_standard/counter.v\"\r\nset fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/curriculum/tier0_fkxbmmwe/counter/iter_001/cand_standard/timing.xdc\" w]\r\nputs $fp {create_clock -period 10.000 -name clk [get_ports clk]}\r\nclose $fp\r\nread_xdc \"C:/Users/prince.baah/Downloads/autortl-work/logs/curriculum/tier0_fkxbmmwe/counter/iter_001/cand_standard/timing.xdc\"\r\nsynth_design -top counter -flatten_hierarchy rebuilt \r\nset fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/curriculum/tier0_fkxbmmwe/counter/iter_001/cand_standard/timing_io.tcl\" w]\r\nputs $fp {set data_inputs [get_ports -filter {DIRECTION == IN && NAME != clk}]}\r\nputs $fp {if {[llength $data_inputs] > 0} {set_input_delay -clock clk -max 0.000 $data_inputs; set_input_delay -clock clk -min 0.000 $data_inputs}}\r\nputs $fp {if {[llength [all_outputs]] > 0} {set_output_delay -clock clk -max 0.000 [all_outputs]; set_output_delay -clock clk -min 0.000 [all_outputs]}}\r\nclose $fp\r\nsource \"C:/Users/prince.baah/Downloads/autortl-work/logs/curriculum/tier0_fkxbmmwe/counter/iter_001/cand_standard/timing_io.tcl\"\r\nreport_utilization -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/curriculum/tier0_fkxbmmwe/counter/iter_001/cand_standard/utilization.rpt\"\r\nreport_timing_summary -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/curriculum/tier0_fkxbmmwe/counter/iter_001/cand_standard/timing.rpt\"\r\nopt_design\r\nplace_design\r\n\r\nroute_design\r\nreport_utilization -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/curriculum/tier0_fkxbmmwe/counter/iter_001/cand_standard/utilization_routed.rpt\"\r\nreport_timing_summary -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/curriculum/tier0_fkxbmmwe/counter/iter_001/cand_standard/timing_routed.rpt\"\r\nreport_design_analysis -logic_level_distribution -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/curriculum/tier0_fkxbmmwe/counter/iter_001/cand_standard/design_analysis.rpt\"\r\nreport_power -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/curriculum/tier0_fkxbmmwe/counter/iter_001/cand_standard/power.rpt\"\r\ncatch { report_methodology -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/curriculum/tier0_fkxbmmwe/counter/iter_001/cand_standard/methodology.rpt\" }\r\ncatch { report_qor_suggestions -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/curriculum/tier0_fkxbmmwe/counter/iter_001/cand_standard/qor_suggestions.rpt\" }\r\nputs \"SYNTH_COMPLETE\"\r\n",
+      "truncated": false
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\curriculum\\tier0_fkxbmmwe\\counter\\iter_001\\cand_standard\\timing.xdc",
+      "sha256": "fa142c09f0fadb5e303ca9fea08c02bc353451533e44aeee9cd9a0231cc8bede",
+      "text": "create_clock -period 10.000 -name clk [get_ports clk]\r\n",
+      "truncated": false
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\curriculum\\tier0_fkxbmmwe\\counter\\iter_001\\cand_standard\\timing_io.tcl",
+      "sha256": "6b38098841a48bbb3ab15de49d2bf2baf7e4384f599259ff5f3afa2c2b1daf00",
+      "text": "set data_inputs [get_ports -filter {DIRECTION == IN && NAME != clk}]\r\nif {[llength $data_inputs] > 0} {set_input_delay -clock clk -max 0.000 $data_inputs; set_input_delay -clock clk -min 0.000 $data_inputs}\r\nif {[llength [all_outputs]] > 0} {set_output_delay -clock clk -max 0.000 [all_outputs]; set_output_delay -clock clk -min 0.000 [all_outputs]}\r\n",
+      "truncated": false
+    }
+  ],
+  "measured_improvement": true,
+  "objective": "minimize_luts",
+  "previous_best_metrics": {
+    "bram_total": 50.0,
+    "bram_used": 0.0,
+    "dsp_total": 90,
+    "dsp_used": 0,
+    "dynamic_power_w": 0.053,
+    "ff_pct": 0.0889423076923077,
+    "ff_total": 41600,
+    "ff_used": 37,
+    "lut_pct": 0.2644230769230769,
+    "lut_total": 20800,
+    "lut_used": 55,
+    "sim_error": "",
+    "sim_passed": true,
+    "synth_error": "",
+    "timing_met": true,
+    "total_power_w": 0.123,
+    "whs_ns": 0.113,
+    "wns_ns": 0.494
+  },
+  "report_headers": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\curriculum\\tier0_fkxbmmwe\\counter\\iter_001\\cand_standard\\utilization.rpt",
+      "sha256": "3f7ef7ec3b8459e4b87c0dc78bbd153187d18bcdf625520db3bb740c92504f2c",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\n| Date         : Tue Oct 20 00:15:51 2026\n| Host         : Baah running 64-bit major release  (build 9200)\n| Command      : report_utilization -file C:/Users/prince.baah/Downloads/autortl-work/logs/curriculum/tier0_fkxbmmwe/counter/iter_001/cand_standard/utilization.rpt\n| Design       : counter\n| Device       : xc7a35tcpg236-1\n| Speed File   : -1\n| Design State : Synthesized\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------\n\nUtilization Design Information\n\nTable of Contents\n-----------------\n1. Slice Logic\n1.1 Summary of Registers by Type\n2. Memory\n3. DSP\n4. IO and GT Specific\n5. Clocking\n6. Specific Feature\n7. Primitives\n8. Black Boxes\n9. Instantiated Netlists\n\n1. Slice Logic\n--------------\n\n+-------------------------+------+-------+------------+-----------+-------+\n|        Site Type        | Used | Fixed | Prohibited | Available | Util% |\n+-------------------------+------+-------+------------+-----------+-------+\n| Slice LUTs*             |   53 |     0 |          0 |     20800 |  0.25 |\n|   LUT as Logic          |   53 |     0 |          0 |     20800 |  0.25 |\n|   LUT as Memory         |    0 |     0 |          0 |      9600 |  0.00 |\n| Slice Registers         |   37 |     0 |          0 |     41600 |  0.09 |\n|   Register as Flip Flop |   37 |     0 |          0 |     41600 |  0.09 |\n| ",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\curriculum\\tier0_fkxbmmwe\\counter\\iter_001\\cand_standard\\utilization_routed.rpt",
+      "sha256": "6594ccece2827a6bb5a4283281667253b9ca0140e63af063c769a7199b6703be",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\n---------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\n| Date         : Tue Oct 20 00:16:44 2026\n| Host         : Baah running 64-bit major release  (build 9200)\n| Command      : report_utilization -file C:/Users/prince.baah/Downloads/autortl-work/logs/curriculum/tier0_fkxbmmwe/counter/iter_001/cand_standard/utilization_routed.rpt\n| Design       : counter\n| Device       : xc7a35tcpg236-1\n| Speed File   : -1\n| Design State : Routed\n---------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n\nUtilization Design Information\n\nTable of Contents\n-----------------\n1. Slice Logic\n1.1 Summary of Registers by Type\n2. Slice Logic Distribution\n3. Memory\n4. DSP\n5. IO and GT Specific\n6. Clocking\n7. Specific Feature\n8. Primitives\n9. Black Boxes\n10. Instantiated Netlists\n\n1. Slice Logic\n--------------\n\n+-------------------------+------+-------+------------+-----------+-------+\n|        Site Type        | Used | Fixed | Prohibited | Available | Util% |\n+-------------------------+------+-------+------------+-----------+-------+\n| Slice LUTs              |   53 |     0 |          0 |     20800 |  0.25 |\n|   LUT as Logic          |   53 |     0 |          0 |     20800 |  0.25 |\n|   LUT as Memory         |    0 |     0 |          0 |      9600 |  0.00 |\n| Slice Registers         |   37 |     0 |          0 |     41600 |  0.09 |\n|   Register as Flip Flop |   37 ",
+      "truncated": true
+    }
+  ]
+}

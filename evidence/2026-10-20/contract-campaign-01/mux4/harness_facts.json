@@ -1,0 +1,130 @@
+{
+  "allowed_flow_variations": "The harness may enable retiming or physical optimization. The candidate's retained synthesis script is authoritative for its actual settings.",
+  "authority": "Harness evidence is fixed. Proposed architectural goals cannot redefine it.",
+  "baseline_metrics": {
+    "bram_total": 50.0,
+    "bram_used": 0.0,
+    "dsp_total": 90,
+    "dsp_used": 0,
+    "dynamic_power_w": 0.04,
+    "ff_pct": 0.019230769230769232,
+    "ff_total": 41600,
+    "ff_used": 8,
+    "lut_pct": 0.038461538461538464,
+    "lut_total": 20800,
+    "lut_used": 8,
+    "sim_error": "",
+    "sim_passed": true,
+    "synth_error": "",
+    "timing_met": true,
+    "total_power_w": 0.111,
+    "whs_ns": 0.052,
+    "wns_ns": 0.579
+  },
+  "clock_period_ns": 10.0,
+  "execution_context": {
+    "dependencies": [],
+    "part": "xc7a35tcpg236-1",
+    "period_ns": 10.0,
+    "promotions": {
+      "Designutils 20-1307": "ERROR",
+      "Synth 8-327": "ERROR",
+      "Synth 8-3352": "ERROR"
+    },
+    "synthesis_template": "c9d0bf78e20ec5b5854a3e48a12cb9d6ce15be79e660b27b3bf703670a77197a",
+    "tb": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\curriculum\\tier0_fkxbmmwe\\mux4\\inputs\\testbench_path.v",
+      "sha256": "ca6f770b2e2b1d797e3aa57828d5d344d885a7851ae8415b47fa26f675c1df4d"
+    },
+    "tools": {
+      "vivado_bin": {
+        "path": "C:\\AMDDesignTools\\2025.2\\Vivado\\bin\\vivado.bat",
+        "sha256": "4f9c05aea82a71c7086a9e5edf01ba16ea70255f69cf3420c58b805ec113e994"
+      },
+      "xelab_bin": {
+        "path": "C:\\AMDDesignTools\\2025.2\\Vivado\\bin\\xelab.bat",
+        "sha256": "512a29ace988992d7fab14ca84f20f0b4515bb69ef1d5fef0a57c5f28b72c9b1"
+      },
+      "xsim_bin": {
+        "path": "C:\\AMDDesignTools\\2025.2\\Vivado\\bin\\xsim.bat",
+        "sha256": "8819fbb54fdf9cbcaaf24c2bf72801b403d5c93e0990ba32408b56c666761d21"
+      },
+      "xvlog_bin": {
+        "path": "C:\\AMDDesignTools\\2025.2\\Vivado\\bin\\xvlog.bat",
+        "sha256": "512a29ace988992d7fab14ca84f20f0b4515bb69ef1d5fef0a57c5f28b72c9b1"
+      }
+    },
+    "top": "mux4"
+  },
+  "flow_and_constraints": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\curriculum\\tier0_fkxbmmwe\\mux4\\iter_000\\synth.tcl",
+      "sha256": "030d5084d857ae02e71991e7b551fc4b96f3366c62ec2307892ec853f93b1c5b",
+      "text": "set_msg_config -id {Designutils 20-1307} -new_severity ERROR\r\nset_msg_config -id {Synth 8-327} -new_severity ERROR\r\nset_msg_config -id {Synth 8-3352} -new_severity ERROR\r\nset_part xc7a35tcpg236-1\r\nread_verilog \"C:/Users/prince.baah/Downloads/autortl-work/logs/curriculum/tier0_fkxbmmwe/mux4/iter_000/mux4.v\"\r\nset fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/curriculum/tier0_fkxbmmwe/mux4/iter_000/timing.xdc\" w]\r\nputs $fp {create_clock -period 10.000 -name clk [get_ports clk]}\r\nclose $fp\r\nread_xdc \"C:/Users/prince.baah/Downloads/autortl-work/logs/curriculum/tier0_fkxbmmwe/mux4/iter_000/timing.xdc\"\r\nsynth_design -top mux4 -flatten_hierarchy rebuilt \r\nset fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/curriculum/tier0_fkxbmmwe/mux4/iter_000/timing_io.tcl\" w]\r\nputs $fp {set data_inputs [get_ports -filter {DIRECTION == IN && NAME != clk}]}\r\nputs $fp {if {[llength $data_inputs] > 0} {set_input_delay -clock clk -max 0.000 $data_inputs; set_input_delay -clock clk -min 0.000 $data_inputs}}\r\nputs $fp {if {[llength [all_outputs]] > 0} {set_output_delay -clock clk -max 0.000 [all_outputs]; set_output_delay -clock clk -min 0.000 [all_outputs]}}\r\nclose $fp\r\nsource \"C:/Users/prince.baah/Downloads/autortl-work/logs/curriculum/tier0_fkxbmmwe/mux4/iter_000/timing_io.tcl\"\r\nreport_utilization -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/curriculum/tier0_fkxbmmwe/mux4/iter_000/utilization.rpt\"\r\nreport_timing_summary -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/curriculum/tier0_fkxbmmwe/mux4/iter_000/timing.rpt\"\r\nopt_design\r\nplace_design\r\n\r\nroute_design\r\nreport_utilization -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/curriculum/tier0_fkxbmmwe/mux4/iter_000/utilization_routed.rpt\"\r\nreport_timing_summary -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/curriculum/tier0_fkxbmmwe/mux4/iter_000/timing_routed.rpt\"\r\nreport_design_analysis -logic_level_distribution -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/curriculum/tier0_fkxbmmwe/mux4/iter_000/design_analysis.rpt\"\r\nreport_power -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/curriculum/tier0_fkxbmmwe/mux4/iter_000/power.rpt\"\r\ncatch { report_methodology -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/curriculum/tier0_fkxbmmwe/mux4/iter_000/methodology.rpt\" }\r\ncatch { report_qor_suggestions -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/curriculum/tier0_fkxbmmwe/mux4/iter_000/qor_suggestions.rpt\" }\r\nputs \"SYNTH_COMPLETE\"\r\n",
+      "truncated": false
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\curriculum\\tier0_fkxbmmwe\\mux4\\iter_000\\timing.xdc",
+      "sha256": "fa142c09f0fadb5e303ca9fea08c02bc353451533e44aeee9cd9a0231cc8bede",
+      "text": "create_clock -period 10.000 -name clk [get_ports clk]\r\n",
+      "truncated": false
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\curriculum\\tier0_fkxbmmwe\\mux4\\iter_000\\timing_io.tcl",
+      "sha256": "6b38098841a48bbb3ab15de49d2bf2baf7e4384f599259ff5f3afa2c2b1daf00",
+      "text": "set data_inputs [get_ports -filter {DIRECTION == IN && NAME != clk}]\r\nif {[llength $data_inputs] > 0} {set_input_delay -clock clk -max 0.000 $data_inputs; set_input_delay -clock clk -min 0.000 $data_inputs}\r\nif {[llength [all_outputs]] > 0} {set_output_delay -clock clk -max 0.000 [all_outputs]; set_output_delay -clock clk -min 0.000 [all_outputs]}\r\n",
+      "truncated": false
+    }
+  ],
+  "hard_gates": [
+    "Preserve ports, parameter defaults, reset behavior and observable cycle behavior.",
+    "Use the fixed provided testbench, tools, device and constraints without modification.",
+    "Static/interface checks, compile, simulation and real routed metric integrity must pass.",
+    "Timing closure requires setup slack >= 0 and hold slack >= 0.",
+    "Unknown or absent evidence cannot count as success."
+  ],
+  "objective": "minimize_luts",
+  "objective_policy": "Seek measured improvement against baseline; a completed experiment may find none. Do not invent mandatory savings, slack margins, tool versions, timing corners, new tests, thresholds, code-style quotas or external environment requirements.",
+  "part": "xc7a35tcpg236-1",
+  "report_headers": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\curriculum\\tier0_fkxbmmwe\\mux4\\iter_000\\utilization.rpt",
+      "sha256": "8bf45b1f5056506e3ef1836977c8755e35fd3455ee0c3d1f804fb148e4f2f228",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\n---------------------------------------------------------------------------------------------------------------------------------------------------\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\n| Date         : Tue Oct 20 00:19:10 2026\n| Host         : Baah running 64-bit major release  (build 9200)\n| Command      : report_utilization -file C:/Users/prince.baah/Downloads/autortl-work/logs/curriculum/tier0_fkxbmmwe/mux4/iter_000/utilization.rpt\n| Design       : mux4\n| Device       : xc7a35tcpg236-1\n| Speed File   : -1\n| Design State : Synthesized\n---------------------------------------------------------------------------------------------------------------------------------------------------\n\nUtilization Design Information\n\nTable of Contents\n-----------------\n1. Slice Logic\n1.1 Summary of Registers by Type\n2. Memory\n3. DSP\n4. IO and GT Specific\n5. Clocking\n6. Specific Feature\n7. Primitives\n8. Black Boxes\n9. Instantiated Netlists\n\n1. Slice Logic\n--------------\n\n+-------------------------+------+-------+------------+-----------+-------+\n|        Site Type        | Used | Fixed | Prohibited | Available | Util% |\n+-------------------------+------+-------+------------+-----------+-------+\n| Slice LUTs*             |    8 |     0 |          0 |     20800 |  0.04 |\n|   LUT as Logic          |    8 |     0 |          0 |     20800 |  0.04 |\n|   LUT as Memory         |    0 |     0 |          0 |      9600 |  0.00 |\n| Slice Registers         |    8 |     0 |          0 |     41600 |  0.02 |\n|   Register as Flip Flop |    8 |     0 |          0 |     41600 |  0.02 |\n|   Register as Latch     |    0 |     0 |          0 | ",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\curriculum\\tier0_fkxbmmwe\\mux4\\iter_000\\utilization_routed.rpt",
+      "sha256": "aee1df6288cb9da589f1087782c2e4e7249f600a82f820c14c0c87354f1824b1",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\n----------------------------------------------------------------------------------------------------------------------------------------------------------\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\n| Date         : Tue Oct 20 00:20:16 2026\n| Host         : Baah running 64-bit major release  (build 9200)\n| Command      : report_utilization -file C:/Users/prince.baah/Downloads/autortl-work/logs/curriculum/tier0_fkxbmmwe/mux4/iter_000/utilization_routed.rpt\n| Design       : mux4\n| Device       : xc7a35tcpg236-1\n| Speed File   : -1\n| Design State : Routed\n----------------------------------------------------------------------------------------------------------------------------------------------------------\n\nUtilization Design Information\n\nTable of Contents\n-----------------\n1. Slice Logic\n1.1 Summary of Registers by Type\n2. Slice Logic Distribution\n3. Memory\n4. DSP\n5. IO and GT Specific\n6. Clocking\n7. Specific Feature\n8. Primitives\n9. Black Boxes\n10. Instantiated Netlists\n\n1. Slice Logic\n--------------\n\n+-------------------------+------+-------+------------+-----------+-------+\n|        Site Type        | Used | Fixed | Prohibited | Available | Util% |\n+-------------------------+------+-------+------------+-----------+-------+\n| Slice LUTs              |    8 |     0 |          0 |     20800 |  0.04 |\n|   LUT as Logic          |    8 |     0 |          0 |     20800 |  0.04 |\n|   LUT as Memory         |    0 |     0 |          0 |      9600 |  0.00 |\n| Slice Registers         |    8 |     0 |          0 |     41600 |  0.02 |\n|   Register as Flip Flop |    8 |     0 |          0 |     41600 |  0.02 |\n|   Registe",
+      "truncated": true
+    }
+  ],
+  "schema_version": 1,
+  "simulation": {
+    "failure_verdict": "TEST FAILED",
+    "required_verdict": "TEST PASSED",
+    "scope": "Provided testbench checks; not a formal equivalence proof.",
+    "tools": [
+      "xvlog",
+      "xelab",
+      "xsim -runall"
+    ]
+  },
+  "sources": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\curriculum\\tier0_fkxbmmwe\\mux4\\iter_000\\mux4.v",
+      "sha256": "7f31b3aeb770130ce153c3373c7cc17a590bcc0d379f8c5304b29d3c9a48c5e6",
+      "text": "`timescale 1ns/1ps\r\nmodule mux4 (\r\n    input  wire clk,\r\n    input  wire rst,\r\n    input  wire [7:0] a, b, c, d,\r\n    input  wire [1:0] sel,\r\n    output reg  [7:0] y\r\n);\r\n    always @(posedge clk) begin\r\n        if (rst) y <= 8'd0;\r\n        else case (sel)\r\n            2'd0: y <= a;\r\n            2'd1: y <= b;\r\n            2'd2: y <= c;\r\n            default: y <= d;\r\n        endcase\r\n    end\r\nendmodule\r\n",
+      "truncated": false
+    }
+  ],
+  "testbench": {
+    "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\curriculum\\tier0_fkxbmmwe\\mux4\\inputs\\testbench_path.v",
+    "sha256": "ca6f770b2e2b1d797e3aa57828d5d344d885a7851ae8415b47fa26f675c1df4d",
+    "text": "`timescale 1ns/1ps\r\nmodule mux4_tb;\r\n    reg clk, rst;\r\n    reg [7:0] a, b, c, d;\r\n    reg [1:0] sel;\r\n    wire [7:0] y;\r\n    integer errors;\r\n    mux4 dut(.clk(clk), .rst(rst), .a(a), .b(b), .c(c), .d(d), .sel(sel), .y(y));\r\n    always #5 clk = ~clk;\r\n    initial begin\r\n        clk=0; errors=0; rst=1; a=8'd10; b=8'd20; c=8'd30; d=8'd40; sel=0;\r\n        repeat(3) @(posedge clk); rst=0;\r\n        sel=2'd0; @(posedge clk); @(posedge clk); #1;\r\n        if (y !== 8'd10) begin $display(\"FAIL: sel=0 expected=10 got=%0d\", y); errors=errors+1; end\r\n        sel=2'd1; @(posedge clk); @(posedge clk); #1;\r\n        if (y !== 8'd20) begin $display(\"FAIL: sel=1 expected=20 got=%0d\", y); errors=errors+1; end\r\n        sel=2'd2; @(posedge clk); @(posedge clk); #1;\r\n        if (y !== 8'd30) begin $display(\"FAIL: sel=2 expected=30 got=%0d\", y); errors=errors+1; end\r\n        sel=2'd3; @(posedge clk); @(posedge clk); #1;\r\n        if (y !== 8'd40) begin $display(\"FAIL: sel=3 expected=40 got=%0d\", y); errors=errors+1; end\r\n        if (errors==0) $display(\"TEST PASSED\"); else $display(\"TEST FAILED: %0d errors\", errors);\r\n        $finish;\r\n    end\r\nendmodule\r\n",
+    "truncated": false
+  },
+  "testbench_top": "mux4_tb",
+  "top_module": "mux4"
+}

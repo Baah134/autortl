@@ -58,6 +58,18 @@ messages:
 # Methodology violations (report_methodology, UG1292 IDs). ADVISORY ONLY:
 # these never kill candidates; they are digested into the planner's context.
 harness_failures:
+  malformed_evaluation_acceptance:
+    meaning: "An incomplete or contradictory evaluator response was parsed as ACCEPT with zero failed criteria"
+    repair: "Require a consistent nonempty summary and reject FAIL or INVESTIGATE criteria before promotion"
+  baseline_testbench_coverage_gap:
+    meaning: "Sparse counter tests accepted changed flag latency or incorrect high-bit comparisons"
+    repair: "Check all outputs against an independent cycle reference across boundaries, controls and deterministic random stimulus"
+  contract_context_starvation:
+    meaning: "Contract roles invented tool settings, thresholds or grading requirements without run evidence"
+    repair: "Supply immutable source, testbench, constraints and measured baseline context to every contract role"
+  evaluation_evidence_gap:
+    meaning: "An evaluator graded code or improvement without candidate RTL and previous-best metrics"
+    repair: "Persist exact candidate evidence and previous-best metrics; reject contradictory ACCEPT with failed criteria"
   unsafe_spec_identifier:
     meaning: "A model-supplied identifier escaped source paths or top-level wiring used an invalid external binding"
     repair: "Validate ASCII Verilog names and all external bindings before creating files or Tcl"

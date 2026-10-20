@@ -18,6 +18,7 @@ from datetime import datetime
 from pathlib import Path
 
 from .config import RunConfig
+from .contract_context import run_evidence, file_evidence, flow_evidence, save_evidence
 from .spec import DesignSpec, ModuleSpec, Port, ResetSpec
 from .linter import lint_spec, write_stub_project, top_verilog
 from .static_checks import check as static_check
@@ -482,8 +483,12 @@ class Orchestrator:
               f"WNS={baseline.wns_ns}")
 
         # ---- contract negotiation ----
+        facts = run_evidence(cfg, baseline, [base_v] + extra_sources, tb_path,
+                             idir, self._cache_context(tb_path, extra_sources))
+        context = save_evidence(state.run_dir / "harness_facts.json", facts)
+        self.planner.run_context = self.evaluator.run_context = context
         c = self._model("planner", "propose_contract", cfg.mode, cfg, baseline,
-                                          original[:4000], self.budget)
+                                          original, self.budget)
         for review_round in range(3):
             fb = self._model("evaluator", "review_contract", c, self.budget)
             if re.match(r"^\s*ACCEPT(?:\s*:|\s*$)", fb, re.IGNORECASE):
@@ -683,6 +688,18 @@ class Orchestrator:
                 f"{'ALIVE' if c.alive else 'dead: ' + c.fail_reason[:80]}"
                 for c in cands)
             vnotes = "\n".join(vivado.message_ids_in(wdir)[:10])
+            candidate_path = Path(wdir) / f"{cfg.top_module}.v"
+            if not candidate_path.is_file():
+                candidate_path = idir / f"cand_{winner.mutation}" / f"{cfg.top_module}.v"
+            if candidate_path.read_text() != winner.verilog:
+                raise ValueError("Candidate source does not match evaluation evidence")
+            candidate_facts = {
+                "candidate_source": file_evidence(candidate_path),
+                **flow_evidence(wdir),
+                "candidate_metrics": wm.to_dict(), "previous_best_metrics": best_m.to_dict(),
+                "objective": cfg.objective, "measured_improvement": self._is_better(wm, best_m),
+            }
+            self.evaluator.candidate_context = save_evidence(idir / "evaluation_facts.json", candidate_facts)
             ev = self._model("evaluator", "evaluate", it, contract_md, ladder_summary, wm,
                                          vnotes, stall,
                                          cfg.stall_restart_threshold, self.budget)
@@ -692,7 +709,8 @@ class Orchestrator:
                 last_advisor = fresh
 
             improved = self._is_better(wm, best_m)
-            is_best = ev.recommendation == "ACCEPT" and improved
+            is_best = (ev.recommendation == "ACCEPT" and ev.failed == 0 and improved
+                       and wm.timing_met is True and wm.wns_ns >= 0 and wm.whs_ns >= 0)
             if is_best:
                 best_v, best_m, best_iter = winner.verilog, wm, it
                 best_artifact_dir = wdir
@@ -748,6 +766,9 @@ class Orchestrator:
         final_artifacts = {str(path.resolve()): hashlib.sha256(path.read_bytes()).hexdigest()
                            for path in Path(best_artifact_dir).glob("*")
                            if path.is_file() and path.suffix in (".v", ".sv", ".rpt", ".xdc", ".tcl")}
+        for evidence_path in [state.run_dir / "harness_facts.json", *state.run_dir.glob("iter_*/evaluation_facts.json")]:
+            if evidence_path.is_file():
+                final_artifacts[str(evidence_path.resolve())] = hashlib.sha256(evidence_path.read_bytes()).hexdigest()
         self._snapshot(phase="DONE", best_iteration=best_iter,
                        best_sha256=hashlib.sha256(best_path.read_bytes()).hexdigest(),
                        summary_sha256=hashlib.sha256((state.run_dir / "run_summary.json").read_bytes()).hexdigest(),

@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Routed LUT reduction: PASS \u2014 53 routed LUTs, down from the 55-LUT baseline.\n- Routed timing at 10.000 ns: PASS \u2014 WNS is 0.456 ns and WHS is 0.282 ns.\n- Fixed testbench and interface behavior: PASS \u2014 simulation passed; the source preserves the ports and parameter defaults.\n- Static/interface checks and compile: PASS \u2014 the standard ladder is ALIVE through 5 rungs and synthesis has no reported error.\n- Routed utilization and timing reports: INVESTIGATE \u2014 routed utilization evidence is present, but the provided evidence does not include the routed timing report.\n- Synthesizable RTL with no inferred latches: PASS \u2014 the candidate uses edge-triggered processes and synthesis succeeded.\n## Summary\n- Passed: 5 of 6\n- Failed: 0 of 6\n- Improved over previous best: YES\n## Recommendation\nREJECT\n## Reason\nThe candidate passes the testbench, timing slack checks, and RTL checks, and improves routed LUT count from 55 to 53. The required routed timing report is not included in the evidence, so that mandatory reporting criterion remains unverifiable.",
+      "recommendation": "REJECT",
+      "passed": 5,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}
