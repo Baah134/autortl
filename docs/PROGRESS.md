@@ -267,5 +267,50 @@ changes, commands, outcomes, evidence locations, limitations, and next action.
 - Final full suite at frozen repaired implementation: **468 passed in134.47s**;
   evidence/2026-10-20/harness-audit-tests.txt. Includes model-blocked early/late
   replay with preserved budgets, budget-stop best pointer, power provenance,
-  hold-fix command selection and all prior regressions. Staged diff passes
-  whitespace checks. New live campaign follows at this tested revision.
+  hold-fix command selection and all prior regressions. The first staged check flagged a trailing blank fixture line;
+  this is normalized in the subsequent evidence checkpoint. New live campaign follows at this tested revision.
+
+- Supervised physical hold-fix command check passed at61854c0: mux simulation
+  passes; `phys_opt_design -hold_fix` accepted by Vivado2025.2; preplaceWHS-1.057ns
+  becomes routedWHS.059ns withWNS.579ns. Cost18LUT/8FF vsstandard8LUT/8FF.
+  Archive physical-hold-fix preserves raw source/scripts/reports/hashes. This
+  validates the command path, not a complete autonomous Doctor invocation or
+  isolated causal optimization benefit. Fresh bounded tier0 campaign follows.
+
+
+## 2026-10-20 - Remove model negotiation and reconcile actual skill prompts
+
+- Continued at user request after quota interval; reclaimed expired coordinator
+  lease and reconciled saved changes before edits. No prior process assumedlive.
+- Frozen campaign02 at61854c0 finished0/2. Counter baseline55LUT/37FF passes;
+  six contract calls/three reviews blocked wording without generating RTL.
+  Mux baseline8LUT/8FF passes; first planner call saved typed CODEX_QUOTA with
+  bounded diagnostics, spentcall1 and best_iteration0. No repair/designrejection.
+  Portable archive contract-campaign-02 preserves both failures and raw evidence.
+- Replaced negotiable optimization prose with a contract rendered mechanically
+  from immutable evidence. Source/TB/device/constraints/objective remain fixed;
+  final evaluator and deterministic verification/promotion gates remain required.
+  Contract modification/deletion fails both interrupted and DONE replay.
+- Audited actual injected references: removed instructions to add latency,
+  change resets/parameter semantics or invent timing exceptions. Added missing
+  fpga-methodology; all role calls now receive conventions exactlyonce. Skill
+  injection budgets include reference headings and separators.
+- Repaired referenced FIFO combinational full/next-pointer loop using current
+  registered writegraypointer. Independent dualclock TB and two-depth control/
+  data/full mutants prepared; no physical CDC or metastability proof claimed.
+- Focused actualrole/skill tests22passed0.52s; final combined validation follows.
+
+- FIFO live qualification:6/6expectedverdicts inactualVivado xsim atAW2/AW4,DW8;
+  controls pass, read-data and full-comparator mutants trigger assertions.
+  Archive fifo-reference retains independentTB/sourcehashes/logs. No physical
+  CDC or metastability claim. Minimal provider readiness call returnedREADY;
+  its usage is separate from experiment budgets, modelidentity unavailable.
+
+- Final combined suite: **497 passed in 100.04 seconds**, retained in
+  evidence/2026-10-20/fixed-contract-tests.txt. Initial combined run retained
+  496 passes and one Windows CRLF/LF fixture assertion; the corrected test
+  compares raw decoded bytes consistently with the production evidence path.
+- Verified all 160 newly archived physical-hold/FIFO/campaign02 file hashes.
+  New source is frozen for a fresh bounded counter/mux campaign. Model access
+  readiness passed with one separate minimal call; model identity was not
+  returned by the CLI, so no specific model-strength claim is made.

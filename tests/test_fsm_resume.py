@@ -75,7 +75,7 @@ def test_resume_preserves_completed_models_tools_winner_and_budget(tmp_path, mon
     install_tools(monkeypatch, fail_compile=True)
     with pytest.raises(KeyboardInterrupt): o.run()
     saved_calls = o.budget.llm_calls
-    assert saved_calls == 4
+    assert saved_calls == 2
     # External files may change; the saved, verified snapshot is authoritative.
     (tmp_path / "seed.v").write_text("changed external source")
     resumed = fsm.Orchestrator(RunConfig.load(run / "config.json"), run)

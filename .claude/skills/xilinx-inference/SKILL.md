@@ -1,32 +1,26 @@
 ---
 name: xilinx-inference
-description: "Use when the design involves multiplication, MAC, filters, memories, RAM, buffers, or large shift registers — coding patterns that make Vivado infer DSP48, BRAM, and SRL primitives."
+description: "Contract-preserving xilinx-inference guidance for AutoRTL."
 ---
-# Xilinx 7-Series Inference Patterns
+# Xilinx Inference Patterns
 
-## DSP48 (multiply / MAC)
-Write the multiply plainly and REGISTER inputs and outputs; Vivado maps to DSP48E1 with internal pipeline registers:
-```verilog
-always @(posedge clk) begin
-    a_r <= a;  b_r <= b;        // input regs
-    p   <= a_r * b_r;           // maps into DSP48
-    acc <= acc + p;             // post-adder can also absorb into DSP
-end
-```
-Signed math: declare `signed` and let the tool handle it. Avoid slicing the product before registering it.
+Preserve the fixed contract: cycle latency, reset, parameter behavior, registered
+outputs, widths and signedness. Resource inference is a measured result, not a
+guarantee. Confirm mapped primitives and post-route utilization in actual reports.
 
-## Block RAM
-```verilog
-(* ram_style = "block" *) reg [DW-1:0] mem [0:DEPTH-1];
-always @(posedge clk) begin
-    if (we) mem[waddr] <= wdata;
-    rdata <= mem[raddr];        // registered read REQUIRED for BRAM
-end
-```
-Asynchronous reads force distributed RAM (LUTs). Depth >= 512 or width*depth >= ~18Kb favours BRAM.
+## DSP arithmetic
+Write multiplication/addition plainly with explicit signedness and full required
+product width. Existing input/output registers may map into DSP registers when
+compatible. Do not add stages, truncate products or change reset/enable semantics
+to force inference. Retiming existing registers must preserve all observable behavior.
 
-## SRL (shift registers)
-An N-deep shift register with no reset and no parallel taps maps into SRL16/SRL32 LUTs — do NOT reset delay-line registers.
+## Memories
+Registered reads may infer block RAM when device/port/reset requirements fit.
+An asynchronous-read contract cannot be converted to registered reads to obtain
+BRAM. Preserve read-during-write behavior and all supported depth/width values.
+Attributes such as ram_style are requests; verify the actual implementation.
 
-## Carry chains
-`a + b` and comparisons use dedicated carry logic — never hand-build adders. Prefer one wide add over several narrow chained ones on the critical path.
+## SRL and carry logic
+Shift registers can map into SRLs when reset/tap/enable requirements allow it.
+Never remove a required reset to obtain an SRL. Plain arithmetic can use carry
+chains; compare alternatives with the same constraints and verification gates.

@@ -5,7 +5,7 @@ from pathlib import Path
 from unittest.mock import Mock
 import pytest
 from autortl import fsm, roles
-from autortl.contract_context import file_evidence, flow_evidence, run_evidence, save_evidence
+from autortl.contract_context import file_evidence, flow_evidence, run_evidence, save_evidence, render_fixed_optimize_contract
 from autortl.roles import Evaluation
 from autortl.report_parser import VivadoMetrics
 from tests.test_fsm_resume import configuration, install_models, install_tools
@@ -79,7 +79,7 @@ def test_fsm_persists_current_and_previous_evaluation_evidence(tmp_path, monkeyp
     assert o.planner.run_context == o.evaluator.run_context
 
 
-@pytest.mark.parametrize("target", ["harness_facts.json", "iter_001/evaluation_facts.json"])
+@pytest.mark.parametrize("target", ["contract.md", "harness_facts.json", "iter_001/evaluation_facts.json"])
 def test_done_resume_rejects_altered_contract_evidence(tmp_path, monkeypatch, target):
     o = fsm.Orchestrator(configuration(tmp_path), tmp_path / "run")
     install_models(o)
@@ -133,7 +133,7 @@ def test_timing_reports_have_complete_file_identity_and_bounded_preview(tmp_path
     assert "not complete reports" in context["metric_provenance"]
 
 
-@pytest.mark.parametrize("role,method", [("planner", "propose_contract"), ("evaluator", "evaluate")])
+@pytest.mark.parametrize("role,method", [("planner", "plan"), ("evaluator", "evaluate")])
 def test_model_failure_is_blocked_and_resume_retries_only_failed_call(tmp_path, monkeypatch, role, method):
     from autortl.config import RunConfig
     from llm.client import ModelCallError
@@ -166,7 +166,7 @@ def test_model_failure_is_blocked_and_resume_retries_only_failed_call(tmp_path, 
         assert resumed.budget.llm_calls == calls + 1
         assert models[("generator", "generate")].call_count == 0
     else:
-        assert resumed.budget.llm_calls == calls + 5
+        assert resumed.budget.llm_calls == calls + 3
 
 
 def test_unsupported_parallel_execution_is_explicit(tmp_path):
@@ -197,14 +197,84 @@ def test_budget_exhaustion_after_model_block_preserves_verified_best(tmp_path, m
     def fail(*args, **kwargs):
         o.budget.charge_llm()
         raise ModelCallError("planner", "CODEX_QUOTA")
-    o.planner.propose_contract = fail
+    o.planner.plan = fail
     assert o.run()["best_iteration"] == 0
     resumed = fsm.Orchestrator(RunConfig.load(o.state.run_dir / "config.json"), o.state.run_dir)
     install_models(resumed)
     tools = install_tools(monkeypatch)
-    resumed.planner.propose_contract = Mock(side_effect=RuntimeError("LLM_BUDGET: exhausted"))
+    resumed.planner.plan = Mock(side_effect=RuntimeError("LLM_BUDGET: exhausted"))
     result = resumed.run()
     assert result["status"] == "budget_exhausted" and result["best_iteration"] == 0
     assert resumed.state.load_fsm()["best_iteration"] == 0
     assert resumed.budget.llm_calls == 1 and not tools
     assert [row["iteration"] for row in resumed.state.read_designs()] == [0]
+
+
+@pytest.mark.parametrize("objective,field,direction", [
+    ("minimize_luts", "lut_used", "strictly lower"),
+    ("minimize_ffs", "ff_used", "strictly lower"),
+    ("maximize_freq", "wns_ns", "strictly higher"),
+    ("minimize_power", "dynamic_power_w", "strictly lower"),
+])
+def test_fixed_contract_is_stable_and_maps_actual_objective(tmp_path, objective, field, direction):
+    cfg = configuration(tmp_path)
+    cfg.objective = objective
+    (tmp_path / "timing.xdc").write_text("create_clock -period 10 [get_ports clk]")
+    (tmp_path / "timing_routed.rpt").write_text("actual timing report")
+    facts = run_evidence(cfg, VivadoMetrics(), [cfg.design_path], cfg.testbench_path,
+                         tmp_path, {"tools": "actual tool identity"})
+    contract = render_fixed_optimize_contract(facts)
+    assert contract == render_fixed_optimize_contract(json.loads(json.dumps(facts)))
+    assert field in contract and direction in contract
+    assert facts["sources"][0]["sha256"] in contract
+    assert facts["testbench"]["sha256"] in contract
+    assert facts["report_manifest"][0]["sha256"] in contract
+    assert "actual tool identity" in contract and cfg.target_part in contract
+    assert "create_clock -period 10" in contract
+    assert "WNS >= 0" in contract and "WHS >= 0" in contract
+    assert "previous verified best" in contract and "best_iteration 0" in contract
+
+
+@pytest.mark.parametrize("tamper", ["change", "delete"])
+def test_non_done_resume_rejects_altered_fixed_contract_before_new_model_calls(tmp_path, monkeypatch, tamper):
+    from autortl.config import RunConfig
+    o = fsm.Orchestrator(configuration(tmp_path), tmp_path / "run")
+    install_models(o)
+    install_tools(monkeypatch, fail_compile=True)
+    with pytest.raises(KeyboardInterrupt):
+        o.run()
+    path = o.state.run_dir / "contract.md"
+    if tamper == "delete":
+        path.unlink()
+    else:
+        path.write_text("weaken all gates")
+    resumed = fsm.Orchestrator(RunConfig.load(o.state.run_dir / "config.json"), o.state.run_dir)
+    install_models(resumed, forbidden=True)
+    tools = install_tools(monkeypatch)
+    with pytest.raises(ValueError, match="Fixed optimization contract (changed|missing)"):
+        resumed.run()
+    assert not tools
+
+
+@pytest.mark.parametrize("name,marker", [
+    ("xvlog.log", "xvlog completed"), ("xelab.log", "xelab completed"),
+    ("sim_log.txt", "TEST PASSED"), ("vivado_synth_output.log", "SYNTH_COMPLETE"),
+])
+def test_verification_log_preview_preserves_final_markers_and_full_hash(tmp_path, name, marker):
+    path = tmp_path / name
+    path.write_text("tool header\n" + "x" * 8000 + "\n" + marker + "\n")
+    item, = flow_evidence(tmp_path)["verification_logs"]
+    assert item["sha256"] == hashlib.sha256(path.read_bytes()).hexdigest()
+    assert item["path"] == str(path.resolve())
+    assert item["head"].startswith("tool header") and marker in item["tail"]
+    assert len(item["head"]) == len(item["tail"]) == 1800
+    assert item["truncated"] is True
+    assert "do not independently" in item["preview_policy"]
+
+
+def test_short_verification_log_is_not_truncated(tmp_path):
+    (tmp_path / "sim_log.txt").write_text("TEST PASSED\n")
+    item, = flow_evidence(tmp_path)["verification_logs"]
+    assert item["head"] == (tmp_path / "sim_log.txt").read_bytes().decode("utf-8")
+    assert item["tail"] == ""
+    assert item["truncated"] is False

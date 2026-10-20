@@ -14,22 +14,22 @@ learn from failures, and retain the best correct design within a fixed budget.
 
 | Validation | Recorded result |
 |---|---|
-| Harness regression suite | **468 tests passed** |
-| Live Vivado testbench checks | **9 generated-testbench cases plus 5 counter reference/mutation cases matched expected verdicts** |
+| Harness regression suite | **497 tests passed** |
+| Live Vivado testbench checks | **20 generated-testbench, counter and FIFO reference/mutation cases matched expected verdicts** |
 | Supervised mux simulation and routing | **8 LUTs · 8 FFs · setup slack 0.579 ns · hold slack 0.052 ns** |
 
 Mux measurements use Vivado 2025.2, `xc7a35tcpg236-1` and a 10 ns clock,
 with explicit ideal zero minimum/maximum I/O delays. These are experiment
 constraints, not board timing requirements.
 
-These results demonstrate supervised harness validation. Successful end-to-end
-autonomous optimization and real interruption/resume campaigns remain under
-validation; no optimization percentage or held curriculum tier is claimed.
+These results demonstrate supervised harness validation. Model-worker recovery has been exercised; accepted autonomous optimization
+and full process-interruption campaigns remain under validation. No
+optimization percentage or held curriculum tier is claimed.
 The first bounded optimization cohort finished **0/2**, with failures preserved
 and followed by targeted repairs.
 
 See the [test evidence](evidence/2026-10-19/README.md),
-[full-suite result](evidence/2026-10-20/harness-audit-tests.txt) and
+[full-suite result](evidence/2026-10-20/fixed-contract-tests.txt) and
 [live experiment reports](evidence/2026-10-19/live-tier0/README.md).
 
 ## The design loop
@@ -45,7 +45,8 @@ flowchart LR
     F --> B
 ```
 
-- **Contract-driven generation:** interfaces, reset behavior and cycle latency
+- **Fixed contracts:** optimization requirements come from immutable harness
+  facts. Interfaces, reset behavior and cycle latency
   are checked against explicit module specifications.
 - **Verification before scoring:** testbench qualification requires a passing
   control and detection of an injected fault. Missing or ambiguous evidence fails.

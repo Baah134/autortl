@@ -1,4 +1,9 @@
-// Async FIFO skeleton: gray-coded pointers, 2FF pointer sync (verified structure)
+// Logical async FIFO skeleton; AW >= 2, DW >= 1, depth 2**AW.
+// Coordinated reset in BOTH domains with traffic stopped is required.
+// Independent domain reset recovery is unsupported. Flags are conservative
+// because remote Gray pointers traverse two synchronizer registers.
+// rd_data holds unless a read is accepted; unspecified before the first read.
+// Simulation does not prove metastability safety or physical CDC constraints.
 module async_fifo #(parameter DW=8, AW=4) (
     input  wire          wr_clk, wr_rst, wr_en,
     input  wire [DW-1:0] wr_data,
@@ -28,7 +33,7 @@ module async_fifo #(parameter DW=8, AW=4) (
         if (wr_rst) {rptr_gray_w2, rptr_gray_w1} <= 0;
         else {rptr_gray_w2, rptr_gray_w1} <= {rptr_gray_w1, rptr_gray};
     end
-    assign full = (wptr_gray_n == {~rptr_gray_w2[AW:AW-1], rptr_gray_w2[AW-2:0]});
+    assign full = (wptr_gray == {~rptr_gray_w2[AW:AW-1], rptr_gray_w2[AW-2:0]});
 
     always @(posedge rd_clk) begin
         if (rd_rst) begin rptr_bin <= 0; rptr_gray <= 0; end

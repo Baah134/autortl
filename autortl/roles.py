@@ -39,12 +39,17 @@ def evidence_prompt(role, prompt, include_candidate=False):
     return prompt
 
 
+def role_system(instruction):
+    """Every role receives one copy of fixed-contract conventions."""
+    return instruction + "\n" + conventions()
+
+
 class Planner:
     def make_spec(self, intent: str, cfg, budget) -> str:
         p = prompts.SPEC_PROMPT.format(intent=intent, target_part=cfg.target_part,
                                        target_freq_mhz=cfg.target_freq_mhz,
                                        objective=cfg.objective)
-        return ask("planner", evidence_prompt(self, p), system=prompts.PLANNER_SYSTEM + "\n" + conventions(),
+        return ask("planner", evidence_prompt(self, p), system=role_system(prompts.PLANNER_SYSTEM),
                    budget=budget)
 
     def propose_contract(self, mode, cfg, baseline: VivadoMetrics,
@@ -56,11 +61,11 @@ class Planner:
             lut_used=baseline.lut_used, ff_used=baseline.ff_used,
             wns_ns=baseline.wns_ns, design_context=design_context,
             device_budget=budget_text(cfg.target_part))
-        return ask("planner", evidence_prompt(self, p), system=prompts.PLANNER_SYSTEM, budget=budget)
+        return ask("planner", evidence_prompt(self, p), system=role_system(prompts.PLANNER_SYSTEM), budget=budget)
 
     def refine_contract(self, contract, feedback, budget) -> str:
         p = prompts.CONTRACT_REFINE.format(feedback=feedback, contract=contract)
-        return ask("planner", evidence_prompt(self, p), system=prompts.PLANNER_SYSTEM, budget=budget)
+        return ask("planner", evidence_prompt(self, p), system=role_system(prompts.PLANNER_SYSTEM), budget=budget)
 
     def plan(self, iteration, contract, progress, evaluations, best: VivadoMetrics,
              signals, budget, target_part="", advisor="") -> str:
@@ -73,14 +78,14 @@ class Planner:
             lut_used=best.lut_used, ff_used=best.ff_used, wns_ns=best.wns_ns,
             dsp_used=best.dsp_used, bram_used=best.bram_used,
             signals="\n".join(f"- {s.kind}: {s.detail}" for s in signals) or "(none)")
-        return ask("planner", evidence_prompt(self, p), system=prompts.PLANNER_SYSTEM, budget=budget)
+        return ask("planner", evidence_prompt(self, p), system=role_system(prompts.PLANNER_SYSTEM), budget=budget)
 
     def restart_plan(self, contract, stall_count, tried, best: VivadoMetrics,
                      budget) -> str:
         p = prompts.RESTART_PLAN.format(contract=contract, stall_count=stall_count,
                                         tried=tried, lut_used=best.lut_used,
                                         ff_used=best.ff_used, wns_ns=best.wns_ns)
-        return ask("planner", evidence_prompt(self, p), system=prompts.PLANNER_SYSTEM, budget=budget)
+        return ask("planner", evidence_prompt(self, p), system=role_system(prompts.PLANNER_SYSTEM), budget=budget)
 
 
 class Generator:
@@ -93,7 +98,7 @@ class Generator:
             ports_table=_ports_table(module), latency=module.latency,
             reset_desc=f"{r.kind}, active_{'high' if r.active_high else 'low'} '{r.signal}'",
             mutation=mutation_text, instruction=instruction, verilog=verilog)
-        resp = ask("generator", p, system=prompts.GENERATOR_SYSTEM + "\n" + conventions(),
+        resp = ask("generator", p, system=role_system(prompts.GENERATOR_SYSTEM),
                    budget=budget)
         return generated_rtl(resp)
 
@@ -107,7 +112,7 @@ class Generator:
         p = prompts.FIX.format(diagnosis=diagnosis, error=error[:1500],
                                verilog=verilog, tb_excerpt=tb_excerpt[:2000],
                                previous_attempts=prev)
-        resp = ask("generator", p, system=prompts.GENERATOR_SYSTEM + "\n" + conventions(),
+        resp = ask("generator", p, system=role_system(prompts.GENERATOR_SYSTEM),
                    budget=budget)
         return generated_rtl(resp)
 
@@ -145,7 +150,7 @@ class Evaluation:
 class Evaluator:
     def review_contract(self, contract: str, budget) -> str:
         return ask("evaluator", evidence_prompt(self, prompts.CONTRACT_REVIEW.format(contract=contract)),
-                   system=prompts.EVALUATOR_SYSTEM, budget=budget)
+                   system=role_system(prompts.EVALUATOR_SYSTEM), budget=budget)
 
     def evaluate(self, iteration, contract, ladder_summary, m: VivadoMetrics,
                  vivado_notes, stall_count, restart_threshold, budget) -> Evaluation:
@@ -156,18 +161,18 @@ class Evaluator:
             timing_met=m.timing_met, dsp_used=m.dsp_used, bram_used=m.bram_used,
             vivado_notes=vivado_notes or "(none)", stall_count=stall_count,
             restart_threshold=restart_threshold)
-        return Evaluation.parse(ask("evaluator", evidence_prompt(self, p, include_candidate=True), system=prompts.EVALUATOR_SYSTEM,
+        return Evaluation.parse(ask("evaluator", evidence_prompt(self, p, include_candidate=True), system=role_system(prompts.EVALUATOR_SYSTEM),
                                     budget=budget))
 
 
 class TimingDoctor:
-    """The one role with bounded agentic latitude (max_turns=3)."""
+    """Timing repair role; worker timeout is bounded, max_turns is advisory."""
     def surgery(self, verilog: str, instruction: str, path_snippet: str,
                 budget) -> str:
         skills = inject(select_for_timing())
         p = (f"{skills}\n\n**Surgical instruction:** {instruction}\n\n"
              f"**Failing timing path:**\n```\n{path_snippet[:1200]}\n```\n\n"
              f"**Current module:**\n```verilog\n{verilog}\n```")
-        resp = ask("timing_doctor", p, system=prompts.DOCTOR_SYSTEM + "\n" + conventions(),
+        resp = ask("timing_doctor", p, system=role_system(prompts.DOCTOR_SYSTEM),
                    budget=budget, max_turns=3)
         return generated_rtl(resp)

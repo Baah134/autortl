@@ -1,30 +1,31 @@
 ---
 name: cdc
-description: "Use when the design has multiple clock domains, async interfaces, wr_clk/rd_clk port pairs, or any signal crossing between clock domains. Simulation LIES about metastability — these patterns are mandatory."
+description: "Contract-preserving cdc guidance for AutoRTL."
 ---
 # Clock Domain Crossing (CDC)
 
-## The danger
-A flop capturing a signal from another clock domain can go metastable.
-**Simulation will not show this** — sim passes, silicon fails. CDC correctness
-comes from structure, never from simulation results.
+Preserve the fixed contract: clocks, cycle latency, resets, parameter behavior,
+registered outputs and transfer protocol. CDC repair cannot add observable
+cycles without an explicitly revised external specification.
 
-## Single-bit crossing: two-flop synchroniser
-See snippets/sync_2ff.v. Rules:
-- Only synchronise SLOW-CHANGING single bits (levels, not pulses).
-- Never synchronise a multi-bit bus bit-by-bit (bits arrive in different cycles).
+## Structural checks
+A two-flop synchronizer is for sufficiently stable single-bit levels, not arbitrary
+pulses or independently synchronized bus bits. Pulse/toggle and request/ack
+protocols require rate and reset assumptions. An async FIFO transfers buses
+through storage with Gray-coded pointers synchronized into each domain.
+See snippets/sync_2ff.v and snippets/async_fifo_skeleton.v.
 
-## Pulse crossing: toggle synchroniser
-Convert the pulse to a level toggle, synchronise the toggle, edge-detect on the far side.
+The FIFO skeleton supports AW >= 2, DW >= 1 and depth 2**AW. It requires
+coordinated reset of both domains while traffic is stopped; independent reset
+recovery is not supported. Data output is registered on accepted reads, holds
+otherwise, and is unspecified until the first accepted read after reset.
+Full/empty flags are conservative because remote pointers pass through two
+synchronizer stages. Full compares the CURRENT write Gray pointer to the
+inverted-MSB synchronized read pointer, avoiding a combinational next-pointer loop.
 
-## Bus crossing: async FIFO (gray-coded pointers)
-Any multi-bit data crossing uses an async FIFO with gray-coded read/write pointers, each pointer synchronised into the other domain with two flops. See snippets/async_fifo_skeleton.v.
-
-## Handshake crossing
-For occasional transfers: req/ack with both signals two-flop synchronised in their destination domains.
-
-## Constraints
-Cross-domain paths need `set_false_path` or `set_max_delay -datapath_only` on the synchroniser input — but ONLY on true synchroniser inputs, never to silence real same-domain paths.
-
-## Spec-level law
-The contract linter rejects any connection whose two ends live in different clock_domains without a CDC module between them. If you need a crossing, it must be its own module using these patterns.
+## Limits and constraints
+Simulation checks logical data/flag behavior; it does not prove metastability
+safety or physical CDC correctness. Review synchronizer placement, Gray-bus skew,
+reset release and actual crossing constraints for the target. Harness-owned
+constraints must identify real CDC paths; never invent false paths to hide timing.
+A recognized CDC module is a structural lint check, not a physical signoff.

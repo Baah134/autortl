@@ -28,7 +28,7 @@ Check git status, git log -1 and python scripts/session.py status before editing
 ## Repository and publication
 
 Remote: https://github.com/Baah134/autortl
-Active branch: codex/contract-context. Last published checkpoint 4091a4b;
+Active branch: codex/contract-context. Last published checkpoint 61854c0;
 main includes the public README rewrite f08cb76. Inspect current Git/remote state
 because subsequent validated commits may follow this document.
 The paused MCP draft remains in its existing local stash.
@@ -59,9 +59,14 @@ Current repairs add bounded redacted worker diagnostics, typed model-blocked
 checkpoints, report manifests including timing, legal mutation/Doctor prompts,
 hold-aware diagnosis and actual physical hold-fix command selection. The dead
 module artifact-cache branch is removed; journal reuse remains. Unsupported
-parallel_candidates=True is explicitly rejected. Final regression suite: 468 passed in134.47s, retained in
-evidence/2026-10-20/harness-audit-tests.txt. Source is frozen for a fresh tier0
-campaign and supervised physical hold-fix command validation.
+parallel_candidates=True is explicitly rejected. Published regression suite: 468 passed in134.47s, retained in
+evidence/2026-10-20/harness-audit-tests.txt. Supervised physicalholdfix passes
+with18LUT vsstandard8LUT; raw evidence physical-hold-fix/. Campaign02 remains0/2
+(counter wordingblock6calls; mux liveCODEX_QUOTA withbestbaselinepreserved).
+Current edits remove model contractnegotiation, repair actualskillguidance and
+conventions, and fix/qualify FIFO reference. Combined validation: 497 tests passed in 100.04 seconds; all six real FIFO
+cases match expected verdicts. New physical optimization campaign follows at
+this frozen source. Prior quota remains an original failure, not retroactive success.
 
 ## Earlier completed foundation (2026-10-19)
 

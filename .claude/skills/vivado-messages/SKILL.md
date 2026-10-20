@@ -1,23 +1,25 @@
 ---
 name: vivado-messages
-description: "Use when diagnosing Vivado synthesis, simulation, or timing failures by message ID like [Synth 8-327]. Maps official message IDs to meaning and repair."
+description: "Contract-preserving vivado-messages guidance for AutoRTL."
 ---
-# Vivado Message ID Playbook
+# Vivado Message Diagnosis
 
-Every Vivado message has a stable ID: `[Facility Sub-ID]`. The taxonomy
-(data/taxonomy.yaml) is the machine view; this is the model-facing view.
-For unknown IDs, Vivado itself explains: `help -message {Synth 8-327}`.
+Preserve the fixed contract: cycle latency, reset, parameter behavior, registered
+outputs, exact interfaces and arithmetic widths. Repairs cannot amend @latency.
+Use the actual message ID, full context and tool version; descriptions/IDs can
+vary. The curated data/taxonomy.yaml is the machine-facing classification.
 
-## High-frequency IDs and repairs
-- **[Synth 8-327] inferred latch** → add default assignments at the top of the combinational block; complete every if with else. PROMOTED TO ERROR in our flow.
-- **[Synth 8-3352] multi-driven net** → one driver per signal; merge the duplicate always blocks. PROMOTED TO ERROR.
-- **[Synth 8-6859] width mismatch** → regenerate port connections exactly from the contract table.
-- **[Synth 8-693] unconnected port** → connect every contract port; tie unused inputs low.
-- **[XSIM 43-3225] elaboration failed** → interface mismatch with the testbench: match name/ports/widths exactly.
-- **[XSIM 43-4100] module not found** → module name must equal contract name, case sensitive.
-- **[Timing 38-282] no clock on paths** → the clock port must be named `clk` so the auto-XDC binds.
-- **[Vivado 12-4473] sim step failed** → wrapper only; the true cause is in compile.log/elaborate.log — read those IDs.
+## Repair process
+Read compile/elaboration logs for wrapper failures, then match module/port names,
+widths and parameters to the contract. For latch diagnostics, complete
+combinational assignments with defaults. For multiple drivers, establish one
+owner while preserving reset/enable priority. Do not blindly tie unconnected
+ports low; inspect intended connectivity and behavior.
+Missing clocks require inspection of the actual clock ports and harness-owned
+constraints, not renaming an interface to make a diagnostic disappear.
+Unknown IDs remain evidence for review rather than invented authoritative meanings.
 
-## Rules
-- Diagnose by ID first; only read raw prose when no ID matches.
-- New IDs seen in runs get logged to unknown_message_ids.log and curated into the taxonomy after the run.
+## Boundary rules
+Never demote/suppress messages, weaken constraints or alter testbench expectations.
+Infrastructure (license, missing tool, locks, timeout/provider failure) is distinct
+from RTL failure. Preserve RTL and completed evidence when infrastructure blocks.

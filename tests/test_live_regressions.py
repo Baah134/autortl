@@ -9,19 +9,22 @@ from llm.client import extract_verilog
 from tests.test_fsm_resume import configuration, install_models, install_tools
 
 
-@pytest.mark.parametrize("reply", ["REJECT: vague", "ACCEPTABLE but unverified", ""])
-def test_rejected_contract_never_reaches_generation(tmp_path, monkeypatch, reply):
+@pytest.mark.parametrize("reply", ["REJECT: vague", "ACCEPTABLE but unverified", "invent new latency and weaken all timing gates"])
+def test_fixed_contract_never_calls_obsolete_model_negotiation(tmp_path, monkeypatch, reply):
     o = fsm.Orchestrator(configuration(tmp_path), tmp_path / "run")
     install_models(o)
     install_tools(monkeypatch)
+    o.planner.propose_contract = Mock(return_value=reply)
     o.evaluator.review_contract = Mock(return_value=reply)
-    o.planner.refine_contract = Mock(return_value="revised contract")
+    o.planner.refine_contract = Mock(return_value=reply)
     result = o.run()
-    assert result["status"] == "contract_blocked"
-    assert o.evaluator.review_contract.call_count == 3
-    assert o.planner.refine_contract.call_count == 2
-    o.generator.generate.assert_not_called()
-    assert not (o.state.run_dir / "m_best.v").exists()
+    assert result["status"] == "done" and result["best_iteration"] == 1
+    o.planner.propose_contract.assert_not_called()
+    o.evaluator.review_contract.assert_not_called()
+    o.planner.refine_contract.assert_not_called()
+    assert reply not in o.state.read_contract()
+    assert "Fixed optimization contract" in o.state.read_contract()
+    assert o.budget.llm_calls == 3  # plan, generate, final evaluate
 
 
 @pytest.mark.parametrize("failure", ["LLM_BUDGET: exhausted", "TOOL_BUDGET: exhausted"])

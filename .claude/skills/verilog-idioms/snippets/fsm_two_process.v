@@ -1,4 +1,4 @@
-// Two-process FSM template (verified pattern)
+// Two-process FSM template (example; adapt only to a matching contract)
 module fsm_template (
     input  wire clk,
     input  wire rst,

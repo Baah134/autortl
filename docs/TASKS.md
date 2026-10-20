@@ -22,6 +22,8 @@ with Git and states acceptance criteria.
 | Fresh model-driven tier0 campaign | Recorded 0/2, recovered DONE | Worker exits preserved; counter physical 55->53 LUT candidate rejected due missing report context; no accepted gain/tier |
 | Harness feature audit | Active | docs/HARNESS_REVIEW.md: keep verification/journals, improve evidence/provider boundaries, constrain legal transformations, remove dead controls |
 | Provider/report/legal transformation repairs | Implemented; validating | Typed resumable model blocks, bounded diagnostics, timing manifest, hold diagnosis and physical command, unsupported parallel control rejected |
+| Deterministic contracts and actual prompt conformance | Implemented; validating | Campaign02 reproduced six wasted negotiation calls; fixed contract preserves gates; all roles receive conventions and consistent references |
+| FIFO reference qualification | Live checked:6/6verdicts | Full comparator cycle repaired; AW2/AW4 controls pass and data/full mutants assert; no physicalCDC proof |
 | Build counter8 and priority encoder | Pending | Typed specs, independent module and top tests, negative tests, routed results |
 
 The active coordinator continues with bounded live campaigns after publication.

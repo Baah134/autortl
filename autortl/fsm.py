@@ -18,7 +18,7 @@ from datetime import datetime
 from pathlib import Path
 
 from .config import RunConfig
-from .contract_context import run_evidence, file_evidence, flow_evidence, save_evidence
+from .contract_context import run_evidence, file_evidence, flow_evidence, save_evidence, render_fixed_optimize_contract
 from .spec import DesignSpec, ModuleSpec, Port, ResetSpec
 from .linter import lint_spec, write_stub_project, top_verilog
 from .static_checks import check as static_check
@@ -449,7 +449,7 @@ class Orchestrator:
         cfg, state = self.cfg, self.state
         extra_sources = extra_sources or []
 
-        # Verification is mandatory before even negotiating an optimization.
+        # Verification is mandatory before defining an optimization contract.
         if not cfg.testbench_path or not Path(cfg.testbench_path).is_file():
             return self._baseline_stop("baseline_blocked", "A baseline testbench is required")
         original = Path(cfg.design_path).read_text()
@@ -485,23 +485,20 @@ class Orchestrator:
         print(f"[iter 0] baseline LUTs={baseline.lut_used} FFs={baseline.ff_used} "
               f"WNS={baseline.wns_ns}")
 
-        # ---- contract negotiation ----
+        # ---- fixed harness contract: no model negotiation ----
         facts = run_evidence(cfg, baseline, [base_v] + extra_sources, tb_path,
                              idir, self._cache_context(tb_path, extra_sources))
         context = save_evidence(state.run_dir / "harness_facts.json", facts)
         self.planner.run_context = self.evaluator.run_context = context
-        c = self._model("planner", "propose_contract", cfg.mode, cfg, baseline,
-                                          original, self.budget)
-        for review_round in range(3):
-            fb = self._model("evaluator", "review_contract", c, self.budget)
-            if re.match(r"^\s*ACCEPT(?:\s*:|\s*$)", fb, re.IGNORECASE):
-                break
-            if review_round == 2:
-                state.write_contract(c)
-                return self._baseline_stop("contract_blocked", "Contract rejected after three reviews: " + fb[:2000])
-            c = self._model("planner", "refine_contract", c, fb, self.budget)
-        state.write_contract(c)
-        contract_md = state.read_contract()
+        contract_md = render_fixed_optimize_contract(facts)
+        if state.contract_path.exists():
+            if state.read_contract() != contract_md:
+                raise ValueError("Fixed optimization contract changed since checkpoint")
+        else:
+            if (state.load_fsm() or {}).get("contract_sha256"):
+                raise ValueError("Fixed optimization contract missing since checkpoint")
+            state.write_contract(contract_md)
+        self._snapshot(contract_sha256=hashlib.sha256(contract_md.encode("utf-8")).hexdigest())
 
         # ---- main loop ----
         best_v, best_m, best_iter = original, baseline, 0
@@ -769,7 +766,7 @@ class Orchestrator:
         final_artifacts = {str(path.resolve()): hashlib.sha256(path.read_bytes()).hexdigest()
                            for path in Path(best_artifact_dir).glob("*")
                            if path.is_file() and path.suffix in (".v", ".sv", ".rpt", ".xdc", ".tcl")}
-        for evidence_path in [state.run_dir / "harness_facts.json", *state.run_dir.glob("iter_*/evaluation_facts.json")]:
+        for evidence_path in [state.contract_path, state.run_dir / "harness_facts.json", *state.run_dir.glob("iter_*/evaluation_facts.json")]:
             if evidence_path.is_file():
                 final_artifacts[str(evidence_path.resolve())] = hashlib.sha256(evidence_path.read_bytes()).hexdigest()
         self._snapshot(phase="DONE", best_iteration=best_iter,

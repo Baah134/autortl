@@ -1,40 +1,30 @@
 ---
 name: verilog-idioms
-description: "Use when generating or fixing any synthesisable Verilog module: FSM structure, latch avoidance, reset discipline, counters, shift registers, handshakes."
+description: "Contract-preserving verilog-idioms guidance for AutoRTL."
 ---
 # Verilog Idioms for Synthesis
 
-## Two-process FSM (the safe pattern)
-State register in one sequential block; next-state and outputs in one combinational block with defaults first. See snippets/fsm_two_process.v.
+## Preserve the fixed contract
+Preserve exact cycle latency, registered outputs, reset/enable priority,
+parameter behavior, signedness and high bits. An `@latency` edit cannot authorize
+extra cycles. Retiming existing registers requires identical observable behavior.
 
-## Latch avoidance
-A latch is inferred when a combinational block can exit without assigning a signal. Cure: give every signal a default at the TOP of the block, then override in branches.
-```verilog
-always @(*) begin
-    grant = 1'b0;          // default FIRST
-    if (req && !busy) grant = 1'b1;
-end
-```
-
-## Reset discipline
-- Reset every state-holding register. Do not reset large data pipelines unnecessarily (wastes routing); reset control, valid flags, and counters.
-- Synchronous reset template:
-```verilog
-always @(posedge clk) begin
-    if (rst) count <= 0;
-    else if (enable) count <= count + 1'b1;
-end
-```
-
-## Valid/ready handshake rules
-- A transfer happens on `valid && ready` at a clock edge.
-- `valid` must not depend combinationally on `ready` (no combinational loops).
-- Once `valid` is high, keep data stable until the beat completes.
-See snippets/valid_ready_stage.v.
+## Combinational and sequential logic
+Give every combinational output a default before conditional overrides to avoid
+latches. Use one driver per signal, nonblocking assignments in clocked blocks,
+and blocking assignments in combinational blocks. A two-process FSM is useful
+only if its output registration matches the contract; see snippets/fsm_two_process.v.
+Reset every register the contract requires, with its exact polarity and kind.
+Do not remove resets for inference or add resets that change specified behavior.
 
 ## Width discipline
-- Compare and add at the minimum width mathematics requires; Vivado prunes but explicit narrowing is more reliable and reads clearer.
-- Constants: size them (`10'd1000`, not bare `1000`) in comparisons to avoid 32-bit promotion.
+Compute explicit operand/result widths and signedness before narrowing. Prove
+that discarded high bits cannot affect any supported input or parameter value.
+Size constants without truncating thresholds; preserve overflow/wrap semantics.
 
-## Pipeline register stage
-See snippets/pipeline_stage.v — the pattern for adding a cycle of latency cleanly (and remember to update `// @latency`).
+## Handshakes
+Transfer occurs on valid && ready at the active clock edge. Keep valid/data
+stable while stalled, as specified. Avoid combinational handshake loops.
+See snippets/valid_ready_stage.v; adapt only within the fixed contract.
+The pipeline_stage.v example has a fixed two-cycle contract; it is not permission
+to add a stage to an existing design.

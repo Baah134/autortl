@@ -1,4 +1,4 @@
-// MAC that reliably infers a single DSP48E1 (verified pattern)
+// Registered MAC example; verify actual DSP mapping in target reports.
 module mac_dsp #(parameter AW=18, BW=18, PW=48) (
     input  wire                 clk,
     input  wire                 rst,

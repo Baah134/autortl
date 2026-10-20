@@ -1,4 +1,4 @@
-// Two-flop synchroniser for a single slow-changing bit (verified pattern)
+// Two-flop synchroniser for a single slow-changing bit (example; adapt only to a matching contract)
 module sync_2ff (
     input  wire dst_clk,
     input  wire d_async,

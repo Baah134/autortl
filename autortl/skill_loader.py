@@ -62,7 +62,9 @@ def inject(skill_names: list[str], limit_chars: int = 12000) -> str:
     used = 0
     for n in skill_names:
         body = load_skill(n)
-        if body and used + len(body) <= limit_chars:
-            parts.append(f"### Reference: {n}\n{body}")
-            used += len(body)
+        section = f"### Reference: {n}\n{body}"
+        cost = len(section) + (2 if parts else 0)
+        if body and used + cost <= limit_chars:
+            parts.append(section)
+            used += cost
     return "\n\n".join(parts)

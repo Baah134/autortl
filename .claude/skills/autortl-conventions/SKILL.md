@@ -1,30 +1,32 @@
 ---
 name: autortl-conventions
-description: "The law of the AutoRTL system. Always loaded into every role's system prompt. Defines the spec schema, output format rules, latency declaration, and the promote-never-demote message policy."
+description: "Contract-preserving autortl-conventions guidance for AutoRTL."
 ---
 # AutoRTL Conventions (LAW — always in force)
 
-## Output format
-- Verilog goes in exactly ONE ```verilog fence. Nothing else in the fence.
-- Python golden models go in exactly ONE ```python fence.
-- Never wrap testbenches or reference material in ```verilog fences — those use ```text.
+## Fixed contract
+The contract is law. Preserve exact module/port names, widths, signedness,
+parameter behavior over every supported value, reset kind/polarity/priority,
+enable/hold behavior, cycle latency, throughput and registered outputs.
+Use the supplied clock names; do not invent or rename clocks.
+Every generated module declares `// @latency N` equal to the fixed contract.
+Changing that comment does not authorize changing behavior. If an architecture
+cannot meet this contract, report the limitation and request replanning; never
+amend it to pass a test. Retiming existing registers is allowed only when all
+observable behavior remains identical.
 
-## Interface law
-- The module name, port names, and port widths in the contract are EXACT. Never add, rename, or resize a port.
-- The top-level clock is always named `clk`. The reset signal name, polarity, and kind come from the contract's reset spec.
-
-## Latency law
-- Every generated module declares its pipeline depth in a header comment: `// @latency N`.
-- N must equal the contract latency. If your implementation would change latency, you still match the contract — the spec is law. Latency changes happen by contract amendment only.
+## Output and code boundaries
+Return generated RTL in exactly one verilog fence, golden Python in one python
+fence. Put quoted reference/testbench material in text fences. Follow the role's
+requested format for reviews/specifications; do not emit replacement RTL there.
+LLM output belongs only in .v/.py files. Harness templates own Tcl, shell and
+paths. Never propose message suppression, altered clocks or relaxed constraints.
 
 ## Coding rules
-- Synchronous resets: `if (rst)` inside `always @(posedge clk)` (unless the contract says async).
-- No `initial` blocks in synthesisable code.
-- In every combinational `always @(*)` block, assign every output a default at the top of the block.
-- One driver per signal: each reg is assigned from exactly one always block.
-
-## Vivado message policy
-- Message severities may be PROMOTED to ERROR (e.g. inferred latch). They are NEVER demoted or suppressed. A clean run must be genuinely clean.
-
-## File boundaries
-- LLM output lands only in .v (or .py for golden models). No LLM string is ever interpolated into TCL, shell, or paths.
+One driver per signal. Assign combinational defaults before branches.
+Use nonblocking sequential assignments. Reset behavior follows the contract,
+including data registers when specified; never remove a required reset.
+No synthesis initial blocks. Preserve high bits, overflow and signed arithmetic.
+Vivado severities may be promoted to ERROR, never demoted or suppressed.
+Simulation, setup, hold, metric integrity and independent reference gates all
+remain mandatory. Infrastructure failures are not design failures.

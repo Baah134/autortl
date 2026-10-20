@@ -1,0 +1,27 @@
+........................................................................ [ 14%]
+........................................................F............... [ 28%]
+........................................................................ [ 43%]
+........................................................................ [ 57%]
+........................................................................ [ 72%]
+........................................................................ [ 86%]
+.................................................................        [100%]
+================================== FAILURES ===================================
+________________ test_short_verification_log_is_not_truncated _________________
+
+tmp_path = WindowsPath('C:/Users/prince.baah/Documents/Codex/2026-10-15/hey/work/full_fixed_contract_20201020_01/test_short_verification_log_is0')
+
+    def test_short_verification_log_is_not_truncated(tmp_path):
+        (tmp_path / "sim_log.txt").write_text("TEST PASSED\n")
+        item, = flow_evidence(tmp_path)["verification_logs"]
+>       assert item["head"] == (tmp_path / "sim_log.txt").read_bytes().decode("utf-8")
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: assert ('TEST PASSED\r\n' == 'TEST PASSED\n'
+E         
+E         - TEST PASSED
+E         + TEST PASSED
+E         ?            +)
+
+tests\test_contract_context.py:278: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_contract_context.py::test_short_verification_log_is_not_truncated
+1 failed, 496 passed in 153.38s (0:02:33)

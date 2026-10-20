@@ -1,4 +1,4 @@
-// Valid/ready pipeline stage with correct backpressure (verified pattern)
+// Valid/ready pipeline stage with correct backpressure (example; adapt only to a matching contract)
 module vr_stage #(parameter W = 8) (
     input  wire         clk,
     input  wire         rst,

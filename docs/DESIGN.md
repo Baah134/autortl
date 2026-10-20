@@ -11,6 +11,9 @@ verification and actionable repair feedback. Weak-model reliability is an
 experimental target, not an established result. If the system only performs well with the best
 model, the design has failed its own requirement.
 
+Optimization contracts are rendered mechanically from frozen harness evidence.
+Model roles do not negotiate or amend their verification requirements.
+
 ## The seven pillars
 1. **Task decomposition into module contracts.** The planner's only creative
    output is `design_spec.json` (typed schema in `autortl/spec.py`). Each
