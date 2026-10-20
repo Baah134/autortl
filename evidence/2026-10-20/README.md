@@ -1,5 +1,12 @@
 # Verification evidence - 2026-10-20
 
+- `interface-atomic-tests.txt`: **554 tests passed in 148.80 seconds**, including
+  structural interface drift and real Windows sharing-lock recovery.
+- `signed-interface/`: four actual signed/symbolic controls and mutants matched
+  expected verdicts; wrappers, generated TBs and parameter overrides exercised.
+- `contract-campaign-03/`: original result **1/2**; mux completed with three
+  model calls and baseline retained; counter hit a Windows checkpoint error
+  after passing candidate simulation. No counter candidate was promoted.
 - `fixed-contract-tests.txt`: fixed contracts/skills checkpoint, **497 tests
   passed in 100.04 seconds**. Initial fixture-only failure is retained separately.
 - `harness-tests.txt`: checkpoint 4091a4b, 436 tests passed in 118.53 seconds.

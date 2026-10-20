@@ -6,7 +6,7 @@ system. No weaker-model performance has been demonstrated yet.
 
 ## What the latest experiments establish
 
-- 497 regression tests passed at the repaired implementation. The counter32 reference checks every output and
+- 554 regression tests passed at the repaired implementation. The counter32 reference checks every output and
   detects all four selected mutants in real Vivado simulation. Earlier nine
   generated-testbench cases cover positive and negative timing/streaming cases.
 - Cohort tier0_fkxbmmwe originally finished 0/2 after worker exits, not failed
@@ -94,3 +94,21 @@ or physical CDC closure. Multi-clock physical implementation is not demonstrated
 Feature value remains an experiment: instruction consistency is required for
 correctness, while the marginal benefit of each optional reference still needs
 controlled ablation. Do not add agent layers merely to increase agent count.
+
+
+## Structural checks and persistence audit
+
+Campaign03 reached useful generation without negotiation but exposed a Windows
+atomic budget replacement error. Bounded Windows-only retry now has controlled
+fault tests and a real sharing-lock test. Persistent storage failure/hard-kill
+accounting is still not an external transaction; no exact recovery claim follows.
+
+Default-width comparison was insufficient: six reproduced public-parameter,
+signedness and packed-shape bypasses are now rejected. Signed/shape metadata and
+symbolic interface dependencies reach mechanical code generation as well as
+static gates. Four live signed/parameter control-and-mutant cases qualify the
+new paths. These checks preserve declarations, not all parameterized behavior.
+
+Retain the verification ladder and deterministic contracts. Next live coverage
+still needs typed build/golden integration, cache/restart and complete Doctor
+invocation; optional planning/skill/best-of-N benefits need controlled ablation.

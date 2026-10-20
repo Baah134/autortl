@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_1:decision:instruction:0",
+  "result": "In the sequential counter update, remove the `count_next` temporary and the `count == {WIDTH{1'b1}}` branch; when `enable` is active and `load` is not, assign `count <= count + 1'b1` and set `overflow` to the reduction-AND of the pre-edge `count`. Keep reset above load above enable, preserve overflow hold while disabled and clear it on load, and leave the registered flag logic unchanged. Preserve the module interface, parameters, reset behavior, and all observable cycle timing.",
+  "artifacts": {}
+}

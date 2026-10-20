@@ -29,3 +29,9 @@ with Git and states acceptance criteria.
 The active coordinator continues with bounded live campaigns after publication.
 Do not treat the previously verified standalone generation trial or controlled
 unit tests as proof of the complete live build/resume/optimization loop.
+
+
+Latest interface/storage checkpoint: 554 regression tests pass; real Windows
+sharing-lock recovery and four signed/symbolic Vivado cases pass expected
+verdicts. Original campaign03 remains1/2. Structural declaration safeguards
+supplement independent verification; they do not establish full equivalence.

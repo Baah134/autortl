@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Ports and interface: PASS \u2014 Candidate preserves the frozen module name, ports, directions, and widths.\n- Observable behavior: PASS \u2014 The registered mux selection and synchronous active-high reset match the frozen source.\n- Declared latency: FAIL \u2014 The candidate declares `// @latency 0`, but its output is updated on `posedge clk`.\n- Simulation: PASS \u2014 The unchanged testbench reports `TEST PASSED`; the deterministic ladder is ALIVE.\n- Tool exit codes: INVESTIGATE \u2014 Logs show clean compile and elaboration output, but successful exit codes are not provided.\n- Routed metrics and timing: PASS \u2014 Retained routed reports are listed; reported setup WNS is 0.579 ns and hold WHS is 0.052 ns.\n- LUT objective: FAIL \u2014 Candidate LUTs are 8, equal to the previous best of 8; strict reduction is required.\n## Summary\n- Passed: 4 of 7\n- Failed: 2 of 7\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate preserves the mux\u2019s observable behavior and passes the reported simulation and timing gates, but its latency annotation conflicts with the registered output, and LUT usage does not strictly improve over the previous best. The available evidence also omits tool exit codes, so that gate remains unverifiable.",
+      "recommendation": "REJECT",
+      "passed": 4,
+      "failed": 2
+    }
+  },
+  "artifacts": {}
+}

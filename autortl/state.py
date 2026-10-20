@@ -1,6 +1,6 @@
 """State files on disk — the only channel between roles, and the resume source.
 
-contract.md   written once after negotiation (amendable only via governance)
+contract.md   fixed harness optimization contract (immutable after creation)
 plan.md       rewritten by planner
 progress.md   append-only
 designs.jsonl one line per iteration
@@ -11,25 +11,65 @@ import json
 import re
 import os
 import tempfile
+import time
 import hashlib
 from datetime import datetime
 from pathlib import Path
 
 
+_WINDOWS = os.name == "nt"
+_REPLACE_RETRY_DELAYS = (.01, .02, .04, .08, .16, .32)
+
+
+def _replace_checkpoint(temporary: str, path: Path) -> None:
+    """Retry only known Windows sharing/access contention, for at most 0.63s.
+
+    Reuse the flushed sibling file throughout. Never remove the old target to
+    work around a lock: replacement must remain atomic, including on failure.
+    """
+    first_error = None
+    for attempt in range(len(_REPLACE_RETRY_DELAYS) + 1):
+        try:
+            os.replace(temporary, path)
+            return
+        except OSError as exc:
+            if not _WINDOWS or getattr(exc, "winerror", None) not in (5, 32, 33):
+                raise
+            if first_error is None:
+                first_error = exc
+            if attempt == len(_REPLACE_RETRY_DELAYS):
+                raise first_error
+            time.sleep(_REPLACE_RETRY_DELAYS[attempt])
+
+
 def atomic_write_text(path: Path, text: str) -> None:
-    """Single-writer checkpoint: replace only after a sibling file is flushed."""
+    """Single-writer checkpoint: flush a sibling, then atomically replace.
+
+    Windows sharing contention gets bounded retry. Failed replacement leaves the
+    previous checkpoint intact; cleanup must never hide the original write error.
+    This does not make external tool execution and budget charging transactional.
+    """
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     fd, temporary = tempfile.mkstemp(prefix=f".{path.name}.", suffix=".tmp", dir=path.parent)
+    write_failed = False
     try:
         with os.fdopen(fd, "w", encoding="utf-8", newline="\n") as stream:
             stream.write(text)
             stream.flush()
             os.fsync(stream.fileno())
-        os.replace(temporary, path)
+        _replace_checkpoint(temporary, path)
+    except BaseException:
+        write_failed = True
+        raise
     finally:
-        if os.path.exists(temporary):
+        try:
             os.unlink(temporary)
+        except FileNotFoundError:
+            pass
+        except OSError:
+            if not write_failed:
+                raise
 
 
 class RunState:

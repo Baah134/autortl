@@ -6,7 +6,17 @@ and wiring that Vivado itself cannot elaborate (via black-box stubs).
 """
 from __future__ import annotations
 from pathlib import Path
-from .spec import DesignSpec, ModuleSpec, valid_identifier
+from .spec import DesignSpec, ModuleSpec, valid_identifier, port_declaration
+
+
+def _packed_shape(port):
+    return port.packed_dimensions if port.packed_dimensions is not None else ([[port.width - 1, 0]] if port.width > 1 else [])
+
+
+def _parameter_header(module):
+    if not module.parameters:
+        return ""
+    return " #( " + ", ".join(f"parameter {name} = {value}" for name, value in module.parameters.items()) + " )"
 
 
 def lint_spec(spec: DesignSpec) -> list[str]:
@@ -42,6 +52,10 @@ def lint_spec(spec: DesignSpec) -> list[str]:
         if sp.width != dp.width:
             errs.append(f"width mismatch: {c.src_module}.{c.src_port}[{sp.width}] -> "
                         f"{c.dst_module}.{c.dst_port}[{dp.width}]")
+        if sp.signed != dp.signed:
+            errs.append(f"signedness mismatch: {c.src_module}.{c.src_port} -> {c.dst_module}.{c.dst_port}")
+        if _packed_shape(sp) != _packed_shape(dp):
+            errs.append(f"packed shape mismatch: {c.src_module}.{c.src_port} -> {c.dst_module}.{c.dst_port}")
         if sp.protocol != dp.protocol:
             errs.append(f"protocol mismatch: {c.src_module}.{c.src_port} ({sp.protocol}) "
                         f"-> {c.dst_module}.{c.dst_port} ({dp.protocol})")
@@ -60,7 +74,7 @@ def lint_spec(spec: DesignSpec) -> list[str]:
                             f"and is not an external port")
             if p.name in external and (m.name, p.name) not in driven:
                 ext = external[p.name]
-                if (p.direction, p.width, p.protocol) != (ext.direction, ext.width, ext.protocol):
+                if (p.direction, p.width, p.protocol, p.signed, _packed_shape(p)) != (ext.direction, ext.width, ext.protocol, ext.signed, _packed_shape(ext)):
                     errs.append(f"external binding mismatch: {m.name}.{p.name}")
     for port in spec.external_ports:
         matches = [p for m in spec.modules for p in m.ports if p.name == port.name and p.direction == port.direction]
@@ -70,18 +84,38 @@ def lint_spec(spec: DesignSpec) -> list[str]:
 
 
 def stub_verilog(m: ModuleSpec) -> str:
+    if m.interface_signature is not None:
+        from .verilog_interface import validate_signature
+        signature = m.interface_signature
+        validate_signature(signature)
+        # Non-ANSI declarations allow interface-dependent localparams to appear
+        # before the symbolic port declarations without flattening their shape.
+        lines = [f"module {m.name} (" + ", ".join(p["name"] for p in signature["ports"]) + ");"]
+        for kind, key in (("parameter", "parameters"), ("localparam", "localparams")):
+            for entry in signature[key]:
+                prefix = (entry["type"] + " ") if entry["type"] else ""
+                lines.append(f"{kind} {prefix}{entry['name']} = {entry['default']};")
+        for entry in signature["ports"]:
+            ranges = "".join(f"[{left}:{right}]" for left, right in entry["dimensions"])
+            dtype = entry["value_type"] if entry["value_type"] in ("int", "integer", "bit") else ""
+            declaration = " ".join(part for part in (entry["direction"], "wire", dtype,
+                "signed" if entry["signed"] else ("unsigned" if dtype in ("int", "integer") else ""),
+                ranges, entry["name"]) if part)
+            lines.append(declaration + ";")
+        lines.append("endmodule\n")
+        return "\n".join(lines)
     ports = ",\n".join(
-        f"    {p.direction} wire {'[%d:0] ' % (p.width - 1) if p.width > 1 else ''}{p.name}"
+        "    " + port_declaration(p, include_direction=True)
         for p in m.ports
     )
-    return f"module {m.name} (\n{ports}\n);\nendmodule\n"
+    return f"module {m.name}{_parameter_header(m)} (\n{ports}\n);\nendmodule\n"
 
 
 def top_verilog(spec: DesignSpec) -> str:
     """Deterministic, mechanical top-level wiring. Zero LLM involvement."""
     lines = []
     ext = ",\n".join(
-        f"    {p.direction} wire {'[%d:0] ' % (p.width - 1) if p.width > 1 else ''}{p.name}"
+        "    " + port_declaration(p, include_direction=True)
         for p in spec.external_ports
     )
     lines.append(f"module {spec.top_name} (\n{ext}\n);")
@@ -91,8 +125,7 @@ def top_verilog(spec: DesignSpec) -> str:
         sp = next(p for p in src.ports if p.name == c.src_port)
         wname = f"w_{c.src_module}_{c.src_port}"
         if wname not in declared:
-            w = f"[{sp.width-1}:0] " if sp.width > 1 else ""
-            lines.append(f"    wire {w}{wname};")
+            lines.append("    " + port_declaration(sp, name=wname) + ";")
             declared.add(wname)
     for m in spec.modules:
         conns = []
@@ -110,7 +143,8 @@ def top_verilog(spec: DesignSpec) -> str:
             else:
                 value = p.name if any(ext.name == p.name for ext in spec.external_ports) else ""
                 conns.append(f".{p.name}({value})")
-        lines.append(f"    {m.name} u_{m.name} (\n        "
+        params = " #( " + ", ".join(f".{name}({value})" for name, value in m.parameters.items()) + " )" if m.parameters else ""
+        lines.append(f"    {m.name}{params} u_{m.name} (\n        "
                      + ",\n        ".join(conns) + "\n    );")
     lines.append("endmodule\n")
     return "\n".join(lines)

@@ -49,15 +49,28 @@ def _strip_comments(text: str) -> str:
 def _check_interface(src: str, c: ModuleSpec) -> list[str]:
     errs = []
     try:
-        actual = {p.name: p for p in infer_module(src, c.name).ports}
+        inferred = infer_module(src, c.name)
+        actual = {p.name: p for p in inferred.ports}
     except ValueError as exc:
         return [str(exc)]
+    if list(c.parameters.items()) != list(inferred.parameters.items()):
+        errs.append("contract public parameter names/order/defaults mismatch")
+    if c.interface_signature is not None and c.interface_signature != inferred.interface_signature:
+        errs.append("contract symbolic interface signature mismatch (parameter types/defaults, dependencies or packed ranges changed)")
     expected = {p.name: p for p in c.ports}
     for name, port in expected.items():
         if name not in actual:
             errs.append(f"contract port '{name}' missing from interface")
         elif (port.direction, port.width) != (actual[name].direction, actual[name].width):
             errs.append(f"contract port '{name}' direction/width mismatch: expected {port.direction}[{port.width}], got {actual[name].direction}[{actual[name].width}]")
+        if name in actual:
+            observed = actual[name]
+            if port.signed != observed.signed:
+                errs.append(f"contract port '{name}' signedness mismatch")
+            def shape(p):
+                return p.packed_dimensions if p.packed_dimensions is not None else ([[p.width-1,0]] if p.width > 1 else [])
+            if shape(port) != shape(observed):
+                errs.append(f"contract port '{name}' packed dimensions/orientation mismatch")
     for name in actual.keys() - expected.keys():
         errs.append(f"unexpected interface port '{name}'")
     return errs

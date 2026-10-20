@@ -26,6 +26,8 @@ class Port:
     width: int                # resolved integer width, >=1
     clock_domain: str = "clk"
     protocol: str = "none"
+    signed: bool = False
+    packed_dimensions: list[list[int]] | None = None
 
     def validate(self) -> list[str]:
         errs = []
@@ -35,9 +37,43 @@ class Port:
             errs.append(f"port {self.name}: bad direction '{self.direction}'")
         if type(self.width) is not int or not 1 <= self.width <= 65536:
             errs.append(f"port {self.name}: width must be int >= 1 (got {self.width})")
+        if type(self.signed) is not bool:
+            errs.append(f"port {self.name}: signed must be boolean")
+        if self.packed_dimensions is not None:
+            dims = self.packed_dimensions
+            if not isinstance(dims, list) or not dims or any(
+                not isinstance(d, list) or len(d) != 2 or any(type(n) is not int for n in d)
+                for d in dims
+            ):
+                errs.append(f"port {self.name}: packed_dimensions must be nonempty integer bound pairs")
+            else:
+                size = 1
+                for left, right in dims:
+                    size *= abs(left - right) + 1
+                if size != self.width:
+                    errs.append(f"port {self.name}: packed_dimensions do not match width")
         if self.protocol not in PROTOCOLS:
             errs.append(f"port {self.name}: unknown protocol '{self.protocol}'")
         return errs
+
+
+def port_declaration(port: Port, storage="wire", *, include_direction=False, name=None) -> str:
+    """Render a resolved port without losing signedness or packed index order."""
+    errors = port.validate()
+    if errors:
+        raise ValueError("; ".join(errors))
+    if storage not in ("wire", "reg", "logic", ""):
+        raise ValueError("unsupported declaration storage")
+    identifier = port.name if name is None else name
+    if not valid_identifier(identifier):
+        raise ValueError("invalid declaration identifier")
+    dimensions = port.packed_dimensions
+    if dimensions is None:
+        dimensions = [[port.width - 1, 0]] if port.width > 1 else []
+    ranges = "".join(f"[{a}:{b}]" for a, b in dimensions)
+    return " ".join(part for part in (
+        port.direction if include_direction else "", storage,
+        "signed" if port.signed else "", ranges, identifier) if part)
 
 
 @dataclass
@@ -75,6 +111,7 @@ class ModuleSpec:
     parameters: dict = field(default_factory=dict)
     examples: list[IOExample] = field(default_factory=list)
     golden_model: str = ""
+    interface_signature: dict | None = None
 
     def contract_hash(self) -> str:
         import hashlib
@@ -82,7 +119,8 @@ class ModuleSpec:
             "name": self.name, "behavior": self.behavior,
             "ports": [asdict(p) for p in self.ports],
             "latency": self.latency, "compare_mode": self.compare_mode,
-            "reset": asdict(self.reset), "params": self.parameters,
+            "reset": asdict(self.reset), "params": list(self.parameters.items()),
+            "interface_signature": self.interface_signature,
         }, sort_keys=True)
         return hashlib.sha256(blob.encode()).hexdigest()[:16]
 
@@ -108,6 +146,12 @@ class ModuleSpec:
             errs.append(f"module {self.name}: latency must be an integer in 0..1024")
         if not all(valid_identifier(name) and type(value) is int for name, value in self.parameters.items()):
             errs.append(f"module {self.name}: parameter names/defaults must be valid identifiers/integers")
+        if self.interface_signature is not None:
+            try:
+                from .verilog_interface import validate_signature
+                validate_signature(self.interface_signature)
+            except (ValueError, TypeError, KeyError) as exc:
+                errs.append(f"module {self.name}: invalid interface signature: {exc}")
         return errs
 
 

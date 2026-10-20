@@ -66,3 +66,19 @@ Reproduce the live testbench cases:
 ```powershell
 python scripts/check_tbgen_cli.py --bin-dir C:/AMDDesignTools/2025.2/Vivado/bin --output runs/tbgen-001
 ```
+
+
+## Windows checkpoint contention
+
+Atomic writes flush a sibling temporary file and replace the target without
+removing the previous checkpoint. Recognized Windows access/sharing contention
+errors (5, 32 and 33) receive seven attempts with at most 0.63 seconds of bounded
+backoff. Other errors fail immediately; exhaustion preserves the original error
+and previous target. Cleanup cannot hide a failed write.
+
+This protects the observed transient replacement boundary. It does not make an
+external tool invocation and its later budget charge one transaction. A persistent
+storage failure or hard process kill can leave tool work beyond the last saved
+budget. Preserve its logs and do not claim exact accounting or silently treat
+that work as free. Full process-interruption accounting remains a separate live
+validation requirement.

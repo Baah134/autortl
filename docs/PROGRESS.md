@@ -314,3 +314,33 @@ changes, commands, outcomes, evidence locations, limitations, and next action.
   New source is frozen for a fresh bounded counter/mux campaign. Model access
   readiness passed with one separate minimal call; model identity was not
   returned by the CLI, so no specific model-strength claim is made.
+
+
+## 2026-10-20 - Windows persistence and structural interface enforcement
+
+- Campaign03 at1243e2e finished **1/2**. Mux completed all stages with three
+  model calls; its 8-LUT candidate had no gain, so the baseline was retained.
+  Counter reached candidate generation in two calls and passed simulation, then
+  hit WinError5 replacing budget.json. Its last persisted budget may omit that
+  interrupted charge; no exact accounting recovery or physical gain is claimed.
+- Added bounded Windows atomic replacement retry for errors5/32/33: seven
+  attempts, at most0.63seconds backoff, same flushed sibling file, previous
+  target preserved, original error retained, cleanup cannot hide write errors.
+  Focused19tests include an actual Windows sharing-lock/release case.
+- Reproduced and closed six structural bypasses: public default changes/removal,
+  public-to-local conversion, signedness drift, parameterized-width hardcoding
+  and packed range reversal despite equal default widths. Public parameters
+  are separated from internal constants; interface-relevant symbolic dependency
+  declarations are retained conservatively. Compatible non-ANSI declarations
+  remain supported; ambiguous merges fail explicitly.
+- Shared typed declarations preserve signedness and packed shape in stubs,
+  generated top/wires/TBs and role prompts. Fallback qualification uses the
+  same interface stub. Golden models retain masked bit patterns with explicit
+  signed interpretation; no automatic change of software oracle semantics.
+- Full frozen suite: **554 passed in148.80seconds**. Four new real Vivado cases
+  pass expected verdicts: signed control/unsigned mutant and symbolic-parameter
+  control/stuck-zero mutant under W12/EXTRA1. Runtime hashes match source used
+  for tests. Total retained simulation verdict checks24; physical hold check
+  remains a separate supervised experiment. No general parameter proof claimed.
+- Portable evidence: interface-atomic-tests.txt, signed-interface/ and
+  contract-campaign-03/. Fresh full tier0 campaign follows at the new revision.

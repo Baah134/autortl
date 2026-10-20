@@ -14,6 +14,10 @@ model, the design has failed its own requirement.
 Optimization contracts are rendered mechanically from frozen harness evidence.
 Model roles do not negotiate or amend their verification requirements.
 
+Structural interface checks preserve signedness, packed shape and symbolic
+public-parameter declarations; see [interface contracts](INTERFACES.md) for the
+supported schema and limits.
+
 ## The seven pillars
 1. **Task decomposition into module contracts.** The planner's only creative
    output is `design_spec.json` (typed schema in `autortl/spec.py`). Each

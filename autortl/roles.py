@@ -1,11 +1,12 @@
 """Planner / Generator / Evaluator / TimingDoctor — isolated views, one client."""
 from __future__ import annotations
 import re
+import json
 from dataclasses import dataclass
 from pathlib import Path
 
 from . import prompts
-from .spec import ModuleSpec, DesignSpec
+from .spec import ModuleSpec, DesignSpec, port_declaration
 from .skill_loader import (conventions, select_for_module, select_for_timing, inject, load_skill)
 from .device import budget_text
 from .report_parser import VivadoMetrics
@@ -24,7 +25,7 @@ def generated_rtl(response: str) -> str:
 
 
 def _ports_table(spec: ModuleSpec) -> str:
-    return "\n".join(f"  {p.direction:6} [{p.width-1}:0] {p.name} "
+    return "\n".join(f"  {port_declaration(p, include_direction=True)} "
                      f"(clock={p.clock_domain}, protocol={p.protocol})"
                      for p in spec.ports)
 
@@ -96,6 +97,8 @@ class Generator:
         p = prompts.GENERATE.format(
             skills=skills, name=module.name, behavior=module.behavior,
             ports_table=_ports_table(module), latency=module.latency,
+            parameters=json.dumps(module.parameters),
+            interface_signature=json.dumps(module.interface_signature, sort_keys=True),
             reset_desc=f"{r.kind}, active_{'high' if r.active_high else 'low'} '{r.signal}'",
             mutation=mutation_text, instruction=instruction, verilog=verilog)
         resp = ask("generator", p, system=role_system(prompts.GENERATOR_SYSTEM),
@@ -118,7 +121,8 @@ class Generator:
 
     def golden_model(self, module: ModuleSpec, budget) -> str:
         p = prompts.GOLDEN_MODEL.format(behavior=module.behavior,
-                                        ports_table=_ports_table(module))
+                                        ports_table=_ports_table(module),
+                                        parameters=json.dumps(module.parameters))
         resp = ask("generator", p, system=conventions(), budget=budget)
         m = re.search(r"```python\s*\n(.*?)```", resp, re.DOTALL)
         return m.group(1).strip() if m else resp.strip()

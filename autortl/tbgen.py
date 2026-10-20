@@ -8,7 +8,7 @@ import json
 import random
 import re
 from pathlib import Path
-from .spec import ModuleSpec
+from .spec import ModuleSpec, port_declaration
 from .golden import GoldenModel
 
 
@@ -30,6 +30,8 @@ def _validate(spec, stimulus=None, expected=None):
     if spec.compare_mode not in ("fixed_latency", "scoreboard"):
         raise ValueError("unsupported compare mode")
     for p in spec.ports:
+        if p.validate():
+            raise ValueError("invalid testbench port: " + "; ".join(p.validate()))
         if not re.fullmatch(identifier, p.name) or p.name.startswith("_autortl_"):
             raise ValueError("invalid or reserved testbench port name")
         if p.direction not in ("input", "output") or type(p.width) is not int or not 1 <= p.width <= 1024:
@@ -93,11 +95,11 @@ def _header(spec, stimulus, expected, inputs, outputs, extra=""):
              "always #5 _autortl_clk = ~_autortl_clk;"]
     for p in spec.ports:
         if p.name != "clk":
-            lines.append(f"{'reg' if p.direction == 'input' else 'wire'} [{p.width-1}:0] {p.name};")
+            lines.append(port_declaration(p, "reg" if p.direction == "input" else "wire") + ";")
     lines += ["integer _autortl_cycle, _autortl_errors, _autortl_index;", extra]
     for ports, kind in ((inputs, "stim"), (outputs, "exp")):
         for p in ports:
-            lines.append(f"reg [{p.width-1}:0] _autortl_{kind}_{p.name} [0:{n-1}];")
+            lines.append(port_declaration(p, "reg", name=f"_autortl_{kind}_{p.name}") + f" [0:{n-1}];")
     params = " #( " + ", ".join(f".{k}({v})" for k,v in spec.parameters.items()) + " )" if spec.parameters else ""
     conns = ", ".join(f".{p.name}({'_autortl_clk' if p.name == 'clk' else p.name})" for p in spec.ports)
     lines.append(f"{spec.name}{params} dut ({conns});")
@@ -164,7 +166,7 @@ def generate_scoreboard_tb(spec, stimulus, expected):
     iv, ir, ov, ore = control("input", "valid"), control("output", "ready"), control("output", "valid"), control("input", "ready")
     n, cycles = len(stimulus), len(stimulus)*12+32
     extra = "integer _autortl_push, _autortl_pop, _autortl_drain;\nreg _autortl_stalled;\n"
-    extra += "\n".join(f"reg [{p.width-1}:0] _autortl_held_{p.name};" for p in outputs)
+    extra += "\n".join(port_declaration(p, "reg", name=f"_autortl_held_{p.name}") + ";" for p in outputs)
     lines = _header(spec, stimulus, expected, inputs, outputs, extra)
     lines += ["_autortl_push=0; _autortl_pop=0; _autortl_drain=0; _autortl_stalled=0;",
               f"for (_autortl_cycle=0; _autortl_cycle<{cycles} && _autortl_drain<4; _autortl_cycle=_autortl_cycle+1) begin",

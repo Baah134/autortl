@@ -1,155 +1,123 @@
-# Session handoff
+# Current session state
 
-Updated: 2026-10-20 (America/New_York)
+Updated: 2026-10-20 (America/New_York). Reconcile this file with Git, coordination
+status and actual process state; documentation is not execution evidence.
 
-## Start here
+## Workspace and publication
 
-Canonical checkout: C:/Users/prince.baah/Downloads/autortl-work.
-The separate Downloads/autortl folder predates this work and was preserved.
-Read START_HERE.md, AGENTS.md, docs/AGENT_HANDOFF.md and docs/TASKS.md.
-Check git status, git log -1 and python scripts/session.py status before editing.
+- Canonical checkout: `C:/Users/prince.baah/Downloads/autortl-work`.
+- Separate preexisting `Downloads/autortl` is preserved; do not edit it.
+- Remote: https://github.com/Baah134/autortl
+- Active branch: `codex/contract-context`, published through `1243e2e`.
+- Main currently includes `f08cb76`, the public README rewrite after the earlier
+  CLI integration. Inspect remote hashes before integrating newer milestones.
+- Paused MCP work remains in its original stash; command-line Vivado is active.
 
-## User decisions
+## Standing user decisions
 
-- Use command-line Vivado. MCP remains deferred.
-- Different user-authorized AI coordinators may take turns, each using its own
-  subagents. Claim the coordinator lease and separate worker file scopes.
-- Continue while usage is available. Checkpointing is continuity preparation,
-  not a request to stop or switch now. A returning coordinator reads the latest
-  shared memory and Git state before continuing.
-- The harness runtime currently invokes Codex CLI with the existing login.
-  Changing development coordinator does not change the runtime provider.
-- Commit and push substantive tested progress to GitHub. The user explicitly
-  requested merging the completed checkpoint into main and continuing to improve
-  incrementally. Preserve all experiment verdicts and tier promotion gates.
-- Preserve progress and evidence for Prince Baah's CV. Do not claim unmeasured
-  optimization improvements or autonomous operation from a standalone trial.
+The harness is the product. Designs are experiments to improve reliability,
+feedback, verification and efficiency, including eventual weaker-model use.
+Periodically keep, improve, simplify or remove features based on evidence;
+`docs/HARNESS_REVIEW.md` records decisions and missing coverage.
 
-## Repository and publication
+Continue autonomously while access permits. Different user-selected providers
+may coordinate, each with bounded subagents. Claim a coordinator lease and
+exclusive file scopes through `scripts/session.py`. Checkpoints retain ownership;
+handoff releases it only when actually switching or ending. Runtime models
+currently use the existing Codex CLI login; changing coordinator does not change
+that provider. Do not invent a provider fallback or request new API keys.
 
-Remote: https://github.com/Baah134/autortl
-Active branch: codex/contract-context. Last published checkpoint 61854c0;
-main includes the public README rewrite f08cb76. Inspect current Git/remote state
-because subsequent validated commits may follow this document.
-The paused MCP draft remains in its existing local stash.
+Push substantive tested progress. The user requested incremental integration
+into main; preserve required regression/benchmark review, actual failures and
+three-matching-cohort tier governance. README is for visitors; continuity stays
+here, in AGENTS/START_HERE and the progress log. Preserve honest CV evidence.
 
-## Latest harness-focused milestone
+## Latest completed source checkpoint
 
-The user's priority is harness reliability with weak models, not collecting
-impressive design counts. Use designs as experiments. Periodically decide which
-features to keep, simplify, improve or remove; docs/HARNESS_REVIEW.md records the
-first audit. Weak-model performance is unmeasured.
+`1243e2e` contains fixed, mechanically rendered optimization contracts. No model
+proposes/refines/reviews their wording. Planning, generation and final evaluator
+remain; all deterministic promotion gates remain mandatory. Immutable contract,
+source, config, runtime and report identities protect replay and DONE reuse.
 
-4091a4b froze authoritative role context, strict evaluator parsing and the
-independent counter32 reference testbench. Full suite: 436 passed in 118.53s.
-Five real counter reference/mutation cases matched expected verdicts. Together
-with earlier generated-testbench cases there are fourteen live verdict checks.
+All roles receive fixed-contract conventions. Active references agree on exact
+cycles, resets, widths and parameter semantics. Missing planning guidance is
+provided; skill budgets count headers and separators. The referenced FIFO's
+combinational full/next-pointer loop is repaired and independently checked.
 
-The fresh cohort tier0_fkxbmmwe originally finished 0/2 after Codex exit1.
-Both runs were later resumed at the unchanged implementation and finished DONE,
-with baselines retained. Counter resumed only the failed evaluator call (7->8
-model calls); tool time stayed 267.641s with no repeated physical work.
-Its physically valid candidate measured 55->53 LUTs, 37 FFs, WNS .456/WHS .282ns,
-but evaluator rejected because context omitted routed timing report identity.
-Do not claim accepted improvement. Original failed cohort stays 0/2; no tier held.
-Portable raw evidence: evidence/2026-10-20/contract-campaign-01/.
-Original worker exit1 causes are unknown; the separate minimal diagnostic passed.
+- Full suite: **497 passed in 100.04 seconds**.
+- Initial suite: 496 passed/one Windows CRLF-vs-LF fixture assertion. Corrected
+  fixture compares raw decoded bytes; the original failed log is retained.
+- Live simulation qualification: nine generated-testbench cases, five counter32
+  cases and six FIFO cases matched expected verdicts. Mutants fail actual
+  assertions; compile/launch/timeouts do not count as detection.
+- FIFO coverage: AW=2/4, DW=8, capacity, blocked writes, data order, empty/disabled
+  read hold, wraps, deterministic traffic and coordinated reset. No metastability,
+  unilateral-reset or physical multi-clock implementation claim.
+- Supervised physical hold command executes in Vivado: mux 18 LUTs/8 FFs,
+  WNS 0.579 ns/WHS 0.059 ns; standard flow used 8 LUTs/8 FFs. Keep it targeted.
+- Typed provider failures retain bounded redacted diagnostics and save
+  `model_blocked`, best pointer and spent budgets without rejecting RTL.
+- Removed unreachable module artifact-cache branch; verified journal reuse
+  remains. Unsupported `parallel_candidates=True` now fails explicitly.
 
-Current repairs add bounded redacted worker diagnostics, typed model-blocked
-checkpoints, report manifests including timing, legal mutation/Doctor prompts,
-hold-aware diagnosis and actual physical hold-fix command selection. The dead
-module artifact-cache branch is removed; journal reuse remains. Unsupported
-parallel_candidates=True is explicitly rejected. Published regression suite: 468 passed in134.47s, retained in
-evidence/2026-10-20/harness-audit-tests.txt. Supervised physicalholdfix passes
-with18LUT vsstandard8LUT; raw evidence physical-hold-fix/. Campaign02 remains0/2
-(counter wordingblock6calls; mux liveCODEX_QUOTA withbestbaselinepreserved).
-Current edits remove model contractnegotiation, repair actualskillguidance and
-conventions, and fix/qualify FIFO reference. Combined validation: 497 tests passed in 100.04 seconds; all six real FIFO
-cases match expected verdicts. New physical optimization campaign follows at
-this frozen source. Prior quota remains an original failure, not retroactive success.
+Portable evidence is under `evidence/2026-10-20/`, with hashes and raw reports.
 
-## Earlier completed foundation (2026-10-19)
+## Current experiment and prior failures
 
-- Relocated the full Git clone and unfinished files; all 317 hashes matched.
-- Added provider-neutral instructions for Codex/Claude/Gemini, SQLite coordinator
-  leases, exclusive worker scopes, checkpoints, handoffs and a readable export.
-- Atomic config/state/budget/cache persistence; strict saved configuration;
-  zero budgets; contextual cache verifies matching source and retained reports.
-- Journaled build/optimization stages. Interrupted runs replay completed model
-  and tool work without spending it again. Unfinished stages may repeat within
-  remaining budgets. DONE replay verifies final source, summary and reports.
-- Frozen inputs plus implementation/Python/tool identities prevent silent drift.
-- Typed JSON build mode, bounded generation/repair, qualified testbenches and
-  mandatory top verification. Invalid qualification cannot regenerate its own
-  grading. Infrastructure retries preserve RTL and never count as design rejects.
-- Exact parameterized/grouped/signed/non-ANSI interface parsing, static width
-  checks, valid default-first combinational assignments and token-aware blocks.
-- Fixed-latency drain and race-free multiport streaming scoreboard generation.
-- Restricted golden functions run in a separate deadline-bounded process with
-  a minimal environment. Restricted Python is not a general hostile-code sandbox.
-- Real three-run curriculum promotion with cohort and individual evidence gates;
-  counter8 and priority-encoder build fixtures with independent top testbenches.
-- Removed generated bytecode from source control; ignored runtime state stays local.
+Campaign03 finished 1/2 under `logs/contract-campaign-03/tier0_c05h57lo`
+at the frozen 1243e2e runtime. Mux completed with three model calls and retained
+its baseline; counter stopped after passing simulation when a budget checkpoint
+replacement raised WinError5. Original results are archived in contract-campaign-03.
 
-## Validation and evidence
+Current uncommitted runtime repairs add bounded Windows checkpoint retries and
+structural parameter/signed/packed interface preservation. Full regression and
+new signed-interface live checks are in progress; keep sources unchanged until
+those finish and inspect output logs before further edits.
+Budgets per design: one iteration/candidate, 16 model calls, 12 tool minutes,
+18 wall minutes, one infrastructure retry. Device xc7a35tcpg236-1, Vivado2025.2,
+10 ns clock and explicit ideal zero I/O assumptions. Do not edit runtime source
+during a run or resume a previous run after implementation changes.
 
-Earlier main integration suite: 423 passed in 84.05 seconds, retained in
-evidence/2026-10-19/main-integration-tests.txt. The prior 423-test repair run
-and earlier 411-test checkpoint remain separately retained.
-Portable evidence: evidence/2026-10-19/ (test log, relocation hashes and nine live
-Vivado simulator cases with source/testbench hashes and raw logs).
-All nine live positive/negative cases matched their expected verdicts.
-Earlier Codex-generated counter: 6 LUTs, 8 FFs, WNS 7.806 ns, WHS 0.249 ns at
-10 ns on xc7a35tcpg236-1. This is a distinct 8-bit design, not a LUT reduction
-against the earlier 32-bit counter (54 LUTs/37 FFs).
+Earlier original cohorts remain failures:
 
-The first live tier0 campaign finished 0/2: counter exhausted eight model calls
-after rejected contract revisions and a missing-timescale candidate; mux4 was
-blocked by missing boundary timing. Both original baselines simulated and routed.
-The counter baseline measured 54 LUTs/37 FFs, WNS 5.491 ns with clock-only timing.
-New fixes stop unaccepted contracts, save budget stops, prepare timescales and
-apply boundary timing in supported Tcl after synthesis. Unsupported XDC control
-flow is promoted to ERROR. I/O delay defaults are ideal zero min/max relative
-to clk; these are experiment assumptions, not board constraints. Remeasure every
-baseline under the new constraints. Counter timescale replay passed without a
-model call. Supervised timing replays retain failures as well as successes.
-See evidence/2026-10-19/live-tier0/ for exact outcomes and raw reports.
-Final supervised mux replay passed with 8 LUTs/8 FFs, WNS 0.579 ns and WHS
-0.052 ns at 10 ns. Both boundary missing-delay counts are zero. Replay01 was
-rejected and replay02 cancelled before the corrected replay03 passed.
-No hardware or test job remains running at this checkpoint.
+- Campaign01 originally 0/2 after unknown worker exits. Separate unchanged-code
+  recovery reached DONE with baselines retained. Counter retried one evaluator
+  call (7 to 8), no repeated physical stages, tool time unchanged at 267.641 s.
+  Its measured 55-to-53 LUT candidate was rejected due omitted timing report
+  identity. Never report it as an accepted autonomous gain.
+- Campaign02 at 61854c0 finished 0/2: counter spent six negotiation calls then
+  blocked on wording; mux saved a real CODEX_QUOTA model block after its baseline.
+  These motivated the fixed contract. Preserve original denominators.
 
-The full build/resume loop still needs a successful live campaign and real
-interruption/resume validation. No tier is claimed newly held. No optimization
-percentage or unattended operation claimed.
-The main coordinator remains active; subagents have completed bounded provider
-and legal-transformation patches for coordinator review.
-The checkpoint command retains ownership; handoff releases it on actual exit.
+One later minimal readiness call returned READY. It is separate from campaign
+budgets; CLI model identity was not returned. No weaker-model performance or
+held tier is established by these results.
 
-## Exact next work
+## Exact next actions
 
-1. Finish regression validation of provider/provenance/legal-transform fixes at
-   one frozen implementation. Do not edit runtime source during tests/live runs.
-2. Run fresh bounded tier0 counter/mux experiments with complete report context.
-   Preserve original failures; no silent regrading/resume across code changes.
-3. Run counter8_build and encoder8_build with independent top TBs, then generated
-   golden/TB variants. Measure coverage of each actual harness execution path.
-4. Validate live cache reuse/invalidation, process interruption and restart;
-   timing Doctor needs live setup/hold repair evidence beyond regression tests.
-5. Advance through PWM/accumulator, FIFO/skid buffer, MAC/FIR and UART only after
-   independent verification is strong enough. Three consecutive matching full
-   qualifying cohorts are required before claiming any tier held.
-6. Compare feature ablations and a genuinely available weaker model with frozen
-   tasks and budgets. Report calls/tokens/tool time and all failed attempts.
+1. Finish and inspect the combined interface/storage tests and signed-interface
+   live checks. Publish the tested checkpoint, then run a fresh bounded tier0
+   campaign under the new runtime. Do not resume campaign03 across code changes.
+2. Fix reproduced harness defects with tests and taxonomy, using a fresh run
+   directory after changes. Never weaken independent tests or acceptance gates.
+3. Exercise typed counter8/encoder8 builds with independent top tests, then the
+   generated golden/TB path. A compile or mocked build is not a live build result.
+4. Validate live cache reuse/invalidation, full process interruption, restart,
+   best-of-N diversity and complete Doctor invocation. Existing regression tests
+   and supervised tool trials do not establish all these execution paths.
+5. Run controlled feature ablations and an actually available weaker model with
+   frozen tasks/budgets before making robustness claims. Progress toward PWM,
+   FIFO/skid buffer, MAC/FIR and UART as independent verification strengthens.
+6. Update progress/task/audit records, publish meaningful milestones and verify
+   remote hashes. Three matching full qualifying cohorts are required to hold
+   a tier; one passing cohort is insufficient.
 
-## Local execution
+## Local tools
 
-Vivado bin: C:/AMDDesignTools/2025.2/Vivado/bin
-Working Python used here:
-C:/Users/prince.baah/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe
-Existing test dependencies:
-C:/Users/prince.baah/Documents/Codex/2026-10-15/hey/work/review_deps
-Use PYTHONDONTWRITEBYTECODE=1, a writable TEMP/TMP, and explicit pytest basetemp.
-Approved execution outside the desktop sandbox may be required by Vivado's
-Windows launcher. Automatic approval-service usage failures mean the command
-was not executed; record the block and retry after access returns.
+- Python: `C:/Users/prince.baah/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe`
+- Test dependencies: `C:/Users/prince.baah/Documents/Codex/2026-10-15/hey/work/review_deps`
+- Vivado binaries: `C:/AMDDesignTools/2025.2/Vivado/bin`.
+- Use explicit workdir, PYTHONDONTWRITEBYTECODE=1, test PYTHONPATH and unique
+  pytest basetemp under the writable workspace. Keep one Vivado job queue.
+- Downloads writes, Git metadata/network and vendor launchers may need the
+  approved execution profile. Record a rejected action as not executed.

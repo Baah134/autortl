@@ -20,7 +20,7 @@ from pathlib import Path
 from .config import RunConfig
 from .contract_context import run_evidence, file_evidence, flow_evidence, save_evidence, render_fixed_optimize_contract
 from .spec import DesignSpec, ModuleSpec, Port, ResetSpec
-from .linter import lint_spec, write_stub_project, top_verilog
+from .linter import lint_spec, write_stub_project, top_verilog, stub_verilog
 from .static_checks import check as static_check
 from .state import RunState, atomic_write_text
 from .roles import Planner, Generator, Evaluator, TimingDoctor, Evaluation
@@ -282,12 +282,12 @@ class Orchestrator:
         mutation = mutate(source)
         if mutation is None:
             contract = self._infer_contract(source, name)
-            ports = ", ".join(f"{p.direction} wire [{p.width-1}:0] {p.name}" for p in contract.ports)
             outputs = [p for p in contract.ports if p.direction == "output"]
             if not outputs:
                 return False, "no observable output to sabotage"
-            mutated = "`timescale 1ns/1ps\nmodule " + name + "(" + ports + ");\n"
-            mutated += "\n".join("assign " + p.name + " = 0;" for p in outputs) + "\nendmodule\n"
+            assignments = "\n".join("assign " + p.name + " = 0;" for p in outputs)
+            mutated = "`timescale 1ns/1ps\n" + stub_verilog(contract).replace(
+                "endmodule", assignments + "\nendmodule")
             mutation = mutated, "stuck-zero outputs"
         for label, code in (("control", source), ("mutant", mutation[0])):
             directory = work / "tbqual" / label

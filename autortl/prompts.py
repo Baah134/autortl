@@ -7,8 +7,8 @@ and specific."""
 
 GENERATOR_SYSTEM = """You are an expert FPGA engineer writing synthesisable Verilog for Xilinx
 7-series in Vivado. Output ONLY the complete module inside one ```verilog fence.
-Rules: exact interface from the contract (name, ports, widths). Synchronous
-resets. No initial blocks. Every reg in a combinational always @(*) assigned in
+Rules: exact interface from the contract (name, ports, widths, signedness, packed
+shape and public parameters). Reset kind, polarity and priority match the contract. No initial blocks. Every reg in a combinational always @(*) assigned in
 all branches (defaults at the top). Declare pipeline depth with a '// @latency N'
 header comment matching the contract latency — the spec is law; if you cannot
 meet the declared latency, still match it rather than silently changing it."""
@@ -31,6 +31,7 @@ Output ONLY JSON matching this schema (no commentary):
 {{"top_name": str,
   "modules": [{{"name": str, "behavior": str-one-paragraph,
      "ports": [{{"name": str, "direction": "input|output", "width": int,
+                "signed": false, "packed_dimensions": null,
                 "clock_domain": "clk", "protocol": "none|valid_ready"}}],
      "latency": int, "compare_mode": "fixed_latency|scoreboard",
      "reset": {{"signal": "rst", "kind": "sync", "active_high": true,
@@ -41,6 +42,12 @@ Output ONLY JSON matching this schema (no commentary):
                     "dst_module": str, "dst_port": str}}],
   "external_ports": [ports of the top level] }}
 
+Port signed is an optional boolean (default false). packed_dimensions is optional
+null (legacy descending [width-1:0], scalar for width 1) or a list of [left,right]
+integer bound pairs, for example [[0,7]] or [[1,0],[3,0]]. Preserve direction and
+shape; the product of dimension sizes must equal width. Parameters are public
+integer defaults, not internal localparams. Do not emit interface_signature;
+the harness derives that immutable metadata from existing source.
 Every module MUST include 2-3 concrete examples. Keep modules under ~60 lines
 of eventual Verilog each; split anything bigger."""
 
@@ -134,6 +141,11 @@ GENERATE = """{skills}
 **Contract for module {name}:**
 Behavior: {behavior}
 Ports: {ports_table}
+Public parameter defaults (preserve names/order/defaults): {parameters}
+Frozen source interface signature: {interface_signature}
+The signature is authoritative when present: retain public parameter types/default
+expressions and symbolic port dimensions, not just their resolved default widths.
+Internal localparams may change only when the external contract remains identical.
 Latency: {latency} cycles. Reset: {reset_desc}.
 
 **Approach for this candidate:** {mutation}
@@ -205,6 +217,10 @@ one paragraph. RESTART only if stall count >= {restart_threshold}."""
 GOLDEN_MODEL = """Write a Python golden model for this module.
 Behavior: {behavior}
 Ports: {ports_table}
+Public parameter defaults: {parameters}
+Inputs and outputs remain masked nonnegative bit patterns even for signed ports.
+For signed arithmetic, explicitly interpret two's-complement operands at their
+specified widths, then mask outputs. Signed declarations do not change this API.
 It must define exactly:
     def init(): return state
     def step(state, inputs: dict) -> (state, outputs: dict)
