@@ -12,7 +12,7 @@ and a real zero-cycle scoreboard false positive before and after its repair.
 - Fullsuite01: 725passed,3failed (legacy unmocked model fixtures). Raw output is
   retained. Fixtures were corrected; focused recovery60tests pass. Corrected full suite:743passed in203.40s (full-suite-743.txt). The separate focused-initial summary is not complete raw output.
 
-runtime-source-before-serial-bound retains the exact 54 frozen implementation
+runtime-source-before-serial-bound retains the exact 53 frozen implementation
 files used by fresh counter build02 and fullsuite02. They are an intermediate
 source version; later serial-latency drain-budget validation is a separate change.
 Each live run preserves raw sources/TB, logs and process receipts. Archive subsets

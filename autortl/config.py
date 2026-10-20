@@ -31,10 +31,15 @@ class RunConfig:
     max_llm_calls: int = 200
     max_vivado_minutes: float = 120.0
     max_wall_minutes: float = 240.0
+    generate_golden: bool = False             # build: also generate/qualify a unit oracle with --tb
 
     def validate(self) -> None:
         if self.mode not in ("build", "optimize"):
             raise ValueError("invalid run mode")
+        if type(self.generate_golden) is not bool:
+            raise ValueError("generate_golden must be boolean")
+        if self.generate_golden and self.mode != "build":
+            raise ValueError("generate_golden=True is supported only in build mode")
         if self.objective not in ("minimize_luts", "minimize_ffs", "maximize_freq", "minimize_power"):
             raise ValueError("invalid objective")
         for name in ("max_iterations", "best_of_n", "max_replans", "max_fix_attempts",
@@ -74,6 +79,9 @@ class RunConfig:
         data = dict(data)
         if data.pop("schema_version", None) != 1:
             raise ValueError("unsupported or missing run config schema_version")
+        # Additive schema-1 migration: this one new optional field defaults off.
+        # All previously required fields remain mandatory.
+        data.setdefault("generate_golden", False)
         allowed = {item.name for item in fields(cls)}
         if set(data) - allowed:
             raise ValueError("unknown run config fields: " + ", ".join(sorted(set(data) - allowed)))

@@ -1,0 +1,5 @@
+{
+  "stage": "module_priority_encoder8_core:model:generator.golden_model:0",
+  "result": "def init():\n    return {\"index\": 0, \"valid\": 0}\n\n\ndef step(state, inputs: dict) -> (dict, dict):\n    if inputs.get(\"rst\", 0) & 1:\n        next_state = {\"index\": 0, \"valid\": 0}\n    else:\n        request = inputs.get(\"request\", 0) & 0xFF\n        index = 0\n        for bit in range(7, -1, -1):\n            if request & (1 << bit):\n                index = bit\n                break\n        next_state = {\"index\": index & 0x7, \"valid\": int(request != 0)}\n\n    outputs = {\n        \"index\": next_state[\"index\"] & 0x7,\n        \"valid\": next_state[\"valid\"] & 0x1,\n    }\n    return next_state, outputs",
+  "artifacts": {}
+}

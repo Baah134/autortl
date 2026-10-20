@@ -1,0 +1,60 @@
+.F...F................                                                   [100%]
+================================== FAILURES ===================================
+___ test_independent_infrastructure_failure_never_mutates_or_qualifies_rtl ____
+
+dual = (<autortl.fsm.Orchestrator object at 0x0000014F404A9DF0>, ModuleSpec(name='counter8_core', behavior='At each rising cl...:/Users/prince.baah/Documents/Codex/2026-10-15/hey/work/dual-flow-focus-01/test_independent_infrastructur0/trusted.v'))
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000014F404A9E20>
+
+    def test_independent_infrastructure_failure_never_mutates_or_qualifies_rtl(dual,monkeypatch):
+        o,spec,directory,generated,_=dual
+        monkeypatch.setattr(o.generator,"generate",Mock(return_value=RTL))
+        fix=Mock();monkeypatch.setattr(o.generator,"fix",fix)
+        seen=simulator(monkeypatch,generated,infra=True)
+        assert o._build_module(spec,directory) is None
+>       assert [kind for kind,_ in seen]==["generated","independent"]
+E       AssertionError: assert ['generated',...'independent'] == ['generated', 'independent']
+E         
+E         Left contains 2 more items, first extra item: 'independent'
+E         Use -v to get more diff
+
+tests\test_dual_verification_flow.py:66: AssertionError
+---------------------------- Captured stdout call -----------------------------
+[module counter8_core] golden model + testbench...
+_ test_independent_original_top_tb_blocks_optimization_candidate_before_synthesis _
+
+tmp_path = WindowsPath('C:/Users/prince.baah/Documents/Codex/2026-10-15/hey/work/dual-flow-focus-01/test_independent_original_top_0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000014F41DD8260>
+
+    def test_independent_original_top_tb_blocks_optimization_candidate_before_synthesis(tmp_path,monkeypatch):
+        from tests.test_golden_reset_protocol import COUNTER
+        o,synthesis=create(tmp_path,monkeypatch);o.cfg.generate_golden=True;o.cfg.max_fix_attempts=0
+        expected_hash=hashlib.sha256(o.cfg.testbench_path.read_bytes()).hexdigest()
+        monkeypatch.setattr(o.generator,"golden_model",Mock(return_value=COUNTER.replace('"count": 99','"count": 0')))
+        candidate="module counter8(input clk,input rst,input enable,output [7:0] count); counter8_core other(.clk(clk),.rst(rst),.enable(!enable),.count(count)); endmodule"
+        monkeypatch.setattr(o.generator,"generate",Mock(side_effect=[RTL,candidate]))
+        original_sim=fsm.vivado.xsim_run;checked=[]
+        def simulate(files,tb,top,cfg,work,**kwargs):
+            if top=="counter8_tb":
+                checked.append((work,hashlib.sha256(tb.read_bytes()).hexdigest()))
+                if work.name=="cand_standard":
+                    return False,"Testbench failures: FAIL inverted enable",FailureKind.DESIGN
+            return original_sim(files,tb,top,cfg,work,**kwargs)
+        monkeypatch.setattr(fsm.vivado,"xsim_run",simulate)
+        result=o.run()
+>       assert result["status"]=="done" and result["best_iteration"]==0
+E       AssertionError: assert ('model_blocked' == 'done'
+E         
+E         - done
+E         + model_blocked)
+
+tests\test_dual_verification_flow.py:106: AssertionError
+---------------------------- Captured stdout call -----------------------------
+[module counter8_core] golden model + testbench...
+[module counter8_core] tb qualification: detected change increment
+[module counter8_core] independent tb qualification: detected change increment
+[build] integrated design compiles; entering optimize loop as baseline
+[iter 0] baseline LUTs=6 FFs=8 WNS=7
+=========================== short test summary info ===========================
+FAILED tests/test_dual_verification_flow.py::test_independent_infrastructure_failure_never_mutates_or_qualifies_rtl
+FAILED tests/test_dual_verification_flow.py::test_independent_original_top_tb_blocks_optimization_candidate_before_synthesis
+2 failed, 20 passed in 28.15s

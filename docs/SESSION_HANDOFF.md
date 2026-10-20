@@ -60,7 +60,15 @@ while the live build is active.
 - Counter02 completed:6LUT/8FF,setup0.424ns,hold0.226ns;6calls. Actual oracle
   syntax repair, generatedTB qualification and independent700-cyclefinalcheck pass.
 - Streaming qualification complete:9/9 actual expected verdicts, including eight faults.
-- Active vendor run: logs/build-golden-encoder8-01, generated-oracle path, baseline routed.
+- Encoder01 complete: accepted6to5LUT,4FF,setup0.531/hold0.156ns; independent
+  exhaustivefinalcheckpassed. Source978c742;5calls,495.720toolseconds.
+- Combined --generate-golden/--tb mode implemented,22flow+90configfocusedtests,
+  fullsuite04:774passed178.95s. Childrepair rerunsbothTBs; both qualify.
+- Streaming01 stopped at qualification: correct generatedRTL passes bothTBs,
+  readinessmutation passespayloadgrader, so noqualification/routing claimed.
+- No vendor jobs active. Next: bounded fault portfolio (retain missedfaults),
+  typed exhausted-infrastructure build-blocked summaries, fulltests and fresh
+  streaming02, then freshfulltier0 beforemainmerge.
 - Next: qualify skid suite9cases, finish fresh counter/encoder builds and independently
   check exact saved winner plus declared child; run generated streaming build.
 - Serial drain/reset-count fixes are complete: real old-bound false failure repaired;

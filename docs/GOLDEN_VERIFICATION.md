@@ -50,9 +50,26 @@ python scripts/check_build_tbs.py --suite skid --bin-dir $vivadoBin --output run
 python scripts/check_generated_build.py --run runs/my-build --tb curriculum/tier2/skid_buffer_build/skid_buffer_tb.v --output runs/my-independent-check
 ```
 
-Build without `--tb` to exercise generated oracle/testbench verification. Supplying
-an independent TB directly selects the trusted-test branch and bypasses oracle
-generation for a single-module build. The final check is a separate step and uses
-the saved `<top>_best.v` and exact declared child files. It does not rerun synthesis.
-Golden execution is capped at10000steps, including reset initialization; leave room
-for the specified reset prefix when choosing a custom stimulus count.
+Build without `--tb` to exercise generated oracle/testbench verification alone.
+With a single-child build, `--tb` alone uses the existing trusted-only path.
+Add `--generate-golden` to run both:
+
+```powershell
+python run.py build --spec curriculum/tier2/skid_buffer_build/design_spec.json --tb curriculum/tier2/skid_buffer_build/skid_buffer_tb.v --generate-golden --top skid_buffer
+```
+
+The generated unit TB and adapted independent TB both gate child generation and
+rerun after repairs. The failing TB and diagnostics reach the child repair worker;
+infrastructure failures stop without RTL mutation. Both TBs must detect sabotage.
+The original supplied top TB stays unchanged for baseline and every optimization
+candidate. Separate workdirs preserve both source/TB identities and tool receipts.
+For a multi-module hierarchy, the supplied TB is integration authority; it cannot
+be mechanically renamed into an arbitrary child's independent testbench.
+
+`check_generated_build.py` separately verifies the exact saved winner and declared
+children. This additional final check does not rerun synthesis or establish the
+quality of an unqualified user-supplied testbench. Golden execution is capped at
+10000 steps, including reset initialization; custom data counts must reserve room
+for the specified reset prefix. The configuration flag is frozen on resume and
+changes curriculum cohort identity. Legacy schema1 configs default only this new
+field to false; all previous required fields remain mandatory.

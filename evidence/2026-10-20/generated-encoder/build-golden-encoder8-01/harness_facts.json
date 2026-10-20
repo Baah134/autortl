@@ -1,0 +1,328 @@
+{
+  "allowed_flow_variations": "The harness may enable retiming or physical optimization. The candidate's retained synthesis script is authoritative for its actual settings.",
+  "authority": "Harness evidence is fixed. Proposed architectural goals cannot redefine it.",
+  "baseline_metrics": {
+    "bram_total": 50.0,
+    "bram_used": 0.0,
+    "dsp_total": 90,
+    "dsp_used": 0,
+    "dynamic_power_w": 0.011,
+    "ff_pct": 0.009615384615384616,
+    "ff_total": 41600,
+    "ff_used": 4,
+    "lut_pct": 0.028846153846153848,
+    "lut_total": 20800,
+    "lut_used": 6,
+    "sim_error": "",
+    "sim_passed": true,
+    "synth_error": "",
+    "timing_met": true,
+    "total_power_w": 0.081,
+    "whs_ns": 0.009,
+    "wns_ns": 0.528
+  },
+  "clock_period_ns": 10.0,
+  "declared_latency": {
+    "cycles": null,
+    "known": false,
+    "meaning": "A source annotation declares numeric latency only when present. Unannotated numeric latency is UNKNOWN, not zero. Preserve the source's exact observable cycles and registered behavior. Annotation presence or absence alone is not independent proof of behavioral correctness; use the fixed source contract and deterministic verification, without inventing a numeric requirement.",
+    "source_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-encoder8-01\\iter_000\\priority_encoder8.v",
+    "source_sha256": "e62e9b37985faa79f76389f9a9450b78274b72e7f294b8ddc64ad79af92ec704"
+  },
+  "execution_context": {
+    "dependencies": [
+      {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-encoder8-01\\modules\\priority_encoder8_core\\priority_encoder8_core.v",
+        "sha256": "c1eeea95647a9bcc614cee59dfc0a6648b2dab53a32aded3ad3a5b39ad86a59a"
+      }
+    ],
+    "part": "xc7a35tcpg236-1",
+    "period_ns": 10.0,
+    "promotions": {
+      "Designutils 20-1307": "ERROR",
+      "Synth 8-327": "ERROR",
+      "Synth 8-3352": "ERROR"
+    },
+    "synthesis_template": "c9d0bf78e20ec5b5854a3e48a12cb9d6ce15be79e660b27b3bf703670a77197a",
+    "tb": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-encoder8-01\\priority_encoder8_tb.v",
+      "sha256": "6df8f44d22ec1d516ff704fac1f8d3233c96829a37f436e5ea198602cd95ac0f"
+    },
+    "tools": {
+      "vivado_bin": {
+        "path": "C:\\AMDDesignTools\\2025.2\\Vivado\\bin\\vivado.bat",
+        "sha256": "4f9c05aea82a71c7086a9e5edf01ba16ea70255f69cf3420c58b805ec113e994"
+      },
+      "xelab_bin": {
+        "path": "C:\\AMDDesignTools\\2025.2\\Vivado\\bin\\xelab.bat",
+        "sha256": "512a29ace988992d7fab14ca84f20f0b4515bb69ef1d5fef0a57c5f28b72c9b1"
+      },
+      "xsim_bin": {
+        "path": "C:\\AMDDesignTools\\2025.2\\Vivado\\bin\\xsim.bat",
+        "sha256": "8819fbb54fdf9cbcaaf24c2bf72801b403d5c93e0990ba32408b56c666761d21"
+      },
+      "xvlog_bin": {
+        "path": "C:\\AMDDesignTools\\2025.2\\Vivado\\bin\\xvlog.bat",
+        "sha256": "512a29ace988992d7fab14ca84f20f0b4515bb69ef1d5fef0a57c5f28b72c9b1"
+      }
+    },
+    "top": "priority_encoder8"
+  },
+  "flow_and_constraints": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-encoder8-01\\iter_000\\synth.tcl",
+      "sha256": "293e07ad1f030e5c20f943e6b67b939adc4bda98c5f658f0b9c84e80cda2f547",
+      "text": "set_msg_config -id {Designutils 20-1307} -new_severity ERROR\r\nset_msg_config -id {Synth 8-327} -new_severity ERROR\r\nset_msg_config -id {Synth 8-3352} -new_severity ERROR\r\nset_part xc7a35tcpg236-1\r\nread_verilog \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-encoder8-01/iter_000/priority_encoder8.v\" \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-encoder8-01/modules/priority_encoder8_core/priority_encoder8_core.v\"\r\nset fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-encoder8-01/iter_000/timing.xdc\" w]\r\nputs $fp {create_clock -period 10.000 -name clk [get_ports clk]}\r\nclose $fp\r\nread_xdc \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-encoder8-01/iter_000/timing.xdc\"\r\nsynth_design -top priority_encoder8 -flatten_hierarchy rebuilt \r\nset fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-encoder8-01/iter_000/timing_io.tcl\" w]\r\nputs $fp {set data_inputs [get_ports -filter {DIRECTION == IN && NAME != clk}]}\r\nputs $fp {if {[llength $data_inputs] > 0} {set_input_delay -clock clk -max 0.000 $data_inputs; set_input_delay -clock clk -min 0.000 $data_inputs}}\r\nputs $fp {if {[llength [all_outputs]] > 0} {set_output_delay -clock clk -max 0.000 [all_outputs]; set_output_delay -clock clk -min 0.000 [all_outputs]}}\r\nclose $fp\r\nsource \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-encoder8-01/iter_000/timing_io.tcl\"\r\nreport_utilization -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-encoder8-01/iter_000/utilization.rpt\"\r\nreport_timing_summary -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-encoder8-01/iter_000/timing.rpt\"\r\nopt_design\r\nplace_design\r\n\r\nroute_design\r\nreport_utilization -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-encoder8-01/iter_000/utilization_routed.rpt\"\r\nreport_timing_summary -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-encoder8-01/iter_000/timing_routed.rpt\"\r\nreport_design_analysis -logic_level_distribution -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-encoder8-01/iter_000/design_analysis.rpt\"\r\nreport_power -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-encoder8-01/iter_000/power.rpt\"\r\ncatch { report_methodology -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-encoder8-01/iter_000/methodology.rpt\" }\r\ncatch { report_qor_suggestions -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-encoder8-01/iter_000/qor_suggestions.rpt\" }\r\nputs \"SYNTH_COMPLETE\"\r\n",
+      "truncated": false
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-encoder8-01\\iter_000\\timing.xdc",
+      "sha256": "fa142c09f0fadb5e303ca9fea08c02bc353451533e44aeee9cd9a0231cc8bede",
+      "text": "create_clock -period 10.000 -name clk [get_ports clk]\r\n",
+      "truncated": false
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-encoder8-01\\iter_000\\timing_io.tcl",
+      "sha256": "6b38098841a48bbb3ab15de49d2bf2baf7e4384f599259ff5f3afa2c2b1daf00",
+      "text": "set data_inputs [get_ports -filter {DIRECTION == IN && NAME != clk}]\r\nif {[llength $data_inputs] > 0} {set_input_delay -clock clk -max 0.000 $data_inputs; set_input_delay -clock clk -min 0.000 $data_inputs}\r\nif {[llength [all_outputs]] > 0} {set_output_delay -clock clk -max 0.000 [all_outputs]; set_output_delay -clock clk -min 0.000 [all_outputs]}\r\n",
+      "truncated": false
+    }
+  ],
+  "hard_gates": [
+    "Preserve ports, parameter defaults, reset behavior and observable cycle behavior.",
+    "Use the fixed provided testbench, tools, device and constraints without modification.",
+    "Static/interface checks, compile, simulation and real routed metric integrity must pass.",
+    "Timing closure requires setup slack >= 0 and hold slack >= 0.",
+    "Unknown or absent evidence cannot count as success."
+  ],
+  "metric_provenance": "Structured metrics are parsed from retained reports; routed utilization/timing reports take precedence when present. The manifest identifies complete files by hash. Header excerpts are bounded previews, not complete reports or an independent metric source.",
+  "objective": "minimize_luts",
+  "objective_policy": "Seek measured improvement against baseline; a completed experiment may find none. Do not invent mandatory savings, slack margins, tool versions, timing corners, new tests, thresholds, code-style quotas or external environment requirements.",
+  "part": "xc7a35tcpg236-1",
+  "report_headers": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-encoder8-01\\iter_000\\power.rpt",
+      "sha256": "d5d2f126a0d9d571d1cfb1332af8931892a09d0b2e335fe229934ef51807bd5f",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n-------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version     : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date             : Tue Oct 20 15:56:58 2026\r\n| Host             : Baah running 64-bit major release  (build 9200)\r\n| Command          : report_power -file C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-encoder8-01/iter_000/power.rpt\r\n| Design           : priority_encoder8\r\n| Device           : xc7a35tcpg236-1\r\n| Design State     : routed\r\n| Grade            : commercial\r\n| Process          : typical\r\n| Characterization : Production\r\n-------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nPower Report\r\n\r\nTable of Contents\r\n-----------------\r\n1. Summary\r\n1.1 On-Chip Components\r\n1.2 Power Supply Summary\r\n1.3 Confidence Level\r\n2. Settings\r\n2.1 Environment\r\n2.2 Clock Constraints\r\n3. Detailed Reports\r\n3.1 By Hierarchy\r\n\r\n1. Summary\r\n----------\r\n\r\n+--------------------------+--------------+\r\n| Total On-Chip Power (W)  | 0.081        |\r\n| Design Power Budget (W)  | Unspecified* |\r\n| Power Budget Margin (W)  | NA           |\r\n| Dynamic (W)              | 0.011        |\r\n| Device Static (W)        | 0.070        |\r\n| Effective TJA (C/W)      | 5.0          |\r\n| Max Ambient (C)          | 84.6         |\r\n| Junction Temperature (C) | 25.4         |\r\n| Confidence Level         | Low          |\r\n| Setting File             | ---          |\r\n| Simulation Activity File | ---          |\r\n| Design Nets Matched      | NA       ",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-encoder8-01\\iter_000\\timing.rpt",
+      "sha256": "127be96c1cc1cf44743eff738d477aecea367d2f847f16ba9fcc16964926aa22",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n---------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date         : Tue Oct 20 15:55:51 2026\r\n| Host         : Baah running 64-bit major release  (build 9200)\r\n| Command      : report_timing_summary -file C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-encoder8-01/iter_000/timing.rpt\r\n| Design       : priority_encoder8\r\n| Device       : 7a35t-cpg236\r\n| Speed File   : -1  PRODUCTION 1.23 2018-06-13\r\n| Design State : Synthesized\r\n---------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nTiming Summary Report\r\n\r\n------------------------------------------------------------------------------------------------\r\n| Timer Settings\r\n| --------------\r\n------------------------------------------------------------------------------------------------\r\n\r\n  Enable Multi Corner Analysis               :  Yes\r\n  Enable Pessimism Removal                   :  Yes\r\n  Pessimism Removal Resolution               :  Nearest Common Node\r\n  Enable Input Delay Default Clock           :  No\r\n  Enable Preset / Clear Arcs                 :  No\r\n  Disable Flight Delays                      :  No\r\n  Ignore I/O Paths                           :  No\r\n  Timing Early Launch at Borrowing Latches   :  No\r\n  Borrow Time for Max Delay Exceptions       :  Yes\r\n  Merge Timing Exceptions                    :  Yes\r\n  Inter-SLR Compensation                     :  Conservative\r\n\r\n  Corner  Analyze    Analyze    \r\n  Name   ",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-encoder8-01\\iter_000\\timing_routed.rpt",
+      "sha256": "918cc1f3d4f83add2bc2bbf2e2daf0aa08a652fca8f13277da438c7ff9af4896",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n--------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date         : Tue Oct 20 15:56:57 2026\r\n| Host         : Baah running 64-bit major release  (build 9200)\r\n| Command      : report_timing_summary -file C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-encoder8-01/iter_000/timing_routed.rpt\r\n| Design       : priority_encoder8\r\n| Device       : 7a35t-cpg236\r\n| Speed File   : -1  PRODUCTION 1.23 2018-06-13\r\n| Design State : Routed\r\n--------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nTiming Summary Report\r\n\r\n------------------------------------------------------------------------------------------------\r\n| Timer Settings\r\n| --------------\r\n------------------------------------------------------------------------------------------------\r\n\r\n  Enable Multi Corner Analysis               :  Yes\r\n  Enable Pessimism Removal                   :  Yes\r\n  Pessimism Removal Resolution               :  Nearest Common Node\r\n  Enable Input Delay Default Clock           :  No\r\n  Enable Preset / Clear Arcs                 :  No\r\n  Disable Flight Delays                      :  No\r\n  Ignore I/O Paths                           :  No\r\n  Timing Early Launch at Borrowing Latches   :  No\r\n  Borrow Time for Max Delay Exceptions       :  Yes\r\n  Merge Timing Exceptions                    :  Yes\r\n  Inter-SLR Compensation                     :  Conservative\r\n\r\n  Corner  Analyze    Analyze   ",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-encoder8-01\\iter_000\\utilization.rpt",
+      "sha256": "48a18788433b665a884e88802da87fa5cabd3f57d9f13f56ee4120c61bf728d8",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\n---------------------------------------------------------------------------------------------------------------------------------------------\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\n| Date         : Tue Oct 20 15:55:50 2026\n| Host         : Baah running 64-bit major release  (build 9200)\n| Command      : report_utilization -file C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-encoder8-01/iter_000/utilization.rpt\n| Design       : priority_encoder8\n| Device       : xc7a35tcpg236-1\n| Speed File   : -1\n| Design State : Synthesized\n---------------------------------------------------------------------------------------------------------------------------------------------\n\nUtilization Design Information\n\nTable of Contents\n-----------------\n1. Slice Logic\n1.1 Summary of Registers by Type\n2. Memory\n3. DSP\n4. IO and GT Specific\n5. Clocking\n6. Specific Feature\n7. Primitives\n8. Black Boxes\n9. Instantiated Netlists\n\n1. Slice Logic\n--------------\n\n+-------------------------+------+-------+------------+-----------+-------+\n|        Site Type        | Used | Fixed | Prohibited | Available | Util% |\n+-------------------------+------+-------+------------+-----------+-------+\n| Slice LUTs*             |    6 |     0 |          0 |     20800 |  0.03 |\n|   LUT as Logic          |    6 |     0 |          0 |     20800 |  0.03 |\n|   LUT as Memory         |    0 |     0 |          0 |      9600 |  0.00 |\n| Slice Registers         |    4 |     0 |          0 |     41600 | <0.01 |\n|   Register as Flip Flop |    4 |     0 |          0 |     41600 | <0.01 |\n|   Register as Latch     |    0 |     0 |          0 |     4",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-encoder8-01\\iter_000\\utilization_routed.rpt",
+      "sha256": "f66cfb6eb9bf43d1440b1bbfc451a8376800f2b79a6cc5cfd9ce04a48b78faff",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\n----------------------------------------------------------------------------------------------------------------------------------------------------\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\n| Date         : Tue Oct 20 15:56:57 2026\n| Host         : Baah running 64-bit major release  (build 9200)\n| Command      : report_utilization -file C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-encoder8-01/iter_000/utilization_routed.rpt\n| Design       : priority_encoder8\n| Device       : xc7a35tcpg236-1\n| Speed File   : -1\n| Design State : Routed\n----------------------------------------------------------------------------------------------------------------------------------------------------\n\nUtilization Design Information\n\nTable of Contents\n-----------------\n1. Slice Logic\n1.1 Summary of Registers by Type\n2. Slice Logic Distribution\n3. Memory\n4. DSP\n5. IO and GT Specific\n6. Clocking\n7. Specific Feature\n8. Primitives\n9. Black Boxes\n10. Instantiated Netlists\n\n1. Slice Logic\n--------------\n\n+-------------------------+------+-------+------------+-----------+-------+\n|        Site Type        | Used | Fixed | Prohibited | Available | Util% |\n+-------------------------+------+-------+------------+-----------+-------+\n| Slice LUTs              |    6 |     0 |          0 |     20800 |  0.03 |\n|   LUT as Logic          |    6 |     0 |          0 |     20800 |  0.03 |\n|   LUT as Memory         |    0 |     0 |          0 |      9600 |  0.00 |\n| Slice Registers         |    4 |     0 |          0 |     41600 | <0.01 |\n|   Register as Flip Flop |    4 |     0 |          0 |     41600 | <0.01 |\n|   Register as ",
+      "truncated": true
+    }
+  ],
+  "report_manifest": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-encoder8-01\\iter_000\\power.rpt",
+      "sha256": "d5d2f126a0d9d571d1cfb1332af8931892a09d0b2e335fe229934ef51807bd5f"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-encoder8-01\\iter_000\\timing.rpt",
+      "sha256": "127be96c1cc1cf44743eff738d477aecea367d2f847f16ba9fcc16964926aa22"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-encoder8-01\\iter_000\\timing_routed.rpt",
+      "sha256": "918cc1f3d4f83add2bc2bbf2e2daf0aa08a652fca8f13277da438c7ff9af4896"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-encoder8-01\\iter_000\\utilization.rpt",
+      "sha256": "48a18788433b665a884e88802da87fa5cabd3f57d9f13f56ee4120c61bf728d8"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-encoder8-01\\iter_000\\utilization_routed.rpt",
+      "sha256": "f66cfb6eb9bf43d1440b1bbfc451a8376800f2b79a6cc5cfd9ce04a48b78faff"
+    }
+  ],
+  "schema_version": 1,
+  "simulation": {
+    "failure_verdict": "TEST FAILED",
+    "required_verdict": "TEST PASSED",
+    "scope": "Provided testbench checks; not a formal equivalence proof.",
+    "tools": [
+      "xvlog",
+      "xelab",
+      "xsim -runall"
+    ]
+  },
+  "sources": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-encoder8-01\\iter_000\\priority_encoder8.v",
+      "sha256": "e62e9b37985faa79f76389f9a9450b78274b72e7f294b8ddc64ad79af92ec704",
+      "text": "module priority_encoder8 (\r\n    input wire clk,\r\n    input wire rst,\r\n    input wire [7:0] request,\r\n    output wire [2:0] index,\r\n    output wire valid\r\n);\r\n    priority_encoder8_core u_priority_encoder8_core (\r\n        .clk(clk),\r\n        .rst(rst),\r\n        .request(request),\r\n        .index(index),\r\n        .valid(valid)\r\n    );\r\nendmodule\r\n",
+      "truncated": false
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-encoder8-01\\modules\\priority_encoder8_core\\priority_encoder8_core.v",
+      "sha256": "c1eeea95647a9bcc614cee59dfc0a6648b2dab53a32aded3ad3a5b39ad86a59a",
+      "text": "`timescale 1ns/1ps\r\n// @latency 1\r\nmodule priority_encoder8_core (\r\n    input  wire       clk,\r\n    input  wire       rst,\r\n    input  wire [7:0] request,\r\n    output wire [2:0] index,\r\n    output wire       valid\r\n);\r\n\r\n    reg [2:0] index_reg;\r\n    reg       valid_reg;\r\n\r\n    assign index = index_reg;\r\n    assign valid = valid_reg;\r\n\r\n    always @(posedge clk) begin\r\n        if (rst) begin\r\n            index_reg <= 3'd0;\r\n            valid_reg <= 1'b0;\r\n        end else begin\r\n            valid_reg <= (request != 8'd0);\r\n            if (request[7])\r\n                index_reg <= 3'd7;\r\n            else if (request[6])\r\n                index_reg <= 3'd6;\r\n            else if (request[5])\r\n                index_reg <= 3'd5;\r\n            else if (request[4])\r\n                index_reg <= 3'd4;\r\n            else if (request[3])\r\n                index_reg <= 3'd3;\r\n            else if (request[2])\r\n                index_reg <= 3'd2;\r\n            else if (request[1])\r\n                index_reg <= 3'd1;\r\n            else\r\n                index_reg <= 3'd0;\r\n        end\r\n    end\r\n\r\nendmodule",
+      "truncated": false
+    }
+  ],
+  "testbench": {
+    "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-encoder8-01\\priority_encoder8_tb.v",
+    "sha256": "6df8f44d22ec1d516ff704fac1f8d3233c96829a37f436e5ea198602cd95ac0f",
+    "text": "`timescale 1ns/1ps\r\nmodule priority_encoder8_tb;\r\nreg _autortl_clk = 0;\r\nalways #5 _autortl_clk = ~_autortl_clk;\r\nreg rst;\r\nreg [7:0] request;\r\nwire [2:0] index;\r\nwire valid;\r\ninteger _autortl_cycle, _autortl_errors, _autortl_index;\r\n\r\nreg [7:0] _autortl_stim_request [0:102];\r\nreg [2:0] _autortl_exp_index [0:102];\r\nreg _autortl_exp_valid [0:102];\r\npriority_encoder8 dut (.clk(_autortl_clk), .rst(rst), .request(request), .index(index), .valid(valid));\r\ninitial begin\r\n_autortl_errors = 0;\r\nrst = 0;\r\nrequest = 0;\r\n_autortl_stim_request[0] = 8'd0;\r\n_autortl_stim_request[1] = 8'd255;\r\n_autortl_stim_request[2] = 8'd128;\r\n_autortl_stim_request[3] = 8'd225;\r\n_autortl_stim_request[4] = 8'd59;\r\n_autortl_stim_request[5] = 8'd3;\r\n_autortl_stim_request[6] = 8'd46;\r\n_autortl_stim_request[7] = 8'd17;\r\n_autortl_stim_request[8] = 8'd42;\r\n_autortl_stim_request[9] = 8'd50;\r\n_autortl_stim_request[10] = 8'd181;\r\n_autortl_stim_request[11] = 8'd121;\r\n_autortl_stim_request[12] = 8'd8;\r\n_autortl_stim_request[13] = 8'd15;\r\n_autortl_stim_request[14] = 8'd8;\r\n_autortl_stim_request[15] = 8'd177;\r\n_autortl_stim_request[16] = 8'd247;\r\n_autortl_stim_request[17] = 8'd237;\r\n_autortl_stim_request[18] = 8'd76;\r\n_autortl_stim_request[19] = 8'd46;\r\n_autortl_stim_request[20] = 8'd93;\r\n_autortl_stim_request[21] = 8'd58;\r\n_autortl_stim_request[22] = 8'd7;\r\n_autortl_stim_request[23] = 8'd249;\r\n_autortl_stim_request[24] = 8'd127;\r\n_autortl_stim_request[25] = 8'd33;\r\n_autortl_stim_request[26] = 8'd238;\r\n_autortl_stim_request[27] = 8'd35;\r\n_autortl_stim_request[28] = 8'd45;\r\n_autortl_stim_request[29] = 8'd23;\r\n_autortl_stim_request[30] = 8'd138;\r\n_autortl_stim_request[31] = 8'd32;\r\n_autortl_stim_request[32] = 8'd154;\r\n_autortl_stim_request[33] = 8'd246;\r\n_autortl_stim_request[34] = 8'd181;\r\n_autortl_stim_request[35] = 8'd136;\r\n_autortl_stim_request[36] = 8'd127;\r\n_autortl_stim_request[37] = 8'd102;\r\n_autortl_stim_request[38] = 8'd232;\r\n_autortl_stim_request[39] = 8'd9;\r\n_autortl_stim_request[40] = 8'd36;\r\n_autortl_stim_request[41] = 8'd2;\r\n_autortl_stim_request[42] = 8'd170;\r\n_autortl_stim_request[43] = 8'd73;\r\n_autortl_stim_request[44] = 8'd242;\r\n_autortl_stim_request[45] = 8'd193;\r\n_autortl_stim_request[46] = 8'd85;\r\n_autortl_stim_request[47] = 8'd27;\r\n_autortl_stim_request[48] = 8'd39;\r\n_autortl_stim_request[49] = 8'd254;\r\n_autortl_stim_request[50] = 8'd83;\r\n_autortl_stim_request[51] = 8'd38;\r\n_autortl_stim_request[52] = 8'd110;\r\n_autortl_stim_request[53] = 8'd73;\r\n_autortl_stim_request[54] = 8'd13;\r\n_autortl_stim_request[55] = 8'd177;\r\n_autortl_stim_request[56] = 8'd56;\r\n_autortl_stim_request[57] = 8'd72;\r\n_autortl_stim_request[58] = 8'd156;\r\n_autortl_stim_request[59] = 8'd232;\r\n_autortl_stim_request[60] = 8'd20;\r\n_autortl_stim_request[61] = 8'd213;\r\n_autortl_stim_request[62] = 8'd141;\r\n_autortl_stim_request[63] = 8'd20;\r\n_autortl_stim_request[64] = 8'd90;\r\n_autortl_stim_request[65] = 8'd139;\r\n_autortl_stim_request[66] = 8'd79;\r\n_autortl_stim_request[67] = 8'd153;\r\n_autortl_stim_request[68] = 8'd79;\r\n_autortl_stim_request[69] = 8'd237;\r\n_autortl_stim_request[70] = 8'd21;\r\n_autortl_stim_request[71] = 8'd197;\r\n_autortl_stim_request[72] = 8'd178;\r\n_autortl_stim_request[73] = 8'd253;\r\n_autortl_stim_request[74] = 8'd174;\r\n_autortl_stim_request[75] = 8'd239;\r\n_autortl_stim_request[76] = 8'd243;\r\n_autortl_stim_request[77] = 8'd23;\r\n_autortl_stim_request[78] = 8'd241;\r\n_autortl_stim_request[79] = 8'd87;\r\n_autortl_stim_request[80] = 8'd225;\r\n_autortl_stim_request[81] = 8'd224;\r\n_autortl_stim_request[82] = 8'd151;\r\n_autortl_stim_request[83] = 8'd140;\r\n_autortl_stim_request[84] = 8'd63;\r\n_autortl_stim_request[85] = 8'd95;\r\n_autortl_stim_request[86] = 8'd213;\r\n_autortl_stim_request[87] = 8'd223;\r\n_autortl_stim_request[88] = 8'd61;\r\n_autortl_stim_request[89] = 8'd52;\r\n_autortl_stim_request[90] = 8'd248;\r\n_autortl_stim_request[91] = 8'd192;\r\n_autortl_stim_request[92] = 8'd130;\r\n_autortl_stim_request[93] = 8'd98;\r\n_autortl_stim_request[94] = 8'd176;\r\n_autortl_stim_request[95] = 8'd55;\r\n_autortl_stim_request[96] = 8'd80;\r\n_autortl_stim_request[97] = 8'd137;\r\n_autortl_stim_request[98] = 8'd79;\r\n_autortl_stim_request[99] = 8'd165;\r\n_autortl_stim_request[100] = 8'd228;\r\n_autortl_stim_request[101] = 8'd36;\r\n_autortl_stim_request[102] = 8'd40;\r\n_autortl_exp_index[0] = 3'd0;\r\n_autortl_exp_index[1] = 3'd7;\r\n_autortl_exp_index[2] = 3'd7;\r\n_autortl_exp_index[3] = 3'd7;\r\n_autortl_exp_index[4] = 3'd5;\r\n_autortl_exp_index[5] = 3'd1;\r\n_autortl_exp_index[6] = 3'd5;\r\n_autortl_exp_index[7] = 3'd4;\r\n_autortl_exp_index[8] = 3'd5;\r\n_autortl_exp_index[9] = 3'd5;\r\n_autortl_exp_index[10] = 3'd7;\r\n_autortl_exp_index[11] = 3'd6;\r\n_autortl_exp_index[12] = 3'd3;\r\n_autortl_exp_index[13] = 3'd3;\r\n_autortl_exp_index[14] = 3'd3;\r\n_autortl_exp_index[15] = 3'd7;\r\n_autortl_exp_index[16] = 3'd7;\r\n_autortl_exp_index[17] = 3'd7;\r\n_autortl_exp_index[18] = 3'd6;\r\n_autortl_exp_index[19] = 3'd5;\r\n_autortl_exp_index[20] = 3'd6;\r\n_autortl_exp_index[21] = 3'd5;\r\n_autortl_exp_index[22] = 3'd2;\r\n_autortl_exp_index[23] = 3'd7;\r\n_autortl_exp_index[24] = 3'd6;\r\n_autortl_exp_index[25] = 3'd5;\r\n_autortl_exp_index[26] = 3'd7;\r\n_autortl_exp_index[27] = 3'd5;\r\n_autortl_exp_index[28] = 3'd5;\r\n_autortl_exp_index[29] = 3'd4;\r\n_autortl_exp_index[30] = 3'd7;\r\n_autortl_exp_index[31] = 3'd5;\r\n_autortl_exp_index[32] = 3'd7;\r\n_autortl_exp_index[33] = 3'd7;\r\n_autortl_exp_index[34] = 3'd7;\r\n_autortl_exp_index[35] = 3'd7;\r\n_autortl_exp_index[36] = 3'd6;\r\n_autortl_exp_index[37] = 3'd6;\r\n_autortl_exp_index[38] = 3'd7;\r\n_autortl_exp_index[39] = 3'd3;\r\n_autortl_exp_index[40] = 3'd5;\r\n_autortl_exp_index[41] = 3'd1;\r\n_autortl_exp_index[42] = 3'd7;\r\n_autortl_exp_index[43] = 3'd6;\r\n_autortl_exp_index[44] = 3'd7;\r\n_autortl_exp_index[45] = 3'd7;\r\n_autortl_exp_index[46] = 3'd6;\r\n_autortl_exp_index[47] = 3'd4;\r\n_autortl_exp_index[48] = 3'd5;\r\n_autortl_exp_index[49] = 3'd7;\r\n_autortl_exp_index[50] = 3'd6;\r\n_autortl_exp_index[51] = 3'd5;\r\n_autortl_exp_index[52] = 3'd6;\r\n_autortl_exp_index[53] = 3'd6;\r\n_autortl_exp_index[54] = 3'd3;\r\n_autortl_exp_index[55] = 3'd7;\r\n_autortl_exp_index[56] = 3'd5;\r\n_autortl_exp_index[57] = 3'd6;\r\n_autortl_exp_index[58] = 3'd7;\r\n_autortl_exp_index[59] = 3'd7;\r\n_autortl_exp_index[60] = 3'd4;\r\n_autortl_exp_index[61] = 3'd7;\r\n_autortl_exp_index[62] = 3'd7;\r\n_autortl_exp_index[63] = 3'd4;\r\n_autortl_exp_index[64] = 3'd6;\r\n_autortl_exp_index[65] = 3'd7;\r\n_autortl_exp_index[66] = 3'd6;\r\n_autortl_exp_index[67] = 3'd7;\r\n_autortl_exp_index[68] = 3'd6;\r\n_autortl_exp_index[69] = 3'd7;\r\n_autortl_exp_index[70] = 3'd4;\r\n_autortl_exp_index[71] = 3'd7;\r\n_autortl_exp_index[72] = 3'd7;\r\n_autortl_exp_index[73] = 3'd7;\r\n_autortl_exp_index[74] = 3'd7;\r\n_autortl_exp_index[75] = 3'd7;\r\n_autortl_exp_index[76] = 3'd7;\r\n_autortl_exp_index[77] = 3'd4;\r\n_autortl_exp_index[78] = 3'd7;\r\n_autortl_exp_index[79] = 3'd6;\r\n_autortl_exp_index[80] = 3'd7;\r\n_autortl_exp_index[81] = 3'd7;\r\n_autortl_exp_index[82] = 3'd7;\r\n_autortl_exp_index[83] = 3'd7;\r\n_autortl_exp_index[84] = 3'd5;\r\n_autortl_exp_index[85] = 3'd6;\r\n_autortl_exp_index[86] = 3'd7;\r\n_autortl_exp_index[87] = 3'd7;\r\n_autortl_exp_index[88] = 3'd5;\r\n_autortl_exp_index[89] = 3'd5;\r\n_autortl_exp_index[90] = 3'd7;\r\n_autortl_exp_index[91] = 3'd7;\r\n_autortl_exp_index[92] = 3'd7;\r\n_autortl_exp_index[93] = 3'd6;\r\n_autortl_exp_index[94] = 3'd7;\r\n_autortl_exp_index[95] = 3'd5;\r\n_autortl_exp_index[96] = 3'd6;\r\n_autortl_exp_index[97] = 3'd7;\r\n_autortl_exp_index[98] = 3'd6;\r\n_autortl_exp_index[99] = 3'd7;\r\n_autortl_exp_index[100] = 3'd7;\r\n_autortl_exp_index[101] = 3'd5;\r\n_autortl_exp_index[102] = 3'd5;\r\n_autortl_exp_valid[0] = 1'd0;\r\n_autortl_exp_valid[1] = 1'd1;\r\n_autortl_exp_valid[2] = 1'd1;\r\n_autortl_exp_valid[3] = 1'd1;\r\n_autortl_exp_valid[4] = 1'd1;\r\n_autortl_exp_valid[5] = 1'd1;\r\n_autortl_exp_valid[6] = 1'd1;\r\n_autortl_exp_valid[7] = 1'd1;\r\n_autortl_exp_valid[8] = 1'd1;\r\n_autortl_exp_valid[9] = 1'd1;\r\n_autortl_exp_valid[10] = 1'd1;\r\n_autortl_exp_valid[11] = 1'd1;\r\n_autortl_exp_valid[12] = 1'd1;\r\n_autortl_exp_valid[13] = 1'd1;\r\n_autortl_exp_valid[14] = 1'd1;\r\n_autortl_exp_valid[15] = 1'd1;\r\n_autortl_exp_valid[16] = 1'd1;\r\n_autortl_exp_valid[17] = 1'd1;\r\n_autortl_exp_valid[18] = 1'd1;\r\n_autortl_exp_valid[19] = 1'd1;\r\n_autortl_exp_valid[20] = 1'd1;\r\n_autortl_exp_valid[21] = 1'd1;\r\n_autortl_exp_valid[22] = 1'd1;\r\n_autortl_exp_valid[23] = 1'd1;\r\n_autortl_exp_valid[24] = 1'd1;\r\n_autortl_exp_valid[25] = 1'd1;\r\n_autortl_exp_valid[26] = 1'd1;\r\n_autortl_exp_valid[27] = 1'd1;\r\n_autortl_exp_valid[28] = 1'd1;\r\n_autortl_exp_valid[29] = 1'd1;\r\n_autortl_exp_valid[30] = 1'd1;\r\n_autortl_exp_valid[31] = 1'd1;\r\n_autortl_exp_valid[32] = 1'd1;\r\n_autortl_exp_valid[33] = 1'd1;\r\n_autortl_exp_valid[34] = 1'd1;\r\n_autortl_exp_valid[35] = 1'd1;\r\n_autortl_exp_valid[36] = 1'd1;\r\n_autortl_exp_valid[37] = 1'd1;\r\n_autortl_exp_valid[38] = 1'd1;\r\n_autortl_exp_valid[39] = 1'd1;\r\n_autortl_exp_valid[40] = 1'd1;\r\n_autortl_exp_valid[41] = 1'd1;\r\n_autortl_exp_valid[42] = 1'd1;\r\n_autortl_exp_valid[43] = 1'd1;\r\n_autortl_exp_valid[44] = 1'd1;\r\n_autortl_exp_valid[45] = 1'd1;\r\n_autortl_exp_valid[46] = 1'd1;\r\n_autortl_exp_valid[47] = 1'd1;\r\n_autortl_exp_valid[48] = 1'd1;\r\n_autortl_exp_valid[49] = 1'd1;\r\n_autortl_exp_valid[50] = 1'd1;\r\n_autortl_exp_valid[51] = 1'd1;\r\n_autortl_exp_valid[52] = 1'd1;\r\n_autortl_exp_valid[53] = 1'd1;\r\n_autortl_exp_valid[54] = 1'd1;\r\n_autortl_exp_valid[55] = 1'd1;\r\n_autortl_exp_valid[56] = 1'd1;\r\n_autortl_exp_valid[57] = 1'd1;\r\n_autortl_exp_valid[58] = 1'd1;\r\n_autortl_exp_valid[59] = 1'd1;\r\n_autortl_exp_valid[60] = 1'd1;\r\n_autortl_exp_valid[61] = 1'd1;\r\n_autortl_exp_valid[62] = 1'd1;\r\n_autortl_exp_valid[63] = 1'd1;\r\n_autortl_exp_valid[64] = 1'd1;\r\n_autortl_exp_valid[65] = 1'd1;\r\n_autortl_exp_valid[66] = 1'd1;\r\n_autortl_exp_valid[67] = 1'd1;\r\n_autortl_exp_valid[68] = 1'd1;\r\n_autortl_exp_valid[69] = 1'd1;\r\n_autortl_exp_valid[70] = 1'd1;\r\n_autortl_exp_valid[71] = 1'd1;\r\n_autortl_exp_valid[72] = 1'd1;\r\n_autortl_exp_valid[73] = 1'd1;\r\n_autortl_exp_valid[74] = 1'd1;\r\n_autortl_exp_valid[75] = 1'd1;\r\n_autortl_exp_valid[76] = 1'd1;\r\n_autortl_exp_valid[77] = 1'd1;\r\n_autortl_exp_valid[78] = 1'd1;\r\n_autortl_exp_valid[79] = 1'd1;\r\n_autortl_exp_valid[80] = 1'd1;\r\n_autortl_exp_valid[81] = 1'd1;\r\n_autortl_exp_valid[82] = 1'd1;\r\n_autortl_exp_valid[83] = 1'd1;\r\n_autortl_exp_valid[84] = 1'd1;\r\n_autortl_exp_valid[85] = 1'd1;\r\n_autortl_exp_valid[86] = 1'd1;\r\n_autortl_exp_valid[87] = 1'd1;\r\n_autortl_exp_valid[88] = 1'd1;\r\n_autortl_exp_valid[89] = 1'd1;\r\n_autortl_exp_valid[90] = 1'd1;\r\n_autortl_exp_valid[91] = 1'd1;\r\n_autortl_exp_valid[92] = 1'd1;\r\n_autortl_exp_valid[93] = 1'd1;\r\n_autortl_exp_valid[94] = 1'd1;\r\n_autortl_exp_valid[95] = 1'd1;\r\n_autortl_exp_valid[96] = 1'd1;\r\n_autortl_exp_valid[97] = 1'd1;\r\n_autortl_exp_valid[98] = 1'd1;\r\n_autortl_exp_valid[99] = 1'd1;\r\n_autortl_exp_valid[100] = 1'd1;\r\n_autortl_exp_valid[101] = 1'd1;\r\n_autortl_exp_valid[102] = 1'd1;\r\nrst = 1'b1;\r\nrepeat (5) @(posedge _autortl_clk);\r\n@(negedge _autortl_clk);\r\nrst = 1'b0;\r\nfor (_autortl_cycle=0; _autortl_cycle<103; _autortl_cycle=_autortl_cycle+1) begin\r\nif (_autortl_cycle > 0) @(negedge _autortl_clk);\r\nif (_autortl_cycle < 103) begin\r\nrequest = _autortl_stim_request[_autortl_cycle];\r\nend\r\n@(posedge _autortl_clk);\r\n#1;\r\n_autortl_index = _autortl_cycle - 0;\r\nif (_autortl_index >= 0 && _autortl_index < 103) begin\r\nif (index !== _autortl_exp_index[_autortl_index]) begin $display(\"FAIL index=%0d signal=index\", _autortl_index); _autortl_errors = _autortl_errors + 1; end\r\nif (valid !== _autortl_exp_valid[_autortl_index]) begin $display(\"FAIL index=%0d signal=valid\", _autortl_index); _autortl_errors = _autortl_errors + 1; end\r\nend\r\nend\r\nif (_autortl_errors == 0) $display(\"TEST PASSED\");\r\nelse $display(\"TEST FAILED: %0d errors\", _autortl_errors);\r\n$finish;\r\nend\r\ninitial begin #1280; $display(\"TEST FAILED: watchdog timeout\"); $finish; end\r\nendmodule\r\n",
+    "truncated": false
+  },
+  "testbench_top": "priority_encoder8_tb",
+  "tool_exit_evidence": {
+    "history_count": 4,
+    "latest_by_tool": {
+      "vivado": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-encoder8-01\\iter_000\\vivado_synth_output.log",
+        "output_log_sha256": "c5329546757aa334945859a6ace149e3cd6b81ad346dd0a8d3c7c77a9b1daae9",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xelab": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-encoder8-01\\iter_000\\xelab.log",
+        "output_log_sha256": "45cd22190598eb5fc501ccb16e615e539519fd371c5b0e2a8d2e800e4a296fb4",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xsim": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-encoder8-01\\iter_000\\xsim.log",
+        "output_log_sha256": "42eef9dc67586a7f360cd8377157fef3bbe7d4a76291e0222d42af774d275d03",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xvlog": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-encoder8-01\\iter_000\\xvlog.log",
+        "output_log_sha256": "58e94d91de5c68f5672309498105be47d76960f715ce851e9ff4571e223d4b98",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      }
+    },
+    "missing_required_tools": [],
+    "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-encoder8-01\\iter_000\\tool_exit_records.log",
+    "records": [
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-encoder8-01\\iter_000",
+        "driver_returncode": 0,
+        "elapsed_seconds": 2.9839999999967404,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xvlog.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-encoder8-01\\iter_000\\xvlog.log",
+        "output_log_sha256": "58e94d91de5c68f5672309498105be47d76960f715ce851e9ff4571e223d4b98",
+        "pid": 27340,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xvlog"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-encoder8-01\\iter_000",
+        "driver_returncode": 0,
+        "elapsed_seconds": 4.187999999994645,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xelab.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-encoder8-01\\iter_000\\xelab.log",
+        "output_log_sha256": "45cd22190598eb5fc501ccb16e615e539519fd371c5b0e2a8d2e800e4a296fb4",
+        "pid": 14608,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xelab"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-encoder8-01\\iter_000",
+        "driver_returncode": 0,
+        "elapsed_seconds": 5.4060000000026776,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xsim.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-encoder8-01\\iter_000\\xsim.log",
+        "output_log_sha256": "42eef9dc67586a7f360cd8377157fef3bbe7d4a76291e0222d42af774d275d03",
+        "pid": 20252,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xsim"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-encoder8-01\\iter_000",
+        "driver_returncode": 0,
+        "elapsed_seconds": 222.96899999999732,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/vivado.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-encoder8-01\\iter_000\\vivado_synth_output.log",
+        "output_log_sha256": "c5329546757aa334945859a6ace149e3cd6b81ad346dd0a8d3c7c77a9b1daae9",
+        "pid": 10776,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "vivado"
+      }
+    ],
+    "schema_valid": true,
+    "sha256": "ae172fdadd6cf62ffbd7361b20e4ef18c7234b61b4ffa47365f11641eb41167e",
+    "status": "recorded",
+    "truncated": false
+  },
+  "top_module": "priority_encoder8",
+  "verification_logs": [
+    {
+      "head": "INFO: [VRFC 10-2263] Analyzing Verilog file \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-encoder8-01/iter_000/priority_encoder8.v\" into library work\r\nINFO: [VRFC 10-311] analyzing module priority_encoder8\r\nINFO: [VRFC 10-2263] Analyzing Verilog file \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-encoder8-01/modules/priority_encoder8_core/priority_encoder8_core.v\" into library work\r\nINFO: [VRFC 10-311] analyzing module priority_encoder8_core\r\nINFO: [VRFC 10-2263] Analyzing Verilog file \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-encoder8-01/priority_encoder8_tb.v\" into library work\r\nINFO: [VRFC 10-311] analyzing module priority_encoder8_tb\r\n\r\n",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-encoder8-01\\iter_000\\xvlog.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "58e94d91de5c68f5672309498105be47d76960f715ce851e9ff4571e223d4b98",
+      "tail": "",
+      "truncated": false
+    },
+    {
+      "head": "Vivado Simulator v2025.2\r\nCopyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\nCopyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\nRunning: C:/AMDDesignTools/2025.2/Vivado/bin/unwrapped/win64.o/xelab.exe priority_encoder8_tb -s priority_encoder8_tb_snap --debug off \r\nMulti-threading is on. Using 10 slave threads.\r\nStarting static elaboration\r\nPass Through NonSizing Optimizer\r\nCompleted static elaboration\r\nStarting simulation data flow analysis\r\nCompleted simulation data flow analysis\r\nTime Resolution for simulation is 1ps\r\nCompiling module work.priority_encoder8_core\r\nCompiling module work.priority_encoder8_tb\r\nBuilt simulation snapshot priority_encoder8_tb_snap\r\n\r\n",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-encoder8-01\\iter_000\\xelab.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "45cd22190598eb5fc501ccb16e615e539519fd371c5b0e2a8d2e800e4a296fb4",
+      "tail": "",
+      "truncated": false
+    },
+    {
+      "head": "\r\n****** xsim v2025.2 (64-bit)\r\n  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025\r\n  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025\r\n  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025\r\n  **** Start of session at: Tue Oct 20 15:53:14 2026\r\n    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\n    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n\r\nsource xsim.dir/priority_encoder8_tb_snap/xsim_script.tcl\r\n# xsim {priority_encoder8_tb_snap} -autoloadwcfg -runall\r\nTime resolution is 1 ps\r\nrun -all\r\nTEST PASSED\r\n$finish called at time : 1076 ns : File \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-encoder8-01/priority_encoder8_tb.v\" Line 347\r\nexit\r\nINFO: [Common 17-206] Exiting xsim at Tue Oct 20 15:53:16 2026...\r\n\r\n",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-encoder8-01\\iter_000\\sim_log.txt",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "42eef9dc67586a7f360cd8377157fef3bbe7d4a76291e0222d42af774d275d03",
+      "tail": "",
+      "truncated": false
+    },
+    {
+      "head": "\r\n****** Vivado v2025.2 (64-bit)\r\n  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025\r\n  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025\r\n  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025\r\n  **** Start of session at: Tue Oct 20 15:53:20 2026\r\n    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\n    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n\r\nsource C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-encoder8-01/iter_000/synth.tcl\r\n# set_msg_config -id {Designutils 20-1307} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-327} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-3352} -new_severity ERROR\r\n# set_part xc7a35tcpg236-1\r\nINFO: [Coretcl 2-1500] The part has been set to 'xc7a35tcpg236-1' for the current project only. Run set_part -help for more details. To evaluate different speed grades in the current design, use the set_speed_grade command, or use the open_checkpoint -part command to change the part used by an existing checkpoint design.\r\nset_part: Time (s): cpu = 00:00:28 ; elapsed = 00:00:21 . Memory (MB): peak = 534.180 ; gain = 227.125\r\n# read_verilog \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-encoder8-01/iter_000/priority_encoder8.v\" \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-encoder8-01/modules/priority_encoder8_core/priority_encoder8_core.v\"\r\n# set fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-encoder8-01/iter_000/timing.xdc\" w]\r\n# puts $fp {create_clock -period 10.000 -name clk [get_ports clk]}\r\n# close $fp\r\n# read_xdc \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-encoder8-01/iter_000/timing.xdc\"\r\n# synth_design -top priority_encoder8 -flatten_hierarchy rebuilt \r\nCommand: synth_design -top priori",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-encoder8-01\\iter_000\\vivado_synth_output.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "c5329546757aa334945859a6ace149e3cd6b81ad346dd0a8d3c7c77a9b1daae9",
+      "tail": "build-golden-encoder8-01/iter_000/power.rpt\"\r\nCommand: report_power -file C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-encoder8-01/iter_000/power.rpt\r\nRunning Vector-less Activity Propagation...\r\n\r\nFinished Running Vector-less Activity Propagation\r\n0 Infos, 0 Warnings, 0 Critical Warnings and 0 Errors encountered.\r\nreport_power completed successfully\r\n# catch { report_methodology -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-encoder8-01/iter_000/methodology.rpt\" }\r\nCommand: report_methodology -file C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-encoder8-01/iter_000/methodology.rpt\r\nINFO: [Timing 38-35] Done setting XDC timing constraints.\r\nINFO: [DRC 23-133] Running Methodology with 2 threads\r\nINFO: [Vivado_Tcl 2-1520] The results of Report Methodology are in file C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-encoder8-01/iter_000/methodology.rpt.\r\nreport_methodology completed successfully\r\n# catch { report_qor_suggestions -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-encoder8-01/iter_000/qor_suggestions.rpt\" }\r\nCommand: report_qor_suggestions -file C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-encoder8-01/iter_000/qor_suggestions.rpt\r\nCongestion Prediction Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.011 . Memory (MB): peak = 1968.586 ; gain = 0.000\r\nINFO: [Implflow 47-1309] PredResultString: 1:44.57:55.43\r\nfeatureProvider Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.049 . Memory (MB): peak = 1968.586 ; gain = 0.000\r\nINFO: [Implflow 47-1274] ML strategy prediction is not supported for 7-series devices.\r\nreport_qor_suggestions completed successfully\r\n# puts \"SYNTH_COMPLETE\"\r\nSYNTH_COMPLETE\r\nINFO: [Common 17-206] Exiting Vivado at Tue Oct 20 15:56:59 2026...\r\n\r\n",
+      "truncated": true
+    }
+  ]
+}

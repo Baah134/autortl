@@ -86,6 +86,11 @@ def _metadata(entry):
     required = ("design", "tb", "top") if mode == "optimize" else ("spec",)
     if mode not in ("build", "optimize") or any(not meta.get(key) for key in required):
         raise ValueError(f"{entry.name}: invalid mode or missing required metadata")
+    if "generate_golden" in meta:
+        if type(meta["generate_golden"]) is not bool:
+            raise ValueError(f"{entry.name}: generate_golden must be boolean")
+        if meta["generate_golden"] and mode != "build":
+            raise ValueError(f"{entry.name}: generate_golden=True requires build mode")
     for name in ("design", "tb", "spec"):
         if name in meta:
             if not isinstance(meta[name], str):
@@ -184,7 +189,8 @@ def run_tier(tier: int, **overrides) -> int:
         config = {"mode": meta.get("mode", "optimize"), "top_module": meta.get("top", ""),
                   "objective": meta.get("objective", "minimize_luts"),
                   "target_freq_mhz": meta.get("target_freq_mhz", 100.0),
-                  "max_iterations": meta.get("iterations", 5)}
+                  "max_iterations": meta.get("iterations", 5),
+                  "generate_golden": meta.get("generate_golden", False)}
         for key, field in (("design", "design_path"), ("tb", "testbench_path"), ("spec", "spec_path")):
             if meta.get(key):
                 config[field] = (entry / meta[key]).resolve()

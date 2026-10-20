@@ -14,9 +14,10 @@ learn from failures, and retain the best correct design within a fixed budget.
 
 | Validation | Recorded result |
 |---|---|
-| Harness regression suite | **746 tests passed** |
-| Live Vivado testbench checks | **24 generated-testbench, counter, FIFO and signed-interface cases matched expected verdicts** |
+| Harness regression suite | **774 tests passed** |
+| Independent streaming verification | **Correct queue control passed; all eight behavior faults detected** |
 | Generated 8-bit counter build | **Golden oracle repaired automatically; independent 700-cycle test passed · 6 LUTs / 8 FFs** |
+| Generated priority encoder optimization | **6 → 5 LUTs (16.7%) · 4 FFs · exhaustive independent test passed** |
 | Accepted autonomous counter optimization | **55 → 53 LUTs (3.6%) · 37 FFs · setup slack 0.456 ns · hold slack 0.282 ns** |
 | Fresh full tier 0 campaign | **2/2 passed · counter improved, mux baseline retained** |
 
@@ -32,7 +33,7 @@ validation. No held curriculum tier is claimed. Earlier unsuccessful cohorts
 remain in the evidence record.
 
 See the [test evidence](evidence/2026-10-20/README.md),
-[full-suite result](evidence/2026-10-20/streaming-qualification/full-suite-746.txt) and
+[full-suite result](evidence/2026-10-20/dual-verification/full-suite-774.txt) and
 [accepted optimization](evidence/2026-10-20/contract-campaign-05/README.md),
 and [generated-build verification](evidence/2026-10-20/generated-counter/README.md).
 
@@ -105,6 +106,9 @@ python run.py optimize --design curriculum/tier0/mux4/mux4.v `
 includes [counter8](curriculum/tier1/counter8_build/) and
 [priority encoder](curriculum/tier1/encoder8_build/) specifications with
 independent top-level testbenches. Supply these using `--spec`, `--tb` and `--top`.
+Add `--generate-golden` to combine generated Python/unit verification with the
+independent testbench, including child repair and optimization gates. See the
+[golden verification guide](docs/GOLDEN_VERIFICATION.md) for semantics and limits.
 
 Resume an interrupted experiment using its saved configuration:
 

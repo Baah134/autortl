@@ -58,6 +58,9 @@ messages:
 # Methodology violations (report_methodology, UG1292 IDs). ADVISORY ONLY:
 # these never kill candidates; they are digested into the planner's context.
 harness_failures:
+  payload_only_capacity_blindness:
+    meaning: "Accepted-transaction payload checks can pass a design with incorrect capacity/readiness"
+    repair: "Combine generated oracle checks with independently qualified temporal/capacity tests, including child repair and integrated candidate gates"
   scoreboard_serial_drain_budget:
     meaning: "One-time latency allowance prematurely ends valid serial streaming transactions"
     repair: "Budget the declared latency for each transaction, plus bounded backpressure/drain allowance"

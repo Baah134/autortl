@@ -51,6 +51,8 @@ def main(argv=None):
     p_bld.add_argument("--tb", type=Path, default=None,
                        help="independent integration testbench")
     p_bld.add_argument("--top", default="")
+    p_bld.add_argument("--generate-golden", action="store_true",
+                       help="generate and qualify a unit oracle even when an independent --tb is supplied")
 
     p_res = sub.add_parser("resume", help="load config.json; no configuration overrides")
     p_res.add_argument("--run", required=True, type=Path)
@@ -98,7 +100,7 @@ def main(argv=None):
         orch = Orchestrator(cfg, run_dir=a.output_dir.resolve() if hasattr(a, "output_dir") else None)
     elif a.cmd == "build":
         cfg = RunConfig(mode="build", spec_path=a.spec, testbench_path=a.tb,
-                        top_module=a.top, **kw)
+                        top_module=a.top, generate_golden=a.generate_golden, **kw)
         orch = Orchestrator(cfg, run_dir=a.output_dir.resolve() if hasattr(a, "output_dir") else None)
 
     summary = orch.run()

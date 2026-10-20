@@ -446,17 +446,21 @@ class Orchestrator:
     def _build_module(self, m: ModuleSpec, mdir: Path) -> str | None:
         """Generate one module through the ladder with best-of-N. Returns verilog."""
         print(f"[module {m.name}] golden model + testbench...")
+        independent_tb = None
         if getattr(self, "_build_single", False) and self.cfg.testbench_path:
             text = Path(self.cfg.testbench_path).read_text()
             text = re.sub(r"\b" + re.escape(self._build_top) + r"\b", m.name, text)
             text = re.sub(r"\b" + re.escape(self._build_top + "_tb") + r"\b", m.name + "_tb", text)
-            tb = mdir / f"{m.name}_tb.v"
-            tb.write_text(text)
-            verilog = self._generate_verified(m, "", "Implement the exact supplied contract", tb, mdir)
-            if verilog is None:
-                return None
-            qualified, _ = self._qualify_source(verilog, tb, m.name, mdir)
-            return verilog if qualified else None
+            prefix = "independent_" if self.cfg.generate_golden else ""
+            trusted_tb = mdir / f"{prefix}{m.name}_tb.v"
+            trusted_tb.write_text(text, encoding="utf-8")
+            if not self.cfg.generate_golden:
+                verilog = self._generate_verified(m, "", "Implement the exact supplied contract", trusted_tb, mdir)
+                if verilog is None:
+                    return None
+                qualified, _ = self._qualify_source(verilog, trusted_tb, m.name, mdir)
+                return verilog if qualified else None
+            independent_tb = trusted_tb
         example_errors = validate_examples(m, require_anchors=True)
         if example_errors:
             atomic_write_text(mdir / "golden_qualification.log", json.dumps({
@@ -494,7 +498,7 @@ class Orchestrator:
         else:
             return None
         verilog = self._generate_verified(m, "(initial implementation)",
-                                          "", tb, mdir)
+                                          "", tb, mdir, independent_tb=independent_tb)
         if verilog is None:
             return None
         # testbench qualification against the now-good module (defence #7)
@@ -503,9 +507,15 @@ class Orchestrator:
         print(f"[module {m.name}] tb qualification: {reason}")
         if not qual_ok:
             return None  # infra/unqualified stimulus must not silently change its own grading
+        if independent_tb is not None:
+            qualified, reason = self._qualify_source(verilog, independent_tb, m.name,
+                                                      mdir / "independent_qualification")
+            print(f"[module {m.name}] independent tb qualification: {reason}")
+            if not qualified:
+                return None
         return verilog
 
-    def _generate_verified(self, contract, seed, instruction, tb, directory):
+    def _generate_verified(self, contract, seed, instruction, tb, directory, *, independent_tb=None):
         for mutation, prompt in mutation_prompts(self.cfg.objective, self.cfg.best_of_n):
             source = self._model("generator", "generate", contract, seed, instruction, prompt, self.budget)
             for attempt in range(self.cfg.max_fix_attempts + 1):
@@ -518,9 +528,16 @@ class Orchestrator:
                 work = directory / f"candidate_{mutation}_{attempt}"
                 work.mkdir(exist_ok=True)
                 path = self._write_tmp(work, contract.name, source)
+                active_tb = tb
                 ok, error, kind = self._tool("xvlog_check", [path], self.cfg, work)
                 if ok:
                     ok, error, kind = self._tool("xsim_run", [path], tb, contract.name + "_tb", self.cfg, work)
+                if ok and independent_tb is not None:
+                    independent_work = work / "independent"
+                    independent_work.mkdir(exist_ok=True)
+                    active_tb = independent_tb
+                    ok, error, kind = self._tool("xsim_run", [path], independent_tb,
+                                                contract.name + "_tb", self.cfg, independent_work)
                 if ok:
                     self._write_tmp(directory, contract.name, source)
                     return source
@@ -528,7 +545,7 @@ class Orchestrator:
                     return None
                 if attempt < self.cfg.max_fix_attempts:
                     source = self._model("generator", "fix", source, "Repair without changing interface or latency",
-                                         error, tb.read_text(), [], self.budget)
+                                         error, active_tb.read_text(encoding="utf-8"), [], self.budget)
         return None
 
     def _write_tmp(self, mdir: Path, name: str, verilog: str) -> Path:

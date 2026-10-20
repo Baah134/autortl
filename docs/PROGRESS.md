@@ -488,3 +488,30 @@ changes, commands, outcomes, evidence locations, limitations, and next action.
   gate child repair and every integrated optimization candidate, while generated
   golden models still run. Plan an explicit opt-in combined mode after reproducing
   that gap; retain default trusted-only behavior and configuration/resume identity.
+
+
+- Encoder build01 completed on978c742: accepted **6to5LUT (16.67%)**,4FF,
+  setup0.531ns/hold0.156ns;5calls,495.720chargedtoolseconds. Exact promoted winner
+  independently passes all256patterns in both directions plus registered/reset
+  checks. Archive generated-encoder preserves actual physical/evaluation records.
+- Capacity-one experiment confirmed payload-only false acceptance; identical DUT
+  bytes fail independent capacity assertions. Added explicit combined mode after
+  measuring the need. Child fixes rerun both TBs; both qualify; original independent
+  topTB gates baseline/candidates. No new agent framework/provider was added.
+- Config/CLI90tests pass; flow22tests pass after two fixture corrections (bounded
+  infra retry count and explicit candidate-repair mock). Initial log retained.
+- Desktop/tool delay interrupted execution around20:15to23:35UTC. Reconciled Git,
+  renewed lease; no vendor job was active during the gap. Fullsuite04 and actual
+  combined streaming build logs/build-golden-skid-01 are now running on frozen
+  source. Budgeted run uses20calls/25toolminutes/40wallminutes/oneinfraretry.
+
+
+- Combined-mode full suite **774 passed in178.95seconds**. First live streaming
+  source passed generated and independent TBs, then correctly STOPPED: the selected
+  readiness mutation passed the payload-only grader, so qualification was not
+  established. No integration/routing result. Retain generated-streaming-attempt-01;
+  do not resume across runtime fixes or silently replace its result.
+- Next fix: bounded alternative observable sabotage, keeping missed faults and
+  the exact TB unchanged. Also preserve exhausted infrastructure causes as typed
+  build-blocked outcomes. Independent temporal tests remain mandatory; portfolio
+  qualification is only minimum non-vacuity evidence, not completeness proof.

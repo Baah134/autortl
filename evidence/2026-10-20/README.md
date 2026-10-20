@@ -57,3 +57,10 @@ no held tier or weaker-model performance is claimed.
 - `streaming-qualification/`: **746 passing regression tests**, independent queue
   control plus eight assertion-detected faults, and serial100-cycle drain-budget
   false rejection reproduced and repaired on the same RTL.
+
+- `generated-encoder/`: accepted6to5LUT (16.7%),4FF, independent exhaustive check;
+  source978c742. Generated oracle/build path exercised in5modelcalls.
+- `dual-verification/`: **774 passing tests**; exact capacity-one RTL passes
+  payload grader but fails independent capacity assertions; combined mode tests.
+- `generated-streaming-attempt-01/`: stopped at fault qualification after correct
+  source passed bothTBs. No physical result; missed readiness fault preserved.
