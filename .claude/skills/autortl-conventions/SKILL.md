@@ -9,7 +9,11 @@ The contract is law. Preserve exact module/port names, widths, signedness,
 parameter behavior over every supported value, reset kind/polarity/priority,
 enable/hold behavior, cycle latency, throughput and registered outputs.
 Use the supplied clock names; do not invent or rename clocks.
-Every generated module declares `// @latency N` equal to the fixed contract.
+When the contract supplies a known numeric latency, declare `// @latency N`
+equal to it. For an existing source with no annotation, declared latency is
+unknown: preserve its exact observable cycle behavior and do not invent a
+numeric annotation. Unknown does not mean zero or combinational. Typed builds
+require an explicit numeric latency.
 Changing that comment does not authorize changing behavior. If an architecture
 cannot meet this contract, report the limitation and request replanning; never
 amend it to pass a test. Retiming existing registers is allowed only when all
