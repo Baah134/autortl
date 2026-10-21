@@ -589,3 +589,24 @@ changes, commands, outcomes, evidence locations, limitations, and next action.
  power plan unchanged. Saved coordinator checkpoint retains progress, not a
  background job. Next concrete work is FIFO fixture/TB/mutation admission per
  TASKS; no extra framework, agent layer or weak-model claim was added.
+
+
+## 2026-10-20 continuation: parameterized FIFO admission
+
+- User confirmed own Vivado work will be code/testbench editing and simulation,
+  with no synthesis/bitstream generation; authorized continuing harness work.
+  Preserve separate folders and one serial harness vendor queue.
+- Began reviewed WIDTH8/DEPTH3 synchronous FIFO contract with independent default
+  wrapper and WIDTH/DEPTH corner matrix. Bounded fixture and runner workers own
+  separate scopes. No generated build or hardware result is yet claimed.
+- Read GateTruth and VeriBugBench primary papers; research ledger records the
+  relevance and limits. Keep concrete fault provenance/raw assertions and report
+  all planned outcomes. No framework, model role or automatic fault engine added.
+
+
+- FIFO admission complete: real reference+13faults **14/14expected verdicts**.
+  Six matrix controls each check701..771cycles; no compile/infra failure counts
+  as a behavioral kill. Actual generated default payload scoreboard also passed
+  the supervised reference. No qualification source/oracle is supplied as a model
+  seed. Fullsuite **836passed in270.94seconds**, frozen runtime/fixture bytes.
+  Publishing tested fixture/runner/research and exact evidence before model build.

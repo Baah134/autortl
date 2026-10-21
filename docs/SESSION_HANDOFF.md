@@ -41,6 +41,23 @@ README is the concise public overview. Agent continuity belongs here and in
 START_HERE, AGENTS and the progress log. Preserve unsuccessful attempts and
 honest CV evidence. Never modify tests/contracts to publish a gain.
 
+## Active continuation: parameterized synchronous FIFO
+
+Canonical source at start:7bef3bf, clean working tree. Active tasks:
+- sync-fifo-fixture: curriculum/tier2/sync_fifo_build and its unit tests.
+- sync-fifo-runner: scripts/check_build_tbs.py and runner tests.
+- Main coordinator owns research/evidence/docs and the vendor queue.
+User's own Vivado GUI is open; they confirmed simulation/editing only and
+explicitly authorized continuing our harness jobs. Use separate run folders.
+Fixture/runner frozen:26fixturetests and29runnertests passed; peer review found
+no blocker. Complete real admission14/14expected verdicts and fullsuite836passed
+in270.94seconds. Generated default payload control passed the supervised reference.
+Both archives are in evidence/2026-10-20. Publishing tested source; next start
+a fresh combined generated+independent model build. No generated FIFO PPA yet.
+Temporary system-awake helper session72910 uses work/autortl-verification-active.flag;
+release after queue completion (two-hour bound; no power-plan changes). Next:
+finish admission/fulltests, publish tested source, run bounded combined FIFO build.
+
 ## Completed continuation: generated designs and final campaign
 
 Runtime **8098466** passed **807tests in137.16seconds**. Fresh fulltier0 campaign06

@@ -128,7 +128,7 @@ No new runtime mechanism is currently required.
   claim. The depth-three default must wrap explicitly instead of truncating bits.
 - The current generated wrapper binds child defaults and does not expose public
   top parameters. The trusted TB should test the default wrapper and explicit
-  child instances at(1,1),(8,2),(8,4),(13,5), compiling the same child source once.
+  child instances at(1,1),(8,2),(8,4),(13,5),(16,8), compiling the same child source once.
   Measure PPA only for the default8x3 top; extra matrix instances are TB-only.
 - Generated golden oracle remains transaction payload identity. Combine it with
   the independent temporal TB using --generate-golden and --tb. All instances
@@ -142,4 +142,8 @@ No new runtime mechanism is currently required.
   begin model build after admission passes. Do not edit runtime during a frozen
   campaign or claim full-tier promotion from this one design.
 
-This is a reviewed next experiment, not an implemented or measured result.
+Implementation now exists in curriculum/tier2/sync_fifo_build with six matrix
+checkers and13faults. Focused26fixturetests and29runnertests pass. Real admission
+passed14/14expected verdicts and fullsuite836tests passed. Generated default
+payload control passed too. Next: model-driven combined build, with no generated
+FIFO physical result claimed until actual routing and independent checks.

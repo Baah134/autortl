@@ -157,3 +157,61 @@ def test_skid_suite_runs_nine_serial_cases_with_complete_source_lists(tmp_path,m
     assert "skid_cases/reference/skid_buffer.v" in manifest
     assert "skid_cases/reference/skid_buffer_core.v" in manifest
     assert "skid_cases/reference/tool_exit_records.log" in manifest
+
+
+
+def test_fifo_materializer_adapter_preserves_wrapper_child_tb_and_plan(tmp_path):
+    def materialize(output):
+        output.mkdir()
+        rows=[]
+        for name in ("reference","fault"):
+            work=output/name
+            work.mkdir()
+            files=[]
+            for filename in ("sync_fifo_core.v","sync_fifo.v","sync_fifo_tb.v"):
+                path=work/filename
+                path.write_text("// controlled materializer unit fixture "+name+filename)
+                files.append({"path":str(path.resolve()),"sha256":hashlib.sha256(path.read_bytes()).hexdigest()})
+            rows.append({"name":name,"expected_verdict":"TEST PASSED" if name=="reference" else "TEST FAILED",
+                         "required_failure_kind":None if name=="reference" else "behavioral_assertion","files":files})
+        return {"cases":rows}
+    cases=cli._save_materialized_cases(tmp_path,"fifo","sync_fifo",materialize)
+    assert len(cases)==2 and sum(row["expected_pass"] for row in cases)==1
+    for row in cases:
+        assert row["work_dir"]=="fifo_cases/"+row["case"]
+        assert row["design_files"]==["sync_fifo_core.v","sync_fifo.v"]
+        assert row["testbench"]=="sync_fifo_tb.v" and row["top"]=="sync_fifo_tb"
+        for filename,digest in row["source_sha256"].items():
+            assert hashlib.sha256((tmp_path/row["work_dir"]/filename).read_bytes()).hexdigest()==digest
+
+
+@pytest.mark.parametrize("infrastructure_failure",[False,True])
+def test_fifo_driver_dispatches_serially_and_never_counts_infrastructure(tmp_path,monkeypatch,infrastructure_failure):
+    def prepare(output):
+        result=[]
+        for name,expected in (("reference",True),("mutant",False)):
+            work=output/"fifo_cases"/name
+            work.mkdir(parents=True)
+            for filename in ("sync_fifo_core.v","sync_fifo.v","sync_fifo_tb.v"):
+                (work/filename).write_text("// controlled unit fixture")
+            result.append({"case":name,"expected_pass":expected,"work_dir":"fifo_cases/"+name,
+                           "design_files":["sync_fifo_core.v","sync_fifo.v"],"testbench":"sync_fifo_tb.v","top":"sync_fifo_tb"})
+        return result
+    monkeypatch.setattr(cli,"save_fifo_cases",prepare)
+    calls=[]
+    def simulate(files,tb,top,config,work,timeout):
+        calls.append(work.name)
+        assert [p.name for p in files]==["sync_fifo_core.v","sync_fifo.v"]
+        assert tb.name=="sync_fifo_tb.v" and top=="sync_fifo_tb" and timeout==60
+        (work/"sim_log.txt").write_text("TEST PASSED" if work.name=="reference" else "FAIL FIFO order\nTEST FAILED: 1 errors")
+        if work.name=="reference":
+            return True,"",FailureKind.DESIGN
+        if infrastructure_failure:
+            return False,"tool launch failed",FailureKind.INFRA
+        return False,"testbench reported failure",FailureKind.DESIGN
+    monkeypatch.setattr(cli,"xsim_run",Mock(side_effect=simulate))
+    output=tmp_path/"fifo-run"
+    assert cli.main(["--suite","fifo","--bin-dir",str(tmp_path),"--output",str(output)])==int(infrastructure_failure)
+    assert calls==["reference","mutant"]
+    rows=json.loads((output/"results.json").read_text())
+    assert rows[1]["assertion_detected"] is (not infrastructure_failure)

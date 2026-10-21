@@ -14,7 +14,8 @@ learn from failures, and retain the best correct design within a fixed budget.
 
 | Validation | Recorded result |
 |---|---|
-| Harness regression suite | **807 tests passed** |
+| Harness regression suite | **836 tests passed** |
+| Parameterized FIFO verification | **Six configurations passed; all 13 planned faults detected** |
 | Independent streaming verification | **Correct queue control passed; all eight behavior faults detected** |
 | Combined-verification streaming build | **Two-entry queue · 15 LUTs / 19 FFs · independent 893-cycle test passed** |
 | Generated 8-bit counter build | **Golden oracle repaired automatically; independent 700-cycle test passed · 6 LUTs / 8 FFs** |
@@ -35,7 +36,7 @@ validation. No held curriculum tier is claimed. Earlier unsuccessful cohorts
 remain in the evidence record.
 
 See the [test evidence](evidence/2026-10-20/README.md),
-[full-suite result](evidence/2026-10-20/qualification-proof/full-suite-807.txt) and
+[full-suite result](evidence/2026-10-20/fifo-qualification/full-suite-836.txt) and
 [accepted optimization](evidence/2026-10-20/contract-campaign-06/README.md),
 [generated-build verification](evidence/2026-10-20/generated-counter/README.md) and
 [streaming build](evidence/2026-10-20/generated-streaming/README.md).

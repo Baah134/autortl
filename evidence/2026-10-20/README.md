@@ -81,3 +81,8 @@ no held tier or weaker-model performance is claimed.
   counter **55to31LUT (43.64%)**,37FF; setup0.126/hold0.026ns; mux baseline retained.
   Known unchanged53-file runtime identities,76-identity counter DONE replay;
   streak1,held=false. This supersedes campaign05 as the latest bounded result.
+
+- `fifo-qualification/`: **836 passing regression tests**; six-configuration
+  parameterized FIFO reference passed and13/13planned behavioral faults asserted.
+- `fifo-payload-control/`: actual generated default scoreboard passed against
+  the supervised FIFO reference, without a model call or PPA measurement.

@@ -66,3 +66,33 @@ Record these in HARNESS_REVIEW or a focused decision entry before implementing:
 Do not copy performance percentages across different datasets, models, tools or
 budgets. No external code or dependency was imported during this review. Read
 licenses and inspect implementation details before any future code reuse.
+
+
+## 2026-10-20 follow-up: auditing the tests before FIFO generation
+
+Primary sources read during the FIFO continuation:
+
+- [GateTruth, arXiv2608.12635v1](https://arxiv.org/html/2608.12635v1): studies
+  seeded semantic mutants, separates behavioral simulation failures from compile
+  failures and reports corrections to its own mutation denominator and evidence
+  policy. Its limitations distinguish fault sensitivity from correctness and
+  describe risks when tests are tailored to the audit. **Application here:** keep
+  the existing raw-assertion requirement and retain every planned FIFO fault,
+  including misses and infrastructure failures. Report the selected mutation
+  set and parameter matrix rather than general testbench correctness. No imported
+  engine, threshold or benchmark percentage is justified by this paper.
+- [VeriBugBench, arXiv2609.18022v2](https://arxiv.org/abs/2609.18022v2): constructs
+  reproducible faulty RTL, stimuli, change locations and execution artifacts
+  from repair-pattern-derived operators. **Application here:** use named FIFO
+  faults tied to concrete wrap, capacity, simultaneous-transfer and width bugs,
+  with unique edits and source/TB hashes. Retain the existing small materializer;
+  do not add automatic fault generation or LLM test enhancement without an
+  observed coverage/repair bottleneck.
+
+These sources reinforce an already observed AutoRTL need: a payload test passed
+capacity/readiness bugs. They do not demonstrate that our harness is correct or
+that a weaker model will succeed. Before a generated FIFO build, the independent
+matrix must pass its supervised control and detect each planned behavioral
+fault through simulation assertions. Never count a compile error as a killed
+behavioral mutant or discard a miss from the denominator. Keep frozen tests
+through the model trial. A new runtime mechanism is unnecessary at this point.

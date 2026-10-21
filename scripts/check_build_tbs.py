@@ -113,38 +113,50 @@ def save_cases(output):
     return prepared
 
 
-def save_skid_cases(output):
-    from curriculum.tier2.skid_buffer_build.qualification.cases import materialize_cases
-    plan = materialize_cases(output / "skid_cases")
+def _save_materialized_cases(output, suite, module, materialize):
+    case_root = suite + "_cases"
+    plan = materialize(output / case_root)
     prepared = []
     for case in plan["cases"]:
-        work = output / "skid_cases" / case["name"]
-        source_files = [work / "skid_buffer_core.v", work / "skid_buffer.v"]
-        prepared.append({"case": case["name"], "module": "skid_buffer", "top": "skid_buffer_tb",
+        work = output / case_root / case["name"]
+        source_files = [work / (module + "_core.v"), work / (module + ".v")]
+        testbench = module + "_tb.v"
+        prepared.append({"case": case["name"], "module": module, "top": module + "_tb",
                          "expected_pass": case["expected_verdict"] == "TEST PASSED",
-                         "work_dir": "skid_cases/" + case["name"],
+                         "work_dir": case_root + "/" + case["name"],
                          "design_files": [p.name for p in source_files],
-                         "testbench": "skid_buffer_tb.v",
+                         "testbench": testbench,
                          "source_sha256": {p.name: _sha(p) for p in source_files},
-                         "tb_sha256": _sha(work / "skid_buffer_tb.v"),
+                         "tb_sha256": _sha(work / testbench),
                          "planned_files": case["files"],
                          "required_failure_kind": case["required_failure_kind"]})
     atomic_write_text(output / "cases.json", json.dumps(prepared, indent=2))
     return prepared
 
 
+def save_skid_cases(output):
+    from curriculum.tier2.skid_buffer_build.qualification.cases import materialize_cases
+    return _save_materialized_cases(output, "skid", "skid_buffer", materialize_cases)
+
+
+def save_fifo_cases(output):
+    from curriculum.tier2.sync_fifo_build.qualification.cases import materialize_cases
+    return _save_materialized_cases(output, "fifo", "sync_fifo", materialize_cases)
+
+
 def main(argv=None):
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--bin-dir",type=Path,required=True)
     parser.add_argument("--output",type=Path,required=True)
-    parser.add_argument("--suite", choices=("build", "skid"), default="build")
+    parser.add_argument("--suite", choices=("build", "skid", "fifo"), default="build")
     args=parser.parse_args(argv)
     output=args.output.resolve()
     output.mkdir(parents=True,exist_ok=False)
     config=RunConfig(mode="optimize",**{name+"_bin":str(args.bin_dir.resolve()/(name+".bat"))
                                     for name in ("vivado","xvlog","xelab","xsim")})
     results=[]
-    prepared = save_skid_cases(output) if args.suite == "skid" else save_cases(output)
+    prepare = {"build": save_cases, "skid": save_skid_cases, "fifo": save_fifo_cases}[args.suite]
+    prepared = prepare(output)
     for case in prepared:
         work=output/case.get("work_dir", case["case"])
         started=time.monotonic()
