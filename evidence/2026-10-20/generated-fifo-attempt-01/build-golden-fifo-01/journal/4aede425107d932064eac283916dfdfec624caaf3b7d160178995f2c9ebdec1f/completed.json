@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_1:decision:instruction:0",
+  "result": "In `sync_fifo_core`, replace the `occupancy` register and its increment/decrement case with a phase bit that toggles when an accepted read or write pointer wraps at `DEPTH - 1`; derive empty from equal pointers and equal phases, and full from equal pointers and different phases. Preserve the synchronous active-high reset, pointer updates, memory writes, `out_data` read behavior, and the existing `in_ready`, `out_valid`, `push`, and `pop` semantics, including simultaneous transfer while full. Keep the parameterized behavior correct for `DEPTH=1` and non-power-of-two depths, and add no registers or cycles to the data path.",
+  "artifacts": {}
+}

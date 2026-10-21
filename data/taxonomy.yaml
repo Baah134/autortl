@@ -66,12 +66,24 @@ messages:
 # Methodology violations (report_methodology, UG1292 IDs). ADVISORY ONLY:
 # these never kill candidates; they are digested into the planner's context.
 harness_failures:
+  completed_child_dependency_omission:
+    meaning: "DONE retained a verification manifest but omitted child RTL referenced by its recorded input hashes"
+    repair: "Validate retained verification dependencies against their recorded hashes before publishing DONE; retain source and testbench identities and reject missing or changed dependencies"
+  infeasible_incumbent_blocks_recovery:
+    meaning: "A smaller timing-invalid incumbent or candidate outranks a timing-closed design"
+    repair: "Require verified timing feasibility before objective comparison; record timing recovery separately from area or power gain"
+  missing_editable_hierarchy_boundary:
+    meaning: "An optimizer redeclared frozen companion RTL because generation and repair omitted dependency evidence"
+    repair: "Provide the editable top and immutable companion identities to generation, repair and timing surgery; keep duplicate-module rejection"
+  compile_failure_skips_bounded_repair:
+    meaning: "A deterministic candidate compile failure bypasses the existing bounded design repair loop"
+    repair: "Apply the configured repair bound consistently to compile and simulation failures; recheck static, interface, compile and simulation after repair; never repair infrastructure failures"
   missing_qualification_replay_proof:
     meaning: "Stage replay omitted raw assertion text or completed-run identity omitted qualification reports"
     repair: "Snapshot and restore raw simulation proof; hash qualification reports and raw proof in DONE evidence"
   implicit_windows_module_encoding:
     meaning: "Implicit Windows encoding can reject or corrupt non-ASCII RTL/testbench comments"
-    repair: "Read trusted testbenches and write generated module evidence with explicit UTF-8 encoding"
+    repair: "Read and write RTL, trusted testbenches and generated module evidence consistently with explicit UTF-8, including evaluation and Doctor reuse"
   unobservable_first_qualification_mutation:
     meaning: "A generated payload grader can miss the first capacity/readiness fault despite detecting data faults"
     repair: "Retain missed faults and try a bounded observable fault portfolio without changing the testbench; require raw assertion proof"

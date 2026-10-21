@@ -1,0 +1,74 @@
+........................................................................ [ 42%]
+............F.............F............................................. [ 84%]
+..........................                                               [100%]
+================================== FAILURES ===================================
+_ test_tool_only_doctor_retains_source_bound_prior_verification_without_resimulation _
+
+lineage = (<autortl.fsm.Orchestrator object at 0x0000023C8BCE6A20>, WindowsPath('C:/Users/prince.baah/Documents/Codex/2026-10-15...l=200, dsp_used=0, dsp_total=0, bram_used=0.0, bram_total=0.0, total_power_w=0.0, dynamic_power_w=0.0, synth_error=''))
+
+    def test_tool_only_doctor_retains_source_bound_prior_verification_without_resimulation(lineage):
+        o,parent,origin,source,tb,metric = lineage
+        before = VivadoMetrics.from_dict(metric.to_dict()); before.lut_used=20; before.timing_met=False
+        result = o._doctor_trial(source,before,SimpleNamespace(latency=0),tb,[],parent,
+                                SimpleNamespace(action="tool_knobs"), verification_dir=origin)
+>       assert result
+E       assert None
+
+tests\test_doctor_fsm.py:48: AssertionError
+_ test_independent_original_top_tb_blocks_optimization_candidate_before_synthesis _
+
+tmp_path = WindowsPath('C:/Users/prince.baah/Documents/Codex/2026-10-15/hey/work/pytest-fifo-recovery-01/test_independent_original_top_0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000023C8BB97DD0>
+
+    def test_independent_original_top_tb_blocks_optimization_candidate_before_synthesis(tmp_path,monkeypatch):
+        from tests.test_golden_reset_protocol import COUNTER
+        o,synthesis=create(tmp_path,monkeypatch);o.cfg.generate_golden=True;o.cfg.max_fix_attempts=0
+        expected_hash=hashlib.sha256(o.cfg.testbench_path.read_bytes()).hexdigest()
+        monkeypatch.setattr(o.generator,"golden_model",Mock(return_value=COUNTER.replace('"count": 99','"count": 0')))
+        candidate="module counter8(input clk,input rst,input enable,output [7:0] count); counter8_core other(.clk(clk),.rst(rst),.enable(!enable),.count(count)); endmodule"
+        monkeypatch.setattr(o.generator,"generate",Mock(side_effect=[RTL,candidate]))
+        repair=Mock(return_value=candidate);monkeypatch.setattr(o.generator,"fix",repair)
+        original_sim=fsm.vivado.xsim_run;checked=[]
+        def simulate(files,tb,top,cfg,work,**kwargs):
+            if top=="counter8_tb":
+                checked.append((work,hashlib.sha256(tb.read_bytes()).hexdigest()))
+                if work.name=="cand_standard":
+                    return False,"Testbench failures: FAIL inverted enable",FailureKind.DESIGN
+            return original_sim(files,tb,top,cfg,work,**kwargs)
+        monkeypatch.setattr(fsm.vivado,"xsim_run",simulate)
+        result=o.run()
+        assert result["status"]=="done" and result["best_iteration"]==0
+        assert synthesis.call_count==1
+        assert any(work.name=="cand_standard" for work,_ in checked)
+        assert all(digest==expected_hash for _,digest in checked)
+>       repair.assert_called_once()
+
+tests\test_dual_verification_flow.py:111: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <Mock id='2459066812752'>
+
+    def assert_called_once(self):
+        """assert that the mock was called only once.
+        """
+        if not self.call_count == 1:
+            msg = ("Expected '%s' to have been called once. Called %s times.%s"
+                   % (self._mock_name or 'mock',
+                      self.call_count,
+                      self._calls_repr()))
+>           raise AssertionError(msg)
+E           AssertionError: Expected 'mock' to have been called once. Called 0 times.
+
+..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\unittest\mock.py:928: AssertionError
+---------------------------- Captured stdout call -----------------------------
+[module counter8_core] golden model + testbench...
+[module counter8_core] tb qualification: detected change increment
+[module counter8_core] independent tb qualification: detected change increment
+[build] integrated design compiles; entering optimize loop as baseline
+[iter 0] baseline LUTs=6 FFs=8 WNS=7
+
+DONE � best from iter 0: LUTs=6 FFs=8 WNS=7
+=========================== short test summary info ===========================
+FAILED tests/test_doctor_fsm.py::test_tool_only_doctor_retains_source_bound_prior_verification_without_resimulation
+FAILED tests/test_dual_verification_flow.py::test_independent_original_top_tb_blocks_optimization_candidate_before_synthesis
+2 failed, 168 passed in 88.88s (0:01:28)

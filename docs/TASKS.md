@@ -147,3 +147,21 @@ checkers and13faults. Focused26fixturetests and29runnertests pass. Real admissio
 passed14/14expected verdicts and fullsuite836tests passed. Generated default
 payload control passed too. Next: model-driven combined build, with no generated
 FIFO physical result claimed until actual routing and independent checks.
+
+
+### Active FIFO recovery gate (2026-10-21)
+
+FIFO01 at ffc15fc passed functional checks but failed setup (-0.931 ns).
+Preserve its failed attempt. Current recovery changes are feasibility-first
+policy, frozen-companion guidance, bounded compile/sim repair, UTF-8 IO and DONE
+child-source identities. Final fullsuite and fresh fulltier0 are required before
+main integration. Run FIFO02 on a newly committed frozen runtime; independently
+check the exact saved winner and declared child, then test completed-run reuse.
+
+After timing closure: packet-tagged FIFO, adding only in_last/out_last to the
+same ready/valid contract. Keep data/last atomic and stable while stalled.
+Cut-through beat delivery is permitted; reset aborts queued/partial packets.
+Qualify sideband stuck/current-input/misalignment/stall/reset faults, plus FIFO
+capacity/order faults. Test lengths1,2,3,4,7,17, depth crossings, consecutive
+single-beat packets, stalled endings and full simultaneous boundary transfers.
+No packet parser, CRC, store-and-forward, CDC or new harness role is required.

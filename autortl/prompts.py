@@ -189,8 +189,14 @@ the contract exactly."""
 EVALUATE = """Grade this design against the contract. Deterministic ladder results are
 authoritative for correctness; you rule only on the subjective residue.
 Use the attached candidate source, complete current and previous-best metrics
-and immutable run facts. Judge improvement from those metrics. Extra savings or
-slack margins are advisory goals, not mandatory gates. Do not invent missing
+and immutable run facts. Judge improvement from those metrics and the recorded
+improvement_kind. A verified candidate with timing_met=true, nonnegative setup
+and hold may replace a known timing-infeasible previous best even if area/power
+is equal or higher: timing_recovery is feasibility recovery, not resource savings.
+Unknown or contradictory timing evidence cannot establish recovery. Once both
+incumbent and candidate are timing-feasible, require strict improvement of the
+chosen objective. Never reject a valid timing recovery solely for higher area
+or power. Extra savings or slack margins are advisory goals, not mandatory gates. Do not invent missing
 measurements or change the provided testbench, latency, constraints or tools.
 ACCEPT requires zero failed mandatory criteria; otherwise REJECT.
 

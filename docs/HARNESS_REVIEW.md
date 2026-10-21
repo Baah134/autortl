@@ -1,12 +1,12 @@
 # Harness effectiveness review
 
-Updated 2026-10-20. The objective is to make a bounded, reliable harness that
+Updated 2026-10-21. The objective is to make a bounded, reliable harness that
 extracts useful work from weaker models. Design results are probes of that
 system. No weaker-model performance has been demonstrated yet.
 
-## What the latest experiments establish
+## Historical campaign05 findings
 
-- Latest source: **655 regression tests passed**. Fresh campaign05 completed
+- At that checkpoint: **655 regression tests passed**. Fresh campaign05 completed
   **2/2**, with accepted counter55to53LUT (3.6%), FF37, WNS0.456ns/
   WHS0.282ns. Mux8LUT baseline retained because its candidate had no gain.
   Three model calls per design; actual DONE replay preserved the counter
@@ -232,3 +232,59 @@ packet-oriented block with explicit reset/backpressure rules. First complete the
 fresh full tier0 merge gate. Defer extra search roles and framework changes until
 controlled ablations demonstrate a benefit; no feature is removed merely because
 one bounded optimization found no gain.
+
+
+## FIFO01 recovery decision before implementation
+
+FIFO01 atffc15fc passed generated and six-configuration independent verification,
+then routed13LUT/6FF with setup-0.931ns and hold0.091ns. It is not timing closed.
+The optimization candidate redeclared its frozen companion and was correctly
+blocked before elaboration; this repeats the earlier streaming boundary mistake.
+The run completed with an invalid-timing baseline retained, not a successful
+physical result. Preserve the complete attempt and grader coverage misses.
+
+Observed policy issues: generator/fix omitted immutable run/dependency evidence;
+compile design failures skipped the candidate's repair opportunity; area-first
+selection and strict objective comparison can block timing recovery. A controlled
+old-policy reproduction using that real baseline and a synthetic14LUT timing-
+feasible candidate confirms selection favors the invalid13LUT design. The14LUT
+value is a synthetic policy test, not a physical measurement.
+
+Implement the smallest corrections to the existing flow: explicit editable top
+and frozen companion context for generator/repair/Doctor; one configured bounded
+compile-or-simulation repair sequence with all verification rerun; one shared
+feasibility-first comparison policy used in selection, promotion and rendered
+contracts/evaluation. Recovery from known failed timing may increase area and
+must be labeled timing recovery. Among timing-feasible designs the original
+strict objective remains. Unknown timing cannot establish recovery. Keep actual
+exit, RTL behavior, source identity, setup/hold and evaluator gates unchanged.
+No new role/framework or unbounded retry is justified. Validate pure policy and
+integrated failure/replay cases, fullsuite and fresh campaigns before main merge.
+
+
+## Current FIFO recovery review
+
+Keep generated payload and independent temporal graders: the exact same
+readiness mutant passed one and failed the other. Preserve the miss, raw
+assertions and source hashes. FIFO01 passed functionally but failed setup;
+its 13 LUT / 6 FF result is a failed physical trial, not a published improvement.
+
+Revise existing policy and feedback, without adding roles: feasibility-first
+selection/promotion, explicit editable-top and frozen-companion context, and
+configured bounded compile/simulation repairs with separate attempt evidence.
+Keep strict objective improvement once timing is feasible. Explicitly label
+recovery that increases area. Final source/TB/child identities must survive DONE
+reuse; UTF-8 IO must be explicit on Windows. Before-failing regressions and
+read-only review cover these repairs. Fresh live closure is still required.
+
+The full regression run found one legacy synthetic cache fixture without its
+required source/TB manifest (938 passes, one failure). Added truthful synthetic
+lineage, retaining production guards and all assertions; its 20-test file passes.
+The complete rerun passed **939 tests in349.85seconds** on frozen runtime.
+Main remains gated on a fresh complete tier0 campaign.
+
+After FIFO timing closure, the smallest next experiment is a packet-tagged FIFO:
+store an end-of-packet bit with every beat and verify tuple alignment through
+stalls, simultaneous transfers, wrap and reset. Reuse the current ladder and
+dual graders. Defer parsing, CRC, store-and-forward, arbitration and CDC until
+concrete failures justify that complexity. No new framework is justified.

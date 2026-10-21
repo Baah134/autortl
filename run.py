@@ -105,7 +105,7 @@ def main(argv=None):
 
     summary = orch.run()
     print(json.dumps({k: v for k, v in summary.items()
-                      if k in ("status", "best_iteration", "run_dir")}, indent=2))
+                      if k in ("status", "best_iteration", "timing_closed", "improvement_kind", "run_dir")}, indent=2))
     return 0 if summary.get("status") == "done" else 1
 
 

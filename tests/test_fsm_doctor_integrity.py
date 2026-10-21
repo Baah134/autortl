@@ -154,6 +154,14 @@ def test_valid_cache_remains_eligible_after_gate(trial, monkeypatch):
     evidence.mkdir()
     from tests.test_fsm_resume import write_mock_tool_receipts
     write_mock_tool_receipts(evidence)
+    # This cache fixture replaces the verified artifact store. Supply the same
+    # source/TB lineage required of real cached evidence, not only process exits.
+    cached_source = evidence / "m.v"
+    cached_source.write_text(o.generator.generate.return_value, encoding="utf-8")
+    import json
+    (evidence / "verification_inputs.log").write_text(
+        json.dumps(fsm._verification_inputs([cached_source], o.cfg.testbench_path)),
+        encoding="utf-8")
     monkeypatch.setattr(o.metrics_cache, "get_entry", Mock(return_value={
         "metrics": metrics(9, True).to_dict(), "artifact_dir": str(evidence)}))
     result = o.run()

@@ -26,7 +26,10 @@ Infrastructure failures use bounded retries of the same tool stage and source.
 Exhausted infrastructure rounds stop without RTL repair, design rejection or
 stall history. A later explicit resume can retry an uncommitted blocked stage,
 within remaining budgets. Design failures can invoke bounded repairs, with
-interface and latency checks repeated before simulation.
+interface and known-latency checks repeated before compilation and simulation.
+Compile and simulation design failures share max_fix_attempts; zero permits no
+repair. Each changed answer has its own repair_NNN directory with source/logs.
+Infrastructure or unknown failures never consume RTL repair attempts.
 
 Model workers expose typed provider failures. Bounded, credential-redacted
 error events and diagnostic stderr are retained without ordinary generated
@@ -58,8 +61,10 @@ plus five counter32 reference/mutation cases and the separate generated counter
 trial. A real failed evaluator was resumed with one additional model call,
 unchanged physical tool time and no repeated completed physical stages. Both
 runs in that original failed cohort later reached DONE with baselines retained.
-Full live build campaigns, process-kill recovery and accepted autonomous gains
-still need validation; model-worker recovery does not prove those paths.
+Later typed counter, encoder and streaming builds and an accepted counter
+optimization have retained live evidence; see PROGRESS and the public README
+for their exact source revisions and limits. Hard process-kill recovery and
+accounting remain separate validation requirements.
 
 Reproduce the live testbench cases:
 
@@ -100,3 +105,25 @@ source and original log identities. It does not pretend to rerun simulation.
 
 Receipt persistence improves traceability. It does not make process execution
 and budget charging a single external transaction, or prove hard-kill recovery.
+
+
+## Completed verification dependencies and outcome
+
+Before publishing a winner, the harness validates each retained verification
+input manifest against its originally recorded source and testbench digests.
+This includes generated child RTL and cached or source-identical Doctor evidence.
+Changing or deleting a companion after DONE invalidates reuse, even when its
+manifest file itself is unchanged. Malformed or missing lineage blocks completion.
+Journal artifact copies retain their separate replay checks; obsolete journal
+snapshots are not treated as new live simulation input manifests.
+
+Source and JSON IO use UTF-8 explicitly, including repaired candidates and Doctor
+trials, so Windows default encodings cannot change source/evidence comparisons.
+
+The summary and CLI expose timing_closed and improvement_kind. Status done and
+exit zero mean the bounded experiment completed; timing_closed must also be true
+before calling a design timing closed. A verified feasible candidate may replace
+a known timing-failing baseline even with higher area, labeled timing_recovery.
+Among timing-feasible designs, promotion still requires strict improvement of
+the selected objective. Missing or contradictory timing cannot establish recovery.
+All behavior, metric, receipt and final evaluation gates continue to apply.

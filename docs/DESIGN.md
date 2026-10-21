@@ -32,7 +32,9 @@ supported schema and limits.
    compare) and scoreboard (queue-based, for valid/ready). Pulse mode is
    deliberately stubbed.
 4. **Best-of-N (N=4)** with objective-weighted mutation prompts (bestofn.py),
-   hash dedupe, deterministic selection: (rungs, objective metric, brevity).
+   hash dedupe, deterministic selection: (rungs, timing feasibility, objective
+   metric, brevity). A verified timing recovery can use more resources; it is
+   recorded separately from objective savings.
 5. **Error taxonomy** keyed on official Vivado message IDs
    (data/taxonomy.yaml). Unknown IDs: query Vivado's own help, log for
    curation. Severity promotion only — never demote.

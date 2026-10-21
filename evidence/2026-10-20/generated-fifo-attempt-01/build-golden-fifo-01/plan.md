@@ -1,0 +1,12 @@
+# PLAN — iteration 1
+## Current state assessment
+
+The baseline passes simulation and uses 13 LUTs, 6 FFs, no DSPs or BRAMs. Routed setup slack is −0.931 ns, so timing also needs to pass before promotion; hold slack is +0.091 ns. The top source has no numeric latency declaration, so preserve its exact observable cycle behavior without inventing one.
+
+## Hypothesis
+
+Replacing the binary occupancy counter and its arithmetic with a wrap-phase bit and pointer-based empty/full detection may reduce LUT use and improve the ready/control path while preserving FIFO behavior.
+
+## Instruction for generator
+
+In `sync_fifo_core`, replace the `occupancy` register and its increment/decrement case with a phase bit that toggles when an accepted read or write pointer wraps at `DEPTH - 1`; derive empty from equal pointers and equal phases, and full from equal pointers and different phases. Preserve the synchronous active-high reset, pointer updates, memory writes, `out_data` read behavior, and the existing `in_ready`, `out_valid`, `push`, and `pop` semantics, including simultaneous transfer while full. Keep the parameterized behavior correct for `DEPTH=1` and non-power-of-two depths, and add no registers or cycles to the data path.

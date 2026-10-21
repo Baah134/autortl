@@ -108,7 +108,7 @@ class Generator:
             interface_signature=json.dumps(module.interface_signature, sort_keys=True),
             reset_desc=f"{r.kind}, active_{'high' if r.active_high else 'low'} '{r.signal}'",
             mutation=mutation_text, instruction=instruction, verilog=verilog)
-        resp = ask("generator", p, system=role_system(prompts.GENERATOR_SYSTEM),
+        resp = ask("generator", evidence_prompt(self, p), system=role_system(prompts.GENERATOR_SYSTEM),
                    budget=budget)
         return generated_rtl(resp)
 
@@ -122,7 +122,7 @@ class Generator:
         p = prompts.FIX.format(diagnosis=diagnosis, error=error[:1500],
                                verilog=verilog, tb_excerpt=tb_excerpt[:2000],
                                previous_attempts=prev)
-        resp = ask("generator", p, system=role_system(prompts.GENERATOR_SYSTEM),
+        resp = ask("generator", evidence_prompt(self, p), system=role_system(prompts.GENERATOR_SYSTEM),
                    budget=budget)
         return generated_rtl(resp)
 
@@ -189,6 +189,6 @@ class TimingDoctor:
         p = (f"{skills}\n\n**Surgical instruction:** {instruction}\n\n"
              f"**Failing timing path:**\n```\n{path_snippet[:1200]}\n```\n\n"
              f"**Current module:**\n```verilog\n{verilog}\n```")
-        resp = ask("timing_doctor", p, system=role_system(prompts.DOCTOR_SYSTEM),
+        resp = ask("timing_doctor", evidence_prompt(self, p), system=role_system(prompts.DOCTOR_SYSTEM),
                    budget=budget, max_turns=3)
         return generated_rtl(resp)

@@ -32,6 +32,8 @@ from .metrics_gate import validate as gate_metrics, MetricsGateError
 from .watchdog import inspect as watchdog_inspect
 from .taxonomy import Taxonomy
 from .bestofn import Candidate, mutation_prompts, dedupe, select
+from .objectives import improvement_kind, timing_feasible
+from .candidate_context import candidate_scope
 from .timing_doctor import diagnose, TimingCategory
 from . import vivado
 from .vivado import advisor_digest
@@ -54,6 +56,33 @@ def _verification_inputs(sources, tb):
         return {"path": str(path.resolve()), "sha256": hashlib.sha256(path.read_bytes()).hexdigest()}
     return {"schema_version": 1, "sources": [identity(path) for path in sources],
             "testbench": identity(tb) if tb is not None else None}
+
+
+def _verification_dependencies(manifest: Path) -> dict[str, str]:
+    """Bind simulated sources and TB to their recorded identities, not current guesses."""
+    try:
+        data = json.loads(Path(manifest).read_text(encoding="utf-8"))
+        if (not isinstance(data, dict) or type(data.get("schema_version")) is not int or
+                data.get("schema_version") != 1 or
+                not isinstance(data.get("sources"), list) or not data["sources"] or
+                not isinstance(data.get("testbench"), dict)):
+            raise ValueError("unsupported or incomplete verification input manifest")
+        dependencies = {}
+        for entry in [*data["sources"], data["testbench"]]:
+            if (not isinstance(entry, dict) or not isinstance(entry.get("path"), str) or
+                    not Path(entry["path"]).is_absolute() or
+                    not isinstance(entry.get("sha256"), str) or
+                    not re.fullmatch(r"[a-f0-9]{64}", entry["sha256"])):
+                raise ValueError("invalid verification dependency identity")
+            path = Path(entry["path"])
+            if not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest() != entry["sha256"]:
+                raise VerificationEvidenceError("Completed verification dependency missing or modified: " + str(path))
+            dependencies[str(path.resolve())] = entry["sha256"]
+        return dependencies
+    except VerificationEvidenceError:
+        raise
+    except (OSError, ValueError, TypeError) as exc:
+        raise VerificationEvidenceError("Completed verification dependency manifest is missing or invalid: " + str(manifest)) from exc
 
 
 def _process_exit_gate(directory, provenance=None):
@@ -120,7 +149,7 @@ class Orchestrator:
             summary_path = self.state.run_dir / "run_summary.json"
             if hashlib.sha256(summary_path.read_bytes()).hexdigest() != saved.get("summary_sha256"):
                 raise ValueError("Completed summary evidence is missing or modified")
-            summary = json.loads(summary_path.read_text())
+            summary = json.loads(summary_path.read_text(encoding="utf-8"))
             winner = self.state.run_dir / f"{summary.get('top_module', self.cfg.top_module)}_best.v"
             if not winner.exists() or hashlib.sha256(winner.read_bytes()).hexdigest() != saved.get("best_sha256"):
                 raise ValueError("Completed winner artifact is missing or modified")
@@ -176,7 +205,7 @@ class Orchestrator:
         runtime = {"schema_version": 1, "python": sys.version, "implementation": implementation,
                    "tools": self._cache_context(None, [])["tools"]}
         if runtime_path.exists():
-            if json.loads(runtime_path.read_text()) != runtime:
+            if json.loads(runtime_path.read_text(encoding="utf-8")) != runtime:
                 raise ValueError("Harness or Python changed since checkpoint; do not silently regrade an existing run")
         else:
             atomic_write_text(runtime_path, json.dumps(runtime, indent=2))
@@ -192,7 +221,7 @@ class Orchestrator:
                     raise ValueError("Resume configuration changed: " + name)
             for name in mutable_paths:
                 setattr(self.cfg, name, getattr(frozen_config, name))
-            manifest = json.loads(manifest_path.read_text())
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
             for name, item in manifest.items():
                 path = Path(item["path"])
                 if not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest() != item["sha256"]:
@@ -250,7 +279,7 @@ class Orchestrator:
         directory = self.state.run_dir / "journal" / hashlib.sha256(identity.encode()).hexdigest()
         completion = directory / "completed.json"
         if completion.exists():
-            saved = json.loads(completion.read_text())
+            saved = json.loads(completion.read_text(encoding="utf-8"))
             for relative, digest in saved.get("artifacts", {}).items():
                 path = directory / "artifacts" / relative
                 if not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest() != digest:
@@ -262,7 +291,7 @@ class Orchestrator:
             return self._unpack(saved["result"])
         directory.mkdir(parents=True, exist_ok=True)
         for attempt in range(attempts):
-            previous = json.loads((directory / "started.json").read_text()) if (directory / "started.json").exists() else {}
+            previous = json.loads((directory / "started.json").read_text(encoding="utf-8")) if (directory / "started.json").exists() else {}
             count = previous.get("attempt", 0) + 1
             atomic_write_text(directory / "started.json", json.dumps({"stage": identity,
                 "args": repr(args), "kwargs": repr(kwargs), "attempt": count}, indent=2))
@@ -416,14 +445,14 @@ class Orchestrator:
         self._scope = "build_spec"
         # PHASE: SPEC
         self._snapshot(phase="PLANNING")
-        intent = Path(self.cfg.spec_path).read_text()
+        intent = Path(self.cfg.spec_path).read_text(encoding="utf-8")
         try:
             DesignSpec.from_json(intent)
             raw = intent
         except (ValueError, KeyError, TypeError):
             raw = self._model("planner", "make_spec", intent, self.cfg, self.budget)
         raw = raw[raw.find("{"): raw.rfind("}") + 1]
-        self.state.spec_path.write_text(raw)
+        self.state.spec_path.write_text(raw, encoding="utf-8")
         spec = DesignSpec.load(self.state.spec_path)
 
         # PHASE: LINT + STUB ELABORATION (Pothole 1)
@@ -456,13 +485,13 @@ class Orchestrator:
                     return {"status": "build_blocked", "module": m.name, **blocker}
                 return {"status": "module_failed", "module": m.name,
                         "error": getattr(self, "_build_failure", "module verification did not complete")}
-            vfile.write_text(result)
+            vfile.write_text(result, encoding="utf-8")
             module_files[m.name] = vfile
 
         # PHASE: MECHANICAL INTEGRATION (zero LLM)
         self._scope = "build_integration"
         top_file = self.state.run_dir / "modules" / f"{spec.top_name}.v"
-        top_file.write_text(top_verilog(spec))
+        top_file.write_text(top_verilog(spec), encoding="utf-8")
         all_files = list(module_files.values()) + [top_file]
         ok, err, kind = self._tool("xvlog_check", all_files, self.cfg,
                                            self.state.run_dir / "modules")
@@ -478,10 +507,10 @@ class Orchestrator:
                 return {"status": "build_blocked", "error": "Multi-module build requires trusted integration testbench"}
             child = spec.modules[0]
             child_tb = self.state.run_dir / "modules" / child.name / f"{child.name}_tb.v"
-            adapted = re.sub(r"\b" + re.escape(child.name) + r"\b", spec.top_name, child_tb.read_text())
+            adapted = re.sub(r"\b" + re.escape(child.name) + r"\b", spec.top_name, child_tb.read_text(encoding="utf-8"))
             adapted = re.sub(r"\b" + re.escape(child.name + "_tb") + r"\b", spec.top_name + "_tb", adapted)
             integration_tb = self.state.run_dir / f"{spec.top_name}_tb.v"
-            integration_tb.write_text(adapted)
+            integration_tb.write_text(adapted, encoding="utf-8")
             self.cfg.testbench_path = integration_tb
         return self._run_optimize(None, extra_sources=list(module_files.values()))
 
@@ -611,7 +640,7 @@ class Orchestrator:
         # Verification is mandatory before defining an optimization contract.
         if not cfg.testbench_path or not Path(cfg.testbench_path).is_file():
             return self._baseline_stop("baseline_blocked", "A baseline testbench is required")
-        original = Path(cfg.design_path).read_text()
+        original = Path(cfg.design_path).read_text(encoding="utf-8")
         # module contract for static checks in optimize mode (interface only)
         contract = self._infer_contract(original, cfg.top_module)
 
@@ -619,7 +648,7 @@ class Orchestrator:
         # ---- iteration 0: baseline ----
         idir = state.iter_dir(0)
         base_v = idir / f"{cfg.top_module}.v"
-        base_v.write_text(original)
+        base_v.write_text(original, encoding="utf-8")
         tb_path = Path(cfg.testbench_path) if cfg.testbench_path else None
         baseline = self._full_flow([base_v] + extra_sources, tb_path,
                                    cfg.top_module, idir)
@@ -651,7 +680,9 @@ class Orchestrator:
         facts = run_evidence(cfg, baseline, [base_v] + extra_sources, tb_path,
                              idir, self._cache_context(tb_path, extra_sources))
         context = save_evidence(state.run_dir / "harness_facts.json", facts)
-        self.planner.run_context = self.evaluator.run_context = context
+        role_context = context + "\n\n" + candidate_scope(cfg.top_module, extra_sources)
+        for role in (self.planner, self.generator, self.evaluator, self.doctor):
+            role.run_context = role_context
         contract_md = render_fixed_optimize_contract(facts)
         if state.contract_path.exists():
             if state.read_contract() != contract_md:
@@ -708,67 +739,8 @@ class Orchestrator:
             recent_codes.extend(c.verilog for c in cands[:1])
 
             for c in cands:
-                # rung 1: static
-                sres = static_check(c.verilog, contract)
-                if not sres.passed:
-                    c.alive, c.fail_reason = False, "; ".join(sres.errors[:3])
-                    continue
-                c.ladder_rungs_passed = 1
-                # latency law
-                dl = declared_latency(c.verilog)
-                if getattr(contract, "latency_known", True) and dl is not None and dl != contract.latency:
-                    c.alive = False
-                    c.fail_reason = (f"declared @latency {dl} != contract "
-                                     f"{contract.latency} (spec is law)")
-                    continue
-                cdir = idir / f"cand_{c.mutation}"
-                cdir.mkdir(exist_ok=True)
-                cv = cdir / f"{cfg.top_module}.v"
-                cv.write_text(c.verilog)
-                # rung 2: xvlog
-                ok, err, kind = self._tool("xvlog_check", [cv] + extra_sources,
-                                                   self.cfg, cdir)
-                if not ok:
-                    if kind != FailureKind.DESIGN:
-                        c.fail_reason = "infra: " + err[:100]
-                        continue  # do not kill on infra; just no rung credit
-                    c.alive, c.fail_reason = False, err[:200]
-                    recent_errors.append(err)
-                    continue
-                c.ladder_rungs_passed = 2
-                # rung 3/4: simulation
-                if tb_path:
-                    passed, err, kind = self._tool("xsim_run",
-                        [cv] + extra_sources, tb_path,
-                        f"{cfg.top_module}_tb", self.cfg, cdir)
-                    if not passed:
-                        if kind != FailureKind.DESIGN:
-                            c.fail_reason = "infra: " + err[:100]
-                            continue
-                        # one taxonomy-guided fix per candidate
-                        ids = extract_message_ids(err)
-                        diag = "\n".join(self.taxonomy.repair_instruction(i)
-                                         for i in ids) or "(no message IDs)"
-                        c.verilog = self._model("generator", "fix",
-                            c.verilog, diag, err,
-                            tb_path.read_text()[:1500], [], self.budget)
-                        repaired_static = static_check(c.verilog, contract)
-                        repaired_latency = declared_latency(c.verilog)
-                        if not repaired_static.passed or (getattr(contract, "latency_known", True) and repaired_latency is not None and repaired_latency != contract.latency):
-                            c.alive, c.fail_reason = False, "repair violated static/interface/latency contract"
-                            continue
-                        cv.write_text(c.verilog)
-                        passed, err, kind = self._tool("xsim_run",
-                            [cv] + extra_sources, tb_path,
-                            f"{cfg.top_module}_tb", self.cfg, cdir)
-                        if not passed and kind != FailureKind.DESIGN:
-                            c.fail_reason = "unverified: " + err[:100]
-                            continue
-                    if not passed:
-                        c.alive, c.fail_reason = False, err[:200]
-                        recent_errors.append(err)
-                        continue
-                    c.ladder_rungs_passed = 4
+                self._verify_optimization_candidate(c, contract, tb_path, extra_sources,
+                                                    idir, recent_errors)
 
             # rung 5: synthesize survivors (cache-aware)
             for c in [x for x in cands if x.alive and x.ladder_rungs_passed == 4]:
@@ -789,7 +761,7 @@ class Orchestrator:
                         c.artifact_dir = Path(cached_entry["artifact_dir"])
                         c.ladder_rungs_passed = 5
                         continue
-                cdir = idir / f"cand_{c.mutation}"
+                cdir = getattr(c, "artifact_dir", idir / f"cand_{c.mutation}")
                 cv = cdir / f"{cfg.top_module}.v"
                 ok, err, kind = self._tool("run_synthesis",
                     [cv] + extra_sources, cfg.top_module, self.cfg, cdir,
@@ -863,13 +835,16 @@ class Orchestrator:
             candidate_path = Path(wdir) / f"{cfg.top_module}.v"
             if not candidate_path.is_file():
                 candidate_path = idir / f"cand_{winner.mutation}" / f"{cfg.top_module}.v"
-            if candidate_path.read_text() != winner.verilog:
+            if candidate_path.read_text(encoding="utf-8") != winner.verilog:
                 raise ValueError("Candidate source does not match evaluation evidence")
             candidate_facts = {
                 "candidate_source": file_evidence(candidate_path),
                 **flow_evidence(wdir),
                 "candidate_metrics": wm.to_dict(), "previous_best_metrics": best_m.to_dict(),
                 "objective": cfg.objective, "measured_improvement": self._is_better(wm, best_m),
+                "improvement_kind": improvement_kind(wm, best_m, cfg.objective),
+                "candidate_timing_feasible": timing_feasible(wm),
+                "previous_best_timing_feasible": timing_feasible(best_m),
             }
             provenance = None
             provenance_path = Path(wdir) / "verification_provenance.json"
@@ -902,7 +877,8 @@ class Orchestrator:
             if fresh:
                 last_advisor = fresh
 
-            improved = self._is_better(wm, best_m)
+            comparison_kind = improvement_kind(wm, best_m, cfg.objective)
+            improved = comparison_kind is not None
             is_best = (receipt_gate["passed"] and ev.recommendation == "ACCEPT" and ev.failed == 0 and improved
                        and wm.timing_met is True and wm.wns_ns >= 0 and wm.whs_ns >= 0)
             if is_best:
@@ -921,6 +897,7 @@ class Orchestrator:
                                   ev.recommendation + (" [NEW BEST]" if is_best else ""))
             state.append_design({"iteration": it, "is_best": is_best,
                                  "recommendation": ev.recommendation,
+                                 "improvement_kind": comparison_kind if is_best else None,
                                  "artifact_dir": str(wdir),
                                  "code_hash": code_hash(winner.verilog),
                                  **wm.to_dict()})
@@ -945,18 +922,15 @@ class Orchestrator:
 
         # ---- finish ----
         best_path = state.run_dir / f"{cfg.top_module}_best.v"
-        atomic_write_text(best_path, best_v)
         summary = {"status": "done", "best_iteration": best_iter,
+                   "timing_closed": timing_feasible(best_m),
+                   "improvement_kind": improvement_kind(best_m, baseline, cfg.objective) if best_iter > 0 else None,
                    "top_module": cfg.top_module,
                    "best_metrics": best_m.to_dict(),
                    "baseline_metrics": baseline.to_dict(),
                    "best_artifact_dir": str(best_artifact_dir),
                    "best_code_hash": code_hash(best_v),
                    "run_dir": str(state.run_dir)}
-        atomic_write_text(state.run_dir / "run_summary.json",
-                          json.dumps(summary, indent=2, default=str))
-        print(f"\nDONE — best from iter {best_iter}: LUTs={best_m.lut_used} "
-              f"FFs={best_m.ff_used} WNS={best_m.wns_ns}")
         final_artifacts = {str(path.resolve()): hashlib.sha256(path.read_bytes()).hexdigest()
                            for path in Path(best_artifact_dir).glob("*")
                            if path.is_file() and (path.suffix in (".v", ".sv", ".rpt", ".xdc", ".tcl", ".log")
@@ -972,7 +946,18 @@ class Orchestrator:
             retained.extend(path for path in receipt.parent.glob("*.log") if path.is_file())
             if (receipt.parent / "sim_log.txt").is_file():
                 retained.append(receipt.parent / "sim_log.txt")
-        for provenance_path in state.run_dir.rglob("verification_provenance.json"):
+        provenance_paths = set(state.run_dir.rglob("verification_provenance.json"))
+        if (Path(best_artifact_dir) / "verification_provenance.json").is_file():
+            provenance_paths.add(Path(best_artifact_dir) / "verification_provenance.json")
+        verification_manifests = {path for path in state.run_dir.rglob("verification_inputs.log")
+                                  if path.relative_to(state.run_dir).parts[0] != "journal"}
+        best_manifest = Path(best_artifact_dir) / "verification_inputs.log"
+        best_provenance = Path(best_artifact_dir) / "verification_provenance.json"
+        if best_manifest.is_file():
+            verification_manifests.add(best_manifest)
+        elif not best_provenance.is_file():
+            raise VerificationEvidenceError("Completed verification dependency manifest is missing: " + str(best_manifest))
+        for provenance_path in provenance_paths:
             retained.append(provenance_path)
             provenance = json.loads(provenance_path.read_text(encoding="utf-8"))
             for evidence in provenance["evidence"]:
@@ -980,9 +965,19 @@ class Orchestrator:
                 if not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest() != evidence["sha256"]:
                     raise ValueError("Reused verification evidence is missing or modified")
                 retained.append(path)
+                if path.name == "verification_inputs.log":
+                    verification_manifests.add(path)
+        for manifest in sorted(verification_manifests):
+            final_artifacts.update(_verification_dependencies(manifest))
+            retained.append(manifest)
         for evidence_path in [state.contract_path, state.run_dir / "harness_facts.json", *state.run_dir.glob("iter_*/evaluation_facts.json"), *retained]:
             if evidence_path.is_file():
                 final_artifacts[str(evidence_path.resolve())] = hashlib.sha256(evidence_path.read_bytes()).hexdigest()
+        atomic_write_text(best_path, best_v)
+        atomic_write_text(state.run_dir / "run_summary.json",
+                          json.dumps(summary, indent=2, default=str))
+        print(f"\nDONE — best from iter {best_iter}: LUTs={best_m.lut_used} "
+              f"FFs={best_m.ff_used} WNS={best_m.wns_ns}")
         self._snapshot(phase="DONE", best_iteration=best_iter,
                        best_sha256=hashlib.sha256(best_path.read_bytes()).hexdigest(),
                        summary_sha256=hashlib.sha256((state.run_dir / "run_summary.json").read_bytes()).hexdigest(),
@@ -990,6 +985,61 @@ class Orchestrator:
         return summary
 
     # ------------------------------------------------------------------ helpers
+    def _verify_optimization_candidate(self, candidate, contract, tb, extra, parent, recent_errors):
+        """Spend only the configured design-repair budget across compile and sim.
+
+        Infrastructure/unknown outcomes keep the candidate unverified, never
+        mutate RTL, and remain replayable through the existing stage journal.
+        Every changed answer re-enters static, interface, latency and tool gates.
+        """
+        base = parent / f"cand_{candidate.mutation}"
+        previous = []
+        for attempt in range(self.cfg.max_fix_attempts + 1):
+            work = base if attempt == 0 else base / f"repair_{attempt:03d}"
+            work.mkdir(parents=True, exist_ok=True)
+            source = work / f"{self.cfg.top_module}.v"
+            source.write_text(candidate.verilog, encoding="utf-8")
+            candidate.artifact_dir = work
+            candidate.ladder_rungs_passed = 0
+            checked = static_check(candidate.verilog, contract)
+            latency = declared_latency(candidate.verilog)
+            if not checked.passed:
+                candidate.alive = False
+                candidate.fail_reason = "; ".join(checked.errors[:3])
+                return
+            if getattr(contract, "latency_known", True) and latency is not None and latency != contract.latency:
+                candidate.alive = False
+                candidate.fail_reason = f"declared @latency {latency} != contract {contract.latency} (spec is law)"
+                return
+            candidate.ladder_rungs_passed = 1
+            ok, error, kind = self._tool("xvlog_check", [source] + extra, self.cfg, work)
+            if ok:
+                candidate.ladder_rungs_passed = 2
+                if tb is None:
+                    candidate.fail_reason = "unverified: a candidate testbench is required"
+                    return
+                ok, error, kind = self._tool("xsim_run", [source] + extra, tb,
+                                            f"{self.cfg.top_module}_tb", self.cfg, work)
+                if ok:
+                    candidate.ladder_rungs_passed = 4
+                    return
+            if kind != FailureKind.DESIGN:
+                candidate.fail_reason = "unverified: " + str(error)[:100]
+                return
+            recent_errors.append(error)
+            if attempt >= self.cfg.max_fix_attempts:
+                candidate.alive = False
+                candidate.fail_reason = str(error)[:200]
+                return
+            diagnosis = "\n".join(self.taxonomy.repair_instruction(identifier)
+                                   for identifier in extract_message_ids(error)) or "(no message IDs)"
+            # The role also receives immutable run/edit-boundary context. Old
+            # failures are advice; none changes the supplied testbench/contract.
+            candidate.verilog = self._model("generator", "fix", candidate.verilog,
+                diagnosis, error, tb.read_text(encoding="utf-8")[:1500] if tb else "",
+                list(previous), self.budget)
+            previous.append(str(error)[:200])
+
     def _doctor_trial(self, source: str, current: VivadoMetrics, contract: ModuleSpec,
                       tb: Path | None, extra: list[Path], parent: Path,
                       diagnosis, verification_dir: Path | None = None) -> tuple[str, VivadoMetrics, Path] | None:
@@ -1008,11 +1058,11 @@ class Orchestrator:
         work = parent / f"doctor_{diagnosis.action}_trial"
         work.mkdir(parents=True, exist_ok=True)
         vfile = work / f"{self.cfg.top_module}.v"
-        vfile.write_text(source)
+        vfile.write_text(source, encoding="utf-8")
         if not surgery and verification_dir is not None:
             origin = Path(verification_dir)
             origin_source = origin / f"{self.cfg.top_module}.v"
-            if not origin_source.is_file() or origin_source.read_text() != source:
+            if not origin_source.is_file() or origin_source.read_text(encoding="utf-8") != source:
                 raise VerificationEvidenceError("Doctor verification reuse requires identical prior source")
             input_manifest = origin / "verification_inputs.log"
             if not input_manifest.is_file():
@@ -1067,12 +1117,7 @@ class Orchestrator:
         except MetricsGateError as exc:
             print(f"[doctor] invalid trial metrics: {exc}")
             return None
-        objective_field = {"minimize_luts": "lut_used", "minimize_ffs": "ff_used",
-                           "maximize_freq": "wns_ns", "minimize_power": "dynamic_power_w"}[
-                               self.cfg.objective]
-        timing_recovered = (result.timing_met and not current.timing_met
-                            and getattr(result, objective_field) == getattr(current, objective_field))
-        if not self._is_better(result, current) and not timing_recovered:
+        if not self._is_better(result, current):
             return None
         return source, result, work
 
@@ -1139,7 +1184,7 @@ class Orchestrator:
             diag = "\n".join(self.taxonomy.repair_instruction(i)
                              for i in ids) or "(no message IDs found)"
             repaired = self._model("generator", "fix", verilog, diag, err,
-                                         tb.read_text()[:1500] if tb else "",
+                                         tb.read_text(encoding="utf-8")[:1500] if tb else "",
                                          previous, self.budget)
             latency = declared_latency(repaired)
             if not static_check(repaired, original_contract).passed or (
@@ -1150,26 +1195,13 @@ class Orchestrator:
                 return verilog, m
             verilog = repaired
             previous.append(err[:200])
-            vfile.write_text(verilog)
+            vfile.write_text(verilog, encoding="utf-8")
             m = self._full_flow([vfile] + extra, tb,
                                 self.cfg.top_module, work)
         return verilog, m
 
     def _is_better(self, new: VivadoMetrics, best: VivadoMetrics) -> bool:
-        if not new.sim_passed:
-            return False
-        if best.timing_met and not new.timing_met:
-            return False
-        obj = self.cfg.objective
-        if obj == "minimize_luts":
-            return new.lut_used < best.lut_used
-        if obj == "minimize_ffs":
-            return new.ff_used < best.ff_used
-        if obj == "maximize_freq":
-            return new.wns_ns > best.wns_ns
-        if obj == "minimize_power":
-            return new.dynamic_power_w < best.dynamic_power_w
-        return new.lut_used < best.lut_used
+        return improvement_kind(new, best, self.cfg.objective) is not None
 
     def _infer_contract(self, verilog: str, top: str) -> ModuleSpec:
         from .verilog_interface import infer_module

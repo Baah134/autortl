@@ -1,0 +1,271 @@
+FF                                                                       [100%]
+================================== FAILURES ===================================
+__________ test_non_ascii_candidate_reaches_evaluation_and_promotion __________
+
+tmp_path = WindowsPath('C:/Users/prince.baah/Documents/Codex/2026-10-15/hey/work/pytest-source-utf8-before/test_non_ascii_candidate_reach0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x00000208B96CB9E0>
+
+    def test_non_ascii_candidate_reaches_evaluation_and_promotion(tmp_path, monkeypatch):
+        o = fsm.Orchestrator(configuration(tmp_path), tmp_path / "run")
+        install_models(o); install_tools(monkeypatch)
+        source = "// caf\xe9 \u03a9 \u4e2d\u6587\\n" + WINNER
+        monkeypatch.setattr(o.generator, "generate", Mock(return_value=source))
+>       result = o.run()
+                 ^^^^^^^
+
+tests\test_optimizer_recovery.py:183: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+autortl\fsm.py:141: in run
+    result = self._run_optimize(saved)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <autortl.fsm.Orchestrator object at 0x00000208B958F980>, saved = None
+extra_sources = []
+
+    def _run_optimize(self, saved: dict | None,
+                      extra_sources: list[Path] | None = None) -> dict:
+        cfg, state = self.cfg, self.state
+        extra_sources = extra_sources or []
+    
+        # Verification is mandatory before defining an optimization contract.
+        if not cfg.testbench_path or not Path(cfg.testbench_path).is_file():
+            return self._baseline_stop("baseline_blocked", "A baseline testbench is required")
+        original = Path(cfg.design_path).read_text()
+        # module contract for static checks in optimize mode (interface only)
+        contract = self._infer_contract(original, cfg.top_module)
+    
+        self._scope = "baseline"
+        # ---- iteration 0: baseline ----
+        idir = state.iter_dir(0)
+        base_v = idir / f"{cfg.top_module}.v"
+        base_v.write_text(original)
+        tb_path = Path(cfg.testbench_path) if cfg.testbench_path else None
+        baseline = self._full_flow([base_v] + extra_sources, tb_path,
+                                   cfg.top_module, idir)
+        if not baseline.sim_passed or baseline.synth_error:
+            print(f"[iter 0] baseline failed verification")
+            v, baseline = self._fix_loop(original, baseline, tb_path,
+                                         base_v, idir, extra_sources)
+            if baseline.sim_passed and not baseline.synth_error:
+                original = v
+        if not baseline.sim_passed or baseline.synth_error:
+            kind = self._flow_failure_kind(baseline)
+            return self._baseline_stop(
+                "baseline_failed" if kind == FailureKind.DESIGN else "baseline_blocked",
+                baseline.sim_error or baseline.synth_error or "Baseline verification incomplete",
+                kind)
+        try:
+            gate_metrics(baseline, synthesis_ran=True)
+        except MetricsGateError as exc:
+            return self._baseline_stop("baseline_blocked", str(exc), FailureKind.INFRA)
+        baseline_receipts = _process_exit_gate(idir)
+        if not baseline_receipts["passed"]:
+            return self._baseline_stop("baseline_blocked", "; ".join(baseline_receipts["reasons"]), FailureKind.INFRA)
+        state.append_design({"iteration": 0, "is_best": True,
+                             **baseline.to_dict(), "recommendation": "BASELINE"})
+        print(f"[iter 0] baseline LUTs={baseline.lut_used} FFs={baseline.ff_used} "
+              f"WNS={baseline.wns_ns}")
+    
+        # ---- fixed harness contract: no model negotiation ----
+        facts = run_evidence(cfg, baseline, [base_v] + extra_sources, tb_path,
+                             idir, self._cache_context(tb_path, extra_sources))
+        context = save_evidence(state.run_dir / "harness_facts.json", facts)
+        role_context = context + "\n\n" + candidate_scope(cfg.top_module, extra_sources)
+        for role in (self.planner, self.generator, self.evaluator, self.doctor):
+            role.run_context = role_context
+        contract_md = render_fixed_optimize_contract(facts)
+        if state.contract_path.exists():
+            if state.read_contract() != contract_md:
+                raise ValueError("Fixed optimization contract changed since checkpoint")
+        else:
+            if (state.load_fsm() or {}).get("contract_sha256"):
+                raise ValueError("Fixed optimization contract missing since checkpoint")
+            state.write_contract(contract_md)
+        self._snapshot(contract_sha256=hashlib.sha256(contract_md.encode("utf-8")).hexdigest())
+    
+        # ---- main loop ----
+        best_v, best_m, best_iter = original, baseline, 0
+        best_artifact_dir = idir
+        generation_seed = original
+        stall, replans, knobs_tried = 0, 0, False
+        recent_codes: list[str] = []
+        recent_errors: list[str] = []
+        last_advisor = advisor_digest(idir, self.taxonomy)   # from baseline synth
+    
+        start_iter = 1  # reconstruct deterministically from completed stages
+        for it in range(start_iter, cfg.max_iterations + 1):
+            self._scope = f"iteration_{it}"
+            if self._decision("exhausted", self.budget.exhausted):
+                print("[budget] exhausted � stopping gracefully")
+                break
+            self._snapshot(phase="GENERATING", iteration=it,
+                           best_iteration=best_iter)
+            idir = state.iter_dir(it)
+    
+            # watchdog + planning
+            signals = watchdog_inspect(state.read_designs(), recent_codes,
+                                       recent_errors, self._decision("fraction", self.budget.fraction_left))
+            for s in signals:
+                print(f"[watchdog] {s.kind}: {s.detail}")
+            need_plan = self._decision("need_plan", lambda: (it == start_iter or stall > 0 or it % 3 == 0
+                         or any(s.kind == "STAGNATION" for s in signals)))
+            if need_plan and self._decision("allow_replan", self.budget.allow_replan):
+                plan = self._model("planner", "plan", it, contract_md, state.read_progress(),
+                                         state.read_recent_evaluations(),
+                                         best_m, signals, self.budget,
+                                         target_part=cfg.target_part,
+                                         advisor=last_advisor)
+                state.write_plan(plan)
+            instruction = self._decision("instruction", state.extract_instruction)
+    
+            # ---- best-of-N generation through the ladder ----
+            n = self._decision("portfolio", lambda: self.budget.effective_best_of_n(cfg.best_of_n))
+            cands: list[Candidate] = []
+            for mname, mtext in mutation_prompts(cfg.objective, n):
+                v = self._model("generator", "generate", contract, generation_seed, instruction,
+                                            mtext, self.budget)
+                cands.append(Candidate(verilog=v, mutation=mname))
+            cands = dedupe(cands)
+            recent_codes.extend(c.verilog for c in cands[:1])
+    
+            for c in cands:
+                self._verify_optimization_candidate(c, contract, tb_path, extra_sources,
+                                                    idir, recent_errors)
+    
+            # rung 5: synthesize survivors (cache-aware)
+            for c in [x for x in cands if x.alive and x.ladder_rungs_passed == 4]:
+                cache_context = self._cache_context(tb_path, extra_sources)
+                cached_entry = self._stage("cache", c.mutation,
+                    lambda: self.metrics_cache.get_entry(c.verilog, cache_context))
+                cached = cached_entry.get("metrics") if cached_entry else None
+                if cached:
+                    try:
+                        cached_metrics = VivadoMetrics.from_dict(cached)
+                        gate_metrics(cached_metrics, synthesis_ran=True)
+                        if not cached_metrics.sim_passed or cached_metrics.synth_error:
+                            raise MetricsGateError("Cache has no verified synthesis result")
+                    except (MetricsGateError, TypeError, ValueError, AttributeError) as exc:
+                        print(f"[cache] invalid metrics ignored: {exc}")
+                    else:
+                        c.metrics = cached_metrics.to_dict()
+                        c.artifact_dir = Path(cached_entry["artifact_dir"])
+                        c.ladder_rungs_passed = 5
+                        continue
+                cdir = getattr(c, "artifact_dir", idir / f"cand_{c.mutation}")
+                cv = cdir / f"{cfg.top_module}.v"
+                ok, err, kind = self._tool("run_synthesis",
+                    [cv] + extra_sources, cfg.top_module, self.cfg, cdir,
+                    promotions=self.taxonomy.promotions())
+                if not ok:
+                    if kind != FailureKind.DESIGN:
+                        c.fail_reason = "infra: " + err[:100]
+                        continue
+                    c.alive, c.fail_reason = False, err[:200]
+                    continue
+                m = self._tool("full_metrics", cdir)
+                m.sim_passed = True
+                try:
+                    gate_metrics(m, synthesis_ran=True)
+                except MetricsGateError as e:
+                    print(f"[gate] {e} � treating as infra, candidate keeps no metrics")
+                    c.fail_reason = "infra: invalid metrics"
+                    continue
+                c.metrics = m.to_dict()
+                c.ladder_rungs_passed = 5
+                self.metrics_cache.put(c.verilog, c.metrics, context=cache_context, artifact_dir=cdir)
+    
+            winner = select(cands, cfg.objective)
+            if winner is None or winner.ladder_rungs_passed < 5:
+                if any(c.alive and c.ladder_rungs_passed < 5 for c in cands):
+                    self._snapshot(phase="INFRA_BLOCKED", iteration=it, best_iteration=best_iter)
+                    state.append_event({"stage": "candidate_ladder", "iteration": it,
+                                        "outcome": "infra_blocked"}, event_id=f"infra:{it}")
+                    return {"status": "infra_blocked", "iteration": it,
+                            "best_iteration": best_iter, "best_metrics": best_m.to_dict(),
+                            "run_dir": str(state.run_dir)}
+                stall += 1
+                state.append_progress(it, "no candidate survived the ladder", "REJECT")
+                state.append_design({"iteration": it, "is_best": False,
+                                     "recommendation": "REJECT",
+                                     "sim_passed": False})
+                continue
+            wm = VivadoMetrics.from_dict(winner.metrics)
+    
+            # ---- Timing Doctor ----
+            wdir = getattr(winner, "artifact_dir", idir / f"cand_{winner.mutation}")
+            if not wm.timing_met:
+                diagd = diagnose(wdir, knobs_tried)
+                print(f"[doctor] wns={diagd.wns_ns} category={diagd.category.value} "
+                      f"action={diagd.action}")
+                if diagd.action == "tool_knobs":
+                    knobs_tried = True
+                if diagd.action in ("tool_knobs", "rtl_surgery"):
+                    try:
+                        trial = self._doctor_trial(winner.verilog, wm, contract, tb_path,
+                                                    extra_sources, idir, diagd, verification_dir=Path(wdir))
+                    except VerificationEvidenceError as exc:
+                        self._snapshot(phase="INFRA_BLOCKED", iteration=it, best_iteration=best_iter,
+                                       evidence_failure=[str(exc)])
+                        state.append_event({"stage": "doctor_verification_lineage", "iteration": it,
+                                            "outcome": "infra_blocked", "reason": str(exc)},
+                                           event_id=f"doctor-evidence:{it}")
+                        return {"status": "infra_blocked", "iteration": it,
+                                "best_iteration": best_iter, "best_metrics": best_m.to_dict(),
+                                "evidence_failure": [str(exc)], "run_dir": str(state.run_dir)}
+                    if trial is not None:
+                        winner.verilog, wm, wdir = trial
+                        winner.metrics = wm.to_dict()
+    
+            # ---- evaluation ----
+            ladder_summary = "\n".join(
+                f"- {c.mutation}: rungs={c.ladder_rungs_passed} "
+                f"{'ALIVE' if c.alive else 'dead: ' + c.fail_reason[:80]}"
+                for c in cands)
+            vnotes = "\n".join(vivado.message_ids_in(wdir)[:10])
+            candidate_path = Path(wdir) / f"{cfg.top_module}.v"
+            if not candidate_path.is_file():
+                candidate_path = idir / f"cand_{winner.mutation}" / f"{cfg.top_module}.v"
+            if candidate_path.read_text() != winner.verilog:
+>               raise ValueError("Candidate source does not match evaluation evidence")
+E               ValueError: Candidate source does not match evaluation evidence
+
+autortl\fsm.py:812: ValueError
+---------------------------- Captured stdout call -----------------------------
+[iter 0] baseline LUTs=20 FFs=8 WNS=1
+___________ test_non_ascii_doctor_source_reuse_preserves_utf8_bytes ___________
+
+lineage = (<autortl.fsm.Orchestrator object at 0x00000208B954C5C0>, WindowsPath('C:/Users/prince.baah/Documents/Codex/2026-10-15...l=200, dsp_used=0, dsp_total=0, bram_used=0.0, bram_total=0.0, total_power_w=0.0, dynamic_power_w=0.0, synth_error=''))
+
+    def test_non_ascii_doctor_source_reuse_preserves_utf8_bytes(lineage):
+        o,parent,origin,source,tb,metric = lineage
+        source = "// caf\xe9 \u03a9 \u4e2d\u6587\\n" + source
+        (origin / "m.v").write_text(source, encoding="utf-8")
+        (origin / "verification_inputs.log").write_text(json.dumps(fsm._verification_inputs([origin / "m.v"], tb)), encoding="utf-8")
+        before = VivadoMetrics.from_dict(metric.to_dict()); before.lut_used = 20
+>       result = o._doctor_trial(source,before,SimpleNamespace(latency=0),tb,[],parent,
+                                SimpleNamespace(action="tool_knobs"),verification_dir=origin)
+
+tests\test_doctor_fsm.py:134: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+autortl\fsm.py:1018: in _doctor_trial
+    vfile.write_text(source)
+..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\pathlib.py:1048: in write_text
+    return f.write(data)
+           ^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <encodings.cp1252.IncrementalEncoder object at 0x00000208B9616C60>
+input = '// caf\xe9 \u03a9 \u4e2d\u6587\\r\\nmodule m(output y); assign y=0; endmodule'
+final = False
+
+    def encode(self, input, final=False):
+>       return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       UnicodeEncodeError: 'charmap' codec can't encode character '\u03a9' in position 8: character maps to <undefined>
+
+..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\encodings\cp1252.py:19: UnicodeEncodeError
+=========================== short test summary info ===========================
+FAILED tests/test_optimizer_recovery.py::test_non_ascii_candidate_reaches_evaluation_and_promotion
+FAILED tests/test_doctor_fsm.py::test_non_ascii_doctor_source_reuse_preserves_utf8_bytes
+2 failed, 22 deselected in 2.36s

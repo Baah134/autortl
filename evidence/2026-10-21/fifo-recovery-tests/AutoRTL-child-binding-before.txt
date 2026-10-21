@@ -1,0 +1,91 @@
+FFF                                                                      [100%]
+================================== FAILURES ===================================
+_____________ test_done_binds_generated_child_dependency[tamper] ______________
+
+tmp_path = WindowsPath('C:/Users/prince.baah/Documents/Codex/2026-10-15/hey/work/pytest-child-binding-before/test_done_binds_generated_chil0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000026B05A16720>
+change = 'tamper'
+
+    @pytest.mark.parametrize("change", ["tamper", "delete"])
+    def test_done_binds_generated_child_dependency(tmp_path, monkeypatch, change):
+        from tests.test_fsm_build import create
+        o, _ = create(tmp_path, monkeypatch)
+        result = o.run(); assert result["status"] == "done"
+        child = o.state.run_dir / "modules/counter8_core/counter8_core.v"
+        if change == "delete": child.unlink()
+        else: child.write_bytes(child.read_bytes() + b"\n// changed child identity\n")
+        resumed = fsm.Orchestrator(RunConfig.load(o.state.run_dir / "config.json"), o.state.run_dir)
+        forbidden = Mock(side_effect=AssertionError("DONE must not regenerate child"))
+        monkeypatch.setattr(resumed.generator, "generate", forbidden)
+>       with pytest.raises(ValueError, match="Completed"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests\test_optimizer_recovery.py:201: Failed
+---------------------------- Captured stdout call -----------------------------
+[module counter8_core] golden model + testbench...
+[build] integrated design compiles; entering optimize loop as baseline
+[iter 0] baseline LUTs=6 FFs=8 WNS=7
+
+DONE � best from iter 0: LUTs=6 FFs=8 WNS=7
+_____________ test_done_binds_generated_child_dependency[delete] ______________
+
+tmp_path = WindowsPath('C:/Users/prince.baah/Documents/Codex/2026-10-15/hey/work/pytest-child-binding-before/test_done_binds_generated_chil1')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000026B04F48380>
+change = 'delete'
+
+    @pytest.mark.parametrize("change", ["tamper", "delete"])
+    def test_done_binds_generated_child_dependency(tmp_path, monkeypatch, change):
+        from tests.test_fsm_build import create
+        o, _ = create(tmp_path, monkeypatch)
+        result = o.run(); assert result["status"] == "done"
+        child = o.state.run_dir / "modules/counter8_core/counter8_core.v"
+        if change == "delete": child.unlink()
+        else: child.write_bytes(child.read_bytes() + b"\n// changed child identity\n")
+        resumed = fsm.Orchestrator(RunConfig.load(o.state.run_dir / "config.json"), o.state.run_dir)
+        forbidden = Mock(side_effect=AssertionError("DONE must not regenerate child"))
+        monkeypatch.setattr(resumed.generator, "generate", forbidden)
+>       with pytest.raises(ValueError, match="Completed"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests\test_optimizer_recovery.py:201: Failed
+---------------------------- Captured stdout call -----------------------------
+[module counter8_core] golden model + testbench...
+[build] integrated design compiles; entering optimize loop as baseline
+[iter 0] baseline LUTs=6 FFs=8 WNS=7
+
+DONE � best from iter 0: LUTs=6 FFs=8 WNS=7
+___________ test_finalization_does_not_bless_changed_verified_child ___________
+
+tmp_path = WindowsPath('C:/Users/prince.baah/Documents/Codex/2026-10-15/hey/work/pytest-child-binding-before/test_finalization_does_not_ble0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000026B05A4D370>
+
+    def test_finalization_does_not_bless_changed_verified_child(tmp_path, monkeypatch):
+        from tests.test_fsm_build import create, RTL
+        o, _ = create(tmp_path, monkeypatch)
+        count = 0
+        def generate(*args, **kwargs):
+            nonlocal count
+            count += 1
+            if count == 2:
+                child = o.state.run_dir / "modules/counter8_core/counter8_core.v"
+                child.write_bytes(child.read_bytes() + b"\n// changed after verified simulation\n")
+            return RTL
+        monkeypatch.setattr(o.generator, "generate", Mock(side_effect=generate))
+>       with pytest.raises(ValueError, match="verification dependency"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests\test_optimizer_recovery.py:218: Failed
+---------------------------- Captured stdout call -----------------------------
+[module counter8_core] golden model + testbench...
+[build] integrated design compiles; entering optimize loop as baseline
+[iter 0] baseline LUTs=6 FFs=8 WNS=7
+
+DONE � best from iter 0: LUTs=6 FFs=8 WNS=7
+=========================== short test summary info ===========================
+FAILED tests/test_optimizer_recovery.py::test_done_binds_generated_child_dependency[tamper]
+FAILED tests/test_optimizer_recovery.py::test_done_binds_generated_child_dependency[delete]
+FAILED tests/test_optimizer_recovery.py::test_finalization_does_not_bless_changed_verified_child
+3 failed, 14 deselected in 8.65s

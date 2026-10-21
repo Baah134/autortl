@@ -42,7 +42,7 @@ def lineage(tmp_path, monkeypatch):
 
 def test_tool_only_doctor_retains_source_bound_prior_verification_without_resimulation(lineage):
     o,parent,origin,source,tb,metric = lineage
-    before = VivadoMetrics.from_dict(metric.to_dict()); before.lut_used=20; before.timing_met=False
+    before = VivadoMetrics.from_dict(metric.to_dict()); before.lut_used=20; before.timing_met=False; before.wns_ns=-0.1
     result = o._doctor_trial(source,before,SimpleNamespace(latency=0),tb,[],parent,
                             SimpleNamespace(action="tool_knobs"), verification_dir=origin)
     assert result
@@ -122,3 +122,16 @@ def test_physical_doctor_refuses_inputs_changed_since_actual_simulation(lineage,
         o._doctor_trial(source,metric,SimpleNamespace(latency=0),tb,[extra],parent,
                         SimpleNamespace(action="tool_knobs"),verification_dir=origin)
     fsm.vivado.run_synthesis.assert_not_called()
+
+
+
+def test_non_ascii_doctor_source_reuse_preserves_utf8_bytes(lineage):
+    o,parent,origin,source,tb,metric = lineage
+    source = "// café Ω 中文\n" + source
+    (origin / "m.v").write_text(source, encoding="utf-8")
+    (origin / "verification_inputs.log").write_text(json.dumps(fsm._verification_inputs([origin / "m.v"], tb)), encoding="utf-8")
+    before = VivadoMetrics.from_dict(metric.to_dict()); before.lut_used = 20
+    result = o._doctor_trial(source,before,SimpleNamespace(latency=0),tb,[],parent,
+                            SimpleNamespace(action="tool_knobs"),verification_dir=origin)
+    assert result and (result[2]/"m.v").read_bytes() == (origin/"m.v").read_bytes()
+    fsm.vivado.xsim_run.assert_not_called()

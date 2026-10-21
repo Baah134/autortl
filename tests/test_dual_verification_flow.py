@@ -89,7 +89,7 @@ def test_without_trusted_tb_generated_path_still_operates(dual,monkeypatch,flag)
 
 def test_independent_original_top_tb_blocks_optimization_candidate_before_synthesis(tmp_path,monkeypatch):
     from tests.test_golden_reset_protocol import COUNTER
-    o,synthesis=create(tmp_path,monkeypatch);o.cfg.generate_golden=True;o.cfg.max_fix_attempts=0
+    o,synthesis=create(tmp_path,monkeypatch);o.cfg.generate_golden=True;o.cfg.max_fix_attempts=1
     expected_hash=hashlib.sha256(o.cfg.testbench_path.read_bytes()).hexdigest()
     monkeypatch.setattr(o.generator,"golden_model",Mock(return_value=COUNTER.replace('"count": 99','"count": 0')))
     candidate="module counter8(input clk,input rst,input enable,output [7:0] count); counter8_core other(.clk(clk),.rst(rst),.enable(!enable),.count(count)); endmodule"
@@ -99,7 +99,7 @@ def test_independent_original_top_tb_blocks_optimization_candidate_before_synthe
     def simulate(files,tb,top,cfg,work,**kwargs):
         if top=="counter8_tb":
             checked.append((work,hashlib.sha256(tb.read_bytes()).hexdigest()))
-            if work.name=="cand_standard":
+            if "cand_standard" in work.parts:
                 return False,"Testbench failures: FAIL inverted enable",FailureKind.DESIGN
         return original_sim(files,tb,top,cfg,work,**kwargs)
     monkeypatch.setattr(fsm.vivado,"xsim_run",simulate)

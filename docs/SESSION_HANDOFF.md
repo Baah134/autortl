@@ -1,6 +1,6 @@
 # Current project checkpoint
 
-Updated 2026-10-20 (America/New_York). Reconcile these notes with Git,
+Updated 2026-10-21 (America/New_York). Reconcile these notes with Git,
 coordination state and actual processes. Notes are not execution evidence.
 
 ## Workspace and publication
@@ -8,14 +8,13 @@ coordination state and actual processes. Notes are not execution evidence.
 - Canonical checkout: C:/Users/prince.baah/Downloads/autortl-work.
 - Preserve the separate preexisting Downloads/autortl copy.
 - Remote: https://github.com/Baah134/autortl
-- Tested runtime source: **8098466** (807 regression tests; proof-retention and
-  duplicate-definition guards). Streaming build03 was measured atafcc080;
-  generated encoder at978c742; generated counter at8b6a162. Each archive records
-  its own source; do not assign all measurements to the latest commit.
-- Verified integration: main and codex/contract-context both reached
-  **a113ca192085bd8406f734f66891a69e35216a99**, containing tested source8098466
-  and the complete campaign06 archive. Later continuity-only commits may extend
-  it. Inspect actual heads before editing.
+- Current development checkpoint contains the recovery runtime with **939 tests
+  passed in349.85s**. Fresh FIFO02/fulltier0 pending; no new timing result yet.
+- Main remains **7bef3bf**. Prior developmentffc15fc has FIFO fixture836tests and
+  admission14/14; FIFO01 at that source failed timing. Prior runtime8098466 had
+ 807tests and campaign06 2/2. Each archive keeps its own measured source.
+- Generated counter8 source8b6a162, encoder978c742, streamingafcc080; do not
+  assign those measurements to the recovery runtime.
 - Paused MCP work remains in its original stash. Command-line Vivado is active.
 
 ## Standing user decisions
@@ -41,22 +40,39 @@ README is the concise public overview. Agent continuity belongs here and in
 START_HERE, AGENTS and the progress log. Preserve unsuccessful attempts and
 honest CV evidence. Never modify tests/contracts to publish a gain.
 
-## Active continuation: parameterized synchronous FIFO
+## Active continuation: FIFO timing recovery and source integrity
 
-Canonical source at start:7bef3bf, clean working tree. Active tasks:
-- sync-fifo-fixture: curriculum/tier2/sync_fifo_build and its unit tests.
-- sync-fifo-runner: scripts/check_build_tbs.py and runner tests.
-- Main coordinator owns research/evidence/docs and the vendor queue.
-User's own Vivado GUI is open; they confirmed simulation/editing only and
-explicitly authorized continuing our harness jobs. Use separate run folders.
-Fixture/runner frozen:26fixturetests and29runnertests passed; peer review found
-no blocker. Complete real admission14/14expected verdicts and fullsuite836passed
-in270.94seconds. Generated default payload control passed the supervised reference.
-Both archives are in evidence/2026-10-20. Publishing tested source; next start
-a fresh combined generated+independent model build. No generated FIFO PPA yet.
-Temporary system-awake helper session72910 uses work/autortl-verification-active.flag;
-release after queue completion (two-hour bound; no power-plan changes). Next:
-finish admission/fulltests, publish tested source, run bounded combined FIFO build.
+Published developmentffc15fc:836tests, FIFO admission14/14, generated default
+control pass. Main remains7bef3bf until final new fullsuite/freshfulltier0 pass.
+
+FIFO01 atffc15fc completed functional verification but FAILED timing:
+13LUT/6FF,setup-0.931ns/hold0.091ns. Both graders qualified; same-SHA readiness
+mutant passed payload grader and failed independent matrix. Candidate redeclared
+frozenchild and compiler blocked it. No successful FIFO physical result or area
+gain is claimed. Independent exact saved-winner+child simulation passed. Actual
+DONE replay and temporary qualification-report tamper test verified184identities
+unchanged after restoration, without new model/tool calls.
+
+Current uncommitted fixes (scopes in SQLite): feasibility-first shared policy,
+editable/frozen hierarchy context in generator/fix/Doctor, configured shared
+compile/simulation repair bound with separate attempt evidence, explicit timing
+outcome in CLI/summary. Policy focus64tests and context focus26tests passed;
+full integrated focus172passed after two contradictory legacy fixture corrections.
+Peer review found mixed UTF8 source IO and omitted original childRTL
+identities at DONE. Before-failing regressions now pass after explicit UTF8 IO
+and recorded-digest dependency validation before winner publication. Final
+integrated focus187passed143.87s; strictschema12passed. Final read-only review
+found no blocker. Final frozen fullsuite03 passed939tests349.85s. Previous fullsuite02
+had938passes/one synthetic cache fixture missing source/TB lineage; fixed fixture
+20tests passed before rerun. Logs archived in evidence/2026-10-21/fifo-recovery-tests. No harness vendor job active; user GUI untouched.
+
+Old keep-awake helper72910 confirmed released after its two-hour limit. New
+bounded helper72074 is active for the verification queue; remove flag on finish. User's
+VivadoGUI is open for code/TB simulation only; authorized separate serial harness
+jobs. Next: publish tested runtime and failure/regression archives, freshFIFO02 combined build, independent savedwinner check/DONE replay,
+then freshfulltier0 before integrating main. Never resume FIFO01 across runtime
+changes or reset its budget. Coordinator lease renewed for active continuation.
+
 
 ## Completed continuation: generated designs and final campaign
 

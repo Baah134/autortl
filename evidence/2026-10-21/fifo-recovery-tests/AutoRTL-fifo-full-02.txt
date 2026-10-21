@@ -1,0 +1,40 @@
+........................................................................ [  7%]
+........................................................................ [ 15%]
+........................................................................ [ 23%]
+........................................................................ [ 30%]
+........................................................................ [ 38%]
+...................................F.................................... [ 46%]
+........................................................................ [ 53%]
+........................................................................ [ 61%]
+........................................................................ [ 69%]
+........................................................................ [ 76%]
+........................................................................ [ 84%]
+........................................................................ [ 92%]
+........................................................................ [ 99%]
+...                                                                      [100%]
+================================== FAILURES ===================================
+________________ test_valid_cache_remains_eligible_after_gate _________________
+
+trial = (<autortl.fsm.Orchestrator object at 0x000001DD52A545F0>, WindowsPath('C:/Users/prince.baah/Documents/Codex/2026-10-15...h('C:/Users/prince.baah/Documents/Codex/2026-10-15/hey/work/pytest-fifo-full-02/test_valid_cache_remains_eligi0/tb.v'))
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001DD52A54BC0>
+
+    def test_valid_cache_remains_eligible_after_gate(trial, monkeypatch):
+        o = prepare_loop(trial, monkeypatch)
+        evidence = o.state.run_dir / "cached_evidence"
+        evidence.mkdir()
+        from tests.test_fsm_resume import write_mock_tool_receipts
+        write_mock_tool_receipts(evidence)
+        monkeypatch.setattr(o.metrics_cache, "get_entry", Mock(return_value={
+            "metrics": metrics(9, True).to_dict(), "artifact_dir": str(evidence)}))
+        result = o.run()
+>       assert result["best_metrics"]["lut_used"] == 9
+               ^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'best_metrics'
+
+tests\test_fsm_doctor_integrity.py:160: KeyError
+---------------------------- Captured stdout call -----------------------------
+[iter 0] baseline LUTs=20 FFs=5 WNS=1
+[iter 1] *** NEW BEST *** LUTs=9 FFs=5 WNS=1
+=========================== short test summary info ===========================
+FAILED tests/test_fsm_doctor_integrity.py::test_valid_cache_remains_eligible_after_gate
+1 failed, 938 passed in 376.48s (0:06:16)

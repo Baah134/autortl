@@ -7,6 +7,8 @@ weighted table per objective: mostly objective-aligned, one wildcard always.
 from __future__ import annotations
 from dataclasses import dataclass, field
 from .cache import code_hash
+from .objectives import timing_feasible
+import math
 
 MUTATIONS = {
     "standard":    "Implement using clean, standard sequential logic.",
@@ -59,7 +61,7 @@ def dedupe(cands: list[Candidate]) -> list[Candidate]:
 
 
 def select(cands: list[Candidate], objective: str) -> Candidate | None:
-    """Deterministic: rank by (rungs passed desc, objective metric, code length)."""
+    """Rank by completed rungs, timing feasibility, objective, then code length."""
     alive = [c for c in cands if c.alive]
     if not alive:
         return None
@@ -69,7 +71,14 @@ def select(cands: list[Candidate], objective: str) -> Candidate | None:
         "maximize_freq":  lambda m: -m.get("wns_ns", -10**9),
         "minimize_power": lambda m: m.get("dynamic_power_w", 10**9),
     }.get(objective, lambda m: m.get("lut_used", 10**9))
+    def objective_score(metrics):
+        try:
+            value = key_metric(metrics)
+            return value if type(value) in (int, float) and math.isfinite(value) else float("inf")
+        except (TypeError, ValueError, OverflowError):
+            return float("inf")
     alive.sort(key=lambda c: (-c.ladder_rungs_passed,
-                              key_metric(c.metrics),
+                              not timing_feasible(c.metrics),
+                              objective_score(c.metrics),
                               len(c.verilog)))
     return alive[0]

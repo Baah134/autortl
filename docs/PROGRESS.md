@@ -610,3 +610,44 @@ changes, commands, outcomes, evidence locations, limitations, and next action.
   the supervised reference. No qualification source/oracle is supplied as a model
   seed. Fullsuite **836passed in270.94seconds**, frozen runtime/fixture bytes.
   Publishing tested fixture/runner/research and exact evidence before model build.
+
+
+- FIFO01 onffc15fc: functional checks and both qualifications passed; routed
+ 13LUT/6FF,setup-0.931ns/hold0.091ns, **timing not closed**. Candidate duplicated
+ frozenchild and was correctly compile-blocked.4calls,226.360chargedtoolseconds,
+ 284.528elapsed. Independent saved-artifact matrix passed; physical failure is
+ preserved. Same-SHA readiness mutant passes payload grader but fails matrix.
+ Actual DONE nominal replay plus qualification-report tamper rejection preserved
+ 184selected identities after original bytes restored. No calls/tools rerun.
+- Failure-driven corrections planned before hotfix in taxonomy/HARNESS_REVIEW:
+ feasibility-first policy, explicit edit boundaries, bounded compile+sim repair.
+ Purepolicy64tests and context26tests passed; integratedfocus172passed82.17s.
+ Initialfocus168passed/2failed because oldfixtures encoded contradictory timing
+ or expected a repair atbudgetzero; corrected truthful fixtures, all assertions
+ retained. Compile/sim repairs now keep separate attempt sources/logs.
+- Read-only peer review caught Windows Unicode source IO mismatch; two new tests
+ reproduce it (candidate evidence compare and Doctor source write). It also found
+ DONE omitted childRTL referenced by simulation manifests; tamper/delete and
+ changed-before-finalization regressions are being added before the guard fix.
+ No new physical success or relaxed timing constraint is claimed by these tests.
+
+
+## 2026-10-21 continuation: recovery guard validation
+
+- Resumed after automatic approval review was temporarily unavailable because
+  of usage limits. No command was executed by that rejected request. Existing
+  uncommitted changes and failure artifacts were preserved.
+- Final integrated recovery focus: **187 passed in143.87seconds**. UTF8 source
+  identity and original child-source retention now pass their before-failing
+  regressions. Strict verification manifest version rejects bool/float values:
+  **12 passed**. Read-only peer review found no remaining concrete blocker.
+- Frozen fullsuite is running. Main integration and any new physical recovery
+  remain unclaimed until actual fullsuite/freshcampaign evidence passes.
+
+- Final frozen fullsuite: **939 passed in349.85seconds**. Prior fullsuite had
+  938passes/one legacy synthetic cache fixture missing source/TB lineage; added
+  truthful synthetic manifest without relaxing production gates or assertions,
+  then20filetests passed and fullsuite rerun passed. Archived all outcomes.
+- Publishing reviewed recovery source and failed FIFO01 evidence to development.
+  Main remains7bef3bf until fresh fulltier0. FIFO02 uses a fresh run and the newly
+  committed frozen runtime; no physical timing recovery is yet claimed.

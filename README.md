@@ -14,7 +14,7 @@ learn from failures, and retain the best correct design within a fixed budget.
 
 | Validation | Recorded result |
 |---|---|
-| Harness regression suite | **836 tests passed** |
+| Harness regression suite | **939 tests passed** |
 | Parameterized FIFO verification | **Six configurations passed; all 13 planned faults detected** |
 | Independent streaming verification | **Correct queue control passed; all eight behavior faults detected** |
 | Combined-verification streaming build | **Two-entry queue · 15 LUTs / 19 FFs · independent 893-cycle test passed** |
@@ -36,7 +36,7 @@ validation. No held curriculum tier is claimed. Earlier unsuccessful cohorts
 remain in the evidence record.
 
 See the [test evidence](evidence/2026-10-20/README.md),
-[full-suite result](evidence/2026-10-20/fifo-qualification/full-suite-836.txt) and
+[full-suite result](evidence/2026-10-21/fifo-recovery-tests/AutoRTL-fifo-full-03.txt) and
 [accepted optimization](evidence/2026-10-20/contract-campaign-06/README.md),
 [generated-build verification](evidence/2026-10-20/generated-counter/README.md) and
 [streaming build](evidence/2026-10-20/generated-streaming/README.md).
@@ -59,8 +59,9 @@ flowchart LR
   are checked against explicit module specifications.
 - **Verification before scoring:** testbench qualification requires a passing
   control and detection of an injected fault. Missing or ambiguous evidence fails.
-- **Measured candidate selection:** configurable best-of-N generation, source
-  deduplication and deterministic scoring use verified tool results.
+- **Measured candidate selection:** configurable best-of-N generation and source
+  deduplication use verified results. Timing feasibility precedes objective
+  scoring; timing recovery is recorded separately from resource savings.
 - **Recoverable execution:** atomic checkpoints, frozen inputs and stage journals
   support replay; source, configuration and report drift invalidate reuse.
 - **Bounded experiments:** model-call, tool-time and wall-time budgets constrain

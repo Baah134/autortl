@@ -183,7 +183,11 @@ def run_evidence(cfg, baseline, sources, tb, directory, execution_context) -> di
             "Timing closure requires setup slack >= 0 and hold slack >= 0.",
             "Unknown or absent evidence cannot count as success.",
         ],
-        "objective_policy": "Seek measured improvement against baseline; a completed experiment may find none. "
+        "objective_policy": "First establish timing feasibility. A verified timing-feasible candidate "
+                            "may replace a known timing-infeasible previous best even with higher area or power; "
+                            "classify this as timing_recovery, not objective savings. Once both are timing-feasible, "
+                            "require strict improvement of the chosen objective. Unknown or contradictory incumbent "
+                            "timing evidence cannot establish recovery. A completed experiment may find no improvement. "
                             "Do not invent mandatory savings, slack margins, tool versions, timing corners, "
                             "new tests, thresholds, code-style quotas or external environment requirements.",
     }
@@ -249,13 +253,21 @@ def render_fixed_optimize_contract(evidence: dict) -> str:
         "and metric integrity; setup WNS >= 0 and hold WHS >= 0 are both mandatory "
         "for promotion. Missing or unknown evidence is not success.\n\n"
         "## Objective and completion\n\n"
-        f"Objective {evidence['objective']} maps to {field}: require {direction} "
+        "First establish timing feasibility: the candidate must pass simulation and all "
+        "verification/metric/receipt gates, with timing_met=true, WNS >= 0 and WHS >= 0. "
+        "A candidate meeting those gates may replace a previous verified best whose known "
+        "consistent timing evidence fails setup or hold, even when area or power increases "
+        "or stays equal. Classify this as timing_recovery: a feasibility recovery, not "
+        "resource or power savings. Unknown, missing or contradictory timing evidence "
+        "does not establish a timing recovery. Once both designs are timing-feasible, "
+        f"objective {evidence['objective']} maps to {field}: require {direction} "
         "than the previous verified best, under the same device, clock and "
         "constraints. No minimum percentage gain or extra slack margin is imposed. "
         "Final evaluator ACCEPT with zero failed criteria and all deterministic "
         "promotion gates are required. DONE describes a completed experiment; "
         "best_iteration 0 retains the baseline and claims no accepted improvement. "
-        "Only a promoted best_iteration > 0 establishes an accepted gain.\n\n"
+        "Only a promoted best_iteration > 0 establishes an accepted improvement; "
+        "its recorded kind distinguishes timing recovery from objective gain.\n\n"
         "## Fixed measurement authority\n\n"
         "The JSON below records source/testbench identities, actual device, clock, "
         "tool context, constraints and retained report hashes. Numeric metrics are "
