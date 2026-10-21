@@ -1,0 +1,5 @@
+{
+  "stage": "module_sync_fifo_core:model:generator.golden_model:0",
+  "result": "WIDTH = 8\n_MASK = (1 << WIDTH) - 1\n\n\ndef init():\n    return 0\n\n\ndef step(state, inputs: dict):\n    if inputs.get(\"rst\", 0):\n        return 0, {\"out_data\": 0}\n\n    return state, {\"out_data\": int(inputs.get(\"in_data\", 0)) & _MASK}",
+  "artifacts": {}
+}

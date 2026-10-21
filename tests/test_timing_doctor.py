@@ -10,7 +10,10 @@ Design Timing Summary
     {wns}    -1.0                      3                   77
 WHS(ns)  THS(ns)  THS Failing Endpoints  THS Total Endpoints
     0.100    0.0                      0                   77
-Slack (VIOLATED) :        {wns}ns
+Slack ({'VIOLATED' if wns < 0 else 'MET'}) :        {wns}ns
+  Source:                 data_source_reg/C
+  Destination:            data_destination_reg/D
+  Path Type:              Max at Slow Process Corner
   Logic Levels:           {levels}
   net (fo=1) fanout={fanout}
 """)

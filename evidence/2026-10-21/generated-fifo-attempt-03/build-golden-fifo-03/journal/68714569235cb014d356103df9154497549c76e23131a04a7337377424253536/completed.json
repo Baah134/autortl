@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Interface and observable FIFO behavior: PASS \u2014 ports and widths are preserved; the fixed testbench passes across its parameter matrix.\n- Compilation, elaboration, and simulation: PASS \u2014 required tool exits are successful and the exact `TEST PASSED` verdict is recorded.\n- Routed report and metric integrity: PASS \u2014 routed reports are retained, and synthesis records `SYNTH_COMPLETE`.\n- Timing feasibility: FAIL \u2014 WNS is \u22120.905 ns and `timing_met=false`; positive WHS does not satisfy the setup requirement.\n- Promotion objective: FAIL \u2014 timing recovery is not established, and LUT use increased from 13 to 14, so there is no strict improvement over the previous best.\n## Summary\n- Passed: 3 of 5\n- Failed: 2 of 5\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes the recorded functional and tool gates, but remains timing-infeasible and uses more LUTs than the previous best. Since both designs are timing-infeasible, this is not timing recovery; the candidate does not meet the `minimize_luts` objective.",
+      "recommendation": "REJECT",
+      "passed": 3,
+      "failed": 2
+    }
+  },
+  "artifacts": {}
+}

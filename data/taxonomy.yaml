@@ -305,6 +305,20 @@ harness_failures:
     meaning: "A fallback qualification mutant dropped parameters or changed declared port shapes"
     repair: "Generate the mutant from the same typed interface stub and require real assertion detection"
 
+
+  truncated_timing_path_context:
+    meaning: "Timing report header previews ended before actual paths; FIFO planner could not identify its failing memory-to-output path"
+    repair: "Expose a bounded excerpt from the original report with its path and full-file hash; keep setup/hold meaning faithful and preserve timing gates"
+  omitted_doctor_trial_feedback:
+    meaning: "A non-adopted physical trial remained on disk but its measured failure and implementation were absent from subsequent planning"
+    repair: "Retain clearly labeled not-adopted trial facts in existing evaluation and planner advice; never substitute them for incumbent or candidate metrics"
+  noop_doctor_surgery:
+    meaning: "Doctor returned exact unchanged RTL and repeated simulation/implementation consumed the remaining FIFO03 budget"
+    repair: "Skip only when source bytes and effective measured flow options are proven identical; record no-source-change and do not skip intentional physical changes"
+  omitted_typed_build_semantics:
+    meaning: "Integrated optimization context omitted resolved build behavior; planner invented an invalid-output requirement despite an explicit unspecified-payload qualifier"
+    repair: "Carry complete bounded resolved typed specification evidence into existing fixed facts, preserving explicit qualifiers and all defined behavior; standalone optimization remains strict"
+
 methodology:
   "TIMING-6":
     meaning: "No common primary clock between related clocks | timing between them is unsafe"

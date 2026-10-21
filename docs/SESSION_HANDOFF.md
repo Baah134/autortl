@@ -8,8 +8,8 @@ coordination state and actual processes. Notes are not execution evidence.
 - Canonical checkout: C:/Users/prince.baah/Downloads/autortl-work.
 - Preserve the separate preexisting Downloads/autortl copy.
 - Remote: https://github.com/Baah134/autortl
-- Current development checkpoint contains the recovery runtime with **939 tests
-  passed in349.85s**. Fresh FIFO02/fulltier0 pending; no new timing result yet.
+- Current development checkpoint contains final feedback/recovery runtime with
+  **984 tests passed in423.26s**. Fresh FIFO04/fulltier0 pending; no FIFO closure yet.
 - Main remains **7bef3bf**. Prior developmentffc15fc has FIFO fixture836tests and
   admission14/14; FIFO01 at that source failed timing. Prior runtime8098466 had
  807tests and campaign06 2/2. Each archive keeps its own measured source.
@@ -66,12 +66,33 @@ found no blocker. Final frozen fullsuite03 passed939tests349.85s. Previous fulls
 had938passes/one synthetic cache fixture missing source/TB lineage; fixed fixture
 20tests passed before rerun. Logs archived in evidence/2026-10-21/fifo-recovery-tests. No harness vendor job active; user GUI untouched.
 
-Old keep-awake helper72910 confirmed released after its two-hour limit. New
-bounded helper72074 is active for the verification queue; remove flag on finish. User's
-VivadoGUI is open for code/TB simulation only; authorized separate serial harness
-jobs. Next: publish tested runtime and failure/regression archives, freshFIFO02 combined build, independent savedwinner check/DONE replay,
-then freshfulltier0 before integrating main. Never resume FIFO01 across runtime
-changes or reset its budget. Coordinator lease renewed for active continuation.
+FIFO02 on49599b5 was interrupted by PC sleep/hibernate during baseline synthesis.
+Both graders qualified, oracle syntax repaired, but tool receipt timed_out and
+wall/tool budgets exhausted. No winner or physical success; do not resume/reset.
+Archive: evidence/2026-10-21/generated-fifo-attempt-02 (hashes verified).
+
+FIFO03 completed budget_exhausted on49599b5 (session12222 ended); no vendor job
+active. Both candidates and first Doctor trial failed timing; second Doctor
+returned unchanged RTL and timed out on remaining budget.10calls,
+1200.654chargedtoolseconds/1349.068elapsed. No saved final winner or accepted
+physical result. Archive03 has295verifiedfiles and feedback-gap-proof.json.
+
+Current uncommitted feedback fixes are implemented/frozen: bounded report paths,
+complete resolved specs, not-adopted Doctor advice and conservative exact-source/
+default-flow dedupe. Original related digests are retained at DONE. Context51
+focusedtests and Doctor74focusedtests pass; firstfullsuite984passed408.00s.
+Final review added source preview for proven no-op (1testpassed); finalentire
+fullsuite02 passed984tests423.26s, archived in feedback-context-tests.
+Four modes recorded in taxonomy/HARNESS_REVIEW before changes. All original
+verification/metric/receipt/setup/hold gates remain intact. Oversized semantic
+facts must fail clearly; standalone optimization stays strict.
+
+Next: publish tested runtime;
+freshFIFO04 (2iterations/1candidate,16calls,25tool/35wallminutes,oneinfraretry)
+and fulltier0, independent savedwinner and DONE checks before main.
+Main remains7bef3bf; prior recovery source49599b5 passed939tests; new tested checkpoint being pushed.
+Oldhelpers72074/72910 released; helper12596 stillactive forqueue (twohourbound).
+Removeflag aftercompletion. User GUI/simulation untouched. No background scheduler.
 
 
 ## Completed continuation: generated designs and final campaign

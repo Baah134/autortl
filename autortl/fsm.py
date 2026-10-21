@@ -14,6 +14,7 @@ import shutil
 import hashlib
 import time
 import re
+import os
 from dataclasses import asdict
 from datetime import datetime
 from pathlib import Path
@@ -109,6 +110,32 @@ def _process_exit_gate(directory, provenance=None):
                 reasons.append(f"{root}: {name} output evidence is missing or modified")
     return {"passed": not reasons, "reasons": reasons,
             "policy": "Every required tool's latest actual process exit must be zero with retained matching output; physical-only Doctor may reuse source-bound prior compile/simulation."}
+
+
+def _doctor_advice(feedback):
+    """Small preview; evaluation_facts retains the full bounded trial evidence."""
+    summary = {key: feedback[key] for key in
+               ("status", "reason", "action", "tools_ran") if key in feedback}
+    metrics = feedback.get("measured_metrics")
+    if metrics is not None:
+        summary["measured_metrics"] = {key: metrics[key] for key in
+            ("lut_used", "ff_used", "wns_ns", "whs_ns", "timing_met", "sim_passed") if key in metrics}
+    parts = [json.dumps(summary, allow_nan=False)]
+    source = feedback.get("trial_source", feedback.get("input_source"))
+    if source is not None:
+        parts.append("Trial RTL evidence: " + json.dumps({key: source[key] for key in ("path", "sha256")}))
+        if source.get("text"):
+            parts.append("RTL preview (bounded, not complete):\n" + source["text"][:1000])
+    excerpt = feedback.get("first_violated_path_excerpt")
+    if excerpt is not None:
+        parts.append("Reported violated path (bounded): " + json.dumps({key: excerpt[key] for key in
+            ("path", "sha256", "category", "slack_ns") if key in excerpt}) + "\n" + excerpt.get("text", "")[:1000])
+    elif feedback.get("reports"):
+        parts.append("Report identity: " + json.dumps(feedback["reports"][0]))
+    text = "\n".join(parts)
+    return ("Doctor trial evidence (advisory; NOT candidate/incumbent metrics):\n" +
+            text[:2700] + ("\n[Preview truncated; complete trial record is in evaluation_facts.json.]"
+                           if len(text) > 2700 else ""))
 
 
 class Orchestrator:
@@ -678,7 +705,8 @@ class Orchestrator:
 
         # ---- fixed harness contract: no model negotiation ----
         facts = run_evidence(cfg, baseline, [base_v] + extra_sources, tb_path,
-                             idir, self._cache_context(tb_path, extra_sources))
+                             idir, self._cache_context(tb_path, extra_sources),
+                             **({"build_spec_path": state.spec_path} if cfg.mode == "build" else {}))
         context = save_evidence(state.run_dir / "harness_facts.json", facts)
         role_context = context + "\n\n" + candidate_scope(cfg.top_module, extra_sources)
         for role in (self.planner, self.generator, self.evaluator, self.doctor):
@@ -802,6 +830,7 @@ class Orchestrator:
             wm = VivadoMetrics.from_dict(winner.metrics)
 
             # ---- Timing Doctor ----
+            self._last_doctor_trial = None
             wdir = getattr(winner, "artifact_dir", idir / f"cand_{winner.mutation}")
             if not wm.timing_met:
                 diagd = diagnose(wdir, knobs_tried)
@@ -846,6 +875,8 @@ class Orchestrator:
                 "candidate_timing_feasible": timing_feasible(wm),
                 "previous_best_timing_feasible": timing_feasible(best_m),
             }
+            if self._last_doctor_trial is not None:
+                candidate_facts["doctor_trial"] = self._last_doctor_trial
             provenance = None
             provenance_path = Path(wdir) / "verification_provenance.json"
             if provenance_path.is_file():
@@ -874,6 +905,8 @@ class Orchestrator:
                                          cfg.stall_restart_threshold, self.budget)
             state.write_evaluation(it, ev.raw)
             fresh = advisor_digest(wdir, self.taxonomy)
+            if self._last_doctor_trial is not None:
+                fresh = _doctor_advice(self._last_doctor_trial) + "\n\n" + fresh
             if fresh:
                 last_advisor = fresh
 
@@ -970,6 +1003,32 @@ class Orchestrator:
         for manifest in sorted(verification_manifests):
             final_artifacts.update(_verification_dependencies(manifest))
             retained.append(manifest)
+
+        def retain_identity(identity, label):
+            if (not isinstance(identity, dict) or not isinstance(identity.get("path"), str) or
+                    not Path(identity["path"]).is_absolute() or
+                    not isinstance(identity.get("sha256"), str) or
+                    not re.fullmatch(r"[a-f0-9]{64}", identity["sha256"])):
+                raise VerificationEvidenceError(label + " identity is invalid")
+            path = Path(identity["path"])
+            if not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest() != identity["sha256"]:
+                raise VerificationEvidenceError(label + " missing or modified: " + str(path))
+            final_artifacts[str(path.resolve())] = identity["sha256"]
+
+        if facts.get("build_spec") is not None:
+            retain_identity(facts["build_spec"], "Resolved build specification evidence")
+        # Rejected Doctor reports still informed later plans. Retain their
+        # originally observed digests, never freshly bless changed trial files.
+        for evaluation_path in state.run_dir.glob("iter_*/evaluation_facts.json"):
+            trial = json.loads(evaluation_path.read_text(encoding="utf-8")).get("doctor_trial")
+            if trial is None:
+                continue
+            identities = [trial[key] for key in ("input_source", "trial_source", "prior_flow_script", "trial_flow_script") if key in trial]
+            identities.extend(trial.get("reports", []))
+            if trial.get("first_violated_path_excerpt") is not None:
+                identities.append(trial["first_violated_path_excerpt"])
+            for identity in identities:
+                retain_identity(identity, "Doctor trial evidence")
         for evidence_path in [state.contract_path, state.run_dir / "harness_facts.json", *state.run_dir.glob("iter_*/evaluation_facts.json"), *retained]:
             if evidence_path.is_file():
                 final_artifacts[str(evidence_path.resolve())] = hashlib.sha256(evidence_path.read_bytes()).hexdigest()
@@ -1040,25 +1099,90 @@ class Orchestrator:
                 list(previous), self.budget)
             previous.append(str(error)[:200])
 
+    def _doctor_default_flow(self, origin: Path, source: str, extra: list[Path], tb: Path) -> bool:
+        """Prove exact prior RTL and default tool options, never infer from missing Tcl."""
+        vfile, script = origin / f"{self.cfg.top_module}.v", origin / "synth.tcl"
+        if not vfile.is_file() or not script.is_file():
+            return False
+        try:
+            if vfile.read_bytes() != source.replace("\n", os.linesep).encode("utf-8"):
+                return False
+            if not _process_exit_gate(origin)["passed"]:
+                return False
+            manifest = origin / "verification_inputs.log"
+            if json.loads(manifest.read_text(encoding="utf-8")) != _verification_inputs([vfile, *extra], tb):
+                return False
+            expected = vivado.SYNTH_TCL.format(
+                promotions=vivado.promotion_tcl(self.taxonomy.promotions()),
+                part=self.cfg.target_part,
+                sources=" ".join(f'"{vivado._tcl_path(path)}"' for path in [vfile, *extra]),
+                workdir=vivado._tcl_path(origin), period=f"{self.cfg.target_period_ns:.3f}",
+                top=self.cfg.top_module, extra_synth="", phys_opt="")
+            return script.read_text(encoding="utf-8") == expected
+        except (OSError, UnicodeError, ValueError, TypeError, KeyError):
+            return False
+
     def _doctor_trial(self, source: str, current: VivadoMetrics, contract: ModuleSpec,
                       tb: Path | None, extra: list[Path], parent: Path,
                       diagnosis, verification_dir: Path | None = None) -> tuple[str, VivadoMetrics, Path] | None:
         """Validate an isolated experiment before replacing any verified artifacts."""
+        original_source = source
+        self._last_doctor_trial = {
+            "status": "NOT_ADOPTED", "action": diagnosis.action,
+            "tools_ran": False, "reason": "not_verified",
+            "scope": "Trial observations only; these do not replace candidate or incumbent metrics.",
+        }
+        feedback = self._last_doctor_trial
+        if verification_dir is not None:
+            prior = Path(verification_dir) / f"{self.cfg.top_module}.v"
+            if prior.is_file():
+                feedback["input_source"] = file_evidence(prior, 0)
+
+        def finish(reason, *, metrics=None, adopted=False):
+            feedback["reason"] = reason
+            feedback["status"] = "ADOPTED" if adopted else "NOT_ADOPTED"
+            if metrics is not None:
+                feedback["measured_metrics"] = metrics.to_dict()
+            if "work" in locations:
+                evidence = flow_evidence(locations["work"])
+                script = locations["work"] / "synth.tcl"
+                if script.is_file():
+                    feedback["trial_flow_script"] = file_evidence(script, 0)
+                feedback["reports"] = evidence["report_manifest"][:8]
+                feedback["reports_truncated"] = len(evidence["report_manifest"]) > 8
+                excerpt = evidence.get("first_violated_path_excerpt")
+                if excerpt is not None:
+                    excerpt = dict(excerpt)
+                    if len(excerpt.get("text", "")) > 2000:
+                        excerpt["text"] = excerpt["text"][:2000]
+                        excerpt["truncated"] = True
+                    feedback["first_violated_path_excerpt"] = excerpt
+            return None
+
+        locations = {}
         surgery = diagnosis.action == "rtl_surgery"
         if surgery:
             if tb is None:
-                return None
+                return finish("missing_testbench")
             source = self._model("doctor", "surgery", source, diagnosis.instruction,
                                          diagnosis.detail, self.budget)
+            feedback["proposed_source_text_sha256"] = hashlib.sha256(source.encode("utf-8")).hexdigest()
             if not static_check(source, contract).passed:
-                return None
+                return finish("static_or_interface_violation")
             latency = declared_latency(source)
             if getattr(contract, "latency_known", True) and latency is not None and latency != contract.latency:
-                return None
+                return finish("latency_violation")
+            if (source == original_source and verification_dir is not None and
+                    self._doctor_default_flow(Path(verification_dir), original_source, extra, tb)):
+                feedback["input_source"] = file_evidence(Path(verification_dir) / f"{self.cfg.top_module}.v", 1000)
+                feedback["prior_flow_script"] = file_evidence(Path(verification_dir) / "synth.tcl", 0)
+                return finish("no_source_change")
         work = parent / f"doctor_{diagnosis.action}_trial"
+        locations["work"] = work
         work.mkdir(parents=True, exist_ok=True)
         vfile = work / f"{self.cfg.top_module}.v"
         vfile.write_text(source, encoding="utf-8")
+        feedback["trial_source"] = file_evidence(vfile, 1000)
         if not surgery and verification_dir is not None:
             origin = Path(verification_dir)
             origin_source = origin / f"{self.cfg.top_module}.v"
@@ -1096,18 +1220,20 @@ class Orchestrator:
             }
             save_evidence(work / "verification_provenance.json", provenance)
         if surgery:
+            feedback["tools_ran"] = True
             passed, _, _ = self._tool("xsim_run", [vfile] + extra, tb,
                                           f"{self.cfg.top_module}_tb", self.cfg, work)
             if not passed:
-                return None
+                return finish("simulation_not_verified")
         hold = getattr(diagnosis, "category", None) == TimingCategory.HOLD
         knobs = {"hold_fix": True} if hold else {}
+        feedback["tools_ran"] = True
         ok, _, _ = self._tool("run_synthesis",
             [vfile] + extra, self.cfg.top_module, self.cfg, work,
             promotions=self.taxonomy.promotions(),
             retiming=not surgery and not hold, phys_opt=not surgery, **knobs)
         if not ok:
-            return None
+            return finish("synthesis_not_verified")
         result = self._tool("full_metrics", work)
         result.sim_passed, result.sim_error = True, ""
         try:
@@ -1116,9 +1242,10 @@ class Orchestrator:
                 raise MetricsGateError(result.synth_error)
         except MetricsGateError as exc:
             print(f"[doctor] invalid trial metrics: {exc}")
-            return None
+            return finish("invalid_metrics")
         if not self._is_better(result, current):
-            return None
+            return finish("timing_not_closed" if not timing_feasible(result) else "no_policy_improvement", metrics=result)
+        finish("policy_improvement", metrics=result, adopted=True)
         return source, result, work
 
     def _verified_best_iteration(self):

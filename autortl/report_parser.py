@@ -84,7 +84,11 @@ def parse_utilization(rpt_path: Path, m: VivadoMetrics) -> None:
 def parse_timing(rpt_path: Path, m: VivadoMetrics) -> None:
     if not rpt_path.exists():
         return
-    text = rpt_path.read_text(errors="replace")
+    parse_timing_text(rpt_path.read_bytes().decode("utf-8", errors="replace"), m)
+
+
+def parse_timing_text(text: str, m: VivadoMetrics) -> None:
+    """Canonical timing summary parser over an immutable decoded snapshot."""
     lines = text.splitlines()
     found = set()
     for i, line in enumerate(lines):

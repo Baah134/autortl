@@ -1,0 +1,50 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025
+| Date         : Wed Oct 21 06:25:02 2026
+| Host         : Baah running 64-bit major release  (build 9200)
+| Command      : report_qor_suggestions -file C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-fifo-03/iter_001/cand_standard/qor_suggestions.rpt
+| Design       : sync_fifo
+| Device       : xc7a35t
+| Design State : Routed
+| ML Models    : v2021.2.0
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Report QoR Suggestions
+
+Table of Contents
+-----------------
+1. QoR Suggestions Report Summary
+2. ML Strategies
+3. QoR Suggestions - Timing
+
+1. QoR Suggestions Report Summary
+---------------------------------
+
++----------------+--------------+-----------+--------------+----------------+-----------+-------------+----------------------+------------------------------------------------------------------------------------------+-------------+
+|      Name      |      Id      |   Status  | Generated At | Applicable For | Automatic |    Scope    | Incremental Friendly |                                        Description                                       |    Source   |
++----------------+--------------+-----------+--------------+----------------+-----------+-------------+----------------------+------------------------------------------------------------------------------------------+-------------+
+| RQS_TIMING-3-1 | RQS_TIMING-3 | Generated | route_design | place_design   | Yes       | GLOBALSCOPE | No                   | Critical nets with loads placed far apart. Apply FORCE_MAX_FANOUT to the critical nets   | Current Run |
+|                |              |           |              |                |           |             |                      | after synthesis to replicate drivers and improve timing.                                 |             |
++----------------+--------------+-----------+--------------+----------------+-----------+-------------+----------------------+------------------------------------------------------------------------------------------+-------------+
+* By default the number of failing paths is limited to 100. Use the -max_paths options to override.
+
+
+2. ML Strategies
+----------------
+
++---+----+---------+---------+
+| # | Id | Command | Options |
++---+----+---------+---------+
+
+
+3. QoR Suggestions - Timing
+---------------------------
+
++----------------+-------------+--------------+--------+--------+--------+--------+--------+----------------+-------+--------+--------------+-------------------+-----------------+-------------+
+|      Name      | No of Paths | Logic Levels | Routes |  Slack |  Req.  |  Skew  | Fanout | Datapath Delay | Cell% | Route% | Source Clock | Destination Clock |    Startpoint   |   Endpoint  |
++----------------+-------------+--------------+--------+--------+--------+--------+--------+----------------+-------+--------+--------------+-------------------+-----------------+-------------+
+| RQS_TIMING-3-1 | 4           | 2            | 2      | -0.898 | 10.000 | -4.640 | 10     | 6.222          | 54.80 | 45.20  | clk          | clk               | rd_ptr_reg[0]/C | out_data[0] |
++----------------+-------------+--------------+--------+--------+--------+--------+--------+----------------+-------+--------+--------------+-------------------+-----------------+-------------+
+
+

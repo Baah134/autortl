@@ -5,11 +5,13 @@ You can continue without access to the previous provider's conversation.
 
 Canonical checkout: `C:/Users/prince.baah/Downloads/autortl-work`.
 GitHub integration branch: `main`. Development branch: `codex/contract-context`.
-Current development checkpoint: **939 passing regression tests**, FIFO recovery
-policy/context/repair and completed child-source integrity guards. Fresh FIFO02
-and full tier0 validation are next; main remains at **7bef3bf** pending those
-gates. Prior fixture source **ffc15fc** passed 836 tests and FIFO admission14/14;
-its FIFO01 failed timing and is preserved. Prior runtime8098466 passed fulltier0.
+Current development checkpoint: **984 passing regression tests**. Recovery
+guards, bounded path/spec evidence, not-adopted Doctor feedback and proven no-op
+deduplication are tested. FIFO02/03 exhausted their original budgets and remain
+archived; freshFIFO04 (2iterations,25tool/35wallminutes) and fulltier0 are next.
+Main remains **7bef3bf** pending those gates. Prior source49599b5 passed939tests;
+fixtureffc15fc passed836tests/FIFO14of14admission; FIFO01 failed timing.
+Prior runtime8098466 passed fulltier0; archives retain their measured source.
 Inspect actual heads, status and SESSION_HANDOFF before editing or switching.
 
 1. Read `AGENTS.md` and `docs/AGENT_HANDOFF.md` for the working contract.

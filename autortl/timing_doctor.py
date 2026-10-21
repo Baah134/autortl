@@ -10,7 +10,7 @@ import math
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
-from .report_parser import VivadoMetrics, parse_timing
+from .report_parser import VivadoMetrics, parse_timing_text
 
 
 class TimingCategory(Enum):
@@ -34,37 +34,90 @@ KNOB_THRESHOLD_NS = -0.5    # deficits smaller than this: try knobs first
 SURGERY_THRESHOLD_NS = -3.0 # deficits worse than this: knobs won't save you
 
 
-def parse_worst_path(timing_rpt: Path) -> tuple[float, int, int, str]:
-    """Returns (wns, logic_levels, fanout_est, raw_path_snippet)."""
-    if not timing_rpt.exists():
-        return -999.0, 0, 0, ""
-    text = timing_rpt.read_text(errors="replace")
+PATH_EXCERPT_CHARS = 6000
+
+
+def first_violated_path(text: str, *, category: str | None = None) -> dict | None:
+    """Select one real negative-slack path without mixing report-wide metadata.
+
+    Category comes from that path's explicit Path Type. Missing path identity
+    remains unknown; report-wide WNS/WHS never supplies an invented path type.
+    """
     metrics = VivadoMetrics()
-    parse_timing(timing_rpt, metrics)
-    wns = metrics.wns_ns
-    levels = 0
-    m = re.search(r"Logic Levels:\s*(\d+)", text)
-    if m:
-        levels = int(m.group(1))
-    fanout = 0
-    fanouts = [int(x) for x in re.findall(r"fanout=(\d+)", text)]
-    if fanouts:
-        fanout = max(fanouts)
-    snippet = ""
-    m = re.search(r"(Slack \(VIOLATED\).*?)(?:\n\s*\n|\Z)", text, re.DOTALL)
-    if m:
-        snippet = "\n".join(m.group(1).splitlines()[:15])
-    return wns, levels, fanout, snippet
+    parse_timing_text(text, metrics)
+    if any(not math.isfinite(n) or n == -999.0 for n in (metrics.wns_ns, metrics.whs_ns)) or metrics.timing_met:
+        return None
+    markers = list(re.finditer(r"^\s*Slack\s*\((VIOLATED|MET)\)\s*:\s*(-?\d+(?:\.\d+)?)\s*ns[^\r\n]*", text, re.MULTILINE))
+    for index, marker in enumerate(markers):
+        slack = float(marker[2])
+        if marker[1] != "VIOLATED" or slack >= 0:
+            continue
+        end = markers[index+1].start() if index+1<len(markers) else len(text)
+        block = text[marker.start():end]
+        # Stop before the next section even when it has no printed path.
+        section = re.search(r"^\s*(?:Max|Min) Delay Paths\s*$", block, re.MULTILINE)
+        if section:
+            block = block[:section.start()]
+        path_type = re.search(r"^\s*Path Type:\s*([^\r\n]+)", block, re.MULTILINE)
+        kind = None
+        if path_type:
+            label = path_type[1].strip().lower()
+            if re.match(r"(?:hold\b|min\b)",label): kind="hold"
+            elif re.match(r"(?:setup\b|max\b)",label): kind="setup"
+        if kind is None or (category is not None and kind!=category):
+            continue
+        summary_slack = metrics.whs_ns if kind=="hold" else metrics.wns_ns
+        if summary_slack>=0 or slack<summary_slack-0.001:
+            continue
+        source = re.search(r"^\s*Source:\s*([^\r\n]+)",block,re.MULTILINE)
+        destination = re.search(r"^\s*Destination:\s*([^\r\n]+)",block,re.MULTILINE)
+        if source is None or destination is None:
+            continue
+        levels = re.search(r"^\s*Logic Levels:\s*(\d+)",block,re.MULTILINE)
+        fanouts = [int(n) for n in re.findall(r"(?:fanout\s*=|\bfo\s*=)\s*(\d+)",block)]
+        block=block.rstrip("\r\n")
+        return {"category":kind,"slack_ns":slack,
+                "source":source[1].strip() if source else None,
+                "destination":destination[1].strip() if destination else None,
+                "logic_levels":int(levels[1]) if levels else None,
+                "fanout":max(fanouts) if fanouts else None,
+                "text":block[:PATH_EXCERPT_CHARS],"truncated":len(block)>PATH_EXCERPT_CHARS,
+                "preview_policy":"First complete identifiable violated path in report order, at most 6000 characters. "
+                                 "Slack, endpoints, levels and fanout describe this path only, not global WNS/WHS. "
+                                 "Resource text is retained verbatim; absent fields are unknown."}
+    return None
+
+
+def _report_path(text):
+    metrics=VivadoMetrics()
+    parse_timing_text(text,metrics)
+    category="hold" if metrics.whs_ns<0 and metrics.whs_ns!=-999.0 else "setup"
+    path=first_violated_path(text,category=category)
+    return metrics,path
+
+
+def parse_worst_path(timing_rpt: Path) -> tuple[float, int, int, str]:
+    """Return global setup WNS plus metadata from one selected violated path.
+
+    Hold takes priority when violated. WNS is a report-wide setup metric and is
+    never labeled as the selected hold path's slack.
+    """
+    if not timing_rpt.exists():
+        return -999.0,0,0,""
+    metrics,path=_report_path(timing_rpt.read_bytes().decode("utf-8",errors="replace"))
+    return (metrics.wns_ns,path["logic_levels"] or 0,path["fanout"] or 0,path["text"]) if path else (metrics.wns_ns,0,0,"")
 
 
 def diagnose(work_dir: Path, already_tried_knobs: bool) -> Diagnosis:
     rpt = work_dir / "timing_routed.rpt"
     if not rpt.exists():
         rpt = work_dir / "timing.rpt"
-    wns, levels, fanout, snippet = parse_worst_path(rpt)
-    metrics = VivadoMetrics()
-    parse_timing(rpt, metrics)
-    whs = metrics.whs_ns
+    text = rpt.read_bytes().decode("utf-8",errors="replace") if rpt.is_file() else ""
+    metrics,path = _report_path(text)
+    wns,whs = metrics.wns_ns,metrics.whs_ns
+    levels = path["logic_levels"] or 0 if path else 0
+    fanout = path["fanout"] or 0 if path else 0
+    snippet = path["text"] if path else ""
 
     if any(not math.isfinite(value) or value == -999.0 for value in (wns, whs)):
         return Diagnosis(TimingCategory.UNKNOWN, wns,

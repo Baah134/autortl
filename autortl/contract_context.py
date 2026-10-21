@@ -6,11 +6,16 @@ import math
 import re
 from pathlib import Path
 from .state import atomic_write_text
+from .timing_doctor import first_violated_path
 
 
 def file_evidence(path: Path, limit: int = 16000) -> dict:
     path = Path(path)
     data = path.read_bytes()
+    return _snapshot_evidence(path, data, limit)
+
+
+def _snapshot_evidence(path, data, limit):
     content = data.decode("utf-8", errors="replace")
     return {"path": str(path.resolve()), "sha256": hashlib.sha256(data).hexdigest(),
             "text": content[:limit], "truncated": len(content) > limit}
@@ -117,13 +122,24 @@ def flow_evidence(directory) -> dict:
     directory = Path(directory)
     reports = sorted({path for pattern in ("*utilization*.rpt", "*timing*.rpt", "power.rpt")
                       for path in directory.glob(pattern) if path.is_file()})
-    headers = [file_evidence(path, 1800) for path in reports]
+    snapshots = {path: path.read_bytes() for path in reports}
+    headers = [_snapshot_evidence(path, data, 1800) for path, data in snapshots.items()]
+    timing = directory / "timing_routed.rpt"
+    if timing not in snapshots:
+        timing = directory / "timing.rpt"
+    path_excerpt = None
+    if timing in snapshots:
+        raw = snapshots[timing]
+        selected = first_violated_path(raw.decode("utf-8", errors="replace"))
+        if selected is not None:
+            path_excerpt = {"path":str(timing.resolve()),"sha256":hashlib.sha256(raw).hexdigest(),**selected}
     verification_logs = []
     for name in ("xvlog.log", "xelab.log", "sim_log.txt", "vivado_synth_output.log"):
         path = directory / name
         if path.is_file():
-            item = file_evidence(path, 1800)
-            full = path.read_bytes().decode("utf-8", errors="replace")
+            raw = path.read_bytes()
+            item = _snapshot_evidence(path, raw, 1800)
+            full = raw.decode("utf-8", errors="replace")
             verification_logs.append({"path": item["path"], "sha256": item["sha256"],
                 "head": full[:1800], "tail": full[-1800:] if len(full) > 1800 else "",
                 "truncated": len(full) > 3600,
@@ -137,6 +153,7 @@ def flow_evidence(directory) -> dict:
         "report_manifest": [{"path": item["path"], "sha256": item["sha256"]}
                             for item in headers],
         "report_headers": headers,
+        "first_violated_path_excerpt": path_excerpt,
         "verification_logs": verification_logs,
         "tool_exit_evidence": tool_exit_evidence(directory),
         "metric_provenance": "Structured metrics are parsed from retained reports; routed "
@@ -146,11 +163,45 @@ def flow_evidence(directory) -> dict:
     }
 
 
-def run_evidence(cfg, baseline, sources, tb, directory, execution_context) -> dict:
+MAX_BUILD_SPEC_CHARS = 64000
+
+
+def _build_spec_evidence(path, top_module):
+    from .spec import DesignSpec
+    from .linter import lint_spec
+    path=Path(path)
+    raw=path.read_bytes()
+    if len(raw)>1000000:
+        raise ValueError("typed build spec source exceeds evidence size limit")
+    try:
+        spec=DesignSpec.from_json(raw.decode("utf-8"))
+        errors=lint_spec(spec)
+    except (ValueError,TypeError,KeyError,AttributeError,UnicodeError) as exc:
+        raise ValueError("invalid typed build spec evidence: "+str(exc)) from exc
+    if errors:
+        raise ValueError("invalid typed build spec evidence: "+"; ".join(errors))
+    if spec.top_name!=top_module:
+        raise ValueError("typed build spec top does not match measured top")
+    resolved=spec.to_json()
+    if len(resolved)>MAX_BUILD_SPEC_CHARS:
+        raise ValueError("typed build spec semantic evidence exceeds budget; partition the design rather than truncate obligations or qualifiers")
+    return {"path":str(path.resolve()),"sha256":hashlib.sha256(raw).hexdigest(),
+            "resolved_spec":json.loads(resolved),"truncated":False,
+            "authority":"Complete resolved typed build contract. Defined behavior is mandatory; "
+                        "explicitly unspecified cases remain unspecified. Frozen implementation identities "
+                        "do not turn incidental values in unspecified cases into requirements."}
+
+
+def run_evidence(cfg, baseline, sources, tb, directory, execution_context, *, build_spec_path=None) -> dict:
     from .verilog_interface import infer_module
     directory = Path(directory)
+    if cfg.mode == "build" and build_spec_path is None:
+        raise ValueError("build mode requires complete typed build spec evidence")
+    if cfg.mode != "build" and build_spec_path is not None:
+        raise ValueError("standalone optimization cannot use a typed build spec exception")
+    build_spec = _build_spec_evidence(build_spec_path,cfg.top_module) if build_spec_path is not None else None
     source_facts = [file_evidence(path) for path in sources]
-    source_contract = infer_module(Path(sources[0]).read_text(), cfg.top_module)
+    source_contract = infer_module(Path(sources[0]).read_text(encoding="utf-8", errors="replace"), cfg.top_module)
     declared_latency = {
         "known": source_contract.latency_known,
         "cycles": source_contract.latency if source_contract.latency_known else None,
@@ -168,6 +219,7 @@ def run_evidence(cfg, baseline, sources, tb, directory, execution_context) -> di
         "objective": cfg.objective, "clock_period_ns": cfg.target_period_ns,
         "baseline_metrics": baseline.to_dict(),
         "sources": source_facts, "declared_latency": declared_latency,
+        "build_spec": build_spec,
         "testbench": file_evidence(tb), "testbench_top": cfg.top_module + "_tb",
         "simulation": {"tools": ["xvlog", "xelab", "xsim -runall"],
                        "required_verdict": "TEST PASSED", "failure_verdict": "TEST FAILED",
@@ -177,7 +229,9 @@ def run_evidence(cfg, baseline, sources, tb, directory, execution_context) -> di
         "allowed_flow_variations": "The harness may enable retiming or physical optimization. "
                                    "The candidate's retained synthesis script is authoritative for its actual settings.",
         "hard_gates": [
-            "Preserve ports, parameter defaults, reset behavior and observable cycle behavior.",
+            ("Preserve typed build spec defined behavior, ports, parameter defaults, reset and observable cycles; "
+             "explicitly unspecified cases remain unspecified." if build_spec is not None else
+             "Preserve ports, parameter defaults, reset behavior and observable cycle behavior."),
             "Use the fixed provided testbench, tools, device and constraints without modification.",
             "Static/interface checks, compile, simulation and real routed metric integrity must pass.",
             "Timing closure requires setup slack >= 0 and hold slack >= 0.",
@@ -229,19 +283,32 @@ def render_fixed_optimize_contract(evidence: dict) -> str:
         "execution_context": evidence["execution_context"],
         "flow_and_constraints": evidence["flow_and_constraints"],
         "report_manifest": evidence["report_manifest"],
+        "build_spec": evidence.get("build_spec"),
     }
+    if evidence.get("build_spec") is not None:
+        obligations = (
+            "The complete resolved typed build specification below is the behavioral authority. "
+            "Preserve all defined behavior, supported parameter semantics, reset priority, observable cycles, "
+            "latency, throughput, flags and handshakes. Preserve top ports and parameter defaults. "
+            "Explicitly unspecified cases remain unspecified: do not impose blanket equality to incidental "
+            "frozen implementation values in those cases, including invalid output payload when the spec "
+            "leaves it unspecified. This does not relax specified valid payloads, transfers or cycle behavior. "
+            "Source hashes identify the measured implementation, not additional semantic obligations. "
+            "No new pipeline stages, extra cycles, interfaces or invented thresholds.")
+    else:
+        obligations = (
+            "Preserve the frozen source's ports, names, directions, widths, parameters and parameter defaults. "
+            "Preserve reset polarity, synchronous/asynchronous behavior, priority, state initialization and "
+            "every observable cycle of latency, throughput, flags and handshakes, including disabled cycles. "
+            "Preserve supported parameter behavior and high-bit semantics. No new pipeline stages, extra "
+            "clock cycles, interfaces or invented thresholds. Standalone optimization has no typed build "
+            "spec exception: do not infer unspecified behavior merely from missing test coverage.")
     return ("# Fixed optimization contract\n\n"
         "This contract is rendered by the harness from immutable run evidence. "
         "Planner, generator and evaluator cannot amend its requirements.\n\n"
         "## Behavioral obligations\n\n"
-        "Preserve the frozen source's ports, names, directions, widths, parameters "
-        "and parameter defaults. Preserve reset polarity, synchronous/asynchronous "
-        "behavior, priority, state initialization and every observable cycle of "
-        "latency, throughput, flags and handshakes, including disabled cycles. "
-        "Preserve supported parameter behavior and high-bit semantics. No new "
-        "pipeline stages, extra clock cycles, interfaces or invented thresholds. "
-        "For build mode, the integrated design remains subject to its module specs.\n\n"
-        "## Verification gates\n\n"
+        + obligations + "\n\n"
+        + "## Verification gates\n\n"
         "Use the frozen testbench unchanged. Pass static/interface and declared "
         "latency checks when a numeric declaration is known, xvlog compilation, "
         "xelab elaboration and xsim -runall. Unannotated numeric latency is UNKNOWN, "

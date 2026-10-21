@@ -127,8 +127,11 @@ one paragraph
 ## Hypothesis
 one sentence
 ## Instruction for generator
-2-4 sentences naming the exact code pattern to change. The generator sees ONLY
-this instruction and the current code."""
+2-4 sentences naming the exact code pattern to change. The generator also receives
+the immutable harness facts, fixed contract and frozen compilation boundary.
+Respect explicit unspecified cases in supplied build specifications; do not invent
+extra behavioral requirements. Use retained trial evidence to avoid repeating an
+unchanged failed experiment."""
 
 RESTART_PLAN = """The loop has stalled ({stall_count} iterations without improvement).
 # Contract

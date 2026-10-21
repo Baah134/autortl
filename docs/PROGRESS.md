@@ -651,3 +651,39 @@ changes, commands, outcomes, evidence locations, limitations, and next action.
 - Publishing reviewed recovery source and failed FIFO01 evidence to development.
   Main remains7bef3bf until fresh fulltier0. FIFO02 uses a fresh run and the newly
   committed frozen runtime; no physical timing recovery is yet claimed.
+
+- Published49599b5 verified on GitHub development; runtime55/55files match. FIFO02
+  repaired oracle syntax and qualified both graders, then PC sleep/hibernate
+  interrupted baseline synthesis. Receipt timed_out/driver124 despiteactualexit0;
+  budget_exhausted with3calls,18741.826chargedtoolseconds/18775.798elapsed. No
+  optimization/winner or physical result. Original budget retained; archive02
+  preserves failure. FreshFIFO03 is a separate experiment on unchanged49599b5.
+- Old helpers72074/72910 released. New bounded queue helper12596 active; remove
+  verification flag after queue. No powerplan or user GUI/simulation changes.
+
+- FIFO03 on frozen49599b5: baseline13LUT/6FF,setup-0.931/hold0.091ns.
+  Candidate1 setup-0.905; Doctor-0.525stillinvalid/notadopted; candidate2-0.600.
+  Second Doctor exact unchanged source reran and exhausted remaining tool time.
+  Finalbudget_exhausted,10calls,1200.654chargedtoolseconds/1349.068elapsed; no
+  saved finalwinner/acceptedphysicalresult. Archive03:295files,manifestverified.
+- Evidence review identified reportpreview truncation beforepaths, lost resolved
+  typed semantics, missing rejected-Doctor feedback and no-op surgery repeats.
+  All four recorded in taxonomy before corrections. Existing fact/advisor/parser
+  plumbing will carry bounded exact evidence; proven same-flow no-op skips only
+  surgery, intentional physical experiments stillrun. No newrole/framework.
+
+- Feedback changes implemented and read-only peerreview found no blocker.
+  Context51tests pass2.81s; Doctor74pass212.77s. Removed test-only legacy parser
+  inference; synthetic helper now supplies real path fields, assertions intact.
+  Firstfullsuite984passed408.00s. Final no-op sourcepreview completion passed its
+  targeted regression1test0.71s; finalfullsuite02 running on frozen source.
+  New related trial/spec digests are protected against pre/postDONE mutation.
+
+- Final feedback runtime fullsuite: **984passed423.26seconds**. All187 recorded
+  runtime/test/curriculum identities unchanged during final run. Read-only peer
+  review and focused51/74checks passed; original before/after failures preserved.
+  Publishing complete tested source and both failed FIFO02/03 archives.
+- FIFO04 predeclared budget:2iterations,1candidate,16calls,25toolminutes,
+ 35wallminutes,oneinfraretry. Larger time allowance covers two possible Doctor
+  trials; no oldrun counters reset and no controlled efficiency comparison with
+  earlier budgets or unobserved CLI model identity is claimed.

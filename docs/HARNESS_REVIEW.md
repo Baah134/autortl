@@ -288,3 +288,45 @@ store an end-of-packet bit with every beat and verify tuple alignment through
 stalls, simultaneous transfers, wrap and reset. Reuse the current ladder and
 dual graders. Defer parsing, CRC, store-and-forward, arbitration and CDC until
 concrete failures justify that complexity. No new framework is justified.
+
+
+## FIFO03 observed feedback corrections, before implementation
+
+Source49599b5 reproduced baseline13LUT/6FF, setup-0.931ns/hold0.091ns.
+Candidate1 closed neither setup(-0.905) nor its resource objective. Doctor's
+masked read mux improved setup to-0.525 but remained invalid and was not adopted.
+Candidate2 remained at-0.600. Its Doctor response exactly repeated source; the
+remaining synthesis deadline expired and the trial ended budget_exhausted,
+10calls,1200.654chargedtoolseconds/1349.068elapsed. No accepted FIFO gain.
+
+Read-only review confirmed four existing feedback omissions. The first1800
+report characters exclude real paths at line201+, and planner explicitly says
+the path is unavailable. Rejected Doctor trials do not reach next planning.
+The typed build spec's explicit invalid-payload qualifier is absent after
+integration, so planner incorrectly requires matching empty output data.
+Exact unchanged Doctor RTL also repeats the same measured flow unnecessarily.
+
+Smallest correction: bounded report-hash-linked path excerpts; frozen complete
+bounded resolved specification facts; labeled not-adopted Doctor advice in
+existing evaluation/planner context; skip only proven source-and-flow-identical
+surgery. Keep standalone optimization strict, all defined valid/stalled behavior
+and reset/latency/interface/TB/exit/setup/hold gates intact. Do not mislabel hold
+paths as setup or adopt merely less-negative slack. No new role/framework.
+Oversized semantic metadata must fail explicitly rather than drop qualifiers.
+Test missing/malformed/hold/routed precedence, exact hashes, actual prompts,
+failed-trial visibility, no-op versus intentional physical changes, and replay.
+
+
+## Feedback correction outcome before fresh physical trial
+
+Keep the existing roles and gates. Final984tests passed423.26s; context51 and
+Doctor74focused checks pass. Raw report/path/hash use one snapshot; full resolved
+semantics are bounded without dropping qualifiers. Failed trial evidence and
+source previews reach planning, while original related digests survive DONE.
+No-op skip requires actual prior receipts/inputs and exact default-flow proof.
+
+Remove test-only report inference: synthetic helper now has real path fields.
+Do not infer data-net fanout from the selected path's clock-inclusive maximum.
+Keep this metadata advisory; no new heuristic or driver parser was added.
+Fresh physical FIFO and fulltier0 are still required. Unit results establish
+these guard/feedback properties, not model robustness or timing closure.

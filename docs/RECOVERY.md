@@ -127,3 +127,26 @@ a known timing-failing baseline even with higher area, labeled timing_recovery.
 Among timing-feasible designs, promotion still requires strict improvement of
 the selected objective. Missing or contradictory timing cannot establish recovery.
 All behavior, metric, receipt and final evaluation gates continue to apply.
+
+
+## Physical feedback and resolved build contracts
+
+Role evidence retains a bounded violated-path excerpt from the same original
+report bytes as its SHA. It identifies setup/hold from the path's own fields;
+report-wide WNS/WHS are distinct measurements. Missing path identity stays
+unknown. Context does not replace metric or process-exit gates.
+
+Build optimization retains the complete validated resolved specification within
+an explicit size budget, preserving defined behavior and any explicit
+unspecified cases. Oversized semantic context fails rather than silently dropping
+qualifiers. Standalone optimization remains governed by its frozen source.
+
+Non-adopted Doctor trial observations reach subsequent planning as advisory
+facts, separately from candidate/incumbent metrics. Their original source/report/
+script digests and the resolved build-spec digest are protected at finalization
+and DONE. Merely improved negative slack never establishes timing recovery.
+
+Exact unchanged RTL surgery is skipped only when source bytes, verified prior
+inputs/exits and the exact current default synthesis flow match. Changed or
+unknown flow options and intentional physical-only trials still run. A skipped
+trial records no_source_change/tools_ran=false and creates no new measurement.

@@ -14,7 +14,7 @@ learn from failures, and retain the best correct design within a fixed budget.
 
 | Validation | Recorded result |
 |---|---|
-| Harness regression suite | **939 tests passed** |
+| Harness regression suite | **984 tests passed** |
 | Parameterized FIFO verification | **Six configurations passed; all 13 planned faults detected** |
 | Independent streaming verification | **Correct queue control passed; all eight behavior faults detected** |
 | Combined-verification streaming build | **Two-entry queue · 15 LUTs / 19 FFs · independent 893-cycle test passed** |
@@ -36,7 +36,7 @@ validation. No held curriculum tier is claimed. Earlier unsuccessful cohorts
 remain in the evidence record.
 
 See the [test evidence](evidence/2026-10-20/README.md),
-[full-suite result](evidence/2026-10-21/fifo-recovery-tests/AutoRTL-fifo-full-03.txt) and
+[full-suite result](evidence/2026-10-21/feedback-context-tests/AutoRTL-feedback-full-02.txt) and
 [accepted optimization](evidence/2026-10-20/contract-campaign-06/README.md),
 [generated-build verification](evidence/2026-10-20/generated-counter/README.md) and
 [streaming build](evidence/2026-10-20/generated-streaming/README.md).
@@ -66,8 +66,9 @@ flowchart LR
   support replay; source, configuration and report drift invalidate reuse.
 - **Bounded experiments:** model-call, tool-time and wall-time budgets constrain
   work. Infrastructure failures receive bounded retries without RTL mutation.
-- **Traceable results:** retained sources, constraints, hashes, reports and event
-  records connect each result to its exact experiment.
+- **Traceable feedback:** sources, constraints, hashes and reports connect results
+  to exact experiments. Routed path details and unsuccessful trial evidence
+  inform subsequent planning; rejected measurements remain separate from winners.
 
 ## Quick start
 
