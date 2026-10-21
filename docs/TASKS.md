@@ -105,8 +105,8 @@ attempt failures remain separate. No weaker-model or held-tier claim.
 
 Final proof-retention and duplicate-definition repairs passed807fulltests and a
 real compiler regression. Source8098466 freshfulltier0 campaign06 passed2/2,
-including accepted55to31LUT counter gain; exact cohort is archived and ready for
-main integration. Next design complexity: parameterized synchronous FIFO with
+including accepted55to31LUT counter gain; exact cohort was archived and integrated
+into main ata113ca1. Next design complexity: parameterized synchronous FIFO with
 pointer wrap, capacity and sustained throughput verification, before packet or
 multi-clock pipelines. Research/feature decisions remain harness-first.
 

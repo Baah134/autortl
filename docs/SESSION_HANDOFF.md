@@ -12,8 +12,10 @@ coordination state and actual processes. Notes are not execution evidence.
   duplicate-definition guards). Streaming build03 was measured atafcc080;
   generated encoder at978c742; generated counter at8b6a162. Each archive records
   its own source; do not assign all measurements to the latest commit.
-- Published development:8098466 on codex/contract-context. Main remains1124ea0
-  pending publication of the now-passing campaign06 archive. Confirm remote heads before editing.
+- Verified integration: main and codex/contract-context both reached
+  **a113ca192085bd8406f734f66891a69e35216a99**, containing tested source8098466
+  and the complete campaign06 archive. Later continuity-only commits may extend
+  it. Inspect actual heads before editing.
 - Paused MCP work remains in its original stash. Command-line Vivado is active.
 
 ## Standing user decisions
@@ -64,11 +66,16 @@ identities at completion. No higher held tier and no controlled weaker-model cla
   427.438chargedtoolseconds; equal-area candidate correctly rejected.
 - Archives: generated-streaming, qualification-proof, contract-campaign-06.
   All manifests verified; original paths are provenance, not portable commands.
-- Vendor queue finished. Temporary keep-awake flag removed; helper release is
-  checked before final checkpoint. No power-plan change was made.
-- Next: integrate tested archive checkpoint into main; verify remote heads and
-  record publication below. Then implement the parameterized synchronous FIFO
-  acceptance plan in docs/TASKS.md. Keep source frozen during any new campaign.
+- Vendor queue finished; no vendor job remains. Temporary keep-awake helper
+  confirmed released. No power-plan change was made. Active coordination is a
+  saved checkpoint, not a background experiment or scheduled agent switch.
+- Main integration verified at a113ca1; full807tests plus freshfulltier0 gates
+  passed before the fast-forward.
+- Exact next action: inspect Git/processes and acquire/renew coordination, then
+  implement the parameterized synchronous FIFO fixture/TB/mutants specified in
+  docs/TASKS.md. Qualify real behavioral faults before a generated combined-mode
+  build. Reuse the current flow; no new framework/role is justified. Keep runtime
+  frozen during each full test or live campaign.
 
 ## Earlier completed milestone (historical)
 

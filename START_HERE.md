@@ -7,7 +7,8 @@ Canonical checkout: `C:/Users/prince.baah/Downloads/autortl-work`.
 GitHub integration branch: `main`. Development branch: `codex/contract-context`.
 Latest tested runtime source: **8098466**, with 807 passing regression tests and
 completed combined-verification streaming evidence. Fresh fulltier0 campaign06 passed2/2; source/runtime identity stayed fixed.
-Main integration is being published; inspect the session record and actual heads.
+Main and development integrated the complete checkpoint at a113ca1. Later
+continuity-only commits may extend it; inspect actual heads and the session record.
 Inspect actual heads, status and SESSION_HANDOFF before editing or switching.
 
 1. Read `AGENTS.md` and `docs/AGENT_HANDOFF.md` for the working contract.

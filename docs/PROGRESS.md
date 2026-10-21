@@ -579,3 +579,13 @@ changes, commands, outcomes, evidence locations, limitations, and next action.
  main integration is now authorized by passing full807tests plus freshfulltier0.
  Queue finished and temporary keep-awake flag removed. Next design's exact FIFO
  contract/matrix/fault admission plan is in docs/TASKS.md, not public README.
+
+
+- Verified GitHub publication: main and codex/contract-context fast-forwarded
+ atomically to **a113ca192085bd8406f734f66891a69e35216a99**. Local main updated
+ with expected-old-ref check; remote heads confirmed identical. Runtime source
+ remains8098466; only evidence/docs changed after the tests and campaign.
+- No vendor processes remain. Temporary system-awake request confirmed released;
+ power plan unchanged. Saved coordinator checkpoint retains progress, not a
+ background job. Next concrete work is FIFO fixture/TB/mutation admission per
+ TASKS; no extra framework, agent layer or weak-model claim was added.
