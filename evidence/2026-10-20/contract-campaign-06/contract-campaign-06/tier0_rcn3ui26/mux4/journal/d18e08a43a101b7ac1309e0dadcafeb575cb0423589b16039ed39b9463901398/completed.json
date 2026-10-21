@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_1:model:generator.generate:0",
+  "result": "`timescale 1ns/1ps\nmodule mux4 (\n    input  wire clk,\n    input  wire rst,\n    input  wire [7:0] a, b, c, d,\n    input  wire [1:0] sel,\n    output reg  [7:0] y\n);\n    always @(posedge clk) begin\n        if (rst) y <= 8'd0;\n        else case (sel)\n            2'd0: y <= a;\n            2'd1: y <= b;\n            2'd2: y <= c;\n            default: y <= d;\n        endcase\n    end\nendmodule",
+  "artifacts": {}
+}

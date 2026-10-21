@@ -76,3 +76,8 @@ no held tier or weaker-model performance is claimed.
   42-identity DONE replay. Equal-area candidate rejected; no gain claimed.
 - `qualification-proof/`: **807 passing regression tests**, actual duplicate
   candidate rejected before elaboration, journal/DONE assertion-proof integrity.
+
+- `contract-campaign-06/`: final807-test source8098466; fulltier0 **2/2**, accepted
+  counter **55to31LUT (43.64%)**,37FF; setup0.126/hold0.026ns; mux baseline retained.
+  Known unchanged53-file runtime identities,76-identity counter DONE replay;
+  streak1,held=false. This supersedes campaign05 as the latest bounded result.

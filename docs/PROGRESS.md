@@ -556,3 +556,26 @@ changes, commands, outcomes, evidence locations, limitations, and next action.
 - Final fullsuite07: **807passed in137.16seconds**. No runtime edits during tests.
   Publishing tested guards and streaming archive; freshfulltier0 campaign06 is
   next, required before main integration. No higher tier is held.
+
+
+- Fresh campaign06 counter completed on frozen8098466: accepted **55 to31LUT
+ (43.64%)**,37FF. Setupslack0.494to0.126ns; holdslack0.113to0.026ns, both positive.
+ The extended increment adder shares carry with overflow; reset/load/enable and
+ pre-edge registered flag behavior remain fixed. Independent default32bitTB,
+ actual exit receipts, routed reports and final evaluator9/9 passed.3modelcalls,
+ 443.859chargedtoolseconds/469.442elapsed. A read-only arithmetic/priority review
+ found no blocker for tested binary/default behavior; no all-parameter or X/Z
+ equivalence claim. Actual DONE replay preserved76protected identities including
+ budgets and winner. Mux still running; no fullcampaign or merge success yet.
+
+
+- Fresh06 fulltier0 completed **2/2**, qualifiedstreak1/heldfalse. Mux equal-area
+ candidate rejected;8LUT/8FF baseline retained,setup0.579/hold0.052ns;3calls,
+ 427.438chargedtoolseconds/450.888elapsed. Both entries match53committed runtime
+ identities at8098466. No runtime edits occurred during campaign. No higher held
+ tier or observed CLI model identity. First pre-run missing-PYTHONPATH traceback
+ is retained separately; no task was created/charged before that import failure.
+- Final portable campaign archive, source identity and hash manifests prepared;
+ main integration is now authorized by passing full807tests plus freshfulltier0.
+ Queue finished and temporary keep-awake flag removed. Next design's exact FIFO
+ contract/matrix/fault admission plan is in docs/TASKS.md, not public README.

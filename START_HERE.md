@@ -4,11 +4,11 @@ This repository is the shared workspace for every coordinator and its workers.
 You can continue without access to the previous provider's conversation.
 
 Canonical checkout: `C:/Users/prince.baah/Downloads/autortl-work`.
-GitHub integration branch: `main`. Tested runtime source `5d285c0` and the
-complete accepted campaign05 were integrated at `251666d`. The active
-working branch is `codex/contract-context`; both published branches contain
-that checkpoint. Later documentation commits may extend it. Inspect actual
-heads, status and the session record before editing or switching branches.
+GitHub integration branch: `main`. Development branch: `codex/contract-context`.
+Latest tested runtime source: **8098466**, with 807 passing regression tests and
+completed combined-verification streaming evidence. Fresh fulltier0 campaign06 passed2/2; source/runtime identity stayed fixed.
+Main integration is being published; inspect the session record and actual heads.
+Inspect actual heads, status and SESSION_HANDOFF before editing or switching.
 
 1. Read `AGENTS.md` and `docs/AGENT_HANDOFF.md` for the working contract.
 2. Read `docs/SESSION_HANDOFF.md` for current state and exact next actions.

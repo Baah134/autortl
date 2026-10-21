@@ -19,7 +19,7 @@ learn from failures, and retain the best correct design within a fixed budget.
 | Combined-verification streaming build | **Two-entry queue · 15 LUTs / 19 FFs · independent 893-cycle test passed** |
 | Generated 8-bit counter build | **Golden oracle repaired automatically; independent 700-cycle test passed · 6 LUTs / 8 FFs** |
 | Generated priority encoder optimization | **6 → 5 LUTs (16.7%) · 4 FFs · exhaustive independent test passed** |
-| Accepted 32-bit counter optimization | **55 → 53 LUTs (3.6%) · 37 FFs · setup slack 0.456 ns · hold slack 0.282 ns** |
+| Accepted 32-bit counter optimization | **55 → 31 LUTs (43.6%) · 37 FFs · setup slack 0.126 ns · hold slack 0.026 ns** |
 | Fresh full tier 0 campaign | **2/2 passed · counter improved, mux baseline retained** |
 
 Measurements use Vivado 2025.2, `xc7a35tcpg236-1` and a 10 ns clock,
@@ -29,13 +29,14 @@ constraints, not board timing requirements.
 The 32-bit counter result passed the independent frozen testbench, actual tool-exit
 checks, routed timing and final review in three model calls. Completed-run
 replay retained its winner and budget without additional model or tool calls.
+Counter setup slack decreased from 0.494 ns to 0.126 ns while area improved.
 Additional build, weaker-model and in-flight interruption coverage remains under
 validation. No held curriculum tier is claimed. Earlier unsuccessful cohorts
 remain in the evidence record.
 
 See the [test evidence](evidence/2026-10-20/README.md),
 [full-suite result](evidence/2026-10-20/qualification-proof/full-suite-807.txt) and
-[accepted optimization](evidence/2026-10-20/contract-campaign-05/README.md),
+[accepted optimization](evidence/2026-10-20/contract-campaign-06/README.md),
 [generated-build verification](evidence/2026-10-20/generated-counter/README.md) and
 [streaming build](evidence/2026-10-20/generated-streaming/README.md).
 

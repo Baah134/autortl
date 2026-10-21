@@ -103,9 +103,43 @@ verified. Combined generated+independent streaming build03 is complete atafcc080
 the independent queue TB; DONE replay preserves42selected identities. Earlier
 attempt failures remain separate. No weaker-model or held-tier claim.
 
-Final proof-retention and duplicate-definition repairs have focused tests and a
-real compiler regression. Fullsuite07 is active; next publish tested source,
-run freshfulltier0 campaign06, archive the exact cohort and integrate main only
-on passing gates. Next design complexity: parameterized synchronous FIFO with
+Final proof-retention and duplicate-definition repairs passed807fulltests and a
+real compiler regression. Source8098466 freshfulltier0 campaign06 passed2/2,
+including accepted55to31LUT counter gain; exact cohort is archived and ready for
+main integration. Next design complexity: parameterized synchronous FIFO with
 pointer wrap, capacity and sustained throughput verification, before packet or
 multi-clock pipelines. Research/feature decisions remain harness-first.
+
+
+### Next design acceptance plan: parameterized synchronous FIFO
+
+Add a standalone tier2/sync_fifo_build experiment after the current integration
+checkpoint. Reuse the two-entry buffer's independent shift-queue checker and
+qualification runner conventions; the asynchronous FIFO is a different CDC task.
+No new runtime mechanism is currently required.
+
+- Child sync_fifo_core defaults WIDTH=8, DEPTH=3. Supported experiment domain:
+  positive WIDTH1..16 and DEPTH1..8; this bound is not universal parameter proof.
+- Ports: clk, rst, in_data, in_valid, in_ready, out_data, out_valid, out_ready.
+  Synchronous active-high reset flushes occupancy. No empty bypass, minimum
+  transfer age1. out_valid=count>0; in_ready=(count<DEPTH)||out_ready.
+  Full simultaneous pop/push is permitted; stalled valid/payload remain stable;
+  invalid output data is unspecified. Avoid adding a conflicting ready-isolation
+  claim. The depth-three default must wrap explicitly instead of truncating bits.
+- The current generated wrapper binds child defaults and does not expose public
+  top parameters. The trusted TB should test the default wrapper and explicit
+  child instances at(1,1),(8,2),(8,4),(13,5), compiling the same child source once.
+  Measure PPA only for the default8x3 top; extra matrix instances are TB-only.
+- Generated golden oracle remains transaction payload identity. Combine it with
+  the independent temporal TB using --generate-golden and --tb. All instances
+  must finish, with per-instance assertions and a bounded global watchdog.
+- Before model generation, qualify reference behavior and faults for hardcoded
+  width/depth defaults, power-of-two-only wrap, early/late full, lost simultaneous
+  transfers, truncation at width13, empty bypass, stall instability and async
+  reset. Compilation/watchdog/infra failures do not count as detected RTL bugs.
+- Test schema/static/default parameter bindings and oracle/matrix manifests;
+  retain every real mutation outcome, input identity and raw assertion. Only
+  begin model build after admission passes. Do not edit runtime during a frozen
+  campaign or claim full-tier promotion from this one design.
+
+This is a reviewed next experiment, not an implemented or measured result.

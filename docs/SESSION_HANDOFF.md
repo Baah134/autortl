@@ -8,15 +8,12 @@ coordination state and actual processes. Notes are not execution evidence.
 - Canonical checkout: C:/Users/prince.baah/Downloads/autortl-work.
 - Preserve the separate preexisting Downloads/autortl copy.
 - Remote: https://github.com/Baah134/autortl
-- Tested runtime source: **5d285c0** (71910e5 plus the previously unstaged,
-  already-tested conventions file). No runtime bytes changed during campaign05;
-  all 54 test/runtime/governance file identities matched.
-- Verified publication: main and development both reached
-  **251666d538cc0e7d51bd5b6994626ec280274471**, integrating the runtime and
-  complete campaign05 evidence. Later continuity-only commits may extend it. The active
-  development branch is codex/contract-context. Inspect actual remote heads and
-  Git history before the next edit; later evidence/docs commits extend the
-  runtime source commit without changing its tested implementation.
+- Tested runtime source: **8098466** (807 regression tests; proof-retention and
+  duplicate-definition guards). Streaming build03 was measured atafcc080;
+  generated encoder at978c742; generated counter at8b6a162. Each archive records
+  its own source; do not assign all measurements to the latest commit.
+- Published development:8098466 on codex/contract-context. Main remains1124ea0
+  pending publication of the now-passing campaign06 archive. Confirm remote heads before editing.
 - Paused MCP work remains in its original stash. Command-line Vivado is active.
 
 ## Standing user decisions
@@ -42,34 +39,36 @@ README is the concise public overview. Agent continuity belongs here and in
 START_HERE, AGENTS and the progress log. Preserve unsuccessful attempts and
 honest CV evidence. Never modify tests/contracts to publish a gain.
 
-## Active continuation: streaming completed; final merge gates running
+## Completed continuation: generated designs and final campaign
 
-Development source afcc080 is published; main remains at1124ea0 until the current
-final full suite and fresh full tier0 pass. Current uncommitted runtime changes
-retain qualification proof through journal/DONE and reject compiler module
-replacement diagnostics. Source passed fullsuite07 and is frozen for campaign06. No higher tier held.
+Runtime **8098466** passed **807tests in137.16seconds**. Fresh fulltier0 campaign06
+completed2/2,streak1,held=false. Both entries match all53committed runtime file
+identities at completion. No higher held tier and no controlled weaker-model claim.
 
-- Counter02 at8b6a162: generated oracle repaired;6LUT/8FF baseline retained;
-  independent700-cycle test passed.
-- Encoder01 at978c742: accepted6to5LUT,4FF; setup0.531/hold0.156ns; exhaustive
-  independent saved-winner test passed.
-- Streaming03 atafcc080: combined generated/independent mode completed;
-  **15LUT/19FF,setup0.302/hold0.138ns**,5calls,384.843chargedtoolseconds.
-  Baseline retained; candidate had equal area and duplicate companion definition.
-  Exact saved winner+child passed the independent893-cycleTB. Actual DONE replay
-  left all42selected protected identities unchanged. Archive generated-streaming.
-- Earlier streaming01 qualification block and streaming02 battery-sleep budget
-  exhaustion remain preserved. Neither is a successful physical result.
-- Final repairs: raw assertion text restored on stage replay; DONE hashes reports
-  and raw proof. Focus43tests pass. Exact saved bad streaming candidate now fails
-  as DESIGN on VRFC10-3609 before elaboration. Compiler focus24tests pass.
-  Read-only peer review found no blocking issue. Archive qualification-proof.
-- Fullsuite07 completed: **807passed in137.16seconds**; no active vendor job. Next: publish tested
-  source, run fresh fulltier0 campaign06 frozen, archive results, update README
-  and fast-forward main only if both gates pass.
-- Temporary system-awake helper(session53742) remains bounded to two hours.
-  Remove work/autortl-verification-active.flag after queue completion; do not
-  change power plans. Machine is on AC after the documented battery sleep.
+- Counter8 build02 at8b6a162: golden repair;6LUT/8FF retained; independent700-cycleTB.
+- Encoder8 build01 at978c742: accepted6to5LUT,4FF; setup0.531/hold0.156ns;
+  exhaustive independent saved-winner test passed.
+- Two-entry streaming03 atafcc080: combined generated+independent verification,
+  **15LUT/19FF,setup0.302/hold0.138ns**;5calls,384.843chargedtoolseconds.
+  Baseline retained; candidate equal-area and duplicate companion definition.
+  Independent893-cycle saved-winner+child check passed. DONE replay42identities
+  unchanged. Earlier qualification and battery-budget failures remain archived.
+- Final guards: journal restores raw assertion/miss proof; DONE hashes reports
+  and raw proof. Duplicate compiler diagnostics VRFC10-3609/Synth8-9873 reject
+  DESIGN even exit0; nonzero infrastructure classification keeps precedence.
+  Exact bad candidate failed before elaboration. Focus43/24 tests and peer review.
+- Fresh06 counter: accepted **55to31LUT (43.64%)**,37FF,setup0.126/hold0.026ns;
+ 9/9 final checks. Baseline timing0.494/0.113ns; positive margins decreased.
+  3calls,443.859chargedtoolseconds. Actual DONE replay76identities unchanged.
+- Fresh06 mux: baseline8LUT/8FF retained,setup0.579/hold0.052ns;3calls,
+  427.438chargedtoolseconds; equal-area candidate correctly rejected.
+- Archives: generated-streaming, qualification-proof, contract-campaign-06.
+  All manifests verified; original paths are provenance, not portable commands.
+- Vendor queue finished. Temporary keep-awake flag removed; helper release is
+  checked before final checkpoint. No power-plan change was made.
+- Next: integrate tested archive checkpoint into main; verify remote heads and
+  record publication below. Then implement the parameterized synchronous FIFO
+  acceptance plan in docs/TASKS.md. Keep source frozen during any new campaign.
 
 ## Earlier completed milestone (historical)
 

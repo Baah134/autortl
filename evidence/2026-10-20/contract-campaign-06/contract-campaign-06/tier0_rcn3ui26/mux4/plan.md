@@ -1,0 +1,9 @@
+# PLAN — iteration 1
+## Current state assessment
+The registered 8-bit, 4:1 mux passes simulation and has 8 LUTs, 8 FFs, and positive routed setup and hold slack. Eight LUTs is already one LUT per output bit; each bit’s mux function depends on four data bits and two select bits, fitting a 7-series LUT6. The source has no numeric latency annotation, so its exact registered cycle behavior must be preserved.
+
+## Hypothesis
+The current mux is already at one LUT per output bit, so rewriting its `case` is unlikely to reduce LUTs; expect no strict improvement over the 8-LUT baseline.
+
+## Instruction for generator
+Leave the clocked `case (sel)` mux and registered assignment to `y` unchanged. Do not add decode logic, registers, or pipeline stages; preserve synchronous active-high reset and the existing cycle behavior. With no defensible LUT reduction available from an RTL rewrite, return the source unchanged.
