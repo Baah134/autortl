@@ -1,0 +1,9 @@
+# PLAN — iteration 1
+## Current state assessment
+The routed baseline uses 15 LUTs, 19 FFs, no DSPs or BRAMs, and meets setup and hold timing at 10 ns (WNS 0.302 ns, WHS 0.138 ns); the fixed testbench passes. The objective is strictly fewer LUTs, with all verification and metric integrity gates still required. The top module is a wrapper around a two-entry skid buffer; its source has no declared numeric latency, so preserve its exact observable cycle behavior without adding an annotation.
+
+## Hypothesis
+Encoding the two-entry occupancy as nonempty and full flags may reduce LUTs by replacing count comparisons and case decoding with direct flag logic, while retaining the same two occupancy FFs.
+
+## Instruction for generator
+In `skid_buffer_core`, replace the 2-bit occupancy count and its case-based state update with two occupancy flags representing nonempty and full, and derive `out_valid` and `in_ready` directly from those flags. Rewrite the sequential transitions for empty, one-item, and full states to preserve the existing push/pop behavior and data0/data1 updates, including simultaneous transfers and stalls. Keep the synchronous active-high reset limited to occupancy state, preserve data-register hold behavior and all ports, and do not change observable cycle behavior or add a latency annotation.

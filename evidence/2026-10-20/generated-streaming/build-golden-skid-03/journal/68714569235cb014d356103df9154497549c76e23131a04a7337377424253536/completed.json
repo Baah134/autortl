@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Interface and observable behavior: PASS \u2014 the authoritative ladder result is ALIVE.\n- Compile, elaboration, and simulation: PASS \u2014 required tools exited successfully and the testbench reported `TEST PASSED`.\n- Routed metrics and timing: PASS \u2014 retained routed metrics show WNS 0.302 ns and WHS 0.138 ns.\n- Candidate implementation identity: FAIL \u2014 the candidate and dependency both define `skid_buffer_core`; Vivado reported VRFC 10-3609 for the duplicate definition.\n- LUT objective: FAIL \u2014 candidate LUTs are 15, equal to the previous best; strict reduction is required.\n\n## Summary\n- Passed: 3 of 5\n- Failed: 2 of 5\n- Improved over previous best: NO\n\n## Recommendation\nREJECT\n\n## Reason\nThe candidate does not improve the LUT count, and its duplicate `skid_buffer_core` definition leaves the integrated implementation ambiguous despite successful tool exits and the authoritative ALIVE result.",
+      "recommendation": "REJECT",
+      "passed": 3,
+      "failed": 2
+    }
+  },
+  "artifacts": {}
+}

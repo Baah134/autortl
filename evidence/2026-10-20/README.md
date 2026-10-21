@@ -70,3 +70,9 @@ no held tier or weaker-model performance is claimed.
   blockers preserve causes and forbid RTL repair/history rejection on infra.
 - `generated-streaming-attempt-02/`: dual-qualified RTL, then frozen budget
   exhaustion during battery sleep. No physical measurement or improvement claim.
+
+- `generated-streaming/`: completed combined-verification two-entry buffer,
+  15 LUTs / 19 FFs; independent 893-cycle saved-winner check and unchanged
+  42-identity DONE replay. Equal-area candidate rejected; no gain claimed.
+- `qualification-proof/`: **807 passing regression tests**, actual duplicate
+  candidate rejected before elaboration, journal/DONE assertion-proof integrity.

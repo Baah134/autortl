@@ -170,15 +170,28 @@ def promotion_tcl(promotions: dict[str, str]) -> str:
     return "\n".join(lines)
 
 
+def _duplicate_module_error(output: str) -> str:
+    """These tool diagnostics mean a source replaced another module definition."""
+    pattern = r"\[(?:VRFC\s+10-3609|Synth\s+8-9873)\]"
+    lines = [line.strip()[:1000] for line in output.splitlines() if re.search(pattern, line)]
+    return "\n".join(lines[:8])
+
+
 # ---------------- Rung 2: xvlog compile check ----------------
 
 def xvlog_check(files: list[Path], cfg: RunConfig, work_dir: Path,
                 sv: bool = False, timeout: float = 120) -> tuple[bool, str, FailureKind]:
     args = [cfg.xvlog_bin] + (["-sv"] if sv else []) + [str(f) for f in files]
     rc, out = _run(args, work_dir, timeout, work_dir / "xvlog.log")
+    kind = classify(out)
+    if rc != 0 and kind == FailureKind.INFRA:
+        return False, _error_lines(out), kind
+    duplicate = _duplicate_module_error(out)
+    if duplicate:
+        return False, duplicate, FailureKind.DESIGN
     if rc == 0:
         return True, "", FailureKind.DESIGN
-    return False, _error_lines(out), classify(out)
+    return False, _error_lines(out), kind
 
 
 # ---------------- Rung 3/4: xelab + xsim batch simulation ----------------
@@ -267,8 +280,14 @@ def run_synthesis(design_files: list[Path], top: str, cfg: RunConfig,
     rc, out = _run([cfg.vivado_bin, "-mode", "batch", "-source", _tcl_path(script),
                     "-nojournal", "-nolog"], work_dir, timeout,
                    work_dir / "vivado_synth_output.log")
+    kind = classify(out)
+    if rc != 0 and kind == FailureKind.INFRA:
+        return False, _error_lines(out), kind
+    duplicate = _duplicate_module_error(out)
+    if duplicate:
+        return False, duplicate, FailureKind.DESIGN
     if rc != 0 or "SYNTH_COMPLETE" not in out:
-        return False, _error_lines(out), classify(out)
+        return False, _error_lines(out), kind
     return True, "", FailureKind.DESIGN
 
 

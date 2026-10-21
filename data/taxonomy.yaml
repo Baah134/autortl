@@ -2,6 +2,14 @@
 # severity_override: ERROR promotes the message (we promote, we NEVER demote).
 # Seeded from every error class hit during AutoRTL v1-v3 development.
 messages:
+  "VRFC 10-3609":
+    meaning: "Compilation overwrote an earlier active module definition"
+    repair: "Keep one active definition per module; never redeclare frozen companion modules"
+    severity_override: ERROR
+  "Synth 8-9873":
+    meaning: "Synthesis overwrote an earlier active module definition"
+    repair: "Keep one active definition per module; never redeclare frozen companion modules"
+    severity_override: ERROR
   "Designutils 20-1307":
     meaning: "Unsupported Tcl control flow in an XDC file caused constraints to be skipped"
     repair: "Run conditional constraints as Tcl after synthesis, and retain the effective commands and timing reports"
@@ -58,6 +66,9 @@ messages:
 # Methodology violations (report_methodology, UG1292 IDs). ADVISORY ONLY:
 # these never kill candidates; they are digested into the planner's context.
 harness_failures:
+  missing_qualification_replay_proof:
+    meaning: "Stage replay omitted raw assertion text or completed-run identity omitted qualification reports"
+    repair: "Snapshot and restore raw simulation proof; hash qualification reports and raw proof in DONE evidence"
   implicit_windows_module_encoding:
     meaning: "Implicit Windows encoding can reject or corrupt non-ASCII RTL/testbench comments"
     repair: "Read trusted testbenches and write generated module evidence with explicit UTF-8 encoding"

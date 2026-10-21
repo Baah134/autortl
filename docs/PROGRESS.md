@@ -537,3 +537,22 @@ changes, commands, outcomes, evidence locations, limitations, and next action.
   streaming03 reached routed baseline15LUT/19FF,setup0.302ns; optimization pending.
   Publishing tested portfolio/typed-blocker source now; finalmainintegration still
   requires completed streaming checks and freshfulltier0, no higher held tier.
+
+
+- Streaming03 completed atafcc080: combined generated+independent verification,
+ 15LUT/19FF baseline retained, setup0.302ns/hold0.138ns;5modelcalls,
+ 384.843chargedtoolseconds/435.038elapsed. Equal-area candidate also duplicated
+ frozencompaniondefinition and was model-rejected. Independent saved-winner
+ plus declaredchild passed; actual DONE replay kept42selected identities equal.
+ Archive generated-streaming retains raw reports, grader misses and sources.
+- Two observed gaps recorded in taxonomy before repair: journal omitted raw
+ assertionTXT and DONE omitted qualificationJSON; exit-zero duplicate-module
+ warnings were accepted by deterministic tool gates. Restored/hashed proof now
+ survives replay, and exact VRFC10-3609/Synth8-9873 diagnostics reject DESIGN.
+ Nonzero infrastructure failures retain precedence. Focus43tests and compiler
+ focus24tests pass; exact old bad candidate now fails before elaboration.
+ Read-only peer review approved freeze. Fullsuite07 running; main not merged.
+
+- Final fullsuite07: **807passed in137.16seconds**. No runtime edits during tests.
+  Publishing tested guards and streaming archive; freshfulltier0 campaign06 is
+  next, required before main integration. No higher tier is held.

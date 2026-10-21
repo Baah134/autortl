@@ -206,3 +206,65 @@ def test_adapted_trusted_tb_preserves_utf8_comments(dual,monkeypatch):
     adapted=o._qualify_source.call_args.args[1]
     assert "中文 Ω independent authority" in adapted.read_text(encoding="utf-8")
     assert trusted.read_text(encoding="utf-8")==text
+
+
+
+def test_qualification_journal_replay_restores_raw_assertions_and_misses(tmp_path, monkeypatch):
+    import json
+    from tests.test_fsm_resume import write_mock_tool_receipts
+    cfg = RunConfig(mode="build")
+    run = tmp_path / "run"
+    tb = tmp_path / "m_tb.v"
+    tb.write_text("// controlled qualification fixture")
+    source = "module m(input [7:0] a,b,output y); assign y=a<b; endmodule"
+    calls = []
+    def simulate(files, tb, top, config, work, **kwargs):
+        calls.append(work.name)
+        write_mock_tool_receipts(work, ("xvlog", "xelab", "xsim"))
+        detected = work.name == "stuck_zero"
+        (work / "sim_log.txt").write_text("FAIL wrong payload\nTEST FAILED: 1 errors\n" if detected else "TEST PASSED\n")
+        return not detected, "Testbench failures: FAIL wrong payload" if detected else "", FailureKind.DESIGN
+    monkeypatch.setattr(fsm.vivado, "xsim_run", simulate)
+    monkeypatch.setattr(fsm.vivado, "vivado_seconds", lambda: 0)
+    def orchestrator():
+        o = fsm.Orchestrator(cfg, run)
+        o._prepare_inputs()
+        o._journal_enabled = True
+        o._scope = "qualification-replay"
+        return o
+    first = orchestrator()
+    work = run / "module"
+    assert first._qualify_source(source, tb, "m", work)[0]
+    report = work / "tbqual/qualification.json"
+    original = json.loads(report.read_text())
+    proof = work / "tbqual/stuck_zero/sim_log.txt"
+    miss = work / "tbqual/mutant/sim_log.txt"
+    proof.unlink()
+    miss.write_text("FAIL forged proof\nTEST FAILED: 1 errors\n")
+    assert orchestrator()._qualify_source(source, tb, "m", work)[0]
+    assert calls == ["control", "mutant", "stuck_zero"]
+    assert proof.read_text() == "FAIL wrong payload\nTEST FAILED: 1 errors\n"
+    assert miss.read_text() == "TEST PASSED\n"
+    assert json.loads(report.read_text()) == original
+    assert original["missed"][0]["label"] == "mutant"
+
+
+@pytest.mark.parametrize("artifact", ["qualification.json", "mutant/sim_log.txt"])
+def test_done_rejects_changed_qualification_proof(tmp_path, monkeypatch, artifact):
+    import json
+    o, synthesis = create(tmp_path, monkeypatch)
+    assert o.run()["status"] == "done"
+    target = o.state.run_dir / "modules/counter8_core/tbqual" / artifact
+    snapshot = json.loads((o.state.run_dir / "state.json").read_text())
+    assert str(target.resolve()) in snapshot["final_artifacts"]
+    original_history = o.state.read_designs()
+    calls = synthesis.call_count
+    target.write_text("tampered qualification evidence")
+    resumed = fsm.Orchestrator(RunConfig.load(o.state.run_dir / "config.json"), o.state.run_dir)
+    forbidden = Mock(side_effect=AssertionError("DONE must not repeat generation"))
+    monkeypatch.setattr(resumed.generator, "generate", forbidden)
+    with pytest.raises(ValueError, match="Completed"):
+        resumed.run()
+    forbidden.assert_not_called()
+    assert synthesis.call_count == calls
+    assert o.state.read_designs() == original_history

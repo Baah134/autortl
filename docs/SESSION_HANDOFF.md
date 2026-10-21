@@ -42,41 +42,36 @@ README is the concise public overview. Agent continuity belongs here and in
 START_HERE, AGENTS and the progress log. Preserve unsuccessful attempts and
 honest CV evidence. Never modify tests/contracts to publish a gain.
 
-## Active continuation: generated builds and streaming
+## Active continuation: streaming completed; final merge gates running
 
-Published development checkpoint535213e includes combined verification,774tests,
-independently verified counter build and accepted encoder6to5LUT gain. Main still
-has the prior fully gated1124ea0 checkpoint. Do not merge until final fullsuite +
-freshfulltier0 qualify; no higher tier is held.
+Development source afcc080 is published; main remains at1124ea0 until the current
+final full suite and fresh full tier0 pass. Current uncommitted runtime changes
+retain qualification proof through journal/DONE and reject compiler module
+replacement diagnostics. Source passed fullsuite07 and is frozen for campaign06. No higher tier held.
 
-- Counter02: generated golden syntax repair,6LUT/8FF baseline retained; independent
-  700-cycleTB passed. Source8b6a162. Encoder01: accepted6to5LUT,4FF,
-  setup0.531/hold0.156ns; exhaustive independentTB passed. Source978c742.
-- Streaming independent fixture: reference+8faults9/9 expected verdicts; source is
-  two-entry elastic queue with combinational ready, not registered-ready isolation.
-- Combined --generate-golden/--tb mode runs generated and adapted independent child
-  tests, reruns both after repair, qualifies both, then retains original topTB for
-  baseline/candidates. Same-byte capacity-one false acceptance motivated this.
-- Streaming01 correctly stopped: primary readiness fault passed payload grader.
-  New bounded mutation portfolio retains misses and requires a real assertion from
-  original/stuck-zero/stuck-one probes. The independent TB detects readiness.
-- Tested final fixes (publishing): qualification portfolio, typed build_blocked diagnostics
-  for INFRA/UNKNOWN, UTF8 per-candidate evidence/trusted-TB adaptation;54focusedtests,
-  fullsuite05 **794passed**. Duration4377.09s includes battery-triggered sleep.
-  Awake repeat fullsuite06 **794passed237.82s** on identical implementation.
-- Streaming02: budget_exhausted after battery sleep, no best/physical result.
-  Never reset its budgets or resume across changed source. Preserve its logs.
-- Active frozen-source vendor job: logs/build-golden-skid-03 (session19115).
-  Baseline routed15LUT/19FF,setup0.302ns;optimization active. Fullsuite06 complete.
-  No other vendor jobs.
-- Local temporary keep-awake helper(session53742) ends after two hours or remove
-  C:/Users/prince.baah/Documents/Codex/2026-10-15/hey/work/autortl-verification-active.flag.
-  Release it after queue completion. Current machine is on AC after battery sleep.
-- Next: finish/publish final tests and portfolio source, finish streaming03 with
-  independent saved-winner check and DONE replay, freshfulltier0 campaign06,
-  archive results, update publicREADME/sharedmemory and fast-forward main if gatespass.
+- Counter02 at8b6a162: generated oracle repaired;6LUT/8FF baseline retained;
+  independent700-cycle test passed.
+- Encoder01 at978c742: accepted6to5LUT,4FF; setup0.531/hold0.156ns; exhaustive
+  independent saved-winner test passed.
+- Streaming03 atafcc080: combined generated/independent mode completed;
+  **15LUT/19FF,setup0.302/hold0.138ns**,5calls,384.843chargedtoolseconds.
+  Baseline retained; candidate had equal area and duplicate companion definition.
+  Exact saved winner+child passed the independent893-cycleTB. Actual DONE replay
+  left all42selected protected identities unchanged. Archive generated-streaming.
+- Earlier streaming01 qualification block and streaming02 battery-sleep budget
+  exhaustion remain preserved. Neither is a successful physical result.
+- Final repairs: raw assertion text restored on stage replay; DONE hashes reports
+  and raw proof. Focus43tests pass. Exact saved bad streaming candidate now fails
+  as DESIGN on VRFC10-3609 before elaboration. Compiler focus24tests pass.
+  Read-only peer review found no blocking issue. Archive qualification-proof.
+- Fullsuite07 completed: **807passed in137.16seconds**; no active vendor job. Next: publish tested
+  source, run fresh fulltier0 campaign06 frozen, archive results, update README
+  and fast-forward main only if both gates pass.
+- Temporary system-awake helper(session53742) remains bounded to two hours.
+  Remove work/autortl-verification-active.flag after queue completion; do not
+  change power plans. Machine is on AC after the documented battery sleep.
 
-## Latest completed milestone
+## Earlier completed milestone (historical)
 
 - **655 regression tests passed in 207.64 seconds.** Initial run: 648 passed,
   seven legacy successful-tool mocks lacked new mandatory receipts. Updated
@@ -123,7 +118,7 @@ recovery), 02 0/2 (negotiation/quota), 03 1/2 (Windows persistence), and 04 2/2
 (no promotion: missing exit proof and no mux gain). Campaign04's historical
 qualification cannot count toward the new runtime-bound streak. No held tier.
 
-## Exact next work
+## Earlier coverage plan (historical; current actions above)
 
 1. Inspect remote heads and confirm this source/evidence integration. Claim or
    renew the coordinator and file scopes before edits.

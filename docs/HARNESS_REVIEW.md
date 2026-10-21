@@ -208,3 +208,27 @@ complete mutation coverage. Typed tool blockers now preserve infrastructure caus
 and stop without RTL repair. No extra model judge, framework or agent layer was
 needed to repair these boundaries. Keep population search deferred until these
 checks have repeated model/budget-controlled results.
+
+
+## Review after the completed streaming build
+
+The combined loop produced a routed two-entry buffer (15 LUTs / 19 FFs) and its
+saved winner passed the independent 893-cycle test. Retain this architecture:
+payload-only qualification visibly missed readiness, so it cannot replace the
+independent temporal grader. No additional role or framework is justified.
+
+Two concrete repairs follow this experiment. Preserve raw assertion proof and
+qualification reports through stage replay and completed-run integrity checks.
+Reject the compiler's duplicate-module diagnostics before metrics or model review:
+the real candidate had exit-zero overwrite warnings and was rejected only later.
+The exact saved bad candidate now fails compilation before elaboration; unrelated
+warnings remain accepted and infrastructure failures keep their classification.
+These are deterministic guard repairs to the existing ladder, with fixture and
+real-tool evidence, rather than a new verification mechanism.
+
+Maintain source-frozen cohorts and honest failures. Next complexity should add a
+parameterized synchronous FIFO and wraparound/full throughput tests, then a
+packet-oriented block with explicit reset/backpressure rules. First complete the
+fresh full tier0 merge gate. Defer extra search roles and framework changes until
+controlled ablations demonstrate a benefit; no feature is removed merely because
+one bounded optimization found no gain.

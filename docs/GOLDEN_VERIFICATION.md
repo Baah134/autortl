@@ -91,3 +91,12 @@ An exhausted module tool failure reports build_blocked with its failure kind,
 stage, diagnostic and testbench. It never enters RTL rejection history or triggers
 RTL repair. Budget exhaustion remains a separate outcome. Start a fresh experiment
 when changing runtime implementation; do not reset an interrupted trial's budgets.
+
+
+Stage journals snapshot raw `sim_log.txt` assertion proof alongside simulator
+logs and input manifests. Replaying a completed qualification restores the
+original proof, including missed faults. DONE snapshots hash all qualification
+reports and raw simulation proof; altered or missing evidence invalidates reuse.
+Vivado module-overwrite diagnostics VRFC 10-3609 and Synth 8-9873 fail as design
+errors even with process exit zero. A candidate must not redeclare its frozen
+companion modules. Infrastructure failures remain infrastructure blockers.

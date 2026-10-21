@@ -24,7 +24,7 @@ with Git and states acceptance criteria.
 | Provider/report/legal transformation repairs | Implemented; validating | Typed resumable model blocks, bounded diagnostics, timing manifest, hold diagnosis and physical command, unsupported parallel control rejected |
 | Deterministic contracts and actual prompt conformance | Implemented; validating | Campaign02 reproduced six wasted negotiation calls; fixed contract preserves gates; all roles receive conventions and consistent references |
 | FIFO reference qualification | Live checked:6/6verdicts | Full comparator cycle repaired; AW2/AW4 controls pass and data/full mutants assert; no physicalCDC proof |
-| Build counter8 and priority encoder | Active live validation | Independent TB controls and eight faults qualified10/10; golden reset and bounded diagnostic retry repaired; counter build02 routing/optimization active; encoder and independent final checks next |
+| Build counter8 and priority encoder | Completed and archived | Counter6LUT/8FF; accepted encoder6to5LUT/4FF; generated verification plus independent final tests pass |
 
 The active coordinator continues with bounded live campaigns after publication.
 Do not treat the previously verified standalone generation trial or controlled
@@ -93,3 +93,19 @@ cache/restart ablations and in-flight recovery remain the next coverage work.
   independent supplied TB, with byte hashes; never recursively glob buildRTL.
 - Before main integration: finalfullsuite and freshfulltier0 under frozen runtime.
   Higher-tier design completion does not by itself establish a held tier.
+
+
+## Current completed progression and integration gate
+
+Counter8 and priority encoder generated builds are complete and independently
+verified. Combined generated+independent streaming build03 is complete atafcc080:
+15LUT/19FF, positive setup/hold; baseline retained. Its saved winner and child pass
+the independent queue TB; DONE replay preserves42selected identities. Earlier
+attempt failures remain separate. No weaker-model or held-tier claim.
+
+Final proof-retention and duplicate-definition repairs have focused tests and a
+real compiler regression. Fullsuite07 is active; next publish tested source,
+run freshfulltier0 campaign06, archive the exact cohort and integrate main only
+on passing gates. Next design complexity: parameterized synchronous FIFO with
+pointer wrap, capacity and sustained throughput verification, before packet or
+multi-clock pipelines. Research/feature decisions remain harness-first.

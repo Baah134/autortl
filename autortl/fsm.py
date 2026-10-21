@@ -278,15 +278,17 @@ class Orchestrator:
             if work:
                 evidence = directory / f"failed_attempt_{count}"
                 evidence.mkdir(exist_ok=True)
-                for path in Path(work).glob("*.log"):
-                    shutil.copyfile(path, evidence / path.name)
+                for path in Path(work).iterdir():
+                    if path.is_file() and (path.suffix == ".log" or path.name in ("sim_log.txt", "qualification.json")):
+                        shutil.copyfile(path, evidence / path.name)
         # Infrastructure outcomes stay uncommitted, so a later resume can retry.
         if isinstance(result, tuple) and len(result) == 3 and result[0] is False and result[2] != FailureKind.DESIGN:
             return result
         artifacts = {}
         if work:
             for source in sorted(Path(work).rglob("*")):
-                if source.is_file() and source.suffix in (".v", ".sv", ".rpt", ".log", ".tcl", ".xdc"):
+                if source.is_file() and (source.suffix in (".v", ".sv", ".rpt", ".log", ".tcl", ".xdc")
+                                         or source.name in ("sim_log.txt", "qualification.json")):
                     relative = source.relative_to(work).as_posix()
                     target = directory / "artifacts" / relative
                     target.parent.mkdir(parents=True, exist_ok=True)
@@ -962,6 +964,10 @@ class Orchestrator:
         # Exit receipts remain mandatory evidence even when baseline wins or
         # Doctor only changes physical tool options in a separate directory.
         retained = list(state.run_dir.rglob("tool_exit_records.log"))
+        # Retain negative assertion proof and missed-fault reports as well as
+        # successful simulation receipts; both determine qualification.
+        retained.extend(state.run_dir.rglob("qualification.json"))
+        retained.extend(state.run_dir.rglob("sim_log.txt"))
         for receipt in list(retained):
             retained.extend(path for path in receipt.parent.glob("*.log") if path.is_file())
             if (receipt.parent / "sim_log.txt").is_file():
