@@ -14,7 +14,7 @@ learn from failures, and retain the best correct design within a fixed budget.
 
 | Validation | Recorded result |
 |---|---|
-| Harness regression suite | **774 tests passed** |
+| Harness regression suite | **794 tests passed** |
 | Independent streaming verification | **Correct queue control passed; all eight behavior faults detected** |
 | Generated 8-bit counter build | **Golden oracle repaired automatically; independent 700-cycle test passed · 6 LUTs / 8 FFs** |
 | Generated priority encoder optimization | **6 → 5 LUTs (16.7%) · 4 FFs · exhaustive independent test passed** |
@@ -33,7 +33,7 @@ validation. No held curriculum tier is claimed. Earlier unsuccessful cohorts
 remain in the evidence record.
 
 See the [test evidence](evidence/2026-10-20/README.md),
-[full-suite result](evidence/2026-10-20/dual-verification/full-suite-774.txt) and
+[full-suite result](evidence/2026-10-20/qualification-portfolio/full-suite-794-awake.txt) and
 [accepted optimization](evidence/2026-10-20/contract-campaign-05/README.md),
 and [generated-build verification](evidence/2026-10-20/generated-counter/README.md).
 

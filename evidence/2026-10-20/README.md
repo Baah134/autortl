@@ -64,3 +64,9 @@ no held tier or weaker-model performance is claimed.
   payload grader but fails independent capacity assertions; combined mode tests.
 - `generated-streaming-attempt-01/`: stopped at fault qualification after correct
   source passed bothTBs. No physical result; missed readiness fault preserved.
+
+- `qualification-portfolio/`: **794 passing tests**, including an awake repeat;
+  fixed bounded fault probes retain missed mutations, typed module infrastructure
+  blockers preserve causes and forbid RTL repair/history rejection on infra.
+- `generated-streaming-attempt-02/`: dual-qualified RTL, then frozen budget
+  exhaustion during battery sleep. No physical measurement or improvement claim.

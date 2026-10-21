@@ -111,3 +111,98 @@ def test_independent_original_top_tb_blocks_optimization_candidate_before_synthe
     repair.assert_called_once()
     assert "counter8" in repair.call_args.args[3]
     o.evaluator.evaluate.assert_not_called()
+
+
+@pytest.mark.parametrize("kind",[FailureKind.INFRA,FailureKind.UNKNOWN])
+def test_qualification_infrastructure_cause_is_retained_in_public_build_summary(tmp_path,monkeypatch,kind):
+    import json
+    o,synthesis=create(tmp_path,monkeypatch,mutant_kind=kind)
+    result=o.run()
+    assert result["status"]=="build_blocked" and result["failure_kind"]==kind.value
+    assert result["stage"]=="qualification mutant"
+    assert result["error"]=="license unavailable"
+    assert result["testbench"].endswith("counter8_core_tb.v")
+    assert json.loads((o.state.run_dir/"run_summary.json").read_text())==result
+    assert o.state.read_designs()==[]
+    synthesis.assert_not_called();o.generator.fix.assert_not_called()
+
+
+def test_exhausted_independent_child_infrastructure_is_typed_before_qualification(tmp_path,monkeypatch):
+    from tests.test_golden_reset_protocol import COUNTER
+    o,synthesis=create(tmp_path,monkeypatch);o.cfg.generate_golden=True;o.cfg.max_infra_retries=1
+    monkeypatch.setattr(o.generator,"golden_model",Mock(return_value=COUNTER.replace('"count": 99','"count": 0')))
+    qualification=Mock(side_effect=AssertionError("incomplete source must not qualify"))
+    monkeypatch.setattr(o,"_qualify_source",qualification)
+    original=fsm.vivado.xsim_run;blocked=[]
+    def simulate(files,tb,top,cfg,work,**kwargs):
+        if work.name=="independent":
+            blocked.append(work)
+            return False,"license unavailable",FailureKind.INFRA
+        return original(files,tb,top,cfg,work,**kwargs)
+    monkeypatch.setattr(fsm.vivado,"xsim_run",simulate)
+    result=o.run()
+    assert result["status"]=="build_blocked" and result["failure_kind"]=="infra"
+    assert result["stage"]=="independent child verification"
+    assert result["error"]=="license unavailable" and len(blocked)==2
+    assert "independent_" in result["testbench"]
+    synthesis.assert_not_called();o.generator.fix.assert_not_called();qualification.assert_not_called()
+    assert o.state.read_designs()==[]
+
+
+def test_fsm_qualification_retains_missed_primary_before_observable_fault(tmp_path,monkeypatch):
+    import json
+    o=fsm.Orchestrator(RunConfig(mode="build"),tmp_path/"run")
+    tb=tmp_path/"m_tb.v";tb.write_text("// controlled independent test")
+    source="module m(input [7:0] a,b,output y); assign y=a<b; endmodule"
+    calls=[]
+    def tool(name,files,tb,top,cfg,work):
+        calls.append(work.name)
+        if work.name=="stuck_zero":
+            (work/"sim_log.txt").write_text("FAIL wrong payload\nTEST FAILED: 1 errors\n")
+            return False,"testbench reported failure",FailureKind.DESIGN
+        (work/"sim_log.txt").write_text("TEST PASSED\n")
+        return True,"",FailureKind.DESIGN
+    monkeypatch.setattr(o,"_tool",tool)
+    qualified,reason=o._qualify_source(source,tb,"m",tmp_path)
+    assert qualified and "missed:" in reason
+    assert calls==["control","mutant","stuck_zero"]
+    record=json.loads((tmp_path/"tbqual/qualification.json").read_text())
+    assert record["qualified"] and record["missed"][0]["label"]=="mutant"
+    assert record["attempts"][-1]["assertion_detected"] is True
+    assert all(len(row["source_sha256"])==64 for row in record["attempts"])
+
+
+def test_fsm_portfolio_cannot_try_another_fault_after_infrastructure(tmp_path,monkeypatch):
+    import json
+    o=fsm.Orchestrator(RunConfig(mode="build"),tmp_path/"run")
+    tb=tmp_path/"m_tb.v";tb.write_text("// controlled test")
+    source="module m(input [7:0] a,b,output y); assign y=a<b; endmodule"
+    calls=[]
+    def tool(name,files,tb,top,cfg,work):
+        calls.append(work.name)
+        return (True,"",FailureKind.DESIGN) if work.name=="control" else (False,"no license",FailureKind.INFRA)
+    monkeypatch.setattr(o,"_tool",tool)
+    assert not o._qualify_source(source,tb,"m",tmp_path)[0]
+    assert calls==["control","mutant"]
+    assert o._build_blocker["error"]=="no license"
+    assert json.loads((tmp_path/"tbqual/qualification.json").read_text())["status"]=="blocked"
+
+
+def test_module_evidence_uses_utf8_for_non_ascii_model_comments(tmp_path):
+    o=fsm.Orchestrator(RunConfig(mode="build"),tmp_path/"run")
+    source="// 中文 Ω\nmodule m(output y); assign y=0; endmodule\n"
+    path=o._write_tmp(tmp_path,"m",source)
+    # Windows newline conversion is allowed; text encoding must remain UTF-8.
+    assert path.read_text(encoding="utf-8")==source
+
+
+def test_adapted_trusted_tb_preserves_utf8_comments(dual,monkeypatch):
+    o,spec,directory,generated,trusted=dual
+    text=trusted.read_text(encoding="utf-8")+"\n// 中文 Ω independent authority\n"
+    trusted.write_text(text,encoding="utf-8")
+    monkeypatch.setattr(o.generator,"generate",Mock(return_value=RTL))
+    simulator(monkeypatch,generated)
+    assert o._build_module(spec,directory)
+    adapted=o._qualify_source.call_args.args[1]
+    assert "中文 Ω independent authority" in adapted.read_text(encoding="utf-8")
+    assert trusted.read_text(encoding="utf-8")==text

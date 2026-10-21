@@ -21,7 +21,7 @@ from pathlib import Path
 from .config import RunConfig
 from .contract_context import run_evidence, file_evidence, flow_evidence, save_evidence, render_fixed_optimize_contract, tool_exit_evidence
 from .spec import DesignSpec, ModuleSpec, Port, ResetSpec
-from .linter import lint_spec, write_stub_project, top_verilog, stub_verilog
+from .linter import lint_spec, write_stub_project, top_verilog
 from .static_checks import check as static_check
 from .state import RunState, atomic_write_text
 from .roles import Planner, Generator, Evaluator, TimingDoctor, Evaluation
@@ -38,7 +38,7 @@ from .vivado import advisor_digest
 from .report_parser import VivadoMetrics, extract_message_ids
 from .golden import GoldenModel, qualify_against_examples, validate_examples
 from .tbgen import generate as generate_tb
-from .tbqual import qualify as qualify_tb, mutate, assertion_failure_proof
+from .tbqual import qualify as qualify_tb, assertion_failure_proof, qualification_mutations
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from llm.client import declared_latency, ModelCallError
@@ -346,32 +346,68 @@ class Orchestrator:
                 raise VerificationEvidenceError("Simulation replay inputs differ from verified input manifest")
         return result
 
+    def _record_build_tool_block(self, error, kind, stage, tb=None):
+        if kind != FailureKind.DESIGN:
+            self._build_blocker = {"failure_kind": kind.value, "error": str(error)[:4000],
+                                   "stage": stage, "testbench": str(Path(tb).resolve()) if tb else None}
+
     def _qualify_source(self, source, tb, name, work):
-        """Record control and sabotage separately, without grading infra failures."""
-        mutation = mutate(source)
-        if mutation is None:
-            contract = self._infer_contract(source, name)
-            outputs = [p for p in contract.ports if p.direction == "output"]
-            if not outputs:
-                return False, "no observable output to sabotage"
-            assignments = "\n".join("assign " + p.name + " = 0;" for p in outputs)
-            mutated = "`timescale 1ns/1ps\n" + stub_verilog(contract).replace(
-                "endmodule", assignments + "\nendmodule")
-            mutation = mutated, "stuck-zero outputs"
-        for label, code in (("control", source), ("mutant", mutation[0])):
-            directory = work / "tbqual" / label
+        """Require an observed assertion from a bounded, fully retained fault set."""
+        faults = qualification_mutations(source, name)
+        attempts, missed = [], []
+        root = work / "tbqual"
+        root.mkdir(parents=True, exist_ok=True)
+        tb_hash = hashlib.sha256(Path(tb).read_bytes()).hexdigest() if Path(tb).is_file() else None
+
+        def save(status, qualified=False):
+            atomic_write_text(root / "qualification.json", json.dumps({
+                "schema_version": 1, "status": status, "qualified": qualified,
+                "testbench_sha256": tb_hash, "attempts": attempts, "missed": missed,
+                "scope": "Minimum assertion sensitivity; missed faults remain coverage limits."}, indent=2))
+
+        def run_case(label, code, description):
+            directory = root / label
             directory.mkdir(parents=True, exist_ok=True)
             path = self._write_tmp(directory, name, code)
             passed, error, kind = self._tool("xsim_run", [path], tb, name + "_tb", self.cfg, directory)
-            if label == "control" and not passed:
-                return False, "qualification control did not pass: " + error
-            if label == "mutant":
-                qualified = not passed and kind == FailureKind.DESIGN and (
-                    error.startswith("Testbench failures:") or error == "testbench reported failure")
-                if qualified:
-                    qualified, detail = assertion_failure_proof(directory)
-                    return qualified, ("detected " + mutation[1]) if qualified else "qualification not established: " + detail
-                return False, "qualification not established: " + error
+            proof, detail = assertion_failure_proof(directory) if not passed else (False, "simulation passed")
+            log = directory / "sim_log.txt"
+            attempts.append({"label": label, "description": description, "passed": passed,
+                "failure_kind": kind.value, "error": str(error)[:2000], "assertion_detected": proof,
+                "proof_reason": detail, "source_sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+                "raw_log_sha256": hashlib.sha256(log.read_bytes()).hexdigest() if log.is_file() else None})
+            return passed, error, kind, proof, detail
+
+        if not faults:
+            self._build_failure = "no observable output or supported fault to sabotage"
+            save("unqualified")
+            return False, self._build_failure
+        passed, error, kind, _, _ = run_case("control", source, "unmodified control")
+        if not passed or kind != FailureKind.DESIGN:
+            self._build_failure = "qualification control did not pass: " + error
+            self._record_build_tool_block(error, kind, "qualification control", tb)
+            save("blocked" if kind != FailureKind.DESIGN else "control_failed")
+            return False, self._build_failure
+        save("qualifying")
+        for label, code, description in faults:
+            passed, error, kind, proof, detail = run_case(label, code, description)
+            if kind != FailureKind.DESIGN:
+                self._build_failure = "qualification tool blocked: " + error
+                self._record_build_tool_block(error, kind, "qualification " + label, tb)
+                save("blocked")
+                return False, self._build_failure
+            explicit_verdict = error.startswith("Testbench failures:") or error == "testbench reported failure"
+            if not passed and explicit_verdict and proof:
+                save("qualified", True)
+                suffix = "; missed: " + ", ".join(item["description"] for item in missed) if missed else ""
+                return True, "detected " + description + suffix
+            missed.append({"label": label, "description": description,
+                           "reason": "simulation passed" if passed else detail or error})
+            save("qualifying")
+        details = "; ".join(item["description"] + ": " + item["reason"] for item in missed)
+        self._build_failure = "qualification not established; no tested fault produced retained assertion proof: " + details[:3000]
+        save("unqualified")
+        return False, self._build_failure
 
     # ------------------------------------------------------------- build mode
     def _run_build(self, saved: dict | None) -> dict:
@@ -413,7 +449,11 @@ class Orchestrator:
             self._build_top = spec.top_name
             result = self._build_module(m, mdir)
             if result is None:
-                return {"status": "module_failed", "module": m.name}
+                blocker = getattr(self, "_build_blocker", None)
+                if blocker:
+                    return {"status": "build_blocked", "module": m.name, **blocker}
+                return {"status": "module_failed", "module": m.name,
+                        "error": getattr(self, "_build_failure", "module verification did not complete")}
             vfile.write_text(result)
             module_files[m.name] = vfile
 
@@ -445,10 +485,12 @@ class Orchestrator:
 
     def _build_module(self, m: ModuleSpec, mdir: Path) -> str | None:
         """Generate one module through the ladder with best-of-N. Returns verilog."""
+        self._build_blocker = None
+        self._build_failure = "module verification did not complete"
         print(f"[module {m.name}] golden model + testbench...")
         independent_tb = None
         if getattr(self, "_build_single", False) and self.cfg.testbench_path:
-            text = Path(self.cfg.testbench_path).read_text()
+            text = Path(self.cfg.testbench_path).read_text(encoding="utf-8")
             text = re.sub(r"\b" + re.escape(self._build_top) + r"\b", m.name, text)
             text = re.sub(r"\b" + re.escape(self._build_top + "_tb") + r"\b", m.name + "_tb", text)
             prefix = "independent_" if self.cfg.generate_golden else ""
@@ -463,6 +505,7 @@ class Orchestrator:
             independent_tb = trusted_tb
         example_errors = validate_examples(m, require_anchors=True)
         if example_errors:
+            self._build_failure = "; ".join(example_errors[:20])
             atomic_write_text(mdir / "golden_qualification.log", json.dumps({
                 "status": "invalid_spec_examples", "errors": [error[:1000] for error in example_errors[:20]],
                 "model_calls": 0}, indent=2))
@@ -496,6 +539,7 @@ class Orchestrator:
                 "scope": "Specification examples and generated stimulus; not formal equivalence or reset-kind proof."}, indent=2))
             break
         else:
+            self._build_failure = feedback
             return None
         verilog = self._generate_verified(m, "(initial implementation)",
                                           "", tb, mdir, independent_tb=independent_tb)
@@ -542,7 +586,10 @@ class Orchestrator:
                     self._write_tmp(directory, contract.name, source)
                     return source
                 if kind != FailureKind.DESIGN:
+                    self._record_build_tool_block(error, kind,
+                        "independent child verification" if active_tb == independent_tb else "child verification", active_tb)
                     return None
+                self._build_failure = str(error)[:4000]
                 if attempt < self.cfg.max_fix_attempts:
                     source = self._model("generator", "fix", source, "Repair without changing interface or latency",
                                          error, active_tb.read_text(encoding="utf-8"), [], self.budget)
@@ -550,7 +597,7 @@ class Orchestrator:
 
     def _write_tmp(self, mdir: Path, name: str, verilog: str) -> Path:
         p = mdir / f"{name}.v"
-        p.write_text(verilog)
+        p.write_text(verilog, encoding="utf-8")
         return p
 
     # ---------------------------------------------------------- optimize mode

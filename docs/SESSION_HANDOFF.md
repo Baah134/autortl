@@ -44,38 +44,37 @@ honest CV evidence. Never modify tests/contracts to publish a gain.
 
 ## Active continuation: generated builds and streaming
 
-Uncommitted harness fixes and new fixtures are being validated; the published
-checkpoint above remains the latest integrated main result. Current coordinator
-retains the lease and is working. Do not start a second vendor job or edit runtime
-while the live build is active.
+Published development checkpoint535213e includes combined verification,774tests,
+independently verified counter build and accepted encoder6to5LUT gain. Main still
+has the prior fully gated1124ea0 checkpoint. Do not merge until final fullsuite +
+freshfulltier0 qualify; no higher tier is held.
 
-- Runtime edits: explicit oracle reset/transaction protocol; bounded concrete
-  example anchors; single diagnostic oracle retry; raw assertion proof for fault
-  qualification; minimum scoreboard transfer age.
-- Fullsuite01: 725passed/3failed in261.52s; three legacy missing model mocks were
-  corrected and focused60tests pass. Corrected fullsuite02:743passed in203.40s.
-- Live trusted counter/encoder qualification10/10 expected verdicts complete.
-- Scoreboard before/after: forbidden zero-cycle falsely passed before; now asserts,
-  registered control still passes. Keep both runs.
-- Counter02 completed:6LUT/8FF,setup0.424ns,hold0.226ns;6calls. Actual oracle
-  syntax repair, generatedTB qualification and independent700-cyclefinalcheck pass.
-- Streaming qualification complete:9/9 actual expected verdicts, including eight faults.
-- Encoder01 complete: accepted6to5LUT,4FF,setup0.531/hold0.156ns; independent
-  exhaustivefinalcheckpassed. Source978c742;5calls,495.720toolseconds.
-- Combined --generate-golden/--tb mode implemented,22flow+90configfocusedtests,
-  fullsuite04:774passed178.95s. Childrepair rerunsbothTBs; both qualify.
-- Streaming01 stopped at qualification: correct generatedRTL passes bothTBs,
-  readinessmutation passespayloadgrader, so noqualification/routing claimed.
-- No vendor jobs active. Next: bounded fault portfolio (retain missedfaults),
-  typed exhausted-infrastructure build-blocked summaries, fulltests and fresh
-  streaming02, then freshfulltier0 beforemainmerge.
-- Next: qualify skid suite9cases, finish fresh counter/encoder builds and independently
-  check exact saved winner plus declared child; run generated streaming build.
-- Serial drain/reset-count fixes are complete: real old-bound false failure repaired;
-  fullsuite03:746passed in272.44s. Source frozen for encoder.
-- Next investigate capacity-one fault under payload scoreboard; if accepted, add
-  an explicit generated-golden + independent-TB mode before streaming build. Keep
-  independent child failure feedback and qualification; do not merely postcheck winner.
+- Counter02: generated golden syntax repair,6LUT/8FF baseline retained; independent
+  700-cycleTB passed. Source8b6a162. Encoder01: accepted6to5LUT,4FF,
+  setup0.531/hold0.156ns; exhaustive independentTB passed. Source978c742.
+- Streaming independent fixture: reference+8faults9/9 expected verdicts; source is
+  two-entry elastic queue with combinational ready, not registered-ready isolation.
+- Combined --generate-golden/--tb mode runs generated and adapted independent child
+  tests, reruns both after repair, qualifies both, then retains original topTB for
+  baseline/candidates. Same-byte capacity-one false acceptance motivated this.
+- Streaming01 correctly stopped: primary readiness fault passed payload grader.
+  New bounded mutation portfolio retains misses and requires a real assertion from
+  original/stuck-zero/stuck-one probes. The independent TB detects readiness.
+- Tested final fixes (publishing): qualification portfolio, typed build_blocked diagnostics
+  for INFRA/UNKNOWN, UTF8 per-candidate evidence/trusted-TB adaptation;54focusedtests,
+  fullsuite05 **794passed**. Duration4377.09s includes battery-triggered sleep.
+  Awake repeat fullsuite06 **794passed237.82s** on identical implementation.
+- Streaming02: budget_exhausted after battery sleep, no best/physical result.
+  Never reset its budgets or resume across changed source. Preserve its logs.
+- Active frozen-source vendor job: logs/build-golden-skid-03 (session19115).
+  Baseline routed15LUT/19FF,setup0.302ns;optimization active. Fullsuite06 complete.
+  No other vendor jobs.
+- Local temporary keep-awake helper(session53742) ends after two hours or remove
+  C:/Users/prince.baah/Documents/Codex/2026-10-15/hey/work/autortl-verification-active.flag.
+  Release it after queue completion. Current machine is on AC after battery sleep.
+- Next: finish/publish final tests and portfolio source, finish streaming03 with
+  independent saved-winner check and DONE replay, freshfulltier0 campaign06,
+  archive results, update publicREADME/sharedmemory and fast-forward main if gatespass.
 
 ## Latest completed milestone
 

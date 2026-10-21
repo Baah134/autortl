@@ -515,3 +515,25 @@ changes, commands, outcomes, evidence locations, limitations, and next action.
   the exact TB unchanged. Also preserve exhausted infrastructure causes as typed
   build-blocked outcomes. Independent temporal tests remain mandatory; portfolio
   qualification is only minimum non-vacuity evidence, not completeness proof.
+
+
+- Qualification portfolio and typed blockers:54combinedfocusedtests pass; source
+  frozen for full05 and streaming02. Full05: **794passed4377.09s** including an
+  observed system-sleep interval; no test failures. Runtime duration is not a
+  performance claim. First-primary miss remains in JSON; zero-output probe asserts,
+  independentTB detects the original readiness mutation in the real streaming run.
+- Windows System events42/1 confirm battery sleep2026-10-20T23:48:54.466Z through
+  2026-10-21T00:57:19.970Z. Streaming02 exhausted frozen budgets (TOOL_BUDGET,
+  no best/physicalresult);2modelcalls,4441.221chargedtoolseconds including sleep.
+  No budget reset, design-rejection history or changed-source resume was used.
+- AC power confirmed after wake. A temporary SetThreadExecutionState system-awake
+  request is active in a local helper for the verification queue, limited to two
+  hours and released when work/autortl-verification-active.flag is removed. It does
+  not change the power plan. Helper process session53742. Currentvendorqueue:
+  logs/build-golden-skid-03; fullsuite06 rerun concurrently. Source remains frozen.
+
+
+- Awake fullsuite06 on identical source: **794passed in237.82seconds**. Actual
+  streaming03 reached routed baseline15LUT/19FF,setup0.302ns; optimization pending.
+  Publishing tested portfolio/typed-blocker source now; finalmainintegration still
+  requires completed streaming checks and freshfulltier0, no higher held tier.

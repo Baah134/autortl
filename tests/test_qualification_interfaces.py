@@ -14,7 +14,6 @@ endmodule'''
 
 def test_fallback_mutant_preserves_symbolic_signed_interface(tmp_path, monkeypatch):
     o = fsm.Orchestrator(RunConfig(mode='build', top_module='m'), tmp_path/'run')
-    monkeypatch.setattr(fsm, 'mutate', lambda source: None)
     sources = {}
     def tool(name, files, tb, top, cfg, directory):
         sources[directory.name] = files[0].read_text()
@@ -25,12 +24,12 @@ def test_fallback_mutant_preserves_symbolic_signed_interface(tmp_path, monkeypat
     monkeypatch.setattr(o, '_tool', tool)
     tb = tmp_path/'m_tb.v';tb.write_text('// controlled test fixture')
     assert o._qualify_source(SOURCE, tb, 'm', tmp_path)[0]
-    reference,mutant = infer_module(SOURCE,'m'),infer_module(sources['mutant'],'m')
+    reference,mutant = infer_module(SOURCE,'m'),infer_module(sources['stuck_zero'],'m')
     assert mutant.interface_signature == reference.interface_signature
     assert mutant.parameters == reference.parameters
     assert mutant.ports[-1].signed is True
     assert mutant.ports[-1].packed_dimensions == [[0,7]]
-    assert 'assign y = 0;' in sources['mutant']
+    assert 'assign y = 0;' in sources['stuck_zero']
 
 
 

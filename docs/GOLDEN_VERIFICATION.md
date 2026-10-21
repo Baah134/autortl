@@ -73,3 +73,21 @@ quality of an unqualified user-supplied testbench. Golden execution is capped at
 for the specified reset prefix. The configuration flag is frozen on resume and
 changes curriculum cohort identity. Legacy schema1 configs default only this new
 field to false; all previous required fields remain mandatory.
+
+
+## Qualification sensitivity and missed faults
+
+Qualification tries a fixed bounded portfolio: the original operator/increment
+fault, interface-preserving stuck-zero outputs, then stuck-one outputs. The
+unchanged control must pass and at least one fault must emit retained assertion
+detail and a failure verdict. Missed probes remain in qualification.json with
+source/TB/log identities; they are not silently relabelled as detected.
+Infrastructure/unknown failures stop the portfolio. No testbench regeneration
+occurs during qualification. This minimum sensitivity check does not establish
+complete behavior coverage. In particular, a payload scoreboard can miss readiness
+and capacity faults that the independent queue TB must detect.
+
+An exhausted module tool failure reports build_blocked with its failure kind,
+stage, diagnostic and testbench. It never enters RTL rejection history or triggers
+RTL repair. Budget exhaustion remains a separate outcome. Start a fresh experiment
+when changing runtime implementation; do not reset an interrupted trial's budgets.

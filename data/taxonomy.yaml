@@ -58,6 +58,15 @@ messages:
 # Methodology violations (report_methodology, UG1292 IDs). ADVISORY ONLY:
 # these never kill candidates; they are digested into the planner's context.
 harness_failures:
+  implicit_windows_module_encoding:
+    meaning: "Implicit Windows encoding can reject or corrupt non-ASCII RTL/testbench comments"
+    repair: "Read trusted testbenches and write generated module evidence with explicit UTF-8 encoding"
+  unobservable_first_qualification_mutation:
+    meaning: "A generated payload grader can miss the first capacity/readiness fault despite detecting data faults"
+    repair: "Retain missed faults and try a bounded observable fault portfolio without changing the testbench; require raw assertion proof"
+  build_infrastructure_cause_erasure:
+    meaning: "Exhausted module tool failures became generic module_failed summaries"
+    repair: "Preserve tool failure kind, diagnostic, stage and testbench in build_blocked outcomes without RTL repair or rejection history"
   payload_only_capacity_blindness:
     meaning: "Accepted-transaction payload checks can pass a design with incorrect capacity/readiness"
     repair: "Combine generated oracle checks with independently qualified temporal/capacity tests, including child repair and integrated candidate gates"

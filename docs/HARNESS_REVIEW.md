@@ -190,3 +190,21 @@ behavior-specific trusted-TB mutations are the next necessary coverage work.
   The measured need is stronger deterministic verification, not another model
   opinion. The next design adds state, capacity and backpressure with a bounded
   independent oracle; full UART/processor generation would outrun current evidence.
+
+
+## Streaming feature review after measured failures
+
+Keep both graders: generated Python/unit tests cover payload behavior, while an
+independently qualified temporal TB checks exact capacity/readiness/reset and
+all-output behavior. Same-byte capacity-one RTL passed the former and failed the
+latter. The combined mode therefore gates child repair and every integrated
+candidate, not only a manual check after choosing a winner.
+
+Improve fault qualification with a bounded fixed portfolio. Retain the missed
+readiness mutation; the payload grader detects stuck-zero and the independent
+TB detects readiness. Changing a probe is not changing the grading testbench.
+One observed assertion is minimum non-vacuity evidence; do not present it as
+complete mutation coverage. Typed tool blockers now preserve infrastructure causes
+and stop without RTL repair. No extra model judge, framework or agent layer was
+needed to repair these boundaries. Keep population search deferred until these
+checks have repeated model/budget-controlled results.
