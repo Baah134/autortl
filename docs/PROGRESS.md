@@ -749,3 +749,10 @@ changes, commands, outcomes, evidence locations, limitations, and next action.
   not reuse of prior output. Only change from suite02 is removed testEOFblank;
  all55runtimefiles remain85e4fb8. Archived03 plus original02 manifests/logs,
  updated README direct evidence link. No failed criterion was relaxed.
+
+- Published final evidence **9cead4e**, GitHubdevelopment head verified; main
+  remains7bef3bf because fresh physical/tier0 gates are pending. Worktree clean
+  at publication. Second kernelpower check stillAC0/Flags6/0%; charger question
+  unanswered. FIFO05/campaign07 notstarted, no reset budgets or claimedresults.
+  Awakehelper1834 released cleanly after flag removal; no vendor/helper jobs
+  left running. Shared memory records exact next command and power dependency.

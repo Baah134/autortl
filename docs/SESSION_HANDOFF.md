@@ -83,11 +83,12 @@ Latency correction is complete/tested/FROZEN:
  review found no blocker. Archive evidence/2026-10-22/latency-contract-tests.
 
 Exact next actions:
-1.85e4fb8 published. Fullsuite03 completed1074passed344.74s October22;
-  all175identities unchanged; only a testEOFblank cleanup since suite02.
-  Publishremainingdocs/evidence/formatting. Vendorqueue waitsfor AC detection
-  or user explanation: Windows reportsAC0,0%,critical. Async charger question
-  pending. No new FIFO05 or campaign07 has started.
+1.Tested runtime85e4fb8 and final evidence9cead4e are published to GitHub
+  development (remote heads verified, worktree clean at milestone). Final
+  fullsuite03:1074passed344.74s October22, all175identities unchanged.
+  Check AC power or user response before vendor queue: Windows twice reports
+  AC0,0%,critical. Async charger question pending. Neither FIFO05 nor campaign07
+  started. No successful new physical outcome or main integration is claimed.
 2. Archive tests/failures, publish tested development commit; verifyruntime55files.
 3. FreshFIFO05:3iterations/1candidate,16calls,25tool/35wallminutes,1infraretry,
    both generated and independent graders. Do not resume/regrade04.
@@ -97,12 +98,13 @@ Exact next actions:
   1infraretry. No held tier. Only completepass permits main integration.
 6. Archive/updatepublicresults/CVlog/featuredecisions, atomicFFpushmainanddev.
 
-Coordination token remains private in functions store coord_token; lease expires
-about05:57UTC October23. Claims in SQLite; docs Codex/main, wrapper Codex/wrapper,
-promptpolicy Codex/latency, parser Codex/parser. Finish claims with actualevidence.
+Implementation/evidence claims completed with published test evidence. The
+coordinator releases its lease while waiting for the physical power condition;
+next continuation must claim anew, check processes/Git and reclaim doc scopes.
 User Vivado GUI/simulation remains untouched. One harness vendor queue.
-Old jobs stopped. New bounded awakehelper1834 active fromOctober22~21:59UTC;
-remove verificationflag afterqueue. It does not overridecriticalbattery shutdown.
+All old and current verification jobs finished. Awakehelper1834 released cleanly
+ after flag removal. No helper/vendor job is left running. Restore bounded awake
+ request only for a real queue; it does not overridecriticalbattery shutdown.
 Remove workspace verificationflag and pollhelper afterqueue. No background
 scheduler or automatic provider failover.
 
