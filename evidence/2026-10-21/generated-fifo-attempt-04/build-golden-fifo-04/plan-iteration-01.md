@@ -1,0 +1,13 @@
+# PLAN — iteration 1
+
+## Current state assessment
+
+The baseline passes simulation and uses 13 LUTs, 6 FFs, no DSPs or BRAMs, but routed setup timing fails at WNS −0.931 ns while hold passes at WHS 0.091 ns. The reported critical path runs from `rd_ptr` through distributed RAM to `out_data[7]`, with two logic levels; the immediate goal is timing recovery under the fixed interface, cycle behavior, and parameterized child checks.
+
+## Hypothesis
+
+Replacing the default wrapper’s circular-memory read path with a three-entry shift queue and a registered head payload should remove the distributed-RAM read from the `out_data` path and may recover setup timing, at the cost of additional FFs and potentially LUTs.
+
+## Instruction for generator
+
+Replace only `sync_fifo`’s `sync_fifo_core` instantiation with equivalent fixed-default FIFO logic using three 8-bit payload registers, occupancy tracking, and a head register that directly drives `out_data`; shift queued payloads on retirement and capture pushes according to the current occupancy. Preserve the exact ready/valid equations, synchronous active-high reset priority, full simultaneous pop/push behavior, no empty bypass, stable stalled output, and visible cycle timing. Keep all ports and clocks unchanged; do not modify the frozen `sync_fifo_core`, whose parameterized configurations remain checked independently.

@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_2:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 2\n## Contract check\n- Interface and fixed wrapper behavior: PASS \u2014 Top ports match the required default wrapper; the frozen core retains parameterized behavior.\n- FIFO behavior: PASS \u2014 The authoritative ladder reports ALIVE, and simulation passes the temporal parameter matrix.\n- Declared latency: FAIL \u2014 Typed builds require an explicit numeric latency; the candidate lacks `// @latency 1`.\n- Tool and simulation gates: PASS \u2014 Required tools exited successfully, and simulation reports `TEST PASSED`.\n- Routed metrics and timing: PASS \u2014 Retained routed metrics show WNS 0.318 ns and WHS 0.05 ns, both nonnegative.\n- Improvement over previous best: PASS \u2014 `timing_recovery` is supported by the known infeasible incumbent and timing-feasible candidate; higher LUT use does not disqualify recovery.\n## Summary\n- Passed: 5 of 6\n- Failed: 1 of 6\n- Improved over previous best: YES\n## Recommendation\nREJECT\n## Reason\nThe candidate recovers timing feasibility and passes the authoritative behavioral and tool gates, but it omits the required numeric latency annotation. That mandatory failure prevents acceptance.",
+      "recommendation": "REJECT",
+      "passed": 5,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

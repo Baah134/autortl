@@ -116,7 +116,7 @@ def extract_verilog(response_text: str) -> str:
     return text.strip()
 
 
-def declared_latency(verilog: str) -> int | None:
-    """Parse the mandated '// @latency N' header if present."""
-    m = re.search(r"//\s*@latency\s+(\d+)", verilog)
-    return int(m.group(1)) if m else None
+def declared_latency(verilog: str, top: str | None = None) -> int | None:
+    """Read only the selected module's real annotation; ambiguous files stay unknown."""
+    from autortl.verilog_interface import module_declared_latency
+    return module_declared_latency(verilog, top)

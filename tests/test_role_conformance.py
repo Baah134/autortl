@@ -57,5 +57,8 @@ def test_actual_conventions_distinguish_unknown_latency():
     guidance = conventions()
     assert "known numeric latency" in guidance
     assert "Unknown does not mean zero or combinational" in guidance
-    assert "Typed builds\nrequire an explicit numeric latency" in guidance
+    assert "module contracts require an explicit numeric latency" in guidance
+    assert "declared_latency.known=true" in guidance
+    assert "unannotated aggregate top" in guidance
+    assert "minimum accepted" in guidance
     assert "Every generated module declares" not in guidance

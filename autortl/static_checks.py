@@ -36,7 +36,7 @@ def check(verilog: str, contract: ModuleSpec | None = None) -> StaticResult:
         errs.append("begin/end imbalance — verify blocks")
 
     if contract is not None:
-        errs.extend(_check_interface(src, contract))
+        errs.extend(_check_interface(verilog, contract))
         errs.extend(_check_latches(src))
 
     return StaticResult(len(errs) == 0, errs)

@@ -150,3 +150,21 @@ Exact unchanged RTL surgery is skipped only when source bytes, verified prior
 inputs/exits and the exact current default synthesis flow match. Changed or
 unknown flow options and intentional physical-only trials still run. A skipped
 trial records no_source_change/tools_ran=false and creates no new measurement.
+
+## Top latency annotation authority
+
+Optimization annotation requirements come from current-top
+declared_latency.known/cycles, not child metadata alone. Validated complete
+transparent single-child wrappers inherit the typed child contract annotation;
+arbitrary aggregate tops remain unknown. Scoreboard latency denotes minimum
+accepted-transfer age, not a fixed delivery deadline under stalls. Unknown
+metadata does not waive defined behavior, static checks or simulation. FIFO04's
+false reviewer requirement remains archived and is never retroactively accepted.
+
+Annotation parsing uses real standalone line comments attached to the selected
+module header or within that module. It masks block comments, quoted strings
+and escaped identifiers, and never takes another module's declaration. Equal
+duplicates are allowed; conflicting, malformed or out-of-range (0..1024) selected
+annotations are static design failures. The optional no-top client form returns
+unknown for multi-module files. This is a lexical supported subset, not a
+Verilog preprocessor or elaborator; annotations are never behavioral proof.

@@ -12,8 +12,12 @@ Use the supplied clock names; do not invent or rename clocks.
 When the contract supplies a known numeric latency, declare `// @latency N`
 equal to it. For an existing source with no annotation, declared latency is
 unknown: preserve its exact observable cycle behavior and do not invent a
-numeric annotation. Unknown does not mean zero or combinational. Typed builds
-require an explicit numeric latency.
+numeric annotation. Unknown does not mean zero or combinational. Typed child
+module contracts require an explicit numeric latency. For optimization, only
+the authoritative current top declared_latency.known=true requires its matching
+numeric annotation. Child metadata does not create an annotation requirement
+for an unannotated aggregate top. Scoreboard latency is minimum accepted
+transfer age; backpressure can delay delivery. Preserve all defined behavior.
 Changing that comment does not authorize changing behavior. If an architecture
 cannot meet this contract, report the limitation and request replanning; never
 amend it to pass a test. Retiming existing registers is allowed only when all

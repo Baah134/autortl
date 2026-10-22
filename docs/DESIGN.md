@@ -22,7 +22,9 @@ supported schema and limits.
 1. **Task decomposition into module contracts.** The planner's only creative
    output is `design_spec.json` (typed schema in `autortl/spec.py`). Each
    module is an independent generate-verify subtask. Top-level wiring is
-   generated mechanically (`linter.top_verilog`) — zero LLM.
+   generated mechanically (`linter.top_verilog`) — zero LLM. A validated complete
+   transparent single-child wrapper inherits that child's known latency contract;
+   arbitrary module graphs receive no inferred aggregate numeric latency.
 2. **Verification ladder.** static checks (ms) → xvlog (s) → unit sim →
    integration sim → synthesis. A candidate that dies at rung 1 costs
    milliseconds, not minutes.
@@ -48,7 +50,11 @@ supported schema and limits.
 ## The six potholes and intended fixes (see handoff for verified status)
 1. Bad blueprint → contract linter + stub elaboration before any generation.
 2. Behavioral-vs-cycle-accurate → latency field + two compare modes;
-   spec-is-law via `// @latency N` header (mismatch = graded failure).
+   spec-is-law via `// @latency N` header when the current top declaration
+   is known (mismatch = graded failure). Unknown annotation metadata is not zero
+   and cannot justify a missing-header rejection. Typed child contracts still
+   require numeric latency; scoreboard latency is minimum accepted-transfer age,
+   with later delivery possible under backpressure.
 3. Anchored horde → forced architectural mutation portfolios + dedupe.
 4. Replan amnesia → contract-hash artifact cache; unchanged modules imported;
    max 2 replans with budget-forced degradation.

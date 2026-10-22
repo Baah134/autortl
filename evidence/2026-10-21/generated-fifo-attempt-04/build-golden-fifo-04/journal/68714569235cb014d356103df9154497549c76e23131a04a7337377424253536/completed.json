@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Interface and behavior: PASS \u2014 deterministic ladder is ALIVE; the default wrapper preserves FIFO behavior, and the parameter matrix passed.\n- Declared latency: FAIL \u2014 typed build latency is 1 cycle, but the candidate has no `// @latency 1` annotation.\n- Compile and simulation gates: PASS \u2014 xvlog, xelab, xsim and Vivado exited successfully; simulation reported `TEST PASSED`.\n- Routed metric integrity: PASS \u2014 routed reports are retained and the metrics are consistent.\n- Timing feasibility: FAIL \u2014 WNS is \u22120.289 ns; setup timing is not met, despite nonnegative hold slack.\n- Promotion objective and recovery: FAIL \u2014 the candidate is not timing-feasible, so it cannot recover timing; LUT use increased from 13 to 21.\n## Summary\n- Passed: 3 of 6\n- Failed: 3 of 6\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes the deterministic behavior, compile, simulation, and routed evidence checks, but misses the required latency annotation and setup timing gate. Since it remains timing-infeasible, it cannot replace the known timing-infeasible previous best as a timing recovery; it also uses more LUTs, so it does not improve the minimize_luts objective.",
+      "recommendation": "REJECT",
+      "passed": 3,
+      "failed": 3
+    }
+  },
+  "artifacts": {}
+}

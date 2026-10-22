@@ -1,6 +1,6 @@
 # Current project checkpoint
 
-Updated 2026-10-21 (America/New_York). Reconcile these notes with Git,
+Updated 2026-10-22 (America/New_York). Reconcile these notes with Git,
 coordination state and actual processes. Notes are not execution evidence.
 
 ## Workspace and publication
@@ -9,7 +9,8 @@ coordination state and actual processes. Notes are not execution evidence.
 - Preserve the separate preexisting Downloads/autortl copy.
 - Remote: https://github.com/Baah134/autortl
 - Current development checkpoint contains final feedback/recovery runtime with
-  **984 tests passed in423.26s**. Fresh FIFO04/fulltier0 pending; no FIFO closure yet.
+  **1,074 tests passed in274.48s** on final unchanged latency source. Publishing
+  correction from d39e34d; freshFIFO05/fulltier0 pending. No accepted FIFO closure yet.
 - Main remains **7bef3bf**. Prior developmentffc15fc has FIFO fixture836tests and
   admission14/14; FIFO01 at that source failed timing. Prior runtime8098466 had
  807tests and campaign06 2/2. Each archive keeps its own measured source.
@@ -40,96 +41,66 @@ README is the concise public overview. Agent continuity belongs here and in
 START_HERE, AGENTS and the progress log. Preserve unsuccessful attempts and
 honest CV evidence. Never modify tests/contracts to publish a gain.
 
-## Active continuation: FIFO timing recovery and source integrity
+## Active continuation: FIFO recovery and latency authority
 
-Published developmentffc15fc:836tests, FIFO admission14/14, generated default
-control pass. Main remains7bef3bf until final new fullsuite/freshfulltier0 pass.
+Published source d39e34d has984passingtests; main7bef3bf remains gated.
+Recovery source49599b5 had939tests; earlier FIFO fixtureffc15fc had836tests.
+No runtime edits are allowed during final fullsuite38328 or later live runs.
 
-FIFO01 atffc15fc completed functional verification but FAILED timing:
-13LUT/6FF,setup-0.931ns/hold0.091ns. Both graders qualified; same-SHA readiness
-mutant passed payload grader and failed independent matrix. Candidate redeclared
-frozenchild and compiler blocked it. No successful FIFO physical result or area
-gain is claimed. Independent exact saved-winner+child simulation passed. Actual
-DONE replay and temporary qualification-report tamper test verified184identities
-unchanged after restoration, without new model/tool calls.
+Historical FIFO trials (all preserved, never reset/regraded):
+- 01 ffc15fc:13LUT/6FF,WNS-0.931/WHS0.091ns; candidate duplicated frozen child.
+  Exact saved baseline+children passed independent simulation and actual DONE
+  nominal/tamper checks (184restoredidentities,no newcalls).
+- 02 49599b5: PC sleep/hibernate interrupted baseline; timed_out receipt and
+  budget_exhausted. No winner/physical success. Archive02,139files.
+- 03 49599b5: candidates/Doctor all failed timing; exact no-op repeated tools
+  and exhausted original budget.10calls,1200.654tool/1349.068elapsedseconds.
+  Archive03,295files. Feedback failures drove d39e34d fixes.
+- 04 d39e34d: done, baseline retained,timing_closed=false. Candidate2
+  24LUT/27FF passed matrix and routed timing (.318/.050ns), but sole rejection
+  was invented numeric top annotation despite authoritative known=false.
+  First candidate/Doctor -.289/-.016ns failed; Doctor facts reached nextplan.
+  9calls,872.439tool/978.931elapsedseconds. Independent savedbaseline+children
+  passed. Archive04 has280verifiedfiles. No accepted FIFO closure/area gain.
 
-Current uncommitted fixes (scopes in SQLite): feasibility-first shared policy,
-editable/frozen hierarchy context in generator/fix/Doctor, configured shared
-compile/simulation repair bound with separate attempt evidence, explicit timing
-outcome in CLI/summary. Policy focus64tests and context focus26tests passed;
-full integrated focus172passed after two contradictory legacy fixture corrections.
-Peer review found mixed UTF8 source IO and omitted original childRTL
-identities at DONE. Before-failing regressions now pass after explicit UTF8 IO
-and recorded-digest dependency validation before winner publication. Final
-integrated focus187passed143.87s; strictschema12passed. Final read-only review
-found no blocker. Final frozen fullsuite03 passed939tests349.85s. Previous fullsuite02
-had938passes/one synthetic cache fixture missing source/TB lineage; fixed fixture
-20tests passed before rerun. Logs archived in evidence/2026-10-21/fifo-recovery-tests. No harness vendor job active; user GUI untouched.
+Latency correction is complete/tested/FROZEN:
+- Current-top declared_latency.known/cycles controls annotation requirements;
+  actual injected conventions and assembled planner/generator/evaluator agree.
+- Validated complete transparent single-child wrapper inherits typed contract.
+  Arbitrary module graphs get no aggregate inference; scoreboard latency means
+  minimum accepted-transfer age, not fixed delivery under stalls.
+- Shared lexical module-scoped extraction ignores other modules/blockcomments/
+  strings. Malformed/conflicting/out-of-range metadata is a static design error.
+  Inference and all four generation/candidate/repair/Doctor gates use it.
+- Typed numeric module contracts and all behavioral/interface/exit/setup/hold
+  gates are retained. Taxonomy records observed modes before implementation.
+- Focused wrapper38,conventions13,promptpolicy91,parser100 and crossstage66
+  passed. Initial gatefocus9pass/1failure exposed malformedmetadata escaping
+  static checks; corrected originaltext inference, rerun66pass70.01s.
+- Preliminary fullsuite01:1042passed301.43s, not finalfreezequalified because
+  taxonomy was appended while it ran. Final fullsuite02 completed1074passed274.48s
+ onOctober21; all175identities unchanged verifiedOctober22. Read-only finalpeer
+ review found no blocker. Archive evidence/2026-10-22/latency-contract-tests.
 
-FIFO02 on49599b5 was interrupted by PC sleep/hibernate during baseline synthesis.
-Both graders qualified, oracle syntax repaired, but tool receipt timed_out and
-wall/tool budgets exhausted. No winner or physical success; do not resume/reset.
-Archive: evidence/2026-10-21/generated-fifo-attempt-02 (hashes verified).
+Exact next actions:
+1. Final tests/source checks passed; publish tested development checkpoint.
+2. Archive tests/failures, publish tested development commit; verifyruntime55files.
+3. FreshFIFO05:3iterations/1candidate,16calls,25tool/35wallminutes,1infraretry,
+   both generated and independent graders. Do not resume/regrade04.
+4. Independently simulate exact saved winner+declaredchildren and perform actual
+   DONE nominal/child/resolvedspec tamper-restoration checks before runtime edits.
+5. Fresh fulltier0 campaign07:1iteration/1candidate,16calls,20tool/30wallminutes,
+  1infraretry. No held tier. Only completepass permits main integration.
+6. Archive/updatepublicresults/CVlog/featuredecisions, atomicFFpushmainanddev.
 
-FIFO03 completed budget_exhausted on49599b5 (session12222 ended); no vendor job
-active. Both candidates and first Doctor trial failed timing; second Doctor
-returned unchanged RTL and timed out on remaining budget.10calls,
-1200.654chargedtoolseconds/1349.068elapsed. No saved final winner or accepted
-physical result. Archive03 has295verifiedfiles and feedback-gap-proof.json.
-
-Current uncommitted feedback fixes are implemented/frozen: bounded report paths,
-complete resolved specs, not-adopted Doctor advice and conservative exact-source/
-default-flow dedupe. Original related digests are retained at DONE. Context51
-focusedtests and Doctor74focusedtests pass; firstfullsuite984passed408.00s.
-Final review added source preview for proven no-op (1testpassed); finalentire
-fullsuite02 passed984tests423.26s, archived in feedback-context-tests.
-Four modes recorded in taxonomy/HARNESS_REVIEW before changes. All original
-verification/metric/receipt/setup/hold gates remain intact. Oversized semantic
-facts must fail clearly; standalone optimization stays strict.
-
-Next: publish tested runtime;
-freshFIFO04 (2iterations/1candidate,16calls,25tool/35wallminutes,oneinfraretry)
-and fulltier0, independent savedwinner and DONE checks before main.
-Main remains7bef3bf; prior recovery source49599b5 passed939tests; new tested checkpoint being pushed.
-Oldhelpers72074/72910 released; helper12596 stillactive forqueue (twohourbound).
-Removeflag aftercompletion. User GUI/simulation untouched. No background scheduler.
-
-
-## Completed continuation: generated designs and final campaign
-
-Runtime **8098466** passed **807tests in137.16seconds**. Fresh fulltier0 campaign06
-completed2/2,streak1,held=false. Both entries match all53committed runtime file
-identities at completion. No higher held tier and no controlled weaker-model claim.
-
-- Counter8 build02 at8b6a162: golden repair;6LUT/8FF retained; independent700-cycleTB.
-- Encoder8 build01 at978c742: accepted6to5LUT,4FF; setup0.531/hold0.156ns;
-  exhaustive independent saved-winner test passed.
-- Two-entry streaming03 atafcc080: combined generated+independent verification,
-  **15LUT/19FF,setup0.302/hold0.138ns**;5calls,384.843chargedtoolseconds.
-  Baseline retained; candidate equal-area and duplicate companion definition.
-  Independent893-cycle saved-winner+child check passed. DONE replay42identities
-  unchanged. Earlier qualification and battery-budget failures remain archived.
-- Final guards: journal restores raw assertion/miss proof; DONE hashes reports
-  and raw proof. Duplicate compiler diagnostics VRFC10-3609/Synth8-9873 reject
-  DESIGN even exit0; nonzero infrastructure classification keeps precedence.
-  Exact bad candidate failed before elaboration. Focus43/24 tests and peer review.
-- Fresh06 counter: accepted **55to31LUT (43.64%)**,37FF,setup0.126/hold0.026ns;
- 9/9 final checks. Baseline timing0.494/0.113ns; positive margins decreased.
-  3calls,443.859chargedtoolseconds. Actual DONE replay76identities unchanged.
-- Fresh06 mux: baseline8LUT/8FF retained,setup0.579/hold0.052ns;3calls,
-  427.438chargedtoolseconds; equal-area candidate correctly rejected.
-- Archives: generated-streaming, qualification-proof, contract-campaign-06.
-  All manifests verified; original paths are provenance, not portable commands.
-- Vendor queue finished; no vendor job remains. Temporary keep-awake helper
-  confirmed released. No power-plan change was made. Active coordination is a
-  saved checkpoint, not a background experiment or scheduled agent switch.
-- Main integration verified at a113ca1; full807tests plus freshfulltier0 gates
-  passed before the fast-forward.
-- Exact next action: inspect Git/processes and acquire/renew coordination, then
-  implement the parameterized synchronous FIFO fixture/TB/mutants specified in
-  docs/TASKS.md. Qualify real behavioral faults before a generated combined-mode
-  build. Reuse the current flow; no new framework/role is justified. Keep runtime
-  frozen during each full test or live campaign.
+Coordination token remains private in functions store coord_token; lease expires
+about05:57UTC October23. Claims in SQLite; docs Codex/main, wrapper Codex/wrapper,
+promptpolicy Codex/latency, parser Codex/parser. Finish claims with actualevidence.
+User Vivado GUI/simulation remains untouched. One harness vendor queue.
+All old jobs/helpers stopped at continuation; start a new bounded awake helper
+for the live vendor queue if needed.
+Remove workspace verificationflag and pollhelper afterqueue. No background
+scheduler or automatic provider failover.
 
 ## Earlier completed milestone (historical)
 

@@ -16,6 +16,79 @@ def strip_comments(text: str) -> str:
     return re.sub(r"//[^\n]*|/\*.*?\*/", " ", text, flags=re.S)
 
 
+
+def module_declared_latency(verilog: str, top: str | None = None) -> int | None:
+    """Read real annotation comments associated with one complete module.
+
+    A module owns comments after the preceding endmodule and throughout its own
+    definition. A comment trailing code on the same line is not a standalone
+    annotation. The optional one-module form is compatible with metadata clients;
+    multi-module callers must name their top instead of guessing a file-global value.
+    """
+    if top is not None and (not isinstance(top,str) or re.fullmatch(IDENT,top) is None):
+        raise ValueError("invalid module identifier for latency annotation")
+    masked=list(verilog)
+    comments=[]
+    tokens=re.compile(r'//[^\r\n]*|/\*[\s\S]*?(?:\*/|\Z)|"(?:\\[\s\S]|[^"\\])*(?:"|\Z)|\\[^\s]+')
+    for token in tokens.finditer(verilog):
+        if token[0].startswith("//"):
+            comments.append(token)
+        for index in range(token.start(),token.end()):
+            if masked[index] not in "\r\n": masked[index]=" "
+    code="".join(masked)
+    boundary=re.compile(rf"\bmodule\s+(?:(?:automatic|static)\s+)?(?P<name>{IDENT})\b|\bendmodule\b")
+    modules=[]
+    current=None
+    preceding_end=0
+    for token in boundary.finditer(code):
+        if token.group("name") is not None:
+            if current is not None:
+                raise ValueError("nested or unterminated module prevents scoped latency annotation")
+            current={"name":token.group("name"),"header_start":preceding_end,"start":token.start()}
+        else:
+            if current is None:
+                raise ValueError("unmatched endmodule prevents scoped latency annotation")
+            current["end"]=token.end()
+            modules.append(current)
+            current=None
+            preceding_end=token.end()
+    if current is not None:
+        raise ValueError("unterminated module prevents scoped latency annotation")
+    if top is None:
+        if len(modules)!=1:
+            return None
+        selected=modules[0]
+    else:
+        matching=[module for module in modules if module["name"]==top]
+        if not matching:
+            raise ValueError(f"module name mismatch for latency annotation: expected '{top}'")
+        if len(matching)!=1:
+            raise ValueError(f"duplicate module '{top}' prevents scoped latency annotation")
+        selected=matching[0]
+    values=set()
+    for comment in comments:
+        if not selected["header_start"]<=comment.start()<selected["end"]:
+            continue
+        line_start=code.rfind("\n",0,comment.start())+1
+        if code[line_start:comment.start()].strip():
+            continue
+        content=comment[0][2:]
+        if re.match(r"[ \t]*@latency\b",content) is None:
+            continue
+        declaration=re.fullmatch(r"[ \t]*@latency[ \t]+([0-9]+)(?:[ \t]+[^\r\n]*)?[ \t]*",content)
+        if declaration is None:
+            raise ValueError(f"module {selected['name']}: malformed @latency annotation")
+        try:
+            value=int(declaration[1])
+        except ValueError as exc:
+            raise ValueError(f"module {selected['name']}: invalid @latency integer") from exc
+        if not 0<=value<=1024:
+            raise ValueError(f"module {selected['name']}: @latency must be in 0..1024")
+        values.add(value)
+    if len(values)>1:
+        raise ValueError(f"module {selected['name']}: conflicting @latency annotations")
+    return next(iter(values)) if values else None
+
 def split_items(text: str, delimiter=",") -> list[str]:
     result, start, depth = [], 0, 0
     for i, char in enumerate(text):
@@ -365,10 +438,10 @@ def infer_module(verilog: str, top: str) -> ModuleSpec:
     signature = {"version":1,"parameters":[records[n] for n in public],"ports":port_signature,
                  "localparams":[records[n] for n in sorted(seen-set(public))]}
     validate_signature(signature)
-    latency = re.search(r"//\s*@latency\s+(\d+)", verilog)
+    latency = module_declared_latency(verilog,top)
     reset = "rst_n" if any(p.name == "rst_n" for p in ports) else "rst"
     return ModuleSpec(top, "existing design under optimization", ports,
-                      latency=int(latency[1]) if latency else 0,
+                      latency=latency if latency is not None else 0,
                       reset=ResetSpec(signal=reset, active_high=reset != "rst_n"),
                       parameters={n:values[n] for n in public}, interface_signature=signature,
                       latency_known=latency is not None)

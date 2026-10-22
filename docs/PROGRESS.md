@@ -687,3 +687,50 @@ changes, commands, outcomes, evidence locations, limitations, and next action.
  35wallminutes,oneinfraretry. Larger time allowance covers two possible Doctor
   trials; no oldrun counters reset and no controlled efficiency comparison with
   earlier budgets or unobserved CLI model identity is claimed.
+
+- Published feedback source **d39e34d**. FIFO04 completed on that frozen runtime:
+  both graders qualified; retained baseline13LUT/6FF, WNS-0.931/WHS0.091ns.
+  Candidate2 passed temporal matrix and routed setup/hold with24LUT/27FF,
+  WNS0.318/WHS0.050ns, but reviewer rejected solely an invented required numeric
+  top annotation despite authoritative declared_latency.known=false. Original
+  rejection retained; no candidate regrading/promotion.9calls,872.439chargedtool
+  seconds/978.931elapsed. Exact saved baseline+children independently passed.
+  Archive generated-fifo-attempt-04 contains280verifiedfiles. This demonstrates
+  timing-recovery potential with an area cost, not an accepted optimization.
+- Recorded invented_top_latency_requirement in taxonomy BEFORE implementation.
+  Plan: align actual injected conventions, evaluator and fixed evidence on the
+  authoritative top declaration; inherit typed metadata only for mechanically
+  proven transparent single-child wrappers. Arbitrary aggregate latency stays
+  unknown; typed module and behavioral/setup/hold gates remain intact.
+  Bounded workers own distinct files; fullsuite and fresh runs follow review.
+
+- Wrapper focus38passed0.31s; conventions13passed1.06s; assembled latency policy
+  focus91passed70.86s (actual injected conventions, build/standalone, known/
+  unknown, six role entry points).
+- Read-only review found a preexisting whole-file annotation search attributing
+  helper-module/block-example metadata to the selected top. Recorded
+  cross_module_latency_annotation before correction. Fullsuite01 was already
+  running; recording this runtime taxonomy change invalidates its freeze, so
+  its outcome will be retained as preliminary only. No source correction is
+  made until it exits. A complete fresh final frozen rerun is required.
+
+- Preliminary fullsuite01 exited0:1042passed301.43s; retained but not final
+  freeze-qualified. Module parser100focusedpassed1.14s. New crossstage focus
+  initially9pass/1fail: malformed annotation escaped comment-stripped static
+  inference and raised. Passing originaltext into existing interface inference
+  converts it to a static design failure. Full client/optimizer/Doctor/gate focus
+  then66passed70.01s. Allfourselectedmodulecalls covered.
+- Final fullsuite02 running frozen with175source/test/fixture identities.
+  Old awakehelper12596 released; bounded helper80718 nowserves queue.
+
+## 2026-10-22 continuation: tested latency correction
+
+- Reconciled actual Git/processes; no old harness jobs running. Expired lease
+  reclaimed; interrupted source preserved. Saved final fullsuite02 completed
+  October21: **1074passed274.48seconds**. All175recorded source/test/fixture
+  identities unchanged onOctober22. This is saved validation, not a new rerun.
+- Final read-only parser/caller/static integration review found no blocker.
+  Archived successful/failing focused and preliminary/final fullsuite outputs
+  with source and archive manifests. Public README reflects1074tests.
+- Publishing the complete latency-authority correction; FIFO04 remains a
+  preserved rejected trial. FreshFIFO05 and fulltier0 still precede main merge.

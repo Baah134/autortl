@@ -207,10 +207,15 @@ def run_evidence(cfg, baseline, sources, tb, directory, execution_context, *, bu
         "cycles": source_contract.latency if source_contract.latency_known else None,
         "source_path": source_facts[0]["path"], "source_sha256": source_facts[0]["sha256"],
         "meaning": "A source annotation declares numeric latency only when present. "
+                   "This known/cycles pair is authoritative for the current top module's annotation requirement. "
+                   "Only known=true requires a matching numeric top annotation. Child typed-module latency "
+                   "does not invent a top annotation for arbitrary aggregate wrappers. "
+                   "When known=false, absence of a top annotation is not a failed or unverifiable criterion. "
                    "Unannotated numeric latency is UNKNOWN, not zero. Preserve the source's "
                    "exact observable cycles and registered behavior. Annotation presence or "
                    "absence alone is not independent proof of behavioral correctness; use the "
-                   "fixed source contract and deterministic verification, without inventing a numeric requirement.",
+                   "fixed source contract, all defined typed latency/minimum transfer age and deterministic "
+                   "verification, without inventing a numeric requirement.",
     }
     return {
         "schema_version": 1,
@@ -303,13 +308,28 @@ def render_fixed_optimize_contract(evidence: dict) -> str:
             "Preserve supported parameter behavior and high-bit semantics. No new pipeline stages, extra "
             "clock cycles, interfaces or invented thresholds. Standalone optimization has no typed build "
             "spec exception: do not infer unspecified behavior merely from missing test coverage.")
+    latency = evidence["declared_latency"]
+    if latency["known"] is True:
+        annotation_rule = (
+            f"The current top has known numeric latency {latency['cycles']}; require a matching "
+            f"// @latency {latency['cycles']} annotation. Preserve its defined cycle behavior. ")
+    else:
+        annotation_rule = (
+            "The current top's numeric latency is UNKNOWN, not zero. Its missing @latency annotation "
+            "is neither FAIL nor INVESTIGATE and must not block ACCEPT. Do not invent a numeric top "
+            "annotation from child typed-module metadata or an arbitrary aggregate wrapper. ")
+    annotation_rule += (
+        "Only authoritative current-top declared_latency.known=true creates a numeric annotation "
+        "requirement. Preserve defined typed latency semantics, minimum transfer age, registered "
+        "outputs, reset and cycle behavior; all deterministic checks remain mandatory. ")
     return ("# Fixed optimization contract\n\n"
         "This contract is rendered by the harness from immutable run evidence. "
         "Planner, generator and evaluator cannot amend its requirements.\n\n"
         "## Behavioral obligations\n\n"
         + obligations + "\n\n"
         + "## Verification gates\n\n"
-        "Use the frozen testbench unchanged. Pass static/interface and declared "
+        + annotation_rule + "\n\n"
+        + "Use the frozen testbench unchanged. Pass static/interface and declared "
         "latency checks when a numeric declaration is known, xvlog compilation, "
         "xelab elaboration and xsim -runall. Unannotated numeric latency is UNKNOWN, "
         "not zero; an annotation alone is not independent behavioral proof. "

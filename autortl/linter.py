@@ -111,9 +111,57 @@ def stub_verilog(m: ModuleSpec) -> str:
     return f"module {m.name}{_parameter_header(m)} (\n{ports}\n);\nendmodule\n"
 
 
+def _transparent_wrapper_latency(spec: DesignSpec) -> int | None:
+    """Inherit a typed contract only across complete, direct single-child wiring.
+
+    This is contract metadata, not an analysis or measurement of RTL latency.
+    Named wiring may reorder ports, but cannot omit or change any boundary.
+    """
+    if len(spec.modules) != 1 or spec.connections:
+        return None
+    child = spec.modules[0]
+    if child.latency_known is not True or type(child.latency) is not int or not 0 <= child.latency <= 1024:
+        return None
+    try:
+        if lint_spec(spec):
+            return None
+        def metadata(port):
+            return (port.direction, port.width, port.signed, _packed_shape(port),
+                    port.protocol, port.clock_domain)
+        external = {port.name: port for port in spec.external_ports}
+        if len(external) != len(child.ports) or set(external) != {port.name for port in child.ports}:
+            return None
+        if any(metadata(port) != metadata(external[port.name]) for port in child.ports):
+            return None
+        if child.interface_signature is not None:
+            # A symbolic signature must describe these same defaults and resolved
+            # port shapes. Otherwise binding defaults could change the boundary.
+            from .verilog_interface import infer_module
+            declared = infer_module(stub_verilog(child), child.name)
+            if list(declared.parameters.items()) != list(child.parameters.items()):
+                return None
+            actual = {port.name: port for port in declared.ports}
+            if set(actual) != set(external):
+                return None
+            for port in child.ports:
+                resolved = actual[port.name]
+                if (port.direction, port.width, port.signed, _packed_shape(port)) != (
+                        resolved.direction, resolved.width, resolved.signed, _packed_shape(resolved)):
+                    return None
+    except (AttributeError, TypeError, ValueError, KeyError):
+        return None
+    return child.latency
+
+
 def top_verilog(spec: DesignSpec) -> str:
     """Deterministic, mechanical top-level wiring. Zero LLM involvement."""
     lines = []
+    latency = _transparent_wrapper_latency(spec)
+    if latency is not None:
+        lines.append(f"// @latency {latency}")
+        mode = ("minimum accepted-transfer age" if spec.modules[0].compare_mode == "scoreboard"
+                else "fixed logical latency")
+        lines.append(f"// Inherited {mode} from transparent typed child wiring; not measured timing.")
     ext = ",\n".join(
         "    " + port_declaration(p, include_direction=True)
         for p in spec.external_ports
@@ -155,9 +203,9 @@ def write_stub_project(spec: DesignSpec, out_dir: Path) -> list[Path]:
     files = []
     for m in spec.modules:
         f = out_dir / f"{m.name}_stub.v"
-        f.write_text(stub_verilog(m))
+        f.write_text(stub_verilog(m), encoding="utf-8")
         files.append(f)
     top = out_dir / f"{spec.top_name}.v"
-    top.write_text(top_verilog(spec))
+    top.write_text(top_verilog(spec), encoding="utf-8")
     files.append(top)
     return files

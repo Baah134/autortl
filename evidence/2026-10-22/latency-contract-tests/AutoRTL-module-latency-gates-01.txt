@@ -1,0 +1,94 @@
+.........F                                                               [100%]
+================================== FAILURES ===================================
+____ test_malformed_candidate_annotation_is_design_rejection_before_tools _____
+
+tmp_path = WindowsPath('C:/Users/prince.baah/Documents/Codex/2026-10-15/hey/work/pytest-module-latency-gates-01/test_malformed_candidate_annot0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000019203F47E90>
+
+    def test_malformed_candidate_annotation_is_design_rejection_before_tools(tmp_path,monkeypatch):
+        o,tb,contract=setup(tmp_path)
+        candidate=Candidate("// @latency nope\n"+SOURCE,"standard")
+        tool=Mock(side_effect=AssertionError("malformed metadata must fail static checks"))
+        monkeypatch.setattr(o,"_tool",tool)
+>       o._verify_optimization_candidate(candidate,contract,tb,[],o.state.iter_dir(1),[])
+
+tests\test_module_latency_gates.py:86: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+autortl\fsm.py:1064: in _verify_optimization_candidate
+    latency = declared_latency(candidate.verilog, contract.name) if checked.passed else None
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+llm\client.py:122: in declared_latency
+    return module_declared_latency(verilog, top)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+verilog = '// @latency nope\nmodule m(input clk,input rst,output y); assign y=0; endmodule'
+top = 'm'
+
+    def module_declared_latency(verilog: str, top: str | None = None) -> int | None:
+        """Read real annotation comments associated with one complete module.
+    
+        A module owns comments after the preceding endmodule and throughout its own
+        definition. A comment trailing code on the same line is not a standalone
+        annotation. The optional one-module form is compatible with metadata clients;
+        multi-module callers must name their top instead of guessing a file-global value.
+        """
+        if top is not None and (not isinstance(top,str) or re.fullmatch(IDENT,top) is None):
+            raise ValueError("invalid module identifier for latency annotation")
+        masked=list(verilog)
+        comments=[]
+        tokens=re.compile(r'//[^\r\n]*|/\*[\s\S]*?(?:\*/|\Z)|"(?:\\[\s\S]|[^"\\])*(?:"|\Z)|\\[^\s]+')
+        for token in tokens.finditer(verilog):
+            if token[0].startswith("//"):
+                comments.append(token)
+            for index in range(token.start(),token.end()):
+                if masked[index] not in "\r\n": masked[index]=" "
+        code="".join(masked)
+        boundary=re.compile(rf"\bmodule\s+(?:(?:automatic|static)\s+)?(?P<name>{IDENT})\b|\bendmodule\b")
+        modules=[]
+        current=None
+        preceding_end=0
+        for token in boundary.finditer(code):
+            if token.group("name") is not None:
+                if current is not None:
+                    raise ValueError("nested or unterminated module prevents scoped latency annotation")
+                current={"name":token.group("name"),"header_start":preceding_end,"start":token.start()}
+            else:
+                if current is None:
+                    raise ValueError("unmatched endmodule prevents scoped latency annotation")
+                current["end"]=token.end()
+                modules.append(current)
+                current=None
+                preceding_end=token.end()
+        if current is not None:
+            raise ValueError("unterminated module prevents scoped latency annotation")
+        if top is None:
+            if len(modules)!=1:
+                return None
+            selected=modules[0]
+        else:
+            matching=[module for module in modules if module["name"]==top]
+            if not matching:
+                raise ValueError(f"module name mismatch for latency annotation: expected '{top}'")
+            if len(matching)!=1:
+                raise ValueError(f"duplicate module '{top}' prevents scoped latency annotation")
+            selected=matching[0]
+        values=set()
+        for comment in comments:
+            if not selected["header_start"]<=comment.start()<selected["end"]:
+                continue
+            line_start=code.rfind("\n",0,comment.start())+1
+            if code[line_start:comment.start()].strip():
+                continue
+            content=comment[0][2:]
+            if re.match(r"[ \t]*@latency\b",content) is None:
+                continue
+            declaration=re.fullmatch(r"[ \t]*@latency[ \t]+([0-9]+)(?:[ \t]+[^\r\n]*)?[ \t]*",content)
+            if declaration is None:
+>               raise ValueError(f"module {selected['name']}: malformed @latency annotation")
+E               ValueError: module m: malformed @latency annotation
+
+autortl\verilog_interface.py:80: ValueError
+=========================== short test summary info ===========================
+FAILED tests/test_module_latency_gates.py::test_malformed_candidate_annotation_is_design_rejection_before_tools
+1 failed, 9 passed in 0.98s

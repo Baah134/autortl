@@ -330,3 +330,25 @@ Do not infer data-net fanout from the selected path's clock-inclusive maximum.
 Keep this metadata advisory; no new heuristic or driver parser was added.
 Fresh physical FIFO and fulltier0 are still required. Unit results establish
 these guard/feedback properties, not model robustness or timing closure.
+
+## FIFO04 observed annotation-authority correction
+
+Keep path excerpts, resolved semantics and rejected-trial feedback: actual
+second planning used the Doctor trial path and generated a timing-feasible
+candidate (24LUT/27FF, WNS0.318/WHS0.050ns). The harness nevertheless rejected it
+solely for missing top latency annotation, despite known=false. Preserve this
+failed outcome and its area tradeoff; no accepted FIFO closure follows.
+
+Revise the ambiguous injected typed-build wording and explicit review rules.
+Require the top header only when its authoritative declaration is known.
+Retain typed metadata across validated complete transparent single-child wiring;
+do not add graph latency inference, another model reviewer or manual regrading.
+No verification, constraints or metric gates are relaxed.
+
+Related review exposed a whole-file latency search that could borrow a helper
+annotation or block-comment example. Keep one shared selected-module parser
+for inference/client/four deterministic generation and repair gates. Preserve
+original comments for static inference so malformed metadata is rejected as a
+design issue, not raised after that boundary. The supported lexical subset and
+no-top multi-module unknown result are explicit; no general Verilog elaborator
+was added. Read-only final integration review found no blocker.

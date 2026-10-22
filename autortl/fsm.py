@@ -622,7 +622,7 @@ class Orchestrator:
             source = self._model("generator", "generate", contract, seed, instruction, prompt, self.budget)
             for attempt in range(self.cfg.max_fix_attempts + 1):
                 result = static_check(source, contract)
-                latency = declared_latency(source)
+                latency = declared_latency(source, contract.name) if result.passed else None
                 if not result.passed or (getattr(contract, "latency_known", True) and latency is not None and latency != contract.latency):
                     break
                 if "`timescale" not in source:
@@ -1061,7 +1061,7 @@ class Orchestrator:
             candidate.artifact_dir = work
             candidate.ladder_rungs_passed = 0
             checked = static_check(candidate.verilog, contract)
-            latency = declared_latency(candidate.verilog)
+            latency = declared_latency(candidate.verilog, contract.name) if checked.passed else None
             if not checked.passed:
                 candidate.alive = False
                 candidate.fail_reason = "; ".join(checked.errors[:3])
@@ -1169,7 +1169,7 @@ class Orchestrator:
             feedback["proposed_source_text_sha256"] = hashlib.sha256(source.encode("utf-8")).hexdigest()
             if not static_check(source, contract).passed:
                 return finish("static_or_interface_violation")
-            latency = declared_latency(source)
+            latency = declared_latency(source, self.cfg.top_module)
             if getattr(contract, "latency_known", True) and latency is not None and latency != contract.latency:
                 return finish("latency_violation")
             if (source == original_source and verification_dir is not None and
@@ -1313,8 +1313,9 @@ class Orchestrator:
             repaired = self._model("generator", "fix", verilog, diag, err,
                                          tb.read_text(encoding="utf-8")[:1500] if tb else "",
                                          previous, self.budget)
-            latency = declared_latency(repaired)
-            if not static_check(repaired, original_contract).passed or (
+            checked = static_check(repaired, original_contract)
+            latency = declared_latency(repaired, original_contract.name) if checked.passed else None
+            if not checked.passed or (
                     getattr(original_contract, "latency_known", True) and latency is not None and latency != original_contract.latency):
                 m.sim_passed = False
                 m.sim_error = "Repair violated static/interface/latency contract"

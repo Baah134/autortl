@@ -165,3 +165,23 @@ Qualify sideband stuck/current-input/misalignment/stall/reset faults, plus FIFO
 capacity/order faults. Test lengths1,2,3,4,7,17, depth crossings, consecutive
 single-beat packets, stalled endings and full simultaneous boundary transfers.
 No packet parser, CRC, store-and-forward, CDC or new harness role is required.
+
+## Active continuation 2026-10-21: annotation authority
+
+FIFO04 on d39e34d finished with baseline retained. Candidate2 passed behavior
+and routed setup/hold (24LUT/27FF,.318/.050ns), but reviewer invented a required
+numeric top annotation despite known=false. Preserve original failure archive04.
+
+1. Complete isolated wrapper/prompt/convention correction and review; runtime
+   frozen during focused/full regression tests. No weakening of typed contracts.
+2. Publish tested milestone. Fresh FIFO05 predeclared:3iterations/1candidate,
+   16calls,25tool/35wallminutes,oneinfraretry. Original04 is never regraded.
+3. Independently simulate exact final saved top and declared children; validate
+   actual DONE replay/input tamper behavior before any further runtime edits.
+4. Fresh complete tier0 campaign07,1iteration/1candidate,16calls,20tool/
+   30wallminutes,oneinfraretry, same target/constraints/toolchain.
+5. Archive actual outcomes, update public verified results and feature review,
+   then integrate main only if complete regression/fulltier0 gates pass.
+6. Next complexity after an accepted FIFO closure: packet-tag bit FIFO, checking
+   tuple order/stability through stalls, full simultaneous transfer, wrap/reset.
+   Reuse ladder and dual graders; no new framework/roles.
