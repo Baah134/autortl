@@ -10,7 +10,8 @@ guards, bounded path/spec evidence, not-adopted Doctor feedback and proven no-op
 deduplication are tested. FIFO02/03 exhausted their original budgets and remain
 archived. FIFO04 exposed a false latency-annotation rejection despite routed
 timing closure; its rejection remains preserved. Latency correction is tested
-and ready for publication; fresh FIFO05 and fulltier0 are next (SESSION_HANDOFF).
+and published85e4fb8; finalOctober22suite1074passed344.74s. FreshFIFO05 and
+fulltier0 await AC power: Windows reports0%critical/unplugged (SESSION_HANDOFF).
 Main remains **7bef3bf** pending those gates. Prior source49599b5 passed939tests;
 fixtureffc15fc passed836tests/FIFO14of14admission; FIFO01 failed timing.
 Prior runtime8098466 passed fulltier0; archives retain their measured source.

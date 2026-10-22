@@ -9,8 +9,8 @@ coordination state and actual processes. Notes are not execution evidence.
 - Preserve the separate preexisting Downloads/autortl copy.
 - Remote: https://github.com/Baah134/autortl
 - Current development checkpoint contains final feedback/recovery runtime with
-  **1,074 tests passed in274.48s** on final unchanged latency source. Publishing
-  correction from d39e34d; freshFIFO05/fulltier0 pending. No accepted FIFO closure yet.
+  **1,074 tests passed in344.74s** onOctober22; published85e4fb8 runtime, verified
+  GitHub head. FreshFIFO05/fulltier0 pending. No accepted FIFO closure yet.
 - Main remains **7bef3bf**. Prior developmentffc15fc has FIFO fixture836tests and
   admission14/14; FIFO01 at that source failed timing. Prior runtime8098466 had
  807tests and campaign06 2/2. Each archive keeps its own measured source.
@@ -45,7 +45,7 @@ honest CV evidence. Never modify tests/contracts to publish a gain.
 
 Published source d39e34d has984passingtests; main7bef3bf remains gated.
 Recovery source49599b5 had939tests; earlier FIFO fixtureffc15fc had836tests.
-No runtime edits are allowed during final fullsuite38328 or later live runs.
+No runtime edits are allowed during a fullsuite or live run. Currenttestsfinished.
 
 Historical FIFO trials (all preserved, never reset/regraded):
 - 01 ffc15fc:13LUT/6FF,WNS-0.931/WHS0.091ns; candidate duplicated frozen child.
@@ -83,7 +83,11 @@ Latency correction is complete/tested/FROZEN:
  review found no blocker. Archive evidence/2026-10-22/latency-contract-tests.
 
 Exact next actions:
-1. Final tests/source checks passed; publish tested development checkpoint.
+1.85e4fb8 published. Fullsuite03 completed1074passed344.74s October22;
+  all175identities unchanged; only a testEOFblank cleanup since suite02.
+  Publishremainingdocs/evidence/formatting. Vendorqueue waitsfor AC detection
+  or user explanation: Windows reportsAC0,0%,critical. Async charger question
+  pending. No new FIFO05 or campaign07 has started.
 2. Archive tests/failures, publish tested development commit; verifyruntime55files.
 3. FreshFIFO05:3iterations/1candidate,16calls,25tool/35wallminutes,1infraretry,
    both generated and independent graders. Do not resume/regrade04.
@@ -97,8 +101,8 @@ Coordination token remains private in functions store coord_token; lease expires
 about05:57UTC October23. Claims in SQLite; docs Codex/main, wrapper Codex/wrapper,
 promptpolicy Codex/latency, parser Codex/parser. Finish claims with actualevidence.
 User Vivado GUI/simulation remains untouched. One harness vendor queue.
-All old jobs/helpers stopped at continuation; start a new bounded awake helper
-for the live vendor queue if needed.
+Old jobs stopped. New bounded awakehelper1834 active fromOctober22~21:59UTC;
+remove verificationflag afterqueue. It does not overridecriticalbattery shutdown.
 Remove workspace verificationflag and pollhelper afterqueue. No background
 scheduler or automatic provider failover.
 

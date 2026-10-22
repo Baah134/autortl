@@ -734,3 +734,18 @@ changes, commands, outcomes, evidence locations, limitations, and next action.
   with source and archive manifests. Public README reflects1074tests.
 - Publishing the complete latency-authority correction; FIFO04 remains a
   preserved rejected trial. FreshFIFO05 and fulltier0 still precede main merge.
+
+- Published **85e4fb8**, GitHubdevelopmenthead verified; mainstill7bef3bf.
+  All55runtimefiles match publishedfilteredGitblobs. Completed implementation
+  claims with tested evidence. Fullsuite03 session29021 additionally verifies a
+  trailingEOFblank cleanup in one test; no runtime behavior changed.
+- Live power checks: CIMbattery0%discharging; kernelGetSystemPowerStatus
+  AC0,Flags6(low+critical),Percent0,Saver1. Requested charger connection async.
+  Prior actual sleep failure motivates holding new long Vivado jobs until AC
+  is detected or user explains reading. Tests/docs/provenance work continues.
+
+- Final publication fullsuite03: **1074passed344.74seconds** October22,
+ 175source/test/fixture identities unchanged. This is a fresh complete test,
+  not reuse of prior output. Only change from suite02 is removed testEOFblank;
+ all55runtimefiles remain85e4fb8. Archived03 plus original02 manifests/logs,
+ updated README direct evidence link. No failed criterion was relaxed.

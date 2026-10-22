@@ -87,4 +87,3 @@ def test_malformed_candidate_annotation_is_design_rejection_before_tools(tmp_pat
     assert candidate.alive is False
     assert "latency" in candidate.fail_reason.lower()
     tool.assert_not_called()
-

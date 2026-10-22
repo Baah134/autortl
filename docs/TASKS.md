@@ -185,3 +185,28 @@ numeric top annotation despite known=false. Preserve original failure archive04.
 6. Next complexity after an accepted FIFO closure: packet-tag bit FIFO, checking
    tuple order/stability through stalls, full simultaneous transfer, wrap/reset.
    Reuse ladder and dual graders; no new framework/roles.
+
+### Next complexity proposal: packet-tagged FIFO
+
+After acceptedFIFO05 closure and fulltier0 gate, add packet_fifo_build with
+WIDTH8/DEPTH3 defaults and the same six parameter checks. Add only in_last/
+out_last as ordinary payload ports (protocol=none). Each accepted tuple
+(data,last) remains ordered/stable through stalls; reset flushes all queuedbeats,
+including partialpackets. Invalid data/last unspecified; last is a marker,
+not store-and-forward control. Reuse current multi-output golden/scoreboard
+support; no new role, queue framework, CRC, parser, arbitration orCDC.
+
+Independent directed lengths1,2,3,4,7,17; identical data/different markers,
+singlebeat packets, marker endings under stall, full simultaneous transfers
+across boundaries, nonpoweroftwo wrap, occupied/reset/partialpacket flush and
+idleinput marker changes whileoutputstalled. Retain preedge/postNBAchecks,
+watchdog/allcasecompletion and percase beat/marker accepted-retired-discarded
+accounting; no marker required on an aborted partial packet.
+
+Proposed admission:1control+19faults (current13adapted, plus laststuck0,
+laststuck1, currentinputlastbypass, unacceptedtagwrite, displacedtagread,
+tagonlystalldrift). Require actual behavioral assertion for each, retain exact
+mutations/hashes and misses. Generated qualification currently stops after a
+detected global mutant; this is not sideband-specific sensitivity. Measure
+both graders on named sideband faults before changing runtime qualification.
+This is a reviewed proposal, not new tested/physical evidence.

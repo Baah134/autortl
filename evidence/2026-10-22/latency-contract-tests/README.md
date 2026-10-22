@@ -1,8 +1,13 @@
 # Latency contract validation
 
-Final frozen full suite: **1074 passed in274.48seconds**.
-Executed October21; saved output and all175 source/test/fixture hashes verified
-unchanged on October22 before publication. This is not a rerun claim.
+Final frozen full suite03: **1074 passed in344.74seconds** onOctober22.
+All175 source/test/fixture hashes verified unchanged through the run.
+The only source change from suite02 was one trailing EOFblank line removed
+from a test. All55runtimefiles remain identical to published85e4fb8.
+
+Prior fullsuite02:1074passed274.48s onOctober21; its output and original
+source/check manifests are retained under the -02 names. All175original
+identities were verified unchanged atOctober22 continuation before EOFcleanup.
 
 Known numeric current-top declarations require matching annotation; unknown
 aggregate declarations cannot borrow a typed child's annotation requirement.
