@@ -11,7 +11,7 @@ saved winner passed independent verification and327-identity DONE checks.
 Fresh fulltier0 campaign08 passed2/2: counter55→53 LUTs, mux baseline retained.
 Matching cohort streak2, heldfalse; earlier best counter31 LUTs remains archived.
 No held tier or controlled weak-model result is claimed. Earlier failed trials
-remain archived. Main and development were integrated at141c548. Packet-tag FIFO admission now passed20/20 expected verdicts across six
+remain archived. Main and development integrated the packet milestone at821afbe; inspect actual Git heads. Packet-tag FIFO admission now passed20/20 expected verdicts across six
 configurations. Generated packet01 recovered timing at23 LUTs/31 FFs,+.078/.106ns; exact
 savedwinner and331-identity DONE checks passed. Inspect current Git and SESSION_HANDOFF.
 Measured runtime85e4fb8/6f3fa7c is unchanged by documentation/evidence commits.

@@ -79,12 +79,12 @@ prior31LUTtrial retained. Cohort9b69c8d0/governance unchanged; modelidentityunkn
 Archive:evidence/2026-10-22/contract-campaign-08,195manifestedfiles.
 All55runtimehashes percase and executable/test/fixture source identities match
 1105-test freeze. Admission202/packet421/campaign195 manifests allverified.
-All main integration gates passed; preparing authorized atomic dev/main push.
-Actual publication heads must be checked after push. No higherheldtier.
+All main integration gates passed. Authorized atomic integration was verified
+on GitHub main and development at821afbe451d21501dd7581bad11ffbcdff19217b.
+A documentation-only followup records this verification; inspect actual heads. No higherheldtier.
 
 No model/vendor jobs active. Job14413 finished0; earlier packet/qualification/
-fullsuite/independent/measurement jobs finished0. Remove/poll awakehelper81495
-flag to release temporary request after queue. UserGUI remains untouched.
+fullsuite/independent/measurement jobs finished0. Awakehelper81495 exited0 and released its temporary request after flag removal. UserGUI remains untouched.
 Coordinator lease active; claimed notes/evidence scopes inSQLite.
 
 Exact next engineering stage: reviewed previous-proposal feedback study in
