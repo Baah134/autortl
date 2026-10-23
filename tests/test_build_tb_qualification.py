@@ -160,8 +160,8 @@ def test_skid_suite_runs_nine_serial_cases_with_complete_source_lists(tmp_path,m
 
 
 
-@pytest.mark.parametrize("suite,module", [("fifo","sync_fifo"), ("packet","packet_fifo")])
-def test_fifo_materializer_adapter_preserves_wrapper_child_tb_and_plan(tmp_path,suite,module):
+@pytest.mark.parametrize("suite,module", [("fifo","sync_fifo"), ("packet","packet_fifo"), ("divider","iterative_divider")])
+def test_build_materializer_adapter_preserves_wrapper_child_tb_and_plan(tmp_path,suite,module):
     def materialize(output):
         output.mkdir()
         rows=[]
@@ -187,9 +187,10 @@ def test_fifo_materializer_adapter_preserves_wrapper_child_tb_and_plan(tmp_path,
 
 
 @pytest.mark.parametrize("suite,module,preparer", [("fifo","sync_fifo","save_fifo_cases"),
-    ("packet","packet_fifo","save_packet_cases")])
+    ("packet","packet_fifo","save_packet_cases"),
+    ("divider","iterative_divider","save_divider_cases")])
 @pytest.mark.parametrize("infrastructure_failure",[False,True])
-def test_fifo_driver_dispatches_serially_and_never_counts_infrastructure(tmp_path,monkeypatch,infrastructure_failure,suite,module,preparer):
+def test_build_driver_dispatches_serially_and_never_counts_infrastructure(tmp_path,monkeypatch,infrastructure_failure,suite,module,preparer):
     def prepare(output):
         result=[]
         for name,expected in (("reference",True),("mutant",False)):

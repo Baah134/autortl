@@ -1,0 +1,608 @@
+{
+  "schema_version": 1,
+  "status": "prepared_not_simulated",
+  "top": "iterative_divider_tb",
+  "domain": {
+    "width_min": 1,
+    "width_max": 16
+  },
+  "matrix": [
+    {
+      "width": 8,
+      "default_wrapper": true
+    },
+    {
+      "width": 1,
+      "default_wrapper": false
+    },
+    {
+      "width": 2,
+      "default_wrapper": false
+    },
+    {
+      "width": 4,
+      "default_wrapper": false
+    },
+    {
+      "width": 13,
+      "default_wrapper": false
+    },
+    {
+      "width": 16,
+      "default_wrapper": false
+    }
+  ],
+  "cases": [
+    {
+      "name": "reference",
+      "expected_verdict": "TEST PASSED",
+      "required_failure_kind": null,
+      "mutation_note": null,
+      "mutation_targets": [],
+      "files": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\divider-qualification-01\\divider_cases\\reference\\iterative_divider_core.v",
+          "sha256": "d5a8b31c77b8f4a258be06656a57f25905861181855fc7738c022ed0104ae1c9"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\divider-qualification-01\\divider_cases\\reference\\iterative_divider.v",
+          "sha256": "fe22423b832194e1e6c22a87c879bd28df7c9c972798fad1c9ec521e04a10d72"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\divider-qualification-01\\divider_cases\\reference\\iterative_divider_tb.v",
+          "sha256": "9d5f9a243539adb9a30601e1667806af3dba41828aca7284ea6645b09bd16f3e"
+        }
+      ]
+    },
+    {
+      "name": "strict_subtraction_compare",
+      "expected_verdict": "TEST FAILED",
+      "required_failure_kind": "behavioral_assertion",
+      "mutation_note": null,
+      "mutation_targets": [
+        {
+          "original": "trial_remainder >= {1'b0, divisor_saved}",
+          "replacement": "trial_remainder > {1'b0, divisor_saved}",
+          "original_occurrences": 1
+        }
+      ],
+      "files": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\divider-qualification-01\\divider_cases\\strict_subtraction_compare\\iterative_divider_core.v",
+          "sha256": "cba4b275e2c05d30f629bf66d495e70231ba702f5cf40d11da004f04991560e9"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\divider-qualification-01\\divider_cases\\strict_subtraction_compare\\iterative_divider.v",
+          "sha256": "fe22423b832194e1e6c22a87c879bd28df7c9c972798fad1c9ec521e04a10d72"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\divider-qualification-01\\divider_cases\\strict_subtraction_compare\\iterative_divider_tb.v",
+          "sha256": "9d5f9a243539adb9a30601e1667806af3dba41828aca7284ea6645b09bd16f3e"
+        }
+      ]
+    },
+    {
+      "name": "addition_instead_of_subtraction",
+      "expected_verdict": "TEST FAILED",
+      "required_failure_kind": "behavioral_assertion",
+      "mutation_note": null,
+      "mutation_targets": [
+        {
+          "original": "trial_remainder - {1'b0, divisor_saved}",
+          "replacement": "trial_remainder + {1'b0, divisor_saved}",
+          "original_occurrences": 1
+        }
+      ],
+      "files": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\divider-qualification-01\\divider_cases\\addition_instead_of_subtraction\\iterative_divider_core.v",
+          "sha256": "2f26a777d873d7c9f35ced25a6eedac6c528360871ea324171bcd8184b05b864"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\divider-qualification-01\\divider_cases\\addition_instead_of_subtraction\\iterative_divider.v",
+          "sha256": "fe22423b832194e1e6c22a87c879bd28df7c9c972798fad1c9ec521e04a10d72"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\divider-qualification-01\\divider_cases\\addition_instead_of_subtraction\\iterative_divider_tb.v",
+          "sha256": "9d5f9a243539adb9a30601e1667806af3dba41828aca7284ea6645b09bd16f3e"
+        }
+      ]
+    },
+    {
+      "name": "quotient_shift_right",
+      "expected_verdict": "TEST FAILED",
+      "required_failure_kind": "behavioral_assertion",
+      "mutation_note": null,
+      "mutation_targets": [
+        {
+          "original": "(quotient_work << 1) | subtract_divisor",
+          "replacement": "(quotient_work >> 1) | subtract_divisor",
+          "original_occurrences": 1
+        }
+      ],
+      "files": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\divider-qualification-01\\divider_cases\\quotient_shift_right\\iterative_divider_core.v",
+          "sha256": "df6ad93137601e5a9c510526ce0af7b31eade9baa51937eb36ac8d976fd44543"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\divider-qualification-01\\divider_cases\\quotient_shift_right\\iterative_divider.v",
+          "sha256": "fe22423b832194e1e6c22a87c879bd28df7c9c972798fad1c9ec521e04a10d72"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\divider-qualification-01\\divider_cases\\quotient_shift_right\\iterative_divider_tb.v",
+          "sha256": "9d5f9a243539adb9a30601e1667806af3dba41828aca7284ea6645b09bd16f3e"
+        }
+      ]
+    },
+    {
+      "name": "wrong_dividend_shift_bit",
+      "expected_verdict": "TEST FAILED",
+      "required_failure_kind": "behavioral_assertion",
+      "mutation_note": null,
+      "mutation_targets": [
+        {
+          "original": "| quotient_work[WIDTH-1]",
+          "replacement": "| quotient_work[0]",
+          "original_occurrences": 1
+        }
+      ],
+      "files": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\divider-qualification-01\\divider_cases\\wrong_dividend_shift_bit\\iterative_divider_core.v",
+          "sha256": "3cb215e291b1a26ccb3df69deb0323a55ef5d4aa095d2a3d755dc098a88e4655"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\divider-qualification-01\\divider_cases\\wrong_dividend_shift_bit\\iterative_divider.v",
+          "sha256": "fe22423b832194e1e6c22a87c879bd28df7c9c972798fad1c9ec521e04a10d72"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\divider-qualification-01\\divider_cases\\wrong_dividend_shift_bit\\iterative_divider_tb.v",
+          "sha256": "9d5f9a243539adb9a30601e1667806af3dba41828aca7284ea6645b09bd16f3e"
+        }
+      ]
+    },
+    {
+      "name": "trial_data_msb_cleared",
+      "expected_verdict": "TEST FAILED",
+      "required_failure_kind": "behavioral_assertion",
+      "mutation_note": "Clear the highest dividend-data bit of the trial value, not merely its extra guard bit. Dropping only the WIDTH+1 guard bit can be equivalent for this unsigned WIDTH-bit operand domain.",
+      "mutation_targets": [
+        {
+          "original": "(remainder_work << 1) | quotient_work[WIDTH-1]",
+          "replacement": "((remainder_work << 1) | quotient_work[WIDTH-1]) & ({WIDTH{1'b1}} >> 1)",
+          "original_occurrences": 1
+        }
+      ],
+      "files": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\divider-qualification-01\\divider_cases\\trial_data_msb_cleared\\iterative_divider_core.v",
+          "sha256": "98ba79ed92356e30fc13a859973a53c9f031cc28cbb03fe058b16611b94cabeb"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\divider-qualification-01\\divider_cases\\trial_data_msb_cleared\\iterative_divider.v",
+          "sha256": "fe22423b832194e1e6c22a87c879bd28df7c9c972798fad1c9ec521e04a10d72"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\divider-qualification-01\\divider_cases\\trial_data_msb_cleared\\iterative_divider_tb.v",
+          "sha256": "9d5f9a243539adb9a30601e1667806af3dba41828aca7284ea6645b09bd16f3e"
+        }
+      ]
+    },
+    {
+      "name": "zero_divisor_quotient_zero",
+      "expected_verdict": "TEST FAILED",
+      "required_failure_kind": "behavioral_assertion",
+      "mutation_note": null,
+      "mutation_targets": [
+        {
+          "original": "(divisor_saved == 0) ? {WIDTH{1'b1}} : next_quotient",
+          "replacement": "(divisor_saved == 0) ? {WIDTH{1'b0}} : next_quotient",
+          "original_occurrences": 1
+        }
+      ],
+      "files": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\divider-qualification-01\\divider_cases\\zero_divisor_quotient_zero\\iterative_divider_core.v",
+          "sha256": "69f5622a67b0247581f078298d33aa6f1ae08ee3c8f7f68334e1a2d5076b5c37"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\divider-qualification-01\\divider_cases\\zero_divisor_quotient_zero\\iterative_divider.v",
+          "sha256": "fe22423b832194e1e6c22a87c879bd28df7c9c972798fad1c9ec521e04a10d72"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\divider-qualification-01\\divider_cases\\zero_divisor_quotient_zero\\iterative_divider_tb.v",
+          "sha256": "9d5f9a243539adb9a30601e1667806af3dba41828aca7284ea6645b09bd16f3e"
+        }
+      ]
+    },
+    {
+      "name": "zero_divisor_remainder_zero",
+      "expected_verdict": "TEST FAILED",
+      "required_failure_kind": "behavioral_assertion",
+      "mutation_note": null,
+      "mutation_targets": [
+        {
+          "original": "(divisor_saved == 0) ? dividend_saved : next_remainder[WIDTH-1:0]",
+          "replacement": "(divisor_saved == 0) ? {WIDTH{1'b0}} : next_remainder[WIDTH-1:0]",
+          "original_occurrences": 1
+        }
+      ],
+      "files": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\divider-qualification-01\\divider_cases\\zero_divisor_remainder_zero\\iterative_divider_core.v",
+          "sha256": "9e384949b4aa86d4bf2ab2134fc184f5d22bd98666da64ac91285def0862aa35"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\divider-qualification-01\\divider_cases\\zero_divisor_remainder_zero\\iterative_divider.v",
+          "sha256": "fe22423b832194e1e6c22a87c879bd28df7c9c972798fad1c9ec521e04a10d72"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\divider-qualification-01\\divider_cases\\zero_divisor_remainder_zero\\iterative_divider_tb.v",
+          "sha256": "9d5f9a243539adb9a30601e1667806af3dba41828aca7284ea6645b09bd16f3e"
+        }
+      ]
+    },
+    {
+      "name": "captured_dividend_truncated_eight",
+      "expected_verdict": "TEST FAILED",
+      "required_failure_kind": "behavioral_assertion",
+      "mutation_note": "Effective operand capture truncation only; symbolic register and public port widths remain unchanged.",
+      "mutation_targets": [
+        {
+          "original": "dividend_saved <= dividend;",
+          "replacement": "dividend_saved <= dividend & 8'hff;",
+          "original_occurrences": 1
+        },
+        {
+          "original": "quotient_work <= dividend;",
+          "replacement": "quotient_work <= dividend & 8'hff;",
+          "original_occurrences": 1
+        }
+      ],
+      "files": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\divider-qualification-01\\divider_cases\\captured_dividend_truncated_eight\\iterative_divider_core.v",
+          "sha256": "874edbc9cb9b2fecf49dc1d0dae19e860b465d85d2d8728b8885f1ffc3aeac47"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\divider-qualification-01\\divider_cases\\captured_dividend_truncated_eight\\iterative_divider.v",
+          "sha256": "fe22423b832194e1e6c22a87c879bd28df7c9c972798fad1c9ec521e04a10d72"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\divider-qualification-01\\divider_cases\\captured_dividend_truncated_eight\\iterative_divider_tb.v",
+          "sha256": "9d5f9a243539adb9a30601e1667806af3dba41828aca7284ea6645b09bd16f3e"
+        }
+      ]
+    },
+    {
+      "name": "captured_divisor_truncated_eight",
+      "expected_verdict": "TEST FAILED",
+      "required_failure_kind": "behavioral_assertion",
+      "mutation_note": "Effective operand capture truncation only; symbolic register and public port widths remain unchanged.",
+      "mutation_targets": [
+        {
+          "original": "divisor_saved <= divisor;",
+          "replacement": "divisor_saved <= divisor & 8'hff;",
+          "original_occurrences": 1
+        }
+      ],
+      "files": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\divider-qualification-01\\divider_cases\\captured_divisor_truncated_eight\\iterative_divider_core.v",
+          "sha256": "e52df98baff0205dbdcd0dc3d3b4d7c82a62fa7b7a7e2ec4b4c1dd650b8e46f9"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\divider-qualification-01\\divider_cases\\captured_divisor_truncated_eight\\iterative_divider.v",
+          "sha256": "fe22423b832194e1e6c22a87c879bd28df7c9c972798fad1c9ec521e04a10d72"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\divider-qualification-01\\divider_cases\\captured_divisor_truncated_eight\\iterative_divider_tb.v",
+          "sha256": "9d5f9a243539adb9a30601e1667806af3dba41828aca7284ea6645b09bd16f3e"
+        }
+      ]
+    },
+    {
+      "name": "hardcoded_eight_iterations",
+      "expected_verdict": "TEST FAILED",
+      "required_failure_kind": "behavioral_assertion",
+      "mutation_note": null,
+      "mutation_targets": [
+        {
+          "original": "steps_left <= WIDTH;",
+          "replacement": "steps_left <= 8;",
+          "original_occurrences": 1
+        }
+      ],
+      "files": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\divider-qualification-01\\divider_cases\\hardcoded_eight_iterations\\iterative_divider_core.v",
+          "sha256": "7c0917dc7692db2d62bf2c765ab8ea809e7ee8c68df7eabc4f228cc0291f712f"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\divider-qualification-01\\divider_cases\\hardcoded_eight_iterations\\iterative_divider.v",
+          "sha256": "fe22423b832194e1e6c22a87c879bd28df7c9c972798fad1c9ec521e04a10d72"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\divider-qualification-01\\divider_cases\\hardcoded_eight_iterations\\iterative_divider_tb.v",
+          "sha256": "9d5f9a243539adb9a30601e1667806af3dba41828aca7284ea6645b09bd16f3e"
+        }
+      ]
+    },
+    {
+      "name": "early_completion",
+      "expected_verdict": "TEST FAILED",
+      "required_failure_kind": "behavioral_assertion",
+      "mutation_note": null,
+      "mutation_targets": [
+        {
+          "original": "if(steps_left == 1) begin",
+          "replacement": "if(steps_left == ((WIDTH > 1) ? 2 : 1)) begin",
+          "original_occurrences": 1
+        }
+      ],
+      "files": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\divider-qualification-01\\divider_cases\\early_completion\\iterative_divider_core.v",
+          "sha256": "e08186b56b401b6e527b4ff5f7712f47dea30b6efb6f8d8164f7691cfcf873bc"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\divider-qualification-01\\divider_cases\\early_completion\\iterative_divider.v",
+          "sha256": "fe22423b832194e1e6c22a87c879bd28df7c9c972798fad1c9ec521e04a10d72"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\divider-qualification-01\\divider_cases\\early_completion\\iterative_divider_tb.v",
+          "sha256": "9d5f9a243539adb9a30601e1667806af3dba41828aca7284ea6645b09bd16f3e"
+        }
+      ]
+    },
+    {
+      "name": "trivial_operand_shortcut",
+      "expected_verdict": "TEST FAILED",
+      "required_failure_kind": "behavioral_assertion",
+      "mutation_note": null,
+      "mutation_targets": [
+        {
+          "original": "steps_left <= WIDTH;",
+          "replacement": "steps_left <= ((dividend == 0) || (divisor == 0) || (divisor == 1) || (dividend == divisor)) ? 1 : WIDTH;",
+          "original_occurrences": 1
+        }
+      ],
+      "files": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\divider-qualification-01\\divider_cases\\trivial_operand_shortcut\\iterative_divider_core.v",
+          "sha256": "961a8b7af2d8ff82d048d20589ca99405435a4c39784dbbe8fa58528b6037434"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\divider-qualification-01\\divider_cases\\trivial_operand_shortcut\\iterative_divider.v",
+          "sha256": "fe22423b832194e1e6c22a87c879bd28df7c9c972798fad1c9ec521e04a10d72"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\divider-qualification-01\\divider_cases\\trivial_operand_shortcut\\iterative_divider_tb.v",
+          "sha256": "9d5f9a243539adb9a30601e1667806af3dba41828aca7284ea6645b09bd16f3e"
+        }
+      ]
+    },
+    {
+      "name": "ready_while_busy",
+      "expected_verdict": "TEST FAILED",
+      "required_failure_kind": "behavioral_assertion",
+      "mutation_note": null,
+      "mutation_targets": [
+        {
+          "original": "assign in_ready = !busy && !out_valid;",
+          "replacement": "assign in_ready = !out_valid;",
+          "original_occurrences": 1
+        }
+      ],
+      "files": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\divider-qualification-01\\divider_cases\\ready_while_busy\\iterative_divider_core.v",
+          "sha256": "8b31eeb68c90bc59538ae266835efed9686293487235c2a30b6553a527310bbd"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\divider-qualification-01\\divider_cases\\ready_while_busy\\iterative_divider.v",
+          "sha256": "fe22423b832194e1e6c22a87c879bd28df7c9c972798fad1c9ec521e04a10d72"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\divider-qualification-01\\divider_cases\\ready_while_busy\\iterative_divider_tb.v",
+          "sha256": "9d5f9a243539adb9a30601e1667806af3dba41828aca7284ea6645b09bd16f3e"
+        }
+      ]
+    },
+    {
+      "name": "ready_on_retirement_edge",
+      "expected_verdict": "TEST FAILED",
+      "required_failure_kind": "behavioral_assertion",
+      "mutation_note": null,
+      "mutation_targets": [
+        {
+          "original": "assign in_ready = !busy && !out_valid;",
+          "replacement": "assign in_ready = !busy && (!out_valid || out_ready);",
+          "original_occurrences": 1
+        }
+      ],
+      "files": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\divider-qualification-01\\divider_cases\\ready_on_retirement_edge\\iterative_divider_core.v",
+          "sha256": "3eb3a18faf966bdd0859af1fc5e223d83286f6735234e88917bdb83dc0ef12d8"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\divider-qualification-01\\divider_cases\\ready_on_retirement_edge\\iterative_divider.v",
+          "sha256": "fe22423b832194e1e6c22a87c879bd28df7c9c972798fad1c9ec521e04a10d72"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\divider-qualification-01\\divider_cases\\ready_on_retirement_edge\\iterative_divider_tb.v",
+          "sha256": "9d5f9a243539adb9a30601e1667806af3dba41828aca7284ea6645b09bd16f3e"
+        }
+      ]
+    },
+    {
+      "name": "current_divisor_not_captured",
+      "expected_verdict": "TEST FAILED",
+      "required_failure_kind": "behavioral_assertion",
+      "mutation_note": null,
+      "mutation_targets": [
+        {
+          "original": "trial_remainder >= {1'b0, divisor_saved}",
+          "replacement": "trial_remainder >= {1'b0, divisor}",
+          "original_occurrences": 1
+        },
+        {
+          "original": "trial_remainder - {1'b0, divisor_saved}",
+          "replacement": "trial_remainder - {1'b0, divisor}",
+          "original_occurrences": 1
+        }
+      ],
+      "files": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\divider-qualification-01\\divider_cases\\current_divisor_not_captured\\iterative_divider_core.v",
+          "sha256": "ff5ca79dd4e7db796ec24f8bfa3e83f02bdb549c3145696efe95ccf4c742856e"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\divider-qualification-01\\divider_cases\\current_divisor_not_captured\\iterative_divider.v",
+          "sha256": "fe22423b832194e1e6c22a87c879bd28df7c9c972798fad1c9ec521e04a10d72"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\divider-qualification-01\\divider_cases\\current_divisor_not_captured\\iterative_divider_tb.v",
+          "sha256": "9d5f9a243539adb9a30601e1667806af3dba41828aca7284ea6645b09bd16f3e"
+        }
+      ]
+    },
+    {
+      "name": "current_dividend_during_computation",
+      "expected_verdict": "TEST FAILED",
+      "required_failure_kind": "behavioral_assertion",
+      "mutation_note": null,
+      "mutation_targets": [
+        {
+          "original": "quotient_work <= next_quotient;",
+          "replacement": "quotient_work <= dividend;",
+          "original_occurrences": 1
+        }
+      ],
+      "files": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\divider-qualification-01\\divider_cases\\current_dividend_during_computation\\iterative_divider_core.v",
+          "sha256": "d1c9a05df78ff8dc785130a3b1b69faec4c477af537087c3bf2a6615f2be8d20"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\divider-qualification-01\\divider_cases\\current_dividend_during_computation\\iterative_divider.v",
+          "sha256": "fe22423b832194e1e6c22a87c879bd28df7c9c972798fad1c9ec521e04a10d72"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\divider-qualification-01\\divider_cases\\current_dividend_during_computation\\iterative_divider_tb.v",
+          "sha256": "9d5f9a243539adb9a30601e1667806af3dba41828aca7284ea6645b09bd16f3e"
+        }
+      ]
+    },
+    {
+      "name": "stalled_quotient_drift",
+      "expected_verdict": "TEST FAILED",
+      "required_failure_kind": "behavioral_assertion",
+      "mutation_note": null,
+      "mutation_targets": [
+        {
+          "original": "if(out_valid && out_ready) out_valid <= 0;",
+          "replacement": "if(out_valid && out_ready) out_valid <= 0;\n            if(out_valid && !out_ready) quotient <= quotient ^ 1'b1;",
+          "original_occurrences": 1
+        }
+      ],
+      "files": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\divider-qualification-01\\divider_cases\\stalled_quotient_drift\\iterative_divider_core.v",
+          "sha256": "c14ce300cce915f78dfc43aca770a4d6ef5324bb3d2850feefa0fb621a6e74bc"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\divider-qualification-01\\divider_cases\\stalled_quotient_drift\\iterative_divider.v",
+          "sha256": "fe22423b832194e1e6c22a87c879bd28df7c9c972798fad1c9ec521e04a10d72"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\divider-qualification-01\\divider_cases\\stalled_quotient_drift\\iterative_divider_tb.v",
+          "sha256": "9d5f9a243539adb9a30601e1667806af3dba41828aca7284ea6645b09bd16f3e"
+        }
+      ]
+    },
+    {
+      "name": "stalled_remainder_drift",
+      "expected_verdict": "TEST FAILED",
+      "required_failure_kind": "behavioral_assertion",
+      "mutation_note": null,
+      "mutation_targets": [
+        {
+          "original": "if(out_valid && out_ready) out_valid <= 0;",
+          "replacement": "if(out_valid && out_ready) out_valid <= 0;\n            if(out_valid && !out_ready) remainder <= remainder ^ 1'b1;",
+          "original_occurrences": 1
+        }
+      ],
+      "files": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\divider-qualification-01\\divider_cases\\stalled_remainder_drift\\iterative_divider_core.v",
+          "sha256": "b9cf77060b11e4f5246b03a4e9c482758078247d4e69684c2a28b2913f40cb71"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\divider-qualification-01\\divider_cases\\stalled_remainder_drift\\iterative_divider.v",
+          "sha256": "fe22423b832194e1e6c22a87c879bd28df7c9c972798fad1c9ec521e04a10d72"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\divider-qualification-01\\divider_cases\\stalled_remainder_drift\\iterative_divider_tb.v",
+          "sha256": "9d5f9a243539adb9a30601e1667806af3dba41828aca7284ea6645b09bd16f3e"
+        }
+      ]
+    },
+    {
+      "name": "asynchronous_reset",
+      "expected_verdict": "TEST FAILED",
+      "required_failure_kind": "behavioral_assertion",
+      "mutation_note": null,
+      "mutation_targets": [
+        {
+          "original": "always @(posedge clk) begin",
+          "replacement": "always @(posedge clk or posedge rst) begin",
+          "original_occurrences": 1
+        }
+      ],
+      "files": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\divider-qualification-01\\divider_cases\\asynchronous_reset\\iterative_divider_core.v",
+          "sha256": "40865ffadd6cbfcbeb15fb813156efce30a4941776a66dc5db631a42dbf0595d"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\divider-qualification-01\\divider_cases\\asynchronous_reset\\iterative_divider.v",
+          "sha256": "fe22423b832194e1e6c22a87c879bd28df7c9c972798fad1c9ec521e04a10d72"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\divider-qualification-01\\divider_cases\\asynchronous_reset\\iterative_divider_tb.v",
+          "sha256": "9d5f9a243539adb9a30601e1667806af3dba41828aca7284ea6645b09bd16f3e"
+        }
+      ]
+    },
+    {
+      "name": "reset_preserves_held_result",
+      "expected_verdict": "TEST FAILED",
+      "required_failure_kind": "behavioral_assertion",
+      "mutation_note": "Suppress reset only for a known held-valid result. Case inequality deliberately permits initial unknown out_valid to reset normally, isolating held-result abort behavior.",
+      "mutation_targets": [
+        {
+          "original": "if(rst) begin",
+          "replacement": "if(rst && (out_valid !== 1'b1)) begin",
+          "original_occurrences": 1
+        }
+      ],
+      "files": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\divider-qualification-01\\divider_cases\\reset_preserves_held_result\\iterative_divider_core.v",
+          "sha256": "b7ee21f01a4bdffad43beecd188c4e193033c9e73fb042145bd8a7e9a118a217"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\divider-qualification-01\\divider_cases\\reset_preserves_held_result\\iterative_divider.v",
+          "sha256": "fe22423b832194e1e6c22a87c879bd28df7c9c972798fad1c9ec521e04a10d72"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\divider-qualification-01\\divider_cases\\reset_preserves_held_result\\iterative_divider_tb.v",
+          "sha256": "9d5f9a243539adb9a30601e1667806af3dba41828aca7284ea6645b09bd16f3e"
+        }
+      ]
+    }
+  ]
+}

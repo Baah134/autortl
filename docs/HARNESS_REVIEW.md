@@ -421,3 +421,14 @@ varied55→53 ratherthan prior55→31; retain both. A passing gate is not eviden
 of repeatable optimization magnitude. Mux no-gain proposal correctly retained
 baseline. Keep deterministic acceptance, comparable cohorts and failed trials.
 No runtime modification was needed for the packet milestone.
+
+## Divider admission: observed reset blind spot
+
+Keep independent temporal checking plus compiling fault qualification. The
+first admission correctly blocked model generation despite1175unit tests:
+reset with ready1 let normal retirement hide an ignored reset. A coverage count
+named reset_result did not establish stalled-result abort. Retain that case,
+add ready0 reset and distinct mandatory coverage plus omission regressions.
+Fresh21/21qualification and1180tests passed with unchanged reference/mutants.
+No new runtime role or scoreboard engine was required. Carry this distinction
+into future checker reviews; a scenario count alone is not fault sensitivity.

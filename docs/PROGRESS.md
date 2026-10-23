@@ -880,3 +880,26 @@ changes, commands, outcomes, evidence locations, limitations, and next action.
   commit is recorded after push. No higher held tier or weak-model proof.
 
 - Authorized atomic integration verified on GitHub main and development at **821afbe451d21501dd7581bad11ffbcdff19217b**. All required gates passed. Vendor/model queue empty; awakehelper81495 exited0 and released request. Documentation-only followup records actual publication. Localmain updated by expected-old ref; no user GUI touched. Next reviewed task is bounded previous-proposal feedback study, not untested role expansion.
+
+- User clarified counter alreadycomplete and requested morecomplexdesigns. Explained counter/mux fresh runs are regressiongates, packet01 complete. Advanced to reviewed multi-cycle unsigned divider plan before implementation; default latency9/overrideWIDTH+1 exactschedule, q/r,div0,backpressure/reset. Existing scoreboard supports it; no newruntimeengine. IndependentTB worker never reads reference. Claimed nonoverlapping scopes; driver35focusedtests passed5.44s. No actual divider tool/modelresult yet. Proposalfeedbackstudy recorded, arithmetic prioritized peruser.
+
+- Divider correctcontrol actualsim passed allsixwidths. Checked1613..3454cycles onshowncases; exhaustiveWIDTH1/2/4,highbits/div0/busy/resultstall/resetphasecoverage and transactionconservation passed. Control54167 finished0; no model/PPA/admissionclaim. Boundedawakehelper13973 active120min fordividerqueue. Await qualificationworkerfixturetests/freeze beforefull21casequalification/fullsuite.
+
+- Dividerfixtureworker67tests passed3.50s; parentintegrated102passed5.51s. Read-only crossreview no blocker. All192source/test/fixture/guardidentities frozen; startedactual21casequalification69785 andfullsuite94856, no editsuntilbothfinish. Actualcontrol6widths passed1502..3454cycles. No model/PPAclaim.
+
+- Divider admission01 REJECTED:20/21expected,correctcontrol+19assertiondetections; reset_preserves_held_result PASSED. Full1175tests passed188.39s andall192hashesmatched, but admission correctlyblockedmodelgeneration. Rootcause heldresetcaseout_ready1 allowedordinaryretirementtohideignoredreset; reset_resultcountdidnotdistinguishstalledabort. Original21rawcases/sourcefreeze/results archived BEFOREhotfix in evidence/2026-10-22/divider-admission-attempt-01. Existingcurriculumfault identifiesfailuremode beforecorrection. Keep originalmutant,adddistinctheldout_ready0resetcase+coverage+regression,thenfullrequalification/fullsuite.
+
+- Preservedfailedadmission01archive212filesbeforefix. Addedstalledreset(out_ready0)case plusdedicatedcoverage; originalresettransfercasesretained. Tests72passed3.82s;parentintegrated107passed7.81s. ExactlyTB+fixturetestchanged, reference/spec/20faultsourcesunchanged. New192-identityfreeze02; qualification56557/fullsuite44361active. No editsuntilbothfinish; modelgenerationstillgated.
+
+## October23: recovered divider admission and advanced model stage
+
+- Recovered actual fullsuite02:1180passed429.28s. Qualification02 passed21/21,
+  correctcontrol+20behavioralassertions; stalled-reset fault now detected.
+  All192 frozen identities unchanged. No owned tool jobs remained; expired
+  coordinator lease reclaimed after process/Git audit.
+- Successful admission archive199files verified, with identical reference and
+  allmutant hashes versus failed01. Original212-file failed archive retained.
+  No weakened contract or substituted mutant. Fresh model budget remains
+ 3iterations/1candidate,16calls,25tool/35wallminutes,1infraretry; no reference seed.
+- Condensed current recovery notes to current facts/nextcommand; historical
+  evidence remains in PROGRESS and Git. No custom compaction threshold claimed.

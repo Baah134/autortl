@@ -149,11 +149,16 @@ def save_packet_cases(output):
     return _save_materialized_cases(output, "packet", "packet_fifo", materialize_cases)
 
 
+def save_divider_cases(output):
+    from curriculum.tier3.iterative_divider_build.qualification.cases import materialize_cases
+    return _save_materialized_cases(output, "divider", "iterative_divider", materialize_cases)
+
+
 def main(argv=None):
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--bin-dir",type=Path,required=True)
     parser.add_argument("--output",type=Path,required=True)
-    parser.add_argument("--suite", choices=("build", "skid", "fifo", "packet"), default="build")
+    parser.add_argument("--suite", choices=("build", "skid", "fifo", "packet", "divider"), default="build")
     args=parser.parse_args(argv)
     output=args.output.resolve()
     output.mkdir(parents=True,exist_ok=False)
@@ -161,7 +166,7 @@ def main(argv=None):
                                     for name in ("vivado","xvlog","xelab","xsim")})
     results=[]
     prepare = {"build": save_cases, "skid": save_skid_cases, "fifo": save_fifo_cases,
-               "packet": save_packet_cases}[args.suite]
+               "packet": save_packet_cases, "divider": save_divider_cases}[args.suite]
     prepared = prepare(output)
     for case in prepared:
         work=output/case.get("work_dir", case["case"])

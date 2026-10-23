@@ -255,3 +255,40 @@ Packet milestone final gates passed:1105fulltests,freshfulltier0campaign08
 counts202admission/421packet/195campaign verified. Readyforauthorizedmainmerge.
 Next executable engineering stage is the reviewed previous-proposal feedback
 study above; inspect actual Git/ownership first, then claim exact scopes.
+
+## User steering: advance to multi-cycle arithmetic (October22)
+
+Counter is complete; tier0 counter/mux runs are regression gates, not the next
+design objective. Packet01 is complete and merged. User requests more complex
+designs now. Next experiment: iterative_divider_build (unsigned quotient and
+remainder), reusing one valid/ready input and output channel plus multi-output
+scoreboard. Proposal-feedback study remains recorded for an observed need;
+advance arithmetic first, without adding a runtime mechanism preemptively.
+
+Plan before implementation: child iterative_divider_core #(WIDTH=8), fixed
+default top iterative_divider. Supported WIDTH1..16; selected defaultwrapper8
+and explicit children1,2,4,13,16. Capture unsigned dividend/divisor only on
+in_valid&&in_ready. Single outstanding transaction, no input acceptance while
+computing or holding a result: in_ready=!busy&&!out_valid. At acceptance edge k
+capture operands; execute WIDTH bounded arithmetic iterations on edges k+1
+through k+WIDTH. out_valid first becomes visible after edge k+WIDTH and earliest
+retirement is edge k+WIDTH+1, so minimum accepted-transfer age WIDTH+1 (default9).
+No early result for trivial operands/dividebyzero. Quotient=floor(a/b),
+remainder=a%b for b!=0; b==0 returns allones quotient and original dividend
+remainder. Hold valid/quotient/remainder during output stall. Synchronous
+activehigh reset aborts computation and queuedresult, dominates transfers;
+invalid output fields unspecified. Consecutive requests are allowed with the
+explicit busy/result boundary; no sameedge inputacceptance on resultretirement.
+
+Golden oracle maps accepted inputs to eventual quotient/remainder; temporal
+TB independently checks availability exactly, legal held producer, no duplicate
+or lost results, reset at each computation phase, dividebyzero timing, busy and
+result stalls, operand noise after capture, conservation and allcasecompletion.
+Exhaustively test smallwidth inputs, directed highbit/exactdivision/max operands
+and deterministic randomized largewidth cases. Reference qualification only,
+never generator seed. Qualify arithmetic/width/capture/latency/stall/reset/readiness
+mutations with actual assertions before model generation. Compile/infra/watchdog
+are not kills. Freeze source for full regression and retain exact inputs/verdicts.
+No new engine/role unless the fixture exposes an actual unsupported requirement.
+
+Divider model experiment predeclared after admission: fresh logs/build-golden-divider-01, typed spec plus independentTB and --generate-golden; no supervisedreference seed.3iterations/1candidate,16modelcalls,25tool/35wallminutes,1infraretry;Vivado2025.2/xc7a35tcpg236-1/100MHz/idealzeroI/O. Retain failed attempts withoutreset. Only launch after21caseadmission andfrozenfullsuitepass. Independent exactsavedwinner/declaredchildren andactualDONE checks afterward. Measure nameddefault-instance arithmetic/q-r/reset/latency grader probes separately ifneeded; widthonlyfaults may be inapplicable atdefaultWIDTH8, neverclaimtheirabsenceascoverage. Fulltier0 again beforemainintegration; no higherheldtiercurrently.
