@@ -210,3 +210,10 @@ mutations/hashes and misses. Generated qualification currently stops after a
 detected global mutant; this is not sideband-specific sensitivity. Measure
 both graders on named sideband faults before changing runtime qualification.
 This is a reviewed proposal, not new tested/physical evidence.
+
+Packet fixture admission completed October22:1105fulltests,60focusedtests,
+20/20realexpectedverdicts. Allsixcontrolconfigurationspassed;19namedmutations
+caughtactualassertions. No runtimeextensionrequired. Freshpacket01 nowadmitted
+withoriginal3iteration/16call/25tool/35wallminute budget. Remaining: generated
+gradernamedsidebandmeasurement, modelphysicaloutcome,exactwinner/DONE checks,
+freshfulltier0 andmainintegration. No generated/PPA result claimed inadvance.

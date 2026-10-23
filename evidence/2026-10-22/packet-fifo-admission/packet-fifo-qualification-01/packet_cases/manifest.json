@@ -1,0 +1,584 @@
+{
+  "schema_version": 1,
+  "status": "prepared_not_simulated",
+  "top": "packet_fifo_tb",
+  "domain": {
+    "width_min": 1,
+    "width_max": 16,
+    "depth_min": 1,
+    "depth_max": 8
+  },
+  "matrix": [
+    {
+      "width": 8,
+      "depth": 3,
+      "default_wrapper": true
+    },
+    {
+      "width": 1,
+      "depth": 1,
+      "default_wrapper": false
+    },
+    {
+      "width": 8,
+      "depth": 2,
+      "default_wrapper": false
+    },
+    {
+      "width": 8,
+      "depth": 4,
+      "default_wrapper": false
+    },
+    {
+      "width": 13,
+      "depth": 5,
+      "default_wrapper": false
+    },
+    {
+      "width": 16,
+      "depth": 8,
+      "default_wrapper": false
+    }
+  ],
+  "cases": [
+    {
+      "name": "reference",
+      "expected_verdict": "TEST PASSED",
+      "required_failure_kind": null,
+      "mutation_note": null,
+      "mutation_targets": [],
+      "files": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\packet-fifo-qualification-01\\packet_cases\\reference\\packet_fifo_core.v",
+          "sha256": "9b644b157fbab02c34818f4dd25e30f4332788de15532939bedd25c6903a8c9e"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\packet-fifo-qualification-01\\packet_cases\\reference\\packet_fifo.v",
+          "sha256": "d60d52f1971c38d9d4cbb55ef5e58e215cd61a29d51b277f467abb9954d32668"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\packet-fifo-qualification-01\\packet_cases\\reference\\packet_fifo_tb.v",
+          "sha256": "719498712a9307a1bddec2afad4b714800686419686ea937ed3b39663308baf1"
+        }
+      ]
+    },
+    {
+      "name": "hardcoded_depth_three",
+      "expected_verdict": "TEST FAILED",
+      "required_failure_kind": "behavioral_assertion",
+      "mutation_note": null,
+      "mutation_targets": [
+        {
+          "original": "assign in_ready = (used < DEPTH) || out_ready;",
+          "replacement": "assign in_ready = (used < 3) || out_ready;",
+          "original_occurrences": 1
+        }
+      ],
+      "files": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\packet-fifo-qualification-01\\packet_cases\\hardcoded_depth_three\\packet_fifo_core.v",
+          "sha256": "e8d583182232614aafdd6b3a8db31f088cc5432bcb121d94f4d2c15f5827b95b"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\packet-fifo-qualification-01\\packet_cases\\hardcoded_depth_three\\packet_fifo.v",
+          "sha256": "d60d52f1971c38d9d4cbb55ef5e58e215cd61a29d51b277f467abb9954d32668"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\packet-fifo-qualification-01\\packet_cases\\hardcoded_depth_three\\packet_fifo_tb.v",
+          "sha256": "719498712a9307a1bddec2afad4b714800686419686ea937ed3b39663308baf1"
+        }
+      ]
+    },
+    {
+      "name": "payload_capture_truncated_eight",
+      "expected_verdict": "TEST FAILED",
+      "required_failure_kind": "behavioral_assertion",
+      "mutation_note": "Adapted from the hardcoded eight-bit memory fault: truncate captured payload to eight effective bits while retaining symbolic packed memory width and the marker bit. This does not change the declared physical memory width.",
+      "mutation_targets": [
+        {
+          "original": "memory[write_pointer] <= {in_last,in_data};",
+          "replacement": "memory[write_pointer] <= {in_last,in_data};\n                memory[write_pointer][WIDTH-1:0] <= in_data & 8'hff;",
+          "original_occurrences": 1
+        }
+      ],
+      "files": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\packet-fifo-qualification-01\\packet_cases\\payload_capture_truncated_eight\\packet_fifo_core.v",
+          "sha256": "7a6f63531b02d6a6a3cbeea6a64faee3f8ba043a6f950c4e25bf5e857be360ec"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\packet-fifo-qualification-01\\packet_cases\\payload_capture_truncated_eight\\packet_fifo.v",
+          "sha256": "d60d52f1971c38d9d4cbb55ef5e58e215cd61a29d51b277f467abb9954d32668"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\packet-fifo-qualification-01\\packet_cases\\payload_capture_truncated_eight\\packet_fifo_tb.v",
+          "sha256": "719498712a9307a1bddec2afad4b714800686419686ea937ed3b39663308baf1"
+        }
+      ]
+    },
+    {
+      "name": "power_of_two_wrap",
+      "expected_verdict": "TEST FAILED",
+      "required_failure_kind": "behavioral_assertion",
+      "mutation_note": null,
+      "mutation_targets": [
+        {
+          "original": "if(write_pointer == DEPTH-1) write_pointer <= 0;",
+          "replacement": "if(write_pointer == (1 << $clog2(DEPTH))-1) write_pointer <= 0;",
+          "original_occurrences": 1
+        },
+        {
+          "original": "if(read_pointer == DEPTH-1) read_pointer <= 0;",
+          "replacement": "if(read_pointer == (1 << $clog2(DEPTH))-1) read_pointer <= 0;",
+          "original_occurrences": 1
+        }
+      ],
+      "files": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\packet-fifo-qualification-01\\packet_cases\\power_of_two_wrap\\packet_fifo_core.v",
+          "sha256": "d309b86d403f06db7d01cd43700497772e2d6188fdf6524079e6a4ed00a4752b"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\packet-fifo-qualification-01\\packet_cases\\power_of_two_wrap\\packet_fifo.v",
+          "sha256": "d60d52f1971c38d9d4cbb55ef5e58e215cd61a29d51b277f467abb9954d32668"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\packet-fifo-qualification-01\\packet_cases\\power_of_two_wrap\\packet_fifo_tb.v",
+          "sha256": "719498712a9307a1bddec2afad4b714800686419686ea937ed3b39663308baf1"
+        }
+      ]
+    },
+    {
+      "name": "early_full",
+      "expected_verdict": "TEST FAILED",
+      "required_failure_kind": "behavioral_assertion",
+      "mutation_note": null,
+      "mutation_targets": [
+        {
+          "original": "assign in_ready = (used < DEPTH) || out_ready;",
+          "replacement": "assign in_ready = (used < DEPTH-1) || out_ready;",
+          "original_occurrences": 1
+        }
+      ],
+      "files": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\packet-fifo-qualification-01\\packet_cases\\early_full\\packet_fifo_core.v",
+          "sha256": "dbbe1034df0c71e38a825c05f73305b70821eaad2ec4efabae7889eac0a98eca"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\packet-fifo-qualification-01\\packet_cases\\early_full\\packet_fifo.v",
+          "sha256": "d60d52f1971c38d9d4cbb55ef5e58e215cd61a29d51b277f467abb9954d32668"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\packet-fifo-qualification-01\\packet_cases\\early_full\\packet_fifo_tb.v",
+          "sha256": "719498712a9307a1bddec2afad4b714800686419686ea937ed3b39663308baf1"
+        }
+      ]
+    },
+    {
+      "name": "late_full",
+      "expected_verdict": "TEST FAILED",
+      "required_failure_kind": "behavioral_assertion",
+      "mutation_note": null,
+      "mutation_targets": [
+        {
+          "original": "assign in_ready = (used < DEPTH) || out_ready;",
+          "replacement": "assign in_ready = (used <= DEPTH) || out_ready;",
+          "original_occurrences": 1
+        }
+      ],
+      "files": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\packet-fifo-qualification-01\\packet_cases\\late_full\\packet_fifo_core.v",
+          "sha256": "67bbb42b59a729bda7d1a44731ffb934a2b7561d00e26b95bc4bcb2bd03a87ce"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\packet-fifo-qualification-01\\packet_cases\\late_full\\packet_fifo.v",
+          "sha256": "d60d52f1971c38d9d4cbb55ef5e58e215cd61a29d51b277f467abb9954d32668"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\packet-fifo-qualification-01\\packet_cases\\late_full\\packet_fifo_tb.v",
+          "sha256": "719498712a9307a1bddec2afad4b714800686419686ea937ed3b39663308baf1"
+        }
+      ]
+    },
+    {
+      "name": "full_simultaneous_blocked",
+      "expected_verdict": "TEST FAILED",
+      "required_failure_kind": "behavioral_assertion",
+      "mutation_note": null,
+      "mutation_targets": [
+        {
+          "original": "assign in_ready = (used < DEPTH) || out_ready;",
+          "replacement": "assign in_ready = (used < DEPTH);",
+          "original_occurrences": 1
+        }
+      ],
+      "files": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\packet-fifo-qualification-01\\packet_cases\\full_simultaneous_blocked\\packet_fifo_core.v",
+          "sha256": "c493b57909313bf2ffa201b7a05e7f4ed037c4194a87c78e24039e3b25a461c7"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\packet-fifo-qualification-01\\packet_cases\\full_simultaneous_blocked\\packet_fifo.v",
+          "sha256": "d60d52f1971c38d9d4cbb55ef5e58e215cd61a29d51b277f467abb9954d32668"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\packet-fifo-qualification-01\\packet_cases\\full_simultaneous_blocked\\packet_fifo_tb.v",
+          "sha256": "719498712a9307a1bddec2afad4b714800686419686ea937ed3b39663308baf1"
+        }
+      ]
+    },
+    {
+      "name": "simultaneous_occupancy_lost",
+      "expected_verdict": "TEST FAILED",
+      "required_failure_kind": "behavioral_assertion",
+      "mutation_note": null,
+      "mutation_targets": [
+        {
+          "original": "2'b11: used <= used;",
+          "replacement": "2'b11: used <= used - 1'b1;",
+          "original_occurrences": 1
+        }
+      ],
+      "files": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\packet-fifo-qualification-01\\packet_cases\\simultaneous_occupancy_lost\\packet_fifo_core.v",
+          "sha256": "8cf92702b97c7083dfe66e1eec9bd65424910133592e14cf8885017fba09594f"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\packet-fifo-qualification-01\\packet_cases\\simultaneous_occupancy_lost\\packet_fifo.v",
+          "sha256": "d60d52f1971c38d9d4cbb55ef5e58e215cd61a29d51b277f467abb9954d32668"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\packet-fifo-qualification-01\\packet_cases\\simultaneous_occupancy_lost\\packet_fifo_tb.v",
+          "sha256": "719498712a9307a1bddec2afad4b714800686419686ea937ed3b39663308baf1"
+        }
+      ]
+    },
+    {
+      "name": "simultaneous_retirement_lost",
+      "expected_verdict": "TEST FAILED",
+      "required_failure_kind": "behavioral_assertion",
+      "mutation_note": null,
+      "mutation_targets": [
+        {
+          "original": "if(pop) begin",
+          "replacement": "if(pop && !push) begin",
+          "original_occurrences": 1
+        }
+      ],
+      "files": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\packet-fifo-qualification-01\\packet_cases\\simultaneous_retirement_lost\\packet_fifo_core.v",
+          "sha256": "5a42da596a963a2bc5739fec78d9b3f3923d3a4cb7b778ba3710f43f56aa4566"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\packet-fifo-qualification-01\\packet_cases\\simultaneous_retirement_lost\\packet_fifo.v",
+          "sha256": "d60d52f1971c38d9d4cbb55ef5e58e215cd61a29d51b277f467abb9954d32668"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\packet-fifo-qualification-01\\packet_cases\\simultaneous_retirement_lost\\packet_fifo_tb.v",
+          "sha256": "719498712a9307a1bddec2afad4b714800686419686ea937ed3b39663308baf1"
+        }
+      ]
+    },
+    {
+      "name": "output_truncated_eight",
+      "expected_verdict": "TEST FAILED",
+      "required_failure_kind": "behavioral_assertion",
+      "mutation_note": null,
+      "mutation_targets": [
+        {
+          "original": "assign out_data = memory[read_pointer][WIDTH-1:0];",
+          "replacement": "assign out_data = memory[read_pointer][WIDTH-1:0] & 8'hff;",
+          "original_occurrences": 1
+        }
+      ],
+      "files": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\packet-fifo-qualification-01\\packet_cases\\output_truncated_eight\\packet_fifo_core.v",
+          "sha256": "c0cd3d76bc4f936ff76fa0e3f88f3e5dba4cf7a2afae007cf04f0a9cec2b3107"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\packet-fifo-qualification-01\\packet_cases\\output_truncated_eight\\packet_fifo.v",
+          "sha256": "d60d52f1971c38d9d4cbb55ef5e58e215cd61a29d51b277f467abb9954d32668"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\packet-fifo-qualification-01\\packet_cases\\output_truncated_eight\\packet_fifo_tb.v",
+          "sha256": "719498712a9307a1bddec2afad4b714800686419686ea937ed3b39663308baf1"
+        }
+      ]
+    },
+    {
+      "name": "unstable_stalled_payload",
+      "expected_verdict": "TEST FAILED",
+      "required_failure_kind": "behavioral_assertion",
+      "mutation_note": null,
+      "mutation_targets": [
+        {
+          "original": "assign out_data = memory[read_pointer][WIDTH-1:0];",
+          "replacement": "assign out_data = out_ready ? memory[read_pointer][WIDTH-1:0] : in_data;",
+          "original_occurrences": 1
+        }
+      ],
+      "files": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\packet-fifo-qualification-01\\packet_cases\\unstable_stalled_payload\\packet_fifo_core.v",
+          "sha256": "b0ed0a0c83893ad6332c4fe1f70cc3af9294de9343083ba2ddd6beb1d154aafa"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\packet-fifo-qualification-01\\packet_cases\\unstable_stalled_payload\\packet_fifo.v",
+          "sha256": "d60d52f1971c38d9d4cbb55ef5e58e215cd61a29d51b277f467abb9954d32668"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\packet-fifo-qualification-01\\packet_cases\\unstable_stalled_payload\\packet_fifo_tb.v",
+          "sha256": "719498712a9307a1bddec2afad4b714800686419686ea937ed3b39663308baf1"
+        }
+      ]
+    },
+    {
+      "name": "incorrect_data_order",
+      "expected_verdict": "TEST FAILED",
+      "required_failure_kind": "behavioral_assertion",
+      "mutation_note": null,
+      "mutation_targets": [
+        {
+          "original": "assign out_data = memory[read_pointer][WIDTH-1:0];",
+          "replacement": "assign out_data = memory[write_pointer][WIDTH-1:0];",
+          "original_occurrences": 1
+        }
+      ],
+      "files": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\packet-fifo-qualification-01\\packet_cases\\incorrect_data_order\\packet_fifo_core.v",
+          "sha256": "0eecba268edf00793d2cf615bac3eb269f0e10967c0514d4461095c76cf75c7a"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\packet-fifo-qualification-01\\packet_cases\\incorrect_data_order\\packet_fifo.v",
+          "sha256": "d60d52f1971c38d9d4cbb55ef5e58e215cd61a29d51b277f467abb9954d32668"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\packet-fifo-qualification-01\\packet_cases\\incorrect_data_order\\packet_fifo_tb.v",
+          "sha256": "719498712a9307a1bddec2afad4b714800686419686ea937ed3b39663308baf1"
+        }
+      ]
+    },
+    {
+      "name": "asynchronous_reset",
+      "expected_verdict": "TEST FAILED",
+      "required_failure_kind": "behavioral_assertion",
+      "mutation_note": null,
+      "mutation_targets": [
+        {
+          "original": "always @(posedge clk) begin",
+          "replacement": "always @(posedge clk or posedge rst) begin",
+          "original_occurrences": 1
+        }
+      ],
+      "files": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\packet-fifo-qualification-01\\packet_cases\\asynchronous_reset\\packet_fifo_core.v",
+          "sha256": "6636367d8589a77520aad41f8c424d85f36f73150c55655e7fa62cd1b0f64c46"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\packet-fifo-qualification-01\\packet_cases\\asynchronous_reset\\packet_fifo.v",
+          "sha256": "d60d52f1971c38d9d4cbb55ef5e58e215cd61a29d51b277f467abb9954d32668"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\packet-fifo-qualification-01\\packet_cases\\asynchronous_reset\\packet_fifo_tb.v",
+          "sha256": "719498712a9307a1bddec2afad4b714800686419686ea937ed3b39663308baf1"
+        }
+      ]
+    },
+    {
+      "name": "last_stuck_zero",
+      "expected_verdict": "TEST FAILED",
+      "required_failure_kind": "behavioral_assertion",
+      "mutation_note": null,
+      "mutation_targets": [
+        {
+          "original": "assign out_last = memory[read_pointer][WIDTH];",
+          "replacement": "assign out_last = 1'b0;",
+          "original_occurrences": 1
+        }
+      ],
+      "files": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\packet-fifo-qualification-01\\packet_cases\\last_stuck_zero\\packet_fifo_core.v",
+          "sha256": "cf69e97b1899323eed4beb756b806341a36572c8df073b8ae97dbbd0c14c7098"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\packet-fifo-qualification-01\\packet_cases\\last_stuck_zero\\packet_fifo.v",
+          "sha256": "d60d52f1971c38d9d4cbb55ef5e58e215cd61a29d51b277f467abb9954d32668"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\packet-fifo-qualification-01\\packet_cases\\last_stuck_zero\\packet_fifo_tb.v",
+          "sha256": "719498712a9307a1bddec2afad4b714800686419686ea937ed3b39663308baf1"
+        }
+      ]
+    },
+    {
+      "name": "last_stuck_one",
+      "expected_verdict": "TEST FAILED",
+      "required_failure_kind": "behavioral_assertion",
+      "mutation_note": null,
+      "mutation_targets": [
+        {
+          "original": "assign out_last = memory[read_pointer][WIDTH];",
+          "replacement": "assign out_last = 1'b1;",
+          "original_occurrences": 1
+        }
+      ],
+      "files": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\packet-fifo-qualification-01\\packet_cases\\last_stuck_one\\packet_fifo_core.v",
+          "sha256": "fd025af0156815617767b0dbe1307ff41c87c32e46a9e7ef55892c6ab11fa1ed"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\packet-fifo-qualification-01\\packet_cases\\last_stuck_one\\packet_fifo.v",
+          "sha256": "d60d52f1971c38d9d4cbb55ef5e58e215cd61a29d51b277f467abb9954d32668"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\packet-fifo-qualification-01\\packet_cases\\last_stuck_one\\packet_fifo_tb.v",
+          "sha256": "719498712a9307a1bddec2afad4b714800686419686ea937ed3b39663308baf1"
+        }
+      ]
+    },
+    {
+      "name": "current_input_last_bypass",
+      "expected_verdict": "TEST FAILED",
+      "required_failure_kind": "behavioral_assertion",
+      "mutation_note": null,
+      "mutation_targets": [
+        {
+          "original": "assign out_last = memory[read_pointer][WIDTH];",
+          "replacement": "assign out_last = in_last;",
+          "original_occurrences": 1
+        }
+      ],
+      "files": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\packet-fifo-qualification-01\\packet_cases\\current_input_last_bypass\\packet_fifo_core.v",
+          "sha256": "fcd836cd3dfee88f02df5b0aa98826bcf509ab0ee2377d56c79ff2d70dd63427"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\packet-fifo-qualification-01\\packet_cases\\current_input_last_bypass\\packet_fifo.v",
+          "sha256": "d60d52f1971c38d9d4cbb55ef5e58e215cd61a29d51b277f467abb9954d32668"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\packet-fifo-qualification-01\\packet_cases\\current_input_last_bypass\\packet_fifo_tb.v",
+          "sha256": "719498712a9307a1bddec2afad4b714800686419686ea937ed3b39663308baf1"
+        }
+      ]
+    },
+    {
+      "name": "unaccepted_tag_write",
+      "expected_verdict": "TEST FAILED",
+      "required_failure_kind": "behavioral_assertion",
+      "mutation_note": null,
+      "mutation_targets": [
+        {
+          "original": "if(push) begin",
+          "replacement": "if(in_valid && !in_ready) memory[write_pointer][WIDTH] <= in_last;\n            if(push) begin",
+          "original_occurrences": 1
+        }
+      ],
+      "files": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\packet-fifo-qualification-01\\packet_cases\\unaccepted_tag_write\\packet_fifo_core.v",
+          "sha256": "1c93ee2f7a20b53caf3d3a85cf05388f990da858dca9ecc03c670099e7eb07a5"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\packet-fifo-qualification-01\\packet_cases\\unaccepted_tag_write\\packet_fifo.v",
+          "sha256": "d60d52f1971c38d9d4cbb55ef5e58e215cd61a29d51b277f467abb9954d32668"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\packet-fifo-qualification-01\\packet_cases\\unaccepted_tag_write\\packet_fifo_tb.v",
+          "sha256": "719498712a9307a1bddec2afad4b714800686419686ea937ed3b39663308baf1"
+        }
+      ]
+    },
+    {
+      "name": "displaced_tag_read",
+      "expected_verdict": "TEST FAILED",
+      "required_failure_kind": "behavioral_assertion",
+      "mutation_note": null,
+      "mutation_targets": [
+        {
+          "original": "assign out_last = memory[read_pointer][WIDTH];",
+          "replacement": "assign out_last = memory[write_pointer][WIDTH];",
+          "original_occurrences": 1
+        }
+      ],
+      "files": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\packet-fifo-qualification-01\\packet_cases\\displaced_tag_read\\packet_fifo_core.v",
+          "sha256": "4480cf5411f6c1a09ad46329dc904b79877636089b50623aca4f847424594c35"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\packet-fifo-qualification-01\\packet_cases\\displaced_tag_read\\packet_fifo.v",
+          "sha256": "d60d52f1971c38d9d4cbb55ef5e58e215cd61a29d51b277f467abb9954d32668"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\packet-fifo-qualification-01\\packet_cases\\displaced_tag_read\\packet_fifo_tb.v",
+          "sha256": "719498712a9307a1bddec2afad4b714800686419686ea937ed3b39663308baf1"
+        }
+      ]
+    },
+    {
+      "name": "tag_only_stall_drift",
+      "expected_verdict": "TEST FAILED",
+      "required_failure_kind": "behavioral_assertion",
+      "mutation_note": null,
+      "mutation_targets": [
+        {
+          "original": "if(push) begin",
+          "replacement": "if(out_valid && !out_ready) memory[read_pointer][WIDTH] <= ~memory[read_pointer][WIDTH];\n            if(push) begin",
+          "original_occurrences": 1
+        }
+      ],
+      "files": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\packet-fifo-qualification-01\\packet_cases\\tag_only_stall_drift\\packet_fifo_core.v",
+          "sha256": "5937d5bced51c3a5b2f6e19f6f95c3950ce4601e702dddffd023858a11022093"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\packet-fifo-qualification-01\\packet_cases\\tag_only_stall_drift\\packet_fifo.v",
+          "sha256": "d60d52f1971c38d9d4cbb55ef5e58e215cd61a29d51b277f467abb9954d32668"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\packet-fifo-qualification-01\\packet_cases\\tag_only_stall_drift\\packet_fifo_tb.v",
+          "sha256": "719498712a9307a1bddec2afad4b714800686419686ea937ed3b39663308baf1"
+        }
+      ]
+    },
+    {
+      "name": "combinational_bypass",
+      "expected_verdict": "TEST FAILED",
+      "required_failure_kind": "behavioral_assertion",
+      "mutation_note": null,
+      "mutation_targets": [
+        {
+          "original": "`timescale 1ns/1ps\n// @latency 1\n// Qualification only. Never configured as a generator seed.\nmodule packet_fifo_core #(parameter WIDTH=8, parameter DEPTH=3)(\n    input clk, input rst, input [WIDTH-1:0] in_data, input in_last,\n    input in_valid, output in_ready, output [WIDTH-1:0] out_data,\n    output out_last, output out_valid, input out_ready);\n    // clog2(DEPTH+1) remains positive for DEPTH=1; explicit wrap handles all depths.\n    reg [$clog2(DEPTH+1)-1:0] read_pointer, write_pointer;\n    reg [$clog2(DEPTH+1)-1:0] used;\n    reg [WIDTH:0] memory [0:DEPTH-1];\n    wire push = in_valid && in_ready;\n    wire pop = out_valid && out_ready;\n    assign in_ready = (used < DEPTH) || out_ready;\n    assign out_valid = (used != 0);\n    assign out_data = memory[read_pointer][WIDTH-1:0];\n    assign out_last = memory[read_pointer][WIDTH];\n    always @(posedge clk) begin\n        if(rst) begin\n            read_pointer <= 0;\n            write_pointer <= 0;\n            used <= 0;\n        end else begin\n            if(push) begin\n                memory[write_pointer] <= {in_last,in_data};\n                if(write_pointer == DEPTH-1) write_pointer <= 0;\n                else write_pointer <= write_pointer + 1'b1;\n            end\n            if(pop) begin\n                if(read_pointer == DEPTH-1) read_pointer <= 0;\n                else read_pointer <= read_pointer + 1'b1;\n            end\n            case({push,pop})\n                2'b10: used <= used + 1'b1;\n                2'b01: used <= used - 1'b1;\n                2'b11: used <= used;\n                default: used <= used;\n            endcase\n        end\n    end\nendmodule\n",
+          "replacement": "`timescale 1ns/1ps\n// @latency 1\n// Intentionally false annotation: temporal assertions must establish behavior.\nmodule packet_fifo_core #(parameter WIDTH=8, parameter DEPTH=3)(\n    input clk, input rst, input [WIDTH-1:0] in_data, input in_last,\n    input in_valid, output in_ready, output [WIDTH-1:0] out_data,\n    output out_last, output out_valid, input out_ready);\n    assign in_ready = out_ready && !rst;\n    assign out_valid = in_valid && !rst;\n    assign out_data = in_data;\n    assign out_last = in_last;\nendmodule\n",
+          "original_occurrences": 1
+        }
+      ],
+      "files": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\packet-fifo-qualification-01\\packet_cases\\combinational_bypass\\packet_fifo_core.v",
+          "sha256": "5b3f4a8fb61ee017ad26a1efd76c2443e6f8eb95bdf441ebd661db9c7a1fc275"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\packet-fifo-qualification-01\\packet_cases\\combinational_bypass\\packet_fifo.v",
+          "sha256": "d60d52f1971c38d9d4cbb55ef5e58e215cd61a29d51b277f467abb9954d32668"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\packet-fifo-qualification-01\\packet_cases\\combinational_bypass\\packet_fifo_tb.v",
+          "sha256": "719498712a9307a1bddec2afad4b714800686419686ea937ed3b39663308baf1"
+        }
+      ]
+    }
+  ]
+}

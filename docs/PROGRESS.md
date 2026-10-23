@@ -810,3 +810,34 @@ changes, commands, outcomes, evidence locations, limitations, and next action.
 - Main integration gates nowpassed:1074tests, freshfulltier0, acceptedFIFO05,
   independentfinalwinner and actualDONEchecks. Preparing authorizedatomic
   fast-forward from7bef3bf; actualfinalheads recorded afterpush.
+
+- Authorized atomic integration completed: **141c548** now verified on both
+  GitHub main and development; localmainmatches andworktreeclean atintegration.
+  Full1074tests andfresh2/2tier0 gates passed on unchangedruntime.
+- User requested continued judgement and context safeguards. Clarified host
+  compaction vs repository continuity: no custom token threshold configured.
+  Added explicit verify-after-compaction rules to AGENTS/AGENT_HANDOFF, bounded
+  historical reads and evidence-first checkpoint fields. No claim of immunity
+  to reasoning errors. Starting reviewed packet-tag FIFO fixture next.
+
+- Packet control-only real simulation passed allsixconfigurations,901..978
+  checkedcycles; data/tagorder, markerconservation, fullboundarysimultaneous,
+  stalls andoccupiedreset coveragepositive. No model orphysicalclaim.
+- Packet integrationfocus60passed5.09s. All185source/test/fixture/guard
+  identities frozen. Startedserial20case qualification12870 and complete
+  pytest59811; no source edits untilbothfinish. Qualification compiles must
+  succeed and faults must fail realbehavioral assertions; no timeoutaskill.
+
+- Packet admission completed: fullsuite **1105passed288.12s**, integratedfocus
+ 60passed5.09s. Real20casequalification passed20/20: sixconfigurationcontrol
+ and19behavioralassertiondetections, no compile/infra/watchdogkills. Bothjobs0.
+ All185frozenidentities matched atcompletion. FollowupfixtureREADME only
+ clarified measuredadmission and overlappingcapture/outputfaults; precise
+ documentationhashdelta retained, executablefixture/tests/runtimeunchanged.
+- Read-only packetcrossreview found no blocker. Archive packet-fifo-admission
+ contains202manifestedfiles, verifiedhashes andrawverdicts. Kept existingroles,
+ multioutputscoreboard andindependentqueue; no newruntimeframeworkmechanism.
+- Fresh packet01 budget predeclared:3iterations/1candidate,16calls,25tool/
+ 35wallminutes,1infraretry,same10ns/device/toolchain. No referenceseed.
+ Generatedgrader sidebandsensitivity andfinalsavedwinner/DONEchecks stillpending.
+ Mainremains141c548 untilfreshfulltier0 gate; developmentmilestonewillbepushed.

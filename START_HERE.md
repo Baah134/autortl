@@ -5,13 +5,13 @@ You can continue without access to the previous provider's conversation.
 
 Canonical checkout: `C:/Users/prince.baah/Downloads/autortl-work`.
 GitHub integration branch: `main`. Development branch: `codex/contract-context`.
-Current verified checkpoint: **1,074 regression tests passed**.
+Current verified checkpoint: **1,105 regression tests passed**.
 FIFO05 recovered timing at22 LUTs/13 FFs, setup0.108 ns/hold0.076 ns; exact
 saved winner passed independent verification and327-identity DONE checks.
 Fresh fulltier0 campaign07 passed2/2: counter55→31 LUTs, mux baseline retained.
 No held tier or controlled weak-model result is claimed. Earlier failed trials
-remain archived. The tested checkpoint is ready for the authorized main/
-development fast-forward; inspect actual Git heads and SESSION_HANDOFF.
+remain archived. Main and development were integrated at141c548. Packet-tag FIFO admission now passed20/20 expected verdicts across six
+configurations. Next is a fresh generated build; inspect current Git and SESSION_HANDOFF.
 Measured runtime85e4fb8/6f3fa7c is unchanged by documentation/evidence commits.
 
 1. Read `AGENTS.md` and `docs/AGENT_HANDOFF.md` for the working contract.

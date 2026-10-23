@@ -387,3 +387,14 @@ The harness owns contracts, source boundaries, execution, budgets and acceptance
 The development coordinator reviews and improves those mechanisms; bounded CLI
 runs do not require this chat. Continuous unattended scheduling, provider quota
 recovery and general hardware/application support remain separate capabilities.
+
+## Packet fixture admission decision
+
+Keep current multi-output scoreboard plus independent temporal checking. Adding
+last as ordinary payload required no new engine or role. Supervised control
+passed allsix selected configurations;19namedsource mutations failed actual
+behavioralassertions. Retain bothtruncations as distinctimplementation probes,
+but document overlappingobservablefaults ratherthan19independentclasses.
+1105fulltests and60focusedtests passed; generatedgrader marker sensitivity is
+still unmeasured. Measure its named faults before deciding whether runtime
+qualification needs a change. No new feature justified by admission alone.

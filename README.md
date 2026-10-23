@@ -14,8 +14,9 @@ learn from failures, and retain the best correct design within a fixed budget.
 
 | Validation | Recorded result |
 |---|---|
-| Harness regression suite | **1,074 tests passed** |
+| Harness regression suite | **1,105 tests passed** |
 | FIFO timing recovery (8-bit, depth 3) | **Setup −0.931 → +0.108 ns · hold +0.076 ns · 22 LUTs / 13 FFs · exact saved winner independently passed** |
+| Packet-tagged FIFO verification | **Six configurations passed; all 19 named source mutations detected** |
 | Parameterized FIFO verification | **Six configurations passed; all 13 planned faults detected** |
 | Independent streaming verification | **Correct queue control passed; all eight behavior faults detected** |
 | Combined-verification streaming build | **Two-entry queue · 15 LUTs / 19 FFs · independent 893-cycle test passed** |
@@ -42,7 +43,8 @@ closure. The loop then reduced its first feasible implementation from 24 to
 
 See the [FIFO recovery evidence](evidence/2026-10-22/generated-fifo-attempt-05/README.md),
 [test evidence](evidence/2026-10-20/README.md),
-[full-suite result](evidence/2026-10-22/latency-contract-tests/AutoRTL-latency-full-03.txt) and
+[full-suite result](evidence/2026-10-22/packet-fifo-admission/AutoRTL-packet-full-01.txt) and
+[packet FIFO admission](evidence/2026-10-22/packet-fifo-admission/README.md),
 [accepted optimization](evidence/2026-10-22/contract-campaign-07/README.md),
 [generated-build verification](evidence/2026-10-20/generated-counter/README.md) and
 [streaming build](evidence/2026-10-20/generated-streaming/README.md).

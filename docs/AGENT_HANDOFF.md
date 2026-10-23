@@ -95,3 +95,17 @@ itself change runtime routing.
 Git cannot schedule agent switches or overcome provider usage limits. The user
 starts the next available provider in this folder and directs it to START_HERE.
 No background scheduler or automatic cross-provider failover is configured.
+
+## Recovery after context compaction
+
+The same resume procedure applies after automatic compaction within one chat.
+A compacted summary is not a passing-test receipt or publication record.
+Recover current state from START_HERE, the active section of SESSION_HANDOFF,
+relevant recent PROGRESS entries, Git, coordination and actual job/result files.
+Verify the measured source and scope before reusing a result. Read historical
+entries selectively with rg rather than loading the complete log every time.
+
+Minimum checkpoint: source commit/branch, worker scopes, live jobs, completed
+test/result paths, unresolved failures, next exact command and immutable budget.
+Model context compaction is supplied by the host; no custom app/API threshold
+has been configured by this repository's session-coordination files.

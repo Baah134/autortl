@@ -57,3 +57,27 @@ sources, map an idea to an observed AutoRTL need, and compare it against a
 simpler existing approach. Add complexity only with a concrete justification,
 tests and a measurable experiment; record keep/revise/remove decisions. Do not
 add roles, memory stores or frameworks solely because another system uses them.
+
+## Context compaction and recovery
+
+Compaction summaries and chat memory are working aids. Files, Git and actual
+tool evidence establish project state. Do not invent or assume a compaction
+threshold, completed test, running process, source identity or published commit.
+
+At each meaningful stage boundary, checkpoint: current branch/commit; claimed
+files; live process/session IDs; last completed tests and their exact scope;
+accepted/rejected measurements with artifact paths; remaining work and the next
+command with its original budget. Keep current state in SESSION_HANDOFF and
+append history to PROGRESS. Do not place coordinator notes in the public README.
+
+After compaction, interruption or suspected context loss, re-read START_HERE,
+the current SESSION_HANDOFF section and the latest relevant PROGRESS entries.
+Inspect actual Git status/heads, coordinator ownership and running jobs. Check
+the cited result JSON, raw verdicts and hashes before continuing or reporting
+success. Resolve contradictions against files and tool results; mark unverified
+claims unknown. Never rerun/resume a spent experiment across runtime changes.
+
+Keep reads bounded: use rg and relevant sections/tails to recover history.
+Retrieve full code or logs when necessary for the current edit or diagnosis;
+do not repeatedly load the entire accumulated progress log into conversation.
+These rules reduce context drift; they do not guarantee error-free reasoning.
