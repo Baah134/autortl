@@ -1,0 +1,736 @@
+{
+  "allowed_flow_variations": "The harness may enable retiming or physical optimization. The candidate's retained synthesis script is authoritative for its actual settings.",
+  "authority": "Harness evidence is fixed. Proposed architectural goals cannot redefine it.",
+  "baseline_metrics": {
+    "bram_total": 50.0,
+    "bram_used": 0.0,
+    "dsp_total": 90,
+    "dsp_used": 0,
+    "dynamic_power_w": 0.022,
+    "ff_pct": 0.11057692307692307,
+    "ff_total": 41600,
+    "ff_used": 46,
+    "lut_pct": 0.18269230769230768,
+    "lut_total": 20800,
+    "lut_used": 38,
+    "sim_error": "",
+    "sim_passed": true,
+    "synth_error": "",
+    "timing_met": true,
+    "total_power_w": 0.092,
+    "whs_ns": 0.136,
+    "wns_ns": 0.324
+  },
+  "build_spec": {
+    "authority": "Complete resolved typed build contract. Defined behavior is mandatory; explicitly unspecified cases remain unspecified. Frozen implementation identities do not turn incidental values in unspecified cases into requirements.",
+    "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-divider-01\\design_spec.json",
+    "resolved_spec": {
+      "connections": [],
+      "external_ports": [
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "clk",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "rst",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "dividend",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 8
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "divisor",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 8
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "in_valid",
+          "packed_dimensions": null,
+          "protocol": "valid_ready",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "output",
+          "name": "in_ready",
+          "packed_dimensions": null,
+          "protocol": "valid_ready",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "output",
+          "name": "quotient",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 8
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "output",
+          "name": "remainder",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 8
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "output",
+          "name": "out_valid",
+          "packed_dimensions": null,
+          "protocol": "valid_ready",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "out_ready",
+          "packed_dimensions": null,
+          "protocol": "valid_ready",
+          "signed": false,
+          "width": 1
+        }
+      ],
+      "modules": [
+        {
+          "behavior": "Parameterized unsigned iterative divider, public parameter WIDTH=8. Supported experiment domain: integer WIDTH 1..16. Preserve unsigned symbolic [WIDTH-1:0] dividend, divisor, quotient and remainder ports and actual WIDTH-dependent arithmetic and schedule, not only defaults. Preferred implementation is restoring division with a WIDTH+1-bit trial remainder and one bounded arithmetic step per compute edge. Capture dividend and divisor only on in_valid && in_ready at rising edge k. There is one outstanding transaction. Define internal computing state busy and held-result flag out_valid: in_ready equals !busy && !out_valid, independent of out_ready and without combinational reset gating. During computing or while a result is held, do not accept another request. Execute exactly WIDTH compute iterations at edges k+1 through k+WIDTH; no arithmetic iteration occurs at capture. out_valid first becomes visible after the NBA update of edge k+WIDTH, with quotient and remainder final together. Earliest retirement is edge k+WIDTH+1; no early result for zero, divisor one, equal operands, dividend smaller than divisor, or divide by zero. At the edge that retires a held result, in_ready was false, so a new request cannot be accepted until a later edge (earliest the following edge). For nonzero divisor, quotient=floor(dividend/divisor) and remainder=dividend%divisor. For divisor zero, quotient is all WIDTH ones and remainder is the captured original dividend, on the same fixed schedule. Ignore operand/input-valid noise after capture until the next accepted transaction. Hold out_valid and the atomic quotient/remainder tuple stable while stalled, until transfer or reset; invalid output fields are unspecified. Synchronous active-high rst aborts computation and any held result at the rising edge and overrides all transfers. Reset has no effect between edges; do not gate handshake or output signals combinationally with rst. After reset, no abandoned result may appear. Numeric latency=9 and // @latency 9 describe only default WIDTH=8 minimum accepted-transfer age; overridden children must satisfy WIDTH+1 age and the exact availability schedule above, checked independently. For the Python scoreboard oracle ONLY, each non-reset step represents one accepted dividend/divisor pair: return its eventual unsigned quotient and remainder masked to default WIDTH, including the explicit divide-by-zero rule. The oracle is arithmetic, not a busy/ready scheduling model or delay queue; init() represents reset state and supplied rst must be handled. Independent temporal verification checks scheduling, stalls, aborts and selected parameter overrides. Behavioral tests establish arithmetic and schedule, not physical iterative structure; retain source review of the sequential implementation for that claim.",
+          "clock_domains": [
+            "clk"
+          ],
+          "compare_mode": "scoreboard",
+          "examples": [
+            {
+              "after_cycles": 9,
+              "expected": {
+                "quotient": 255,
+                "remainder": 0
+              },
+              "inputs": {
+                "dividend": 0,
+                "divisor": 0,
+                "in_valid": 1,
+                "out_ready": 1,
+                "rst": 0
+              }
+            },
+            {
+              "after_cycles": 9,
+              "expected": {
+                "quotient": 255,
+                "remainder": 255
+              },
+              "inputs": {
+                "dividend": 255,
+                "divisor": 0,
+                "in_valid": 1,
+                "out_ready": 1,
+                "rst": 0
+              }
+            },
+            {
+              "after_cycles": 9,
+              "expected": {
+                "quotient": 255,
+                "remainder": 0
+              },
+              "inputs": {
+                "dividend": 255,
+                "divisor": 1,
+                "in_valid": 1,
+                "out_ready": 1,
+                "rst": 0
+              }
+            },
+            {
+              "after_cycles": 9,
+              "expected": {
+                "quotient": 15,
+                "remainder": 15
+              },
+              "inputs": {
+                "dividend": 255,
+                "divisor": 16,
+                "in_valid": 1,
+                "out_ready": 1,
+                "rst": 0
+              }
+            },
+            {
+              "after_cycles": 9,
+              "expected": {
+                "quotient": 0,
+                "remainder": 128
+              },
+              "inputs": {
+                "dividend": 128,
+                "divisor": 255,
+                "in_valid": 1,
+                "out_ready": 1,
+                "rst": 0
+              }
+            },
+            {
+              "after_cycles": 9,
+              "expected": {
+                "quotient": 12,
+                "remainder": 0
+              },
+              "inputs": {
+                "dividend": 144,
+                "divisor": 12,
+                "in_valid": 1,
+                "out_ready": 1,
+                "rst": 0
+              }
+            }
+          ],
+          "golden_model": "",
+          "interface_signature": {
+            "localparams": [],
+            "parameters": [
+              {
+                "default": "8",
+                "name": "WIDTH",
+                "type": ""
+              }
+            ],
+            "ports": [
+              {
+                "dimensions": [],
+                "direction": "input",
+                "name": "clk",
+                "signed": false,
+                "value_type": "logic"
+              },
+              {
+                "dimensions": [],
+                "direction": "input",
+                "name": "rst",
+                "signed": false,
+                "value_type": "logic"
+              },
+              {
+                "dimensions": [
+                  [
+                    "WIDTH - 1",
+                    "0"
+                  ]
+                ],
+                "direction": "input",
+                "name": "dividend",
+                "signed": false,
+                "value_type": "logic"
+              },
+              {
+                "dimensions": [
+                  [
+                    "WIDTH - 1",
+                    "0"
+                  ]
+                ],
+                "direction": "input",
+                "name": "divisor",
+                "signed": false,
+                "value_type": "logic"
+              },
+              {
+                "dimensions": [],
+                "direction": "input",
+                "name": "in_valid",
+                "signed": false,
+                "value_type": "logic"
+              },
+              {
+                "dimensions": [],
+                "direction": "output",
+                "name": "in_ready",
+                "signed": false,
+                "value_type": "logic"
+              },
+              {
+                "dimensions": [
+                  [
+                    "WIDTH - 1",
+                    "0"
+                  ]
+                ],
+                "direction": "output",
+                "name": "quotient",
+                "signed": false,
+                "value_type": "logic"
+              },
+              {
+                "dimensions": [
+                  [
+                    "WIDTH - 1",
+                    "0"
+                  ]
+                ],
+                "direction": "output",
+                "name": "remainder",
+                "signed": false,
+                "value_type": "logic"
+              },
+              {
+                "dimensions": [],
+                "direction": "output",
+                "name": "out_valid",
+                "signed": false,
+                "value_type": "logic"
+              },
+              {
+                "dimensions": [],
+                "direction": "input",
+                "name": "out_ready",
+                "signed": false,
+                "value_type": "logic"
+              }
+            ],
+            "version": 1
+          },
+          "latency": 9,
+          "latency_known": true,
+          "name": "iterative_divider_core",
+          "parameters": {
+            "WIDTH": 8
+          },
+          "ports": [
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "clk",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "rst",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "dividend",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 8
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "divisor",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 8
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "in_valid",
+              "packed_dimensions": null,
+              "protocol": "valid_ready",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "in_ready",
+              "packed_dimensions": null,
+              "protocol": "valid_ready",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "quotient",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 8
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "remainder",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 8
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "out_valid",
+              "packed_dimensions": null,
+              "protocol": "valid_ready",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "out_ready",
+              "packed_dimensions": null,
+              "protocol": "valid_ready",
+              "signed": false,
+              "width": 1
+            }
+          ],
+          "reset": {
+            "active_high": true,
+            "duration_cycles": 3,
+            "kind": "sync",
+            "signal": "rst"
+          }
+        }
+      ],
+      "top_name": "iterative_divider"
+    },
+    "sha256": "f7652c21b4360894126a4d97746e470f3969db7b5f10d738f34a79985b7fb528",
+    "truncated": false
+  },
+  "clock_period_ns": 10.0,
+  "declared_latency": {
+    "cycles": 9,
+    "known": true,
+    "meaning": "A source annotation declares numeric latency only when present. This known/cycles pair is authoritative for the current top module's annotation requirement. Only known=true requires a matching numeric top annotation. Child typed-module latency does not invent a top annotation for arbitrary aggregate wrappers. When known=false, absence of a top annotation is not a failed or unverifiable criterion. Unannotated numeric latency is UNKNOWN, not zero. Preserve the source's exact observable cycles and registered behavior. Annotation presence or absence alone is not independent proof of behavioral correctness; use the fixed source contract, all defined typed latency/minimum transfer age and deterministic verification, without inventing a numeric requirement.",
+    "source_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-divider-01\\iter_000\\iterative_divider.v",
+    "source_sha256": "92bf8ec2cd042ba17e16c9eddf195e81b52960c9e6bc901c016d0917804c71ac"
+  },
+  "execution_context": {
+    "dependencies": [
+      {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-divider-01\\modules\\iterative_divider_core\\iterative_divider_core.v",
+        "sha256": "5ed40f837e29b2aee2c8cc872429270932a52838b7d00c16017866e6e156242d"
+      }
+    ],
+    "part": "xc7a35tcpg236-1",
+    "period_ns": 10.0,
+    "promotions": {
+      "Designutils 20-1307": "ERROR",
+      "Synth 8-327": "ERROR",
+      "Synth 8-3352": "ERROR",
+      "Synth 8-9873": "ERROR",
+      "VRFC 10-3609": "ERROR"
+    },
+    "synthesis_template": "c9d0bf78e20ec5b5854a3e48a12cb9d6ce15be79e660b27b3bf703670a77197a",
+    "tb": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-divider-01\\inputs\\testbench_path.v",
+      "sha256": "aecd87a99a0976f74e8d1e1de7eb6c1d977a46b5c3b8d7d01d392340ec3e3039"
+    },
+    "tools": {
+      "vivado_bin": {
+        "path": "C:\\AMDDesignTools\\2025.2\\Vivado\\bin\\vivado.bat",
+        "sha256": "4f9c05aea82a71c7086a9e5edf01ba16ea70255f69cf3420c58b805ec113e994"
+      },
+      "xelab_bin": {
+        "path": "C:\\AMDDesignTools\\2025.2\\Vivado\\bin\\xelab.bat",
+        "sha256": "512a29ace988992d7fab14ca84f20f0b4515bb69ef1d5fef0a57c5f28b72c9b1"
+      },
+      "xsim_bin": {
+        "path": "C:\\AMDDesignTools\\2025.2\\Vivado\\bin\\xsim.bat",
+        "sha256": "8819fbb54fdf9cbcaaf24c2bf72801b403d5c93e0990ba32408b56c666761d21"
+      },
+      "xvlog_bin": {
+        "path": "C:\\AMDDesignTools\\2025.2\\Vivado\\bin\\xvlog.bat",
+        "sha256": "512a29ace988992d7fab14ca84f20f0b4515bb69ef1d5fef0a57c5f28b72c9b1"
+      }
+    },
+    "top": "iterative_divider"
+  },
+  "first_violated_path_excerpt": null,
+  "flow_and_constraints": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-divider-01\\iter_000\\synth.tcl",
+      "sha256": "1675a9d8f0c11c4f8947a771a52a199b513283a4a81172d1ef9e9abcbe53aebd",
+      "text": "set_msg_config -id {VRFC 10-3609} -new_severity ERROR\r\nset_msg_config -id {Synth 8-9873} -new_severity ERROR\r\nset_msg_config -id {Designutils 20-1307} -new_severity ERROR\r\nset_msg_config -id {Synth 8-327} -new_severity ERROR\r\nset_msg_config -id {Synth 8-3352} -new_severity ERROR\r\nset_part xc7a35tcpg236-1\r\nread_verilog \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-divider-01/iter_000/iterative_divider.v\" \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-divider-01/modules/iterative_divider_core/iterative_divider_core.v\"\r\nset fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-divider-01/iter_000/timing.xdc\" w]\r\nputs $fp {create_clock -period 10.000 -name clk [get_ports clk]}\r\nclose $fp\r\nread_xdc \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-divider-01/iter_000/timing.xdc\"\r\nsynth_design -top iterative_divider -flatten_hierarchy rebuilt \r\nset fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-divider-01/iter_000/timing_io.tcl\" w]\r\nputs $fp {set data_inputs [get_ports -filter {DIRECTION == IN && NAME != clk}]}\r\nputs $fp {if {[llength $data_inputs] > 0} {set_input_delay -clock clk -max 0.000 $data_inputs; set_input_delay -clock clk -min 0.000 $data_inputs}}\r\nputs $fp {if {[llength [all_outputs]] > 0} {set_output_delay -clock clk -max 0.000 [all_outputs]; set_output_delay -clock clk -min 0.000 [all_outputs]}}\r\nclose $fp\r\nsource \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-divider-01/iter_000/timing_io.tcl\"\r\nreport_utilization -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-divider-01/iter_000/utilization.rpt\"\r\nreport_timing_summary -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-divider-01/iter_000/timing.rpt\"\r\nopt_design\r\nplace_design\r\n\r\nroute_design\r\nreport_utilization -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-divider-01/iter_000/utilization_routed.rpt\"\r\nreport_timing_summary -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-divider-01/iter_000/timing_routed.rpt\"\r\nreport_design_analysis -logic_level_distribution -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-divider-01/iter_000/design_analysis.rpt\"\r\nreport_power -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-divider-01/iter_000/power.rpt\"\r\ncatch { report_methodology -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-divider-01/iter_000/methodology.rpt\" }\r\ncatch { report_qor_suggestions -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-divider-01/iter_000/qor_suggestions.rpt\" }\r\nputs \"SYNTH_COMPLETE\"\r\n",
+      "truncated": false
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-divider-01\\iter_000\\timing.xdc",
+      "sha256": "fa142c09f0fadb5e303ca9fea08c02bc353451533e44aeee9cd9a0231cc8bede",
+      "text": "create_clock -period 10.000 -name clk [get_ports clk]\r\n",
+      "truncated": false
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-divider-01\\iter_000\\timing_io.tcl",
+      "sha256": "6b38098841a48bbb3ab15de49d2bf2baf7e4384f599259ff5f3afa2c2b1daf00",
+      "text": "set data_inputs [get_ports -filter {DIRECTION == IN && NAME != clk}]\r\nif {[llength $data_inputs] > 0} {set_input_delay -clock clk -max 0.000 $data_inputs; set_input_delay -clock clk -min 0.000 $data_inputs}\r\nif {[llength [all_outputs]] > 0} {set_output_delay -clock clk -max 0.000 [all_outputs]; set_output_delay -clock clk -min 0.000 [all_outputs]}\r\n",
+      "truncated": false
+    }
+  ],
+  "hard_gates": [
+    "Preserve typed build spec defined behavior, ports, parameter defaults, reset and observable cycles; explicitly unspecified cases remain unspecified.",
+    "Use the fixed provided testbench, tools, device and constraints without modification.",
+    "Static/interface checks, compile, simulation and real routed metric integrity must pass.",
+    "Timing closure requires setup slack >= 0 and hold slack >= 0.",
+    "Unknown or absent evidence cannot count as success."
+  ],
+  "metric_provenance": "Structured metrics are parsed from retained reports; routed utilization/timing reports take precedence when present. The manifest identifies complete files by hash. Header excerpts are bounded previews, not complete reports or an independent metric source.",
+  "objective": "minimize_luts",
+  "objective_policy": "First establish timing feasibility. A verified timing-feasible candidate may replace a known timing-infeasible previous best even with higher area or power; classify this as timing_recovery, not objective savings. Once both are timing-feasible, require strict improvement of the chosen objective. Unknown or contradictory incumbent timing evidence cannot establish recovery. A completed experiment may find no improvement. Do not invent mandatory savings, slack margins, tool versions, timing corners, new tests, thresholds, code-style quotas or external environment requirements.",
+  "part": "xc7a35tcpg236-1",
+  "report_headers": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-divider-01\\iter_000\\power.rpt",
+      "sha256": "6c330a908a00300f3501aa3314184b52a049aeedda68f518f223a27035969cff",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n-------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version     : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date             : Fri Oct 23 09:27:08 2026\r\n| Host             : Baah running 64-bit major release  (build 9200)\r\n| Command          : report_power -file C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-divider-01/iter_000/power.rpt\r\n| Design           : iterative_divider\r\n| Device           : xc7a35tcpg236-1\r\n| Design State     : routed\r\n| Grade            : commercial\r\n| Process          : typical\r\n| Characterization : Production\r\n-------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nPower Report\r\n\r\nTable of Contents\r\n-----------------\r\n1. Summary\r\n1.1 On-Chip Components\r\n1.2 Power Supply Summary\r\n1.3 Confidence Level\r\n2. Settings\r\n2.1 Environment\r\n2.2 Clock Constraints\r\n3. Detailed Reports\r\n3.1 By Hierarchy\r\n\r\n1. Summary\r\n----------\r\n\r\n+--------------------------+--------------+\r\n| Total On-Chip Power (W)  | 0.092        |\r\n| Design Power Budget (W)  | Unspecified* |\r\n| Power Budget Margin (W)  | NA           |\r\n| Dynamic (W)              | 0.022        |\r\n| Device Static (W)        | 0.070        |\r\n| Effective TJA (C/W)      | 5.0          |\r\n| Max Ambient (C)          | 84.5         |\r\n| Junction Temperature (C) | 25.5         |\r\n| Confidence Level         | Low          |\r\n| Setting File             | ---          |\r\n| Simulation Activity File | ---          |\r\n| Design Nets Matched      | NA        ",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-divider-01\\iter_000\\timing.rpt",
+      "sha256": "f8c51523feb245d64d0b311e11052ec8c5b4c2992fd48c762f553bcb1aba7d04",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n---------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date         : Fri Oct 23 09:26:35 2026\r\n| Host         : Baah running 64-bit major release  (build 9200)\r\n| Command      : report_timing_summary -file C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-divider-01/iter_000/timing.rpt\r\n| Design       : iterative_divider\r\n| Device       : 7a35t-cpg236\r\n| Speed File   : -1  PRODUCTION 1.23 2018-06-13\r\n| Design State : Synthesized\r\n---------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nTiming Summary Report\r\n\r\n------------------------------------------------------------------------------------------------\r\n| Timer Settings\r\n| --------------\r\n------------------------------------------------------------------------------------------------\r\n\r\n  Enable Multi Corner Analysis               :  Yes\r\n  Enable Pessimism Removal                   :  Yes\r\n  Pessimism Removal Resolution               :  Nearest Common Node\r\n  Enable Input Delay Default Clock           :  No\r\n  Enable Preset / Clear Arcs                 :  No\r\n  Disable Flight Delays                      :  No\r\n  Ignore I/O Paths                           :  No\r\n  Timing Early Launch at Borrowing Latches   :  No\r\n  Borrow Time for Max Delay Exceptions       :  Yes\r\n  Merge Timing Exceptions                    :  Yes\r\n  Inter-SLR Compensation                     :  Conservative\r\n\r\n  Corner  Analyze    Analyze    \r\n  Name    ",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-divider-01\\iter_000\\timing_routed.rpt",
+      "sha256": "b2ddc40057d2f4671cd85b91ea7acd65ef0afe2bd95d97ca4d16d05fc45d6fdc",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n-------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date         : Fri Oct 23 09:27:08 2026\r\n| Host         : Baah running 64-bit major release  (build 9200)\r\n| Command      : report_timing_summary -file C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-divider-01/iter_000/timing_routed.rpt\r\n| Design       : iterative_divider\r\n| Device       : 7a35t-cpg236\r\n| Speed File   : -1  PRODUCTION 1.23 2018-06-13\r\n| Design State : Routed\r\n-------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nTiming Summary Report\r\n\r\n------------------------------------------------------------------------------------------------\r\n| Timer Settings\r\n| --------------\r\n------------------------------------------------------------------------------------------------\r\n\r\n  Enable Multi Corner Analysis               :  Yes\r\n  Enable Pessimism Removal                   :  Yes\r\n  Pessimism Removal Resolution               :  Nearest Common Node\r\n  Enable Input Delay Default Clock           :  No\r\n  Enable Preset / Clear Arcs                 :  No\r\n  Disable Flight Delays                      :  No\r\n  Ignore I/O Paths                           :  No\r\n  Timing Early Launch at Borrowing Latches   :  No\r\n  Borrow Time for Max Delay Exceptions       :  Yes\r\n  Merge Timing Exceptions                    :  Yes\r\n  Inter-SLR Compensation                     :  Conservative\r\n\r\n  Corner  Analyze    Analyze    \r\n",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-divider-01\\iter_000\\utilization.rpt",
+      "sha256": "5ca4c6941b900e53b3bd7f79a5c76f010694823dc6d9de8a94c44d399c5e56f0",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\n---------------------------------------------------------------------------------------------------------------------------------------------\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\n| Date         : Fri Oct 23 09:26:35 2026\n| Host         : Baah running 64-bit major release  (build 9200)\n| Command      : report_utilization -file C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-divider-01/iter_000/utilization.rpt\n| Design       : iterative_divider\n| Device       : xc7a35tcpg236-1\n| Speed File   : -1\n| Design State : Synthesized\n---------------------------------------------------------------------------------------------------------------------------------------------\n\nUtilization Design Information\n\nTable of Contents\n-----------------\n1. Slice Logic\n1.1 Summary of Registers by Type\n2. Memory\n3. DSP\n4. IO and GT Specific\n5. Clocking\n6. Specific Feature\n7. Primitives\n8. Black Boxes\n9. Instantiated Netlists\n\n1. Slice Logic\n--------------\n\n+-------------------------+------+-------+------------+-----------+-------+\n|        Site Type        | Used | Fixed | Prohibited | Available | Util% |\n+-------------------------+------+-------+------------+-----------+-------+\n| Slice LUTs*             |   40 |     0 |          0 |     20800 |  0.19 |\n|   LUT as Logic          |   40 |     0 |          0 |     20800 |  0.19 |\n|   LUT as Memory         |    0 |     0 |          0 |      9600 |  0.00 |\n| Slice Registers         |   46 |     0 |          0 |     41600 |  0.11 |\n|   Register as Flip Flop |   46 |     0 |          0 |     41600 |  0.11 |\n|   Register as Latch     |    0 |     0 |          0 |     41",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-divider-01\\iter_000\\utilization_routed.rpt",
+      "sha256": "6072543e7ad891eb46b7d41a96e05ecbd3f450ae3cef393b711d50c80bf8c937",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\n---------------------------------------------------------------------------------------------------------------------------------------------------\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\n| Date         : Fri Oct 23 09:27:08 2026\n| Host         : Baah running 64-bit major release  (build 9200)\n| Command      : report_utilization -file C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-divider-01/iter_000/utilization_routed.rpt\n| Design       : iterative_divider\n| Device       : xc7a35tcpg236-1\n| Speed File   : -1\n| Design State : Routed\n---------------------------------------------------------------------------------------------------------------------------------------------------\n\nUtilization Design Information\n\nTable of Contents\n-----------------\n1. Slice Logic\n1.1 Summary of Registers by Type\n2. Slice Logic Distribution\n3. Memory\n4. DSP\n5. IO and GT Specific\n6. Clocking\n7. Specific Feature\n8. Primitives\n9. Black Boxes\n10. Instantiated Netlists\n\n1. Slice Logic\n--------------\n\n+-------------------------+------+-------+------------+-----------+-------+\n|        Site Type        | Used | Fixed | Prohibited | Available | Util% |\n+-------------------------+------+-------+------------+-----------+-------+\n| Slice LUTs              |   38 |     0 |          0 |     20800 |  0.18 |\n|   LUT as Logic          |   38 |     0 |          0 |     20800 |  0.18 |\n|   LUT as Memory         |    0 |     0 |          0 |      9600 |  0.00 |\n| Slice Registers         |   46 |     0 |          0 |     41600 |  0.11 |\n|   Register as Flip Flop |   46 |     0 |          0 |     41600 |  0.11 |\n|   Register as Lat",
+      "truncated": true
+    }
+  ],
+  "report_manifest": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-divider-01\\iter_000\\power.rpt",
+      "sha256": "6c330a908a00300f3501aa3314184b52a049aeedda68f518f223a27035969cff"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-divider-01\\iter_000\\timing.rpt",
+      "sha256": "f8c51523feb245d64d0b311e11052ec8c5b4c2992fd48c762f553bcb1aba7d04"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-divider-01\\iter_000\\timing_routed.rpt",
+      "sha256": "b2ddc40057d2f4671cd85b91ea7acd65ef0afe2bd95d97ca4d16d05fc45d6fdc"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-divider-01\\iter_000\\utilization.rpt",
+      "sha256": "5ca4c6941b900e53b3bd7f79a5c76f010694823dc6d9de8a94c44d399c5e56f0"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-divider-01\\iter_000\\utilization_routed.rpt",
+      "sha256": "6072543e7ad891eb46b7d41a96e05ecbd3f450ae3cef393b711d50c80bf8c937"
+    }
+  ],
+  "schema_version": 1,
+  "simulation": {
+    "failure_verdict": "TEST FAILED",
+    "required_verdict": "TEST PASSED",
+    "scope": "Provided testbench checks; not a formal equivalence proof.",
+    "tools": [
+      "xvlog",
+      "xelab",
+      "xsim -runall"
+    ]
+  },
+  "sources": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-divider-01\\iter_000\\iterative_divider.v",
+      "sha256": "92bf8ec2cd042ba17e16c9eddf195e81b52960c9e6bc901c016d0917804c71ac",
+      "text": "// @latency 9\r\n// Inherited minimum accepted-transfer age from transparent typed child wiring; not measured timing.\r\nmodule iterative_divider (\r\n    input wire clk,\r\n    input wire rst,\r\n    input wire [7:0] dividend,\r\n    input wire [7:0] divisor,\r\n    input wire in_valid,\r\n    output wire in_ready,\r\n    output wire [7:0] quotient,\r\n    output wire [7:0] remainder,\r\n    output wire out_valid,\r\n    input wire out_ready\r\n);\r\n    iterative_divider_core #( .WIDTH(8) ) u_iterative_divider_core (\r\n        .clk(clk),\r\n        .rst(rst),\r\n        .dividend(dividend),\r\n        .divisor(divisor),\r\n        .in_valid(in_valid),\r\n        .in_ready(in_ready),\r\n        .quotient(quotient),\r\n        .remainder(remainder),\r\n        .out_valid(out_valid),\r\n        .out_ready(out_ready)\r\n    );\r\nendmodule\r\n",
+      "truncated": false
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-divider-01\\modules\\iterative_divider_core\\iterative_divider_core.v",
+      "sha256": "5ed40f837e29b2aee2c8cc872429270932a52838b7d00c16017866e6e156242d",
+      "text": "`timescale 1ns/1ps\r\n// @latency 9\r\nmodule iterative_divider_core #(\r\n    parameter WIDTH = 8\r\n) (\r\n    input wire clk,\r\n    input wire rst,\r\n    input wire [WIDTH-1:0] dividend,\r\n    input wire [WIDTH-1:0] divisor,\r\n    input wire in_valid,\r\n    output wire in_ready,\r\n    output wire [WIDTH-1:0] quotient,\r\n    output wire [WIDTH-1:0] remainder,\r\n    output wire out_valid,\r\n    input wire out_ready\r\n);\r\n\r\n    localparam COUNT_WIDTH = $clog2(WIDTH + 1);\r\n\r\n    reg busy;\r\n    reg out_valid_reg;\r\n    reg [WIDTH-1:0] dividend_reg;\r\n    reg [WIDTH-1:0] divisor_reg;\r\n    reg [WIDTH-1:0] quotient_work;\r\n    reg [WIDTH:0] remainder_work;\r\n    reg [COUNT_WIDTH-1:0] iteration;\r\n\r\n    reg [WIDTH-1:0] quotient_reg;\r\n    reg [WIDTH-1:0] remainder_reg;\r\n\r\n    wire [WIDTH:0] trial_remainder;\r\n    wire [WIDTH:0] next_remainder;\r\n    wire [WIDTH-1:0] next_quotient;\r\n\r\n    assign trial_remainder = {\r\n        remainder_work[WIDTH-1:0],\r\n        quotient_work[WIDTH-1]\r\n    };\r\n\r\n    assign next_remainder =\r\n        (trial_remainder >= {1'b0, divisor_reg})\r\n        ? trial_remainder - {1'b0, divisor_reg}\r\n        : trial_remainder;\r\n\r\n    assign next_quotient = {\r\n        quotient_work[WIDTH-2:0],\r\n        (trial_remainder >= {1'b0, divisor_reg})\r\n    };\r\n\r\n    assign in_ready = !busy && !out_valid_reg;\r\n    assign out_valid = out_valid_reg;\r\n    assign quotient = quotient_reg;\r\n    assign remainder = remainder_reg;\r\n\r\n    always @(posedge clk) begin\r\n        if (rst) begin\r\n            busy <= 1'b0;\r\n            out_valid_reg <= 1'b0;\r\n            dividend_reg <= {WIDTH{1'b0}};\r\n            divisor_reg <= {WIDTH{1'b0}};\r\n            quotient_work <= {WIDTH{1'b0}};\r\n            remainder_work <= {(WIDTH+1){1'b0}};\r\n            iteration <= {COUNT_WIDTH{1'b0}};\r\n            quotient_reg <= {WIDTH{1'b0}};\r\n            remainder_reg <= {WIDTH{1'b0}};\r\n        end else if (busy) begin\r\n            quotient_work <= next_quotient;\r\n            remainder_work <= next_remainder;\r\n\r\n            if (iteration == WIDTH - 1) begin\r\n                busy <= 1'b0;\r\n                out_valid_reg <= 1'b1;\r\n                quotient_reg <= next_quotient;\r\n                remainder_reg <= next_remainder[WIDTH-1:0];\r\n            end else begin\r\n                iteration <= iteration + 1'b1;\r\n            end\r\n        end else if (out_valid_reg) begin\r\n            if (out_ready)\r\n                out_valid_reg <= 1'b0;\r\n        end else if (in_valid && in_ready) begin\r\n            dividend_reg <= dividend;\r\n            divisor_reg <= divisor;\r\n            quotient_work <= dividend;\r\n            remainder_work <= {(WIDTH+1){1'b0}};\r\n            iteration <= {COUNT_WIDTH{1'b0}};\r\n            busy <= 1'b1;\r\n        end\r\n    end\r\n\r\nendmodule",
+      "truncated": false
+    }
+  ],
+  "testbench": {
+    "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-divider-01\\inputs\\testbench_path.v",
+    "sha256": "aecd87a99a0976f74e8d1e1de7eb6c1d977a46b5c3b8d7d01d392340ec3e3039",
+    "text": "`timescale 1ns/1ps\r\n// Black-box temporal model: exact countdown plus /,% transaction oracle.\r\n// This checks behavior and timing; it does not prove iterative architecture.\r\nmodule iterative_divider_case #(\r\n    parameter WIDTH=8, USE_TOP=0, CASE_ID=0\r\n)(input clk, output reg finished=0, output reg failed=0);\r\n    reg rst=1, in_valid=0, out_ready=0;\r\n    reg [WIDTH-1:0] dividend=0, divisor=0;\r\n    wire in_ready, out_valid;\r\n    wire [WIDTH-1:0] quotient, remainder;\r\n    generate\r\n        if (USE_TOP) begin: default_wrapper\r\n            iterative_divider dut(.clk(clk), .rst(rst), .dividend(dividend),\r\n                .divisor(divisor), .in_valid(in_valid), .in_ready(in_ready),\r\n                .quotient(quotient), .remainder(remainder),\r\n                .out_valid(out_valid), .out_ready(out_ready));\r\n        end else begin: parameter_child\r\n            iterative_divider_core #(.WIDTH(WIDTH)) dut(.clk(clk), .rst(rst),\r\n                .dividend(dividend), .divisor(divisor),\r\n                .in_valid(in_valid), .in_ready(in_ready),\r\n                .quotient(quotient), .remainder(remainder),\r\n                .out_valid(out_valid), .out_ready(out_ready));\r\n        end\r\n    endgenerate\r\n\r\n    localparam [WIDTH-1:0] MAX_VALUE={WIDTH{1'b1}};\r\n    reg [WIDTH-1:0] expected_quotient=0, expected_remainder=0;\r\n    reg result_pending=0, model_started=0, last_accept=0;\r\n    integer remaining_steps=0, accepted_at=0;\r\n    integer checked=0, errors=0, accepted=0, retired=0, discarded=0;\r\n    integer available_results=0, stalled_results=0, busy_cycles=0;\r\n    integer blocked_busy=0, blocked_result=0, retirement_bubbles=0;\r\n    integer zero_divisors=0, zero_dividends=0, reset_compute=0, reset_result=0;\r\n    integer reset_stalled_result=0;\r\n    integer reset_phases=0, exhaustive_pairs=0, directed_pairs=0, random_pairs=0;\r\n    integer a, b, i, phase, n;\r\n    reg [31:0] seed=32'h6d2b79f5 ^ CASE_ID;\r\n    reg pending_valid=0;\r\n    reg [WIDTH-1:0] pending_dividend=0, pending_divisor=0;\r\n    reg push, pop;\r\n\r\n    task fail;\r\n        input [639:0] message;\r\n        begin\r\n            errors=errors+1;\r\n            if (errors<=12)\r\n                $display(\"FAIL case=%0d WIDTH=%0d cycle=%0d remaining=%0d pending=%0d: %0s\",\r\n                    CASE_ID,WIDTH,checked,remaining_steps,result_pending,message);\r\n        end\r\n    endtask\r\n\r\n    task check_outputs;\r\n        begin\r\n            if (in_ready !== ((remaining_steps==0)&&!result_pending))\r\n                fail(\"single outstanding readiness / retirement-edge bubble\");\r\n            if (out_valid !== result_pending)\r\n                fail(\"exact WIDTH-step result availability / no early or late valid\");\r\n            if (result_pending) begin\r\n                if (quotient !== expected_quotient) fail(\"unsigned quotient / stable held result\");\r\n                if (remainder !== expected_remainder) fail(\"unsigned remainder / stable held result\");\r\n            end\r\n        end\r\n    endtask\r\n\r\n    task step;\r\n        input reset_value, valid_value;\r\n        input [WIDTH-1:0] dividend_value, divisor_value;\r\n        input ready_value;\r\n        begin\r\n            @(negedge clk);\r\n            rst=reset_value;\r\n            in_valid=valid_value;\r\n            dividend=dividend_value;\r\n            divisor=divisor_value;\r\n            out_ready=ready_value;\r\n            #1;\r\n            // Catch asynchronous reset or combinational early responses.\r\n            if (model_started) check_outputs;\r\n            @(posedge clk);\r\n            if (model_started) check_outputs;\r\n            push=in_valid&&(remaining_steps==0)&&!result_pending;\r\n            pop=result_pending&&out_ready;\r\n            last_accept=0;\r\n            if (rst) begin\r\n                if (remaining_steps>0) reset_compute=reset_compute+1;\r\n                if (result_pending) reset_result=reset_result+1;\r\n                if (result_pending&&!out_ready) reset_stalled_result=reset_stalled_result+1;\r\n                if ((remaining_steps>0)||result_pending) discarded=discarded+1;\r\n                remaining_steps=0;\r\n                result_pending=0;\r\n            end else begin\r\n                busy_cycles=busy_cycles+(remaining_steps>0);\r\n                blocked_busy=blocked_busy+((remaining_steps>0)&&in_valid);\r\n                blocked_result=blocked_result+(result_pending&&in_valid&&!out_ready);\r\n                stalled_results=stalled_results+(result_pending&&!out_ready);\r\n                retirement_bubbles=retirement_bubbles+(pop&&in_valid&&!push);\r\n                if (pop) begin\r\n                    if (checked-accepted_at<WIDTH+1) fail(\"accepted transfer age below WIDTH+1\");\r\n                    result_pending=0;\r\n                    retired=retired+1;\r\n                end\r\n                // A capture does not also perform a computation step.\r\n                if (remaining_steps>0) begin\r\n                    remaining_steps=remaining_steps-1;\r\n                    if (remaining_steps==0) begin\r\n                        result_pending=1;\r\n                        available_results=available_results+1;\r\n                    end\r\n                end\r\n                if (push) begin\r\n                    if (divisor_value==0) begin\r\n                        expected_quotient=MAX_VALUE;\r\n                        expected_remainder=dividend_value;\r\n                        zero_divisors=zero_divisors+1;\r\n                    end else begin\r\n                        expected_quotient=dividend_value/divisor_value;\r\n                        expected_remainder=dividend_value%divisor_value;\r\n                    end\r\n                    zero_dividends=zero_dividends+(dividend_value==0);\r\n                    remaining_steps=WIDTH;\r\n                    accepted_at=checked;\r\n                    accepted=accepted+1;\r\n                    last_accept=1;\r\n                end\r\n            end\r\n            #1;\r\n            model_started=1;\r\n            check_outputs;\r\n            checked=checked+1;\r\n            #1;\r\n        end\r\n    endtask\r\n\r\n    function [31:0] advance;\r\n        input [31:0] value;\r\n        reg [31:0] x;\r\n        begin\r\n            x=value^(value<<13);\r\n            x=x^(x>>17);\r\n            advance=x^(x<<5);\r\n        end\r\n    endfunction\r\n\r\n    // Idle input operands may change after capture, including during a held\r\n    // result. They are deliberately unrelated to the captured operation.\r\n    task finish_transaction;\r\n        input integer stall_count;\r\n        integer t;\r\n        begin\r\n            while (remaining_steps>0) begin\r\n                seed=advance(seed);\r\n                step(0,0,seed[WIDTH-1:0],~seed[WIDTH-1:0],1);\r\n            end\r\n            for (t=0; t<stall_count; t=t+1) begin\r\n                seed=advance(seed);\r\n                step(0,0,seed[WIDTH-1:0],~seed[WIDTH-1:0],0);\r\n            end\r\n            step(0,0,0,0,1);\r\n        end\r\n    endtask\r\n\r\n    task transaction;\r\n        input [WIDTH-1:0] av, bv;\r\n        input integer stall_count;\r\n        begin\r\n            step(0,1,av,bv,1);\r\n            if (!last_accept) fail(\"directed request not accepted from idle\");\r\n            finish_transaction(stall_count);\r\n        end\r\n    endtask\r\n\r\n    initial begin\r\n        step(1,0,0,0,0);\r\n        step(1,0,0,0,0);\r\n        // Exhaustive unsigned pairs, including zero, at every selected small width.\r\n        if (WIDTH<=4) begin\r\n            for (a=0; a<(1<<WIDTH); a=a+1)\r\n                for (b=0; b<(1<<WIDTH); b=b+1) begin\r\n                    transaction(a,b,(a+b)%3);\r\n                    exhaustive_pairs=exhaustive_pairs+1;\r\n                end\r\n        end\r\n        transaction(0,0,3);\r\n        transaction(0,MAX_VALUE,2);\r\n        transaction(MAX_VALUE,0,4);\r\n        transaction(MAX_VALUE,1,2);\r\n        transaction(MAX_VALUE,MAX_VALUE,3);\r\n        transaction(1,MAX_VALUE,1);\r\n        transaction(MAX_VALUE-1,MAX_VALUE,2);\r\n        directed_pairs=7;\r\n        for (i=0; i<WIDTH; i=i+1) begin\r\n            // Powers of two, near powers, high bits, exact division and a<b.\r\n            transaction(1<<i,1,1);\r\n            transaction(MAX_VALUE,1<<i,2);\r\n            transaction((1<<i)-1,1<<i,1);\r\n            transaction(1<<i,(1<<i)+1,2);\r\n            directed_pairs=directed_pairs+4;\r\n            if (i<WIDTH-1) begin\r\n                transaction(3<<i,1<<i,2);\r\n                directed_pairs=directed_pairs+1;\r\n            end\r\n        end\r\n\r\n        // A second request remains legally asserted throughout computation,\r\n        // held result, and the first result's retirement edge. It is accepted\r\n        // only on the following idle edge, with its original operands intact.\r\n        step(0,1,MAX_VALUE,1,0);\r\n        if (!last_accept) fail(\"first burst request not accepted\");\r\n        repeat (WIDTH) step(0,1,1,MAX_VALUE,0);\r\n        repeat (4) step(0,1,1,MAX_VALUE,0);\r\n        step(0,1,1,MAX_VALUE,1);\r\n        if (last_accept) fail(\"new request accepted on result retirement edge\");\r\n        step(0,1,1,MAX_VALUE,1);\r\n        if (!last_accept) fail(\"held second request not accepted on next idle edge\");\r\n        finish_transaction(3);\r\n\r\n        // Reset before each computation phase, including the final step;\r\n        // phase WIDTH resets a result already made visible. Reset dominates\r\n        // asserted input and ready, and aborts pending work without an output.\r\n        for (phase=0; phase<=WIDTH; phase=phase+1) begin\r\n            step(0,1,MAX_VALUE,MAX_VALUE,0);\r\n            if (!last_accept) fail(\"reset-phase request not accepted\");\r\n            for (n=0; n<phase; n=n+1) step(0,0,0,1,0);\r\n            step(1,1,1,0,1);\r\n            reset_phases=reset_phases+1;\r\n            step(0,0,0,0,1);\r\n        end\r\n        // Reset a HELD result with ready low. Normal retirement cannot mask\r\n        // an ignored reset. The second pending input is held unchanged until\r\n        // reset aborts it; no result from either operation may later reappear.\r\n        step(0,1,MAX_VALUE,1,0);\r\n        if (!last_accept) fail(\"stalled-result reset request not accepted\");\r\n        repeat (WIDTH) step(0,1,1,MAX_VALUE,0);\r\n        repeat (2) step(0,1,1,MAX_VALUE,0);\r\n        step(1,1,1,MAX_VALUE,0);\r\n        step(0,0,0,0,1);\r\n        repeat (WIDTH+2) step(0,0,MAX_VALUE,0,1);\r\n        // Idle reset with valid/ready asserted must not capture a new operation.\r\n        step(1,1,MAX_VALUE,0,1);\r\n        step(0,0,0,0,1);\r\n\r\n        // Bounded deterministic randomized legal producer. Once asserted, the\r\n        // pending tuple remains unchanged until capture; resets may abort it.\r\n        for (i=0; i<1400; i=i+1) begin\r\n            seed=advance(seed);\r\n            if (!pending_valid || last_accept) begin\r\n                pending_valid=seed[0]||seed[4];\r\n                pending_dividend=seed[WIDTH-1:0];\r\n                seed=advance(seed);\r\n                pending_divisor=seed[WIDTH-1:0];\r\n            end\r\n            step(0,pending_valid,pending_dividend,pending_divisor,seed[2]||seed[7]);\r\n            if (last_accept) random_pairs=random_pairs+1;\r\n        end\r\n        if (pending_valid&&!last_accept) begin\r\n            while (!last_accept) step(0,1,pending_dividend,pending_divisor,1);\r\n            random_pairs=random_pairs+1;\r\n        end\r\n        if (remaining_steps>0 || result_pending) finish_transaction(2);\r\n        repeat (3) step(0,0,MAX_VALUE,0,1);\r\n        if (remaining_steps!=0 || result_pending || accepted!=retired+discarded)\r\n            fail(\"final drain / accepted-retired-discarded conservation\");\r\n        if (accepted<50 || retired<40 || busy_cycles<WIDTH*30 ||\r\n            stalled_results<15 || blocked_busy<WIDTH || blocked_result<4 ||\r\n            retirement_bubbles<1 || zero_divisors<2 || zero_dividends<2 ||\r\n            reset_compute<WIDTH || reset_result<1 || reset_stalled_result<1 ||\r\n            reset_phases!=WIDTH+1 ||\r\n            directed_pairs!=6+5*WIDTH || random_pairs<40 ||\r\n            ((WIDTH<=4)&&(exhaustive_pairs!=(1<<(2*WIDTH)))))\r\n            fail(\"required arithmetic / temporal / reset coverage missing\");\r\n        $display(\"COVERAGE case=%0d WIDTH=%0d checked=%0d accepted=%0d retired=%0d discarded=%0d available=%0d busy=%0d stalled=%0d blocked_busy=%0d blocked_result=%0d retirement_bubbles=%0d div0=%0d zero_dividend=%0d reset_compute=%0d reset_result=%0d reset_stalled_result=%0d reset_phases=%0d exhaustive=%0d directed=%0d random=%0d\",\r\n            CASE_ID,WIDTH,checked,accepted,retired,discarded,available_results,\r\n            busy_cycles,stalled_results,blocked_busy,blocked_result,retirement_bubbles,\r\n            zero_divisors,zero_dividends,reset_compute,reset_result,reset_stalled_result,reset_phases,\r\n            exhaustive_pairs,directed_pairs,random_pairs);\r\n        failed=(errors!=0);\r\n        finished=1;\r\n    end\r\nendmodule\r\n\r\nmodule iterative_divider_tb;\r\n    reg clk=0;\r\n    wire [5:0] finished, failed;\r\n    always #5 clk=~clk;\r\n    iterative_divider_case #(.WIDTH(8),.USE_TOP(1),.CASE_ID(0)) default_case(clk,finished[0],failed[0]);\r\n    iterative_divider_case #(.WIDTH(1),.CASE_ID(1)) width1_case(clk,finished[1],failed[1]);\r\n    iterative_divider_case #(.WIDTH(2),.CASE_ID(2)) width2_case(clk,finished[2],failed[2]);\r\n    iterative_divider_case #(.WIDTH(4),.CASE_ID(3)) width4_case(clk,finished[3],failed[3]);\r\n    iterative_divider_case #(.WIDTH(13),.CASE_ID(4)) width13_case(clk,finished[4],failed[4]);\r\n    iterative_divider_case #(.WIDTH(16),.CASE_ID(5)) width16_case(clk,finished[5],failed[5]);\r\n    initial begin\r\n        wait (&finished);\r\n        #1;\r\n        if (failed===6'b000000) $display(\"TEST PASSED\");\r\n        else $display(\"TEST FAILED: iterative divider matrix failed mask=%b\",failed);\r\n        $finish;\r\n    end\r\n    initial begin\r\n        #200000;\r\n        $display(\"TEST FAILED: iterative divider matrix watchdog\");\r\n        $finish;\r\n    end\r\nendmodule\r\n",
+    "truncated": false
+  },
+  "testbench_top": "iterative_divider_tb",
+  "tool_exit_evidence": {
+    "history_count": 4,
+    "latest_by_tool": {
+      "vivado": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-divider-01\\iter_000\\vivado_synth_output.log",
+        "output_log_sha256": "14753ec1d951ecfde4e0572ae48c5142724322ccc6dabd3d595106c4e70ccb30",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xelab": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-divider-01\\iter_000\\xelab.log",
+        "output_log_sha256": "d08499fda7211ebc26f807afc0c7814b38b9fbb23d7d96e408937bf76c0348fe",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xsim": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-divider-01\\iter_000\\xsim.log",
+        "output_log_sha256": "733a679040108cad35c3ac19e617c424c6a6e1bc599f665068b46ca8d244b572",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xvlog": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-divider-01\\iter_000\\xvlog.log",
+        "output_log_sha256": "dd4f749429fd1b8f1b17b30e1c692738a1ec438564dbe7be7121bbb331b883c2",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      }
+    },
+    "missing_required_tools": [],
+    "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-divider-01\\iter_000\\tool_exit_records.log",
+    "records": [
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-divider-01\\iter_000",
+        "driver_returncode": 0,
+        "elapsed_seconds": 0.9680000000007567,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xvlog.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-divider-01\\iter_000\\xvlog.log",
+        "output_log_sha256": "dd4f749429fd1b8f1b17b30e1c692738a1ec438564dbe7be7121bbb331b883c2",
+        "pid": 5896,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xvlog"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-divider-01\\iter_000",
+        "driver_returncode": 0,
+        "elapsed_seconds": 4.405999999995402,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xelab.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-divider-01\\iter_000\\xelab.log",
+        "output_log_sha256": "d08499fda7211ebc26f807afc0c7814b38b9fbb23d7d96e408937bf76c0348fe",
+        "pid": 10924,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xelab"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-divider-01\\iter_000",
+        "driver_returncode": 0,
+        "elapsed_seconds": 3.0309999999954016,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xsim.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-divider-01\\iter_000\\xsim.log",
+        "output_log_sha256": "733a679040108cad35c3ac19e617c424c6a6e1bc599f665068b46ca8d244b572",
+        "pid": 28336,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xsim"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-divider-01\\iter_000",
+        "driver_returncode": 0,
+        "elapsed_seconds": 130.125,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/vivado.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-divider-01\\iter_000\\vivado_synth_output.log",
+        "output_log_sha256": "14753ec1d951ecfde4e0572ae48c5142724322ccc6dabd3d595106c4e70ccb30",
+        "pid": 12412,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "vivado"
+      }
+    ],
+    "schema_valid": true,
+    "sha256": "f31323966e52434a2409989b62bb8e917d1e3f5491fea3c4597517589d8f4c1f",
+    "status": "recorded",
+    "truncated": false
+  },
+  "top_module": "iterative_divider",
+  "verification_logs": [
+    {
+      "head": "INFO: [VRFC 10-2263] Analyzing Verilog file \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-divider-01/iter_000/iterative_divider.v\" into library work\r\nINFO: [VRFC 10-311] analyzing module iterative_divider\r\nINFO: [VRFC 10-2263] Analyzing Verilog file \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-divider-01/modules/iterative_divider_core/iterative_divider_core.v\" into library work\r\nINFO: [VRFC 10-311] analyzing module iterative_divider_core\r\nINFO: [VRFC 10-2263] Analyzing Verilog file \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-divider-01/inputs/testbench_path.v\" into library work\r\nINFO: [VRFC 10-311] analyzing module iterative_divider_case\r\nINFO: [VRFC 10-311] analyzing module iterative_divider_tb\r\n\r\n",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-divider-01\\iter_000\\xvlog.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "dd4f749429fd1b8f1b17b30e1c692738a1ec438564dbe7be7121bbb331b883c2",
+      "tail": "",
+      "truncated": false
+    },
+    {
+      "head": "Vivado Simulator v2025.2\r\nCopyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\nCopyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\nRunning: C:/AMDDesignTools/2025.2/Vivado/bin/unwrapped/win64.o/xelab.exe iterative_divider_tb -s iterative_divider_tb_snap --debug off \r\nMulti-threading is on. Using 10 slave threads.\r\nStarting static elaboration\r\nPass Through NonSizing Optimizer\r\nWARNING: [VRFC 10-3705] select index -1 into 'quotient_work' is out of bounds [C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-divider-01/modules/iterative_divider_core/iterative_divider_core.v:46]\r\nCompleted static elaboration\r\nStarting simulation data flow analysis\r\nCompleted simulation data flow analysis\r\nTime Resolution for simulation is 1ps\r\nCompiling module work.iterative_divider_core_default\r\nCompiling module work.iterative_divider_case(USE_TOP=1...\r\nCompiling module work.iterative_divider_core(WIDTH=1)\r\nCompiling module work.iterative_divider_case(WIDTH=1,C...\r\nCompiling module work.iterative_divider_core(WIDTH=2)\r\nCompiling module work.iterative_divider_case(WIDTH=2,C...\r\nCompiling module work.iterative_divider_core(WIDTH=4)\r\nCompiling module work.iterative_divider_case(WIDTH=4,C...\r\nCompiling module work.iterative_divider_core(WIDTH=13)\r\nCompiling module work.iterative_divider_case(WIDTH=13,...\r\nCompiling module work.iterative_divider_core(WIDTH=16)\r\nCompiling module work.iterative_divider_case(WIDTH=16,...\r\nCompiling module work.iterative_divider_tb\r\nBuilt simulation snapshot iterative_divider_tb_snap\r\n\r\n",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-divider-01\\iter_000\\xelab.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "d08499fda7211ebc26f807afc0c7814b38b9fbb23d7d96e408937bf76c0348fe",
+      "tail": "",
+      "truncated": false
+    },
+    {
+      "head": "\r\n****** xsim v2025.2 (64-bit)\r\n  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025\r\n  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025\r\n  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025\r\n  **** Start of session at: Fri Oct 23 09:24:57 2026\r\n    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\n    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n\r\nsource xsim.dir/iterative_divider_tb_snap/xsim_script.tcl\r\n# xsim {iterative_divider_tb_snap} -autoloadwcfg -runall\r\nTime resolution is 1 ps\r\nrun -all\r\nCOVERAGE case=1 WIDTH=1 checked=1511 accepted=443 retired=440 discarded=3 available=442 busy=442 stalled=163 blocked_busy=337 blocked_result=125 retirement_bubbles=406 div0=222 zero_dividend=146 reset_compute=1 reset_result=2 reset_stalled_result=1 reset_phases=2 exhaustive=4 directed=11 random=423\r\nCOVERAGE case=2 WIDTH=2 checked=1624 accepted=357 retired=353 discarded=4 available=355 busy=711 stalled=181 blocked_busy=536 blocked_result=129 retirement_bubbles=312 div0=86 zero_dividend=53 reset_compute=2 reset_result=2 reset_stalled_result=1 reset_phases=3 exhaustive=16 directed=16 random=319\r\nCOVERAGE case=0 WIDTH=8 checked=2072 accepted=195 retired=185 discarded=10 available=187 busy=1524 stalled=131 blocked_busy=1057 blocked_result=47 retirement_bubbles=137 div0=2 zero_dividend=3 reset_compute=8 reset_result=2 reset_stalled_result=1 reset_phases=9 exhaustive=0 directed=46 random=137\r\nCOVERAGE case=4 WIDTH=13 checked=2822 accepted=181 retired=166 discarded=15 available=168 busy=2262 stalled=160 blocked_busy=1207 blocked_result=36 retirement_bubbles=93 div0=2 zero_dividend=3 reset_compute=13 reset_result=2 reset_stalled_result=1 reset_phases=14 exhaustive=0 directed=71 random=93\r\nCOVERAGE case=5 WIDTH=16 checked=3401 acc",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-divider-01\\iter_000\\sim_log.txt",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "733a679040108cad35c3ac19e617c424c6a6e1bc599f665068b46ca8d244b572",
+      "tail": "_result=1 reset_phases=2 exhaustive=4 directed=11 random=423\r\nCOVERAGE case=2 WIDTH=2 checked=1624 accepted=357 retired=353 discarded=4 available=355 busy=711 stalled=181 blocked_busy=536 blocked_result=129 retirement_bubbles=312 div0=86 zero_dividend=53 reset_compute=2 reset_result=2 reset_stalled_result=1 reset_phases=3 exhaustive=16 directed=16 random=319\r\nCOVERAGE case=0 WIDTH=8 checked=2072 accepted=195 retired=185 discarded=10 available=187 busy=1524 stalled=131 blocked_busy=1057 blocked_result=47 retirement_bubbles=137 div0=2 zero_dividend=3 reset_compute=8 reset_result=2 reset_stalled_result=1 reset_phases=9 exhaustive=0 directed=46 random=137\r\nCOVERAGE case=4 WIDTH=13 checked=2822 accepted=181 retired=166 discarded=15 available=168 busy=2262 stalled=160 blocked_busy=1207 blocked_result=36 retirement_bubbles=93 div0=2 zero_dividend=3 reset_compute=13 reset_result=2 reset_stalled_result=1 reset_phases=14 exhaustive=0 directed=71 random=93\r\nCOVERAGE case=5 WIDTH=16 checked=3401 accepted=184 retired=166 discarded=18 available=168 busy=2808 stalled=182 blocked_busy=1241 blocked_result=34 retirement_bubbles=78 div0=2 zero_dividend=3 reset_compute=16 reset_result=2 reset_stalled_result=1 reset_phases=17 exhaustive=0 directed=86 random=78\r\nCOVERAGE case=3 WIDTH=4 checked=3469 accepted=513 retired=507 discarded=6 available=509 busy=2042 stalled=382 blocked_busy=822 blocked_result=75 retirement_bubbles=223 div0=33 zero_dividend=26 reset_compute=4 reset_result=2 reset_stalled_result=1 reset_phases=5 exhaustive=256 directed=26 random=223\r\nTEST PASSED\r\n$finish called at time : 34698 ns : File \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-divider-01/inputs/testbench_path.v\" Line 296\r\nexit\r\nINFO: [Common 17-206] Exiting xsim at Fri Oct 23 09:24:59 2026...\r\n\r\n",
+      "truncated": false
+    },
+    {
+      "head": "\r\n****** Vivado v2025.2 (64-bit)\r\n  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025\r\n  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025\r\n  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025\r\n  **** Start of session at: Fri Oct 23 09:25:01 2026\r\n    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\n    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n\r\nsource C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-divider-01/iter_000/synth.tcl\r\n# set_msg_config -id {VRFC 10-3609} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-9873} -new_severity ERROR\r\n# set_msg_config -id {Designutils 20-1307} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-327} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-3352} -new_severity ERROR\r\n# set_part xc7a35tcpg236-1\r\nINFO: [Coretcl 2-1500] The part has been set to 'xc7a35tcpg236-1' for the current project only. Run set_part -help for more details. To evaluate different speed grades in the current design, use the set_speed_grade command, or use the open_checkpoint -part command to change the part used by an existing checkpoint design.\r\nset_part: Time (s): cpu = 00:00:12 ; elapsed = 00:00:11 . Memory (MB): peak = 532.250 ; gain = 224.391\r\n# read_verilog \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-divider-01/iter_000/iterative_divider.v\" \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-divider-01/modules/iterative_divider_core/iterative_divider_core.v\"\r\n# set fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-divider-01/iter_000/timing.xdc\" w]\r\n# puts $fp {create_clock -period 10.000 -name clk [get_ports clk]}\r\n# close $fp\r\n# read_xdc \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-divider-01/iter_000/timi",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-divider-01\\iter_000\\vivado_synth_output.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "14753ec1d951ecfde4e0572ae48c5142724322ccc6dabd3d595106c4e70ccb30",
+      "tail": "k/logs/build-golden-divider-01/iter_000/power.rpt\"\r\nCommand: report_power -file C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-divider-01/iter_000/power.rpt\r\nRunning Vector-less Activity Propagation...\r\n\r\nFinished Running Vector-less Activity Propagation\r\n0 Infos, 0 Warnings, 0 Critical Warnings and 0 Errors encountered.\r\nreport_power completed successfully\r\n# catch { report_methodology -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-divider-01/iter_000/methodology.rpt\" }\r\nCommand: report_methodology -file C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-divider-01/iter_000/methodology.rpt\r\nINFO: [Timing 38-35] Done setting XDC timing constraints.\r\nINFO: [DRC 23-133] Running Methodology with 2 threads\r\nINFO: [Vivado_Tcl 2-1520] The results of Report Methodology are in file C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-divider-01/iter_000/methodology.rpt.\r\nreport_methodology completed successfully\r\n# catch { report_qor_suggestions -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-divider-01/iter_000/qor_suggestions.rpt\" }\r\nCommand: report_qor_suggestions -file C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-divider-01/iter_000/qor_suggestions.rpt\r\nCongestion Prediction Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.035 . Memory (MB): peak = 1991.520 ; gain = 0.000\r\nINFO: [Implflow 47-1309] PredResultString: 1:44.43:55.57\r\nfeatureProvider Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.062 . Memory (MB): peak = 1991.520 ; gain = 0.000\r\nINFO: [Implflow 47-1274] ML strategy prediction is not supported for 7-series devices.\r\nreport_qor_suggestions completed successfully\r\n# puts \"SYNTH_COMPLETE\"\r\nSYNTH_COMPLETE\r\nINFO: [Common 17-206] Exiting Vivado at Fri Oct 23 09:27:09 2026...\r\n\r\n",
+      "truncated": true
+    }
+  ]
+}

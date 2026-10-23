@@ -1,0 +1,5 @@
+{
+  "stage": "module_iterative_divider_core:model:generator.golden_model:1",
+  "result": "def init():\n    return {}\n\n\ndef step(state, inputs: dict):\n    mask = (1 << 8) - 1\n\n    if inputs.get(\"rst\", 0):\n        return init(), {\"quotient\": 0, \"remainder\": 0}\n\n    dividend = inputs.get(\"dividend\", 0) & mask\n    divisor = inputs.get(\"divisor\", 0) & mask\n\n    if divisor == 0:\n        quotient = mask\n        remainder = dividend\n    else:\n        quotient = dividend // divisor\n        remainder = dividend % divisor\n\n    return state, {\n        \"quotient\": quotient & mask,\n        \"remainder\": remainder & mask,\n    }",
+  "artifacts": {}
+}

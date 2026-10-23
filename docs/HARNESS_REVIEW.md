@@ -432,3 +432,21 @@ add ready0 reset and distinct mandatory coverage plus omission regressions.
 Fresh21/21qualification and1180tests passed with unchanged reference/mutants.
 No new runtime role or scoreboard engine was required. Carry this distinction
 into future checker reviews; a scenario count alone is not fault sensitivity.
+
+## Divider01 outcome and next necessary correction
+
+The accepted sequential divider reduced38->26LUT (31.58%) and46->38FF with
+positive setup/hold. Estimated power increased; do not claim power savings.
+Keep report/contract-grounded planning: after one duplicate proposal, the next
+plan's shared subtraction produced a useful distinct candidate. This differs
+from packet01's repeated replan outcome; diversity reliability remains unproven.
+Independent finalwinner and251-identity actualDONE checks passed.
+
+Generated grader caught13/17applicablefaults but missed zero-divisor remainder
+despite an explicit255/0example. Actual RTL stimulus had only0/0. Oracle example
+qualification is separate from RTL input coverage. Revise scoreboard stimulus
+to include eligible complete accepted-example payloads, retaining corner/random
+cases and existing scheduling. Do not replay fixed-latency/stateful examples
+as isolated transactions. Exact reset/readiness verification remains independent.
+Original source/results archived before change; require a controlled unchanged
+oracle/reference/mutant comparison and full regression before claiming closure.

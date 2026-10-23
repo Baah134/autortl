@@ -292,3 +292,29 @@ are not kills. Freeze source for full regression and retain exact inputs/verdict
 No new engine/role unless the fixture exposes an actual unsupported requirement.
 
 Divider model experiment predeclared after admission: fresh logs/build-golden-divider-01, typed spec plus independentTB and --generate-golden; no supervisedreference seed.3iterations/1candidate,16modelcalls,25tool/35wallminutes,1infraretry;Vivado2025.2/xc7a35tcpg236-1/100MHz/idealzeroI/O. Retain failed attempts withoutreset. Only launch after21caseadmission andfrozenfullsuitepass. Independent exactsavedwinner/declaredchildren andactualDONE checks afterward. Measure nameddefault-instance arithmetic/q-r/reset/latency grader probes separately ifneeded; widthonlyfaults may be inapplicable atdefaultWIDTH8, neverclaimtheirabsenceascoverage. Fulltier0 again beforemainintegration; no higherheldtiercurrently.
+
+## Evidence-driven harness correction: scoreboard example payload coverage
+
+Divider01 completed26LUT/38FF,+.315/.129ns,31.58%LUTreduction; independent
+exactwinner andDONE251 checks passed. Supplemental generatedgrader caught13/17
+defaultfaults, missedzero_divisor_remainder_zero despiteexplicitaccepted
+255/0=>R255 IOexample. Actualstimulus onlysimulated0/0. Originalmodeltrial and
+13/17outcomes archived436files BEFOREchange. This is missing declared-input
+coverage in RTL simulation, not an oracle arithmetic failure.
+
+Plan: reuse current scoreboard engine. Preservecorners andseededrandomtail;
+addunique completepayloadvectors fromeligible declaredacceptedexamples. Require
+explicit inputvalid1 andresetdeasserted; skip partial/reset/inactiveexamples,
+ignoreexampleoutready becauseTBowns scheduling. Validateexamples/boundedvalues
+and total10000stepsincludingseeds/reset BEFORE allocations or oraclecalls.
+Fixed-latency generation unchanged; no claimthatpayloadseedingreplaysstateful
+after_cycles traces or closesreset/readiness faults. No newagent/engine.
+
+Beforeimplementation: independentplanreview; tests for deterministicselection,
+dedup/filter/renamedcontrols/activelowreset,bounds andno prevalidation sideeffects.
+Afterfix: controlledactualsimulation withnewgeneratedTB,frozenqualifiedoracle
+andunchangedreference/zeroRmutant; controlmustpass andpreviousmissmustassert.
+Original01notresumed/regraded. Fullregression+freshfulltier0 onnewruntime before
+mainintegration; runtimecohortstreakmustreset honestly. Researchbasis: existing
+RESEARCH.md complementarygrader andprecise-evidence decisions; simplestdataflow
+correction ratherthanrole/frameworkexpansion.

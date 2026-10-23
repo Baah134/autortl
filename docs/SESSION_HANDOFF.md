@@ -53,22 +53,43 @@ Old qualification56557/fullsuite44361 are complete, no owned tools running.
 Old awakehelper13973 is no longer running; restart bounded helper for new queue.
 User Vivado GUI remains untouched. One vendor implementation job at a time.
 
-## Exact next action and immutable experiment budget
+## Completed generated divider01 / active harness correction
 
-Review/archive/commit/push admitted fixture, then launch NEW
-logs/build-golden-divider-01 (never resume an old spent experiment):
+Launchcfef8af, modeljob66886 finished0. DONE bestiter3:26LUT/38FF,
+setup+.315ns/hold+.129ns,31.58%LUTreduction from38LUT/46FF,+.324/.136ns.
+Estimatedpower .092->.103W increased.11calls,409.939chargedtoolseconds,
+560.999elapsedseconds,original3iterations/1candidate/16calls/25tool/35wallmin.
+Oracledivmod rejected/repaired; dualinitialgraders caughtflip==to!=. Iter2
+duplicated/rejected,iter3sharedsubtractwon. Actualsourceis8steprestoring.
+Exact savedwinner/declaredchild independentcheckPASS. ActualDONE251identities,
+fileset/budget unchanged; child/spec tamperrejected,restored. No in-flightkill
+proof. CRLF/LF normalizedcompletecodeequal,independentcopybytesame.
+Archive:evidence/2026-10-23/generated-divider-attempt-01 (436filesverified).
 
-```powershell
-python -u run.py build --spec curriculum/tier3/iterative_divider_build/design_spec.json --tb curriculum/tier3/iterative_divider_build/iterative_divider_tb.v --top iterative_divider --generate-golden --objective minimize_luts --iterations 3 --best-of-n 1 --max-llm-calls 16 --max-vivado-minutes 25 --max-wall-minutes 35 --max-infra-retries 1 --vivado C:/AMDDesignTools/2025.2/Vivado/bin/vivado.bat --xvlog C:/AMDDesignTools/2025.2/Vivado/bin/xvlog.bat --xelab C:/AMDDesignTools/2025.2/Vivado/bin/xelab.bat --xsim C:/AMDDesignTools/2025.2/Vivado/bin/xsim.bat --output-dir logs/build-golden-divider-01
-```
+Generatedgradermeasurement94764 finished0: passingcontrol,13/17applicable
+faults detected; missedzero_divisor_remainder_zero,ready_on_retirement_edge,
+asynchronous_reset,reset_preserves_held_result. Width-only3faultsexcludedat8.
+Spec hasaccepted255/0=>R255, butactualRTLstimulusonlytested0/0. This is the
+observed next harness correction; original01MUSTNOTberesumed/regradedunder
+changedruntime. Rawresults/sourceidentitiesalreadyarchivedbeforechange.
 
-Record launch commit/runtime hashes, freeze source during run. After completion:
-independent exactsavedwinner/children check, actualDONE integrity, supplemental
-generated-grader sensitivity if useful (workspace/work/measure_divider_grader.py;
-excludes three width-only faults inapplicable at default8), then freshfulltier0
-before main integration. Preserve all failed outcomes. No generated divider/PPA
-result is claimed before actual tools. Proposal-feedback study remains in
-TASKS; user prioritizes advancing complex designs now. No new role/framework.
+ACTIVE worker /root/packet_qualification, claimscoreboard-example-inputs,
+ownerCodex/scoreboard: ONLYautortl/tbgen.py andtests/test_tbgen_examples.py.
+Independentplanreview /root/codex_review found no blocker. PlaninTASKS:
+scoreboard-only unique complete accepted-example payloads after3corners and
+before unchangedrandomtail; explicitvalid1/resetdeasserted, configurednames/
+polarity; skipvalidpartial/reset/inactiveexamples; rejectmalformedexamples;
+total10000boundincludingseeds/resetbeforealloc/oracle. TBownsscheduling,
+goldenownsexpectations. Fixed-latency traces unchanged. No newrole/framework.
+
+No vendor/model jobsactive. Awakehelper55214 remainsbounded120min forqueue.
+Afterworkerfreeze: focusedtests + read-onlyreview, controlledactualcomparison
+using frozenqualifiedoracle/reference/unchangedzeroRmutant and NEWgeneratedTB;
+controlPASS and arithmeticassertionrequired. Freezecomplete newsource forfull
+pytest. Freshfulltier0 onnewruntime beforemainintegration; cohortstreakmustreset
+honestly (tbgen sourcechanges). Do not attribute originaldividerPPA tonewruntime.
+Commit/push meaningfulmilestones; currentmain044a3d5, developmentcfef8af until
+nextpushverified. KeepuserGUIuntouched,onevendorjob atatime. Updatejobs/hashes.
 
 Python:C:/Users/prince.baah/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe
 PYTHONPATH:C:/Users/prince.baah/Documents/Codex/2026-10-15/hey/work/review_deps

@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_2:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 2\n## Contract check\n- Interface and defined behavior: PASS \u2014 source preserves the top interface, cycle schedule, handshakes, reset behavior, and held-result behavior; deterministic simulation passed.\n- Top latency annotation: PASS \u2014 `// @latency 9` matches the authoritative current-top latency.\n- Compile and elaboration: PASS \u2014 xvlog and xelab exited successfully.\n- Simulation: PASS \u2014 xsim exited successfully with the exact `TEST PASSED` verdict.\n- Synthesis completion: PASS \u2014 Vivado exited successfully and reported `SYNTH_COMPLETE`.\n- Routed metrics and metric integrity: PASS \u2014 retained routed reports and successful process evidence are provided.\n- Timing feasibility: PASS \u2014 timing is met, with WNS 0.315 ns and WHS 0.11 ns.\n- Objective improvement: FAIL \u2014 LUT use is 30, equal to the timing-feasible previous best; strict LUT reduction is required.\n## Summary\n- Passed: 7 of 8\n- Failed: 1 of 8\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes the behavioral, verification, and timing gates, but it does not improve the chosen objective: both it and the previous best use 30 LUTs, and the recorded improvement kind is null. With both designs timing-feasible, equal LUT use does not meet the strict improvement requirement.",
+      "recommendation": "REJECT",
+      "passed": 7,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

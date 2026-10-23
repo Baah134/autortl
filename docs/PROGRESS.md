@@ -903,3 +903,26 @@ changes, commands, outcomes, evidence locations, limitations, and next action.
  3iterations/1candidate,16calls,25tool/35wallminutes,1infraretry; no reference seed.
 - Condensed current recovery notes to current facts/nextcommand; historical
   evidence remains in PROGRESS and Git. No custom compaction threshold claimed.
+
+- Published fixture cfef8af todevelopment afterreview,1180fulltests/21of21admission. Freshdivider01 modeljob66886 launchedwithoriginal3iteration/16call/25tool/35wallbudget. All55runtimehashesmatchlaunchcommit. Awakehelper55214 activebounded120min; onevendorqueue. No reference seed or generatedPPAclaim.
+
+- Divider01 baseline passes dualgraders/independentwidthmatrix androuting:38LUT/46FF,WNS+.324/WHS+.136ns. Oraclefirstattemptdivmod rejectedbyallowlist, repairedattempt2; bothgraderscaughtflip==to!=. Iter1optimizesstrictLUTfromfeasiblebaseline; noacceptedimprovementclaimyet. Originalsource/budgetsunchanged.
+
+- Divider01 DONE bestiter3 **26LUT/38FF,WNS+.315/WHS+.129ns**, baseline
+ 38LUT/46FF,+.324/.136ns; accepted31.58%LUT objective improvement. Iter1 won
+ 30LUT/39FF,iter2 duplicated/rejected via cache,scheduled/stall replan received
+ churn and proposed shared subtract,iter3won.11calls,409.939chargedtoolseconds,
+ 560.999elapsedseconds. Estimatedpower increased.092->.103W,notpowergain.
+- Exactsavedwinner/declaredchild independentmatrixPASS. ActualDONE nominal0,
+ child/spec tamper1 each,251hashes/fileset/budget restored,noextra calls/tools.
+ Read-only source/report review found no blocker; actual8steprestoringtop.
+ MeasuredCRLF/savedLF complete normalizedtexts equal,independentcopybyteequal.
+- Supplementalfrozengrader13/17applicablefaults; missedzero-divisorRzero,
+ retirementedge ready,asyncreset,heldreset. Threewidth-onlyfaultsinapplicableat8
+ excluded. Controlpassed; allfaultsourcehasheslinkedto21/21independentqualification.
+ Archive436files verified BEFOREnextchange; original01neverresumed/regraded.
+- Foundspecaccepted255/0=>R255 absentfromRTLstimulus,only0/0simulated.
+ Independentplanreviewapprovedsmallscoreboardpayloadseedcorrection; claim
+ scoreboard-example-inputs/Codex/scoreboard on tbgen.py/newtests. No newrole
+ orengine, nofixed-latencytracechanges. Oldruntime results stayfrozen; newfull
+ regression/controlledgraderexperiment/freshfulltier0 requiredbeforemainmerge.
