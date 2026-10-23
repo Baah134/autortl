@@ -6,9 +6,9 @@ raw tool results and source hashes. Chat summaries are supplementary.
 ## Checkout and integration
 
 Canonical:C:/Users/prince.baah/Downloads/autortl-work; preserve Downloads/autortl.
-Branch:codex/contract-context. Main was044a3d5; development4618887 before final
-evidence integration. All gates below passed; authorized atomic main/dev push
-is next. Record actual remote heads after push, never infer publication.
+Branch:codex/contract-context. Main/development atomic integration verified at
+e4894cbb29a264be50916805bcf7855c67c7c78c after all gates below passed.
+This documentation-only followup records publication; inspect actual Git heads.
 
 ## Completed divider milestone
 
@@ -57,8 +57,8 @@ No higherheldtier orcontrolledweak-model/head-to-head superiority proof.
 ## Jobs and coordination
 
 No model/vendor/test jobs active;71332campaign,7477fullsuite,6026experiment
-completed0. Awakehelper55214 remains bounded120min; remove flag/poll release
-after queue. User Vivado GUI untouched. One implementation queue.
+completed0. Awakehelper55214 released its temporary request after flag removal;
+no owned jobs remain. User Vivado GUI untouched. One implementation queue.
 Coordinator:Codex coordinator /2026-10-23 divider validation,active8hlease.
 Runtime/fixtureworker claims done. Notes/evidence scopes remain inSQLite.
 Keep checkpoint current; no automatic providerfailover/scheduler configured.

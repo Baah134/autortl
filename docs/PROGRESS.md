@@ -955,3 +955,5 @@ changes, commands, outcomes, evidence locations, limitations, and next action.
  specs/budgets,heldouttests,multipletrials,escapedbugs,humanminutes,cost andPPA.
  Genericagentscanruntools; specializedverifiedworkflow value mustbemeasured.
  Preparingauthorizedmainintegration; actualheadsrecordedafterpush.
+
+- Authorizedatomicmain/dev integration verified at e4894cbb29a264be50916805bcf7855c67c7c78c. Allgatespassed; noownedtooljobs; temporaryawakeflagremoved. Documentation-onlyfollowup recordsactualpublication. Workingbranch remainscodex/contract-context.
