@@ -14,7 +14,7 @@ learn from failures, and retain the best correct design within a fixed budget.
 
 | Validation | Recorded result |
 |---|---|
-| Harness regression suite | **1,180 tests passed** |
+| Harness regression suite | **1,226 tests passed** |
 | FIFO timing recovery (8-bit, depth 3) | **Setup −0.931 → +0.108 ns · hold +0.076 ns · 22 LUTs / 13 FFs · exact saved winner independently passed** |
 | Generated packet-tagged FIFO | **23 LUTs / 31 FFs · setup +0.078 ns · hold +0.106 ns · saved winner independently passed** |
 | Generated iterative divider (8-bit) | **38 → 26 LUTs (31.6%) · 38 FFs · setup +0.315 ns / hold +0.129 ns · saved winner independently passed** |
@@ -52,7 +52,8 @@ closure. The loop then reduced its first feasible implementation from 24 to
 
 See the [FIFO recovery evidence](evidence/2026-10-22/generated-fifo-attempt-05/README.md),
 [test evidence](evidence/2026-10-20/README.md),
-[full-suite result](evidence/2026-10-23/divider-admission-attempt-02/AutoRTL-divider-full-02.txt) and
+[full-suite result](evidence/2026-10-23/scoreboard-example-coverage/AutoRTL-scoreboard-examples-full-01.txt) and
+[scoreboard coverage](evidence/2026-10-23/scoreboard-example-coverage/README.md),
 [divider optimization](evidence/2026-10-23/generated-divider-attempt-01/README.md),
 [divider verification](evidence/2026-10-23/divider-admission-attempt-02/README.md),
 [packet FIFO build](evidence/2026-10-22/generated-packet-attempt-01/README.md),
@@ -79,7 +80,9 @@ flowchart LR
   facts. Interfaces, reset behavior and cycle latency
   are checked against explicit module specifications.
 - **Verification before scoring:** testbench qualification requires a passing
-  control and detection of an injected fault. Missing or ambiguous evidence fails.
+  control and detection of an injected fault. Scoreboard stimulus includes eligible
+  specification payload examples alongside corners and seeded random cases.
+  Missing or ambiguous evidence fails.
 - **Measured candidate selection:** configurable best-of-N generation and source
   deduplication use verified results. Timing feasibility precedes objective
   scoring; timing recovery is recorded separately from resource savings.

@@ -9,7 +9,7 @@ import random
 import re
 from pathlib import Path
 from .spec import ModuleSpec, port_declaration
-from .golden import GoldenModel
+from .golden import GoldenModel, validate_examples
 
 
 def _ports(spec):
@@ -76,14 +76,45 @@ def _validate(spec, stimulus=None, expected=None):
     return inputs, outputs
 
 
+def _scoreboard_control(controls, direction, suffix):
+    found = [p for p in controls if p.direction == direction and p.name.endswith(suffix) and p.width == 1]
+    if len(found) != 1:
+        raise ValueError("scoreboard requires exactly one input and output valid/ready channel")
+    return found[0].name
+
+
 def gen_stimulus(spec: ModuleSpec, n_random=100, seed=1234):
     inputs, _ = _validate(spec)
     reset_steps = spec.reset.duration_cycles if any(p.name == spec.reset.signal for p in spec.ports) else 0
     if type(n_random) is not int or not 0 <= n_random <= 9997 - reset_steps:
         raise ValueError("invalid stimulus count including reset prefix")
-    rng = random.Random(seed)
+    if spec.compare_mode == "scoreboard":
+        errors = validate_examples(spec)
+        if errors:
+            raise ValueError("invalid scoreboard examples: " + "; ".join(errors))
     stimulus = [{p.name: fn(p.width) for p in inputs} for fn in
                 (lambda w: 0, lambda w: (1 << w)-1, lambda w: 1 << (w-1))]
+    if spec.compare_mode == "scoreboard":
+        controls = [p for p in spec.ports if p.protocol == "valid_ready"]
+        valid = _scoreboard_control(controls, "input", "valid")
+        names = [p.name for p in inputs]
+        seen = {tuple(row[name] for name in names) for row in stimulus}
+        # Examples supply transaction payloads, not a replay of stateful traces
+        # or after_cycles. The driver owns handshake/reset/backpressure timing;
+        # the qualified oracle still computes every expected output.
+        for example in spec.examples:
+            given = example.inputs
+            if (given.get(valid) != 1 or
+                    given.get(spec.reset.signal) != 1 - int(spec.reset.active_high) or
+                    not set(names).issubset(given)):
+                continue
+            payload = tuple(given[name] for name in names)
+            if payload not in seen:
+                stimulus.append(dict(zip(names, payload)))
+                seen.add(payload)
+        if len(stimulus) + n_random + reset_steps > 10000:
+            raise ValueError("stimulus including example payloads and reset exceeds 10000 steps")
+    rng = random.Random(seed)
     stimulus += [{p.name: rng.randrange(1 << p.width) for p in inputs} for _ in range(n_random)]
     return stimulus
 
@@ -185,14 +216,12 @@ def generate_fixed_latency_tb(spec, stimulus, expected):
 def generate_scoreboard_tb(spec, stimulus, expected):
     inputs, outputs = _validate(spec, stimulus, expected)
     controls = [p for p in spec.ports if p.protocol == "valid_ready"]
-    def control(direction, suffix):
-        found = [p for p in controls if p.direction == direction and p.name.endswith(suffix) and p.width == 1]
-        if len(found) != 1:
-            raise ValueError("scoreboard requires exactly one input and output valid/ready channel")
-        return found[0].name
     if len(controls) != 4 or not inputs:
         raise ValueError("unsupported scoreboard channel shape")
-    iv, ir, ov, ore = control("input", "valid"), control("output", "ready"), control("output", "valid"), control("input", "ready")
+    iv, ir, ov, ore = (_scoreboard_control(controls, "input", "valid"),
+                       _scoreboard_control(controls, "output", "ready"),
+                       _scoreboard_control(controls, "output", "valid"),
+                       _scoreboard_control(controls, "input", "ready"))
     n, cycles = len(stimulus), len(stimulus)*(12+spec.latency)+32
     extra = "integer _autortl_push, _autortl_pop, _autortl_drain;\nreg _autortl_stalled;\n"
     extra += f"integer _autortl_accepted_cycle [0:{n-1}];\n"

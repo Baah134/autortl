@@ -450,3 +450,10 @@ cases and existing scheduling. Do not replay fixed-latency/stateful examples
 as isolated transactions. Exact reset/readiness verification remains independent.
 Original source/results archived before change; require a controlled unchanged
 oracle/reference/mutant comparison and full regression before claiming closure.
+
+Scoreboard payload correction validated:1226tests; same frozen oracle/reference/
+fault reproduces oldzeroRmiss and newassertion, bothcontrolspass. Detection
+13/17->14/17 without modelcalls,changedrandomtail orweakenedacceptance. Keep
+the small deterministic payload selector. Keep independent temporal checker
+for remainingreadiness/resetcoverage; no newengine orrole justified. Full
+example timing/state replay and general mutation completeness remain unclaimed.

@@ -73,23 +73,29 @@ Spec hasaccepted255/0=>R255, butactualRTLstimulusonlytested0/0. This is the
 observed next harness correction; original01MUSTNOTberesumed/regradedunder
 changedruntime. Rawresults/sourceidentitiesalreadyarchivedbeforechange.
 
-ACTIVE worker /root/packet_qualification, claimscoreboard-example-inputs,
-ownerCodex/scoreboard: ONLYautortl/tbgen.py andtests/test_tbgen_examples.py.
-Independentplanreview /root/codex_review found no blocker. PlaninTASKS:
-scoreboard-only unique complete accepted-example payloads after3corners and
-before unchangedrandomtail; explicitvalid1/resetdeasserted, configurednames/
-polarity; skipvalidpartial/reset/inactiveexamples; rejectmalformedexamples;
-total10000boundincludingseeds/resetbeforealloc/oracle. TBownsscheduling,
-goldenownsexpectations. Fixed-latency traces unchanged. No newrole/framework.
+## Current tested coverage correction / merge gate
 
-No vendor/model jobsactive. Awakehelper55214 remainsbounded120min forqueue.
-Afterworkerfreeze: focusedtests + read-onlyreview, controlledactualcomparison
-using frozenqualifiedoracle/reference/unchangedzeroRmutant and NEWgeneratedTB;
-controlPASS and arithmeticassertionrequired. Freezecomplete newsource forfull
-pytest. Freshfulltier0 onnewruntime beforemainintegration; cohortstreakmustreset
-honestly (tbgen sourcechanges). Do not attribute originaldividerPPA tonewruntime.
-Commit/push meaningfulmilestones; currentmain044a3d5, developmentcfef8af until
-nextpushverified. KeepuserGUIuntouched,onevendorjob atatime. Updatejobs/hashes.
+Worker completed autortl/tbgen.py +tests/test_tbgen_examples.py; read-only review
+found no blocker. Parentfocus140passed2.35s; fullsuite1226passed175.87s.
+All193identities inworkspace/work/scoreboard-example-source-freeze-01.json
+matchthroughvalidation/archive. Actualcontrolledexperiment6026 completed0:
+oldcontrolPASS/oldzeroRmutantPASS, newcontrolPASS/newzeroRactualassertion.
+Newgrader14/17vs13/17; readiness/reset3missesretained.103->108vectors;
+3corners andexact100randomtail unchanged. No modelcalls ororiginalFSMresume.
+Originalrun250experiment-protectedhashes/state/budgetunchanged, notthe same
+setas251actualDONEscope; bothproofsretained. Coveragearchive174files:
+evidence/2026-10-23/scoreboard-example-coverage. Initialprelaunchhelperfailure
+retained separately; qualifiedoracle boundtoreceipt+publishedarchivehash.
+
+Fullsuite7477finished0. No actualvendor/modeljobactive atthischeckpoint.
+Awakehelper55214 remainsbounded120min; releaseafterqueue. Source frozen.
+Next: commit/push testedcoveragefix, launch freshfulltier0campaign09:
+1iteration/1candidate,16calls,20tool/30wallminutes,1infraretry perentry,
+sameVivado/device/100MHz/idealzeroI/O. Runtimechanged(tbgen), oldstreak2 MUST
+NOTcarryover. No higherheldtier. Afteractualpass archive/sourceverify then
+authorizedatomicmain/devintegration. Currentmain044a3d5; devb20b5b4 before
+newcommit. Actualheads verifiedafterpush. Do notresume originaldivider01
+undernewruntime; its PPA remains tiedtocfef8af andimmutableevidence.
 
 Python:C:/Users/prince.baah/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe
 PYTHONPATH:C:/Users/prince.baah/Documents/Codex/2026-10-15/hey/work/review_deps

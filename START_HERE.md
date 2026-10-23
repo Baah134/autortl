@@ -5,7 +5,7 @@ You can continue without access to the previous provider's conversation.
 
 Canonical checkout: `C:/Users/prince.baah/Downloads/autortl-work`.
 GitHub integration branch: `main`. Development branch: `codex/contract-context`.
-Current verified checkpoint: **1,180 regression tests passed**.
+Current verified checkpoint: **1,226 regression tests passed**.
 FIFO05 recovered timing at22 LUTs/13 FFs, setup0.108 ns/hold0.076 ns; exact
 saved winner passed independent verification and327-identity DONE checks.
 Fresh fulltier0 campaign08 passed2/2: counter55→53 LUTs, mux baseline retained.
@@ -15,7 +15,10 @@ remain archived. Main and development integrated the packet milestone at821afbe;
 configurations. Generated packet01 recovered timing at23 LUTs/31 FFs,+.078/.106ns; exact
 savedwinner and331-identity DONE checks passed. Inspect current Git and SESSION_HANDOFF.
 Current engineering: multi-cycle unsigned divider admitted after21/21 actual
-qualification verdicts. Fresh model build is next; no generated result yet. Inspect active scopes/jobs in SESSION_HANDOFF.
+qualification verdicts. Generated divider01 reduced38->26LUT(31.6%),38FF,+.315/.129ns; independent
+winner and251-identity DONE checks passed. Scoreboard payload-seeding correction
+then passed1226tests and a controlled unchanged-oracle/fault comparison. Fresh
+fulltier0 required on this changed runtime; older streak must not carry forward. Inspect active scopes/jobs in SESSION_HANDOFF.
 Measured runtime85e4fb8/6f3fa7c is unchanged by documentation/evidence commits.
 
 1. Read `AGENTS.md` and `docs/AGENT_HANDOFF.md` for the working contract.

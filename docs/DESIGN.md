@@ -33,6 +33,12 @@ supported schema and limits.
    code (tbgen.py) in two compare modes: fixed_latency (shift-register
    compare) and scoreboard (queue-based, for valid/ready). Pulse mode is
    deliberately stubbed.
+   Scoreboard stimulus includes unique complete payload vectors from declared
+   examples that explicitly assert input-valid and deassert the configured
+   reset. Scheduling remains driver-owned; oracle outputs remain authoritative.
+   Three existing corners and the seeded random tail are preserved. This is
+   payload coverage, not replay of example timing/state traces. Fixed-latency
+   example sequences are unchanged; total stimulus plus reset remains bounded.
 4. **Best-of-N (N=4)** with objective-weighted mutation prompts (bestofn.py),
    hash dedupe, deterministic selection: (rungs, timing feasibility, objective
    metric, brevity). A verified timing recovery can use more resources; it is

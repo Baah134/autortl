@@ -926,3 +926,18 @@ changes, commands, outcomes, evidence locations, limitations, and next action.
  scoreboard-example-inputs/Codex/scoreboard on tbgen.py/newtests. No newrole
  orengine, nofixed-latencytracechanges. Oldruntime results stayfrozen; newfull
  regression/controlledgraderexperiment/freshfulltier0 requiredbeforemainmerge.
+
+- Scoreboardexamplefix frozen; parentfocus140passed2.35s andread-onlyreviewno blocker.193sourceidentities frozen. Controlledexperiment6026/fullsuite7477active. Initialhelperassertedgolden.pyinDONEartifacts, butDONEprotectsrenderedTB; prelaunchfailedbeforeanytool/modelcall. Preservedconsole, boundfrozenoracletoqualifiedreceipt+publishedarchivehash instead. ActualoldcontrolPASS/oldzeroRmutantPASS nowreproduced; newcasesrunning. No sourcemodificationduringvalidation.
+
+- Coverage correction completed: fullsuite **1226passed175.87s**, parentfocus
+ 140passed2.35s. All193frozenidentities unchanged throughvalidation/archive.
+ Controlledold/neworacle/spec/reference/fault comparison: bothcontrolspass,
+ originalzeroRmissreproduced, unchangedfaultnowfailsremainderassertion.
+ Newgrader14/17vs13/17,103->108vectors,exact100randomtail/3cornerspreserved.
+ Remainingreadiness/resetmissesretained; independentchecker catchesall20.
+ Originalcompletedrun250experiment-protectedhashes/state/budget unchanged;
+ no modelcall/resume/PPAremeasurement. ActualDONE's251scope is separatelysaved.
+- Coveragearchive174files verified; no fixed-latencytrace/temporal replay claim.
+ Preparingnewruntime commit andfreshfulltier0campaign09 using originalperentry
+ 1iteration/1candidate,16calls,20tool/30wallminutes,1infraretry. Runtimechanged
+ so oldstreak2 cannotcarryover. No higherheldtier.
