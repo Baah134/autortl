@@ -57,7 +57,7 @@ Packet01 DONE: bestiter1 retained,23LUT/31FF,setup+.078ns/hold+.106ns.
 Baseline15LUT/6FF failedsetup-.946ns (hold+.167ns). This is timing_recovery
 with increased area, no overall area saving.13calls,769.639chargedtoolseconds,
 937.551elapsedseconds. Iter2 failedtiming; iter3 feasible27LUT rejectedforarea.
-Churn replan did not create architecture diversity. All original trials retained.
+Scheduled/stall replan received churn signal but did not create architecture diversity. All original trials retained.
 
 Generated grader: oracle syntax rejected/repaired attempt2, globalstuckzero
 caught,readinessflip missed; independent caughtsame readinessfault. Separate
@@ -70,21 +70,32 @@ Archive:evidence/2026-10-22/generated-packet-attempt-01,421manifestedfiles.
 Read-only source/report review found no blocker. Selectedmatrix not allparameter
 orformalproof; actualDONE is not in-flightkillproof; no heldtier/weakmodelclaim.
 
-ACTIVE: fresh fulltier0 campaign08, session14413, output
-workspace outputs/AutoRTL-contract-campaign-08.txt. Original budgets perentry:
-1iteration/1candidate,16calls,20tool/30wallminutes,1infraretry; same
-Vivado2025.2/xc7a35tcpg236-1/100MHz/idealzeroI/O. Runtime/spec/tests frozen.
-One vendorqueue; user GUI untouched. No other model/vendor job active.
-Bounded awakehelper81495 flag remains; expires~01:48UTC October23.
-Coordinator lease renewed8h; scopes inSQLite. No runtime implementation change
-since85e4fb8. AGENTS/AGENT_HANDOFF contain explicit context recovery rules.
+## Final gate and exact next stage
 
-Next: poll14413, verify full2/2 campaign and source/cohort/governance identities,
-archive actual outcomes. Final docs/public results and atomic dev/main merge
-only after regression/fulltier0 gate. No higherheldtier. Release awake request
-after queue. Record actual remote heads after push; do not infer publication.
-Future plan: controlled equal-budget repeated-proposal feedback study before
-adding mechanisms/roles. Preserve original packet01 as measured evidence.
+Fresh fulltier0 campaign08 completed0,2/2PASS,matching cohort streak2,heldfalse.
+Counter55→53LUT/37FF,setup+.456/hold+.282ns,3calls. Mux8LUT/8FF,+.579/.052ns
+baseline retained after8LUTno-gainproposal,3calls. Smaller counter gain than
+prior31LUTtrial retained. Cohort9b69c8d0/governance unchanged; modelidentityunknown.
+Archive:evidence/2026-10-22/contract-campaign-08,195manifestedfiles.
+All55runtimehashes percase and executable/test/fixture source identities match
+1105-test freeze. Admission202/packet421/campaign195 manifests allverified.
+All main integration gates passed; preparing authorized atomic dev/main push.
+Actual publication heads must be checked after push. No higherheldtier.
+
+No model/vendor jobs active. Job14413 finished0; earlier packet/qualification/
+fullsuite/independent/measurement jobs finished0. Remove/poll awakehelper81495
+flag to release temporary request after queue. UserGUI remains untouched.
+Coordinator lease active; claimed notes/evidence scopes inSQLite.
+
+Exact next engineering stage: reviewed previous-proposal feedback study in
+docs/TASKS.md. Read current Git/coordination first, claim scopes, then define
+bounded journaled prior instruction/source/outcome feedback for planner/generator
+with separate standard/Doctor flows. CHURN is printed/passed to planning but not
+directly checked byneed_plan; changing CHURN alone will not solve packet01.
+Do not automatically reject repeated RTL. Keep cache, incumbent, budgets and
+gates; sameRTL/differenttoolsettings produced acceptedwinner. Define mocked
+identity/replay/incumbent tests, fullregression/freshtier0 and matched fixedbudget
+baseline/feedback study before claiming improvement. No newrole/framework.
 
 Python:C:/Users/prince.baah/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe
 Dependencies:PYTHONPATH=C:/Users/prince.baah/Documents/Codex/2026-10-15/hey/work/review_deps

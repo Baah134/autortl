@@ -225,3 +225,33 @@ campaign08 active14413; main integration pending. Next harness study should
 target repeated proposals after churn/replan under an equal original budget,
 using retained packet01 as failure evidence; no new mechanism is yet approved
 by evidence. Plan and compare simpler feedback before implementation.
+
+### Reviewed next harness study: previous proposal feedback
+
+Observed packet01 repeated exact standard RTL across three iterations, including
+a scheduled/stall replan. CHURN is visible to planning but is not a direct
+need_plan condition; adding it alone would not solve this reproduced case.
+Generation lacks a compact prior instruction/source/outcome record.
+
+Plan bounded, journaled feedback for planner/generator: prior instruction, source
+identity, equality to current seed, measured standard-flow outcome, separately
+identified Doctor outcomes. Request a concrete change from an already tried
+proposal. Preserve cache, immutable contracts, original budgets and acceptance.
+Do not automatically reject repeated RTL: changed physical settings produced
+the accepted packet winner. No extra role or population framework.
+
+Before implementation, define deterministic mocks for feedback identities,
+standard-vs-Doctor separation, incumbent retention and identical replay without
+extra calls. Then full regression and fresh fulltier0 gates. Evaluate three
+matched baseline/feedback pairs with same observed-model configuration, task,
+constraints, N=1 and original budget; report duplicate generation, distinct
+verified candidates, calls/tokens, tool time, completion and accepted improvement.
+Retain only if repetition decreases without reduced verified completion or
+material added cost. A new source hash alone is not success. Research basis:
+docs/RESEARCH.md precision-feedback decision and existing primary sources.
+
+Packet milestone final gates passed:1105fulltests,freshfulltier0campaign08
+2/2(streak2,heldfalse),exactwinnerindependentcheck,DONE331identities. Archive
+counts202admission/421packet/195campaign verified. Readyforauthorizedmainmerge.
+Next executable engineering stage is the reviewed previous-proposal feedback
+study above; inspect actual Git/ownership first, then claim exact scopes.

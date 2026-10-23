@@ -410,8 +410,14 @@ Keep bounded Doctor: tool settings closed timing at23LUT/31FF,+.078/.106ns;
 subsequent failed/timing-feasible-but-larger trials remained rejected.
 
 Cache reuse saved redundant candidate work, but duplicate proposals persisted
-after the churn-triggered replan. Record this diversity limit. A future frozen,
+after the scheduled/stall replan, which also received the churn signal. Record this diversity limit. A future frozen,
 equal-budget feedback/portfolio comparison can test improvement; this single
 trial does not justify another agent or evolutionary framework. Existing
 independent source review and331-identity DONE checks found no blocker; no
 in-flight hard-kill or general parameter proof follows.
+
+Fresh campaign08 passed2/2, matching cohort streak2/heldfalse. Counter gain
+varied55→53 ratherthan prior55→31; retain both. A passing gate is not evidence
+of repeatable optimization magnitude. Mux no-gain proposal correctly retained
+baseline. Keep deterministic acceptance, comparable cohorts and failed trials.
+No runtime modification was needed for the packet milestone.

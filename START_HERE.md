@@ -8,7 +8,8 @@ GitHub integration branch: `main`. Development branch: `codex/contract-context`.
 Current verified checkpoint: **1,105 regression tests passed**.
 FIFO05 recovered timing at22 LUTs/13 FFs, setup0.108 ns/hold0.076 ns; exact
 saved winner passed independent verification and327-identity DONE checks.
-Fresh fulltier0 campaign07 passed2/2: counter55→31 LUTs, mux baseline retained.
+Fresh fulltier0 campaign08 passed2/2: counter55→53 LUTs, mux baseline retained.
+Matching cohort streak2, heldfalse; earlier best counter31 LUTs remains archived.
 No held tier or controlled weak-model result is claimed. Earlier failed trials
 remain archived. Main and development were integrated at141c548. Packet-tag FIFO admission now passed20/20 expected verdicts across six
 configurations. Generated packet01 recovered timing at23 LUTs/31 FFs,+.078/.106ns; exact

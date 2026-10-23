@@ -12,7 +12,7 @@ Vivado2025.2,xc7a35tcpg236-1,100MHz,idealzero min/max I/O delays.
 - Iter1 shiftqueue23LUT/29FF failedsetup-0.172ns. Bounded tool-knob trial
   closed timing at **23LUT/31FF,setup+0.078ns,hold+0.106ns**; review6/6ACCEPT.
 - Iter2 repeated source and failed standard timing; RTLDoctor trial also
-  failed setup. Rejected. Churn watchdog triggered a replan.
+  failed setup. Rejected. The next scheduled/stall replan also received a churn signal; CHURN itself is not a direct planning trigger.
 - Iter3 repeated source again. RTLDoctor produced feasible27LUT/30FF,
   +0.333/+0.115ns, correctly rejected for increased LUTs versus feasible23LUT.
   Replan did not enforce architectural diversity in this trial.

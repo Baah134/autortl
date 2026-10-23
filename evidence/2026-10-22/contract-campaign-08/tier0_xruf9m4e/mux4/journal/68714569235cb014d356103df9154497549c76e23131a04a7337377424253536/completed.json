@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Interface and cycle behavior: PASS \u2014 the candidate preserves the ports and synchronous reset behavior; the 4:1 selection is equivalent to the frozen source, and the deterministic ladder is ALIVE.\n- Top latency annotation: PASS \u2014 authoritative top latency is unknown, so no numeric annotation is required.\n- Compilation and simulation gates: PASS \u2014 xvlog, xelab, and xsim exited successfully; simulation reports the required `TEST PASSED` verdict.\n- Routed metrics and timing feasibility: PASS \u2014 retained routed metrics show 8 LUTs, WNS 0.579 ns, WHS 0.057 ns, and timing_met=true.\n- Objective improvement: FAIL \u2014 both candidate and previous best are timing-feasible, and LUT use remains equal at 8; strict LUT reduction is required.\n## Summary\n- Passed: 4 of 5\n- Failed: 1\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate satisfies the behavioral and verification gates and meets setup and hold timing, but it does not improve the selected objective: LUT use is unchanged from the timing-feasible previous best.",
+      "recommendation": "REJECT",
+      "passed": 4,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

@@ -864,3 +864,17 @@ changes, commands, outcomes, evidence locations, limitations, and next action.
   Started required fresh fulltier0 campaign08,session14413,1iteration/1candidate,
   16calls/20tool/30wallminutes/1infraretry perentry,same target/constraints.
   Main remains141c548 until campaign gate passes. All55 runtime files unchanged.
+
+- Read-only next-stage source audit refined earlier causal wording: CHURN is printed and passed to planner, but need_plan directly checks initial/stall/periodic/STAGNATION. Packet iter3 replanned via scheduled/stall condition, not a direct CHURN trigger. Corrected summary README/review and its manifest; raw evidence unchanged. Concrete next study: bounded journaled previous-proposal instruction/source/outcome feedback, separate standard vs Doctor flow outcomes; retain repeated-source tool exploration. No runtime edits during campaign.
+
+- Fresh fulltier0campaign08 completed **2/2 PASS, matching cohort streak2,
+  heldfalse**. Counter55→53LUT/37FF,WNS+.456/WHS+.282ns,3calls; smaller gain
+  than prior31LUT trial is retained honestly. Mux8LUT/8FF,+.579/.052ns baseline
+  retained;8LUT no-gain proposal rejected,3calls. No primitive failure thisrun.
+- Campaign archive195 files verified; both55-file runtime manifests unchanged,
+  same known cohort9b69c8d0/governance. All executable/test/fixture identities
+  still match1105-test freeze; fixtureREADME-only posttest delta documented.
+  Admission202,packet421,campaign195 archive manifests all verified together.
+- Regression/fulltier0/independent winner/actualDONE gates now passed for
+  packet milestone. Preparing authorized main/dev integration; actual remote
+  commit is recorded after push. No higher held tier or weak-model proof.
