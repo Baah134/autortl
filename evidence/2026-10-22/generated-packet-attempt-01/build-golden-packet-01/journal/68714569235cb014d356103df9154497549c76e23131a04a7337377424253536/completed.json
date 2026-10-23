@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Interface and latency: PASS \u2014 top interface matches the contract and `// @latency 1` matches the authoritative latency.\n- FIFO behavior: PASS \u2014 candidate preserves the specified queue behavior; the authoritative ladder reports ALIVE.\n- Compile and simulation: PASS \u2014 successful tool exits and the required `TEST PASSED` verdict are recorded for the source-identical candidate.\n- Routed metric integrity: PASS \u2014 retained routed reports and successful synthesis completion are recorded.\n- Timing feasibility: PASS \u2014 timing_met=true, WNS=0.078 ns and WHS=0.106 ns.\n- Improvement policy: PASS \u2014 this is valid timing recovery from a known timing-infeasible previous best; increased LUT and FF counts do not invalidate recovery.\n## Summary\n- Passed: 6 of 6\n- Failed: 0 of 6\n- Improved over previous best: YES\n## Recommendation\nACCEPT\n## Reason\nThe candidate satisfies the behavioral and verification gates and meets both setup and hold timing requirements. The previous best had known negative setup slack, so this candidate qualifies as timing recovery under the contract despite using more LUTs and flip-flops.",
+      "recommendation": "ACCEPT",
+      "passed": 6,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}

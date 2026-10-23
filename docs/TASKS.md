@@ -217,3 +217,11 @@ caughtactualassertions. No runtimeextensionrequired. Freshpacket01 nowadmitted
 withoriginal3iteration/16call/25tool/35wallminute budget. Remaining: generated
 gradernamedsidebandmeasurement, modelphysicaloutcome,exactwinner/DONE checks,
 freshfulltier0 andmainintegration. No generated/PPA result claimed inadvance.
+
+Packet01 completed:23LUT/31FF,+.078/.106ns timing recovery; independent saved
+winner and331-identity DONE checks passed. Generated grader caught6/6named
+marker faults, still missed readinessflip. Archive421files. Fresh fulltier0
+campaign08 active14413; main integration pending. Next harness study should
+target repeated proposals after churn/replan under an equal original budget,
+using retained packet01 as failure evidence; no new mechanism is yet approved
+by evidence. Plan and compare simpler feedback before implementation.

@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_2:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 2\n## Contract check\n- Behavioral correctness: PASS \u2014 standard ladder is ALIVE; simulation reports the exact `TEST PASSED` verdict.\n- Top latency annotation: PASS \u2014 candidate declares `// @latency 1`, matching authoritative latency 1.\n- Interface and build checks: PASS \u2014 candidate retains the required top interface; xvlog and xelab exited successfully.\n- Simulation and synthesis gates: PASS \u2014 xsim exited successfully, and Vivado completed with `SYNTH_COMPLETE`.\n- Routed metric integrity: PASS \u2014 retained routed reports are present and the recorded metrics are consistent.\n- Timing feasibility: FAIL \u2014 setup WNS is -0.172 ns and `timing_met=false`; hold WHS is 0.096 ns.\n- Objective improvement: FAIL \u2014 the previous best is timing-feasible, and LUT usage is unchanged at 23, so there is no recovery or strict LUT improvement.\n## Summary\n- Passed: 5 of 7\n- Failed: 2 of 7\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes the behavioral ladder and verification gates, but fails mandatory setup timing. Its LUT count equals the timing-feasible previous best, so it qualifies neither as timing recovery nor as an objective improvement.",
+      "recommendation": "REJECT",
+      "passed": 5,
+      "failed": 2
+    }
+  },
+  "artifacts": {}
+}

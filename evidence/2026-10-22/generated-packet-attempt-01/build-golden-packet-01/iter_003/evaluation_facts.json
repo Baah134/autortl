@@ -1,0 +1,342 @@
+{
+  "candidate_metrics": {
+    "bram_total": 50.0,
+    "bram_used": 0.0,
+    "dsp_total": 90,
+    "dsp_used": 0,
+    "dynamic_power_w": 0.014,
+    "ff_pct": 0.07211538461538461,
+    "ff_total": 41600,
+    "ff_used": 30,
+    "lut_pct": 0.12980769230769232,
+    "lut_total": 20800,
+    "lut_used": 27,
+    "sim_error": "",
+    "sim_passed": true,
+    "synth_error": "",
+    "timing_met": true,
+    "total_power_w": 0.085,
+    "whs_ns": 0.115,
+    "wns_ns": 0.333
+  },
+  "candidate_source": {
+    "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\iter_003\\doctor_rtl_surgery_trial\\packet_fifo.v",
+    "sha256": "3686db3338a5c6b6d2fcca863fbb58d863df156356997f108c7cc763e29b7cca",
+    "text": "`timescale 1ns/1ps\r\n// @latency 1\r\nmodule packet_fifo (\r\n    input wire clk,\r\n    input wire rst,\r\n    input wire [7:0] in_data,\r\n    input wire in_last,\r\n    input wire in_valid,\r\n    output wire in_ready,\r\n    output wire [7:0] out_data,\r\n    output wire out_last,\r\n    output wire out_valid,\r\n    input wire out_ready\r\n);\r\n    reg [8:0] entry0;\r\n    reg [8:0] entry1;\r\n    reg [8:0] entry2;\r\n    reg [1:0] occupancy;\r\n    reg full_reg;\r\n\r\n    wire push;\r\n    wire pop;\r\n\r\n    assign out_valid = (occupancy != 0);\r\n    assign in_ready = !full_reg || out_ready;\r\n    assign out_data = entry0[7:0];\r\n    assign out_last = entry0[8];\r\n\r\n    assign push = in_valid && in_ready;\r\n    assign pop = out_valid && out_ready;\r\n\r\n    always @(posedge clk) begin\r\n        if (rst) begin\r\n            occupancy <= 2'd0;\r\n            full_reg <= 1'b0;\r\n        end else begin\r\n            if (pop) begin\r\n                entry0 <= entry1;\r\n                entry1 <= entry2;\r\n            end\r\n\r\n            if (push) begin\r\n                if (pop) begin\r\n                    case (occupancy)\r\n                        2'd1: entry0 <= {in_last, in_data};\r\n                        2'd2: entry1 <= {in_last, in_data};\r\n                        2'd3: entry2 <= {in_last, in_data};\r\n                        default: entry0 <= {in_last, in_data};\r\n                    endcase\r\n                end else begin\r\n                    case (occupancy)\r\n                        2'd0: entry0 <= {in_last, in_data};\r\n                        2'd1: entry1 <= {in_last, in_data};\r\n                        2'd2: entry2 <= {in_last, in_data};\r\n                        default: entry2 <= {in_last, in_data};\r\n                    endcase\r\n                end\r\n            end\r\n\r\n            case ({push, pop})\r\n                2'b10: begin\r\n                    occupancy <= occupancy + 2'd1;\r\n                    full_reg <= (occupancy == 2'd2);\r\n                end\r\n                2'b01: begin\r\n                    occupancy <= occupancy - 2'd1;\r\n                    full_reg <= 1'b0;\r\n                end\r\n                default: begin\r\n                    occupancy <= occupancy;\r\n                    full_reg <= full_reg;\r\n                end\r\n            endcase\r\n        end\r\n    end\r\nendmodule",
+    "truncated": false
+  },
+  "candidate_timing_feasible": true,
+  "doctor_trial": {
+    "action": "rtl_surgery",
+    "input_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\iter_001\\cand_standard\\packet_fifo.v",
+      "sha256": "33df40080f99bfb8b97c12bb1e40ea2837c32f03d29c38c0414fba72488367b3",
+      "text": "",
+      "truncated": true
+    },
+    "measured_metrics": {
+      "bram_total": 50.0,
+      "bram_used": 0.0,
+      "dsp_total": 90,
+      "dsp_used": 0,
+      "dynamic_power_w": 0.014,
+      "ff_pct": 0.07211538461538461,
+      "ff_total": 41600,
+      "ff_used": 30,
+      "lut_pct": 0.12980769230769232,
+      "lut_total": 20800,
+      "lut_used": 27,
+      "sim_error": "",
+      "sim_passed": true,
+      "synth_error": "",
+      "timing_met": true,
+      "total_power_w": 0.085,
+      "whs_ns": 0.115,
+      "wns_ns": 0.333
+    },
+    "proposed_source_text_sha256": "d145a602f02764dd4b453e47b3d6d2cc4b256456cf6e81d9bc010afe1168d8f4",
+    "reason": "policy_improvement",
+    "reports": [
+      {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\iter_003\\doctor_rtl_surgery_trial\\power.rpt",
+        "sha256": "2981cc0cc15b9c02f517f6dbb4f3f0b83035d47e8b83cb95e516e6322758328c"
+      },
+      {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\iter_003\\doctor_rtl_surgery_trial\\timing.rpt",
+        "sha256": "adf774b86d3938d0636700dea222c59ba1e0437cf10d1236a9d2737b542d1c69"
+      },
+      {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\iter_003\\doctor_rtl_surgery_trial\\timing_routed.rpt",
+        "sha256": "45ed6f0e63f300f69ee827b94fd11ef4257abbe1c08899663566b2a9ce53a223"
+      },
+      {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\iter_003\\doctor_rtl_surgery_trial\\utilization.rpt",
+        "sha256": "79eabacda41aa08d6521a700b561672bef40cb49cdb2ad80b251fa9ce826154c"
+      },
+      {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\iter_003\\doctor_rtl_surgery_trial\\utilization_routed.rpt",
+        "sha256": "d3729bcc47a23063d9e7c53add2e64d85967027dea01bcdb229459e90bb2b6e1"
+      }
+    ],
+    "reports_truncated": false,
+    "scope": "Trial observations only; these do not replace candidate or incumbent metrics.",
+    "status": "ADOPTED",
+    "tools_ran": true,
+    "trial_flow_script": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\iter_003\\doctor_rtl_surgery_trial\\synth.tcl",
+      "sha256": "2a511f58dc3891d7406dce4f1ab0230764b5283b392624ccfa2eca27cb4974dc",
+      "text": "",
+      "truncated": true
+    },
+    "trial_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\iter_003\\doctor_rtl_surgery_trial\\packet_fifo.v",
+      "sha256": "3686db3338a5c6b6d2fcca863fbb58d863df156356997f108c7cc763e29b7cca",
+      "text": "`timescale 1ns/1ps\r\n// @latency 1\r\nmodule packet_fifo (\r\n    input wire clk,\r\n    input wire rst,\r\n    input wire [7:0] in_data,\r\n    input wire in_last,\r\n    input wire in_valid,\r\n    output wire in_ready,\r\n    output wire [7:0] out_data,\r\n    output wire out_last,\r\n    output wire out_valid,\r\n    input wire out_ready\r\n);\r\n    reg [8:0] entry0;\r\n    reg [8:0] entry1;\r\n    reg [8:0] entry2;\r\n    reg [1:0] occupancy;\r\n    reg full_reg;\r\n\r\n    wire push;\r\n    wire pop;\r\n\r\n    assign out_valid = (occupancy != 0);\r\n    assign in_ready = !full_reg || out_ready;\r\n    assign out_data = entry0[7:0];\r\n    assign out_last = entry0[8];\r\n\r\n    assign push = in_valid && in_ready;\r\n    assign pop = out_valid && out_ready;\r\n\r\n    always @(posedge clk) begin\r\n        if (rst) begin\r\n            occupancy <= 2'd0;\r\n            full_reg <= 1'b0;\r\n        end else begin\r\n            if (pop) begin\r\n                entry0 <= entry1;\r\n                entry1 <= entry2;\r\n            end\r\n\r\n            if (pu",
+      "truncated": true
+    }
+  },
+  "first_violated_path_excerpt": null,
+  "flow_and_constraints": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\iter_003\\doctor_rtl_surgery_trial\\synth.tcl",
+      "sha256": "2a511f58dc3891d7406dce4f1ab0230764b5283b392624ccfa2eca27cb4974dc",
+      "text": "set_msg_config -id {VRFC 10-3609} -new_severity ERROR\r\nset_msg_config -id {Synth 8-9873} -new_severity ERROR\r\nset_msg_config -id {Designutils 20-1307} -new_severity ERROR\r\nset_msg_config -id {Synth 8-327} -new_severity ERROR\r\nset_msg_config -id {Synth 8-3352} -new_severity ERROR\r\nset_part xc7a35tcpg236-1\r\nread_verilog \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-packet-01/iter_003/doctor_rtl_surgery_trial/packet_fifo.v\" \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-packet-01/modules/packet_fifo_core/packet_fifo_core.v\"\r\nset fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-packet-01/iter_003/doctor_rtl_surgery_trial/timing.xdc\" w]\r\nputs $fp {create_clock -period 10.000 -name clk [get_ports clk]}\r\nclose $fp\r\nread_xdc \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-packet-01/iter_003/doctor_rtl_surgery_trial/timing.xdc\"\r\nsynth_design -top packet_fifo -flatten_hierarchy rebuilt \r\nset fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-packet-01/iter_003/doctor_rtl_surgery_trial/timing_io.tcl\" w]\r\nputs $fp {set data_inputs [get_ports -filter {DIRECTION == IN && NAME != clk}]}\r\nputs $fp {if {[llength $data_inputs] > 0} {set_input_delay -clock clk -max 0.000 $data_inputs; set_input_delay -clock clk -min 0.000 $data_inputs}}\r\nputs $fp {if {[llength [all_outputs]] > 0} {set_output_delay -clock clk -max 0.000 [all_outputs]; set_output_delay -clock clk -min 0.000 [all_outputs]}}\r\nclose $fp\r\nsource \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-packet-01/iter_003/doctor_rtl_surgery_trial/timing_io.tcl\"\r\nreport_utilization -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-packet-01/iter_003/doctor_rtl_surgery_trial/utilization.rpt\"\r\nreport_timing_summary -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-packet-01/iter_003/doctor_rtl_surgery_trial/timing.rpt\"\r\nopt_design\r\nplace_design\r\n\r\nroute_design\r\nreport_utilization -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-packet-01/iter_003/doctor_rtl_surgery_trial/utilization_routed.rpt\"\r\nreport_timing_summary -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-packet-01/iter_003/doctor_rtl_surgery_trial/timing_routed.rpt\"\r\nreport_design_analysis -logic_level_distribution -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-packet-01/iter_003/doctor_rtl_surgery_trial/design_analysis.rpt\"\r\nreport_power -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-packet-01/iter_003/doctor_rtl_surgery_trial/power.rpt\"\r\ncatch { report_methodology -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-packet-01/iter_003/doctor_rtl_surgery_trial/methodology.rpt\" }\r\ncatch { report_qor_suggestions -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-packet-01/iter_003/doctor_rtl_surgery_trial/qor_suggestions.rpt\" }\r\nputs \"SYNTH_COMPLETE\"\r\n",
+      "truncated": false
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\iter_003\\doctor_rtl_surgery_trial\\timing.xdc",
+      "sha256": "fa142c09f0fadb5e303ca9fea08c02bc353451533e44aeee9cd9a0231cc8bede",
+      "text": "create_clock -period 10.000 -name clk [get_ports clk]\r\n",
+      "truncated": false
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\iter_003\\doctor_rtl_surgery_trial\\timing_io.tcl",
+      "sha256": "6b38098841a48bbb3ab15de49d2bf2baf7e4384f599259ff5f3afa2c2b1daf00",
+      "text": "set data_inputs [get_ports -filter {DIRECTION == IN && NAME != clk}]\r\nif {[llength $data_inputs] > 0} {set_input_delay -clock clk -max 0.000 $data_inputs; set_input_delay -clock clk -min 0.000 $data_inputs}\r\nif {[llength [all_outputs]] > 0} {set_output_delay -clock clk -max 0.000 [all_outputs]; set_output_delay -clock clk -min 0.000 [all_outputs]}\r\n",
+      "truncated": false
+    }
+  ],
+  "improvement_kind": null,
+  "measured_improvement": false,
+  "metric_provenance": "Structured metrics are parsed from retained reports; routed utilization/timing reports take precedence when present. The manifest identifies complete files by hash. Header excerpts are bounded previews, not complete reports or an independent metric source.",
+  "objective": "minimize_luts",
+  "previous_best_metrics": {
+    "bram_total": 50.0,
+    "bram_used": 0.0,
+    "dsp_total": 90,
+    "dsp_used": 0,
+    "dynamic_power_w": 0.014,
+    "ff_pct": 0.07451923076923077,
+    "ff_total": 41600,
+    "ff_used": 31,
+    "lut_pct": 0.11057692307692307,
+    "lut_total": 20800,
+    "lut_used": 23,
+    "sim_error": "",
+    "sim_passed": true,
+    "synth_error": "",
+    "timing_met": true,
+    "total_power_w": 0.085,
+    "whs_ns": 0.106,
+    "wns_ns": 0.078
+  },
+  "previous_best_timing_feasible": true,
+  "process_exit_gate": {
+    "passed": true,
+    "policy": "Every required tool's latest actual process exit must be zero with retained matching output; physical-only Doctor may reuse source-bound prior compile/simulation.",
+    "reasons": []
+  },
+  "report_headers": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\iter_003\\doctor_rtl_surgery_trial\\power.rpt",
+      "sha256": "2981cc0cc15b9c02f517f6dbb4f3f0b83035d47e8b83cb95e516e6322758328c",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version     : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date             : Thu Oct 22 20:59:38 2026\r\n| Host             : Baah running 64-bit major release  (build 9200)\r\n| Command          : report_power -file C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-packet-01/iter_003/doctor_rtl_surgery_trial/power.rpt\r\n| Design           : packet_fifo\r\n| Device           : xc7a35tcpg236-1\r\n| Design State     : routed\r\n| Grade            : commercial\r\n| Process          : typical\r\n| Characterization : Production\r\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nPower Report\r\n\r\nTable of Contents\r\n-----------------\r\n1. Summary\r\n1.1 On-Chip Components\r\n1.2 Power Supply Summary\r\n1.3 Confidence Level\r\n2. Settings\r\n2.1 Environment\r\n2.2 Clock Constraints\r\n3. Detailed Reports\r\n3.1 By Hierarchy\r\n\r\n1. Summary\r\n----------\r\n\r\n+--------------------------+--------------+\r\n| Total On-Chip Power (W)  | 0.085        |\r\n| Design Power Budget (W)  | Unspecified* |\r\n| Power Budget Margin (W)  | NA           |\r\n| Dynamic (W)              | 0.014        |\r\n| Device Static (W)        | 0.070        |\r\n| Effective TJA (C/W)      | 5.0          |\r\n| Max Ambient (C)          | 84.6         |\r\n| Junction Temperature (C) | 25.4         |\r\n| Confidence Level         | Low          |\r\n| Setting File             | ---          |\r\n| Simulation Activity File |",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\iter_003\\doctor_rtl_surgery_trial\\timing.rpt",
+      "sha256": "adf774b86d3938d0636700dea222c59ba1e0437cf10d1236a9d2737b542d1c69",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date         : Thu Oct 22 20:58:58 2026\r\n| Host         : Baah running 64-bit major release  (build 9200)\r\n| Command      : report_timing_summary -file C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-packet-01/iter_003/doctor_rtl_surgery_trial/timing.rpt\r\n| Design       : packet_fifo\r\n| Device       : 7a35t-cpg236\r\n| Speed File   : -1  PRODUCTION 1.23 2018-06-13\r\n| Design State : Synthesized\r\n------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nTiming Summary Report\r\n\r\n------------------------------------------------------------------------------------------------\r\n| Timer Settings\r\n| --------------\r\n------------------------------------------------------------------------------------------------\r\n\r\n  Enable Multi Corner Analysis               :  Yes\r\n  Enable Pessimism Removal                   :  Yes\r\n  Pessimism Removal Resolution               :  Nearest Common Node\r\n  Enable Input Delay Default Clock           :  No\r\n  Enable Preset / Clear Arcs                 :  No\r\n  Disable Flight Delays                      :  No\r\n  Ignore I/O Paths                           :  No\r\n  Timing Early Launch at Borrowing Latches   :  No\r\n  Borrow Time for Max Delay Exceptions       :  Yes\r\n  Merge Timing Exceptions                    :  Yes\r\n  Inter-SLR Compensation                     :  ",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\iter_003\\doctor_rtl_surgery_trial\\timing_routed.rpt",
+      "sha256": "45ed6f0e63f300f69ee827b94fd11ef4257abbe1c08899663566b2a9ce53a223",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n-------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date         : Thu Oct 22 20:59:38 2026\r\n| Host         : Baah running 64-bit major release  (build 9200)\r\n| Command      : report_timing_summary -file C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-packet-01/iter_003/doctor_rtl_surgery_trial/timing_routed.rpt\r\n| Design       : packet_fifo\r\n| Device       : 7a35t-cpg236\r\n| Speed File   : -1  PRODUCTION 1.23 2018-06-13\r\n| Design State : Routed\r\n-------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nTiming Summary Report\r\n\r\n------------------------------------------------------------------------------------------------\r\n| Timer Settings\r\n| --------------\r\n------------------------------------------------------------------------------------------------\r\n\r\n  Enable Multi Corner Analysis               :  Yes\r\n  Enable Pessimism Removal                   :  Yes\r\n  Pessimism Removal Resolution               :  Nearest Common Node\r\n  Enable Input Delay Default Clock           :  No\r\n  Enable Preset / Clear Arcs                 :  No\r\n  Disable Flight Delays                      :  No\r\n  Ignore I/O Paths                           :  No\r\n  Timing Early Launch at Borrowing Latches   :  No\r\n  Borrow Time for Max Delay Exceptions       :  Yes\r\n  Merge Timing Exceptions                    :  Yes\r\n  Inter-SLR Compensation        ",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\iter_003\\doctor_rtl_surgery_trial\\utilization.rpt",
+      "sha256": "79eabacda41aa08d6521a700b561672bef40cb49cdb2ad80b251fa9ce826154c",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\n| Date         : Thu Oct 22 20:58:58 2026\n| Host         : Baah running 64-bit major release  (build 9200)\n| Command      : report_utilization -file C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-packet-01/iter_003/doctor_rtl_surgery_trial/utilization.rpt\n| Design       : packet_fifo\n| Device       : xc7a35tcpg236-1\n| Speed File   : -1\n| Design State : Synthesized\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------\n\nUtilization Design Information\n\nTable of Contents\n-----------------\n1. Slice Logic\n1.1 Summary of Registers by Type\n2. Memory\n3. DSP\n4. IO and GT Specific\n5. Clocking\n6. Specific Feature\n7. Primitives\n8. Black Boxes\n9. Instantiated Netlists\n\n1. Slice Logic\n--------------\n\n+-------------------------+------+-------+------------+-----------+-------+\n|        Site Type        | Used | Fixed | Prohibited | Available | Util% |\n+-------------------------+------+-------+------------+-----------+-------+\n| Slice LUTs*             |   26 |     0 |          0 |     20800 |  0.13 |\n|   LUT as Logic          |   26 |     0 |          0 |     20800 |  0.13 |\n|   LUT as Memory         |    0 |     0 |          0 |      9600 |  0.00 |\n| Slice Registers         |   30 |     0 |          0 |     41600 |  0.07 |\n|   Register as Flip Flop |   30 |     0 |          0 |     41600 |  0.07 ",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\iter_003\\doctor_rtl_surgery_trial\\utilization_routed.rpt",
+      "sha256": "d3729bcc47a23063d9e7c53add2e64d85967027dea01bcdb229459e90bb2b6e1",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\n---------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\n| Date         : Thu Oct 22 20:59:38 2026\n| Host         : Baah running 64-bit major release  (build 9200)\n| Command      : report_utilization -file C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-packet-01/iter_003/doctor_rtl_surgery_trial/utilization_routed.rpt\n| Design       : packet_fifo\n| Device       : xc7a35tcpg236-1\n| Speed File   : -1\n| Design State : Routed\n---------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n\nUtilization Design Information\n\nTable of Contents\n-----------------\n1. Slice Logic\n1.1 Summary of Registers by Type\n2. Slice Logic Distribution\n3. Memory\n4. DSP\n5. IO and GT Specific\n6. Clocking\n7. Specific Feature\n8. Primitives\n9. Black Boxes\n10. Instantiated Netlists\n\n1. Slice Logic\n--------------\n\n+-------------------------+------+-------+------------+-----------+-------+\n|        Site Type        | Used | Fixed | Prohibited | Available | Util% |\n+-------------------------+------+-------+------------+-----------+-------+\n| Slice LUTs              |   27 |     0 |          0 |     20800 |  0.13 |\n|   LUT as Logic          |   27 |     0 |          0 |     20800 |  0.13 |\n|   LUT as Memory         |    0 |     0 |          0 |      9600 |  0.00 |\n| Slice Registers         |   30 |     0 |          0 |     41600 |  0.07 |\n|   Register as Flip Flop |  ",
+      "truncated": true
+    }
+  ],
+  "report_manifest": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\iter_003\\doctor_rtl_surgery_trial\\power.rpt",
+      "sha256": "2981cc0cc15b9c02f517f6dbb4f3f0b83035d47e8b83cb95e516e6322758328c"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\iter_003\\doctor_rtl_surgery_trial\\timing.rpt",
+      "sha256": "adf774b86d3938d0636700dea222c59ba1e0437cf10d1236a9d2737b542d1c69"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\iter_003\\doctor_rtl_surgery_trial\\timing_routed.rpt",
+      "sha256": "45ed6f0e63f300f69ee827b94fd11ef4257abbe1c08899663566b2a9ce53a223"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\iter_003\\doctor_rtl_surgery_trial\\utilization.rpt",
+      "sha256": "79eabacda41aa08d6521a700b561672bef40cb49cdb2ad80b251fa9ce826154c"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\iter_003\\doctor_rtl_surgery_trial\\utilization_routed.rpt",
+      "sha256": "d3729bcc47a23063d9e7c53add2e64d85967027dea01bcdb229459e90bb2b6e1"
+    }
+  ],
+  "tool_exit_evidence": {
+    "history_count": 4,
+    "latest_by_tool": {
+      "vivado": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\iter_003\\doctor_rtl_surgery_trial\\vivado_synth_output.log",
+        "output_log_sha256": "604dcb3cf90c0375b55b71e8bcdbd16c9a756579fdc159e1749de6768b69285f",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xelab": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\iter_003\\doctor_rtl_surgery_trial\\xelab.log",
+        "output_log_sha256": "31b7cdbd60c55409a3d2e248071187c7b96ec503cfefdbc829044d8004e9872a",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xsim": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\iter_003\\doctor_rtl_surgery_trial\\xsim.log",
+        "output_log_sha256": "1a8b2ec3d5d2e386b2240c25b89114aedbad52fe94739e29b052d9cc3ce8f205",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xvlog": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\iter_003\\doctor_rtl_surgery_trial\\xvlog.log",
+        "output_log_sha256": "aa5abd2bcdff7d2db065f4d120718142ccf9e077dfe492b60e7430cd4764866c",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      }
+    },
+    "missing_required_tools": [],
+    "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\iter_003\\doctor_rtl_surgery_trial\\tool_exit_records.log",
+    "records": [
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\iter_003\\doctor_rtl_surgery_trial",
+        "driver_returncode": 0,
+        "elapsed_seconds": 1.1880000000001019,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xvlog.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\iter_003\\doctor_rtl_surgery_trial\\xvlog.log",
+        "output_log_sha256": "aa5abd2bcdff7d2db065f4d120718142ccf9e077dfe492b60e7430cd4764866c",
+        "pid": 12784,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xvlog"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\iter_003\\doctor_rtl_surgery_trial",
+        "driver_returncode": 0,
+        "elapsed_seconds": 6.0,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xelab.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\iter_003\\doctor_rtl_surgery_trial\\xelab.log",
+        "output_log_sha256": "31b7cdbd60c55409a3d2e248071187c7b96ec503cfefdbc829044d8004e9872a",
+        "pid": 17600,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xelab"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\iter_003\\doctor_rtl_surgery_trial",
+        "driver_returncode": 0,
+        "elapsed_seconds": 3.094000000000051,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xsim.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\iter_003\\doctor_rtl_surgery_trial\\xsim.log",
+        "output_log_sha256": "1a8b2ec3d5d2e386b2240c25b89114aedbad52fe94739e29b052d9cc3ce8f205",
+        "pid": 5308,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xsim"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\iter_003\\doctor_rtl_surgery_trial",
+        "driver_returncode": 0,
+        "elapsed_seconds": 102.76599999999962,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/vivado.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\iter_003\\doctor_rtl_surgery_trial\\vivado_synth_output.log",
+        "output_log_sha256": "604dcb3cf90c0375b55b71e8bcdbd16c9a756579fdc159e1749de6768b69285f",
+        "pid": 24024,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "vivado"
+      }
+    ],
+    "schema_valid": true,
+    "sha256": "c72209c16a27bfbe159e7e7803c3662095d7de8a717f877c6b25c06270cc9d00",
+    "status": "recorded",
+    "truncated": false
+  },
+  "verification_logs": [
+    {
+      "head": "INFO: [VRFC 10-2263] Analyzing Verilog file \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-packet-01/iter_003/doctor_rtl_surgery_trial/packet_fifo.v\" into library work\r\nINFO: [VRFC 10-311] analyzing module packet_fifo\r\nINFO: [VRFC 10-2263] Analyzing Verilog file \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-packet-01/modules/packet_fifo_core/packet_fifo_core.v\" into library work\r\nINFO: [VRFC 10-311] analyzing module packet_fifo_core\r\nINFO: [VRFC 10-2263] Analyzing Verilog file \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-packet-01/inputs/testbench_path.v\" into library work\r\nINFO: [VRFC 10-311] analyzing module packet_fifo_case\r\nINFO: [VRFC 10-311] analyzing module packet_fifo_tb\r\n\r\n",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\iter_003\\doctor_rtl_surgery_trial\\xvlog.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "aa5abd2bcdff7d2db065f4d120718142ccf9e077dfe492b60e7430cd4764866c",
+      "tail": "",
+      "truncated": false
+    },
+    {
+      "head": "Vivado Simulator v2025.2\r\nCopyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\nCopyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\nRunning: C:/AMDDesignTools/2025.2/Vivado/bin/unwrapped/win64.o/xelab.exe packet_fifo_tb -s packet_fifo_tb_snap --debug off \r\nMulti-threading is on. Using 10 slave threads.\r\nStarting static elaboration\r\nPass Through NonSizing Optimizer\r\nCompleted static elaboration\r\nStarting simulation data flow analysis\r\nCompleted simulation data flow analysis\r\nTime Resolution for simulation is 1ps\r\nCompiling module work.packet_fifo\r\nCompiling module work.packet_fifo_case(USE_TOP=1)\r\nCompiling module work.packet_fifo_core(WIDTH=1,DEPTH=1...\r\nCompiling module work.packet_fifo_case(WIDTH=1,DEPTH=1...\r\nCompiling module work.packet_fifo_core(DEPTH=2)\r\nCompiling module work.packet_fifo_case(DEPTH=2)\r\nCompiling module work.packet_fifo_core(DEPTH=4)\r\nCompiling module work.packet_fifo_case(DEPTH=4)\r\nCompiling module work.packet_fifo_core(WIDTH=13,DEPTH=...\r\nCompiling module work.packet_fifo_case(WIDTH=13,DEPTH=...\r\nCompiling module work.packet_fifo_core(WIDTH=16,DEPTH=...\r\nCompiling module work.packet_fifo_case(WIDTH=16,DEPTH=...\r\nCompiling module work.packet_fifo_tb\r\nBuilt simulation snapshot packet_fifo_tb_snap\r\n\r\n",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\iter_003\\doctor_rtl_surgery_trial\\xelab.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "31b7cdbd60c55409a3d2e248071187c7b96ec503cfefdbc829044d8004e9872a",
+      "tail": "",
+      "truncated": false
+    },
+    {
+      "head": "\r\n****** xsim v2025.2 (64-bit)\r\n  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025\r\n  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025\r\n  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025\r\n  **** Start of session at: Thu Oct 22 20:57:54 2026\r\n    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\n    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n\r\nsource xsim.dir/packet_fifo_tb_snap/xsim_script.tcl\r\n# xsim {packet_fifo_tb_snap} -autoloadwcfg -runall\r\nTime resolution is 1 ps\r\nrun -all\r\nCOVERAGE case=1 WIDTH=1 DEPTH=1 checked=901 accepted=672 retired=668 discarded=4 accepted_markers=246 retired_markers=244 discarded_markers=2 full=789 stall=121 simultaneous=603 full_simultaneous=603 boundary_simultaneous=251 full_boundary_simultaneous=251 ending_stalls=56 ordinary_stalls=65 idle_tag_changes=25 resets=4 marker_resets=2 packets=6\r\nCOVERAGE case=2 WIDTH=8 DEPTH=2 checked=912 accepted=695 retired=689 discarded=6 accepted_markers=252 retired_markers=248 discarded_markers=4 full=234 stall=124 simultaneous=599 full_simultaneous=141 boundary_simultaneous=246 full_boundary_simultaneous=74 ending_stalls=55 ordinary_stalls=69 idle_tag_changes=31 resets=4 marker_resets=4 packets=6\r\nCOVERAGE case=0 WIDTH=8 DEPTH=3 checked=923 accepted=727 retired=715 discarded=12 accepted_markers=281 retired_markers=274 discarded_markers=7 full=177 stall=127 simultaneous=623 full_simultaneous=114 boundary_simultaneous=269 full_boundary_simultaneous=68 ending_stalls=63 ordinary_stalls=64 idle_tag_changes=28 resets=4 marker_resets=7 packets=6\r\nCOVERAGE case=3 WIDTH=8 DEPTH=4 checked=934 accepted=735 retired=724 discarded=11 accepted_markers=270 retired_markers=266 discarded_markers=4 full=122 stall=144 simultaneous=623 full_simultaneous=78 boundar",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\iter_003\\doctor_rtl_surgery_trial\\sim_log.txt",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "1a8b2ec3d5d2e386b2240c25b89114aedbad52fe94739e29b052d9cc3ce8f205",
+      "tail": "l_simultaneous=141 boundary_simultaneous=246 full_boundary_simultaneous=74 ending_stalls=55 ordinary_stalls=69 idle_tag_changes=31 resets=4 marker_resets=4 packets=6\r\nCOVERAGE case=0 WIDTH=8 DEPTH=3 checked=923 accepted=727 retired=715 discarded=12 accepted_markers=281 retired_markers=274 discarded_markers=7 full=177 stall=127 simultaneous=623 full_simultaneous=114 boundary_simultaneous=269 full_boundary_simultaneous=68 ending_stalls=63 ordinary_stalls=64 idle_tag_changes=28 resets=4 marker_resets=7 packets=6\r\nCOVERAGE case=3 WIDTH=8 DEPTH=4 checked=934 accepted=735 retired=724 discarded=11 accepted_markers=270 retired_markers=266 discarded_markers=4 full=122 stall=144 simultaneous=623 full_simultaneous=78 boundary_simultaneous=253 full_boundary_simultaneous=23 ending_stalls=70 ordinary_stalls=74 idle_tag_changes=33 resets=4 marker_resets=4 packets=6\r\nCOVERAGE case=4 WIDTH=13 DEPTH=5 checked=945 accepted=727 retired=712 discarded=15 accepted_markers=275 retired_markers=266 discarded_markers=9 full=107 stall=148 simultaneous=606 full_simultaneous=72 boundary_simultaneous=252 full_boundary_simultaneous=49 ending_stalls=72 ordinary_stalls=76 idle_tag_changes=28 resets=3 marker_resets=9 packets=6\r\nCOVERAGE case=5 WIDTH=16 DEPTH=8 checked=978 accepted=768 retired=746 discarded=22 accepted_markers=307 retired_markers=296 discarded_markers=11 full=129 stall=175 simultaneous=646 full_simultaneous=88 boundary_simultaneous=264 full_boundary_simultaneous=33 ending_stalls=88 ordinary_stalls=87 idle_tag_changes=27 resets=4 marker_resets=11 packets=6\r\nTEST PASSED\r\n$finish called at time : 9788 ns : File \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-packet-01/inputs/testbench_path.v\" Line 262\r\nexit\r\nINFO: [Common 17-206] Exiting xsim at Thu Oct 22 20:57:56 2026...\r\n\r\n",
+      "truncated": false
+    },
+    {
+      "head": "\r\n****** Vivado v2025.2 (64-bit)\r\n  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025\r\n  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025\r\n  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025\r\n  **** Start of session at: Thu Oct 22 20:57:58 2026\r\n    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\n    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n\r\nsource C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-packet-01/iter_003/doctor_rtl_surgery_trial/synth.tcl\r\n# set_msg_config -id {VRFC 10-3609} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-9873} -new_severity ERROR\r\n# set_msg_config -id {Designutils 20-1307} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-327} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-3352} -new_severity ERROR\r\n# set_part xc7a35tcpg236-1\r\nINFO: [Coretcl 2-1500] The part has been set to 'xc7a35tcpg236-1' for the current project only. Run set_part -help for more details. To evaluate different speed grades in the current design, use the set_speed_grade command, or use the open_checkpoint -part command to change the part used by an existing checkpoint design.\r\nset_part: Time (s): cpu = 00:00:12 ; elapsed = 00:00:09 . Memory (MB): peak = 531.672 ; gain = 222.930\r\n# read_verilog \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-packet-01/iter_003/doctor_rtl_surgery_trial/packet_fifo.v\" \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-packet-01/modules/packet_fifo_core/packet_fifo_core.v\"\r\n# set fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-packet-01/iter_003/doctor_rtl_surgery_trial/timing.xdc\" w]\r\n# puts $fp {create_clock -period 10.000 -name clk [get_ports clk]}\r\n# close $fp\r\n# read_xdc \"C:/Users/prince.baah/Downloads/au",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\iter_003\\doctor_rtl_surgery_trial\\vivado_synth_output.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "604dcb3cf90c0375b55b71e8bcdbd16c9a756579fdc159e1749de6768b69285f",
+      "tail": "cket-01/iter_003/doctor_rtl_surgery_trial/power.rpt\r\nRunning Vector-less Activity Propagation...\r\n\r\nFinished Running Vector-less Activity Propagation\r\n0 Infos, 0 Warnings, 0 Critical Warnings and 0 Errors encountered.\r\nreport_power completed successfully\r\n# catch { report_methodology -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-packet-01/iter_003/doctor_rtl_surgery_trial/methodology.rpt\" }\r\nCommand: report_methodology -file C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-packet-01/iter_003/doctor_rtl_surgery_trial/methodology.rpt\r\nINFO: [Timing 38-35] Done setting XDC timing constraints.\r\nINFO: [DRC 23-133] Running Methodology with 2 threads\r\nINFO: [Vivado_Tcl 2-1520] The results of Report Methodology are in file C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-packet-01/iter_003/doctor_rtl_surgery_trial/methodology.rpt.\r\nreport_methodology completed successfully\r\n# catch { report_qor_suggestions -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-packet-01/iter_003/doctor_rtl_surgery_trial/qor_suggestions.rpt\" }\r\nCommand: report_qor_suggestions -file C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-packet-01/iter_003/doctor_rtl_surgery_trial/qor_suggestions.rpt\r\nCongestion Prediction Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.007 . Memory (MB): peak = 1990.406 ; gain = 0.000\r\nINFO: [Implflow 47-1309] PredResultString: 1:34.78:65.22\r\nfeatureProvider Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.023 . Memory (MB): peak = 1990.406 ; gain = 0.000\r\nINFO: [Implflow 47-1274] ML strategy prediction is not supported for 7-series devices.\r\nreport_qor_suggestions completed successfully\r\n# puts \"SYNTH_COMPLETE\"\r\nSYNTH_COMPLETE\r\nINFO: [Common 17-206] Exiting Vivado at Thu Oct 22 20:59:39 2026...\r\n\r\n",
+      "truncated": true
+    }
+  ]
+}

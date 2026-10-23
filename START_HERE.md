@@ -11,7 +11,8 @@ saved winner passed independent verification and327-identity DONE checks.
 Fresh fulltier0 campaign07 passed2/2: counter55→31 LUTs, mux baseline retained.
 No held tier or controlled weak-model result is claimed. Earlier failed trials
 remain archived. Main and development were integrated at141c548. Packet-tag FIFO admission now passed20/20 expected verdicts across six
-configurations. Next is a fresh generated build; inspect current Git and SESSION_HANDOFF.
+configurations. Generated packet01 recovered timing at23 LUTs/31 FFs,+.078/.106ns; exact
+savedwinner and331-identity DONE checks passed. Inspect current Git and SESSION_HANDOFF.
 Measured runtime85e4fb8/6f3fa7c is unchanged by documentation/evidence commits.
 
 1. Read `AGENTS.md` and `docs/AGENT_HANDOFF.md` for the working contract.

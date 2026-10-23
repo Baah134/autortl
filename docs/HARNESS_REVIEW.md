@@ -398,3 +398,20 @@ but document overlappingobservablefaults ratherthan19independentclasses.
 1105fulltests and60focusedtests passed; generatedgrader marker sensitivity is
 still unmeasured. Measure its named faults before deciding whether runtime
 qualification needs a change. No new feature justified by admission alone.
+
+## Packet01 measured feature decision
+
+Keep complementary graders: the generated grader detected six named marker
+faults on the default instance but missed readinessflip; independent temporal
+verification caught it. There is no observed missing multi-output comparison
+to justify a new scoreboard engine or role. Keep report-grounded planning:
+actual read-pointer/RAM-to-out_last path informed the first architecture change.
+Keep bounded Doctor: tool settings closed timing at23LUT/31FF,+.078/.106ns;
+subsequent failed/timing-feasible-but-larger trials remained rejected.
+
+Cache reuse saved redundant candidate work, but duplicate proposals persisted
+after the churn-triggered replan. Record this diversity limit. A future frozen,
+equal-budget feedback/portfolio comparison can test improvement; this single
+trial does not justify another agent or evolutionary framework. Existing
+independent source review and331-identity DONE checks found no blocker; no
+in-flight hard-kill or general parameter proof follows.

@@ -841,3 +841,26 @@ changes, commands, outcomes, evidence locations, limitations, and next action.
  35wallminutes,1infraretry,same10ns/device/toolchain. No referenceseed.
  Generatedgrader sidebandsensitivity andfinalsavedwinner/DONEchecks stillpending.
  Mainremains141c548 untilfreshfulltier0 gate; developmentmilestonewillbepushed.
+
+- Development1357a08 pushed/remoteverified;mainstill141c548. Freshpacket01 session45225 launchedwithoriginalbudgets. All55runtimehashesmatchcommit. OracleSyntaxError rejected/repaired attempt2; generatedgrader caughtstuckzero aftermissingreadinessflip. No finalbuildclaimyet.
+
+- Packet01 intermediate timingrecoveryacceptediter1:23LUT/31FF,WNS+.078/WHS+.106ns afterboundedtoolknobs. OriginalcandidateWNS-.172;baseline15LUT/6FF,WNS-.946/WHS+.167ns. Higherareaistimingrecovery,notareasavings. Iter2active;finalsavedwinnernotyetvalidated.
+
+- Packet01 completed: best iteration1 retained at **23 LUTs/31 FFs,
+  WNS +0.078 ns/WHS +0.106 ns**, timing_recovery from invalid15LUT/6FF,
+  -0.946/+0.167ns baseline. Tool-knob trial closed initial shiftqueue's -0.172ns.
+  13 model calls,769.639 charged tool seconds,937.551 elapsed seconds.
+  Iter2 failed timing; iter3 was feasible27LUT/30FF,+.333/.115ns and correctly
+  rejected for increased LUTs. Churn watchdog replanned but source repeated.
+- Frozen generated grader separately passed control and caught all six named
+  marker faults against original qualification hashes. No sideband engine gap
+  found. Readiness fault remains missed by generated grader, caught independently.
+- Exact savedwinner/declaredchild passed independent sixconfiguration matrix.
+  Actual DONE nominal0 and temporary child/spec/Doctorreport tamper1 each;
+  331 identities,fileset,budget restored unchanged,no extra model/tool charges.
+  Measured CRLF/saved LF differ only line endings; identity link retained.
+- Packet archive421 manifested files verified. Read-only final review found
+  no blocker. No all-parameter/formal/board/weak-model proof is claimed.
+  Started required fresh fulltier0 campaign08,session14413,1iteration/1candidate,
+  16calls/20tool/30wallminutes/1infraretry perentry,same target/constraints.
+  Main remains141c548 until campaign gate passes. All55 runtime files unchanged.

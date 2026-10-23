@@ -16,6 +16,7 @@ learn from failures, and retain the best correct design within a fixed budget.
 |---|---|
 | Harness regression suite | **1,105 tests passed** |
 | FIFO timing recovery (8-bit, depth 3) | **Setup −0.931 → +0.108 ns · hold +0.076 ns · 22 LUTs / 13 FFs · exact saved winner independently passed** |
+| Generated packet-tagged FIFO | **23 LUTs / 31 FFs · setup +0.078 ns · hold +0.106 ns · saved winner independently passed** |
 | Packet-tagged FIFO verification | **Six configurations passed; all 19 named source mutations detected** |
 | Parameterized FIFO verification | **Six configurations passed; all 13 planned faults detected** |
 | Independent streaming verification | **Correct queue control passed; all eight behavior faults detected** |
@@ -37,6 +38,9 @@ Additional build, weaker-model and in-flight interruption coverage remains under
 validation. No held curriculum tier is claimed. Earlier unsuccessful cohorts
 remain in the evidence record.
 
+The packet FIFO also recovered timing from −0.946 ns with higher area than its
+failing 15-LUT baseline; no overall area saving is claimed.
+
 The FIFO trades higher area than its failing baseline (13 LUTs) for timing
 closure. The loop then reduced its first feasible implementation from 24 to
 22 LUTs (8.3%).
@@ -44,6 +48,7 @@ closure. The loop then reduced its first feasible implementation from 24 to
 See the [FIFO recovery evidence](evidence/2026-10-22/generated-fifo-attempt-05/README.md),
 [test evidence](evidence/2026-10-20/README.md),
 [full-suite result](evidence/2026-10-22/packet-fifo-admission/AutoRTL-packet-full-01.txt) and
+[packet FIFO build](evidence/2026-10-22/generated-packet-attempt-01/README.md),
 [packet FIFO admission](evidence/2026-10-22/packet-fifo-admission/README.md),
 [accepted optimization](evidence/2026-10-22/contract-campaign-07/README.md),
 [generated-build verification](evidence/2026-10-20/generated-counter/README.md) and

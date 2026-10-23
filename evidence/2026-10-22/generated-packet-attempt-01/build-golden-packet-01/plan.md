@@ -1,0 +1,9 @@
+# PLAN — iteration 3
+## Current state assessment
+Iteration 1 is the verified best at 23 LUTs, 31 FFs, WNS 0.078 ns, and WHS 0.106 ns. Since it is timing-feasible, iteration 3 must pass every verification and routed-metric gate and use strictly fewer than 23 LUTs to improve the `minimize_luts` objective. Iteration 2 did not improve LUT usage and failed setup timing; the advisor trial also failed setup, with the critical path running from `read_ptr` through a RAMD32 to an output.
+
+## Hypothesis
+An age-ordered three-entry tuple queue can remove pointer-controlled output selection and reduce LUT use below 23 while keeping the oldest tuple directly available at the output.
+
+## Instruction for generator
+In the editable top, replace circular storage and variable-indexed reads with three explicit `{data,last}` entries kept in oldest-to-newest order. On pop, shift remaining entries toward the output; on push, place the accepted tuple at the resulting tail, handling simultaneous push/pop and empty capture without bypass. Preserve the fixed interface, `// @latency 1`, capacity, handshakes, reset behavior, output stall stability, and all defined cycle behavior; the experiment succeeds only if it passes every gate, closes setup and hold timing, and uses fewer than 23 LUTs.

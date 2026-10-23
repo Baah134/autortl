@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_3:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 3\n## Contract check\n- Behavioral verification: PASS \u2014 authoritative ladder is ALIVE; simulation passed.\n- Interface and latency annotation: PASS \u2014 top interface is preserved and `// @latency 1` matches the known declared latency.\n- Compile and elaboration: PASS \u2014 required tools exited successfully.\n- Metric integrity: PASS \u2014 routed reports are retained and the process exit gate passed.\n- Timing feasibility: PASS \u2014 timing_met=true, WNS=0.333 ns and WHS=0.115 ns.\n- Objective improvement: FAIL \u2014 both candidate and previous best are timing-feasible; candidate LUTs increased from 23 to 27, so it does not strictly improve `minimize_luts`.\n## Summary\n- Passed: 5 of 6\n- Failed: 1 of 6\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes behavioral and promotion gates, but the previous best was already timing-feasible. Since the candidate uses more LUTs (27 versus 23), it fails the required strict improvement for the selected objective.",
+      "recommendation": "REJECT",
+      "passed": 5,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

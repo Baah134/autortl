@@ -1,0 +1,744 @@
+{
+  "allowed_flow_variations": "The harness may enable retiming or physical optimization. The candidate's retained synthesis script is authoritative for its actual settings.",
+  "authority": "Harness evidence is fixed. Proposed architectural goals cannot redefine it.",
+  "baseline_metrics": {
+    "bram_total": 50.0,
+    "bram_used": 0.0,
+    "dsp_total": 90,
+    "dsp_used": 0,
+    "dynamic_power_w": 0.015,
+    "ff_pct": 0.014423076923076924,
+    "ff_total": 41600,
+    "ff_used": 6,
+    "lut_pct": 0.07211538461538461,
+    "lut_total": 20800,
+    "lut_used": 15,
+    "sim_error": "",
+    "sim_passed": true,
+    "synth_error": "",
+    "timing_met": false,
+    "total_power_w": 0.085,
+    "whs_ns": 0.167,
+    "wns_ns": -0.946
+  },
+  "build_spec": {
+    "authority": "Complete resolved typed build contract. Defined behavior is mandatory; explicitly unspecified cases remain unspecified. Frozen implementation identities do not turn incidental values in unspecified cases into requirements.",
+    "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\design_spec.json",
+    "resolved_spec": {
+      "connections": [],
+      "external_ports": [
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "clk",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "rst",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "in_data",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 8
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "in_last",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "in_valid",
+          "packed_dimensions": null,
+          "protocol": "valid_ready",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "output",
+          "name": "in_ready",
+          "packed_dimensions": null,
+          "protocol": "valid_ready",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "output",
+          "name": "out_data",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 8
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "output",
+          "name": "out_last",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "output",
+          "name": "out_valid",
+          "packed_dimensions": null,
+          "protocol": "valid_ready",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "out_ready",
+          "packed_dimensions": null,
+          "protocol": "valid_ready",
+          "signed": false,
+          "width": 1
+        }
+      ],
+      "modules": [
+        {
+          "behavior": "Parameterized synchronous elastic packet-tagged FIFO, public parameters WIDTH=8 and DEPTH=3 in that order. Supported experiment domain: integer WIDTH 1..16 and DEPTH 1..8. Input/output data ports must remain symbolic [WIDTH-1:0]; last ports remain one bit. DEPTH controls actual capacity, pointer wrap and occupancy. Preserve all supported parameter behavior, not only defaults. At rising clk, synchronous active-high rst discards all queued tuples and overrides transfers; reset has no effect between edges. Otherwise accept the atomic tuple (in_data,in_last) on in_valid && in_ready and retire (out_data,out_last) on out_valid && out_ready sampled before the edge. out_valid equals (occupancy != 0), in_ready equals (occupancy < DEPTH) || out_ready. This is a combinational ready path; full simultaneous pop/push is legal and must preserve occupancy. While valid, out_data and out_last are exactly the oldest unretired accepted tuple, preserving order, multiplicity, every data bit and every last bit together. Keep out_valid, out_data and out_last stable under output stall until transfer or reset. Invalid out_data and out_last are unspecified. Last is an ordinary payload marker, not a handshake or a store-and-forward condition: present queued beats without waiting for a last-marked beat, allow zero or consecutive last markers, and never invent or infer a marker from the data. Reset may discard a partial packet without manufacturing a last-marked output. No empty bypass: a new tuple captured into an empty queue becomes valid only after capture, with earliest output transfer at the following edge (minimum age 1). Sustain one push and pop per cycle when nonempty and downstream ready. Explicitly wrap at DEPTH-1; do not assume power-of-two depth or truncate data to eight bits. For Python scoreboard oracle ONLY, each non-reset step represents one accepted input transaction: return its eventual identical out_data masked to default WIDTH and out_last masked to one bit. The oracle does not simulate occupancy, ready/valid scheduling, stalls or a delay queue; RTL must still implement all temporal behavior above. init() represents reset state and supplied rst must be handled. The independent temporal testbench checks the default wrapper and additional child parameter configurations.",
+          "clock_domains": [
+            "clk"
+          ],
+          "compare_mode": "scoreboard",
+          "examples": [
+            {
+              "after_cycles": 1,
+              "expected": {
+                "out_data": 0,
+                "out_last": 0
+              },
+              "inputs": {
+                "in_data": 0,
+                "in_last": 0,
+                "in_valid": 1,
+                "out_ready": 1,
+                "rst": 0
+              }
+            },
+            {
+              "after_cycles": 1,
+              "expected": {
+                "out_data": 0,
+                "out_last": 1
+              },
+              "inputs": {
+                "in_data": 0,
+                "in_last": 1,
+                "in_valid": 1,
+                "out_ready": 1,
+                "rst": 0
+              }
+            },
+            {
+              "after_cycles": 1,
+              "expected": {
+                "out_data": 255,
+                "out_last": 0
+              },
+              "inputs": {
+                "in_data": 255,
+                "in_last": 0,
+                "in_valid": 1,
+                "out_ready": 1,
+                "rst": 0
+              }
+            },
+            {
+              "after_cycles": 1,
+              "expected": {
+                "out_data": 255,
+                "out_last": 1
+              },
+              "inputs": {
+                "in_data": 255,
+                "in_last": 1,
+                "in_valid": 1,
+                "out_ready": 1,
+                "rst": 0
+              }
+            },
+            {
+              "after_cycles": 1,
+              "expected": {
+                "out_data": 165,
+                "out_last": 1
+              },
+              "inputs": {
+                "in_data": 165,
+                "in_last": 1,
+                "in_valid": 1,
+                "out_ready": 1,
+                "rst": 0
+              }
+            },
+            {
+              "after_cycles": 1,
+              "expected": {
+                "out_data": 165,
+                "out_last": 0
+              },
+              "inputs": {
+                "in_data": 165,
+                "in_last": 0,
+                "in_valid": 1,
+                "out_ready": 1,
+                "rst": 0
+              }
+            }
+          ],
+          "golden_model": "",
+          "interface_signature": {
+            "localparams": [],
+            "parameters": [
+              {
+                "default": "8",
+                "name": "WIDTH",
+                "type": ""
+              },
+              {
+                "default": "3",
+                "name": "DEPTH",
+                "type": ""
+              }
+            ],
+            "ports": [
+              {
+                "dimensions": [],
+                "direction": "input",
+                "name": "clk",
+                "signed": false,
+                "value_type": "logic"
+              },
+              {
+                "dimensions": [],
+                "direction": "input",
+                "name": "rst",
+                "signed": false,
+                "value_type": "logic"
+              },
+              {
+                "dimensions": [
+                  [
+                    "WIDTH - 1",
+                    "0"
+                  ]
+                ],
+                "direction": "input",
+                "name": "in_data",
+                "signed": false,
+                "value_type": "logic"
+              },
+              {
+                "dimensions": [],
+                "direction": "input",
+                "name": "in_last",
+                "signed": false,
+                "value_type": "logic"
+              },
+              {
+                "dimensions": [],
+                "direction": "input",
+                "name": "in_valid",
+                "signed": false,
+                "value_type": "logic"
+              },
+              {
+                "dimensions": [],
+                "direction": "output",
+                "name": "in_ready",
+                "signed": false,
+                "value_type": "logic"
+              },
+              {
+                "dimensions": [
+                  [
+                    "WIDTH - 1",
+                    "0"
+                  ]
+                ],
+                "direction": "output",
+                "name": "out_data",
+                "signed": false,
+                "value_type": "logic"
+              },
+              {
+                "dimensions": [],
+                "direction": "output",
+                "name": "out_last",
+                "signed": false,
+                "value_type": "logic"
+              },
+              {
+                "dimensions": [],
+                "direction": "output",
+                "name": "out_valid",
+                "signed": false,
+                "value_type": "logic"
+              },
+              {
+                "dimensions": [],
+                "direction": "input",
+                "name": "out_ready",
+                "signed": false,
+                "value_type": "logic"
+              }
+            ],
+            "version": 1
+          },
+          "latency": 1,
+          "latency_known": true,
+          "name": "packet_fifo_core",
+          "parameters": {
+            "DEPTH": 3,
+            "WIDTH": 8
+          },
+          "ports": [
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "clk",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "rst",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "in_data",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 8
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "in_last",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "in_valid",
+              "packed_dimensions": null,
+              "protocol": "valid_ready",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "in_ready",
+              "packed_dimensions": null,
+              "protocol": "valid_ready",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "out_data",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 8
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "out_last",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "out_valid",
+              "packed_dimensions": null,
+              "protocol": "valid_ready",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "out_ready",
+              "packed_dimensions": null,
+              "protocol": "valid_ready",
+              "signed": false,
+              "width": 1
+            }
+          ],
+          "reset": {
+            "active_high": true,
+            "duration_cycles": 3,
+            "kind": "sync",
+            "signal": "rst"
+          }
+        }
+      ],
+      "top_name": "packet_fifo"
+    },
+    "sha256": "76e3bc02bad38dd3275638a87afb7d90ef7ab2a0fa77d22abfade482cfde8332",
+    "truncated": false
+  },
+  "clock_period_ns": 10.0,
+  "declared_latency": {
+    "cycles": 1,
+    "known": true,
+    "meaning": "A source annotation declares numeric latency only when present. This known/cycles pair is authoritative for the current top module's annotation requirement. Only known=true requires a matching numeric top annotation. Child typed-module latency does not invent a top annotation for arbitrary aggregate wrappers. When known=false, absence of a top annotation is not a failed or unverifiable criterion. Unannotated numeric latency is UNKNOWN, not zero. Preserve the source's exact observable cycles and registered behavior. Annotation presence or absence alone is not independent proof of behavioral correctness; use the fixed source contract, all defined typed latency/minimum transfer age and deterministic verification, without inventing a numeric requirement.",
+    "source_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\iter_000\\packet_fifo.v",
+    "source_sha256": "05004dedf98516d86c91034a72b940e6b329ee41d3725444a4a4029e6ab1bcf5"
+  },
+  "execution_context": {
+    "dependencies": [
+      {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\modules\\packet_fifo_core\\packet_fifo_core.v",
+        "sha256": "5c845cf286478d0dd8ffc02eb5f9b8381343bc7d3f9095a072d9e43ee72a61e1"
+      }
+    ],
+    "part": "xc7a35tcpg236-1",
+    "period_ns": 10.0,
+    "promotions": {
+      "Designutils 20-1307": "ERROR",
+      "Synth 8-327": "ERROR",
+      "Synth 8-3352": "ERROR",
+      "Synth 8-9873": "ERROR",
+      "VRFC 10-3609": "ERROR"
+    },
+    "synthesis_template": "c9d0bf78e20ec5b5854a3e48a12cb9d6ce15be79e660b27b3bf703670a77197a",
+    "tb": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\inputs\\testbench_path.v",
+      "sha256": "719498712a9307a1bddec2afad4b714800686419686ea937ed3b39663308baf1"
+    },
+    "tools": {
+      "vivado_bin": {
+        "path": "C:\\AMDDesignTools\\2025.2\\Vivado\\bin\\vivado.bat",
+        "sha256": "4f9c05aea82a71c7086a9e5edf01ba16ea70255f69cf3420c58b805ec113e994"
+      },
+      "xelab_bin": {
+        "path": "C:\\AMDDesignTools\\2025.2\\Vivado\\bin\\xelab.bat",
+        "sha256": "512a29ace988992d7fab14ca84f20f0b4515bb69ef1d5fef0a57c5f28b72c9b1"
+      },
+      "xsim_bin": {
+        "path": "C:\\AMDDesignTools\\2025.2\\Vivado\\bin\\xsim.bat",
+        "sha256": "8819fbb54fdf9cbcaaf24c2bf72801b403d5c93e0990ba32408b56c666761d21"
+      },
+      "xvlog_bin": {
+        "path": "C:\\AMDDesignTools\\2025.2\\Vivado\\bin\\xvlog.bat",
+        "sha256": "512a29ace988992d7fab14ca84f20f0b4515bb69ef1d5fef0a57c5f28b72c9b1"
+      }
+    },
+    "top": "packet_fifo"
+  },
+  "first_violated_path_excerpt": {
+    "category": "setup",
+    "destination": "out_last",
+    "fanout": 20,
+    "logic_levels": 2,
+    "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\iter_000\\timing_routed.rpt",
+    "preview_policy": "First complete identifiable violated path in report order, at most 6000 characters. Slack, endpoints, levels and fanout describe this path only, not global WNS/WHS. Resource text is retained verbatim; absent fields are unknown.",
+    "sha256": "499d80da7b3d69f9884e64f3e61ada703ef16ef27137fdf3f4edd5a00835f19a",
+    "slack_ns": -0.946,
+    "source": "u_packet_fifo_core/read_ptr_reg[1]/C",
+    "text": "Slack (VIOLATED) :        -0.946ns  (required time - arrival time)\r\n  Source:                 u_packet_fifo_core/read_ptr_reg[1]/C\r\n                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@5.000ns period=10.000ns})\r\n  Destination:            out_last\r\n                            (output port clocked by clk  {rise@0.000ns fall@5.000ns period=10.000ns})\r\n  Path Group:             clk\r\n  Path Type:              Max at Slow Process Corner\r\n  Requirement:            10.000ns  (clk rise@10.000ns - clk rise@0.000ns)\r\n  Data Path Delay:        6.271ns  (logic 3.537ns (56.406%)  route 2.734ns (43.594%))\r\n  Logic Levels:           2  (OBUF=1 RAMD32=1)\r\n  Output Delay:           0.000ns\r\n  Clock Path Skew:        -4.639ns (DCD - SCD + CPR)\r\n    Destination Clock Delay (DCD):    0.000ns = ( 10.000 - 10.000 ) \r\n    Source Clock Delay      (SCD):    4.639ns\r\n    Clock Pessimism Removal (CPR):    0.000ns\r\n  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE\r\n    Total System Jitter     (TSJ):    0.071ns\r\n    Total Input Jitter      (TIJ):    0.000ns\r\n    Discrete Jitter          (DJ):    0.000ns\r\n    Phase Error              (PE):    0.000ns\r\n\r\n    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)\r\n  -------------------------------------------------------------------    -------------------\r\n                         (clock clk rise edge)        0.000     0.000 r  \r\n    M18                                               0.000     0.000 r  clk (IN)\r\n                         net (fo=0)                   0.000     0.000    clk\r\n    M18                  IBUF (Prop_ibuf_I_O)         0.938     0.938 r  clk_IBUF_inst/O\r\n                         net (fo=1, routed)           1.972     2.910    clk_IBUF\r\n    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.096     3.006 r  clk_IBUF_BUFG_inst/O\r\n                         net (fo=20, routed)          1.633     4.639    u_packet_fifo_core/clk_IBUF_BUFG\r\n    SLICE_X3Y14          FDRE                                         r  u_packet_fifo_core/read_ptr_reg[1]/C\r\n  -------------------------------------------------------------------    -------------------\r\n    SLICE_X3Y14          FDRE (Prop_fdre_C_Q)         0.419     5.058 r  u_packet_fifo_core/read_ptr_reg[1]/Q\r\n                         net (fo=11, routed)          0.867     5.925    u_packet_fifo_core/last_mem_reg_0_3_0_0/DPRA1\r\n    SLICE_X2Y15          RAMD32 (Prop_ramd32_RADR1_O)\r\n                                                      0.321     6.246 r  u_packet_fifo_core/last_mem_reg_0_3_0_0/DP/O\r\n                         net (fo=1, routed)           1.867     8.113    out_last_OBUF\r\n    R18                  OBUF (Prop_obuf_I_O)         2.797    10.910 r  out_last_OBUF_inst/O\r\n                         net (fo=0)                   0.000    10.910    out_last\r\n    R18                                                               r  out_last (OUT)\r\n  -------------------------------------------------------------------    -------------------\r\n\r\n                         (clock clk rise edge)       10.000    10.000 r  \r\n                         clock pessimism              0.000    10.000    \r\n                         clock uncertainty           -0.035     9.965    \r\n                         output delay                -0.000     9.965    \r\n  -------------------------------------------------------------------\r\n                         required time                          9.965    \r\n                         arrival time                         -10.910    \r\n  -------------------------------------------------------------------\r\n                         slack                                 -0.946    ",
+    "truncated": false
+  },
+  "flow_and_constraints": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\iter_000\\synth.tcl",
+      "sha256": "cad25ed0961b56ddd61e738c11bea4b649e35111410bd4ebd57809c6a0f2816b",
+      "text": "set_msg_config -id {VRFC 10-3609} -new_severity ERROR\r\nset_msg_config -id {Synth 8-9873} -new_severity ERROR\r\nset_msg_config -id {Designutils 20-1307} -new_severity ERROR\r\nset_msg_config -id {Synth 8-327} -new_severity ERROR\r\nset_msg_config -id {Synth 8-3352} -new_severity ERROR\r\nset_part xc7a35tcpg236-1\r\nread_verilog \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-packet-01/iter_000/packet_fifo.v\" \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-packet-01/modules/packet_fifo_core/packet_fifo_core.v\"\r\nset fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-packet-01/iter_000/timing.xdc\" w]\r\nputs $fp {create_clock -period 10.000 -name clk [get_ports clk]}\r\nclose $fp\r\nread_xdc \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-packet-01/iter_000/timing.xdc\"\r\nsynth_design -top packet_fifo -flatten_hierarchy rebuilt \r\nset fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-packet-01/iter_000/timing_io.tcl\" w]\r\nputs $fp {set data_inputs [get_ports -filter {DIRECTION == IN && NAME != clk}]}\r\nputs $fp {if {[llength $data_inputs] > 0} {set_input_delay -clock clk -max 0.000 $data_inputs; set_input_delay -clock clk -min 0.000 $data_inputs}}\r\nputs $fp {if {[llength [all_outputs]] > 0} {set_output_delay -clock clk -max 0.000 [all_outputs]; set_output_delay -clock clk -min 0.000 [all_outputs]}}\r\nclose $fp\r\nsource \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-packet-01/iter_000/timing_io.tcl\"\r\nreport_utilization -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-packet-01/iter_000/utilization.rpt\"\r\nreport_timing_summary -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-packet-01/iter_000/timing.rpt\"\r\nopt_design\r\nplace_design\r\n\r\nroute_design\r\nreport_utilization -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-packet-01/iter_000/utilization_routed.rpt\"\r\nreport_timing_summary -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-packet-01/iter_000/timing_routed.rpt\"\r\nreport_design_analysis -logic_level_distribution -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-packet-01/iter_000/design_analysis.rpt\"\r\nreport_power -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-packet-01/iter_000/power.rpt\"\r\ncatch { report_methodology -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-packet-01/iter_000/methodology.rpt\" }\r\ncatch { report_qor_suggestions -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-packet-01/iter_000/qor_suggestions.rpt\" }\r\nputs \"SYNTH_COMPLETE\"\r\n",
+      "truncated": false
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\iter_000\\timing.xdc",
+      "sha256": "fa142c09f0fadb5e303ca9fea08c02bc353451533e44aeee9cd9a0231cc8bede",
+      "text": "create_clock -period 10.000 -name clk [get_ports clk]\r\n",
+      "truncated": false
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\iter_000\\timing_io.tcl",
+      "sha256": "6b38098841a48bbb3ab15de49d2bf2baf7e4384f599259ff5f3afa2c2b1daf00",
+      "text": "set data_inputs [get_ports -filter {DIRECTION == IN && NAME != clk}]\r\nif {[llength $data_inputs] > 0} {set_input_delay -clock clk -max 0.000 $data_inputs; set_input_delay -clock clk -min 0.000 $data_inputs}\r\nif {[llength [all_outputs]] > 0} {set_output_delay -clock clk -max 0.000 [all_outputs]; set_output_delay -clock clk -min 0.000 [all_outputs]}\r\n",
+      "truncated": false
+    }
+  ],
+  "hard_gates": [
+    "Preserve typed build spec defined behavior, ports, parameter defaults, reset and observable cycles; explicitly unspecified cases remain unspecified.",
+    "Use the fixed provided testbench, tools, device and constraints without modification.",
+    "Static/interface checks, compile, simulation and real routed metric integrity must pass.",
+    "Timing closure requires setup slack >= 0 and hold slack >= 0.",
+    "Unknown or absent evidence cannot count as success."
+  ],
+  "metric_provenance": "Structured metrics are parsed from retained reports; routed utilization/timing reports take precedence when present. The manifest identifies complete files by hash. Header excerpts are bounded previews, not complete reports or an independent metric source.",
+  "objective": "minimize_luts",
+  "objective_policy": "First establish timing feasibility. A verified timing-feasible candidate may replace a known timing-infeasible previous best even with higher area or power; classify this as timing_recovery, not objective savings. Once both are timing-feasible, require strict improvement of the chosen objective. Unknown or contradictory incumbent timing evidence cannot establish recovery. A completed experiment may find no improvement. Do not invent mandatory savings, slack margins, tool versions, timing corners, new tests, thresholds, code-style quotas or external environment requirements.",
+  "part": "xc7a35tcpg236-1",
+  "report_headers": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\iter_000\\power.rpt",
+      "sha256": "9efa09cc6f747e70b2c6cb8f3a9b765786ae403f2b0e8c4b18953d8209908f83",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n-------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version     : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date             : Thu Oct 22 20:47:37 2026\r\n| Host             : Baah running 64-bit major release  (build 9200)\r\n| Command          : report_power -file C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-packet-01/iter_000/power.rpt\r\n| Design           : packet_fifo\r\n| Device           : xc7a35tcpg236-1\r\n| Design State     : routed\r\n| Grade            : commercial\r\n| Process          : typical\r\n| Characterization : Production\r\n-------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nPower Report\r\n\r\nTable of Contents\r\n-----------------\r\n1. Summary\r\n1.1 On-Chip Components\r\n1.2 Power Supply Summary\r\n1.3 Confidence Level\r\n2. Settings\r\n2.1 Environment\r\n2.2 Clock Constraints\r\n3. Detailed Reports\r\n3.1 By Hierarchy\r\n\r\n1. Summary\r\n----------\r\n\r\n+--------------------------+--------------+\r\n| Total On-Chip Power (W)  | 0.085        |\r\n| Design Power Budget (W)  | Unspecified* |\r\n| Power Budget Margin (W)  | NA           |\r\n| Dynamic (W)              | 0.015        |\r\n| Device Static (W)        | 0.070        |\r\n| Effective TJA (C/W)      | 5.0          |\r\n| Max Ambient (C)          | 84.6         |\r\n| Junction Temperature (C) | 25.4         |\r\n| Confidence Level         | Low          |\r\n| Setting File             | ---          |\r\n| Simulation Activity File | ---          |\r\n| Design Nets Matched      | NA           |\r\n+",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\iter_000\\timing.rpt",
+      "sha256": "432435ea6ea2f09a57da5cf9e7b19f41c9b2a9b5199b218992add7d657d0eb8e",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n---------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date         : Thu Oct 22 20:47:00 2026\r\n| Host         : Baah running 64-bit major release  (build 9200)\r\n| Command      : report_timing_summary -file C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-packet-01/iter_000/timing.rpt\r\n| Design       : packet_fifo\r\n| Device       : 7a35t-cpg236\r\n| Speed File   : -1  PRODUCTION 1.23 2018-06-13\r\n| Design State : Synthesized\r\n---------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nTiming Summary Report\r\n\r\n------------------------------------------------------------------------------------------------\r\n| Timer Settings\r\n| --------------\r\n------------------------------------------------------------------------------------------------\r\n\r\n  Enable Multi Corner Analysis               :  Yes\r\n  Enable Pessimism Removal                   :  Yes\r\n  Pessimism Removal Resolution               :  Nearest Common Node\r\n  Enable Input Delay Default Clock           :  No\r\n  Enable Preset / Clear Arcs                 :  No\r\n  Disable Flight Delays                      :  No\r\n  Ignore I/O Paths                           :  No\r\n  Timing Early Launch at Borrowing Latches   :  No\r\n  Borrow Time for Max Delay Exceptions       :  Yes\r\n  Merge Timing Exceptions                    :  Yes\r\n  Inter-SLR Compensation                     :  Conservative\r\n\r\n  Corner  Analyze    Analyze    \r\n  Name    Max Pat",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\iter_000\\timing_routed.rpt",
+      "sha256": "499d80da7b3d69f9884e64f3e61ada703ef16ef27137fdf3f4edd5a00835f19a",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date         : Thu Oct 22 20:47:36 2026\r\n| Host         : Baah running 64-bit major release  (build 9200)\r\n| Command      : report_timing_summary -file C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-packet-01/iter_000/timing_routed.rpt\r\n| Design       : packet_fifo\r\n| Device       : 7a35t-cpg236\r\n| Speed File   : -1  PRODUCTION 1.23 2018-06-13\r\n| Design State : Routed\r\n------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nTiming Summary Report\r\n\r\n------------------------------------------------------------------------------------------------\r\n| Timer Settings\r\n| --------------\r\n------------------------------------------------------------------------------------------------\r\n\r\n  Enable Multi Corner Analysis               :  Yes\r\n  Enable Pessimism Removal                   :  Yes\r\n  Pessimism Removal Resolution               :  Nearest Common Node\r\n  Enable Input Delay Default Clock           :  No\r\n  Enable Preset / Clear Arcs                 :  No\r\n  Disable Flight Delays                      :  No\r\n  Ignore I/O Paths                           :  No\r\n  Timing Early Launch at Borrowing Latches   :  No\r\n  Borrow Time for Max Delay Exceptions       :  Yes\r\n  Merge Timing Exceptions                    :  Yes\r\n  Inter-SLR Compensation                     :  Conservative\r\n\r\n  Corner  Analyze    Analyze    \r\n  Name   ",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\iter_000\\utilization.rpt",
+      "sha256": "2b5ac51f072d1ffc2cf587db8b7dfd7897f19f1faac5f326a5ae7b1b00c51b3f",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\n---------------------------------------------------------------------------------------------------------------------------------------------\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\n| Date         : Thu Oct 22 20:47:00 2026\n| Host         : Baah running 64-bit major release  (build 9200)\n| Command      : report_utilization -file C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-packet-01/iter_000/utilization.rpt\n| Design       : packet_fifo\n| Device       : xc7a35tcpg236-1\n| Speed File   : -1\n| Design State : Synthesized\n---------------------------------------------------------------------------------------------------------------------------------------------\n\nUtilization Design Information\n\nTable of Contents\n-----------------\n1. Slice Logic\n1.1 Summary of Registers by Type\n2. Memory\n3. DSP\n4. IO and GT Specific\n5. Clocking\n6. Specific Feature\n7. Primitives\n8. Black Boxes\n9. Instantiated Netlists\n\n1. Slice Logic\n--------------\n\n+----------------------------+------+-------+------------+-----------+-------+\n|          Site Type         | Used | Fixed | Prohibited | Available | Util% |\n+----------------------------+------+-------+------------+-----------+-------+\n| Slice LUTs*                |   16 |     0 |          0 |     20800 |  0.08 |\n|   LUT as Logic             |    6 |     0 |          0 |     20800 |  0.03 |\n|   LUT as Memory            |   10 |     0 |          0 |      9600 |  0.10 |\n|     LUT as Distributed RAM |   10 |     0 |            |           |       |\n|     LUT as Shift Register  |    0 |     0 |            |           |       |\n| Slice Registers            |    6 |     0 |",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\iter_000\\utilization_routed.rpt",
+      "sha256": "87bb3b2a64d0ba6ac078040953197a4962690755cb0787036b3af3d9e99ca90b",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\n--------------------------------------------------------------------------------------------------------------------------------------------------\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\n| Date         : Thu Oct 22 20:47:36 2026\n| Host         : Baah running 64-bit major release  (build 9200)\n| Command      : report_utilization -file C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-packet-01/iter_000/utilization_routed.rpt\n| Design       : packet_fifo\n| Device       : xc7a35tcpg236-1\n| Speed File   : -1\n| Design State : Routed\n--------------------------------------------------------------------------------------------------------------------------------------------------\n\nUtilization Design Information\n\nTable of Contents\n-----------------\n1. Slice Logic\n1.1 Summary of Registers by Type\n2. Slice Logic Distribution\n3. Memory\n4. DSP\n5. IO and GT Specific\n6. Clocking\n7. Specific Feature\n8. Primitives\n9. Black Boxes\n10. Instantiated Netlists\n\n1. Slice Logic\n--------------\n\n+----------------------------+------+-------+------------+-----------+-------+\n|          Site Type         | Used | Fixed | Prohibited | Available | Util% |\n+----------------------------+------+-------+------------+-----------+-------+\n| Slice LUTs                 |   15 |     0 |          0 |     20800 |  0.07 |\n|   LUT as Logic             |    7 |     0 |          0 |     20800 |  0.03 |\n|   LUT as Memory            |    8 |     0 |          0 |      9600 |  0.08 |\n|     LUT as Distributed RAM |    8 |     0 |            |           |       |\n|     LUT as Shift Register  |    0 |     0 |            |           |       |\n| Sl",
+      "truncated": true
+    }
+  ],
+  "report_manifest": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\iter_000\\power.rpt",
+      "sha256": "9efa09cc6f747e70b2c6cb8f3a9b765786ae403f2b0e8c4b18953d8209908f83"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\iter_000\\timing.rpt",
+      "sha256": "432435ea6ea2f09a57da5cf9e7b19f41c9b2a9b5199b218992add7d657d0eb8e"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\iter_000\\timing_routed.rpt",
+      "sha256": "499d80da7b3d69f9884e64f3e61ada703ef16ef27137fdf3f4edd5a00835f19a"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\iter_000\\utilization.rpt",
+      "sha256": "2b5ac51f072d1ffc2cf587db8b7dfd7897f19f1faac5f326a5ae7b1b00c51b3f"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\iter_000\\utilization_routed.rpt",
+      "sha256": "87bb3b2a64d0ba6ac078040953197a4962690755cb0787036b3af3d9e99ca90b"
+    }
+  ],
+  "schema_version": 1,
+  "simulation": {
+    "failure_verdict": "TEST FAILED",
+    "required_verdict": "TEST PASSED",
+    "scope": "Provided testbench checks; not a formal equivalence proof.",
+    "tools": [
+      "xvlog",
+      "xelab",
+      "xsim -runall"
+    ]
+  },
+  "sources": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\iter_000\\packet_fifo.v",
+      "sha256": "05004dedf98516d86c91034a72b940e6b329ee41d3725444a4a4029e6ab1bcf5",
+      "text": "// @latency 1\r\n// Inherited minimum accepted-transfer age from transparent typed child wiring; not measured timing.\r\nmodule packet_fifo (\r\n    input wire clk,\r\n    input wire rst,\r\n    input wire [7:0] in_data,\r\n    input wire in_last,\r\n    input wire in_valid,\r\n    output wire in_ready,\r\n    output wire [7:0] out_data,\r\n    output wire out_last,\r\n    output wire out_valid,\r\n    input wire out_ready\r\n);\r\n    packet_fifo_core #( .WIDTH(8), .DEPTH(3) ) u_packet_fifo_core (\r\n        .clk(clk),\r\n        .rst(rst),\r\n        .in_data(in_data),\r\n        .in_last(in_last),\r\n        .in_valid(in_valid),\r\n        .in_ready(in_ready),\r\n        .out_data(out_data),\r\n        .out_last(out_last),\r\n        .out_valid(out_valid),\r\n        .out_ready(out_ready)\r\n    );\r\nendmodule\r\n",
+      "truncated": false
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\modules\\packet_fifo_core\\packet_fifo_core.v",
+      "sha256": "5c845cf286478d0dd8ffc02eb5f9b8381343bc7d3f9095a072d9e43ee72a61e1",
+      "text": "`timescale 1ns/1ps\r\n// @latency 1\r\nmodule packet_fifo_core #(\r\n    parameter WIDTH = 8,\r\n    parameter DEPTH = 3\r\n) (\r\n    input wire clk,\r\n    input wire rst,\r\n    input wire [WIDTH-1:0] in_data,\r\n    input wire in_last,\r\n    input wire in_valid,\r\n    output wire in_ready,\r\n    output wire [WIDTH-1:0] out_data,\r\n    output wire out_last,\r\n    output wire out_valid,\r\n    input wire out_ready\r\n);\r\n\r\n    localparam PTR_WIDTH = (DEPTH <= 1) ? 1 : $clog2(DEPTH);\r\n    localparam COUNT_WIDTH = (DEPTH <= 1) ? 1 : $clog2(DEPTH + 1);\r\n\r\n    reg [WIDTH-1:0] data_mem [0:DEPTH-1];\r\n    reg last_mem [0:DEPTH-1];\r\n\r\n    reg [PTR_WIDTH-1:0] read_ptr;\r\n    reg [PTR_WIDTH-1:0] write_ptr;\r\n    reg [COUNT_WIDTH-1:0] occupancy;\r\n\r\n    wire push;\r\n    wire pop;\r\n\r\n    assign out_valid = (occupancy != 0);\r\n    assign in_ready = (occupancy < DEPTH) || out_ready;\r\n    assign out_data = data_mem[read_ptr];\r\n    assign out_last = last_mem[read_ptr];\r\n\r\n    assign push = in_valid && in_ready;\r\n    assign pop = out_valid && out_ready;\r\n\r\n    always @(posedge clk) begin\r\n        if (rst) begin\r\n            read_ptr <= {PTR_WIDTH{1'b0}};\r\n            write_ptr <= {PTR_WIDTH{1'b0}};\r\n            occupancy <= {COUNT_WIDTH{1'b0}};\r\n        end else begin\r\n            if (push) begin\r\n                data_mem[write_ptr] <= in_data;\r\n                last_mem[write_ptr] <= in_last;\r\n                if (write_ptr == DEPTH - 1)\r\n                    write_ptr <= {PTR_WIDTH{1'b0}};\r\n                else\r\n                    write_ptr <= write_ptr + 1'b1;\r\n            end\r\n\r\n            if (pop) begin\r\n                if (read_ptr == DEPTH - 1)\r\n                    read_ptr <= {PTR_WIDTH{1'b0}};\r\n                else\r\n                    read_ptr <= read_ptr + 1'b1;\r\n            end\r\n\r\n            case ({push, pop})\r\n                2'b10: occupancy <= occupancy + 1'b1;\r\n                2'b01: occupancy <= occupancy - 1'b1;\r\n                default: occupancy <= occupancy;\r\n            endcase\r\n        end\r\n    end\r\n\r\nendmodule",
+      "truncated": false
+    }
+  ],
+  "testbench": {
+    "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\inputs\\testbench_path.v",
+    "sha256": "719498712a9307a1bddec2afad4b714800686419686ea937ed3b39663308baf1",
+    "text": "`timescale 1ns/1ps\r\n// Independent accepted-transaction shift queue. No DUT internals are observed.\r\nmodule packet_fifo_case #(\r\n    parameter WIDTH=8, DEPTH=3, USE_TOP=0, CASE_ID=0\r\n)(input clk, output reg finished=0, output reg failed=0);\r\n    reg rst=1, in_valid=0, in_last=0, out_ready=0;\r\n    reg [WIDTH-1:0] in_data=0;\r\n    wire in_ready, out_valid, out_last;\r\n    wire [WIDTH-1:0] out_data;\r\n    generate\r\n        if (USE_TOP) begin: default_wrapper\r\n            packet_fifo dut(.clk(clk), .rst(rst), .in_data(in_data),\r\n                .in_last(in_last), .in_valid(in_valid), .in_ready(in_ready),\r\n                .out_data(out_data), .out_last(out_last),\r\n                .out_valid(out_valid), .out_ready(out_ready));\r\n        end else begin: parameter_child\r\n            packet_fifo_core #(.WIDTH(WIDTH), .DEPTH(DEPTH)) dut(\r\n                .clk(clk), .rst(rst), .in_data(in_data), .in_last(in_last),\r\n                .in_valid(in_valid), .in_ready(in_ready), .out_data(out_data),\r\n                .out_last(out_last), .out_valid(out_valid), .out_ready(out_ready));\r\n        end\r\n    endgenerate\r\n\r\n    reg [WIDTH-1:0] expected_data [0:DEPTH-1];\r\n    reg expected_last [0:DEPTH-1];\r\n    integer accepted_cycle [0:DEPTH-1];\r\n    integer queued=0, errors=0, checked=0;\r\n    integer accepted=0, retired=0, discarded=0;\r\n    integer accepted_markers=0, retired_markers=0, discarded_markers=0;\r\n    integer full_cycles=0, stalled=0, simultaneous=0, full_simultaneous=0;\r\n    integer boundary_simultaneous=0, full_boundary_simultaneous=0;\r\n    integer ending_stalls=0, ordinary_stalls=0;\r\n    integer idle_tag_changes=0, occupied_resets=0, marker_resets=0;\r\n    integer empty_cycles=0, bubbles=0, max_queued=0, directed_packets=0;\r\n    integer i, j, k, packet_length, shift_index;\r\n    reg model_started=0, push, pop, last_push=0;\r\n    reg pending_valid=0, pending_last=0, previous_idle_tag=0;\r\n    reg [WIDTH-1:0] pending_data=0;\r\n    reg [31:0] seed=32'h9e3779b9 ^ CASE_ID;\r\n\r\n    task fail;\r\n        input [639:0] message;\r\n        begin\r\n            errors=errors+1;\r\n            if (errors<=12)\r\n                $display(\"FAIL case=%0d WIDTH=%0d DEPTH=%0d cycle=%0d queued=%0d: %0s\",\r\n                    CASE_ID, WIDTH, DEPTH, checked, queued, message);\r\n        end\r\n    endtask\r\n\r\n    task check_outputs;\r\n        begin\r\n            if (out_valid !== (queued!=0)) fail(\"nonempty validity / no empty bypass\");\r\n            if (in_ready !== ((queued<DEPTH)||out_ready))\r\n                fail(\"exact capacity / full simultaneous readiness\");\r\n            if (queued>0) begin\r\n                if (out_data !== expected_data[0]) fail(\"oldest full-width data / order / stall stability\");\r\n                if (out_last !== expected_last[0]) fail(\"oldest marker / tuple alignment / stall stability\");\r\n            end\r\n        end\r\n    endtask\r\n\r\n    task step;\r\n        input reset_value, valid_value;\r\n        input [WIDTH-1:0] data_value;\r\n        input last_value, ready_value;\r\n        begin\r\n            @(negedge clk);\r\n            rst=reset_value;\r\n            in_valid=valid_value;\r\n            in_data=data_value;\r\n            in_last=last_value;\r\n            out_ready=ready_value;\r\n            #1;\r\n            // Synchronous reset must not erase the old tuple before capture.\r\n            if (model_started) check_outputs;\r\n            @(posedge clk);\r\n            if (model_started) check_outputs;\r\n            push=in_valid && ((queued<DEPTH)||out_ready);\r\n            pop=(queued>0) && out_ready;\r\n            last_push=0;\r\n            if (rst) begin\r\n                occupied_resets=occupied_resets+(queued>0);\r\n                for (shift_index=0; shift_index<queued; shift_index=shift_index+1) begin\r\n                    discarded_markers=discarded_markers+expected_last[shift_index];\r\n                    marker_resets=marker_resets+expected_last[shift_index];\r\n                end\r\n                discarded=discarded+queued;\r\n                queued=0;\r\n            end else begin\r\n                full_cycles=full_cycles+(queued==DEPTH);\r\n                stalled=stalled+((queued>0)&&!out_ready);\r\n                simultaneous=simultaneous+(push&&pop);\r\n                full_simultaneous=full_simultaneous+((queued==DEPTH)&&push&&pop);\r\n                if (queued>0) begin\r\n                    ending_stalls=ending_stalls+(!out_ready&&expected_last[0]);\r\n                    ordinary_stalls=ordinary_stalls+(!out_ready&&!expected_last[0]);\r\n                    boundary_simultaneous=boundary_simultaneous+\r\n                        (push&&pop&&(in_last!=expected_last[0]));\r\n                    full_boundary_simultaneous=full_boundary_simultaneous+\r\n                        ((queued==DEPTH)&&push&&pop&&(in_last!=expected_last[0]));\r\n                    if (!in_valid&&!out_ready&&(in_last!=previous_idle_tag))\r\n                        idle_tag_changes=idle_tag_changes+1;\r\n                end\r\n                previous_idle_tag=in_last;\r\n                empty_cycles=empty_cycles+(queued==0);\r\n                bubbles=bubbles+!in_valid;\r\n                // Retire the OLD tuple, then append the accepted NEW tuple.\r\n                if (pop) begin\r\n                    if (checked-accepted_cycle[0]<1) fail(\"accepted transfer age below one\");\r\n                    retired_markers=retired_markers+expected_last[0];\r\n                    for (shift_index=0; shift_index<DEPTH-1; shift_index=shift_index+1) begin\r\n                        expected_data[shift_index]=expected_data[shift_index+1];\r\n                        expected_last[shift_index]=expected_last[shift_index+1];\r\n                        accepted_cycle[shift_index]=accepted_cycle[shift_index+1];\r\n                    end\r\n                    queued=queued-1;\r\n                    retired=retired+1;\r\n                end\r\n                if (push) begin\r\n                    expected_data[queued]=in_data;\r\n                    expected_last[queued]=in_last;\r\n                    accepted_cycle[queued]=checked;\r\n                    queued=queued+1;\r\n                    accepted=accepted+1;\r\n                    accepted_markers=accepted_markers+in_last;\r\n                    last_push=1;\r\n                end\r\n            end\r\n            if (queued>max_queued) max_queued=queued;\r\n            if (queued<0 || queued>DEPTH) fail(\"reference bounds\");\r\n            #1;\r\n            model_started=1;\r\n            check_outputs;\r\n            checked=checked+1;\r\n            #1;\r\n        end\r\n    endtask\r\n\r\n    function [31:0] advance;\r\n        input [31:0] value;\r\n        reg [31:0] x;\r\n        begin\r\n            x=value^(value<<13);\r\n            x=x^(x>>17);\r\n            advance=x^(x<<5);\r\n        end\r\n    endfunction\r\n    function [WIDTH-1:0] payload;\r\n        input integer index;\r\n        reg [31:0] value;\r\n        begin\r\n            value=(index*137)+(CASE_ID*53)+32'h1a35;\r\n            payload=value;\r\n        end\r\n    endfunction\r\n\r\n    initial begin\r\n        step(1,0,0,0,0);\r\n        step(1,0,0,0,0);\r\n        // Exact capacity, blocked pending tuple, then OLD retirement / NEW capture.\r\n        // Pending input stays identical throughout every blocked cycle.\r\n        for (i=0; i<DEPTH; i=i+1) step(0,1,payload(i),i[0],0);\r\n        repeat (6) step(0,1,{WIDTH{1'b1}},1,0);\r\n        step(0,1,{WIDTH{1'b1}},1,1);\r\n        for (i=0; i<4*DEPTH+8; i=i+1) step(0,1,payload(i+32),i[0],1);\r\n        repeat (DEPTH+3) step(0,0,0,0,1);\r\n\r\n        // Explicit marker and ordinary stalls. Idle in_last changes are legal\r\n        // and must not leak into an already queued tuple (including DEPTH=1).\r\n        for (j=0; j<2; j=j+1) begin\r\n            step(0,1,payload(90),j[0],0);\r\n            for (i=0; i<8; i=i+1) step(0,0,0,i[0],0);\r\n            step(0,0,0,0,1);\r\n        end\r\n\r\n        // Consecutive packets, including packets longer than every FIFO depth.\r\n        // Positions advance only after actual accepted input; ready=1 gives\r\n        // one acceptance per call even when the FIFO begins full.\r\n        for (j=0; j<6; j=j+1) begin\r\n            case (j)\r\n                0: packet_length=1;\r\n                1: packet_length=2;\r\n                2: packet_length=3;\r\n                3: packet_length=4;\r\n                4: packet_length=7;\r\n                default: packet_length=17;\r\n            endcase\r\n            for (k=0; k<packet_length; k=k+1) begin\r\n                step(0,1,payload(100+k+j*19),k==packet_length-1,1);\r\n                if (!last_push) fail(\"directed packet input not accepted\");\r\n            end\r\n            directed_packets=directed_packets+1;\r\n        end\r\n        // Same data with different tags; alternating markers and single beats.\r\n        repeat (12) step(0,1,{WIDTH{1'b1}},1,1);\r\n        for (i=0; i<32; i=i+1) step(0,1,{WIDTH{1'b1}},i[0],1);\r\n        for (i=0; i<256; i=i+1) step(0,1,payload(i),((i%7)==6),1);\r\n        step(0,1,(1 << (WIDTH-1))|1,0,1);\r\n        repeat (DEPTH+3) step(0,0,0,0,1);\r\n\r\n        // Abort an unfinished packet. Reset dominates even a would-be push/pop.\r\n        for (i=0; i<DEPTH; i=i+1) step(0,1,payload(i+200),0,0);\r\n        step(1,1,{WIDTH{1'b1}},1,1);\r\n        step(0,0,0,1,1);\r\n        // Flush queued endings too; no old marker may survive reset.\r\n        for (i=0; i<DEPTH; i=i+1) step(0,1,payload(i+220),1,0);\r\n        step(1,1,0,0,0);\r\n        step(0,1,payload(240),0,0);\r\n        repeat (DEPTH+3) step(0,0,0,1,1);\r\n\r\n        // Legal producer: a pending valid tuple is held until accepted. Reset\r\n        // may abort it and any partial packet; no manufactured ending is needed.\r\n        for (i=0; i<500; i=i+1) begin\r\n            seed=advance(seed);\r\n            if (!pending_valid || last_push) begin\r\n                pending_valid=seed[0]||seed[3];\r\n                pending_data=seed[WIDTH-1:0];\r\n                pending_last=seed[5];\r\n            end\r\n            step((i==131)||(i==317),pending_valid,pending_data,pending_last,seed[2]||seed[7]);\r\n            if (i==131 || i==317) pending_valid=0;\r\n        end\r\n        if (pending_valid && !last_push) step(0,1,pending_data,pending_last,1);\r\n        repeat (DEPTH+5) step(0,0,0,0,1);\r\n        if (queued!=0 || accepted!=retired+discarded)\r\n            fail(\"final drain / beat conservation\");\r\n        if (accepted_markers!=retired_markers+discarded_markers)\r\n            fail(\"marker conservation\");\r\n        if (checked<850 || accepted<400 || retired<380 || max_queued!=DEPTH ||\r\n            full_cycles<6 || stalled<20 || simultaneous<250 || full_simultaneous<1 ||\r\n            boundary_simultaneous<5 || full_boundary_simultaneous<1 ||\r\n            ending_stalls<8 || ordinary_stalls<8 ||\r\n            idle_tag_changes<8 || empty_cycles<4 || bubbles<2 ||\r\n            occupied_resets<2 || marker_resets<1 || directed_packets!=6)\r\n            fail(\"required scenario coverage missing\");\r\n        $display(\"COVERAGE case=%0d WIDTH=%0d DEPTH=%0d checked=%0d accepted=%0d retired=%0d discarded=%0d accepted_markers=%0d retired_markers=%0d discarded_markers=%0d full=%0d stall=%0d simultaneous=%0d full_simultaneous=%0d boundary_simultaneous=%0d full_boundary_simultaneous=%0d ending_stalls=%0d ordinary_stalls=%0d idle_tag_changes=%0d resets=%0d marker_resets=%0d packets=%0d\",\r\n            CASE_ID,WIDTH,DEPTH,checked,accepted,retired,discarded,\r\n            accepted_markers,retired_markers,discarded_markers,full_cycles,stalled,\r\n            simultaneous,full_simultaneous,boundary_simultaneous,full_boundary_simultaneous,ending_stalls,\r\n            ordinary_stalls,idle_tag_changes,occupied_resets,marker_resets,directed_packets);\r\n        failed=(errors!=0);\r\n        finished=1;\r\n    end\r\nendmodule\r\n\r\nmodule packet_fifo_tb;\r\n    reg clk=0;\r\n    wire [5:0] finished, failed;\r\n    always #5 clk=~clk;\r\n    packet_fifo_case #(.WIDTH(8),.DEPTH(3),.USE_TOP(1),.CASE_ID(0)) default_case(clk,finished[0],failed[0]);\r\n    packet_fifo_case #(.WIDTH(1),.DEPTH(1),.CASE_ID(1)) depth1_case(clk,finished[1],failed[1]);\r\n    packet_fifo_case #(.WIDTH(8),.DEPTH(2),.CASE_ID(2)) depth2_case(clk,finished[2],failed[2]);\r\n    packet_fifo_case #(.WIDTH(8),.DEPTH(4),.CASE_ID(3)) depth4_case(clk,finished[3],failed[3]);\r\n    packet_fifo_case #(.WIDTH(13),.DEPTH(5),.CASE_ID(4)) wide_nonpower_case(clk,finished[4],failed[4]);\r\n    packet_fifo_case #(.WIDTH(16),.DEPTH(8),.CASE_ID(5)) maximum_case(clk,finished[5],failed[5]);\r\n    initial begin\r\n        wait (&finished);\r\n        #1;\r\n        if (failed===6'b000000) $display(\"TEST PASSED\");\r\n        else $display(\"TEST FAILED: packet FIFO matrix failed mask=%b\",failed);\r\n        $finish;\r\n    end\r\n    initial begin\r\n        #100000;\r\n        $display(\"TEST FAILED: packet FIFO matrix watchdog\");\r\n        $finish;\r\n    end\r\nendmodule\r\n",
+    "truncated": false
+  },
+  "testbench_top": "packet_fifo_tb",
+  "tool_exit_evidence": {
+    "history_count": 4,
+    "latest_by_tool": {
+      "vivado": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\iter_000\\vivado_synth_output.log",
+        "output_log_sha256": "9e974684b304fe3cfe46f1f6142b69da86243d2eccef25480f82a433dd1f60fb",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xelab": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\iter_000\\xelab.log",
+        "output_log_sha256": "3e45430198a83c9c94a23c775003232d4d3c6a2c5f0e16cc3b35f7ea6ac3183e",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xsim": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\iter_000\\xsim.log",
+        "output_log_sha256": "26be2c2930fc3ecdc58a783c100b34f862a647c3a0b5290e90c6559ef167580a",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xvlog": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\iter_000\\xvlog.log",
+        "output_log_sha256": "bf7101bf21f854fa46fe2c0e30d4e1ab237df23af2ee0acfc38563f18d7085a7",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      }
+    },
+    "missing_required_tools": [],
+    "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\iter_000\\tool_exit_records.log",
+    "records": [
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\iter_000",
+        "driver_returncode": 0,
+        "elapsed_seconds": 1.844000000000051,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xvlog.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\iter_000\\xvlog.log",
+        "output_log_sha256": "bf7101bf21f854fa46fe2c0e30d4e1ab237df23af2ee0acfc38563f18d7085a7",
+        "pid": 29188,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xvlog"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\iter_000",
+        "driver_returncode": 0,
+        "elapsed_seconds": 6.235000000000127,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xelab.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\iter_000\\xelab.log",
+        "output_log_sha256": "3e45430198a83c9c94a23c775003232d4d3c6a2c5f0e16cc3b35f7ea6ac3183e",
+        "pid": 29660,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xelab"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\iter_000",
+        "driver_returncode": 0,
+        "elapsed_seconds": 3.155999999999949,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xsim.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\iter_000\\xsim.log",
+        "output_log_sha256": "26be2c2930fc3ecdc58a783c100b34f862a647c3a0b5290e90c6559ef167580a",
+        "pid": 27840,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xsim"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\iter_000",
+        "driver_returncode": 0,
+        "elapsed_seconds": 105.65700000000015,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/vivado.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\iter_000\\vivado_synth_output.log",
+        "output_log_sha256": "9e974684b304fe3cfe46f1f6142b69da86243d2eccef25480f82a433dd1f60fb",
+        "pid": 8016,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "vivado"
+      }
+    ],
+    "schema_valid": true,
+    "sha256": "85cb5a850e329b190dfada2fbba8c89ab5b55243b6e40c09e5ac141994384d00",
+    "status": "recorded",
+    "truncated": false
+  },
+  "top_module": "packet_fifo",
+  "verification_logs": [
+    {
+      "head": "INFO: [VRFC 10-2263] Analyzing Verilog file \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-packet-01/iter_000/packet_fifo.v\" into library work\r\nINFO: [VRFC 10-311] analyzing module packet_fifo\r\nINFO: [VRFC 10-2263] Analyzing Verilog file \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-packet-01/modules/packet_fifo_core/packet_fifo_core.v\" into library work\r\nINFO: [VRFC 10-311] analyzing module packet_fifo_core\r\nINFO: [VRFC 10-2263] Analyzing Verilog file \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-packet-01/inputs/testbench_path.v\" into library work\r\nINFO: [VRFC 10-311] analyzing module packet_fifo_case\r\nINFO: [VRFC 10-311] analyzing module packet_fifo_tb\r\n\r\n",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\iter_000\\xvlog.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "bf7101bf21f854fa46fe2c0e30d4e1ab237df23af2ee0acfc38563f18d7085a7",
+      "tail": "",
+      "truncated": false
+    },
+    {
+      "head": "Vivado Simulator v2025.2\r\nCopyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\nCopyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\nRunning: C:/AMDDesignTools/2025.2/Vivado/bin/unwrapped/win64.o/xelab.exe packet_fifo_tb -s packet_fifo_tb_snap --debug off \r\nMulti-threading is on. Using 10 slave threads.\r\nStarting static elaboration\r\nPass Through NonSizing Optimizer\r\nCompleted static elaboration\r\nStarting simulation data flow analysis\r\nCompleted simulation data flow analysis\r\nTime Resolution for simulation is 1ps\r\nCompiling module work.packet_fifo_core_default\r\nCompiling module work.packet_fifo_case(USE_TOP=1)\r\nCompiling module work.packet_fifo_core(WIDTH=1,DEPTH=1...\r\nCompiling module work.packet_fifo_case(WIDTH=1,DEPTH=1...\r\nCompiling module work.packet_fifo_core(DEPTH=2)\r\nCompiling module work.packet_fifo_case(DEPTH=2)\r\nCompiling module work.packet_fifo_core(DEPTH=4)\r\nCompiling module work.packet_fifo_case(DEPTH=4)\r\nCompiling module work.packet_fifo_core(WIDTH=13,DEPTH=...\r\nCompiling module work.packet_fifo_case(WIDTH=13,DEPTH=...\r\nCompiling module work.packet_fifo_core(WIDTH=16,DEPTH=...\r\nCompiling module work.packet_fifo_case(WIDTH=16,DEPTH=...\r\nCompiling module work.packet_fifo_tb\r\nBuilt simulation snapshot packet_fifo_tb_snap\r\n\r\n",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\iter_000\\xelab.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "3e45430198a83c9c94a23c775003232d4d3c6a2c5f0e16cc3b35f7ea6ac3183e",
+      "tail": "",
+      "truncated": false
+    },
+    {
+      "head": "\r\n****** xsim v2025.2 (64-bit)\r\n  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025\r\n  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025\r\n  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025\r\n  **** Start of session at: Thu Oct 22 20:45:50 2026\r\n    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\n    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n\r\nsource xsim.dir/packet_fifo_tb_snap/xsim_script.tcl\r\n# xsim {packet_fifo_tb_snap} -autoloadwcfg -runall\r\nTime resolution is 1 ps\r\nrun -all\r\nCOVERAGE case=1 WIDTH=1 DEPTH=1 checked=901 accepted=672 retired=668 discarded=4 accepted_markers=246 retired_markers=244 discarded_markers=2 full=789 stall=121 simultaneous=603 full_simultaneous=603 boundary_simultaneous=251 full_boundary_simultaneous=251 ending_stalls=56 ordinary_stalls=65 idle_tag_changes=25 resets=4 marker_resets=2 packets=6\r\nCOVERAGE case=2 WIDTH=8 DEPTH=2 checked=912 accepted=695 retired=689 discarded=6 accepted_markers=252 retired_markers=248 discarded_markers=4 full=234 stall=124 simultaneous=599 full_simultaneous=141 boundary_simultaneous=246 full_boundary_simultaneous=74 ending_stalls=55 ordinary_stalls=69 idle_tag_changes=31 resets=4 marker_resets=4 packets=6\r\nCOVERAGE case=0 WIDTH=8 DEPTH=3 checked=923 accepted=727 retired=715 discarded=12 accepted_markers=281 retired_markers=274 discarded_markers=7 full=177 stall=127 simultaneous=623 full_simultaneous=114 boundary_simultaneous=269 full_boundary_simultaneous=68 ending_stalls=63 ordinary_stalls=64 idle_tag_changes=28 resets=4 marker_resets=7 packets=6\r\nCOVERAGE case=3 WIDTH=8 DEPTH=4 checked=934 accepted=735 retired=724 discarded=11 accepted_markers=270 retired_markers=266 discarded_markers=4 full=122 stall=144 simultaneous=623 full_simultaneous=78 boundar",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\iter_000\\sim_log.txt",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "26be2c2930fc3ecdc58a783c100b34f862a647c3a0b5290e90c6559ef167580a",
+      "tail": "l_simultaneous=141 boundary_simultaneous=246 full_boundary_simultaneous=74 ending_stalls=55 ordinary_stalls=69 idle_tag_changes=31 resets=4 marker_resets=4 packets=6\r\nCOVERAGE case=0 WIDTH=8 DEPTH=3 checked=923 accepted=727 retired=715 discarded=12 accepted_markers=281 retired_markers=274 discarded_markers=7 full=177 stall=127 simultaneous=623 full_simultaneous=114 boundary_simultaneous=269 full_boundary_simultaneous=68 ending_stalls=63 ordinary_stalls=64 idle_tag_changes=28 resets=4 marker_resets=7 packets=6\r\nCOVERAGE case=3 WIDTH=8 DEPTH=4 checked=934 accepted=735 retired=724 discarded=11 accepted_markers=270 retired_markers=266 discarded_markers=4 full=122 stall=144 simultaneous=623 full_simultaneous=78 boundary_simultaneous=253 full_boundary_simultaneous=23 ending_stalls=70 ordinary_stalls=74 idle_tag_changes=33 resets=4 marker_resets=4 packets=6\r\nCOVERAGE case=4 WIDTH=13 DEPTH=5 checked=945 accepted=727 retired=712 discarded=15 accepted_markers=275 retired_markers=266 discarded_markers=9 full=107 stall=148 simultaneous=606 full_simultaneous=72 boundary_simultaneous=252 full_boundary_simultaneous=49 ending_stalls=72 ordinary_stalls=76 idle_tag_changes=28 resets=3 marker_resets=9 packets=6\r\nCOVERAGE case=5 WIDTH=16 DEPTH=8 checked=978 accepted=768 retired=746 discarded=22 accepted_markers=307 retired_markers=296 discarded_markers=11 full=129 stall=175 simultaneous=646 full_simultaneous=88 boundary_simultaneous=264 full_boundary_simultaneous=33 ending_stalls=88 ordinary_stalls=87 idle_tag_changes=27 resets=4 marker_resets=11 packets=6\r\nTEST PASSED\r\n$finish called at time : 9788 ns : File \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-packet-01/inputs/testbench_path.v\" Line 262\r\nexit\r\nINFO: [Common 17-206] Exiting xsim at Thu Oct 22 20:45:52 2026...\r\n\r\n",
+      "truncated": false
+    },
+    {
+      "head": "\r\n****** Vivado v2025.2 (64-bit)\r\n  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025\r\n  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025\r\n  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025\r\n  **** Start of session at: Thu Oct 22 20:45:54 2026\r\n    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\n    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n\r\nsource C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-packet-01/iter_000/synth.tcl\r\n# set_msg_config -id {VRFC 10-3609} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-9873} -new_severity ERROR\r\n# set_msg_config -id {Designutils 20-1307} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-327} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-3352} -new_severity ERROR\r\n# set_part xc7a35tcpg236-1\r\nINFO: [Coretcl 2-1500] The part has been set to 'xc7a35tcpg236-1' for the current project only. Run set_part -help for more details. To evaluate different speed grades in the current design, use the set_speed_grade command, or use the open_checkpoint -part command to change the part used by an existing checkpoint design.\r\nset_part: Time (s): cpu = 00:00:12 ; elapsed = 00:00:10 . Memory (MB): peak = 530.008 ; gain = 225.309\r\n# read_verilog \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-packet-01/iter_000/packet_fifo.v\" \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-packet-01/modules/packet_fifo_core/packet_fifo_core.v\"\r\n# set fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-packet-01/iter_000/timing.xdc\" w]\r\n# puts $fp {create_clock -period 10.000 -name clk [get_ports clk]}\r\n# close $fp\r\n# read_xdc \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-packet-01/iter_000/timing.xdc\"\r\n# synth_design",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-packet-01\\iter_000\\vivado_synth_output.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "9e974684b304fe3cfe46f1f6142b69da86243d2eccef25480f82a433dd1f60fb",
+      "tail": "rtl-work/logs/build-golden-packet-01/iter_000/power.rpt\"\r\nCommand: report_power -file C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-packet-01/iter_000/power.rpt\r\nRunning Vector-less Activity Propagation...\r\n\r\nFinished Running Vector-less Activity Propagation\r\n0 Infos, 0 Warnings, 0 Critical Warnings and 0 Errors encountered.\r\nreport_power completed successfully\r\n# catch { report_methodology -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-packet-01/iter_000/methodology.rpt\" }\r\nCommand: report_methodology -file C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-packet-01/iter_000/methodology.rpt\r\nINFO: [Timing 38-35] Done setting XDC timing constraints.\r\nINFO: [DRC 23-133] Running Methodology with 2 threads\r\nINFO: [Vivado_Tcl 2-1520] The results of Report Methodology are in file C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-packet-01/iter_000/methodology.rpt.\r\nreport_methodology completed successfully\r\n# catch { report_qor_suggestions -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-packet-01/iter_000/qor_suggestions.rpt\" }\r\nCommand: report_qor_suggestions -file C:/Users/prince.baah/Downloads/autortl-work/logs/build-golden-packet-01/iter_000/qor_suggestions.rpt\r\nCongestion Prediction Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.010 . Memory (MB): peak = 1978.652 ; gain = 0.000\r\nINFO: [Implflow 47-1309] PredResultString: 1:34.13:65.87\r\nfeatureProvider Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.030 . Memory (MB): peak = 1978.652 ; gain = 0.000\r\nINFO: [Implflow 47-1274] ML strategy prediction is not supported for 7-series devices.\r\nreport_qor_suggestions completed successfully\r\n# puts \"SYNTH_COMPLETE\"\r\nSYNTH_COMPLETE\r\nINFO: [Common 17-206] Exiting Vivado at Thu Oct 22 20:47:37 2026...\r\n\r\n",
+      "truncated": true
+    }
+  ]
+}

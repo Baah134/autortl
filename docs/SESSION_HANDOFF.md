@@ -46,37 +46,45 @@ New fixture:curriculum/tier2/packet_fifo_build.
 - Planned admission:one control+19distinct source faults. They are not19unique
   semantic classes or exhaustive correctness proof. Supervised control-only passed all six configurations; no model/physical result.
 
-## Current validation and next execution
+## Current validation and active job
 
-Packet fixture/driver admission complete: 1,105 tests passed288.12s, integrated
-focus60passed5.09s. Real qualification20/20: correct control passed six selected
-configurations; all19distinct source mutations detected by behavioral assertions,
-with no compile/infra/watchdog kills. Read-only crossreview found no blocker.
-Capture/output truncation faults overlap semantically; no19-class claim.
-All185frozenidentities matched after both jobs. FixtureREADME alone subsequently
-updated admission wording; source-verification.json records its precise hashdelta.
-Archive:evidence/2026-10-22/packet-fifo-admission (202manifestedfiles).
+Published development fixture commit1357a08; GitHub main141c548. Packet01 ran
+from1357a08 with all55 runtime hashes matching. Full regression1105passed288.12s;
+all185 frozen identities matched at completion. Only fixtureREADME wording
+changed afterward, separately recorded. Admission archive202files verified.
 
-Qualification12870 andfullsuite59811 finished0. No vendor/model job active at
-this checkpoint. Existing bounded awakehelper81495 flag remains; expires~01:48UTC
-October23. Coordinator lease renewed8h; scopes in localSQLite. Runtime files
-remain unchanged from85e4fb8; AGENTS/AGENT_HANDOFF add recovery rules only.
+Packet01 DONE: bestiter1 retained,23LUT/31FF,setup+.078ns/hold+.106ns.
+Baseline15LUT/6FF failedsetup-.946ns (hold+.167ns). This is timing_recovery
+with increased area, no overall area saving.13calls,769.639chargedtoolseconds,
+937.551elapsedseconds. Iter2 failedtiming; iter3 feasible27LUT rejectedforarea.
+Churn replan did not create architecture diversity. All original trials retained.
 
-Next fresh generated packet01, no reference seed, with these predeclared budgets:
-3iterations/1candidate,16modelcalls,25toolminutes/35wallminutes,1infraretry,
-Vivado2025.2/xc7a35tcpg236-1/100MHz/idealzeroI/O. Command:
+Generated grader: oracle syntax rejected/repaired attempt2, globalstuckzero
+caught,readinessflip missed; independent caughtsame readinessfault. Separate
+frozen grader measurement passedcontrol+6/6namedmarker assertions with original
+qualification/hash links. No newsidebandengine or role required.
+Savedwinner/declaredchild independent sixconfiguration check passed. ActualDONE
+nominal0;child/spec/Doctorreporttamper1 each,331hashes/fileset/budget restored,
+no extra calls/toolcharges. MeasuredCRLF/savedLF complete normalizedtexts equal.
+Archive:evidence/2026-10-22/generated-packet-attempt-01,421manifestedfiles.
+Read-only source/report review found no blocker. Selectedmatrix not allparameter
+orformalproof; actualDONE is not in-flightkillproof; no heldtier/weakmodelclaim.
 
-```powershell
-python -u run.py build --spec curriculum/tier2/packet_fifo_build/design_spec.json --tb curriculum/tier2/packet_fifo_build/packet_fifo_tb.v --top packet_fifo --generate-golden --objective minimize_luts --iterations 3 --best-of-n 1 --max-llm-calls 16 --max-vivado-minutes 25 --max-wall-minutes 35 --max-infra-retries 1 --vivado C:/AMDDesignTools/2025.2/Vivado/bin/vivado.bat --xvlog C:/AMDDesignTools/2025.2/Vivado/bin/xvlog.bat --xelab C:/AMDDesignTools/2025.2/Vivado/bin/xelab.bat --xsim C:/AMDDesignTools/2025.2/Vivado/bin/xsim.bat --output-dir logs/build-golden-packet-01
-```
+ACTIVE: fresh fulltier0 campaign08, session14413, output
+workspace outputs/AutoRTL-contract-campaign-08.txt. Original budgets perentry:
+1iteration/1candidate,16calls,20tool/30wallminutes,1infraretry; same
+Vivado2025.2/xc7a35tcpg236-1/100MHz/idealzeroI/O. Runtime/spec/tests frozen.
+One vendorqueue; user GUI untouched. No other model/vendor job active.
+Bounded awakehelper81495 flag remains; expires~01:48UTC October23.
+Coordinator lease renewed8h; scopes inSQLite. No runtime implementation change
+since85e4fb8. AGENTS/AGENT_HANDOFF contain explicit context recovery rules.
 
-Freeze source/record commit before launch. Do not edit runtime/spec/TB duringrun.
-After finish measure generated grader against passingcontrol+six named sideband
-faults separately (default globalmutant does not establish marker sensitivity).
-Independently check exactsavedwinner/declaredchildren andactualDONE integrity.
-Fresh fulltier0campaign08 is required before main integration; no higherheldtier.
-Archive actual failures/successes, update feature decisions and push meaningful
-tested progress. No generated packet success/PPA/heldtier is claimed yet.
+Next: poll14413, verify full2/2 campaign and source/cohort/governance identities,
+archive actual outcomes. Final docs/public results and atomic dev/main merge
+only after regression/fulltier0 gate. No higherheldtier. Release awake request
+after queue. Record actual remote heads after push; do not infer publication.
+Future plan: controlled equal-budget repeated-proposal feedback study before
+adding mechanisms/roles. Preserve original packet01 as measured evidence.
 
 Python:C:/Users/prince.baah/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe
 Dependencies:PYTHONPATH=C:/Users/prince.baah/Documents/Codex/2026-10-15/hey/work/review_deps
