@@ -58,7 +58,7 @@ See the [FIFO recovery evidence](evidence/2026-10-22/generated-fifo-attempt-05/R
 [divider verification](evidence/2026-10-23/divider-admission-attempt-02/README.md),
 [packet FIFO build](evidence/2026-10-22/generated-packet-attempt-01/README.md),
 [packet FIFO admission](evidence/2026-10-22/packet-fifo-admission/README.md),
-[fresh full tier 0](evidence/2026-10-22/contract-campaign-08/README.md),
+[fresh full tier 0](evidence/2026-10-23/contract-campaign-09/README.md),
 [accepted optimization](evidence/2026-10-22/contract-campaign-07/README.md),
 [generated-build verification](evidence/2026-10-20/generated-counter/README.md) and
 [streaming build](evidence/2026-10-20/generated-streaming/README.md).

@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Interface and cycle behavior: PASS \u2014 ports, widths, synchronous reset, registered output, and mux behavior are preserved.\n- Top latency annotation: PASS \u2014 authoritative top latency is unknown, so no numeric annotation is required.\n- Deterministic ladder: PASS \u2014 standard ladder reports 5 rungs ALIVE.\n- Compile, elaboration, and simulation: PASS \u2014 required tool exits are zero and simulation reports TEST PASSED.\n- Synthesis completion and process exits: PASS \u2014 successful exits and SYNTH_COMPLETE are recorded.\n- Routed metrics and report integrity: PASS \u2014 retained routed reports and metric provenance are provided.\n- Timing feasibility: PASS \u2014 timing_met is true, WNS is 0.579 ns, and WHS is 0.057 ns.\n- Objective improvement: FAIL \u2014 both candidate and previous best use 8 LUTs; minimize_luts requires a strict reduction when both are timing-feasible.\n\n## Summary\n- Passed: 7 of 8\n- Failed: 1 of 8\n- Improved over previous best: NO\n\n## Recommendation\nREJECT\n\n## Reason\nThe candidate preserves the defined behavior and passes the deterministic verification and timing gates, but it does not improve the selected LUT objective over the already timing-feasible previous best: both use 8 LUTs. The contract requires a strict objective improvement in this case, so the failed criterion prevents acceptance.",
+      "recommendation": "REJECT",
+      "passed": 7,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

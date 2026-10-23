@@ -941,3 +941,17 @@ changes, commands, outcomes, evidence locations, limitations, and next action.
  Preparingnewruntime commit andfreshfulltier0campaign09 using originalperentry
  1iteration/1candidate,16calls,20tool/30wallminutes,1infraretry. Runtimechanged
  so oldstreak2 cannotcarryover. No higherheldtier.
+
+- Published4618887 scoreboardingexamplefix todevelopment; full1226tests andcontrolledcomparisonpassed. Freshfulltier0campaign09 launched71332 onnewruntime, original1iter/16call/20tool/30wallbudgetperentry. Nootheractualtooljob; mainstill044a3d5pendinggate.
+
+- Freshfulltier0campaign09 PASSED2/2,newcohort958d54f4,streak1/heldfalse.
+ Counter55->53LUT/37FF,+.456/.282ns; mux8LUT/8FF,+.579/.052ns retained;
+3calls each. Both55runtimehashes match4618887;193testidentities unchanged.
+ Campaignarchive195files verified; allfive divider/coverage/campaign manifests
+ checked together. Required1226tests+freshfulltier0 gates nowpassed.
+- User asks honestutilityvs copy/paste and Work/Cowork with virtualenvironments.
+ No matchedcomparisonexists. Originaldivider31.6% is ownbaseline improvement,
+ notproofagainstproducts. Nextcomparativeevidence needs identicalmodel/tools/
+ specs/budgets,heldouttests,multipletrials,escapedbugs,humanminutes,cost andPPA.
+ Genericagentscanruntools; specializedverifiedworkflow value mustbemeasured.
+ Preparingauthorizedmainintegration; actualheadsrecordedafterpush.

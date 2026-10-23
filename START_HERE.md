@@ -8,8 +8,8 @@ GitHub integration branch: `main`. Development branch: `codex/contract-context`.
 Current verified checkpoint: **1,226 regression tests passed**.
 FIFO05 recovered timing at22 LUTs/13 FFs, setup0.108 ns/hold0.076 ns; exact
 saved winner passed independent verification and327-identity DONE checks.
-Fresh fulltier0 campaign08 passed2/2: counter55→53 LUTs, mux baseline retained.
-Matching cohort streak2, heldfalse; earlier best counter31 LUTs remains archived.
+Fresh fulltier0 campaign09 passed2/2: counter55→53 LUTs, mux baseline retained.
+New runtime cohort streak1, heldfalse; earlier best counter31 LUTs remains archived.
 No held tier or controlled weak-model result is claimed. Earlier failed trials
 remain archived. Main and development integrated the packet milestone at821afbe; inspect actual Git heads. Packet-tag FIFO admission now passed20/20 expected verdicts across six
 configurations. Generated packet01 recovered timing at23 LUTs/31 FFs,+.078/.106ns; exact
@@ -18,7 +18,7 @@ Current engineering: multi-cycle unsigned divider admitted after21/21 actual
 qualification verdicts. Generated divider01 reduced38->26LUT(31.6%),38FF,+.315/.129ns; independent
 winner and251-identity DONE checks passed. Scoreboard payload-seeding correction
 then passed1226tests and a controlled unchanged-oracle/fault comparison. Fresh
-fulltier0 required on this changed runtime; older streak must not carry forward. Inspect active scopes/jobs in SESSION_HANDOFF.
+fulltier0 now passed on this changed runtime; older streak was not carried forward. Inspect active scopes/jobs in SESSION_HANDOFF.
 Measured runtime85e4fb8/6f3fa7c is unchanged by documentation/evidence commits.
 
 1. Read `AGENTS.md` and `docs/AGENT_HANDOFF.md` for the working contract.

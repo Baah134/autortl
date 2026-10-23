@@ -457,3 +457,11 @@ fault reproduces oldzeroRmiss and newassertion, bothcontrolspass. Detection
 the small deterministic payload selector. Keep independent temporal checker
 for remainingreadiness/resetcoverage; no newengine orrole justified. Full
 example timing/state replay and general mutation completeness remain unclaimed.
+
+Fresh fulltier0campaign09 passed2/2 onnewruntime4618887;newcohortstreak1,
+noheldtier.193testedidentities unchanged. Oldcohortstreaknotcarriedover.
+User's product comparison requires matched empirical trials; generalagents
+with identicaltools may matchorbeat current harness. Keep domain-specific
+verification/measurement/evidence workflow, and measure usereffort and escaped
+bugs before asserting an advantage. Rawunitcounts and selfbaseline PPA gains
+do not establish superiority. No new role/framework is justified by that question.
