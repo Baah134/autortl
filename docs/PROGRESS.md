@@ -957,3 +957,24 @@ changes, commands, outcomes, evidence locations, limitations, and next action.
  Preparingauthorizedmainintegration; actualheadsrecordedafterpush.
 
 - Authorizedatomicmain/dev integration verified at e4894cbb29a264be50916805bcf7855c67c7c78c. Allgatespassed; noownedtooljobs; temporaryawakeflagremoved. Documentation-onlyfollowup recordsactualpublication. Workingbranch remainscodex/contract-context.
+
+
+## October23 — previous-proposal feedback engineering stage
+
+- User requests continued harness-first autonomous FPGA work and meaningful
+  GitHub progress. Recovered actual clean e6dc558 and existing coordinator;
+  no vendor/model jobs. Corrected stale runtime references in START_HERE.
+- Read existing research/decisions and re-read Anthropic primary workflow
+  guidance. Chose the observed packet/divider repetition gap over adding roles.
+  TASKS records six alternating paired runs and explicit keep/remove criteria.
+- Added bounded chronological proposal records and an ablation switch.
+  Standard metrics are captured before Doctor; generated/repaired identities,
+  duplicate skips and rejected trials remain distinct. Immutable feedback and
+  originally observed file digests are checked through replay and DONE.
+- First parent focused run failed collection due test package imports; corrected.
+  Next61 integration/replay tests passed101.98s. Worker helper25passed.34s,
+  config/CLI78passed1.58s. Review added fullpath preservation, duplicate status,
+  exact replay call counts and adversarial late-modification tests.
+- Fullsuite71497 active,202 files frozen; no new model/PPA claim yet.
+
+- Fullsuite1301passed326.44s; all202 source identities unchanged. Archived raw fullsuite output and freeze in evidence/2026-10-23/proposal-feedback-tests-01. No model-benefit or PPA claim; preparing frozen runtime study.

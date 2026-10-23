@@ -16,7 +16,7 @@ from autortl.state import atomic_write_text
 
 ROOT = Path(__file__).resolve().parent
 RESULTS = ROOT / "results.jsonl"
-OVERRIDES = {"vivado_bin", "xvlog_bin", "xelab_bin", "xsim_bin", "target_part",
+OVERRIDES = {"proposal_feedback", "vivado_bin", "xvlog_bin", "xelab_bin", "xsim_bin", "target_part",
              "target_freq_mhz", "objective", "max_iterations", "best_of_n",
              "max_llm_calls", "max_vivado_minutes", "max_wall_minutes", "max_infra_retries"}
 

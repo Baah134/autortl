@@ -3,6 +3,34 @@
 Updated October23,2026 (America/New_York). Recover from actual Git, ownership,
 raw tool results and source hashes. Chat summaries are supplementary.
 
+## Active continuation: previous-proposal feedback (October23)
+
+Parent fullsuite71497 completed:1301passed326.44s on frozen202 files;
+freeze workspace/work/proposal-source-freeze-01.json. No vendor/model job yet.
+Prior61 focused integration/replay tests passed; helper25 and config78 focused
+tests passed separately. Expanded adversarial binding/restart tests passed within that fullsuite.
+All202 source identities matched after the gate. Evidence: proposal-feedback-tests-01.
+
+Implemented bounded planner/generator context from only completed earlier
+iterations; exact and normalized identities, generated vs repaired RTL, standard
+metrics before Doctor, separate trial projection. Feedback input/outcome stages
+are journaled, checked on replay and originally observed source/script/context
+digests bound at DONE. No duplicate ban or role/budget/acceptance change.
+Per-run proposal_feedback defaultTrue, legacy saved configs missing fieldFalse,
+CLI --no-proposal-feedback for ablation; curriculum override included.
+Review corrected dedupe status to duplicate_skipped and retained full filesystem
+paths, clipping only prompt previews. Performance benefit remains unmeasured.
+
+Predeclared3 matched alternating-order divider optimization pairs in TASKS.
+Launcher workspace/work/proposal_study.py; not prepared/launched yet. Uses exact
+original generated baseline wrapper+child concatenated as a standalone source,
+same frozen independently admitted six-width TB, N1/3iter/16calls/25tool/35wall,
+1infra retry. Original completed divider run never resumed or regraded.
+CLIdefault model identity remains unknown unless emitted; exploratoryonly.
+Next: inspect fullsuite result, fix any failures honestly, re-freeze/test if edited;
+then commit frozen runtime, prepare study, run paired trials sequentially, inspect
+every result and exactwinner verification, freshfulltier0 before mainintegration.
+
 ## Checkout and integration
 
 Canonical:C:/Users/prince.baah/Downloads/autortl-work; preserve Downloads/autortl.

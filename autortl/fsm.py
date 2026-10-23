@@ -35,6 +35,7 @@ from .taxonomy import Taxonomy
 from .bestofn import Candidate, mutation_prompts, dedupe, select
 from .objectives import improvement_kind, timing_feasible
 from .candidate_context import candidate_scope
+from .proposal_feedback import record_candidate, render_feedback, source_identity, doctor_summary
 from .timing_doctor import diagnose, TimingCategory
 from . import vivado
 from .vivado import advisor_digest
@@ -143,6 +144,7 @@ class Orchestrator:
         self.cfg = cfg
         self._scope = "initial"
         self._counts = {}
+        self._proposal_artifacts = {}
         self._journal_enabled = False
         if run_dir is None:
             ts = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -357,6 +359,22 @@ class Orchestrator:
     def _model(self, role, name, *args, **kwargs):
         return self._stage("model", role + "." + name,
                            lambda: getattr(getattr(self, role), name)(*args, **kwargs), args, kwargs)
+
+    def _proposal_evidence(self, directory, name, data):
+        """Journal chronological feedback and reject changed/missing saved context."""
+        path = directory / f"proposal_{name}.json"
+        serialized = json.dumps(data, sort_keys=True, indent=2, allow_nan=False)
+        def persist():
+            if path.exists() and path.read_text(encoding="utf-8") != serialized:
+                raise VerificationEvidenceError("Proposal feedback evidence modified: " + str(path))
+            atomic_write_text(path, serialized)
+            return data
+        expected = self._stage("proposal_feedback", name, persist)
+        if (expected != data or not path.is_file()
+                or path.read_text(encoding="utf-8") != serialized):
+            raise VerificationEvidenceError("Proposal feedback evidence missing or modified: " + str(path))
+        self._proposal_artifacts[str(path.resolve())] = hashlib.sha256(serialized.encode("utf-8")).hexdigest()
+        return expected
 
     def _decision(self, name, function):
         return self._stage("decision", name, function)
@@ -726,6 +744,7 @@ class Orchestrator:
         best_artifact_dir = idir
         generation_seed = original
         stall, replans, knobs_tried = 0, 0, False
+        proposal_records = []  # reconstruct only completed earlier iterations during replay
         recent_codes: list[str] = []
         recent_errors: list[str] = []
         last_advisor = advisor_digest(idir, self.taxonomy)   # from baseline synth
@@ -739,6 +758,16 @@ class Orchestrator:
             self._snapshot(phase="GENERATING", iteration=it,
                            best_iteration=best_iter)
             idir = state.iter_dir(it)
+
+            # Snapshot only locally reconstructed past outcomes, never future disk history.
+            proposal_context = render_feedback(proposal_records, generation_seed, it)
+            self._proposal_evidence(idir, "input", {
+                "schema_version": 1, "before_iteration": it,
+                "seed_sha256": source_identity(generation_seed),
+                "enabled": cfg.proposal_feedback,
+                "feedback": proposal_context if cfg.proposal_feedback else ""})
+            for role in (self.planner, self.generator):
+                role.proposal_context = proposal_context if cfg.proposal_feedback else ""
 
             # watchdog + planning
             signals = watchdog_inspect(state.read_designs(), recent_codes,
@@ -763,6 +792,8 @@ class Orchestrator:
                 v = self._model("generator", "generate", contract, generation_seed, instruction,
                                             mtext, self.budget)
                 cands.append(Candidate(verilog=v, mutation=mname))
+            generated_sources = {c.mutation: c.verilog for c in cands}
+            all_candidates = list(cands)
             cands = dedupe(cands)
             recent_codes.extend(c.verilog for c in cands[:1])
 
@@ -785,6 +816,7 @@ class Orchestrator:
                     except (MetricsGateError, TypeError, ValueError, AttributeError) as exc:
                         print(f"[cache] invalid metrics ignored: {exc}")
                     else:
+                        c.cache_hit = True
                         c.metrics = cached_metrics.to_dict()
                         c.artifact_dir = Path(cached_entry["artifact_dir"])
                         c.ladder_rungs_passed = 5
@@ -812,6 +844,10 @@ class Orchestrator:
                 c.ladder_rungs_passed = 5
                 self.metrics_cache.put(c.verilog, c.metrics, context=cache_context, artifact_dir=cdir)
 
+            standard_records = [
+                record_candidate(c, generated_sources[c.mutation], instruction, it,
+                                 cache_hit=getattr(c, "cache_hit", False))
+                for c in all_candidates]
             winner = select(cands, cfg.objective)
             if winner is None or winner.ladder_rungs_passed < 5:
                 if any(c.alive and c.ladder_rungs_passed < 5 for c in cands):
@@ -821,6 +857,11 @@ class Orchestrator:
                     return {"status": "infra_blocked", "iteration": it,
                             "best_iteration": best_iter, "best_metrics": best_m.to_dict(),
                             "run_dir": str(state.run_dir)}
+                proposal_records.append(self._proposal_evidence(idir, "outcome", {
+                    "schema_version": 1, "iteration": it, "instruction": instruction[:600],
+                    "candidates": standard_records, "doctor": None,
+                    "recommendation": "REJECT", "is_best": False,
+                    "selected_source_sha256": None}))
                 stall += 1
                 state.append_progress(it, "no candidate survived the ladder", "REJECT")
                 state.append_design({"iteration": it, "is_best": False,
@@ -935,6 +976,13 @@ class Orchestrator:
                                  "code_hash": code_hash(winner.verilog),
                                  **wm.to_dict()})
 
+            proposal_records.append(self._proposal_evidence(idir, "outcome", {
+                "schema_version": 1, "iteration": it, "instruction": instruction[:600],
+                "candidates": standard_records,
+                "doctor": doctor_summary(self._last_doctor_trial),
+                "recommendation": ev.recommendation, "is_best": is_best,
+                "selected_source_sha256": source_identity(winner.verilog)}))
+
             # ---- restart mechanism ----
             if (ev.recommendation == "RESTART"
                     and stall >= cfg.stall_restart_threshold
@@ -945,6 +993,12 @@ class Orchestrator:
                     f"iter {d['iteration']}: {d.get('recommendation')} "
                     f"LUTs={d.get('lut_used')}"
                     for d in state.read_designs()[-8:])
+                restart_context = render_feedback(proposal_records, original, it + 1)
+                self._proposal_evidence(idir, "restart", {
+                    "schema_version": 1, "before_iteration": it + 1,
+                    "seed_sha256": source_identity(original), "enabled": cfg.proposal_feedback,
+                    "feedback": restart_context if cfg.proposal_feedback else ""})
+                self.planner.proposal_context = restart_context if cfg.proposal_feedback else ""
                 plan = self._model("planner", "restart_plan", contract_md, stall, tried,
                                                  best_m, self.budget)
                 state.write_plan(plan)
@@ -1029,7 +1083,16 @@ class Orchestrator:
                 identities.append(trial["first_violated_path_excerpt"])
             for identity in identities:
                 retain_identity(identity, "Doctor trial evidence")
-        for evidence_path in [state.contract_path, state.run_dir / "harness_facts.json", *state.run_dir.glob("iter_*/evaluation_facts.json"), *retained]:
+        # Preserve observed feedback identities, including non-winning standard
+        # flows that informed later proposals. Never bless changed bytes at DONE.
+        for path, digest in self._proposal_artifacts.items():
+            retain_identity({"path": path, "sha256": digest}, "Proposal feedback evidence")
+        for record in proposal_records:
+            for candidate in record["candidates"]:
+                for key in ("source", "flow_script"):
+                    if candidate.get(key) is not None:
+                        retain_identity(candidate[key], "Standard proposal evidence")
+        for evidence_path in [state.contract_path, state.run_dir / "harness_facts.json", *state.run_dir.glob("iter_*/evaluation_facts.json"), *state.run_dir.glob("iter_*/proposal_*.json"), *retained]:
             if evidence_path.is_file():
                 final_artifacts[str(evidence_path.resolve())] = hashlib.sha256(evidence_path.read_bytes()).hexdigest()
         atomic_write_text(best_path, best_v)

@@ -318,3 +318,33 @@ Original01notresumed/regraded. Fullregression+freshfulltier0 onnewruntime before
 mainintegration; runtimecohortstreakmustreset honestly. Researchbasis: existing
 RESEARCH.md complementarygrader andprecise-evidence decisions; simplestdataflow
 correction ratherthanrole/frameworkexpansion.
+
+## October23: bounded previous-proposal feedback study (active)
+
+Observed packet01 exact RTL repetition across all3 iterations, and divider01
+iteration2 duplicate despite an accepted iteration1. Existing instruction and
+current seed omit compact standard-flow outcomes. Keep current roles, cache,
+budget and acceptance; add bounded prior completed iteration feedback only.
+Preserve same RTL with distinct physical settings as a valid experiment.
+Snapshot generated/repaired identities and standard metrics BEFORE Doctor;
+project Doctor separately. Journal input/outcome and bind them at DONE.
+Reconstruct local chronological records on replay; never read future design
+history into an earlier proposal. Feedback cannot change any frozen contract.
+Provide a frozen per-run optout for ablation; old saved configs default off.
+
+Predeclared engineering tests: deterministic bounds, future exclusion, source
+and script identity, infra/design distinction, rejected/accepted Doctor separation,
+multiple candidates, repair identity, incumbent retention, interruption replay
+without extra calls and modified/deleted feedback rejection. Fullsuite and fresh
+fulltier0 after source freeze; no held higher tier exists.
+
+Predeclared live study: three matched pairs on the admitted divider optimizer,
+same frozen saved baseline RTL and independent6width TB, Vivado2025.2,
+xc7a35tcpg236-1/100MHz idealzeroIO, N1/max3iterations/16calls/25tool/35wallminutes,
+feedback off vs on, alternating order. Same CLI default route; actual model is
+unknown unless emitted, so no controlled model-strength claim. No repeated
+budget resets; retain every failure. Compare exact/codehash repetitions,
+distinct verified candidates, accepted improvements, completion, model calls/
+reported tokens and tool/wall seconds. Keep experimental feedback only if
+repetition declines without reduced completion or material added cost; report
+uncertain/negative results and revise/remove if benefit unsupported.

@@ -30,13 +30,15 @@ def _ports_table(spec: ModuleSpec) -> str:
                      for p in spec.ports)
 
 
-def evidence_prompt(role, prompt, include_candidate=False):
+def evidence_prompt(role, prompt, include_candidate=False, include_proposals=False):
     facts = getattr(role, "run_context", "")
     candidate = getattr(role, "candidate_context", "")
     if facts:
         prompt += "\n\n# AUTHORITATIVE HARNESS FACTS (immutable)\n" + facts
     if candidate and include_candidate:
         prompt += "\n\n# CURRENT CANDIDATE EVIDENCE (immutable)\n" + candidate
+    if include_proposals and getattr(role, "proposal_context", ""):
+        prompt += "\n\n# PRIOR PROPOSAL OUTCOMES (advisory)\n" + role.proposal_context
     return prompt
 
 
@@ -79,14 +81,14 @@ class Planner:
             lut_used=best.lut_used, ff_used=best.ff_used, wns_ns=best.wns_ns,
             dsp_used=best.dsp_used, bram_used=best.bram_used,
             signals="\n".join(f"- {s.kind}: {s.detail}" for s in signals) or "(none)")
-        return ask("planner", evidence_prompt(self, p), system=role_system(prompts.PLANNER_SYSTEM), budget=budget)
+        return ask("planner", evidence_prompt(self, p, include_proposals=True), system=role_system(prompts.PLANNER_SYSTEM), budget=budget)
 
     def restart_plan(self, contract, stall_count, tried, best: VivadoMetrics,
                      budget) -> str:
         p = prompts.RESTART_PLAN.format(contract=contract, stall_count=stall_count,
                                         tried=tried, lut_used=best.lut_used,
                                         ff_used=best.ff_used, wns_ns=best.wns_ns)
-        return ask("planner", evidence_prompt(self, p), system=role_system(prompts.PLANNER_SYSTEM), budget=budget)
+        return ask("planner", evidence_prompt(self, p, include_proposals=True), system=role_system(prompts.PLANNER_SYSTEM), budget=budget)
 
 
 class Generator:
@@ -108,7 +110,7 @@ class Generator:
             interface_signature=json.dumps(module.interface_signature, sort_keys=True),
             reset_desc=f"{r.kind}, active_{'high' if r.active_high else 'low'} '{r.signal}'",
             mutation=mutation_text, instruction=instruction, verilog=verilog)
-        resp = ask("generator", evidence_prompt(self, p), system=role_system(prompts.GENERATOR_SYSTEM),
+        resp = ask("generator", evidence_prompt(self, p, include_proposals=True), system=role_system(prompts.GENERATOR_SYSTEM),
                    budget=budget)
         return generated_rtl(resp)
 

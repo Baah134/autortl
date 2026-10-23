@@ -143,7 +143,10 @@ one sentence
 the immutable harness facts, fixed contract and frozen compilation boundary.
 Respect explicit unspecified cases in supplied build specifications; do not invent
 extra behavioral requirements. Use retained trial evidence to avoid repeating an
-unchanged failed experiment."""
+unchanged failed experiment. Prior proposal outcomes are advisory observations,
+not new contract requirements. Name a concrete change from an already tried
+proposal when appropriate; identical RTL remains valid for different physical
+settings, and a new source hash alone does not establish an improvement."""
 
 RESTART_PLAN = """The loop has stalled ({stall_count} iterations without improvement).
 # Contract

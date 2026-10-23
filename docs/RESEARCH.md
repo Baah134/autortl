@@ -96,3 +96,12 @@ matrix must pass its supervised control and detect each planned behavioral
 fault through simulation assertions. Never count a compile error as a killed
 behavioral mutant or discard a miss from the denominator. Keep frozen tests
 through the model trial. A new runtime mechanism is unnecessary at this point.
+
+## October23: bounded proposal feedback experiment
+
+Re-read Anthropic's primary Building effective agents guidance
+(https://www.anthropic.com/research/building-effective-agents): simple workflows,
+environment feedback and measured complexity. Our inference: packet/divider
+repetition warrants compact measured prior-proposal context before any new
+agent or population mechanism. TASKS predeclares paired trials and removal
+criterion. This source supplies a design rationale, not evidence of AutoRTL gain.

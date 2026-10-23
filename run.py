@@ -39,6 +39,9 @@ def main(argv=None):
     common.add_argument("--max-vivado-minutes", type=float)
     common.add_argument("--max-wall-minutes", type=float)
     common.add_argument("--max-infra-retries", type=int)
+    common.add_argument("--no-proposal-feedback", action="store_false",
+                        dest="proposal_feedback", default=None,
+                        help="disable prior-proposal context for a new run (controlled ablation)")
     common.add_argument("--route", help="unsupported: routing is Codex-only")
 
     p_opt = sub.add_parser("optimize", parents=[common])
@@ -77,8 +80,10 @@ def main(argv=None):
                  "best_of_n": "best_of_n", "vivado": "vivado_bin", "xvlog": "xvlog_bin",
                  "xelab": "xelab_bin", "xsim": "xsim_bin", "max_llm_calls": "max_llm_calls",
                  "max_vivado_minutes": "max_vivado_minutes", "max_wall_minutes": "max_wall_minutes",
-                 "max_infra_retries": "max_infra_retries"}
-        kw = {dest: getattr(a, source) for source, dest in names.items() if hasattr(a, source)}
+                 "max_infra_retries": "max_infra_retries",
+                 "proposal_feedback": "proposal_feedback"}
+        kw = {dest: getattr(a, source) for source, dest in names.items()
+              if hasattr(a, source) and getattr(a, source) is not None}
         for key in ("max_iterations", "best_of_n", "target_freq_mhz"):
             if key in kw and (not math.isfinite(kw[key]) or kw[key] <= 0):
                 ap.error(f"{key} must be positive")
