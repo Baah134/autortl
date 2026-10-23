@@ -352,3 +352,20 @@ original comments for static inference so malformed metadata is rejected as a
 design issue, not raised after that boundary. The supported lexical subset and
 no-top multi-module unknown result are explicit; no general Verilog elaborator
 was added. Read-only final integration review found no blocker.
+
+## FIFO05 measured feature decision
+
+Keep exact path/spec evidence and top annotation authority: firstplan named real
+RAMreadpath and requiredmatchingheader; allactualreviews passedlatencycriterion.
+Keep separate generatedpayload and independenttemporal graders: payload again
+missed readinessmutation, independent caughtit. Do not claim either provesall
+parametercombinations. Keep boundedDoctor: toolonly-.016ns remainedrejected;
+actualRTLrepair registered equivalentvalidstate and won22LUT/13FF,+.108/.076ns.
+Firstfeasible24LUT shrank8.33%; initialinvalid13LUT is notanareasavingsbaseline.
+Strict timing/objective policy retained priorvalidbest when an initialiter3
+candidate failedsetup. No newrole/framework/threshold was needed.
+ActualDONE nominal/child/spec/Doctorreport tests preserved327identities/budget.
+No-op skip not exercised bythistrial; its regressions remain separate evidence.
+BestofN1 is intentional boundedcost here; diversity/cache/weakmodel ablations
+are not established by thisrun. Nextcomplexity packet-tagFIFO can reusetheflow
+after freshfulltier0. Mainstillgated; fullsuite1074unchangedruntime.

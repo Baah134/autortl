@@ -756,3 +756,33 @@ changes, commands, outcomes, evidence locations, limitations, and next action.
   unanswered. FIFO05/campaign07 notstarted, no reset budgets or claimedresults.
   Awakehelper1834 released cleanly after flag removal; no vendor/helper jobs
   left running. Shared memory records exact next command and power dependency.
+
+## 2026-10-22 physical validation resumed
+
+- Power nowcharging16%; no oldvendorjobs. Claimednewcoordinator/doc/evidence
+  scopes and bounded awakehelper81495 forrealqueue.
+- Started freshFIFO05 session57827 on published6f3fa7c/runtime85e4fb8.
+  All55runtimefiles matchcommit. Predeclared3iterations/1candidate,16calls,
+ 25tool/35wallminutes,oneinfraretry,generatedgoldenplusfrozenindependentmatrix.
+  Spec/TB/10ns/xc7a35tcpg236-1/Vivado2025.2unchanged. No oldrun resumed/regraded.
+
+- FIFO05iter1:21LUT/26FF,WNS-.289ns; tool-onlyDoctor21LUT/27FF,-.016/.005ns
+  remainedinvalid/notadopted. Annotationcriterionpassed; normaltimingrejection.
+- FIFO05iter2 accepted **timing_recovery**:24LUT/14FF,WNS+.013/WHS+.027ns,
+ 7/7reviewPASS and selectedtemporalparameterchecksPASS. Higherresourcecost
+  versus13LUT/6FFbaseline is recorded; notarea savings orboardtimingproof.
+  Iter3currentlyattempts strictLUTreduction while retaining setup/holdfeasibility.
+  This is an accepted intermediatebest, not yetfinalsavedwinner/DONEvalidation.
+
+- FIFO05 DONEiter3 **22LUT/13FF,WNS+.108/WHS+.076ns** via boundedRTLDoctor
+  registering equivalentvalidstate. Iter2firstfeasible24LUT→22LUT=8.33%reduction;
+ baseline13LUTfailedtiming, sooverallresultistiming_recoverywithareacost.
+ 13calls,856.39chargedtoolseconds,1041.5565elapsedseconds. Finalreview5/5PASS.
+- Exact savedwinner+declaredchildren separately passed independentmatrix.
+  ActualDONE nominalreuse0; child/spec/Doctorreporttamper eachrejected1 then
+  restored;327identities, fileset andbudgetunchanged, noextramodel/toolcharges.
+  ArchiveFIFO05 manifestverified. All55runtimefiles stillmatchpublishedsource.
+- Freshfulltier0campaign07 startedsession31889. Firstlaunchfailed before any
+  run/model/tool because barePythoncouldnotimportyaml; originalconsole retained.
+  Corrected launchenvironment toexistingreview_deps PYTHONPATH (no sourcechange,
+  no dependencyinstallation); campaignnowrunning serially withpredeclaredbudget.

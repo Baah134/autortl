@@ -15,6 +15,7 @@ learn from failures, and retain the best correct design within a fixed budget.
 | Validation | Recorded result |
 |---|---|
 | Harness regression suite | **1,074 tests passed** |
+| FIFO timing recovery (8-bit, depth 3) | **Setup −0.931 → +0.108 ns · hold +0.076 ns · 22 LUTs / 13 FFs · exact saved winner independently passed** |
 | Parameterized FIFO verification | **Six configurations passed; all 13 planned faults detected** |
 | Independent streaming verification | **Correct queue control passed; all eight behavior faults detected** |
 | Combined-verification streaming build | **Two-entry queue · 15 LUTs / 19 FFs · independent 893-cycle test passed** |
@@ -35,7 +36,12 @@ Additional build, weaker-model and in-flight interruption coverage remains under
 validation. No held curriculum tier is claimed. Earlier unsuccessful cohorts
 remain in the evidence record.
 
-See the [test evidence](evidence/2026-10-20/README.md),
+The FIFO trades higher area than its failing baseline (13 LUTs) for timing
+closure. The loop then reduced its first feasible implementation from 24 to
+22 LUTs (8.3%).
+
+See the [FIFO recovery evidence](evidence/2026-10-22/generated-fifo-attempt-05/README.md),
+[test evidence](evidence/2026-10-20/README.md),
 [full-suite result](evidence/2026-10-22/latency-contract-tests/AutoRTL-latency-full-03.txt) and
 [accepted optimization](evidence/2026-10-20/contract-campaign-06/README.md),
 [generated-build verification](evidence/2026-10-20/generated-counter/README.md) and

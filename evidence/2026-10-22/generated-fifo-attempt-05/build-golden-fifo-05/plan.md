@@ -1,0 +1,9 @@
+# PLAN — iteration 3
+## Current state assessment
+Iteration 2 is the timing-feasible best at 24 LUTs, 14 FFs, WNS 0.013 ns, and WHS 0.027 ns. Since the incumbent already meets timing, iteration 3 must use strictly fewer than 24 LUTs and retain nonnegative setup and hold slack. Iteration 1’s shift-register FIFO used 21 LUTs but had WNS −0.289 ns, so its unchanged architecture is not a suitable retry.
+
+## Hypothesis
+Simplifying the iteration 2 FIFO’s occupancy and tail-control logic while keeping its registered head will reduce LUT use below 24 without adding delay to the output path.
+
+## Instruction for generator
+Keep the registered head and two-entry circular tail organization, and retain `// @latency 1`. Simplify the occupancy next-state and tail pointer control so push-only, pop-only, simultaneous push/pop, and idle transitions use only the state needed for this depth-three FIFO; avoid redundant count or wrap logic. Preserve full simultaneous pop/push, stall stability, synchronous reset priority, and the exact ready/valid behavior. The candidate is an improvement only if it passes all fixed gates, has WNS and WHS at least zero, and uses fewer LUTs than the current best.

@@ -10,7 +10,8 @@ coordination state and actual processes. Notes are not execution evidence.
 - Remote: https://github.com/Baah134/autortl
 - Current development checkpoint contains final feedback/recovery runtime with
   **1,074 tests passed in344.74s** onOctober22; published85e4fb8 runtime, verified
-  GitHub head. FreshFIFO05/fulltier0 pending. No accepted FIFO closure yet.
+  GitHub head. FIFO05 now accepted:22LUT/13FF,+.108/.076ns; exact savedwinner
+  independent check and327identity DONEproof pass. Fulltier0campaign07 running.
 - Main remains **7bef3bf**. Prior developmentffc15fc has FIFO fixture836tests and
   admission14/14; FIFO01 at that source failed timing. Prior runtime8098466 had
  807tests and campaign06 2/2. Each archive keeps its own measured source.
@@ -82,31 +83,40 @@ Latency correction is complete/tested/FROZEN:
  onOctober21; all175identities unchanged verifiedOctober22. Read-only finalpeer
  review found no blocker. Archive evidence/2026-10-22/latency-contract-tests.
 
-Exact next actions:
-1.Tested runtime85e4fb8 and final evidence9cead4e are published to GitHub
-  development (remote heads verified, worktree clean at milestone). Final
-  fullsuite03:1074passed344.74s October22, all175identities unchanged.
-  Check AC power or user response before vendor queue: Windows twice reports
-  AC0,0%,critical. Async charger question pending. Neither FIFO05 nor campaign07
-  started. No successful new physical outcome or main integration is claimed.
-2. Archive tests/failures, publish tested development commit; verifyruntime55files.
-3. FreshFIFO05:3iterations/1candidate,16calls,25tool/35wallminutes,1infraretry,
-   both generated and independent graders. Do not resume/regrade04.
-4. Independently simulate exact saved winner+declaredchildren and perform actual
-   DONE nominal/child/resolvedspec tamper-restoration checks before runtime edits.
-5. Fresh fulltier0 campaign07:1iteration/1candidate,16calls,20tool/30wallminutes,
-  1infraretry. No held tier. Only completepass permits main integration.
-6. Archive/updatepublicresults/CVlog/featuredecisions, atomicFFpushmainanddev.
+## Current validation and exact next actions
 
-Implementation/evidence claims completed with published test evidence. The
-coordinator releases its lease while waiting for the physical power condition;
-next continuation must claim anew, check processes/Git and reclaim doc scopes.
-User Vivado GUI/simulation remains untouched. One harness vendor queue.
-All old and current verification jobs finished. Awakehelper1834 released cleanly
- after flag removal. No helper/vendor job is left running. Restore bounded awake
- request only for a real queue; it does not overridecriticalbattery shutdown.
-Remove workspace verificationflag and pollhelper afterqueue. No background
-scheduler or automatic provider failover.
+FIFO05 completed DONE iteration3 on6f3fa7c/runtime85e4fb8:
+22LUT/13FF, WNS0.108ns/WHS0.076ns. Baseline13LUT/6FF failed setup-0.931ns.
+First feasible iteration2 used24LUT/14FF,0.013/0.027ns; finalDoctor lowered LUTs
+8.33% versus that feasible incumbent. Overall result remains timing_recovery
+with area cost versus baseline.13modelcalls,856.39chargedtoolseconds,
+1041.5565elapsedseconds. Finalreview5/5PASS. Exact savedtop+declaredchildren
+passed independent matrix. Actual DONE nominal0, child/spec/Doctorreport
+tamper each1; all327identities, file set andbudget matched afterrestoration.
+Archive evidence/2026-10-22/generated-fifo-attempt-05 has368manifested files.
+
+1.Monitor fulltier0 campaign07, session31889; output workspace
+  outputs/AutoRTL-contract-campaign-07.txt, runroot
+  logs/contract-campaign-07/tier0_e66g8z7j. Counter baseline55LUT/37FF,
+  WNS0.494ns measured. No final campaign claim yet.
+2.Firstlaunch lacked PyYAML in barePython; import failed before model/vendor
+  calls, console retained. Relaunch uses existing review_deps PYTHONPATH,
+  matching test environment and declared requirements. No source hotfix or
+  dependency install. Keep that environment for benchmark commands.
+3.Require fulltier0 passes before main integration; no higher tier is held.
+  Archive actual reports/receipts/source identity and optional DONEreplay.
+4.Update public results, sharedmemory and feature review, push meaningful
+  FIFO05 progress now; atomic fast-forward main+development only after gates.
+5.Next design proposal is packet-tag FIFO in TASKS.md; runtime mechanisms
+  remain unchanged unless its measurements reveal a concrete need.
+
+Runtime/tests/constraints frozen. All55runtime files match measured6f3fa7c
+and1074-test runtime85e4fb8. No modifications during the live campaign.
+Coordinator lease active (token private infunctionsstore coord_token); main
+docscope sync-fifo-notes and fifo-final-evidence-22 held byCodex/main.
+Bounded awakehelper81495 active for queue; remove flag/pollrelease afterward.
+No userGUI/simulation touched; one harness vendor job at a time.
+No background scheduler or automatic provider failover.
 
 ## Earlier completed milestone (historical)
 

@@ -5,13 +5,12 @@ You can continue without access to the previous provider's conversation.
 
 Canonical checkout: `C:/Users/prince.baah/Downloads/autortl-work`.
 GitHub integration branch: `main`. Development branch: `codex/contract-context`.
-Current development checkpoint: **1,074 passing regression tests**. Recovery
-guards, bounded path/spec evidence, not-adopted Doctor feedback and proven no-op
-deduplication are tested. FIFO02/03 exhausted their original budgets and remain
-archived. FIFO04 exposed a false latency-annotation rejection despite routed
-timing closure; its rejection remains preserved. Latency correction is tested
-and published85e4fb8; finalOctober22suite1074passed344.74s. FreshFIFO05 and
-fulltier0 await AC power: Windows reports0%critical/unplugged (SESSION_HANDOFF).
+Current development checkpoint: **1,074 passing regression tests**.
+FIFO05 completed accepted timing recovery:22 LUTs/13 FFs, setup0.108 ns,
+hold0.076 ns. Exact saved winner passed the independent matrix; actual DONE
+reuse and restored tamper checks retained327 identities and the original budget.
+Fresh complete tier0 campaign07 is running; see SESSION_HANDOFF.
+Earlier FIFO02/03 budget failures and FIFO04 false rejection remain archived.
 Main remains **7bef3bf** pending those gates. Prior source49599b5 passed939tests;
 fixtureffc15fc passed836tests/FIFO14of14admission; FIFO01 failed timing.
 Prior runtime8098466 passed fulltier0; archives retain their measured source.

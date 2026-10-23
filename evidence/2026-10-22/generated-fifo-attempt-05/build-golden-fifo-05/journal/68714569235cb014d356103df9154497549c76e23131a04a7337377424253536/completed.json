@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Behavioral contract and interface: PASS \u2014 the unchanged deterministic ladder is ALIVE; the frozen temporal testbench passed.\n- Top latency annotation: PASS \u2014 `// @latency 1` matches the authoritative top latency.\n- Compile, elaboration, and simulation: PASS \u2014 required tool exits succeeded and simulation reported `TEST PASSED`.\n- Synthesis and metric integrity: PASS \u2014 synthesis completed, and routed reports and metrics are present.\n- Timing feasibility: FAIL \u2014 setup WNS is -0.289 ns and `timing_met=false`; hold WHS is nonnegative.\n- Improvement and promotion objective: FAIL \u2014 LUT use increased from 13 to 21, and the candidate does not qualify for timing recovery because it remains timing-infeasible.\n## Summary\n- Passed: 4 of 6\n- Failed: 2 of 6\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes the behavioral and verification checks, but it fails the mandatory timing feasibility gate. Although setup slack improved from -0.931 ns to -0.289 ns, timing recovery requires nonnegative setup and hold slack with `timing_met=true`; additionally, LUT use is higher than the previous best. With zero failed mandatory criteria required for acceptance, reject.",
+      "recommendation": "REJECT",
+      "passed": 4,
+      "failed": 2
+    }
+  },
+  "artifacts": {}
+}

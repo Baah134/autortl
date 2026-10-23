@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_2:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 2\n## Contract check\n- Interface and defined FIFO behavior: PASS \u2014 top ports are preserved; the candidate maintains FIFO ordering, full simultaneous pop/push, stall stability, and synchronous reset behavior. The frozen parameterized child passes the additional configurations.\n- Top latency declaration: PASS \u2014 `// @latency 1` matches authoritative latency 1.\n- Static/interface checks, compile, elaboration, simulation: PASS \u2014 required tool exits are successful, and the unchanged testbench reports `TEST PASSED`.\n- Synthesis completion: PASS \u2014 Vivado exited successfully and recorded `SYNTH_COMPLETE`.\n- Routed reports and metric integrity: PASS \u2014 routed timing and utilization reports are retained; candidate metrics are consistent with the reported LUT count.\n- Timing feasibility: PASS \u2014 `timing_met=true`, WNS is 0.013 ns, and WHS is 0.027 ns.\n- Improvement over previous best: PASS \u2014 recorded `timing_recovery` is supported: the previous best had known negative setup slack and the candidate meets setup and hold. Higher LUT use is permitted for this recovery.\n## Summary\n- Passed: 7 of 7\n- Failed: 0 of 7\n- Improved over previous best: YES\n## Recommendation\nACCEPT\n## Reason\nThe candidate passes the deterministic verification and promotion gates, preserves the defined FIFO behavior, and recovers timing feasibility over the verified timing-infeasible previous best. Its higher LUT use does not invalidate this recorded timing recovery.",
+      "recommendation": "ACCEPT",
+      "passed": 7,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}

@@ -1,0 +1,16 @@
+{
+  "stage": "baseline measured; first plan generated, candidate not yet physically graded",
+  "authoritative_top_latency": {
+    "cycles": 1,
+    "known": true,
+    "meaning": "A source annotation declares numeric latency only when present. This known/cycles pair is authoritative for the current top module's annotation requirement. Only known=true requires a matching numeric top annotation. Child typed-module latency does not invent a top annotation for arbitrary aggregate wrappers. When known=false, absence of a top annotation is not a failed or unverifiable criterion. Unannotated numeric latency is UNKNOWN, not zero. Preserve the source's exact observable cycles and registered behavior. Annotation presence or absence alone is not independent proof of behavioral correctness; use the fixed source contract, all defined typed latency/minimum transfer age and deterministic verification, without inventing a numeric requirement.",
+    "source_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-golden-fifo-05\\iter_000\\sync_fifo.v",
+    "source_sha256": "80bcd2702b8d8c70b5f5f9177fb1c176c8c957b367cce798db15ff0fda9206bb"
+  },
+  "path_excerpt_matches_report": true,
+  "full_resolved_behavior": "Parameterized synchronous elastic FIFO, public parameters WIDTH=8 and DEPTH=3 in that order. Supported experiment domain: integer WIDTH 1..16 and DEPTH 1..8. Input/output payload ports must remain symbolic [WIDTH-1:0]; DEPTH controls actual capacity, pointer wrap and occupancy. Preserve all supported parameter behavior, not only defaults. At rising clk, synchronous active-high rst discards all queued words and overrides transfers; reset has no effect between edges. Otherwise accept input on in_valid && in_ready and retire output on out_valid && out_ready sampled before the edge. out_valid equals (occupancy != 0), in_ready equals (occupancy < DEPTH) || out_ready. This is a combinational ready path; full simultaneous pop/push is legal and must preserve occupancy. out_data is the oldest unretired accepted input whenever valid. Keep valid and payload stable under output stall until transfer or reset. Invalid out_data is unspecified. No empty bypass: a new word captured into an empty queue becomes valid only after capture, with earliest output transfer at the following edge (minimum age 1). Sustain one push and pop per cycle when nonempty and downstream ready. Explicitly wrap at DEPTH-1; do not assume power-of-two depth or truncate payloads to eight bits. For Python scoreboard oracle ONLY, each non-reset step represents one accepted input transaction: return its eventual identical out_data, masked to default WIDTH. The oracle does not simulate FIFO occupancy, ready/valid scheduling, stalls or a delay queue; RTL must still implement all temporal behavior above. init() represents reset state and supplied rst must be handled. The independent temporal testbench checks the default wrapper and additional child parameter configurations.",
+  "plan_keeps_minimum_age": true,
+  "plan_requests_matching_annotation": true,
+  "candidate_annotation_present": true,
+  "scope": "Context observation before candidate PPA/evaluation. Does not imply timing recovery or acceptance."
+}
