@@ -31,6 +31,10 @@ that exact mutation. Their evidence is complementary; qualification is fault
 sensitivity, not correctness proof. The original 13-fault admission is separate.
 
 The exact saved top and declared children passed independent final simulation.
+The measured stage source uses CRLF and the saved winner uses LF. Their complete
+text matches after only CRLF-to-LF conversion; the independent copy matches
+the saved winner byte for byte. winner-source-equivalence.json links all hashes.
+The original measured source remains unmodified in this archive.
 Actual CLI DONE reuse made no extra model or tool charges. Temporary changes to
 the child, resolved specification and a protected Doctor report were rejected;
 all 327 protected hashes, the run file set and budget matched after restoration.

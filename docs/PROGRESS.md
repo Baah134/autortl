@@ -786,3 +786,27 @@ changes, commands, outcomes, evidence locations, limitations, and next action.
   run/model/tool because barePythoncouldnotimportyaml; originalconsole retained.
   Corrected launchenvironment toexistingreview_deps PYTHONPATH (no sourcechange,
   no dependencyinstallation); campaignnowrunning serially withpredeclaredbudget.
+
+- Final read-only FIFO05 review found no blocker; verified registered valid-state
+  invariant and tail-pointer transitions. Recorded source equivalence explicitly:
+  measured stage uses CRLF, saved winner LF; full text equal after ONLY CRLF→LF,
+  independent source_0 byte-identical to saved winner. Raw measured source and
+  all actual hashes retained. Archive now369files including this hash link.
+
+- Fresh fulltier0campaign07 **2/2PASS**, qualificationtrue, streak1, heldfalse.
+  Counter55→31LUT(43.64%),37FF,WNS+.126/WHS+.026ns; baseline+.494/+.113ns.
+ 3calls,249.126toolseconds/272.556elapsed. CounteractualDONEreuse preserved80
+  hashes/fileset/budget with no newcalls. Unknown latencycriterionpassed8/8review.
+- Mux baseline8LUT/8FF,+.579/+.052ns retained. Initial primitive proposal failed
+  xelab (unlinked MUXF7/MUXF8); boundedrepair passed then nogaincorrectlyrejected.
+ 4calls,187.781toolseconds/220.759elapsed. Actualfailure/repair botharchived.
+- Campaignarchive210files verified; both55-file runtimeidentities matchsource
+ 6f3fa7c, governanceunchanged, all175finaltestedsource/fixtureidentities unchanged.
+  Oldercohortsnotcounted; no weaker-model orall-parameterproofclaimed.
+- User asked about independence and roles. Explained boundedCLI runs do not
+  dependon this chat; genericapplication/continuousunattended supportrequires
+  matchingtool/protocolverification and deploymentoperations. Existingroles
+  were clarified and grounded, not expanded into moreagents. No newframework.
+- Main integration gates nowpassed:1074tests, freshfulltier0, acceptedFIFO05,
+  independentfinalwinner and actualDONEchecks. Preparing authorizedatomic
+  fast-forward from7bef3bf; actualfinalheads recorded afterpush.

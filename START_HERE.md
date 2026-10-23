@@ -5,16 +5,14 @@ You can continue without access to the previous provider's conversation.
 
 Canonical checkout: `C:/Users/prince.baah/Downloads/autortl-work`.
 GitHub integration branch: `main`. Development branch: `codex/contract-context`.
-Current development checkpoint: **1,074 passing regression tests**.
-FIFO05 completed accepted timing recovery:22 LUTs/13 FFs, setup0.108 ns,
-hold0.076 ns. Exact saved winner passed the independent matrix; actual DONE
-reuse and restored tamper checks retained327 identities and the original budget.
-Fresh complete tier0 campaign07 is running; see SESSION_HANDOFF.
-Earlier FIFO02/03 budget failures and FIFO04 false rejection remain archived.
-Main remains **7bef3bf** pending those gates. Prior source49599b5 passed939tests;
-fixtureffc15fc passed836tests/FIFO14of14admission; FIFO01 failed timing.
-Prior runtime8098466 passed fulltier0; archives retain their measured source.
-Inspect actual heads, status and SESSION_HANDOFF before editing or switching.
+Current verified checkpoint: **1,074 regression tests passed**.
+FIFO05 recovered timing at22 LUTs/13 FFs, setup0.108 ns/hold0.076 ns; exact
+saved winner passed independent verification and327-identity DONE checks.
+Fresh fulltier0 campaign07 passed2/2: counter55→31 LUTs, mux baseline retained.
+No held tier or controlled weak-model result is claimed. Earlier failed trials
+remain archived. The tested checkpoint is ready for the authorized main/
+development fast-forward; inspect actual Git heads and SESSION_HANDOFF.
+Measured runtime85e4fb8/6f3fa7c is unchanged by documentation/evidence commits.
 
 1. Read `AGENTS.md` and `docs/AGENT_HANDOFF.md` for the working contract.
 2. Read `docs/SESSION_HANDOFF.md` for current state and exact next actions.

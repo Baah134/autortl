@@ -369,3 +369,21 @@ No-op skip not exercised bythistrial; its regressions remain separate evidence.
 BestofN1 is intentional boundedcost here; diversity/cache/weakmodel ablations
 are not established by thisrun. Nextcomplexity packet-tagFIFO can reusetheflow
 after freshfulltier0. Mainstillgated; fullsuite1074unchangedruntime.
+
+## Fresh campaign07 and role boundaries
+
+Complete tier0 passed2/2 on unchanged tested runtime. Counter review explicitly
+accepted unknown numeric top latency as unknown (no invented annotation), and
+accepted55→31LUT with positive setup/hold. Mux generated MUXF7/MUXF8 primitives
+whose simulation libraries were not linked; xelab rejected them. One bounded
+generator repair returned behavioral RTL, passed the ladder, and was correctly
+rejected for no LUT gain. Keep the repair role and deterministic promotion gate.
+Retain this library-support limit before claiming arbitrary vendor primitive/IP
+coverage. Add a library adapter only when a required design establishes that
+need, with actual primitive/control verification; no new agent role is needed.
+
+Runtime roles remain planner, generator/repair, evaluator and Timing Doctor.
+The harness owns contracts, source boundaries, execution, budgets and acceptance.
+The development coordinator reviews and improves those mechanisms; bounded CLI
+runs do not require this chat. Continuous unattended scheduling, provider quota
+recovery and general hardware/application support remain separate capabilities.

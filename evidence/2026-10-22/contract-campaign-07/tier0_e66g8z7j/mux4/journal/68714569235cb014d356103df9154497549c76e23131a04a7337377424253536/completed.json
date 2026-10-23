@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Ports, reset, and observable behavior: PASS \u2014 candidate preserves the frozen interface and sequential mux behavior; deterministic ladder is ALIVE.\n- Top latency annotation: PASS \u2014 authoritative top latency is unknown, so no numeric annotation is required.\n- Compile and elaboration: PASS \u2014 xvlog and xelab exited successfully.\n- Simulation: PASS \u2014 xsim exited successfully with the required `TEST PASSED` verdict.\n- Synthesis and metric integrity: PASS \u2014 Vivado exited successfully with `SYNTH_COMPLETE`; retained routed reports and metrics are present.\n- Timing feasibility: PASS \u2014 `timing_met=true`, WNS is 0.579 ns, and WHS is 0.052 ns.\n- Chosen objective improvement: FAIL \u2014 both candidate and previous best are timing-feasible, but LUT usage is unchanged at 8; strict LUT reduction is required.\n## Summary\n- Passed: 6 of 7\n- Failed: 1 of 7\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes the behavioral and deterministic verification gates and meets setup and hold timing, but the previous best is already timing-feasible and the candidate does not reduce LUT usage. It therefore fails the required strict improvement for the `minimize_luts` objective.",
+      "recommendation": "REJECT",
+      "passed": 6,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

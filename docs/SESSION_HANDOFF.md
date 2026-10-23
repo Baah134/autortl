@@ -11,8 +11,9 @@ coordination state and actual processes. Notes are not execution evidence.
 - Current development checkpoint contains final feedback/recovery runtime with
   **1,074 tests passed in344.74s** onOctober22; published85e4fb8 runtime, verified
   GitHub head. FIFO05 now accepted:22LUT/13FF,+.108/.076ns; exact savedwinner
-  independent check and327identity DONEproof pass. Fulltier0campaign07 running.
-- Main remains **7bef3bf**. Prior developmentffc15fc has FIFO fixture836tests and
+  independent check and327identity DONEproof pass. Fresh fulltier0campaign07 passed2/2; integration gates passed.
+- Integration base is **7bef3bf**; this checkpoint has passed all required gates
+  for main/development fast-forward. Verify actual Git heads. Earlierffc15fc had
   admission14/14; FIFO01 at that source failed timing. Prior runtime8098466 had
  807tests and campaign06 2/2. Each archive keeps its own measured source.
 - Generated counter8 source8b6a162, encoder978c742, streamingafcc080; do not
@@ -93,30 +94,32 @@ with area cost versus baseline.13modelcalls,856.39chargedtoolseconds,
 1041.5565elapsedseconds. Finalreview5/5PASS. Exact savedtop+declaredchildren
 passed independent matrix. Actual DONE nominal0, child/spec/Doctorreport
 tamper each1; all327identities, file set andbudget matched afterrestoration.
-Archive evidence/2026-10-22/generated-fifo-attempt-05 has368manifested files.
+Archive evidence/2026-10-22/generated-fifo-attempt-05 has369manifested files,
+including explicit measuredCRLF/savedLF full-text equivalence and rawhashes.
 
-1.Monitor fulltier0 campaign07, session31889; output workspace
-  outputs/AutoRTL-contract-campaign-07.txt, runroot
-  logs/contract-campaign-07/tier0_e66g8z7j. Counter baseline55LUT/37FF,
-  WNS0.494ns measured. No final campaign claim yet.
-2.Firstlaunch lacked PyYAML in barePython; import failed before model/vendor
-  calls, console retained. Relaunch uses existing review_deps PYTHONPATH,
-  matching test environment and declared requirements. No source hotfix or
-  dependency install. Keep that environment for benchmark commands.
-3.Require fulltier0 passes before main integration; no higher tier is held.
-  Archive actual reports/receipts/source identity and optional DONEreplay.
-4.Update public results, sharedmemory and feature review, push meaningful
-  FIFO05 progress now; atomic fast-forward main+development only after gates.
-5.Next design proposal is packet-tag FIFO in TASKS.md; runtime mechanisms
-  remain unchanged unless its measurements reveal a concrete need.
+1.Campaign07 completed2/2, qualifiedtrue, streak1/heldfalse; no higher tier held.
+  Counter55→31LUT/37FF,+.126/.026ns,3calls; mux8LUT/8FF,+.579/.052ns retained,
+ 4calls including bounded repair of unlinked primitive proposal. Counteractual
+  DONE nominalreuse preserved80hashes, fileset andbudget. Archive210files:
+  evidence/2026-10-22/contract-campaign-07. Runtimeidentityknown/governanceunchanged.
+2.All175finaltested source/test/fixture hashes remain unchanged. Runtime55files
+  match6f3fa7c/runtime85e4fb8. No source change since1074-test publication suite.
+  InitialPyYAML importfailure is separately retained; successfulcampaignused
+  existing review_deps PYTHONPATH, no package/source change.
+3.Integration gates are complete. Commit final evidence/checkpoint and perform
+  authorizedatomicfast-forward main+development from expectedremote7bef3bf/
+  b009e02. Verify actualheads and cleanworktree before reporting integration.
+4.Next engineering stage: implement packet-tag FIFO proposal in TASKS.md,
+  qualify control+19behaviorfaults and namedsideband sensitivity with both
+  graders before modeltrial. Reuse currentworkflow; investigate vendor library
+  support only when a required design needs it. No newrole/framework planned.
 
-Runtime/tests/constraints frozen. All55runtime files match measured6f3fa7c
-and1074-test runtime85e4fb8. No modifications during the live campaign.
-Coordinator lease active (token private infunctionsstore coord_token); main
-docscope sync-fifo-notes and fifo-final-evidence-22 held byCodex/main.
-Bounded awakehelper81495 active for queue; remove flag/pollrelease afterward.
-No userGUI/simulation touched; one harness vendor job at a time.
-No background scheduler or automatic provider failover.
+Coordinator lease active while integrating; tokenprivate functionsstore
+coord_token. Mainnotes/evidence scopes belongtoCodex/main. All vendor/model
+jobs completed. Bounded awakehelper81495 willbe released afterfinalqueuechecks.
+No userGUI touched. No backgroundscheduler orproviderfailover.
+Runtime/tier0/physical results have exact archived source and constraints; no
+board timing, exhaustive parameter or weak-model reliability proof follows.
 
 ## Earlier completed milestone (historical)
 

@@ -43,7 +43,7 @@ closure. The loop then reduced its first feasible implementation from 24 to
 See the [FIFO recovery evidence](evidence/2026-10-22/generated-fifo-attempt-05/README.md),
 [test evidence](evidence/2026-10-20/README.md),
 [full-suite result](evidence/2026-10-22/latency-contract-tests/AutoRTL-latency-full-03.txt) and
-[accepted optimization](evidence/2026-10-20/contract-campaign-06/README.md),
+[accepted optimization](evidence/2026-10-22/contract-campaign-07/README.md),
 [generated-build verification](evidence/2026-10-20/generated-counter/README.md) and
 [streaming build](evidence/2026-10-20/generated-streaming/README.md).
 
