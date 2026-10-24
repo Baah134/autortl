@@ -1,0 +1,61 @@
+{"frozen_files": 203}
+........................................................................ [  5%]
+........................................................................ [ 10%]
+...............................................F........................ [ 16%]
+........................................................................ [ 21%]
+........................................................................ [ 26%]
+........................................................................ [ 32%]
+........................................................................ [ 37%]
+........................................................................ [ 42%]
+........................................................................ [ 48%]
+........................................................................ [ 53%]
+........................................................................ [ 59%]
+........................................................................ [ 64%]
+........................................................................ [ 69%]
+........................................................................ [ 75%]
+........................................................................ [ 80%]
+........................................................................ [ 85%]
+........................................................................ [ 91%]
+........................................................................ [ 96%]
+............................................                             [100%]
+================================== FAILURES ===================================
+______ test_budget_exhaustion_after_model_block_preserves_verified_best _______
+
+tmp_path = WindowsPath('C:/Users/prince.baah/Documents/Codex/2026-10-15/hey/work/pytest-proposal-fixes-full-01/test_budget_exhaustion_after_m0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000019BD9F62A80>
+
+    def test_budget_exhaustion_after_model_block_preserves_verified_best(tmp_path, monkeypatch):
+        from autortl.config import RunConfig
+        from llm.client import ModelCallError
+        cfg = configuration(tmp_path)
+        cfg.max_llm_calls = 1
+        o = fsm.Orchestrator(cfg, tmp_path / "run")
+        install_models(o)
+        install_tools(monkeypatch)
+        def fail(*args, **kwargs):
+            o.budget.charge_llm()
+            raise ModelCallError("planner", "CODEX_QUOTA")
+        o.planner.plan = fail
+        assert o.run()["best_iteration"] == 0
+        resumed = fsm.Orchestrator(RunConfig.load(o.state.run_dir / "config.json"), o.state.run_dir)
+        install_models(resumed)
+        tools = install_tools(monkeypatch)
+        resumed.planner.plan = Mock(side_effect=RuntimeError("LLM_BUDGET: exhausted"))
+        result = resumed.run()
+>       assert result["status"] == "budget_exhausted" and result["best_iteration"] == 0
+E       AssertionError: assert ('done' == 'budget_exhausted'
+E         
+E         - budget_exhausted
+E         + done)
+
+tests\test_contract_context.py:207: AssertionError
+---------------------------- Captured stdout call -----------------------------
+[iter 0] baseline LUTs=20 FFs=8 WNS=1
+[resume] continuing from phase=MODEL_BLOCKED iter=1
+[iter 0] baseline LUTs=20 FFs=8 WNS=1
+
+DONE � best from iter 0: LUTs=20 FFs=8 WNS=1
+=========================== short test summary info ===========================
+FAILED tests/test_contract_context.py::test_budget_exhaustion_after_model_block_preserves_verified_best
+1 failed, 1339 passed in 497.32s (0:08:17)
+{"exit_code": 1, "elapsed_seconds": 498.875, "frozen_source_files": 203, "source_unchanged": true}

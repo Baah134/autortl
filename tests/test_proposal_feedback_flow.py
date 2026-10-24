@@ -153,9 +153,9 @@ def test_interrupted_feedback_reconstructs_without_extra_calls(tmp_path, monkeyp
     assert not any('iter_001' in directory for _, directory in calls)
     expected_new_evaluations = 2 if point == 'input' else 1
     assert models[('evaluator','evaluate')].call_count == expected_new_evaluations
-    assert resumed.budget.llm_calls == 8
+    assert resumed.budget.llm_calls == 9
     assert models[('generator','generate')].call_count == expected_new_evaluations
-    assert first_calls == (3 if point == 'input' else 5)
+    assert first_calls == (3 if point == 'input' else 6)
 
 
 @pytest.mark.parametrize('name', ['input', 'outcome'])

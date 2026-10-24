@@ -381,3 +381,10 @@ failures in taxonomy before source integration. Require full regression, a NEW
 live run that actually exercises changed-seed replanning, independent winner,
 actual DONE plan-binding tamper checks, and fresh full tier0 before main merge.
 No old trial resume/regrade under changed runtime and no extra budget allowances.
+
+
+Implementation gate: source binding/exact dedupe/default-off integrated;
+1,340 full regression tests passed on203 frozen identities. First failed run
+retained and execution-budget status restored without changing old regression.
+Remaining acceptance: fresh actual accepted-source refresh, independent winner,
+DONE plan-binding tamper proof, and fresh full tier0 before main integration.

@@ -1,3 +1,5 @@
+import pytest
+
 from autortl.bestofn import Candidate, mutation_prompts, dedupe, select
 
 
@@ -6,11 +8,64 @@ def test_portfolio_matches_objective():
     assert "pipeline" in names and "wildcard" in names
 
 
-def test_dedupe_kills_cosmetic_duplicates():
+def test_dedupe_kills_exact_duplicates():
     a = Candidate("module m; assign y = x; endmodule", "standard")
-    b = Candidate("module m;  assign y=x;  endmodule // dup", "narrow")
-    survivors = dedupe([a, b])
-    assert len(survivors) == 1 and survivors[0].mutation == "standard"
+    b = Candidate(a.verilog, "narrow")
+    candidates = [a, b]
+    survivors = dedupe(candidates)
+    assert survivors == [a]
+    assert survivors[0] is a
+    assert candidates == [a, b]
+    assert a.alive and a.fail_reason == ""
+    assert not b.alive
+    assert b.fail_reason == "duplicate of 'standard' candidate"
+
+
+@pytest.mark.parametrize("first,second", [
+    ("module m; assign y = x; endmodule",
+     "module m;  assign y=x;  endmodule // cosmetic variant"),
+    ('module m(output [15:0] y); assign y = "//A"; endmodule',
+     'module m(output [15:0] y); assign y = "//B"; endmodule'),
+    ('module m(output [31:0] y); assign y = " A"; endmodule',
+     'module m(output [31:0] y); assign y = "  A"; endmodule'),
+    ('module m(output [15:0] y); assign y = "/*A*/"; endmodule',
+     'module m(output [15:0] y); assign y = "/*B*/"; endmodule'),
+    ('`define VALUE 1\nmodule m(output y); assign y = `VALUE; endmodule',
+     '`define VALUE 1\r\nmodule m(output y); assign y = `VALUE; endmodule'),
+    ('module m(input \\a+b , input b, output y); assign y = \\a+b ; endmodule',
+     'module m(input \\a , input b, output y); assign y = \\a +b; endmodule'),
+    ('module m; // cafÃ©\nendmodule', 'module m; // cafe\nendmodule'),
+], ids=["cosmetic", "line-comment-in-string", "literal-whitespace",
+        "block-comment-in-string", "macro-newline", "escaped-identifier", "utf8"])
+def test_dedupe_retains_distinct_sources(first, second):
+    a = Candidate(first, "standard")
+    b = Candidate(second, "narrow")
+    assert dedupe([a, b]) == [a, b]
+    assert a.alive and b.alive
+    assert a.fail_reason == b.fail_reason == ""
+
+
+def test_dedupe_preserves_order_and_first_duplicate_identity():
+    a = Candidate("module a; endmodule", "standard")
+    b = Candidate("module b; endmodule", "narrow")
+    duplicate = Candidate(a.verilog, "share")
+    c = Candidate("module c; endmodule", "wildcard")
+    survivors = dedupe([a, b, duplicate, c])
+    assert len(survivors) == 3
+    assert all(actual is expected for actual, expected in zip(survivors, [a, b, c]))
+    assert not duplicate.alive
+    assert duplicate.fail_reason == "duplicate of 'standard' candidate"
+
+
+def test_dedupe_keeps_existing_dead_candidate_behavior():
+    a = Candidate("module a; endmodule", "standard", alive=False,
+                  fail_reason="previous verification failure")
+    duplicate = Candidate(a.verilog, "narrow")
+    b = Candidate("module b; endmodule", "share")
+    assert dedupe([a, duplicate, b]) == [b]
+    assert not a.alive and a.fail_reason == "previous verification failure"
+    assert not duplicate.alive
+    assert dedupe([]) == []
 
 
 def test_selection_prefers_more_rungs_then_metric():

@@ -6,7 +6,7 @@ weighted table per objective: mostly objective-aligned, one wildcard always.
 """
 from __future__ import annotations
 from dataclasses import dataclass, field
-from .cache import code_hash
+import hashlib
 from .objectives import timing_feasible
 import math
 
@@ -49,9 +49,10 @@ def mutation_prompts(objective: str, n: int) -> list[tuple[str, str]]:
 
 
 def dedupe(cands: list[Candidate]) -> list[Candidate]:
+    """Skip only byte-identical UTF-8 sources; preserve first-seen order."""
     seen: dict[str, Candidate] = {}
     for c in cands:
-        h = code_hash(c.verilog)
+        h = hashlib.sha256(c.verilog.encode("utf-8")).hexdigest()
         if h not in seen:
             seen[h] = c
         else:

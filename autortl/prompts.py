@@ -125,8 +125,15 @@ PLAN = """Plan iteration {iteration} of an FPGA optimisation loop.
 {progress}
 # Recent evaluations
 {evaluations}
-# Current best
+# Verified incumbent measurements (may describe a different source from the generation seed)
 LUTs={lut_used} FFs={ff_used} WNS={wns_ns}ns DSP={dsp_used} BRAM={bram_used}
+# Actual generation seed (write instructions for this source)
+```verilog
+{generation_seed}
+```
+Baseline source facts remain immutable verification context. The source above is
+the code the generator will modify; incumbent measurements are not measurements
+of this seed unless independently established by retained evidence.
 # Vivado advisor (advisory only | strong evidence from the tool that will judge)
 {advisor}
 # Watchdog signals
@@ -151,8 +158,14 @@ settings, and a new source hash alone does not establish an improvement."""
 RESTART_PLAN = """The loop has stalled ({stall_count} iterations without improvement).
 # Contract
 {contract}
-# Current best
+# Verified incumbent measurements (preserved across restart)
 LUTs={lut_used} FFs={ff_used} WNS={wns_ns}ns
+# Original generation seed for restart (write instructions for this source)
+```verilog
+{generation_seed}
+```
+The original seed can differ from the verified incumbent. Its measurements must
+not be inferred from the incumbent measurements or advisory history.
 # Already tried on this line (do NOT reuse or refine any of these)
 {tried}
 

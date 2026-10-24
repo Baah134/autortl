@@ -1,67 +1,66 @@
 # Current AutoRTL checkpoint
 
-Updated October 23, 2026 (America/New_York). Verify files, Git and ownership
-before continuing; chat summaries are supplementary.
+Updated October 23, 2026 (America/New_York). Recover actual Git heads,
+ownership, source hashes and live jobs before resuming. Preserve Downloads/autortl.
 
-## Completed frozen study; reviewed fixes next
+## Tested implementation; fresh live and merge gates next
 
-Canonical checkout: C:/Users/prince.baah/Downloads/autortl-work.
-Branch codex/contract-context; last published development 156355c. Main remains
-e6dc558. Runtime 776e61b and all 202 tested source identities stayed unchanged
-through the complete study, independent checks and archival. Full regression:
-1,301 passed in 326.44 seconds. No owned vendor/model job remains at this checkpoint.
+Canonical: C:/Users/prince.baah/Downloads/autortl-work.
+Branch codex/contract-context; published study milestone fba4b3e. Main remains
+e6dc558. Reviewed implementation is now applied and full regression passed:
+**1,340 tests in 507.21 seconds**, all 203 frozen source identities unchanged.
+Freeze: workspace/work/proposal-fixes-source-freeze-02.json. Raw output:
+workspace/outputs/AutoRTL-proposal-fixes-full-02.txt. Archive:
+evidence/2026-10-23/proposal-fixes-tests-02. Commit/push tested runtime next.
 
-All six original study02 rows retained. Five uninterrupted runs completed;
-pair2 baseline remains CODEX_QUOTA in its original row. Separate actual CLI
-recovery finished with cumulative 6→9 calls, no budget reset, independently
-verified winner. Do not substitute that recovery into the original comparison.
-Each mode repeated three proposals across three trials. Context did not meet
-its predeclared retention criterion; token comparison is incomplete. Unknown
-model identity, quota interruption and uncontrolled host load prevent a causal
-efficiency claim. Pair3 baseline/context both finished at 33 LUT / 46 FF.
+Changes: planner receives actual editable RTL and binds plans to exact seed text;
+changed accepted source forces fresh planning; unavailable required planning
+preserves incumbent. Exact UTF8 SHA256 dedupe replaces unsafe normalization.
+Advisory proposal context defaults off, explicit positive/negative CLI retained;
+chronological immutable evidence is always retained. No new role/framework,
+retry or budget allowance.
 
-Actual DONE CLI proof on pair2 context: nominal exit 0; altered input, outcome,
-nonwinning standard RTL and flow script each exit 1. All 252 protected identities,
-run file set, budget and router stats restored unchanged. No new charges.
-This is completed-run reuse/tamper validation, not arbitrary in-flight kill proof.
-Archive: evidence/2026-10-23/proposal-feedback-study-02; 1500 hashed files.
-Invalid setup01 and supplemental quota recovery remain separate published evidence.
+First full run failed: 1 failed / 1,339 passed in 497.32 seconds. Local planner
+budget exception handling incorrectly converted exhausted resume into DONE.
+Removed both local catches, retained existing budget_exhausted status and
+untouched original regression. Two new tests require retained verified source;
+56 focused tests passed121.24seconds. Original failed203-file snapshot archived
+in evidence/2026-10-23/proposal-fixes-tests-01 before source repair.
 
-## Reviewed implementation, not yet applied
+Completed frozen study: six original rows, three repeats in each mode; original
+pair2 baseline quota row retained, separate actual6→9call recovery independently
+passed. Context retention criterion failed; unknown model/usage/host load prevent
+causal efficiency claims. Old runtime776e61b/202files archived1500files before
+new source. Actual DONE252 proof: nominal0/four restored tamper probes1,
+identities/budget/routerstats/fileset unchanged. Actual dedupe simulations proved
+distinct2f41/2f42 outputs collided and old dedupe retained one;21-file archive.
 
-Isolated workspace/work stages:
-- seed-binding-stage: supply current RTL to planner, bind plan to exact seed,
-  replan after accepted source changes, retain incumbent if planning budget ends.
-  Restart source and incumbent metrics stay distinct; CODEX_QUOTA remains resumable.
-- context-default-stage: advisory context default off; explicit positive/negative
-  CLI switch; old missing setting remains off. 86 isolated focused tests passed.
-- dedupe-stage: eliminate only exact UTF8 source duplicates using full SHA256.
-  Distinct valid Verilog string constants collided under old normalization.
-  Metrics cache already uses exact contextual identity. 37 focused tests passed.
-Independent read-only reviews found no implementation blocker. New whole-source
-regression, fresh live validation and full tier0 remain mandatory before main.
+## Exact next actions / active queue
 
-Root owns integration scopes in local coordinator state. Temporary awake42170
-is bounded and watches workspace/work/proposal-recovery-awake.flag; release when
-the vendor queue ends. No scheduler or automatic cross-provider failover exists.
+1. Commit/push tested source and evidence; verify remote and current203hashes.
+2. Launch workspace/work/validate_seed_binding_live.py in NEW logs/seed-binding-live-01.
+   Same original study02 core/TB, default context OFF,3iter/N1/16calls,
+   25tool/35wallminutes/1infraretry. No runtime changes or old study resume.
+   Helper audits exact journal seed/plan bindings, immediately preceding accepted
+   source transition and independent exact saved winner. Five synthetic audit
+   cases passed; unavailable seed/stale binding/wrong original fail closed;
+   restart plus periodic planning does not count as accepted-source refresh.
+   No actual live result yet. Zero corrected-path coverage is inconclusive.
+3. Once model/vendor queue idle, actual CLI DONE proof using distinct helper
+   workspace/work/check_seed_binding_done.py (adds plan binding tamper probe).
+4. Fresh full tier0 logs/contract-campaign-10 on the final unchanged runtime:
+   1iter/N1/16calls/20tool/30wallminutes/1infraretry. No higher held tier exists.
+   Runtime changed; reset cohort streak honestly. Archive all results.
+5. Update documentation/README concisely and integrate main only after gates.
+6. Next complex fixture: dot4_pipeline_build, two registered17-bit pair product
+   sums plus registered18-bit merge,8-bit unsigned inputs, two sampled edges.
+   Independent width/wiring/reset/pipeline fault admission before generation;
+   no invented aggregate top latency annotation or new framework.
 
-## Exact next actions
-
-1. Finish optional actual Verilog dedupe reproducer session7220; preserve outputs.
-2. Commit/push completed frozen-study evidence and this decision to development.
-3. Execute workspace/work/integrate_proposal_fixes.py only after its preconditions
-   pass; it records taxonomy failures before copying reviewed source files.
-4. Freeze new source, full pytest tests/ -q, retain any failures; no source edits
-   during active tests. Commit/push tested runtime before fresh live validation.
-5. Reviewed workspace/work/validate_seed_binding_live.py runs a NEW default-off
-   experiment with original seed/TB and 3iter/N1/16calls/25tool/35wall budgets.
-   Require actual changed-seed refresh coverage, independent exact winner and
-   binding audit. Never resume old study under changed runtime.
-6. Actual DONE proof including plan binding, then fresh full tier0 on final
-   runtime (no higher held tier), archive, docs and authorized main integration.
-7. Next complex fixture: dot4_pipeline_build, three generated modules, unsigned
-   8-bit products → 17-bit pair sums → 18-bit registered merge, two sampled edges.
-   Admit independent wiring/width/reset/latency faults before model generation.
+No owned vendor/model/fullsuite job remains at this checkpoint. Temporary
+awake42170 bounded120min watches workspace/work/proposal-recovery-awake.flag;
+release after queue. Coordination lease and exact integration scopes remain
+active. Scheduling deferred; no automatic cross-provider failover configured.
 
 ## Checkout and integration
 

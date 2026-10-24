@@ -743,6 +743,15 @@ class Orchestrator:
         best_v, best_m, best_iter = original, baseline, 0
         best_artifact_dir = idir
         generation_seed = original
+        plan_seed_sha256 = None
+        termination_reason = None
+        def planning_stop(iteration, seed, reason="planning_unavailable_for_generation_seed"):
+            state.append_event({"stage": "planning", "iteration": iteration,
+                                "outcome": "stopped", "reason": reason,
+                                "seed_sha256": source_identity(seed),
+                                "plan_seed_sha256": plan_seed_sha256},
+                               event_id=f"planning_unavailable:{iteration}")
+            return reason
         stall, replans, knobs_tried = 0, 0, False
         proposal_records = []  # reconstruct only completed earlier iterations during replay
         recent_codes: list[str] = []
@@ -754,6 +763,8 @@ class Orchestrator:
             self._scope = f"iteration_{it}"
             if self._decision("exhausted", self.budget.exhausted):
                 print("[budget] exhausted — stopping gracefully")
+                if plan_seed_sha256 != source_identity(generation_seed):
+                    termination_reason = planning_stop(it, generation_seed)
                 break
             self._snapshot(phase="GENERATING", iteration=it,
                            best_iteration=best_iter)
@@ -774,15 +785,28 @@ class Orchestrator:
                                        recent_errors, self._decision("fraction", self.budget.fraction_left))
             for s in signals:
                 print(f"[watchdog] {s.kind}: {s.detail}")
-            need_plan = self._decision("need_plan", lambda: (it == start_iter or stall > 0 or it % 3 == 0
+            seed_sha256 = source_identity(generation_seed)
+            need_plan = self._decision("need_plan", lambda: (plan_seed_sha256 != seed_sha256
+                         or it == start_iter or stall > 0 or it % 3 == 0
                          or any(s.kind == "STAGNATION" for s in signals)))
             if need_plan and self._decision("allow_replan", self.budget.allow_replan):
                 plan = self._model("planner", "plan", it, contract_md, state.read_progress(),
-                                         state.read_recent_evaluations(),
-                                         best_m, signals, self.budget,
-                                         target_part=cfg.target_part,
-                                         advisor=last_advisor)
+                                   state.read_recent_evaluations(), best_m, signals, self.budget,
+                                   target_part=cfg.target_part, advisor=last_advisor,
+                                   generation_seed=generation_seed)
                 state.write_plan(plan)
+                self._proposal_evidence(idir, "plan_binding", {
+                    "schema_version": 1, "iteration": it,
+                    "original_seed_sha256": source_identity(original),
+                    "seed_sha256": seed_sha256,
+                    "plan_sha256": source_identity(plan)})
+                plan_seed_sha256 = seed_sha256
+            if plan_seed_sha256 != seed_sha256:
+                termination_reason = planning_stop(it, generation_seed)
+                break
+            # Always extract from the locally reconstructed, bound model result.
+            # plan.md may contain a later iteration's plan during replay.
+            state.write_plan(plan)
             instruction = self._decision("instruction", state.extract_instruction)
 
             # ---- best-of-N generation through the ladder ----
@@ -1000,8 +1024,14 @@ class Orchestrator:
                     "feedback": restart_context if cfg.proposal_feedback else ""})
                 self.planner.proposal_context = restart_context if cfg.proposal_feedback else ""
                 plan = self._model("planner", "restart_plan", contract_md, stall, tried,
-                                                 best_m, self.budget)
+                                   best_m, self.budget, generation_seed=original)
                 state.write_plan(plan)
+                self._proposal_evidence(idir, "restart_plan_binding", {
+                    "schema_version": 1, "iteration": it,
+                    "original_seed_sha256": source_identity(original),
+                    "seed_sha256": source_identity(original),
+                    "plan_sha256": source_identity(plan)})
+                plan_seed_sha256 = source_identity(original)
                 # A search restart changes the next seed, never the accepted winner.
                 generation_seed = original
                 stall, knobs_tried = 0, False
@@ -1018,6 +1048,8 @@ class Orchestrator:
                    "best_artifact_dir": str(best_artifact_dir),
                    "best_code_hash": code_hash(best_v),
                    "run_dir": str(state.run_dir)}
+        if termination_reason is not None:
+            summary["termination_reason"] = termination_reason
         final_artifacts = {str(path.resolve()): hashlib.sha256(path.read_bytes()).hexdigest()
                            for path in Path(best_artifact_dir).glob("*")
                            if path.is_file() and (path.suffix in (".v", ".sv", ".rpt", ".xdc", ".tcl", ".log")

@@ -1,4 +1,4 @@
-"""Frozen proposal-feedback configuration and CLI ablation boundaries."""
+"""Frozen experimental proposal-context configuration and CLI boundaries."""
 from unittest.mock import Mock
 
 import pytest
@@ -8,8 +8,16 @@ import run
 
 
 @pytest.mark.parametrize("mode", ["build", "optimize"])
-def test_new_runs_enable_proposal_feedback(mode):
+def test_new_runs_disable_proposal_feedback(mode):
     config = RunConfig(mode=mode)
+    assert config.proposal_feedback is False
+    assert config.to_dict()["proposal_feedback"] is False
+
+
+@pytest.mark.parametrize("mode", ["build", "optimize"])
+def test_api_explicitly_enables_proposal_feedback(mode):
+    config = RunConfig(mode=mode, proposal_feedback=True)
+    config.validate()
     assert config.proposal_feedback is True
     assert config.to_dict()["proposal_feedback"] is True
 
@@ -52,7 +60,11 @@ def test_proposal_feedback_requires_strict_boolean(value, saved):
     ["build", "--spec", "s.json"],
     ["optimize", "--design", "m.v", "--top", "m"],
 ])
-@pytest.mark.parametrize("extra,enabled", [([], True), (["--no-proposal-feedback"], False)])
+@pytest.mark.parametrize("extra,enabled", [
+    ([], False),
+    (["--proposal-feedback"], True),
+    (["--no-proposal-feedback"], False),
+])
 def test_new_run_cli_feedback_choice(monkeypatch, command, extra, enabled):
     orchestrator = Mock()
     orchestrator.return_value.run.return_value = {"status": "done"}
@@ -61,13 +73,30 @@ def test_new_run_cli_feedback_choice(monkeypatch, command, extra, enabled):
     assert orchestrator.call_args.args[0].proposal_feedback is enabled
 
 
-@pytest.mark.parametrize("extra,expected", [([], {}), (["--no-proposal-feedback"], {"proposal_feedback": False})])
-def test_bench_only_forwards_explicit_feedback_ablation(monkeypatch, extra, expected):
+@pytest.mark.parametrize("extra,expected", [
+    ([], {}),
+    (["--proposal-feedback"], {"proposal_feedback": True}),
+    (["--no-proposal-feedback"], {"proposal_feedback": False}),
+])
+def test_bench_only_forwards_explicit_feedback_choice(monkeypatch, extra, expected):
     from curriculum import runner
     bench = Mock(return_value=0)
     monkeypatch.setattr(runner, "run_tier", bench)
     assert run.main(["bench", "--tier", "0", *extra]) == 0
     bench.assert_called_once_with(0, **expected)
+
+
+@pytest.mark.parametrize("command", ["build", "optimize", "bench"])
+def test_feedback_help_labels_experiment_and_retained_audit(capsys, command):
+    with pytest.raises(SystemExit) as exc:
+        run.main([command, "--help"])
+    assert exc.value.code == 0
+    help_text = " ".join(capsys.readouterr().out.split())
+    assert "--proposal-feedback" in help_text
+    assert "--no-proposal-feedback" in help_text
+    assert "experimental prior-proposal context" in help_text
+    assert "default: off" in help_text
+    assert "bounded proposal journal audit is always retained" in help_text
 
 
 @pytest.mark.parametrize("enabled", [False, True])
@@ -80,9 +109,11 @@ def test_resume_retains_frozen_feedback_choice(monkeypatch, tmp_path, enabled):
     assert run.main(["resume", "--run", str(tmp_path)]) == 0
     assert orchestrator.call_args.args[0].proposal_feedback is enabled
     orchestrator.reset_mock()
-    with pytest.raises(SystemExit):
-        run.main(["resume", "--run", str(tmp_path), "--no-proposal-feedback"])
-    orchestrator.assert_not_called()
+    for flag in ("--proposal-feedback", "--no-proposal-feedback"):
+        with pytest.raises(SystemExit) as exc:
+            run.main(["resume", "--run", str(tmp_path), flag])
+        assert exc.value.code == 2
+        orchestrator.assert_not_called()
 
 
 def test_resume_old_config_keeps_feedback_disabled(monkeypatch, tmp_path):

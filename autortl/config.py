@@ -32,7 +32,7 @@ class RunConfig:
     max_vivado_minutes: float = 120.0
     max_wall_minutes: float = 240.0
     generate_golden: bool = False             # build: also generate/qualify a unit oracle with --tb
-    proposal_feedback: bool = True            # freeze bounded prior-proposal context for this run
+    proposal_feedback: bool = False           # experimental prior-proposal context; journal always retained
 
     def validate(self) -> None:
         if self.mode not in ("build", "optimize"):
@@ -83,8 +83,8 @@ class RunConfig:
         if data.pop("schema_version", None) != 1:
             raise ValueError("unsupported or missing run config schema_version")
         # Additive schema-1 migration: older runs received neither option.
-        # Preserve their original semantics; new RunConfig instances enable
-        # proposal feedback by default. Other required fields remain mandatory.
+        # Preserve their original semantics. Proposal feedback is experimental
+        # and disabled by default. Other required fields remain mandatory.
         data.setdefault("generate_golden", False)
         data.setdefault("proposal_feedback", False)
         allowed = {item.name for item in fields(cls)}

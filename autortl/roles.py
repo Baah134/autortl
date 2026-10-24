@@ -71,9 +71,10 @@ class Planner:
         return ask("planner", evidence_prompt(self, p), system=role_system(prompts.PLANNER_SYSTEM), budget=budget)
 
     def plan(self, iteration, contract, progress, evaluations, best: VivadoMetrics,
-             signals, budget, target_part="", advisor="") -> str:
+             signals, budget, target_part="", advisor="", generation_seed=None) -> str:
         p = prompts.PLAN.format(
             iteration=iteration, contract=contract, progress=progress,
+            generation_seed=generation_seed if generation_seed is not None else "(not supplied)",
             planning_skill=inject(["fpga-methodology"]),
             device_budget=budget_text(target_part) or "(unknown part)",
             advisor=advisor or "(no advisor output available)",
@@ -84,10 +85,11 @@ class Planner:
         return ask("planner", evidence_prompt(self, p, include_proposals=True), system=role_system(prompts.PLANNER_SYSTEM), budget=budget)
 
     def restart_plan(self, contract, stall_count, tried, best: VivadoMetrics,
-                     budget) -> str:
+                     budget, generation_seed=None) -> str:
         p = prompts.RESTART_PLAN.format(contract=contract, stall_count=stall_count,
                                         tried=tried, lut_used=best.lut_used,
-                                        ff_used=best.ff_used, wns_ns=best.wns_ns)
+                                        ff_used=best.ff_used, wns_ns=best.wns_ns,
+                                        generation_seed=generation_seed if generation_seed is not None else "(not supplied)")
         return ask("planner", evidence_prompt(self, p, include_proposals=True), system=role_system(prompts.PLANNER_SYSTEM), budget=budget)
 
 

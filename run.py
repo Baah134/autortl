@@ -39,9 +39,10 @@ def main(argv=None):
     common.add_argument("--max-vivado-minutes", type=float)
     common.add_argument("--max-wall-minutes", type=float)
     common.add_argument("--max-infra-retries", type=int)
-    common.add_argument("--no-proposal-feedback", action="store_false",
-                        dest="proposal_feedback", default=None,
-                        help="disable prior-proposal context for a new run (controlled ablation)")
+    common.add_argument("--proposal-feedback", action=argparse.BooleanOptionalAction,
+                        default=None,
+                        help="enable experimental prior-proposal context for a new run (default: off; "
+                             "bounded proposal journal audit is always retained)")
     common.add_argument("--route", help="unsupported: routing is Codex-only")
 
     p_opt = sub.add_parser("optimize", parents=[common])

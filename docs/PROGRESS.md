@@ -1010,3 +1010,23 @@ changes, commands, outcomes, evidence locations, limitations, and next action.
 - Reviewed next implementation addresses observed stale-plan/source mismatch
   and unsafe normalized candidate deduplication. No extra roles, framework,
   retries or budget increases. Full regression/live/tier0 gates still pending.
+
+- Published fba4b3e and verified matching remote development head. Study archive
+  contains 1,500 hashed files; actual dedupe collision archive contains 21.
+  Vivado observed distinct 2f41/2f42 values while old dedupe retained one source.
+- Applied reviewed source-binding/default-off/exact-dedupe changes after old
+  runtime archival. Full regression65990 on 203 frozen identities is active;
+  at least one failure observed. No concurrent vendor/model job or source edits.
+
+- Full01: 1 failed, 1,339 passed in 497.32 seconds; 203 source hashes unchanged.
+  Archived209files before repair. Local planner exception handling incorrectly
+  changed exhausted resume status to DONE. Removed both local catches; retained
+  the existing budget handler and untouched original regression. Updated only
+  two new tests to require budget_exhausted and preserved verified source.
+  Focused56passed121.24seconds; full02session26373 active on fresh203freeze.
+
+- Full02 passed **1,340 tests in 507.21 seconds**; all203 source identities
+  unchanged. Archived passing source/log alongside failed01 snapshot. Focused56
+  passed121.24seconds. Five pure synthetic validation-audit cases also passed.
+  Publishing tested runtime; actual changed-seed Vivado validation and fresh
+  full tier0 still required before main. No efficiency/superiority claim added.

@@ -137,3 +137,27 @@ Curriculum cohorts bind tasks, configuration, frozen implementation/Python/tool
 identity and governance code. Missing or mixed runtime provenance cannot qualify
 a tier. CLI model identity remains unobserved; a tier result does not establish
 a frozen-model experiment or weaker-model robustness.
+
+## Proposal identity and planning
+
+Candidate deduplication skips only exact UTF8 generation text using full SHA256.
+Whitespace/comment normalization is advisory; it does not prove equivalent
+Verilog and cannot justify discarding a candidate. Metrics reuse additionally
+requires the existing exact source, flow, inputs and environment context.
+
+Planner instructions are bound to the SHA256 of the actual generation seed
+text and the returned plan. A changed accepted seed requires a fresh plan;
+source-identical physical improvements retain existing planning policy. Planner
+prompts distinguish the editable source from verified incumbent measurements,
+including restarts that return generation to the original source.
+
+Without room for a required replan, the loop keeps its verified incumbent and
+stops without executing stale instructions. Raised execution-budget errors
+retain the existing budget_exhausted status; provider quota failures remain
+model_blocked. Neither is a design failure or a successful new proposal.
+
+Bounded chronological proposal records remain retained and integrity checked.
+Their additional prompt context is experimental and defaults off after the
+three-pair study did not establish a repetition benefit. New runs may enable
+--proposal-feedback or explicitly use --no-proposal-feedback; saved configuration
+controls resume. No extra role, retry or budget is introduced.
