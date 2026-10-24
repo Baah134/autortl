@@ -1,35 +1,77 @@
 # Current AutoRTL checkpoint
 
-Updated October23,2026 (America/New_York). Recover from actual Git, ownership,
-raw tool results and source hashes. Chat summaries are supplementary.
+Updated October23,2026 (America/New_York). Recover actual Git, ownership,
+processes, raw results and source hashes; chat memory is supplementary.
 
-## Active continuation: previous-proposal feedback (October23)
+## Active frozen study / current jobs
 
-Parent fullsuite71497 completed:1301passed326.44s on frozen202 files;
-freeze workspace/work/proposal-source-freeze-01.json. No vendor/model job yet.
-Prior61 focused integration/replay tests passed; helper25 and config78 focused
-tests passed separately. Expanded adversarial binding/restart tests passed within that fullsuite.
-All202 source identities matched after the gate. Evidence: proposal-feedback-tests-01.
+Canonical Downloads/autortl-work, development776e61b published; main remains
+last integrated e6dc558 (inspect actual heads). Runtime source remains frozen:
+202files in workspace/work/proposal-source-freeze-01.json and
+logs/proposal-feedback-study-02/plan.json. Fullsuite1301passed326.44s.
+No canonical executable/test changes since that verified gate.
 
-Implemented bounded planner/generator context from only completed earlier
-iterations; exact and normalized identities, generated vs repaired RTL, standard
-metrics before Doctor, separate trial projection. Feedback input/outcome stages
-are journaled, checked on replay and originally observed source/script/context
-digests bound at DONE. No duplicate ban or role/budget/acceptance change.
-Per-run proposal_feedback defaultTrue, legacy saved configs missing fieldFalse,
-CLI --no-proposal-feedback for ablation; curriculum override included.
-Review corrected dedupe status to duplicate_skipped and retained full filesystem
-paths, clipping only prompt previews. Performance benefit remains unmeasured.
+Study02 uses original generated parameterized divider core, frozen wrapper
+appended to independent six-width TB; only TB container renamed. Original
+case/checker bodies preserved. Same N1/3iter/16calls/25tool/35wall/1infraretry.
+Actual CLI model unknown (metadata model null); exploratory only.
 
-Predeclared3 matched alternating-order divider optimization pairs in TASKS.
-Launcher workspace/work/proposal_study.py; not prepared/launched yet. Uses exact
-original generated baseline wrapper+child concatenated as a standalone source,
-same frozen independently admitted six-width TB, N1/3iter/16calls/25tool/35wall,
-1infra retry. Original completed divider run never resumed or regraded.
-CLIdefault model identity remains unknown unless emitted; exploratoryonly.
-Next: inspect fullsuite result, fix any failures honestly, re-freeze/test if edited;
-then commit frozen runtime, prepare study, run paired trials sequentially, inspect
-every result and exactwinner verification, freshfulltier0 before mainintegration.
+Original paired rows retained:
+- Pair1 baseline33LUT/46FF,+.313/.095ns;9calls,308.799toolsec,453.781wall.
+- Pair1 context32LUT/50FF,+.313/.159ns;8calls,284.719toolsec,417.578wall.
+- Pair2 context33LUT/46FF;8calls,377.472toolsec,510.891wall.
+- Pair2 baseline hit CODEX_QUOTA atplanner3 with6calls. Original study-result
+  remains blocked and usage unknown; do not rewrite it as a paired success.
+Each original row repeatedoneproposal. Completed winners independentlyPASS.
+Actual pair2Doctor trial40LUT/45FF,-.080/.111 unchanged afterphysicaloptions,
+NOT_ADOPTED, candidateREJECT,33LUT incumbent preserved; hashes verified.
+
+User returned after quota reset; no old jobs active, expired lease reclaimed.
+Actual CLI quotaresume22624 completed0, cumulative6->9calls withoutreset,
+318.641toolsec total. Exact saved33LUT winner independentlyPASS1543.
+Supplemental quota-resume/result.json retains original blocked row and
+before/afterbudget. Completed stages replayed; no runtimechange/regrading.
+Original partial comparison remains interrupted; no efficacy claim.
+
+CURRENT actual job: index4 pair3baseline99062.
+Index5 pair3context remains unstarted. Temporary awake42170 watches
+workspace/work/proposal-recovery-awake.flag (bounded120min); oldawake29697 expired.
+One vendor/model queue; user GUI untouched.
+
+## Isolated preparation (NOT canonical implementation)
+
+Agent seed_binding_stage copied202frozenfiles into workspace/work/seed-binding-stage.
+It is preparing source-bound planning, actualseed prompt input and graceful
+incumbent retention if fresh planning budget unavailable, with synthetictests.
+Agent context_default_stage prepared conditional defaultoff/positive+negativeCLI
+under workspace/work/context-default-stage;86focusedtests passed144.60s.
+Apply that only if final context study fails predeclared keep criterion.
+No extra roles/dependencies/retries/budget increases. Both agents forbidden
+canonical edits or actual vendor/model jobs during the frozen study.
+
+Observed issue: accepted new seed reuses old instruction atiter2; context alone
+did not prevent repetition. Planner currently sees baseline source, not current
+seed. Proposed fix must both supply actualseed and bind plan to it. Do not claim
+it improves PPA/repetition before testing. BaselineWIDTH1 negative select warning
+remains despite actualVivadoPASS; no portability/all-domainproof.
+
+## Exact next actions
+
+1. Inspect/finish index4; launch frozen helper workspace/work/proposal_study02.py
+   --index5 once queueidle, originalbudgets/no resets.
+2. Run workspace/work/report_proposal_study.py after allsix original rows exist.
+   Preserve CODEX_QUOTA row + supplemental recovery separately. No positive
+   context-only claim with missingusage/interruptedcomparison.
+3. With all model/vendor jobs stopped, run workspace/work/check_proposal_done.py
+   against pair2feedback (completed on unchanged776runtime), output outside run.
+   Verify nominalCLI0 and restoredtamper failures forcontext/source/script,
+   unchanged budget/routerstats/fileset. BEFORE any runtime source changes.
+4. Archive complete study, failedsetup107filearchive and actualDONE proof.
+   Then review isolated patches, record observedfailuretaxonomy before hotfix,
+   apply only reviewedfiles, fullsuite+freshlivecheck+freshfulltier0 beforemain.
+   No held higher tier. Update publicREADME with concise verifiedresults only.
+5. Release temporaryawakeflag when queueends; checkpoint/push meaningful progress.
+   Scheduling deferred at user's request; no heartbeat/automaticfailover set.
 
 ## Checkout and integration
 
@@ -109,3 +151,5 @@ Python:C:/Users/prince.baah/.cache/codex-runtimes/codex-primary-runtime/dependen
 PYTHONPATH:C:/Users/prince.baah/Documents/Codex/2026-10-15/hey/work/review_deps
 Set PYTHONDONTWRITEBYTECODE=1; fresh pytest basetemp,no cacheprovider.
 Downloads writes/Git/vendor launches require authorized escalation.
+
+Read-only pair1sourceaudit: both sequential dividers, six rawcases completed; saved/copybytes match. Baseline WIDTH1 negative-range select emits VRFC10-3705 but actualVivadoPASS; no portability/all-domainproof. Feedbackwinner width-safe quotient shift. Doctor null in both; actualDoctor separation only prior evidence/unit tests. Both firstpair modes repeatediter2; context-only benefit unproven. Reviewer supports stale-plan hypothesis: seedchanges afteracceptance but instruction reused; do not modify frozen study. Consider source-bound planning only after allsixtrials and actualDONEproof.

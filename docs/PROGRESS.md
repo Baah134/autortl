@@ -978,3 +978,9 @@ changes, commands, outcomes, evidence locations, limitations, and next action.
 - Fullsuite71497 active,202 files frozen; no new model/PPA claim yet.
 
 - Fullsuite1301passed326.44s; all202 source identities unchanged. Archived raw fullsuite output and freeze in evidence/2026-10-23/proposal-feedback-tests-01. No model-benefit or PPA claim; preparing frozen runtime study.
+
+- Study01 setup invalid/ownedtree stopped,107filearchive verified; spentbudget lowerbound4calls/116.579toolsec preserved. Study02 corrected core-only boundary with unchanged six-case checker, frozenhelper/seed/TB/202sources. Pair1baseline completed37->33LUT/46FF,+.313/.095ns;9calls/308.799toolsec/453.781wallsec;1repeat/2distinctmeasured; exactwinner independentPASS. Feedbackpair1 active62092, allremainingtrials stillrequired before comparison.
+
+- Pair1feedback completed32LUT/50FF,+.313/.159ns;8calls/284.719toolsec/417.578wallsec; exactwinnerPASS. Both modes repeatedoneproposal, so no repetition-benefit claim. Read-only audit confirms sequential sources/byteidentities; baselineWIDTH1 emits known negative-index warning despite actualPASS. Pair2feedback index2 active31562. Context-only negative signal motivates later seed-bound plan review, not mid-study changes.
+
+- Recovered after automaticapprovalreview usageblock; no jobs active, claimed expiredlease. Source202/helper freeze matched. Pair2baseline originalCODEX_QUOTA row retained; actualCLIresume6->9calls, noreset, exactsavedwinner sixwidthPASS. Supplemental recovery318.641toolsec cumulative. Index4baseline99062 active; isolated seed/default patches preparing while canonicalfrozen. No scheduling configured (user deferred).

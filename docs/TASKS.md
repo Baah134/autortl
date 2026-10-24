@@ -348,3 +348,20 @@ distinct verified candidates, accepted improvements, completion, model calls/
 reported tokens and tool/wall seconds. Keep experimental feedback only if
 repetition declines without reduced completion or material added cost; report
 uncertain/negative results and revise/remove if benefit unsupported.
+
+### Prelaunch amendment after invalid study01 setup
+
+Study01 baseline was deliberately aborted before any paired result: combined
+wrapper/core source conflicted with top-only generation guidance, spending
+repairs restoring its missing helper. Raw plan/runtime/source, model calls,
+tool logs and lower-bound budget remain in logs/proposal-feedback-study-01.
+No outcome is used for feedback performance. Owned Python10212 tree stopped;
+no other model/vendor/Python job remained. No source/budget reset or regrade.
+
+Study02 uses only original generated parameterized core as editable top.
+Frozen original wrapper is appended to supplied admitted six-width TB; only
+TB container name changes to iterative_divider_core_tb, reversibly checked.
+All original case/checker statements and wrapper are preserved byte-for-byte
+after line-ending normalization. Same six selected configurations, pairedorder,
+budgets and keep/remove criterion; all six actual paired runs still required.
+This is a corrected experiment setup, not a relaxed acceptance requirement.
