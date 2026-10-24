@@ -26,7 +26,7 @@ learn from failures, and retain the best correct design within a fixed budget.
 | Generated 8-bit counter build | **Golden oracle repaired automatically; independent 700-cycle test passed · 6 LUTs / 8 FFs** |
 | Generated priority encoder optimization | **6 → 5 LUTs (16.7%) · 4 FFs · exhaustive independent test passed** |
 | Accepted 32-bit counter optimization | **55 → 31 LUTs (43.6%) · 37 FFs · setup slack 0.126 ns · hold slack 0.026 ns** |
-| Fresh full tier 0 campaign | **2/2 passed · fresh counter 55 → 53 LUTs, mux baseline retained** |
+| Fresh full tier 0 campaign | **2/2 passed · fresh counter 55 → 53 LUTs, mux 8 LUTs** |
 
 Measurements use Vivado 2025.2, `xc7a35tcpg236-1` and a 10 ns clock,
 with explicit ideal zero minimum/maximum I/O delays. These are experiment
@@ -58,7 +58,7 @@ See the [FIFO recovery evidence](evidence/2026-10-22/generated-fifo-attempt-05/R
 [divider verification](evidence/2026-10-23/divider-admission-attempt-02/README.md),
 [packet FIFO build](evidence/2026-10-22/generated-packet-attempt-01/README.md),
 [packet FIFO admission](evidence/2026-10-22/packet-fifo-admission/README.md),
-[fresh full tier 0](evidence/2026-10-23/contract-campaign-09/README.md),
+[fresh full tier 0](evidence/2026-10-24/contract-campaign-10/README.md),
 [accepted optimization](evidence/2026-10-22/contract-campaign-07/README.md),
 [generated-build verification](evidence/2026-10-20/generated-counter/README.md) and
 [streaming build](evidence/2026-10-20/generated-streaming/README.md).
@@ -78,7 +78,7 @@ flowchart LR
 
 - **Fixed contracts:** optimization requirements come from immutable harness
   facts. Interfaces, reset behavior and cycle latency
-  are checked against explicit module specifications.
+  are checked against explicit module specifications. Plans are bound to the exact editable RTL.
 - **Verification before scoring:** testbench qualification requires a passing
   control and detection of an injected fault. Scoreboard stimulus includes eligible
   specification payload examples alongside corners and seeded random cases.

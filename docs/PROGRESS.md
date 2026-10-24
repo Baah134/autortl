@@ -1030,3 +1030,40 @@ changes, commands, outcomes, evidence locations, limitations, and next action.
   passed121.24seconds. Five pure synthetic validation-audit cases also passed.
   Publishing tested runtime; actual changed-seed Vivado validation and fresh
   full tier0 still required before main. No efficiency/superiority claim added.
+
+- Published965251fe0bf52b1039d2f41422638047066b9fc7, verified matchingremote.
+  All203 tested source hashes unchanged aftercommit. Fresh default-off actual
+  seed-binding-live-01 session87223 launched with unchanged originalseed/TB
+  and3iter/N1/16call/25tool/35wall budgets. Main remains e6dc558 pending gates.
+
+
+## October 24 — recover actual live validation after quota reset
+
+- User returned and requested continuation. No old jobs remained. Original live01
+  hit CODEX_QUOTA before generation after passing baseline37LUT/46FF; original
+  row retained as blocked, not counted as design failure or mechanism validation.
+- Verified203 source identities and original helper; archived60 pre-recovery
+  files before actual CLI resume13274 with unchanged source/config/budgets.
+  Before:1 charged model call,305.140 tool seconds. Baseline stages replayed;
+  supplemental recovery is separate and no spent budget was reset.
+- Renewed existing coordinator lease; old awake request had released. New bounded
+  awake51802 covers current queue. Main remains e6dc558 pending live/tier0 gates.
+
+- Quota recovery finished with cumulative10calls/637.920toolseconds, no reset;
+  one accepted-source fresh-plan path audited, no unbound generator inputs.
+  Exact33LUT/46FF winner independentlyPASS,+.313/.095ns. Original blocked row
+  retained. Reporting observer failed printing Unicode after harness DONE;
+  original exit/wall duration remain unknown, explicit separate CLI reuse0.
+- Actual DONE five tamper probes all rejected,267 identities/stats/budget/file
+  set restored unchanged. Recovery268-file archive verified before next queue.
+- Fresh full tier0campaign10 session60255 active on unchanged965251f; original
+  per-entry budgets, no held higher tier. Dot4 proposal remains isolated/unadmitted.
+
+- Fresh FULL tier0campaign10 PASSED2/2, new cohort9ce241c06f496aabc8bf5a74e161915cef9b3e871b302c087c8bd20aa262d028,
+  streak1/heldfalse. Counter55→53LUT,
+  mux8LUT. Runtime/source/report identities verified;
+  all203 tested source hashes unchanged. No higher held tier.
+- All gates for runtime965251f now passed:1,340 full tests, actual accepted-source
+  planning refresh, exact independent winner, five DONE integrity probes and
+  fresh full tier0. Preparing authorized main integration; no comparative
+  efficiency, weak-model or product-superiority claim.

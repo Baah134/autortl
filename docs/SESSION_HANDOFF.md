@@ -1,17 +1,17 @@
 # Current AutoRTL checkpoint
 
-Updated October 23, 2026 (America/New_York). Recover actual Git heads,
+Updated October 24, 2026 (America/New_York). Recover actual Git heads,
 ownership, source hashes and live jobs before resuming. Preserve Downloads/autortl.
 
 ## Tested implementation; fresh live and merge gates next
 
 Canonical: C:/Users/prince.baah/Downloads/autortl-work.
-Branch codex/contract-context; published study milestone fba4b3e. Main remains
+Branch codex/contract-context; published tested runtime965251f (remote verified); study milestone fba4b3e. Main remains
 e6dc558. Reviewed implementation is now applied and full regression passed:
 **1,340 tests in 507.21 seconds**, all 203 frozen source identities unchanged.
 Freeze: workspace/work/proposal-fixes-source-freeze-02.json. Raw output:
 workspace/outputs/AutoRTL-proposal-fixes-full-02.txt. Archive:
-evidence/2026-10-23/proposal-fixes-tests-02. Commit/push tested runtime next.
+evidence/2026-10-23/proposal-fixes-tests-02. Tested runtime committed/pushed965251f; all203hashes unchanged afterward.
 
 Changes: planner receives actual editable RTL and binds plans to exact seed text;
 changed accepted source forces fresh planning; unavailable required planning
@@ -35,32 +35,36 @@ new source. Actual DONE252 proof: nominal0/four restored tamper probes1,
 identities/budget/routerstats/fileset unchanged. Actual dedupe simulations proved
 distinct2f41/2f42 outputs collided and old dedupe retained one;21-file archive.
 
-## Exact next actions / active queue
+## All integration gates passed on runtime965251f
 
-1. Commit/push tested source and evidence; verify remote and current203hashes.
-2. Launch workspace/work/validate_seed_binding_live.py in NEW logs/seed-binding-live-01.
-   Same original study02 core/TB, default context OFF,3iter/N1/16calls,
-   25tool/35wallminutes/1infraretry. No runtime changes or old study resume.
-   Helper audits exact journal seed/plan bindings, immediately preceding accepted
-   source transition and independent exact saved winner. Five synthetic audit
-   cases passed; unavailable seed/stale binding/wrong original fail closed;
-   restart plus periodic planning does not count as accepted-source refresh.
-   No actual live result yet. Zero corrected-path coverage is inconclusive.
-3. Once model/vendor queue idle, actual CLI DONE proof using distinct helper
-   workspace/work/check_seed_binding_done.py (adds plan binding tamper probe).
-4. Fresh full tier0 logs/contract-campaign-10 on the final unchanged runtime:
-   1iter/N1/16calls/20tool/30wallminutes/1infraretry. No higher held tier exists.
-   Runtime changed; reset cohort streak honestly. Archive all results.
-5. Update documentation/README concisely and integrate main only after gates.
-6. Next complex fixture: dot4_pipeline_build, two registered17-bit pair product
-   sums plus registered18-bit merge,8-bit unsigned inputs, two sampled edges.
-   Independent width/wiring/reset/pipeline fault admission before generation;
-   no invented aggregate top latency annotation or new framework.
+Full suite1,340passed507.21seconds; all203 frozen identities unchanged.
+Live same-runtime quota recovery:1→10calls,637.920 cumulative tool seconds,
+one accepted-source fresh-plan path/no unbound inputs. Exact saved33LUT/46FF
+winner six-widthPASS,+.313/.095ns. Actual DONE nominal0/five tamper probes1,
+267 identities/file set/budget/stats unchanged. Original quota-blocked row and
+observer Unicode printing failure retained separately; original first CLI exit
+and observer wall duration remain unknown, separate completed CLI reuse0.
 
-No owned vendor/model/fullsuite job remains at this checkpoint. Temporary
-awake42170 bounded120min watches workspace/work/proposal-recovery-awake.flag;
-release after queue. Coordination lease and exact integration scopes remain
-active. Scheduling deferred; no automatic cross-provider failover configured.
+Fresh FULL tier0 campaign10 PASSED2/2; new cohort 9ce241c06f496aabc8bf5a74e161915cef9b3e871b302c087c8bd20aa262d028,
+streak1/heldfalse. Counter55→53LUT,
+mux8LUT. Per-entry original1iter/N1/16calls/20tool/30wall,
+1infraretry. All runtime manifests match frozen source. No higher held tier.
+Campaign archive213files verified;
+recovery archive268files and pre-recovery quota archive60files also retained.
+
+No vendor/model/test jobs active. Preparing authorized main/development atomic
+fast-forward publication after checking actual remote heads/ancestry. Current
+source remains965251f; pending changes are documentation/evidence only.
+Do not repeat old study or optimization under changed runtime.
+
+Next: isolated dot4-fixture-stage proposal reviewed structurally,7files,
+13 intended admission cases,52 port checks. Not compiled/simulated/admitted.
+Admit independently before copying into canonical or generating designs; it
+exercises three generated children and fixed pipeline integration. Any new
+source cohort requires fresh regression and full tier0 before another main merge.
+
+Temporary awake51802 bounded120min; release flag when queue ends. Coordinator
+lease/scopes remain active. User deferred scheduling; no automatic failover.
 
 ## Checkout and integration
 

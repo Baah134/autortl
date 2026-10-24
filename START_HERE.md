@@ -5,17 +5,16 @@ You can continue without access to the previous provider's conversation.
 
 Canonical checkout: `C:/Users/prince.baah/Downloads/autortl-work`.
 GitHub integration branch: `main`. Development branch: `codex/contract-context`.
-Current integrated checkpoint: **e6dc558**, with **1,226 regression tests passed**
-on runtime **4618887**. Inspect Git heads rather than assuming this remains latest.
-Generated divider01 improved its own baseline38→26LUTs, with independent
-six-width verification and DONE integrity checks. FIFO and packet evidence
-remain archived; no head-to-head or controlled weak-model superiority is claimed.
+Current tested runtime: **965251f**, with **1,340 regression tests passed**.
+Actual source-bound planning recovery, independent six-width winner verification,
+five DONE tamper probes and fresh full tier0 campaign10 passed. Main integration
+gates are complete; inspect actual Git heads and SESSION_HANDOFF for publication.
+Generated divider01's prior38→26LUT result remains the project area result;
+the new33LUT run validates planning/recovery, not a stronger optimization claim.
 
-Active engineering: bounded previous-proposal feedback, with standard-flow
-and Doctor outcomes kept separate, immutable chronological context and an
-explicit frozen optout. Full regression passed 1,301 tests on the frozen runtime; the new mechanism
-is not yet a verified performance improvement. Final exploratory trial is active.
-See SESSION_HANDOFF and local coordinator status for current jobs and scopes.
+Keep source-bound planning and exact candidate dedupe. Additional prior-proposal
+prompt context is experimental/opt-in after its study did not establish a benefit.
+No held tier, controlled weak-model or product-superiority claim is made.
 
 1. Read `AGENTS.md` and `docs/AGENT_HANDOFF.md` for the working contract.
 2. Read `docs/SESSION_HANDOFF.md` for current state and exact next actions.

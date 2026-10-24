@@ -487,3 +487,19 @@ different Verilog string outputs. Exact UTF8 SHA256 dedupe is the smallest
 safe correction. Cosmetic variants may now cost verification; normalized text
 hashes remain advisory and cannot establish semantic equivalence. No cache
 redesign, language parser, new model role or framework is justified.
+
+
+## Source binding and exact dedupe: verified implementation decision
+
+Keep seed-bound planning and exact dedupe:1,340 regression tests passed; a fresh
+actual run exercised accepted-source replanning with no unbound generator input.
+The exact winner independently passed six widths. Five restored tamper probes,
+including the plan binding, were rejected with267 protected identities and no
+new budget charges. Fresh full tier0 passed2/2 in a new cohort, streak1/heldfalse.
+
+The live run was quota-interrupted, then recovered on unchanged source with
+cumulative budgets. Its reporting observer also failed printing Unicode after
+harness completion; that original exit/wall timing stays unknown. These results
+validate the mechanism and evidence boundaries, not causal efficiency or
+repetition improvements. Keep additional proposal context opt-in and retain
+negative study results. No role/framework expansion is justified.

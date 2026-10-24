@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_1:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 1,
+    "instruction": "In the enabled count update, remove the `count_next` temporary and the `count == {WIDTH{1'b1}}` branch; assign `count <= count + 1'b1` and `overflow <= &count`. Keep reset, load priority, disabled-cycle holds, and all registered threshold flag logic unchanged, including flags\u2019 pre-edge count behavior. Preserve behavior for every supported `WIDTH`, including natural truncation on increment; retain the candidate only if all required verification and routed metric gates pass and LUT use is strictly below 55.",
+    "candidates": [
+      {
+        "iteration": 1,
+        "mutation": "standard",
+        "instruction": "In the enabled count update, remove the `count_next` temporary and the `count == {WIDTH{1'b1}}` branch; assign `count <= count + 1'b1` and `overflow <= &count`. Keep reset, load priority, disabled-cycle holds, and all registered threshold flag logic unchanged, including flags\u2019 pre-edge count behavior. Preserve behavior for every supported `WIDTH`, including natural truncation on increment; retain the candidate only if all required verification and routed metric gates pass and LUT use is strictly below 55.",
+        "generated_source_sha256": "b34edca96b3074065043ab091b67cd77b357bf3d8b0ebd166b3f832e124259f1",
+        "final_source_sha256": "b34edca96b3074065043ab091b67cd77b357bf3d8b0ebd166b3f832e124259f1",
+        "generated_code_hash": "eec13e417f50e549",
+        "final_code_hash": "eec13e417f50e549",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.456,
+          "whs_ns": 0.282,
+          "lut_used": 53,
+          "ff_used": 37,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.05,
+          "total_power_w": 0.12
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\contract-campaign-10\\tier0_qpgrlhn6\\counter\\iter_001\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\contract-campaign-10\\tier0_qpgrlhn6\\counter\\iter_001\\cand_standard\\synth.tcl",
+          "sha256": "382660fe20bb1f38acbfc1294d56ecd1462d5e30942c81444d4d8e8b22710e52"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\contract-campaign-10\\tier0_qpgrlhn6\\counter\\iter_001\\cand_standard\\counter.v",
+          "sha256": "583ed34da2f9aec18c0fa2878a418775ca0c0c91f35e8784c40fcd54a5f9ec22"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "ACCEPT",
+    "is_best": true,
+    "selected_source_sha256": "b34edca96b3074065043ab091b67cd77b357bf3d8b0ebd166b3f832e124259f1"
+  },
+  "artifacts": {}
+}
