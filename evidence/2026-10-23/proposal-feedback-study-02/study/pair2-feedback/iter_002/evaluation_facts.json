@@ -1,0 +1,286 @@
+{
+  "candidate_metrics": {
+    "bram_total": 50.0,
+    "bram_used": 0.0,
+    "dsp_total": 90,
+    "dsp_used": 0,
+    "dynamic_power_w": 0.022,
+    "ff_pct": 0.11057692307692307,
+    "ff_total": 41600,
+    "ff_used": 46,
+    "lut_pct": 0.15865384615384615,
+    "lut_total": 20800,
+    "lut_used": 33,
+    "sim_error": "",
+    "sim_passed": true,
+    "synth_error": "",
+    "timing_met": true,
+    "total_power_w": 0.092,
+    "whs_ns": 0.095,
+    "wns_ns": 0.313
+  },
+  "candidate_source": {
+    "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\proposal-feedback-study-02\\pair2-feedback\\iter_001\\cand_standard\\iterative_divider_core.v",
+    "sha256": "b35e192fe64a924f8423c2e1bbf7f27016385cd6fff21b6e2c2aed273effd969",
+    "text": "`timescale 1ns/1ps\r\n// @latency 9\r\nmodule iterative_divider_core #(\r\n    parameter WIDTH = 8\r\n) (\r\n    input wire clk,\r\n    input wire rst,\r\n    input wire [WIDTH-1:0] dividend,\r\n    input wire [WIDTH-1:0] divisor,\r\n    input wire in_valid,\r\n    output wire in_ready,\r\n    output wire [WIDTH-1:0] quotient,\r\n    output wire [WIDTH-1:0] remainder,\r\n    output wire out_valid,\r\n    input wire out_ready\r\n);\r\n\r\n    localparam COUNT_WIDTH = $clog2(WIDTH + 1);\r\n\r\n    reg busy;\r\n    reg out_valid_reg;\r\n    reg [WIDTH-1:0] dividend_reg;\r\n    reg [WIDTH-1:0] divisor_reg;\r\n    reg [WIDTH-1:0] quotient_work;\r\n    reg [WIDTH:0] remainder_work;\r\n    reg [COUNT_WIDTH-1:0] iteration;\r\n\r\n    reg [WIDTH-1:0] quotient_reg;\r\n    reg [WIDTH-1:0] remainder_reg;\r\n\r\n    wire [WIDTH:0] trial_remainder;\r\n    wire [WIDTH+1:0] subtract_result;\r\n    wire subtract_borrow;\r\n    wire [WIDTH:0] next_remainder;\r\n    wire [WIDTH-1:0] next_quotient;\r\n\r\n    assign trial_remainder = {\r\n        remainder_work[WIDTH-1:0],\r\n        quotient_work[WIDTH-1]\r\n    };\r\n\r\n    assign subtract_result =\r\n        {1'b0, trial_remainder} - {2'b00, divisor_reg};\r\n    assign subtract_borrow = subtract_result[WIDTH+1];\r\n\r\n    assign next_remainder = subtract_borrow\r\n        ? trial_remainder\r\n        : subtract_result[WIDTH:0];\r\n\r\n    assign next_quotient = (quotient_work << 1) | !subtract_borrow;\r\n\r\n    assign in_ready = !busy && !out_valid_reg;\r\n    assign out_valid = out_valid_reg;\r\n    assign quotient = quotient_reg;\r\n    assign remainder = remainder_reg;\r\n\r\n    always @(posedge clk) begin\r\n        if (rst) begin\r\n            busy <= 1'b0;\r\n            out_valid_reg <= 1'b0;\r\n            dividend_reg <= {WIDTH{1'b0}};\r\n            divisor_reg <= {WIDTH{1'b0}};\r\n            quotient_work <= {WIDTH{1'b0}};\r\n            remainder_work <= {(WIDTH+1){1'b0}};\r\n            iteration <= {COUNT_WIDTH{1'b0}};\r\n            quotient_reg <= {WIDTH{1'b0}};\r\n            remainder_reg <= {WIDTH{1'b0}};\r\n        end else if (busy) begin\r\n            quotient_work <= next_quotient;\r\n            remainder_work <= next_remainder;\r\n\r\n            if (iteration == WIDTH - 1) begin\r\n                busy <= 1'b0;\r\n                out_valid_reg <= 1'b1;\r\n                quotient_reg <= next_quotient;\r\n                remainder_reg <= next_remainder[WIDTH-1:0];\r\n            end else begin\r\n                iteration <= iteration + 1'b1;\r\n            end\r\n        end else if (out_valid_reg) begin\r\n            if (out_ready)\r\n                out_valid_reg <= 1'b0;\r\n        end else if (in_valid && in_ready) begin\r\n            dividend_reg <= dividend;\r\n            divisor_reg <= divisor;\r\n            quotient_work <= dividend;\r\n            remainder_work <= {(WIDTH+1){1'b0}};\r\n            iteration <= {COUNT_WIDTH{1'b0}};\r\n            busy <= 1'b1;\r\n        end\r\n    end\r\n\r\nendmodule",
+    "truncated": false
+  },
+  "candidate_timing_feasible": true,
+  "first_violated_path_excerpt": null,
+  "flow_and_constraints": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\proposal-feedback-study-02\\pair2-feedback\\iter_001\\cand_standard\\synth.tcl",
+      "sha256": "ebc70a13512cce70025b1ee1cf9fd9dcfc6dab8bfa0279c2f5b005d51dc04bcf",
+      "text": "set_msg_config -id {VRFC 10-3609} -new_severity ERROR\r\nset_msg_config -id {Synth 8-9873} -new_severity ERROR\r\nset_msg_config -id {Designutils 20-1307} -new_severity ERROR\r\nset_msg_config -id {Synth 8-327} -new_severity ERROR\r\nset_msg_config -id {Synth 8-3352} -new_severity ERROR\r\nset_part xc7a35tcpg236-1\r\nread_verilog \"C:/Users/prince.baah/Downloads/autortl-work/logs/proposal-feedback-study-02/pair2-feedback/iter_001/cand_standard/iterative_divider_core.v\"\r\nset fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/proposal-feedback-study-02/pair2-feedback/iter_001/cand_standard/timing.xdc\" w]\r\nputs $fp {create_clock -period 10.000 -name clk [get_ports clk]}\r\nclose $fp\r\nread_xdc \"C:/Users/prince.baah/Downloads/autortl-work/logs/proposal-feedback-study-02/pair2-feedback/iter_001/cand_standard/timing.xdc\"\r\nsynth_design -top iterative_divider_core -flatten_hierarchy rebuilt \r\nset fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/proposal-feedback-study-02/pair2-feedback/iter_001/cand_standard/timing_io.tcl\" w]\r\nputs $fp {set data_inputs [get_ports -filter {DIRECTION == IN && NAME != clk}]}\r\nputs $fp {if {[llength $data_inputs] > 0} {set_input_delay -clock clk -max 0.000 $data_inputs; set_input_delay -clock clk -min 0.000 $data_inputs}}\r\nputs $fp {if {[llength [all_outputs]] > 0} {set_output_delay -clock clk -max 0.000 [all_outputs]; set_output_delay -clock clk -min 0.000 [all_outputs]}}\r\nclose $fp\r\nsource \"C:/Users/prince.baah/Downloads/autortl-work/logs/proposal-feedback-study-02/pair2-feedback/iter_001/cand_standard/timing_io.tcl\"\r\nreport_utilization -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/proposal-feedback-study-02/pair2-feedback/iter_001/cand_standard/utilization.rpt\"\r\nreport_timing_summary -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/proposal-feedback-study-02/pair2-feedback/iter_001/cand_standard/timing.rpt\"\r\nopt_design\r\nplace_design\r\n\r\nroute_design\r\nreport_utilization -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/proposal-feedback-study-02/pair2-feedback/iter_001/cand_standard/utilization_routed.rpt\"\r\nreport_timing_summary -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/proposal-feedback-study-02/pair2-feedback/iter_001/cand_standard/timing_routed.rpt\"\r\nreport_design_analysis -logic_level_distribution -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/proposal-feedback-study-02/pair2-feedback/iter_001/cand_standard/design_analysis.rpt\"\r\nreport_power -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/proposal-feedback-study-02/pair2-feedback/iter_001/cand_standard/power.rpt\"\r\ncatch { report_methodology -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/proposal-feedback-study-02/pair2-feedback/iter_001/cand_standard/methodology.rpt\" }\r\ncatch { report_qor_suggestions -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/proposal-feedback-study-02/pair2-feedback/iter_001/cand_standard/qor_suggestions.rpt\" }\r\nputs \"SYNTH_COMPLETE\"\r\n",
+      "truncated": false
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\proposal-feedback-study-02\\pair2-feedback\\iter_001\\cand_standard\\timing.xdc",
+      "sha256": "fa142c09f0fadb5e303ca9fea08c02bc353451533e44aeee9cd9a0231cc8bede",
+      "text": "create_clock -period 10.000 -name clk [get_ports clk]\r\n",
+      "truncated": false
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\proposal-feedback-study-02\\pair2-feedback\\iter_001\\cand_standard\\timing_io.tcl",
+      "sha256": "6b38098841a48bbb3ab15de49d2bf2baf7e4384f599259ff5f3afa2c2b1daf00",
+      "text": "set data_inputs [get_ports -filter {DIRECTION == IN && NAME != clk}]\r\nif {[llength $data_inputs] > 0} {set_input_delay -clock clk -max 0.000 $data_inputs; set_input_delay -clock clk -min 0.000 $data_inputs}\r\nif {[llength [all_outputs]] > 0} {set_output_delay -clock clk -max 0.000 [all_outputs]; set_output_delay -clock clk -min 0.000 [all_outputs]}\r\n",
+      "truncated": false
+    }
+  ],
+  "improvement_kind": null,
+  "measured_improvement": false,
+  "metric_provenance": "Structured metrics are parsed from retained reports; routed utilization/timing reports take precedence when present. The manifest identifies complete files by hash. Header excerpts are bounded previews, not complete reports or an independent metric source.",
+  "objective": "minimize_luts",
+  "previous_best_metrics": {
+    "bram_total": 50.0,
+    "bram_used": 0.0,
+    "dsp_total": 90,
+    "dsp_used": 0,
+    "dynamic_power_w": 0.022,
+    "ff_pct": 0.11057692307692307,
+    "ff_total": 41600,
+    "ff_used": 46,
+    "lut_pct": 0.15865384615384615,
+    "lut_total": 20800,
+    "lut_used": 33,
+    "sim_error": "",
+    "sim_passed": true,
+    "synth_error": "",
+    "timing_met": true,
+    "total_power_w": 0.092,
+    "whs_ns": 0.095,
+    "wns_ns": 0.313
+  },
+  "previous_best_timing_feasible": true,
+  "process_exit_gate": {
+    "passed": true,
+    "policy": "Every required tool's latest actual process exit must be zero with retained matching output; physical-only Doctor may reuse source-bound prior compile/simulation.",
+    "reasons": []
+  },
+  "report_headers": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\proposal-feedback-study-02\\pair2-feedback\\iter_001\\cand_standard\\power.rpt",
+      "sha256": "7ae11aecb66b77136503524c02fbb13755cd163618e92f65d7eb7be3eb42d9bb",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n----------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version     : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date             : Fri Oct 23 11:08:35 2026\r\n| Host             : Baah running 64-bit major release  (build 9200)\r\n| Command          : report_power -file C:/Users/prince.baah/Downloads/autortl-work/logs/proposal-feedback-study-02/pair2-feedback/iter_001/cand_standard/power.rpt\r\n| Design           : iterative_divider_core\r\n| Device           : xc7a35tcpg236-1\r\n| Design State     : routed\r\n| Grade            : commercial\r\n| Process          : typical\r\n| Characterization : Production\r\n----------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nPower Report\r\n\r\nTable of Contents\r\n-----------------\r\n1. Summary\r\n1.1 On-Chip Components\r\n1.2 Power Supply Summary\r\n1.3 Confidence Level\r\n2. Settings\r\n2.1 Environment\r\n2.2 Clock Constraints\r\n3. Detailed Reports\r\n3.1 By Hierarchy\r\n\r\n1. Summary\r\n----------\r\n\r\n+--------------------------+--------------+\r\n| Total On-Chip Power (W)  | 0.092        |\r\n| Design Power Budget (W)  | Unspecified* |\r\n| Power Budget Margin (W)  | NA           |\r\n| Dynamic (W)              | 0.022        |\r\n| Device Static (W)        | 0.070        |\r\n| Effective TJA (C/W)      | 5.0          |\r\n| Max Ambient (C)          | 84.5         |\r\n| Junction Temperature (C) | 25.5         |\r\n| Confidence Level         | Low          |\r\n| Setting File             | ---      ",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\proposal-feedback-study-02\\pair2-feedback\\iter_001\\cand_standard\\timing.rpt",
+      "sha256": "814d177c960601d548ce9ff26f18edca131d73e42340c49d754e7fc9cf982a55",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date         : Fri Oct 23 11:08:05 2026\r\n| Host         : Baah running 64-bit major release  (build 9200)\r\n| Command      : report_timing_summary -file C:/Users/prince.baah/Downloads/autortl-work/logs/proposal-feedback-study-02/pair2-feedback/iter_001/cand_standard/timing.rpt\r\n| Design       : iterative_divider_core\r\n| Device       : 7a35t-cpg236\r\n| Speed File   : -1  PRODUCTION 1.23 2018-06-13\r\n| Design State : Synthesized\r\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nTiming Summary Report\r\n\r\n------------------------------------------------------------------------------------------------\r\n| Timer Settings\r\n| --------------\r\n------------------------------------------------------------------------------------------------\r\n\r\n  Enable Multi Corner Analysis               :  Yes\r\n  Enable Pessimism Removal                   :  Yes\r\n  Pessimism Removal Resolution               :  Nearest Common Node\r\n  Enable Input Delay Default Clock           :  No\r\n  Enable Preset / Clear Arcs                 :  No\r\n  Disable Flight Delays                      :  No\r\n  Ignore I/O Paths                           :  No\r\n  Timing Early Launch at Borrowing Latches   :  No\r\n  Borrow Time for Max Delay Exceptions       :  Yes\r\n  Merge Timing Exceptions                    :  Yes\r\n  Inter-SLR C",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\proposal-feedback-study-02\\pair2-feedback\\iter_001\\cand_standard\\timing_routed.rpt",
+      "sha256": "52b0165ebcea70c884ddabb1d780659333b0a22a3478bbebdf70daacf3df328f",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date         : Fri Oct 23 11:08:35 2026\r\n| Host         : Baah running 64-bit major release  (build 9200)\r\n| Command      : report_timing_summary -file C:/Users/prince.baah/Downloads/autortl-work/logs/proposal-feedback-study-02/pair2-feedback/iter_001/cand_standard/timing_routed.rpt\r\n| Design       : iterative_divider_core\r\n| Device       : 7a35t-cpg236\r\n| Speed File   : -1  PRODUCTION 1.23 2018-06-13\r\n| Design State : Routed\r\n---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nTiming Summary Report\r\n\r\n------------------------------------------------------------------------------------------------\r\n| Timer Settings\r\n| --------------\r\n------------------------------------------------------------------------------------------------\r\n\r\n  Enable Multi Corner Analysis               :  Yes\r\n  Enable Pessimism Removal                   :  Yes\r\n  Pessimism Removal Resolution               :  Nearest Common Node\r\n  Enable Input Delay Default Clock           :  No\r\n  Enable Preset / Clear Arcs                 :  No\r\n  Disable Flight Delays                      :  No\r\n  Ignore I/O Paths                           :  No\r\n  Timing Early Launch at Borrowing Latches   :  No\r\n  Borrow Time for Max Delay Exceptions       :  Yes\r\n  Merge Timing Exceptions                    :  Ye",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\proposal-feedback-study-02\\pair2-feedback\\iter_001\\cand_standard\\utilization.rpt",
+      "sha256": "af43d008a656bd955eb346d4bc72e9df79126511c7bdd2e7461861a5c6c0c182",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\n----------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\n| Date         : Fri Oct 23 11:08:05 2026\n| Host         : Baah running 64-bit major release  (build 9200)\n| Command      : report_utilization -file C:/Users/prince.baah/Downloads/autortl-work/logs/proposal-feedback-study-02/pair2-feedback/iter_001/cand_standard/utilization.rpt\n| Design       : iterative_divider_core\n| Device       : xc7a35tcpg236-1\n| Speed File   : -1\n| Design State : Synthesized\n----------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n\nUtilization Design Information\n\nTable of Contents\n-----------------\n1. Slice Logic\n1.1 Summary of Registers by Type\n2. Memory\n3. DSP\n4. IO and GT Specific\n5. Clocking\n6. Specific Feature\n7. Primitives\n8. Black Boxes\n9. Instantiated Netlists\n\n1. Slice Logic\n--------------\n\n+-------------------------+------+-------+------------+-----------+-------+\n|        Site Type        | Used | Fixed | Prohibited | Available | Util% |\n+-------------------------+------+-------+------------+-----------+-------+\n| Slice LUTs*             |   35 |     0 |          0 |     20800 |  0.17 |\n|   LUT as Logic          |   35 |     0 |          0 |     20800 |  0.17 |\n|   LUT as Memory         |    0 |     0 |          0 |      9600 |  0.00 |\n| Slice Registers         |   46 |     0 |          0 |     41600 |  0.11 |\n|   Register as Flip Flop |   46 |     ",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\proposal-feedback-study-02\\pair2-feedback\\iter_001\\cand_standard\\utilization_routed.rpt",
+      "sha256": "dd0617ddb4d23a940cc58602464773cb69d783d2581c413a25dd36856381f9c6",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\n-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\n| Date         : Fri Oct 23 11:08:35 2026\n| Host         : Baah running 64-bit major release  (build 9200)\n| Command      : report_utilization -file C:/Users/prince.baah/Downloads/autortl-work/logs/proposal-feedback-study-02/pair2-feedback/iter_001/cand_standard/utilization_routed.rpt\n| Design       : iterative_divider_core\n| Device       : xc7a35tcpg236-1\n| Speed File   : -1\n| Design State : Routed\n-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n\nUtilization Design Information\n\nTable of Contents\n-----------------\n1. Slice Logic\n1.1 Summary of Registers by Type\n2. Slice Logic Distribution\n3. Memory\n4. DSP\n5. IO and GT Specific\n6. Clocking\n7. Specific Feature\n8. Primitives\n9. Black Boxes\n10. Instantiated Netlists\n\n1. Slice Logic\n--------------\n\n+-------------------------+------+-------+------------+-----------+-------+\n|        Site Type        | Used | Fixed | Prohibited | Available | Util% |\n+-------------------------+------+-------+------------+-----------+-------+\n| Slice LUTs              |   33 |     0 |          0 |     20800 |  0.16 |\n|   LUT as Logic          |   33 |     0 |          0 |     20800 |  0.16 |\n|   LUT as Memory         |    0 |     0 |          0 |      9600 |  0.00 |\n| Slice Registers         |   46 |     0 |          0 |     41600 |  0",
+      "truncated": true
+    }
+  ],
+  "report_manifest": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\proposal-feedback-study-02\\pair2-feedback\\iter_001\\cand_standard\\power.rpt",
+      "sha256": "7ae11aecb66b77136503524c02fbb13755cd163618e92f65d7eb7be3eb42d9bb"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\proposal-feedback-study-02\\pair2-feedback\\iter_001\\cand_standard\\timing.rpt",
+      "sha256": "814d177c960601d548ce9ff26f18edca131d73e42340c49d754e7fc9cf982a55"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\proposal-feedback-study-02\\pair2-feedback\\iter_001\\cand_standard\\timing_routed.rpt",
+      "sha256": "52b0165ebcea70c884ddabb1d780659333b0a22a3478bbebdf70daacf3df328f"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\proposal-feedback-study-02\\pair2-feedback\\iter_001\\cand_standard\\utilization.rpt",
+      "sha256": "af43d008a656bd955eb346d4bc72e9df79126511c7bdd2e7461861a5c6c0c182"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\proposal-feedback-study-02\\pair2-feedback\\iter_001\\cand_standard\\utilization_routed.rpt",
+      "sha256": "dd0617ddb4d23a940cc58602464773cb69d783d2581c413a25dd36856381f9c6"
+    }
+  ],
+  "tool_exit_evidence": {
+    "history_count": 5,
+    "latest_by_tool": {
+      "vivado": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\proposal-feedback-study-02\\pair2-feedback\\iter_001\\cand_standard\\vivado_synth_output.log",
+        "output_log_sha256": "e557996ef271346b2f61914cdfc1eef0749843b7e8e6a3ce1a4e1c5c8e9a7182",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xelab": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\proposal-feedback-study-02\\pair2-feedback\\iter_001\\cand_standard\\xelab.log",
+        "output_log_sha256": "0884e70c9b425de77b1ce6e97367d4f4fa9f1364b514cdf571ea314fbf4a718b",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xsim": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\proposal-feedback-study-02\\pair2-feedback\\iter_001\\cand_standard\\xsim.log",
+        "output_log_sha256": "bffb9a3bb47a9bebcaf4f100efad9b80b9e153d9ed2d574a81eaa8733776c2ce",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xvlog": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\proposal-feedback-study-02\\pair2-feedback\\iter_001\\cand_standard\\xvlog.log",
+        "output_log_sha256": "646b2866f55c5b51326ff022927242273421c9e7001be76ef03ee189efde0358",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      }
+    },
+    "missing_required_tools": [],
+    "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\proposal-feedback-study-02\\pair2-feedback\\iter_001\\cand_standard\\tool_exit_records.log",
+    "records": [
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\proposal-feedback-study-02\\pair2-feedback\\iter_001\\cand_standard",
+        "driver_returncode": 0,
+        "elapsed_seconds": 1.0,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xvlog.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\proposal-feedback-study-02\\pair2-feedback\\iter_001\\cand_standard\\xvlog.log",
+        "output_log_sha256": "02f6a64d09f114c22842213730e5e201270a09cd695731115a4b3100c7349068",
+        "pid": 18020,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xvlog"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\proposal-feedback-study-02\\pair2-feedback\\iter_001\\cand_standard",
+        "driver_returncode": 0,
+        "elapsed_seconds": 0.8600000000005821,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xvlog.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\proposal-feedback-study-02\\pair2-feedback\\iter_001\\cand_standard\\xvlog.log",
+        "output_log_sha256": "646b2866f55c5b51326ff022927242273421c9e7001be76ef03ee189efde0358",
+        "pid": 29052,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xvlog"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\proposal-feedback-study-02\\pair2-feedback\\iter_001\\cand_standard",
+        "driver_returncode": 0,
+        "elapsed_seconds": 4.047000000005937,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xelab.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\proposal-feedback-study-02\\pair2-feedback\\iter_001\\cand_standard\\xelab.log",
+        "output_log_sha256": "0884e70c9b425de77b1ce6e97367d4f4fa9f1364b514cdf571ea314fbf4a718b",
+        "pid": 14288,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xelab"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\proposal-feedback-study-02\\pair2-feedback\\iter_001\\cand_standard",
+        "driver_returncode": 0,
+        "elapsed_seconds": 3.1560000000026776,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xsim.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\proposal-feedback-study-02\\pair2-feedback\\iter_001\\cand_standard\\xsim.log",
+        "output_log_sha256": "bffb9a3bb47a9bebcaf4f100efad9b80b9e153d9ed2d574a81eaa8733776c2ce",
+        "pid": 21272,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xsim"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\proposal-feedback-study-02\\pair2-feedback\\iter_001\\cand_standard",
+        "driver_returncode": 0,
+        "elapsed_seconds": 81.03199999999924,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/vivado.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\proposal-feedback-study-02\\pair2-feedback\\iter_001\\cand_standard\\vivado_synth_output.log",
+        "output_log_sha256": "e557996ef271346b2f61914cdfc1eef0749843b7e8e6a3ce1a4e1c5c8e9a7182",
+        "pid": 15320,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "vivado"
+      }
+    ],
+    "schema_valid": true,
+    "sha256": "69b94e59b93de7f35a18dc1a772aadc63fec6814dfa946759a2d115813af9b29",
+    "status": "recorded",
+    "truncated": false
+  },
+  "verification_logs": [
+    {
+      "head": "INFO: [VRFC 10-2263] Analyzing Verilog file \"C:/Users/prince.baah/Downloads/autortl-work/logs/proposal-feedback-study-02/pair2-feedback/iter_001/cand_standard/iterative_divider_core.v\" into library work\r\nINFO: [VRFC 10-311] analyzing module iterative_divider_core\r\nINFO: [VRFC 10-2263] Analyzing Verilog file \"C:/Users/prince.baah/Downloads/autortl-work/logs/proposal-feedback-study-02/pair2-feedback/inputs/testbench_path.v\" into library work\r\nINFO: [VRFC 10-311] analyzing module iterative_divider\r\nINFO: [VRFC 10-311] analyzing module iterative_divider_case\r\nINFO: [VRFC 10-311] analyzing module iterative_divider_core_tb\r\n\r\n",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\proposal-feedback-study-02\\pair2-feedback\\iter_001\\cand_standard\\xvlog.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "646b2866f55c5b51326ff022927242273421c9e7001be76ef03ee189efde0358",
+      "tail": "",
+      "truncated": false
+    },
+    {
+      "head": "Vivado Simulator v2025.2\r\nCopyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\nCopyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\nRunning: C:/AMDDesignTools/2025.2/Vivado/bin/unwrapped/win64.o/xelab.exe iterative_divider_core_tb -s iterative_divider_core_tb_snap --debug off \r\nMulti-threading is on. Using 10 slave threads.\r\nStarting static elaboration\r\nPass Through NonSizing Optimizer\r\nCompleted static elaboration\r\nStarting simulation data flow analysis\r\nCompleted simulation data flow analysis\r\nTime Resolution for simulation is 1ps\r\nCompiling module work.iterative_divider_core_default\r\nCompiling module work.iterative_divider_case(USE_TOP=1...\r\nCompiling module work.iterative_divider_core(WIDTH=1)\r\nCompiling module work.iterative_divider_case(WIDTH=1,C...\r\nCompiling module work.iterative_divider_core(WIDTH=2)\r\nCompiling module work.iterative_divider_case(WIDTH=2,C...\r\nCompiling module work.iterative_divider_core(WIDTH=4)\r\nCompiling module work.iterative_divider_case(WIDTH=4,C...\r\nCompiling module work.iterative_divider_core(WIDTH=13)\r\nCompiling module work.iterative_divider_case(WIDTH=13,...\r\nCompiling module work.iterative_divider_core(WIDTH=16)\r\nCompiling module work.iterative_divider_case(WIDTH=16,...\r\nCompiling module work.iterative_divider_core_tb\r\nBuilt simulation snapshot iterative_divider_core_tb_snap\r\n\r\n",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\proposal-feedback-study-02\\pair2-feedback\\iter_001\\cand_standard\\xelab.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "0884e70c9b425de77b1ce6e97367d4f4fa9f1364b514cdf571ea314fbf4a718b",
+      "tail": "",
+      "truncated": false
+    },
+    {
+      "head": "\r\n****** xsim v2025.2 (64-bit)\r\n  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025\r\n  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025\r\n  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025\r\n  **** Start of session at: Fri Oct 23 11:07:13 2026\r\n    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\n    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n\r\nsource xsim.dir/iterative_divider_core_tb_snap/xsim_script.tcl\r\n# xsim {iterative_divider_core_tb_snap} -autoloadwcfg -runall\r\nTime resolution is 1 ps\r\nrun -all\r\nCOVERAGE case=1 WIDTH=1 checked=1511 accepted=443 retired=440 discarded=3 available=442 busy=442 stalled=163 blocked_busy=337 blocked_result=125 retirement_bubbles=406 div0=222 zero_dividend=146 reset_compute=1 reset_result=2 reset_stalled_result=1 reset_phases=2 exhaustive=4 directed=11 random=423\r\nCOVERAGE case=2 WIDTH=2 checked=1624 accepted=357 retired=353 discarded=4 available=355 busy=711 stalled=181 blocked_busy=536 blocked_result=129 retirement_bubbles=312 div0=86 zero_dividend=53 reset_compute=2 reset_result=2 reset_stalled_result=1 reset_phases=3 exhaustive=16 directed=16 random=319\r\nCOVERAGE case=0 WIDTH=8 checked=2072 accepted=195 retired=185 discarded=10 available=187 busy=1524 stalled=131 blocked_busy=1057 blocked_result=47 retirement_bubbles=137 div0=2 zero_dividend=3 reset_compute=8 reset_result=2 reset_stalled_result=1 reset_phases=9 exhaustive=0 directed=46 random=137\r\nCOVERAGE case=4 WIDTH=13 checked=2822 accepted=181 retired=166 discarded=15 available=168 busy=2262 stalled=160 blocked_busy=1207 blocked_result=36 retirement_bubbles=93 div0=2 zero_dividend=3 reset_compute=13 reset_result=2 reset_stalled_result=1 reset_phases=14 exhaustive=0 directed=71 random=93\r\nCOVERAGE case=5 WIDTH=16 checke",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\proposal-feedback-study-02\\pair2-feedback\\iter_001\\cand_standard\\sim_log.txt",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "bffb9a3bb47a9bebcaf4f100efad9b80b9e153d9ed2d574a81eaa8733776c2ce",
+      "tail": "ases=2 exhaustive=4 directed=11 random=423\r\nCOVERAGE case=2 WIDTH=2 checked=1624 accepted=357 retired=353 discarded=4 available=355 busy=711 stalled=181 blocked_busy=536 blocked_result=129 retirement_bubbles=312 div0=86 zero_dividend=53 reset_compute=2 reset_result=2 reset_stalled_result=1 reset_phases=3 exhaustive=16 directed=16 random=319\r\nCOVERAGE case=0 WIDTH=8 checked=2072 accepted=195 retired=185 discarded=10 available=187 busy=1524 stalled=131 blocked_busy=1057 blocked_result=47 retirement_bubbles=137 div0=2 zero_dividend=3 reset_compute=8 reset_result=2 reset_stalled_result=1 reset_phases=9 exhaustive=0 directed=46 random=137\r\nCOVERAGE case=4 WIDTH=13 checked=2822 accepted=181 retired=166 discarded=15 available=168 busy=2262 stalled=160 blocked_busy=1207 blocked_result=36 retirement_bubbles=93 div0=2 zero_dividend=3 reset_compute=13 reset_result=2 reset_stalled_result=1 reset_phases=14 exhaustive=0 directed=71 random=93\r\nCOVERAGE case=5 WIDTH=16 checked=3401 accepted=184 retired=166 discarded=18 available=168 busy=2808 stalled=182 blocked_busy=1241 blocked_result=34 retirement_bubbles=78 div0=2 zero_dividend=3 reset_compute=16 reset_result=2 reset_stalled_result=1 reset_phases=17 exhaustive=0 directed=86 random=78\r\nCOVERAGE case=3 WIDTH=4 checked=3469 accepted=513 retired=507 discarded=6 available=509 busy=2042 stalled=382 blocked_busy=822 blocked_result=75 retirement_bubbles=223 div0=33 zero_dividend=26 reset_compute=4 reset_result=2 reset_stalled_result=1 reset_phases=5 exhaustive=256 directed=26 random=223\r\nTEST PASSED\r\n$finish called at time : 34698 ns : File \"C:/Users/prince.baah/Downloads/autortl-work/logs/proposal-feedback-study-02/pair2-feedback/inputs/testbench_path.v\" Line 325\r\nexit\r\nINFO: [Common 17-206] Exiting xsim at Fri Oct 23 11:07:15 2026...\r\n\r\n",
+      "truncated": false
+    },
+    {
+      "head": "\r\n****** Vivado v2025.2 (64-bit)\r\n  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025\r\n  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025\r\n  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025\r\n  **** Start of session at: Fri Oct 23 11:07:16 2026\r\n    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\n    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n\r\nsource C:/Users/prince.baah/Downloads/autortl-work/logs/proposal-feedback-study-02/pair2-feedback/iter_001/cand_standard/synth.tcl\r\n# set_msg_config -id {VRFC 10-3609} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-9873} -new_severity ERROR\r\n# set_msg_config -id {Designutils 20-1307} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-327} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-3352} -new_severity ERROR\r\n# set_part xc7a35tcpg236-1\r\nINFO: [Coretcl 2-1500] The part has been set to 'xc7a35tcpg236-1' for the current project only. Run set_part -help for more details. To evaluate different speed grades in the current design, use the set_speed_grade command, or use the open_checkpoint -part command to change the part used by an existing checkpoint design.\r\nset_part: Time (s): cpu = 00:00:10 ; elapsed = 00:00:07 . Memory (MB): peak = 530.703 ; gain = 225.941\r\n# read_verilog \"C:/Users/prince.baah/Downloads/autortl-work/logs/proposal-feedback-study-02/pair2-feedback/iter_001/cand_standard/iterative_divider_core.v\"\r\n# set fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/proposal-feedback-study-02/pair2-feedback/iter_001/cand_standard/timing.xdc\" w]\r\n# puts $fp {create_clock -period 10.000 -name clk [get_ports clk]}\r\n# close $fp\r\n# read_xdc \"C:/Users/prince.baah/Downloads/autortl-work/logs/proposal-feedback-study-02/pair2-feedback/iter_001/cand_standard/ti",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\proposal-feedback-study-02\\pair2-feedback\\iter_001\\cand_standard\\vivado_synth_output.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "e557996ef271346b2f61914cdfc1eef0749843b7e8e6a3ce1a4e1c5c8e9a7182",
+      "tail": "d/power.rpt\r\nRunning Vector-less Activity Propagation...\r\n\r\nFinished Running Vector-less Activity Propagation\r\n0 Infos, 0 Warnings, 0 Critical Warnings and 0 Errors encountered.\r\nreport_power completed successfully\r\n# catch { report_methodology -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/proposal-feedback-study-02/pair2-feedback/iter_001/cand_standard/methodology.rpt\" }\r\nCommand: report_methodology -file C:/Users/prince.baah/Downloads/autortl-work/logs/proposal-feedback-study-02/pair2-feedback/iter_001/cand_standard/methodology.rpt\r\nINFO: [Timing 38-35] Done setting XDC timing constraints.\r\nINFO: [DRC 23-133] Running Methodology with 2 threads\r\nINFO: [Vivado_Tcl 2-1520] The results of Report Methodology are in file C:/Users/prince.baah/Downloads/autortl-work/logs/proposal-feedback-study-02/pair2-feedback/iter_001/cand_standard/methodology.rpt.\r\nreport_methodology completed successfully\r\n# catch { report_qor_suggestions -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/proposal-feedback-study-02/pair2-feedback/iter_001/cand_standard/qor_suggestions.rpt\" }\r\nCommand: report_qor_suggestions -file C:/Users/prince.baah/Downloads/autortl-work/logs/proposal-feedback-study-02/pair2-feedback/iter_001/cand_standard/qor_suggestions.rpt\r\nCongestion Prediction Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.006 . Memory (MB): peak = 1995.664 ; gain = 0.000\r\nINFO: [Implflow 47-1309] PredResultString: 1:36.63:63.37\r\nfeatureProvider Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.019 . Memory (MB): peak = 1995.664 ; gain = 0.000\r\nINFO: [Implflow 47-1274] ML strategy prediction is not supported for 7-series devices.\r\nreport_qor_suggestions completed successfully\r\n# puts \"SYNTH_COMPLETE\"\r\nSYNTH_COMPLETE\r\nINFO: [Common 17-206] Exiting Vivado at Fri Oct 23 11:08:36 2026...\r\n\r\n",
+      "truncated": true
+    }
+  ]
+}

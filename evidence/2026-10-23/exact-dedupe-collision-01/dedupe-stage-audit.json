@@ -1,0 +1,56 @@
+{
+  "status": "confirmed; isolated patch only",
+  "canonical_freeze_files_verified_unchanged": 202,
+  "stage_modified_files": [
+    "autortl/bestofn.py",
+    "tests/test_bestofn.py"
+  ],
+  "stage_file_hashes": {
+    "autortl/bestofn.py": "80e5ba88142b9bfd56b28657c0892b9b12aa68b1b66d5d0b063a6e973e97d4d8",
+    "tests/test_bestofn.py": "85498f7195de7afbec62e0568c29c4cfcb75779a839688524090b190a50430b9"
+  },
+  "baseline_reproducer": {
+    "sources": [
+      "module m(output [15:0] y); assign y = \"//A\"; endmodule",
+      "module m(output [15:0] y); assign y = \"//B\"; endmodule"
+    ],
+    "normalized_hashes": [
+      "fcbad720ef670d95",
+      "fcbad720ef670d95"
+    ],
+    "survivors": [
+      "standard"
+    ],
+    "second_alive": false,
+    "second_fail_reason": "duplicate of 'standard' candidate",
+    "verilog_simulation": "not run by worker; parent reserved actual tool proof"
+  },
+  "change": "dedupe uses full SHA256 of exact UTF8 source; first occurrence and existing candidate state behavior preserved; no parser or semantic normalization",
+  "unchanged": "cache.py code_hash and MetricsCache context identity; ranking, budgets, roles and cache untouched",
+  "expected_cost": "Cosmetic variants may reach verification instead of being skipped; exact repeats still skipped. No measured vendor cost claim.",
+  "tests": {
+    "command": "python -B -m pytest tests/test_bestofn.py tests/test_cache.py -q -p no:cacheprovider --basetemp ../dedupe-testtmp-02",
+    "runtime": "C:/Users/prince.baah/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe",
+    "dependencies": "work/review_deps",
+    "environment": "PYTHONDONTWRITEBYTECODE=1",
+    "outcome": "37 passed in 1.47s",
+    "evidence": "work/dedupe-focused-tests-02.txt",
+    "coverage": [
+      "exact duplicate rejection and reason",
+      "cosmetic variants retained",
+      "line/block comment markers in strings",
+      "significant literal whitespace",
+      "CRLF/LF macro source identity",
+      "escaped identifier boundaries",
+      "UTF8 identity",
+      "deterministic first-seen order",
+      "existing dead-candidate behavior",
+      "existing cache tests"
+    ]
+  },
+  "scope_limits": [
+    "No canonical writes",
+    "No model/vendor/fullsuite calls",
+    "No Git commands or commits"
+  ]
+}

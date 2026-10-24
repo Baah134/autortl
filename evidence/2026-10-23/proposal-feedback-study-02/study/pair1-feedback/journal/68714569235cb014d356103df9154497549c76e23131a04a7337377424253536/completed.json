@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Ports, parameterization, and arithmetic semantics: PASS \u2014 interface and default are preserved; the subtract-with-carry rewrite preserves unsigned division steps, and the supplied width matrix passes.\n- Reset, handshakes, registered outputs, and cycle behavior: PASS \u2014 deterministic simulation passes the fixed checks for latency, stalls, retirement, and reset behavior.\n- Top latency annotation: PASS \u2014 candidate declares `// @latency 9`, matching the authoritative value.\n- Compile and elaboration: PASS \u2014 `xvlog` and `xelab` exited successfully.\n- Simulation verdict: PASS \u2014 `xsim -runall` exited successfully with the exact `TEST PASSED` verdict.\n- Routed reports and metric integrity: PASS \u2014 retained routed reports are identified by hashes; synthesis completed with `SYNTH_COMPLETE`.\n- Timing feasibility: PASS \u2014 `timing_met=true`, WNS is 0.313 ns, and WHS is 0.095 ns.\n- LUT objective: PASS \u2014 LUTs decreased from 37 to 33 while both candidate and previous best are timing-feasible.\n## Summary\n- Passed: 8 of 8\n- Failed: 0 of 8\n- Improved over previous best: YES\n## Recommendation\nACCEPT\n## Reason\nThe candidate passes the mandatory verification and routed timing gates, preserves the defined behavior, and strictly improves the selected LUT objective from 37 to 33.",
+      "recommendation": "ACCEPT",
+      "passed": 8,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}

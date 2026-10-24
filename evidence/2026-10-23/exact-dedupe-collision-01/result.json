@@ -1,0 +1,199 @@
+{
+  "scope": "Actual compiling Verilog sources with different observable values collide under pre-fix normalization; no model call or synthesis",
+  "normalized_hashes": [
+    "fcbad720ef670d95",
+    "fcbad720ef670d95"
+  ],
+  "pre_fix_survivors": 1,
+  "different_observable_values": true,
+  "simulations": [
+    {
+      "name": "A",
+      "source": "module m(output [15:0] y); assign y = \"//A\"; endmodule",
+      "expected_observed_hex": "2f41",
+      "actual_simulation_passed": true,
+      "inputs": {
+        "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\exact-dedupe-collision-01\\A\\m.v": "d76738e3f27731eba43b4647590740acaec1c3cc2860cab5c903e270eb3676f3",
+        "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\exact-dedupe-collision-01\\A\\m_tb.v": "d9c67d960f4c65796047ba8e1cca8aa066891b59bd05d3c8155a906c50be063f"
+      },
+      "process_exits": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\exact-dedupe-collision-01\\A\\tool_exit_records.log",
+        "sha256": "595c54eeaaa0f772e1d94a3753e989eddf921f3e505be8b3010fa3d66baf6dd4",
+        "status": "recorded",
+        "schema_valid": true,
+        "history_count": 3,
+        "records": [
+          {
+            "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\exact-dedupe-collision-01\\A",
+            "driver_returncode": 0,
+            "elapsed_seconds": 3.3439999999973224,
+            "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xvlog.bat",
+            "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\exact-dedupe-collision-01\\A\\xvlog.log",
+            "output_log_sha256": "3625272d9bafb29a0514d670032a96a135e5e32b42c94b7113a9cffeb3051405",
+            "pid": 24512,
+            "returncode": 0,
+            "schema_version": 1,
+            "status": "exited",
+            "tool": "xvlog"
+          },
+          {
+            "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\exact-dedupe-collision-01\\A",
+            "driver_returncode": 0,
+            "elapsed_seconds": 3.139999999999418,
+            "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xelab.bat",
+            "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\exact-dedupe-collision-01\\A\\xelab.log",
+            "output_log_sha256": "dd1fecfa062bb5d7db788921973808fa4a18b0cad1626e2273c2ee16da321631",
+            "pid": 20564,
+            "returncode": 0,
+            "schema_version": 1,
+            "status": "exited",
+            "tool": "xelab"
+          },
+          {
+            "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\exact-dedupe-collision-01\\A",
+            "driver_returncode": 0,
+            "elapsed_seconds": 4.89100000000326,
+            "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xsim.bat",
+            "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\exact-dedupe-collision-01\\A\\xsim.log",
+            "output_log_sha256": "0d3821a4f7ee6fcd6a597d6b92a6ea2c3acb0c8e55b16d8e56cbf3781ac01370",
+            "pid": 16592,
+            "returncode": 0,
+            "schema_version": 1,
+            "status": "exited",
+            "tool": "xsim"
+          }
+        ],
+        "truncated": false,
+        "latest_by_tool": {
+          "xvlog": {
+            "status": "exited",
+            "returncode": 0,
+            "driver_returncode": 0,
+            "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\exact-dedupe-collision-01\\A\\xvlog.log",
+            "output_log_sha256": "3625272d9bafb29a0514d670032a96a135e5e32b42c94b7113a9cffeb3051405",
+            "log_status": "verified",
+            "log_verified": true,
+            "successful": true
+          },
+          "xelab": {
+            "status": "exited",
+            "returncode": 0,
+            "driver_returncode": 0,
+            "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\exact-dedupe-collision-01\\A\\xelab.log",
+            "output_log_sha256": "dd1fecfa062bb5d7db788921973808fa4a18b0cad1626e2273c2ee16da321631",
+            "log_status": "verified",
+            "log_verified": true,
+            "successful": true
+          },
+          "xsim": {
+            "status": "exited",
+            "returncode": 0,
+            "driver_returncode": 0,
+            "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\exact-dedupe-collision-01\\A\\xsim.log",
+            "output_log_sha256": "0d3821a4f7ee6fcd6a597d6b92a6ea2c3acb0c8e55b16d8e56cbf3781ac01370",
+            "log_status": "verified",
+            "log_verified": true,
+            "successful": true
+          }
+        },
+        "missing_required_tools": [
+          "vivado"
+        ]
+      }
+    },
+    {
+      "name": "B",
+      "source": "module m(output [15:0] y); assign y = \"//B\"; endmodule",
+      "expected_observed_hex": "2f42",
+      "actual_simulation_passed": true,
+      "inputs": {
+        "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\exact-dedupe-collision-01\\B\\m.v": "bcf6594a41999c86c56f67771629548d6455537b7541f7661083d8bc96c291b8",
+        "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\exact-dedupe-collision-01\\B\\m_tb.v": "3f87d914a172e1122eaf7f9b9cec6a00d4d024d406d82249a9a8678b5437350a"
+      },
+      "process_exits": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\exact-dedupe-collision-01\\B\\tool_exit_records.log",
+        "sha256": "dda12bac289aa6506668bdeb0553cefe9a058250231a60947906622a4a034e38",
+        "status": "recorded",
+        "schema_valid": true,
+        "history_count": 3,
+        "records": [
+          {
+            "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\exact-dedupe-collision-01\\B",
+            "driver_returncode": 0,
+            "elapsed_seconds": 2.5,
+            "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xvlog.bat",
+            "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\exact-dedupe-collision-01\\B\\xvlog.log",
+            "output_log_sha256": "5d0860ec558d0e47330a3294e03126012b2e1bb63268a672ed0fda43fca9a5f9",
+            "pid": 25556,
+            "returncode": 0,
+            "schema_version": 1,
+            "status": "exited",
+            "tool": "xvlog"
+          },
+          {
+            "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\exact-dedupe-collision-01\\B",
+            "driver_returncode": 0,
+            "elapsed_seconds": 2.9539999999979045,
+            "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xelab.bat",
+            "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\exact-dedupe-collision-01\\B\\xelab.log",
+            "output_log_sha256": "dd1fecfa062bb5d7db788921973808fa4a18b0cad1626e2273c2ee16da321631",
+            "pid": 14360,
+            "returncode": 0,
+            "schema_version": 1,
+            "status": "exited",
+            "tool": "xelab"
+          },
+          {
+            "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\exact-dedupe-collision-01\\B",
+            "driver_returncode": 0,
+            "elapsed_seconds": 4.7189999999973224,
+            "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xsim.bat",
+            "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\exact-dedupe-collision-01\\B\\xsim.log",
+            "output_log_sha256": "1bb6b3e51288909685ab9f81bead861e49e0d98b369a77cf24623434f8b183e8",
+            "pid": 19104,
+            "returncode": 0,
+            "schema_version": 1,
+            "status": "exited",
+            "tool": "xsim"
+          }
+        ],
+        "truncated": false,
+        "latest_by_tool": {
+          "xvlog": {
+            "status": "exited",
+            "returncode": 0,
+            "driver_returncode": 0,
+            "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\exact-dedupe-collision-01\\B\\xvlog.log",
+            "output_log_sha256": "5d0860ec558d0e47330a3294e03126012b2e1bb63268a672ed0fda43fca9a5f9",
+            "log_status": "verified",
+            "log_verified": true,
+            "successful": true
+          },
+          "xelab": {
+            "status": "exited",
+            "returncode": 0,
+            "driver_returncode": 0,
+            "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\exact-dedupe-collision-01\\B\\xelab.log",
+            "output_log_sha256": "dd1fecfa062bb5d7db788921973808fa4a18b0cad1626e2273c2ee16da321631",
+            "log_status": "verified",
+            "log_verified": true,
+            "successful": true
+          },
+          "xsim": {
+            "status": "exited",
+            "returncode": 0,
+            "driver_returncode": 0,
+            "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\exact-dedupe-collision-01\\B\\xsim.log",
+            "output_log_sha256": "1bb6b3e51288909685ab9f81bead861e49e0d98b369a77cf24623434f8b183e8",
+            "log_status": "verified",
+            "log_verified": true,
+            "successful": true
+          }
+        },
+        "missing_required_tools": [
+          "vivado"
+        ]
+      }
+    }
+  ]
+}

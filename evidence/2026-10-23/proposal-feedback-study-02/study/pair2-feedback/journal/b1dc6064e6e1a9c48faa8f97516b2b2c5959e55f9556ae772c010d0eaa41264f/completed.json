@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_3:decision:instruction:0",
+  "result": "Remove the `busy` register and use the existing iteration counter as the phase state: load it with `WIDTH` on an accepted request, decrement once per compute cycle, and treat `iteration != 0` as busy; the `iteration == 1` compute cycle must produce the result and clear the counter. Derive `in_ready` from the zero counter state and `!out_valid_reg`, preserving the retirement-edge bubble, reset priority, held outputs, handshakes, and all supported parameter behavior, including `WIDTH=1`. Keep `// @latency 9`; run the unchanged gates and promote only if routed timing and metric integrity pass and LUT usage is strictly below 33.",
+  "artifacts": {}
+}

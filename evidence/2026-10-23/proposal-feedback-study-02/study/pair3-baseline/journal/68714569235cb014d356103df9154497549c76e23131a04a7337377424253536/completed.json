@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Interface, parameter behavior, reset, and observable cycle behavior: PASS \u2014 Candidate preserves the top interface and reset behavior; the unchanged testbench passes its parameter, arithmetic, handshake, reset, and timing checks.\n- Top latency declaration: PASS \u2014 The current top declares `// @latency 9`, matching authoritative latency 9.\n- Static checks, compilation, elaboration, and simulation: PASS \u2014 Required tool exits succeeded, and the unchanged testbench reported `TEST PASSED`.\n- Routed metric and receipt integrity: PASS \u2014 Retained routed reports and verified tool receipts are present; the process exit gate passed.\n- Timing feasibility: PASS \u2014 `timing_met=true`, WNS is 0.313 ns, and WHS is 0.095 ns.\n- LUT objective: PASS \u2014 LUTs decreased from 37 to 33 while the previous best and candidate are both timing-feasible.\n- Improvement classification: PASS \u2014 `improvement_kind=objective` matches the strict LUT reduction.\n## Summary\n- Passed: 7 of 7\n- Failed: 0\n- Improved over previous best: YES\n## Recommendation\nACCEPT\n## Reason\nThe candidate passes the deterministic verification and metric gates, meets setup and hold timing requirements, and reduces LUT use from 37 to 33 against a timing-feasible previous best. Its latency annotation matches the authoritative top latency, and the recorded improvement kind correctly identifies an objective gain.",
+      "recommendation": "ACCEPT",
+      "passed": 7,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}

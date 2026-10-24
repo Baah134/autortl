@@ -984,3 +984,29 @@ changes, commands, outcomes, evidence locations, limitations, and next action.
 - Pair1feedback completed32LUT/50FF,+.313/.159ns;8calls/284.719toolsec/417.578wallsec; exactwinnerPASS. Both modes repeatedoneproposal, so no repetition-benefit claim. Read-only audit confirms sequential sources/byteidentities; baselineWIDTH1 emits known negative-index warning despite actualPASS. Pair2feedback index2 active31562. Context-only negative signal motivates later seed-bound plan review, not mid-study changes.
 
 - Recovered after automaticapprovalreview usageblock; no jobs active, claimed expiredlease. Source202/helper freeze matched. Pair2baseline originalCODEX_QUOTA row retained; actualCLIresume6->9calls, noreset, exactsavedwinner sixwidthPASS. Supplemental recovery318.641toolsec cumulative. Index4baseline99062 active; isolated seed/default patches preparing while canonicalfrozen. No scheduling configured (user deferred).
+
+- Pair3baseline DONE33LUT/46FF,8calls,812.937chargedtoolsec/938.078wallsec,
+  exactsavedwinner independent sixwidthPASS;1repeat/2distinctmeasured. Final
+  originalcontext trial9510 active. Hostload/power uncontrolled; isolatedsynthetic
+  stagingtests overlapped part ofbaseline, so cost measurements are descriptive.
+- Isolated staleplan/sourcebinding patch independentlyreviewed, no blocker.
+  Conditional contextdefaultoff patch86focusedPASS. Distinct string-valued RTL
+  candidates reproduced unsafe normalized-dedupe collision; exactsource fix
+  reviewed,37focusedPASS. Canonical202files remainfrozen pending study/DONEproof.
+
+
+## October 23 — frozen feedback study completed
+
+- Retained all six original rows and separate actual quota recovery. Each mode
+  repeated three proposals; no established repetition benefit. Advisory context
+  will become opt-in. Incomplete usage and uncontrolled host load prevent a
+  causal efficiency comparison; no product/model-strength superiority claim.
+- Final pair3 baseline/context both independently passed at 33 LUT / 46 FF.
+  Context: 8 calls, 735.093 charged tool seconds, 843.984 run wall seconds.
+- Actual DONE proof: nominal CLI 0; four restored tamper probes CLI 1; all 252
+  protected identities, file set, budgets and router stats unchanged. No new
+  model/tool charges. Archive verified: 1500 files, including frozen
+  sources, raw reports/journals, independent checks and original interrupted row.
+- Reviewed next implementation addresses observed stale-plan/source mismatch
+  and unsafe normalized candidate deduplication. No extra roles, framework,
+  retries or budget increases. Full regression/live/tier0 gates still pending.

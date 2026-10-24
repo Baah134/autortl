@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_2:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 2,
+    "instruction": "Replace the separate `trial_remainder >= {1'b0, divisor_reg}` comparison and conditional subtraction with a single subtraction widened by one guard bit, using its borrow bit for the decision and its difference bits for `next_remainder`. Keep the quotient decision, iteration schedule, registered outputs, reset and handshake behavior unchanged, including division-by-zero behavior and supported widths such as `WIDTH=1`. Preserve `// @latency 9`; retain the candidate only if all required checks pass, routed WNS and WHS remain nonnegative, and LUT usage is strictly below 37.",
+    "candidates": [
+      {
+        "iteration": 2,
+        "mutation": "standard",
+        "instruction": "Replace the separate `trial_remainder >= {1'b0, divisor_reg}` comparison and conditional subtraction with a single subtraction widened by one guard bit, using its borrow bit for the decision and its difference bits for `next_remainder`. Keep the quotient decision, iteration schedule, registered outputs, reset and handshake behavior unchanged, including division-by-zero behavior and supported widths such as `WIDTH=1`. Preserve `// @latency 9`; retain the candidate only if all required checks pass, routed WNS and WHS remain nonnegative, and LUT usage is strictly below 37.",
+        "generated_source_sha256": "3589fe581bbb34705acc3d944c21d13ddbde4b4b0e794f7df43e42ba283cab31",
+        "final_source_sha256": "3589fe581bbb34705acc3d944c21d13ddbde4b4b0e794f7df43e42ba283cab31",
+        "generated_code_hash": "f209bcbd8b8dbdb5",
+        "final_code_hash": "f209bcbd8b8dbdb5",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.313,
+          "whs_ns": 0.095,
+          "lut_used": 33,
+          "ff_used": 46,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.022,
+          "total_power_w": 0.092
+        },
+        "cache_hit": true,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\proposal-feedback-study-02\\pair2-feedback\\iter_001\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\proposal-feedback-study-02\\pair2-feedback\\iter_001\\cand_standard\\synth.tcl",
+          "sha256": "ebc70a13512cce70025b1ee1cf9fd9dcfc6dab8bfa0279c2f5b005d51dc04bcf"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\proposal-feedback-study-02\\pair2-feedback\\iter_001\\cand_standard\\iterative_divider_core.v",
+          "sha256": "b35e192fe64a924f8423c2e1bbf7f27016385cd6fff21b6e2c2aed273effd969"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": "3589fe581bbb34705acc3d944c21d13ddbde4b4b0e794f7df43e42ba283cab31"
+  },
+  "artifacts": {}
+}

@@ -1,0 +1,1 @@
+module m(output [15:0] y); assign y = "//A"; endmodule

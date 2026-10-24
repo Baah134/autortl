@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_2:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 2,
+    "instruction": "Replace the separate `trial_remainder >= {1'b0, divisor_reg}` decision and conditional subtraction with one widened unsigned subtraction whose borrow determines whether to use the difference or the original trial remainder; use that same decision for the quotient bit. Keep the iteration schedule, registered outputs, handshake, reset behavior, operand widths, and `// @latency 9` unchanged, including behavior for divisor zero and `WIDTH=1`. The expected benefit is fewer LUTs through shared arithmetic; retain the candidate only if routed LUT use is strictly below 37 and every fixed verification a",
+    "candidates": [
+      {
+        "iteration": 2,
+        "mutation": "standard",
+        "instruction": "Replace the separate `trial_remainder >= {1'b0, divisor_reg}` decision and conditional subtraction with one widened unsigned subtraction whose borrow determines whether to use the difference or the original trial remainder; use that same decision for the quotient bit. Keep the iteration schedule, registered outputs, handshake, reset behavior, operand widths, and `// @latency 9` unchanged, including behavior for divisor zero and `WIDTH=1`. The expected benefit is fewer LUTs through shared arithmetic; retain the candidate only if routed LUT use is strictly below 37 and every fixed verification a",
+        "generated_source_sha256": "4a20bee2a9ac128412e5a14727b17369b7b10d3fda7ec604d525c903c2046b60",
+        "final_source_sha256": "4a20bee2a9ac128412e5a14727b17369b7b10d3fda7ec604d525c903c2046b60",
+        "generated_code_hash": "8dcf97eb4653f805",
+        "final_code_hash": "8dcf97eb4653f805",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.313,
+          "whs_ns": 0.095,
+          "lut_used": 33,
+          "ff_used": 46,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.022,
+          "total_power_w": 0.092
+        },
+        "cache_hit": true,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\proposal-feedback-study-02\\pair3-baseline\\iter_001\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\proposal-feedback-study-02\\pair3-baseline\\iter_001\\cand_standard\\synth.tcl",
+          "sha256": "c7a707a23f010cc68542a901f036910514c33be0afe9242495c62911fe297662"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\proposal-feedback-study-02\\pair3-baseline\\iter_001\\cand_standard\\iterative_divider_core.v",
+          "sha256": "971c050f4615f51ecafeba6b933ae7f2c99554c0946c223625e8a0a4a3a8b33f"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": "4a20bee2a9ac128412e5a14727b17369b7b10d3fda7ec604d525c903c2046b60"
+  },
+  "artifacts": {}
+}

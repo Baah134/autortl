@@ -1,0 +1,1 @@
+module m_tb; wire [15:0] y; m dut(y); initial begin #1; if (y !== 16'h2f41) $fatal(1,"Wrong literal value"); $display("OBSERVED=%h",y); $display("TEST PASSED"); $finish; end endmodule

@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_3:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 3\n## Contract check\n- Interface and defined behavior: PASS \u2014 frozen ports and parameterized behavior are preserved; the unchanged testbench passes across the tested widths, reset phases, handshakes, and transfer ages.\n- Top latency annotation: PASS \u2014 `// @latency 9` matches the authoritative current-top latency.\n- Compile, elaboration, and simulation gates: PASS \u2014 required tool exits are successful and the exact `TEST PASSED` verdict is present.\n- Routed metrics and timing feasibility: PASS \u2014 retained routed evidence is available; timing is met with WNS 0.313 ns and WHS 0.019 ns.\n- Strict LUT objective versus previous best: FAIL \u2014 candidate uses 36 LUTs versus the timing-feasible previous best\u2019s 33; this is not a strict improvement.\n## Summary\n- Passed: 4 of 5\n- Failed: 1 of 5\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes the behavioral, latency, tool, and timing gates, but the previous best is already timing-feasible and uses fewer LUTs. The candidate therefore fails the required strict LUT reduction; stall count 1 does not qualify for RESTART.",
+      "recommendation": "REJECT",
+      "passed": 4,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

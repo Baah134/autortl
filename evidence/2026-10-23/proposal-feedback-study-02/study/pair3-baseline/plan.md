@@ -1,0 +1,9 @@
+# PLAN — iteration 3
+## Current state assessment
+Iteration 1 is the verified best at 33 LUTs, with timing feasible and the required `// @latency 9` declaration. Iteration 2 repeated the same subtraction transformation and tied the best LUT count, so repeating it offers no objective gain. The divider is parameterized and the fixed contract requires preserving its exact transfer timing, reset, and handshake behavior.
+
+## Hypothesis
+Counting down from `WIDTH-1` to zero may reduce LUT use by replacing the current up-counter and `WIDTH-1` terminal comparison with a zero detect, while preserving the same number of busy cycles.
+
+## Instruction for generator
+Starting from the iteration 1 best, change only the `iteration` counter logic: load `WIDTH-1` when a request is accepted, decrement on each nonfinal busy cycle, and finish the operation when the counter is zero. Preserve the capture cycle, exactly `WIDTH` computation cycles, output registration, stalls, reset priority, and all arithmetic and handshake behavior; ensure `WIDTH=1` still completes on its first busy cycle. Keep the top annotation `// @latency 9`; promote only if the unchanged verification gates pass, routed timing and hold remain nonnegative, and LUT use is strictly below 33.

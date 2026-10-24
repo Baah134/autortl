@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_3:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 3\n## Contract check\n- Interface and observable behavior: PASS \u2014 the candidate preserves the declared interface and passes the authoritative five-rung ladder and fixed testbench.\n- Top latency annotation: PASS \u2014 `// @latency 9` matches the authoritative value.\n- Compile, elaboration and simulation: PASS \u2014 required tool exits succeeded and simulation reports `TEST PASSED`.\n- Synthesis and routed metric evidence: PASS \u2014 synthesis completed and retained routed reports provide candidate metrics.\n- Timing feasibility: FAIL \u2014 timing is not met; setup WNS is -0.08 ns, below the required 0 ns. Hold WHS is 0.111 ns.\n- Improvement over previous best: FAIL \u2014 the previous best is timing-feasible at 33 LUTs; this candidate is infeasible at 40 LUTs, so it establishes neither timing recovery nor objective improvement.\n## Summary\n- Passed: 4 of 6\n- Failed: 2 of 6\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes behavioral, annotation, tool and routed-evidence checks, but fails mandatory setup timing and does not improve on the timing-feasible previous best, using more LUTs. Stall count is 1, below the RESTART threshold.",
+      "recommendation": "REJECT",
+      "passed": 4,
+      "failed": 2
+    }
+  },
+  "artifacts": {}
+}

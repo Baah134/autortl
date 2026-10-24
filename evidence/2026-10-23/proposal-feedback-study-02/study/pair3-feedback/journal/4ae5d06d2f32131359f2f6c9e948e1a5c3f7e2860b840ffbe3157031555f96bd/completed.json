@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_2:decision:instruction:0",
+  "result": "Keep the restoring divider\u2019s state machine and registers; replace the separate `trial_remainder >= divisor` comparisons and conditional subtraction with one explicitly widened unsigned subtraction that provides a reliable no-borrow decision across the full operand range. Reuse that decision for the quotient bit and remainder selection, preserving divisor-zero results, all supported widths including `WIDTH=1`, and the existing registered outputs and handshakes. Retain `// @latency 9`; the candidate is useful only if it passes every fixed gate and routes with fewer than 37 LUTs while maintaining nonnegative setup and hold slack.",
+  "artifacts": {}
+}

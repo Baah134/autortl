@@ -1,77 +1,67 @@
 # Current AutoRTL checkpoint
 
-Updated October23,2026 (America/New_York). Recover actual Git, ownership,
-processes, raw results and source hashes; chat memory is supplementary.
+Updated October 23, 2026 (America/New_York). Verify files, Git and ownership
+before continuing; chat summaries are supplementary.
 
-## Active frozen study / current jobs
+## Completed frozen study; reviewed fixes next
 
-Canonical Downloads/autortl-work, development776e61b published; main remains
-last integrated e6dc558 (inspect actual heads). Runtime source remains frozen:
-202files in workspace/work/proposal-source-freeze-01.json and
-logs/proposal-feedback-study-02/plan.json. Fullsuite1301passed326.44s.
-No canonical executable/test changes since that verified gate.
+Canonical checkout: C:/Users/prince.baah/Downloads/autortl-work.
+Branch codex/contract-context; last published development 156355c. Main remains
+e6dc558. Runtime 776e61b and all 202 tested source identities stayed unchanged
+through the complete study, independent checks and archival. Full regression:
+1,301 passed in 326.44 seconds. No owned vendor/model job remains at this checkpoint.
 
-Study02 uses original generated parameterized divider core, frozen wrapper
-appended to independent six-width TB; only TB container renamed. Original
-case/checker bodies preserved. Same N1/3iter/16calls/25tool/35wall/1infraretry.
-Actual CLI model unknown (metadata model null); exploratory only.
+All six original study02 rows retained. Five uninterrupted runs completed;
+pair2 baseline remains CODEX_QUOTA in its original row. Separate actual CLI
+recovery finished with cumulative 6→9 calls, no budget reset, independently
+verified winner. Do not substitute that recovery into the original comparison.
+Each mode repeated three proposals across three trials. Context did not meet
+its predeclared retention criterion; token comparison is incomplete. Unknown
+model identity, quota interruption and uncontrolled host load prevent a causal
+efficiency claim. Pair3 baseline/context both finished at 33 LUT / 46 FF.
 
-Original paired rows retained:
-- Pair1 baseline33LUT/46FF,+.313/.095ns;9calls,308.799toolsec,453.781wall.
-- Pair1 context32LUT/50FF,+.313/.159ns;8calls,284.719toolsec,417.578wall.
-- Pair2 context33LUT/46FF;8calls,377.472toolsec,510.891wall.
-- Pair2 baseline hit CODEX_QUOTA atplanner3 with6calls. Original study-result
-  remains blocked and usage unknown; do not rewrite it as a paired success.
-Each original row repeatedoneproposal. Completed winners independentlyPASS.
-Actual pair2Doctor trial40LUT/45FF,-.080/.111 unchanged afterphysicaloptions,
-NOT_ADOPTED, candidateREJECT,33LUT incumbent preserved; hashes verified.
+Actual DONE CLI proof on pair2 context: nominal exit 0; altered input, outcome,
+nonwinning standard RTL and flow script each exit 1. All 252 protected identities,
+run file set, budget and router stats restored unchanged. No new charges.
+This is completed-run reuse/tamper validation, not arbitrary in-flight kill proof.
+Archive: evidence/2026-10-23/proposal-feedback-study-02; 1500 hashed files.
+Invalid setup01 and supplemental quota recovery remain separate published evidence.
 
-User returned after quota reset; no old jobs active, expired lease reclaimed.
-Actual CLI quotaresume22624 completed0, cumulative6->9calls withoutreset,
-318.641toolsec total. Exact saved33LUT winner independentlyPASS1543.
-Supplemental quota-resume/result.json retains original blocked row and
-before/afterbudget. Completed stages replayed; no runtimechange/regrading.
-Original partial comparison remains interrupted; no efficacy claim.
+## Reviewed implementation, not yet applied
 
-CURRENT actual job: index4 pair3baseline99062.
-Index5 pair3context remains unstarted. Temporary awake42170 watches
-workspace/work/proposal-recovery-awake.flag (bounded120min); oldawake29697 expired.
-One vendor/model queue; user GUI untouched.
+Isolated workspace/work stages:
+- seed-binding-stage: supply current RTL to planner, bind plan to exact seed,
+  replan after accepted source changes, retain incumbent if planning budget ends.
+  Restart source and incumbent metrics stay distinct; CODEX_QUOTA remains resumable.
+- context-default-stage: advisory context default off; explicit positive/negative
+  CLI switch; old missing setting remains off. 86 isolated focused tests passed.
+- dedupe-stage: eliminate only exact UTF8 source duplicates using full SHA256.
+  Distinct valid Verilog string constants collided under old normalization.
+  Metrics cache already uses exact contextual identity. 37 focused tests passed.
+Independent read-only reviews found no implementation blocker. New whole-source
+regression, fresh live validation and full tier0 remain mandatory before main.
 
-## Isolated preparation (NOT canonical implementation)
-
-Agent seed_binding_stage copied202frozenfiles into workspace/work/seed-binding-stage.
-It is preparing source-bound planning, actualseed prompt input and graceful
-incumbent retention if fresh planning budget unavailable, with synthetictests.
-Agent context_default_stage prepared conditional defaultoff/positive+negativeCLI
-under workspace/work/context-default-stage;86focusedtests passed144.60s.
-Apply that only if final context study fails predeclared keep criterion.
-No extra roles/dependencies/retries/budget increases. Both agents forbidden
-canonical edits or actual vendor/model jobs during the frozen study.
-
-Observed issue: accepted new seed reuses old instruction atiter2; context alone
-did not prevent repetition. Planner currently sees baseline source, not current
-seed. Proposed fix must both supply actualseed and bind plan to it. Do not claim
-it improves PPA/repetition before testing. BaselineWIDTH1 negative select warning
-remains despite actualVivadoPASS; no portability/all-domainproof.
+Root owns integration scopes in local coordinator state. Temporary awake42170
+is bounded and watches workspace/work/proposal-recovery-awake.flag; release when
+the vendor queue ends. No scheduler or automatic cross-provider failover exists.
 
 ## Exact next actions
 
-1. Inspect/finish index4; launch frozen helper workspace/work/proposal_study02.py
-   --index5 once queueidle, originalbudgets/no resets.
-2. Run workspace/work/report_proposal_study.py after allsix original rows exist.
-   Preserve CODEX_QUOTA row + supplemental recovery separately. No positive
-   context-only claim with missingusage/interruptedcomparison.
-3. With all model/vendor jobs stopped, run workspace/work/check_proposal_done.py
-   against pair2feedback (completed on unchanged776runtime), output outside run.
-   Verify nominalCLI0 and restoredtamper failures forcontext/source/script,
-   unchanged budget/routerstats/fileset. BEFORE any runtime source changes.
-4. Archive complete study, failedsetup107filearchive and actualDONE proof.
-   Then review isolated patches, record observedfailuretaxonomy before hotfix,
-   apply only reviewedfiles, fullsuite+freshlivecheck+freshfulltier0 beforemain.
-   No held higher tier. Update publicREADME with concise verifiedresults only.
-5. Release temporaryawakeflag when queueends; checkpoint/push meaningful progress.
-   Scheduling deferred at user's request; no heartbeat/automaticfailover set.
+1. Finish optional actual Verilog dedupe reproducer session7220; preserve outputs.
+2. Commit/push completed frozen-study evidence and this decision to development.
+3. Execute workspace/work/integrate_proposal_fixes.py only after its preconditions
+   pass; it records taxonomy failures before copying reviewed source files.
+4. Freeze new source, full pytest tests/ -q, retain any failures; no source edits
+   during active tests. Commit/push tested runtime before fresh live validation.
+5. Reviewed workspace/work/validate_seed_binding_live.py runs a NEW default-off
+   experiment with original seed/TB and 3iter/N1/16calls/25tool/35wall budgets.
+   Require actual changed-seed refresh coverage, independent exact winner and
+   binding audit. Never resume old study under changed runtime.
+6. Actual DONE proof including plan binding, then fresh full tier0 on final
+   runtime (no higher held tier), archive, docs and authorized main integration.
+7. Next complex fixture: dot4_pipeline_build, three generated modules, unsigned
+   8-bit products → 17-bit pair sums → 18-bit registered merge, two sampled edges.
+   Admit independent wiring/width/reset/latency faults before model generation.
 
 ## Checkout and integration
 

@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_2:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 2\n## Contract check\n- Interface and parameter behavior: PASS \u2014 ports, widths, directions, and `WIDTH` parameter are preserved.\n- Reset, handshakes, and cycle behavior: PASS \u2014 control and registered outputs preserve the required behavior; the unchanged testbench passes.\n- Top latency annotation: PASS \u2014 `// @latency 9` matches the authoritative latency.\n- Static/interface checks, compile, elaboration, and simulation: PASS \u2014 ladder is ALIVE; required tool exits are successful and simulation reports `TEST PASSED`.\n- Routed reports and metric integrity: PASS \u2014 retained routed reports are present; candidate timing is feasible with WNS 0.313 ns and WHS 0.095 ns.\n- Timing feasibility: PASS \u2014 `timing_met=true` and both setup and hold slack are nonnegative.\n- Minimize LUTs objective: FAIL \u2014 candidate and previous best both use 33 LUTs, so there is no strict improvement.\n## Summary\n- Passed: 6 of 7\n- Failed: 1 of 7\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes the behavioral and verification gates and meets setup and hold timing, but the previous best is already timing-feasible and uses the same 33 LUTs. The required strict LUT reduction is absent, so the candidate cannot be promoted.",
+      "recommendation": "REJECT",
+      "passed": 6,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_2:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 2\n## Contract check\n- Interface and parameter behavior: PASS \u2014 module ports and parameter are preserved; the arithmetic rewrite supports the tested widths, including WIDTH=1.\n- Top latency annotation: PASS \u2014 `// @latency 9` matches the authoritative latency.\n- Simulation and deterministic correctness: PASS \u2014 ladder is ALIVE; simulation passed with the required verdict.\n- Tool and process gates: PASS \u2014 xvlog, xelab, xsim, and Vivado exits succeeded; synthesis completion is recorded.\n- Routed metrics and timing: PASS \u2014 retained routed metrics are present; timing is met with WNS 0.313 ns and WHS 0.095 ns.\n- Objective improvement over previous best: FAIL \u2014 candidate LUT count is 33, equal to the previous best\u2019s 33; strict reduction is required.\n## Summary\n- Passed: 5 of 6\n- Failed: 1 of 6\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes behavioral, annotation, tool, and timing gates, but it does not improve the chosen LUT objective over the previous best: both use 33 LUTs, and the recorded improvement is false. The mandatory strict-improvement criterion therefore fails.",
+      "recommendation": "REJECT",
+      "passed": 5,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

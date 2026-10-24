@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_1:decision:instruction:0",
+  "result": "Replace the separate `trial_remainder >= {1'b0, divisor_reg}` decision and conditional subtraction with one widened unsigned subtraction whose borrow determines whether to use the difference or the original trial remainder; use that same decision for the quotient bit. Keep the iteration schedule, registered outputs, handshake, reset behavior, operand widths, and `// @latency 9` unchanged, including behavior for divisor zero and `WIDTH=1`. The expected benefit is fewer LUTs through shared arithmetic; retain the candidate only if routed LUT use is strictly below 37 and every fixed verification and metric gate passes.",
+  "artifacts": {}
+}

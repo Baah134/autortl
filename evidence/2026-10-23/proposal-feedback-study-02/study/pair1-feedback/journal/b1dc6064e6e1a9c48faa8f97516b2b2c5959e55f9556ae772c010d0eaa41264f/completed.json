@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_3:decision:instruction:0",
+  "result": "In `iterative_divider_core`, replace the binary `iteration` counter, its increment, and the `iteration == WIDTH - 1` terminal check with a `WIDTH`-bit one-hot step token: load bit 0 on request capture, shift it once per busy cycle, and use the current top bit to identify the final computation cycle. Handle `WIDTH=1` correctly, and preserve the existing cycle timing, arithmetic, registered outputs, handshakes, reset priority, and `// @latency 9` annotation. Keep the interface and parameter behavior unchanged across supported widths. This is a new experiment; promote it only if the unchanged verification and routed timing gates pass and LUT use is strictly below the 33-LUT incumbent.",
+  "artifacts": {}
+}

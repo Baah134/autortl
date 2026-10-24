@@ -365,3 +365,19 @@ All original case/checker statements and wrapper are preserved byte-for-byte
 after line-ending normalization. Same six selected configurations, pairedorder,
 budgets and keep/remove criterion; all six actual paired runs still required.
 This is a corrected experiment setup, not a relaxed acceptance requirement.
+
+
+### Study02 decision and implementation gate
+
+All six original rows and four actual restored DONE tamper probes are archived.
+Predeclared context retention failed: repeated proposals did not decrease and
+the quota interruption left usage incomplete. Set new advisory context default
+off, retain explicit opt-in and immutable audit evidence.
+
+Reviewed next changes: exact source dedupe; actual editable RTL supplied to
+planner; seed-bound plans refreshed after accepted source changes; graceful
+incumbent retention under the original planning budget. Record both observed
+failures in taxonomy before source integration. Require full regression, a NEW
+live run that actually exercises changed-seed replanning, independent winner,
+actual DONE plan-binding tamper checks, and fresh full tier0 before main merge.
+No old trial resume/regrade under changed runtime and no extra budget allowances.

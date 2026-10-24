@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_2:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 2,
+    "instruction": "Keep the restoring divider\u2019s state machine and registers; replace the separate `trial_remainder >= divisor` comparisons and conditional subtraction with one explicitly widened unsigned subtraction that provides a reliable no-borrow decision across the full operand range. Reuse that decision for the quotient bit and remainder selection, preserving divisor-zero results, all supported widths including `WIDTH=1`, and the existing registered outputs and handshakes. Retain `// @latency 9`; the candidate is useful only if it passes every fixed gate and routes with fewer than 37 LUTs while maintaining",
+    "candidates": [
+      {
+        "iteration": 2,
+        "mutation": "standard",
+        "instruction": "Keep the restoring divider\u2019s state machine and registers; replace the separate `trial_remainder >= divisor` comparisons and conditional subtraction with one explicitly widened unsigned subtraction that provides a reliable no-borrow decision across the full operand range. Reuse that decision for the quotient bit and remainder selection, preserving divisor-zero results, all supported widths including `WIDTH=1`, and the existing registered outputs and handshakes. Retain `// @latency 9`; the candidate is useful only if it passes every fixed gate and routes with fewer than 37 LUTs while maintaining",
+        "generated_source_sha256": "610e5f768065792e99994c9862bea4ad62b4a28f50ab834748f701de5c7f3356",
+        "final_source_sha256": "610e5f768065792e99994c9862bea4ad62b4a28f50ab834748f701de5c7f3356",
+        "generated_code_hash": "f1cf19a188c96d36",
+        "final_code_hash": "f1cf19a188c96d36",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.313,
+          "whs_ns": 0.095,
+          "lut_used": 33,
+          "ff_used": 46,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.022,
+          "total_power_w": 0.092
+        },
+        "cache_hit": true,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\proposal-feedback-study-02\\pair3-feedback\\iter_001\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\proposal-feedback-study-02\\pair3-feedback\\iter_001\\cand_standard\\synth.tcl",
+          "sha256": "597afe3047cd39757e44e2aaffeb2191a917e801c304f1463c03ec689936f356"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\proposal-feedback-study-02\\pair3-feedback\\iter_001\\cand_standard\\iterative_divider_core.v",
+          "sha256": "05d6df823c6368e54066597b17e973b60a4d7bf1ddfd0e8b73a7e805361ce634"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": "610e5f768065792e99994c9862bea4ad62b4a28f50ab834748f701de5c7f3356"
+  },
+  "artifacts": {}
+}

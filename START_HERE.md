@@ -13,8 +13,8 @@ remain archived; no head-to-head or controlled weak-model superiority is claimed
 
 Active engineering: bounded previous-proposal feedback, with standard-flow
 and Doctor outcomes kept separate, immutable chronological context and an
-explicit frozen optout. Full regression is currently running; the new mechanism
-is not yet a verified performance improvement. No vendor/model trial is active.
+explicit frozen optout. Full regression passed 1,301 tests on the frozen runtime; the new mechanism
+is not yet a verified performance improvement. Final exploratory trial is active.
 See SESSION_HANDOFF and local coordinator status for current jobs and scopes.
 
 1. Read `AGENTS.md` and `docs/AGENT_HANDOFF.md` for the working contract.

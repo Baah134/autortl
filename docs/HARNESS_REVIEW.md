@@ -465,3 +465,25 @@ with identicaltools may matchorbeat current harness. Keep domain-specific
 verification/measurement/evidence workflow, and measure usereffort and escaped
 bugs before asserting an advantage. Rawunitcounts and selfbaseline PPA gains
 do not establish superiority. No new role/framework is justified by that question.
+
+
+## Previous-proposal study02: revise the default, retain the audit
+
+Three chronological pairs on one divider did not reduce repeated proposals:
+three repeats in each mode. One original baseline run hit quota; its separate
+budget-preserving recovery is not an uninterrupted comparison. Token totals
+are incomplete, model identity is unknown and host load was uncontrolled.
+Keep immutable proposal evidence and bounded opt-in context; disable context
+by default. Do not assert that context is harmful or generally ineffective.
+
+The trajectory audit instead exposed stale instructions after a changed seed.
+Supply the current RTL and bind each plan to its exact seed; the deterministic
+binding is a correctness boundary, not a diversity guarantee. Keep verified
+incumbents when fresh planning exceeds the original budget. Validate with
+replay/budget tests and an actual changed-seed path before promotion.
+
+The candidate audit separately reproduced a normalized-hash collision for
+different Verilog string outputs. Exact UTF8 SHA256 dedupe is the smallest
+safe correction. Cosmetic variants may now cost verification; normalized text
+hashes remain advisory and cannot establish semantic equivalence. No cache
+redesign, language parser, new model role or framework is justified.

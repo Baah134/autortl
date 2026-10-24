@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Interface and parameter behavior: PASS \u2014 candidate preserves the top module\u2019s ports, widths, default `WIDTH`, and supported parameter behavior.\n- Latency annotation: PASS \u2014 authoritative top latency is 9 cycles and candidate declares `// @latency 9`.\n- Observable cycle, handshake, and reset behavior: PASS \u2014 candidate preserves the iterative schedule, registered outputs, retirement behavior, and synchronous reset; the unchanged testbench passes.\n- Compilation and elaboration: PASS \u2014 xvlog and xelab exited successfully.\n- Simulation: PASS \u2014 xsim exited successfully with the exact `TEST PASSED` verdict.\n- Routed metrics and timing feasibility: PASS \u2014 retained routed evidence reports 33 LUTs, WNS 0.313 ns, WHS 0.095 ns, and `timing_met=true`.\n- Objective improvement: PASS \u2014 LUT use fell from 37 to 33 while the previous best was already timing-feasible; this meets `minimize_luts` with strict improvement.\n## Summary\n- Passed: 7 of 7\n- Failed: 0\n- Improved over previous best: YES\n## Recommendation\nACCEPT\n## Reason\nThe candidate passes the deterministic verification and metric gates, preserves the defined interface and cycle behavior, and carries the required latency annotation. Its routed LUT count is strictly lower than the timing-feasible previous best, so the recorded objective improvement is supported.",
+      "recommendation": "ACCEPT",
+      "passed": 7,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}
