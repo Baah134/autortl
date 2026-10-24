@@ -1,0 +1,5 @@
+{
+  "stage": "module_dot4_pair23:model:generator.generate:0",
+  "result": "`timescale 1ns/1ps\n// @latency 1\nmodule dot4_pair23 (\n    input wire clk,\n    input wire rst,\n    input wire [7:0] a2,\n    input wire [7:0] b2,\n    input wire [7:0] a3,\n    input wire [7:0] b3,\n    output reg [16:0] pair23_sum\n);\n\n    wire [15:0] product2 = a2 * b2;\n    wire [15:0] product3 = a3 * b3;\n    wire [16:0] sum = {1'b0, product2} + {1'b0, product3};\n\n    always @(posedge clk) begin\n        if (rst)\n            pair23_sum <= 17'd0;\n        else\n            pair23_sum <= sum;\n    end\n\nendmodule",
+  "artifacts": {}
+}

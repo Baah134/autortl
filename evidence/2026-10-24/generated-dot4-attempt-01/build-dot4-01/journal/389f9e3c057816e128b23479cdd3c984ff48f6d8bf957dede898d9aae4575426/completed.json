@@ -1,0 +1,5 @@
+{
+  "stage": "module_dot4_merge:model:generator.golden_model:0",
+  "result": "def init():\n    return 0\n\n\ndef step(state, inputs: dict) -> (int, dict):\n    if inputs.get(\"rst\", 0) & 1:\n        state = 0\n    else:\n        left_sum = inputs.get(\"left_sum\", 0) & 0x1FFFF\n        right_sum = inputs.get(\"right_sum\", 0) & 0x1FFFF\n        state = (left_sum + right_sum) & 0x3FFFF\n\n    return state, {\"dot_result\": state}",
+  "artifacts": {}
+}

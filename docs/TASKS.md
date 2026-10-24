@@ -394,3 +394,10 @@ Source-binding stage gates complete:1,340 full tests; actual accepted-source
 fresh planning and exact independent winner; five DONE tamper probes; fresh
 full tier0campaign10 passed2/2/newcohort/streak1. Integrate authorized main.
 Next fixture proposal remains isolated until independent dot4 fault admission.
+
+
+Dot4 complex design independently verified and archived651files. Next permanent
+correction: explicit mechanical top timescale (actual controlled43-4099→685PASS,
+zero modelcalls). Integrate reviewed tiny patch plus qualified fixture/pure tests
+in one batch; taxonomy first, full regression and actual canonical topfirst check,
+then one fresh final tier0 gate. Old complex run stays frozen, never regraded.

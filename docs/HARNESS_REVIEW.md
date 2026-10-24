@@ -503,3 +503,24 @@ harness completion; that original exit/wall timing stays unknown. These results
 validate the mechanism and evidence boundaries, not causal efficiency or
 repetition improvements. Keep additional proposal context opt-in and retain
 negative study results. No role/framework expansion is justified.
+
+
+## Three-module dot-product design: keep composition and bounded repair
+
+Independent checker admission detected all12 named compiling faults, including
+hidden asynchronous partial-state reset. Three generated goldens and RTL modules
+then composed correctly. A golden syntax error was repaired by the existing
+bounded loop; no new role or parser is justified.
+
+Keep the editable-top optimization boundary: equivalent logic can be inlined
+while companion definitions stay frozen. This case mapped arithmetic into4DSPs,
+reducing325→17LUT and52→18sliceFF. No hierarchical optimizer extension is needed
+for this observed success. DSP internal registers are outside sliceFF counts;
+total estimated power increased slightly. No general PPA benefit follows.
+
+Revise the mechanical wrapper template: missing timescale triggered43-4099 only
+when optimization compiled top before children. The same generated children/TB
+reproduce that failure; addingonlytimescale passes685checks without modelcalls.
+This is deterministic scaffold generation, so fix the template rather than spend
+LLM repair budget. Preserve latency authority and severity policy; retain the
+original completed run before integrating the tested patch.

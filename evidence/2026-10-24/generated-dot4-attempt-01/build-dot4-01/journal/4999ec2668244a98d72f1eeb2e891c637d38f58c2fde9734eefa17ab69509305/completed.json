@@ -1,0 +1,5 @@
+{
+  "stage": "baseline:model:generator.fix:0",
+  "result": "`timescale 1ns/1ps\nmodule dot4_pipeline (\n    input wire clk,\n    input wire rst,\n    input wire [7:0] a0,\n    input wire [7:0] b0,\n    input wire [7:0] a1,\n    input wire [7:0] b1,\n    input wire [7:0] a2,\n    input wire [7:0] b2,\n    input wire [7:0] a3,\n    input wire [7:0] b3,\n    output wire [17:0] dot_result\n);\n    wire [16:0] w_dot4_pair01_pair01_sum;\n    wire [16:0] w_dot4_pair23_pair23_sum;\n\n    dot4_pair01 u_dot4_pair01 (\n        .clk(clk),\n        .rst(rst),\n        .a0(a0),\n        .b0(b0),\n        .a1(a1),\n        .b1(b1),\n        .pair01_sum(w_dot4_pair01_pair01_sum)\n    );\n\n    dot4_pair23 u_dot4_pair23 (\n        .clk(clk),\n        .rst(rst),\n        .a2(a2),\n        .b2(b2),\n        .a3(a3),\n        .b3(b3),\n        .pair23_sum(w_dot4_pair23_pair23_sum)\n    );\n\n    dot4_merge u_dot4_merge (\n        .clk(clk),\n        .rst(rst),\n        .left_sum(w_dot4_pair01_pair01_sum),\n        .right_sum(w_dot4_pair23_pair23_sum),\n        .dot_result(dot_result)\n    );\nendmodule",
+  "artifacts": {}
+}

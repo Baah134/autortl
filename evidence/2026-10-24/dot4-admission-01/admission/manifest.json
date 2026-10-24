@@ -1,0 +1,387 @@
+{
+  "schema_version": 1,
+  "status": "prepared_not_simulated",
+  "top": "dot4_pipeline_tb",
+  "cases": [
+    {
+      "name": "reference",
+      "expected_verdict": "TEST PASSED",
+      "required_failure_kind": null,
+      "mutation_targets": [],
+      "files": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\dot4-admission-01\\reference\\children.v",
+          "sha256": "898d6739722c68f1196baa5d346d6bc3cc1076dc2f0ac51af2882cfdf9f609cc"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\dot4-admission-01\\reference\\dot4_pipeline.v",
+          "sha256": "f015fcb9feb048fa9a0f97a3c8f3e8404b37c1f6e0c42ffcb0cc68929e989793"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\dot4-admission-01\\reference\\dot4_pipeline_tb.v",
+          "sha256": "dc325ab3047fd761c9dc3ad3d5c57e86ec91f5840953d8f2379f648527525205"
+        }
+      ]
+    },
+    {
+      "name": "drop_product",
+      "expected_verdict": "TEST FAILED",
+      "required_failure_kind": "behavioral_assertion",
+      "mutation_targets": [
+        {
+          "file": "children",
+          "original": "else pair01_sum <= {1'b0,product0} + {1'b0,product1};",
+          "replacement": "else pair01_sum <= {1'b0,product0};",
+          "original_occurrences": 1
+        }
+      ],
+      "files": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\dot4-admission-01\\drop_product\\children.v",
+          "sha256": "68706a67b377e75669ac84f50bddbb675a53dfc53224cb6a03d72fe559e904a9"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\dot4-admission-01\\drop_product\\dot4_pipeline.v",
+          "sha256": "f015fcb9feb048fa9a0f97a3c8f3e8404b37c1f6e0c42ffcb0cc68929e989793"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\dot4-admission-01\\drop_product\\dot4_pipeline_tb.v",
+          "sha256": "dc325ab3047fd761c9dc3ad3d5c57e86ec91f5840953d8f2379f648527525205"
+        }
+      ]
+    },
+    {
+      "name": "truncate_pair_carry",
+      "expected_verdict": "TEST FAILED",
+      "required_failure_kind": "behavioral_assertion",
+      "mutation_targets": [
+        {
+          "file": "children",
+          "original": "else pair01_sum <= {1'b0,product0} + {1'b0,product1};",
+          "replacement": "else pair01_sum <= ({1'b0,product0} + {1'b0,product1}) & 17'h0ffff;",
+          "original_occurrences": 1
+        }
+      ],
+      "files": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\dot4-admission-01\\truncate_pair_carry\\children.v",
+          "sha256": "df5c3e737693e4607762aad61e7d4f488aef3a8cd9ed2172653bdc60223fd36a"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\dot4-admission-01\\truncate_pair_carry\\dot4_pipeline.v",
+          "sha256": "f015fcb9feb048fa9a0f97a3c8f3e8404b37c1f6e0c42ffcb0cc68929e989793"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\dot4-admission-01\\truncate_pair_carry\\dot4_pipeline_tb.v",
+          "sha256": "dc325ab3047fd761c9dc3ad3d5c57e86ec91f5840953d8f2379f648527525205"
+        }
+      ]
+    },
+    {
+      "name": "truncate_final_carry",
+      "expected_verdict": "TEST FAILED",
+      "required_failure_kind": "behavioral_assertion",
+      "mutation_targets": [
+        {
+          "file": "children",
+          "original": "else dot_result <= {1'b0,left_sum} + {1'b0,right_sum};",
+          "replacement": "else dot_result <= ({1'b0,left_sum} + {1'b0,right_sum}) & 18'h1ffff;",
+          "original_occurrences": 1
+        }
+      ],
+      "files": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\dot4-admission-01\\truncate_final_carry\\children.v",
+          "sha256": "6b27b856d8ef875480ab2313b672491ab2d597fe34616afe4bb16d411d4a9679"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\dot4-admission-01\\truncate_final_carry\\dot4_pipeline.v",
+          "sha256": "f015fcb9feb048fa9a0f97a3c8f3e8404b37c1f6e0c42ffcb0cc68929e989793"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\dot4-admission-01\\truncate_final_carry\\dot4_pipeline_tb.v",
+          "sha256": "dc325ab3047fd761c9dc3ad3d5c57e86ec91f5840953d8f2379f648527525205"
+        }
+      ]
+    },
+    {
+      "name": "signed_operands",
+      "expected_verdict": "TEST FAILED",
+      "required_failure_kind": "behavioral_assertion",
+      "mutation_targets": [
+        {
+          "file": "children",
+          "original": "wire [15:0] product0 = a0 * b0;",
+          "replacement": "wire [15:0] product0 = $signed(a0) * $signed(b0);",
+          "original_occurrences": 1
+        }
+      ],
+      "files": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\dot4-admission-01\\signed_operands\\children.v",
+          "sha256": "f693508a54ab13f0d0ea509e3cf17c47fbdd97d7c1f162905dfaaeac57747663"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\dot4-admission-01\\signed_operands\\dot4_pipeline.v",
+          "sha256": "f015fcb9feb048fa9a0f97a3c8f3e8404b37c1f6e0c42ffcb0cc68929e989793"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\dot4-admission-01\\signed_operands\\dot4_pipeline_tb.v",
+          "sha256": "dc325ab3047fd761c9dc3ad3d5c57e86ec91f5840953d8f2379f648527525205"
+        }
+      ]
+    },
+    {
+      "name": "duplicate_first_input_pair",
+      "expected_verdict": "TEST FAILED",
+      "required_failure_kind": "behavioral_assertion",
+      "mutation_targets": [
+        {
+          "file": "wrapper",
+          "original": ".a2(a2)",
+          "replacement": ".a2(a0)",
+          "original_occurrences": 1
+        },
+        {
+          "file": "wrapper",
+          "original": ".b2(b2)",
+          "replacement": ".b2(b0)",
+          "original_occurrences": 1
+        },
+        {
+          "file": "wrapper",
+          "original": ".a3(a3)",
+          "replacement": ".a3(a1)",
+          "original_occurrences": 1
+        },
+        {
+          "file": "wrapper",
+          "original": ".b3(b3)",
+          "replacement": ".b3(b1)",
+          "original_occurrences": 1
+        }
+      ],
+      "files": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\dot4-admission-01\\duplicate_first_input_pair\\children.v",
+          "sha256": "898d6739722c68f1196baa5d346d6bc3cc1076dc2f0ac51af2882cfdf9f609cc"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\dot4-admission-01\\duplicate_first_input_pair\\dot4_pipeline.v",
+          "sha256": "0c9f0a189025b81867d21a052f7c2265dc5aa747668f40bfee7f95207d0694d4"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\dot4-admission-01\\duplicate_first_input_pair\\dot4_pipeline_tb.v",
+          "sha256": "dc325ab3047fd761c9dc3ad3d5c57e86ec91f5840953d8f2379f648527525205"
+        }
+      ]
+    },
+    {
+      "name": "duplicate_partial_sum",
+      "expected_verdict": "TEST FAILED",
+      "required_failure_kind": "behavioral_assertion",
+      "mutation_targets": [
+        {
+          "file": "children",
+          "original": "else dot_result <= {1'b0,left_sum} + {1'b0,right_sum};",
+          "replacement": "else dot_result <= {1'b0,left_sum} + {1'b0,left_sum};",
+          "original_occurrences": 1
+        }
+      ],
+      "files": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\dot4-admission-01\\duplicate_partial_sum\\children.v",
+          "sha256": "4448071212910d398fcffe70778b367c2fa5dd7ed5dd3653a4a23740b9a906bd"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\dot4-admission-01\\duplicate_partial_sum\\dot4_pipeline.v",
+          "sha256": "f015fcb9feb048fa9a0f97a3c8f3e8404b37c1f6e0c42ffcb0cc68929e989793"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\dot4-admission-01\\duplicate_partial_sum\\dot4_pipeline_tb.v",
+          "sha256": "dc325ab3047fd761c9dc3ad3d5c57e86ec91f5840953d8f2379f648527525205"
+        }
+      ]
+    },
+    {
+      "name": "combinational_merge",
+      "expected_verdict": "TEST FAILED",
+      "required_failure_kind": "behavioral_assertion",
+      "mutation_targets": [
+        {
+          "file": "children",
+          "original": "always @(posedge clk) begin // merge_clock",
+          "replacement": "always @* begin // merge_clock",
+          "original_occurrences": 1
+        }
+      ],
+      "files": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\dot4-admission-01\\combinational_merge\\children.v",
+          "sha256": "d37ba73503a1c768279c8d34cae3cc90ff96350d23c94b1b6549a5a11e3665e3"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\dot4-admission-01\\combinational_merge\\dot4_pipeline.v",
+          "sha256": "f015fcb9feb048fa9a0f97a3c8f3e8404b37c1f6e0c42ffcb0cc68929e989793"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\dot4-admission-01\\combinational_merge\\dot4_pipeline_tb.v",
+          "sha256": "dc325ab3047fd761c9dc3ad3d5c57e86ec91f5840953d8f2379f648527525205"
+        }
+      ]
+    },
+    {
+      "name": "extra_merge_stage",
+      "expected_verdict": "TEST FAILED",
+      "required_failure_kind": "behavioral_assertion",
+      "mutation_targets": [
+        {
+          "file": "children",
+          "original": "always @(posedge clk) begin // merge_clock",
+          "replacement": "reg [17:0] delayed_sum;\n    always @(posedge clk) begin // merge_clock",
+          "original_occurrences": 1
+        },
+        {
+          "file": "children",
+          "original": "if(rst) dot_result <= 0;\n        else dot_result <= {1'b0,left_sum} + {1'b0,right_sum};",
+          "replacement": "if(rst) begin dot_result <= 0; delayed_sum <= 0; end\n        else begin delayed_sum <= {1'b0,left_sum} + {1'b0,right_sum}; dot_result <= delayed_sum; end",
+          "original_occurrences": 1
+        }
+      ],
+      "files": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\dot4-admission-01\\extra_merge_stage\\children.v",
+          "sha256": "aea2efbdfea721d7138c1f17e03757cc14f6222369435eeceb539aa0d1deaec3"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\dot4-admission-01\\extra_merge_stage\\dot4_pipeline.v",
+          "sha256": "f015fcb9feb048fa9a0f97a3c8f3e8404b37c1f6e0c42ffcb0cc68929e989793"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\dot4-admission-01\\extra_merge_stage\\dot4_pipeline_tb.v",
+          "sha256": "dc325ab3047fd761c9dc3ad3d5c57e86ec91f5840953d8f2379f648527525205"
+        }
+      ]
+    },
+    {
+      "name": "branch_cycle_misalignment",
+      "expected_verdict": "TEST FAILED",
+      "required_failure_kind": "behavioral_assertion",
+      "mutation_targets": [
+        {
+          "file": "children",
+          "original": "wire [15:0] product2 = a2 * b2;",
+          "replacement": "reg [16:0] delayed_pair;\n    wire [15:0] product2 = a2 * b2;",
+          "original_occurrences": 1
+        },
+        {
+          "file": "children",
+          "original": "if(rst) pair23_sum <= 0;\n        else pair23_sum <= {1'b0,product2} + {1'b0,product3};",
+          "replacement": "if(rst) begin pair23_sum <= 0; delayed_pair <= 0; end\n        else begin delayed_pair <= {1'b0,product2} + {1'b0,product3}; pair23_sum <= delayed_pair; end",
+          "original_occurrences": 1
+        }
+      ],
+      "files": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\dot4-admission-01\\branch_cycle_misalignment\\children.v",
+          "sha256": "f9b3eeed6d714f66b029f18215029b119d0be39269a82fc3faf46797cea75f3a"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\dot4-admission-01\\branch_cycle_misalignment\\dot4_pipeline.v",
+          "sha256": "f015fcb9feb048fa9a0f97a3c8f3e8404b37c1f6e0c42ffcb0cc68929e989793"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\dot4-admission-01\\branch_cycle_misalignment\\dot4_pipeline_tb.v",
+          "sha256": "dc325ab3047fd761c9dc3ad3d5c57e86ec91f5840953d8f2379f648527525205"
+        }
+      ]
+    },
+    {
+      "name": "asynchronous_pair_reset",
+      "expected_verdict": "TEST FAILED",
+      "required_failure_kind": "behavioral_assertion",
+      "mutation_targets": [
+        {
+          "file": "children",
+          "original": "always @(posedge clk) begin // pair01_clock",
+          "replacement": "always @(posedge clk or posedge rst) begin // pair01_clock",
+          "original_occurrences": 1
+        }
+      ],
+      "files": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\dot4-admission-01\\asynchronous_pair_reset\\children.v",
+          "sha256": "9cce4006c0ea58c546cbffc13e753166221ef3503ed66ddd20fa59c97ca7fd5f"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\dot4-admission-01\\asynchronous_pair_reset\\dot4_pipeline.v",
+          "sha256": "f015fcb9feb048fa9a0f97a3c8f3e8404b37c1f6e0c42ffcb0cc68929e989793"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\dot4-admission-01\\asynchronous_pair_reset\\dot4_pipeline_tb.v",
+          "sha256": "dc325ab3047fd761c9dc3ad3d5c57e86ec91f5840953d8f2379f648527525205"
+        }
+      ]
+    },
+    {
+      "name": "merge_reset_ignored",
+      "expected_verdict": "TEST FAILED",
+      "required_failure_kind": "behavioral_assertion",
+      "mutation_targets": [
+        {
+          "file": "children",
+          "original": "if(rst) dot_result <= 0;",
+          "replacement": "if(rst) dot_result <= dot_result;",
+          "original_occurrences": 1
+        }
+      ],
+      "files": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\dot4-admission-01\\merge_reset_ignored\\children.v",
+          "sha256": "51021888cc5b3ae826e7bef45c5e091271c982e45545ad1ba86321a0ee59cb8f"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\dot4-admission-01\\merge_reset_ignored\\dot4_pipeline.v",
+          "sha256": "f015fcb9feb048fa9a0f97a3c8f3e8404b37c1f6e0c42ffcb0cc68929e989793"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\dot4-admission-01\\merge_reset_ignored\\dot4_pipeline_tb.v",
+          "sha256": "dc325ab3047fd761c9dc3ad3d5c57e86ec91f5840953d8f2379f648527525205"
+        }
+      ]
+    },
+    {
+      "name": "interedge_input_leak",
+      "expected_verdict": "TEST FAILED",
+      "required_failure_kind": "behavioral_assertion",
+      "mutation_targets": [
+        {
+          "file": "wrapper",
+          "original": "    dot4_merge u_dot4_merge (",
+          "replacement": "    wire [17:0] registered_result;\n    assign dot_result = registered_result ^ {17'b0,a0[0]};\n    dot4_merge u_dot4_merge (",
+          "original_occurrences": 1
+        },
+        {
+          "file": "wrapper",
+          "original": ".dot_result(dot_result)",
+          "replacement": ".dot_result(registered_result)",
+          "original_occurrences": 1
+        }
+      ],
+      "files": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\dot4-admission-01\\interedge_input_leak\\children.v",
+          "sha256": "898d6739722c68f1196baa5d346d6bc3cc1076dc2f0ac51af2882cfdf9f609cc"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\dot4-admission-01\\interedge_input_leak\\dot4_pipeline.v",
+          "sha256": "3690259dd1cf700ac92cd8dbdfb68205189d20a3552e1cd478d2533a020ee585"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\dot4-admission-01\\interedge_input_leak\\dot4_pipeline_tb.v",
+          "sha256": "dc325ab3047fd761c9dc3ad3d5c57e86ec91f5840953d8f2379f648527525205"
+        }
+      ]
+    }
+  ]
+}

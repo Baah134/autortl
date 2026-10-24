@@ -7,8 +7,8 @@ Canonical checkout: `C:/Users/prince.baah/Downloads/autortl-work`.
 GitHub integration branch: `main`. Development branch: `codex/contract-context`.
 Current tested runtime: **965251f**, with **1,340 regression tests passed**.
 Actual source-bound planning recovery, independent six-width winner verification,
-five DONE tamper probes and fresh full tier0 campaign10 passed. Main integration
-gates are complete; inspect actual Git heads and SESSION_HANDOFF for publication.
+five DONE tamper probes and fresh full tier0 campaign10 passed. Main/development integration verified at **8bbacf3** after all gates passed.
+Inspect actual Git heads and SESSION_HANDOFF before continuing.
 Generated divider01's prior38→26LUT result remains the project area result;
 the new33LUT run validates planning/recovery, not a stronger optimization claim.
 

@@ -1,0 +1,5 @@
+{
+  "stage": "module_dot4_pair01:model:generator.golden_model:0",
+  "result": "def init():\n    return 0\n\n\ndef step(state, inputs: dict) -> (object, dict):\n    if inputs.get(\"rst\", 0) & 1:\n        state = 0\n    else:\n        a0 = inputs.get(\"a0\", 0) & 0xFF\n        b0 = inputs.get(\"b0\", 0) & 0xFF\n        a1 = inputs.get(\"a1\", 0) & 0xFF\n        b1 = inputs.get(\"b1\", 0) & 0xFF\n        state = (a0 * b0 + a1 * b1) & 0x1FFFF\n\n    return state, {\"pair01_sum\": state}",
+  "artifacts": {}
+}

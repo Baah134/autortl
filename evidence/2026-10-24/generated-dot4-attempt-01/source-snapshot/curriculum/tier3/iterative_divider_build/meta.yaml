@@ -1,0 +1,11 @@
+mode: build
+top: iterative_divider
+spec: design_spec.json
+tb: iterative_divider_tb.v
+generate_golden: true
+iterations: 3
+objective: minimize_luts
+target_freq_mhz: 100.0
+stresses: "multi-cycle unsigned arithmetic; exact availability; single outstanding transaction; quotient/remainder alignment; divide by zero; reset abort; symbolic parameter preservation"
+pass_criteria:
+  timing_met: true

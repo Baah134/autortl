@@ -15,6 +15,7 @@ learn from failures, and retain the best correct design within a fixed budget.
 | Validation | Recorded result |
 |---|---|
 | Harness regression suite | **1,340 tests passed** |
+| Generated pipelined dot product (3 modules) | **325 → 17 LUTs · 4 DSPs · setup +0.354 ns / hold +0.254 ns · 685-cycle independent test passed** |
 | FIFO timing recovery (8-bit, depth 3) | **Setup −0.931 → +0.108 ns · hold +0.076 ns · 22 LUTs / 13 FFs · exact saved winner independently passed** |
 | Generated packet-tagged FIFO | **23 LUTs / 31 FFs · setup +0.078 ns · hold +0.106 ns · saved winner independently passed** |
 | Generated iterative divider (8-bit) | **38 → 26 LUTs (31.6%) · 38 FFs · setup +0.315 ns / hold +0.129 ns · saved winner independently passed** |
@@ -40,6 +41,10 @@ Additional build, weaker-model and in-flight interruption coverage remains under
 validation. No held curriculum tier is claimed. Earlier unsuccessful cohorts
 remain in the evidence record.
 
+The dot product trades fabric logic for four DSPs (baseline: zero). Slice FFs
+fall from 52 to 18; DSP internal registers are excluded. Reported total power
+increases slightly from 0.157 W to 0.158 W.
+
 The divider result reduces area; estimated total power increased from 0.092 W
 to 0.103 W under the same experiment constraints.
 
@@ -50,7 +55,8 @@ The FIFO trades higher area than its failing baseline (13 LUTs) for timing
 closure. The loop then reduced its first feasible implementation from 24 to
 22 LUTs (8.3%).
 
-See the [FIFO recovery evidence](evidence/2026-10-22/generated-fifo-attempt-05/README.md),
+See the [three-module dot-product evidence](evidence/2026-10-24/generated-dot4-attempt-01/README.md),
+[FIFO recovery evidence](evidence/2026-10-22/generated-fifo-attempt-05/README.md),
 [test evidence](evidence/2026-10-20/README.md),
 [full-suite result](evidence/2026-10-23/proposal-fixes-tests-02/AutoRTL-proposal-fixes-full-02.txt) and
 [scoreboard coverage](evidence/2026-10-23/scoreboard-example-coverage/README.md),

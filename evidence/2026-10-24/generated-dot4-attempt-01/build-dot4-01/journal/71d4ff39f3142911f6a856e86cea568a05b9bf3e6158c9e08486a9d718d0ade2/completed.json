@@ -1,0 +1,5 @@
+{
+  "stage": "module_dot4_pair23:model:generator.golden_model:1",
+  "result": "def init():\n    return {\"pair23_sum\": 0}\n\n\ndef step(state, inputs: dict) -> tuple:\n    if inputs.get(\"rst\", 0) & 1:\n        value = 0\n    else:\n        a2 = inputs.get(\"a2\", 0) & 0xFF\n        b2 = inputs.get(\"b2\", 0) & 0xFF\n        a3 = inputs.get(\"a3\", 0) & 0xFF\n        b3 = inputs.get(\"b3\", 0) & 0xFF\n        value = (a2 * b2 + a3 * b3) & 0x1FFFF\n\n    next_state = {\"pair23_sum\": value}\n    return next_state, {\"pair23_sum\": value}",
+  "artifacts": {}
+}

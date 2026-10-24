@@ -1,0 +1,5 @@
+{
+  "stage": "module_dot4_pair01:model:generator.generate:0",
+  "result": "`timescale 1ns/1ps\n// @latency 1\nmodule dot4_pair01 (\n    input wire clk,\n    input wire rst,\n    input wire [7:0] a0,\n    input wire [7:0] b0,\n    input wire [7:0] a1,\n    input wire [7:0] b1,\n    output wire [16:0] pair01_sum\n);\n\n    wire [15:0] product0 = a0 * b0;\n    wire [15:0] product1 = a1 * b1;\n    wire [16:0] sum = {1'b0, product0} + {1'b0, product1};\n\n    reg [16:0] pair01_sum_reg;\n\n    assign pair01_sum = pair01_sum_reg;\n\n    always @(posedge clk) begin\n        if (rst)\n            pair01_sum_reg <= 17'd0;\n        else\n            pair01_sum_reg <= sum;\n    end\n\nendmodule",
+  "artifacts": {}
+}

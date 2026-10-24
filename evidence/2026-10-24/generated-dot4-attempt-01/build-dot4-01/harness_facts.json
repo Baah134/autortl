@@ -1,0 +1,791 @@
+{
+  "allowed_flow_variations": "The harness may enable retiming or physical optimization. The candidate's retained synthesis script is authoritative for its actual settings.",
+  "authority": "Harness evidence is fixed. Proposed architectural goals cannot redefine it.",
+  "baseline_metrics": {
+    "bram_total": 50.0,
+    "bram_used": 0.0,
+    "dsp_total": 90,
+    "dsp_used": 0,
+    "dynamic_power_w": 0.087,
+    "ff_pct": 0.125,
+    "ff_total": 41600,
+    "ff_used": 52,
+    "lut_pct": 1.5625,
+    "lut_total": 20800,
+    "lut_used": 325,
+    "sim_error": "",
+    "sim_passed": true,
+    "synth_error": "",
+    "timing_met": true,
+    "total_power_w": 0.157,
+    "whs_ns": 0.202,
+    "wns_ns": 0.087
+  },
+  "build_spec": {
+    "authority": "Complete resolved typed build contract. Defined behavior is mandatory; explicitly unspecified cases remain unspecified. Frozen implementation identities do not turn incidental values in unspecified cases into requirements.",
+    "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-dot4-01\\design_spec.json",
+    "resolved_spec": {
+      "connections": [
+        {
+          "dst_module": "dot4_merge",
+          "dst_port": "left_sum",
+          "src_module": "dot4_pair01",
+          "src_port": "pair01_sum"
+        },
+        {
+          "dst_module": "dot4_merge",
+          "dst_port": "right_sum",
+          "src_module": "dot4_pair23",
+          "src_port": "pair23_sum"
+        }
+      ],
+      "external_ports": [
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "clk",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "rst",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "a0",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 8
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "b0",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 8
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "a1",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 8
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "b1",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 8
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "a2",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 8
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "b2",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 8
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "a3",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 8
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "b3",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 8
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "output",
+          "name": "dot_result",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 18
+        }
+      ],
+      "modules": [
+        {
+          "behavior": "At each rising clk edge synchronous active-high rst sets pair01_sum=0. Otherwise register the unsigned exact sum a0*b0 + a1*b1, range 0..130050, without truncating product or addition carry. Each operand is independently unsigned 8-bit including 128..255. Outputs hold between rising edges, including during off-edge reset pulses. Throughput one input sample per edge. Python oracle returns arithmetic result for the current sample; the driver supplies latency, do not add a pipeline queue.",
+          "clock_domains": [
+            "clk"
+          ],
+          "compare_mode": "fixed_latency",
+          "examples": [
+            {
+              "after_cycles": 1,
+              "expected": {
+                "pair01_sum": 130050
+              },
+              "inputs": {
+                "a0": 255,
+                "a1": 255,
+                "b0": 255,
+                "b1": 255,
+                "rst": 0
+              }
+            }
+          ],
+          "golden_model": "",
+          "interface_signature": null,
+          "latency": 1,
+          "latency_known": true,
+          "name": "dot4_pair01",
+          "parameters": {},
+          "ports": [
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "clk",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "rst",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "a0",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 8
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "b0",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 8
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "a1",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 8
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "b1",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 8
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "pair01_sum",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 17
+            }
+          ],
+          "reset": {
+            "active_high": true,
+            "duration_cycles": 3,
+            "kind": "sync",
+            "signal": "rst"
+          }
+        },
+        {
+          "behavior": "At each rising clk edge synchronous active-high rst sets pair23_sum=0. Otherwise register the unsigned exact sum a2*b2 + a3*b3, range 0..130050, without truncating product or addition carry. Each operand is independently unsigned 8-bit including 128..255. Outputs hold between rising edges, including during off-edge reset pulses. Throughput one input sample per edge. Python oracle returns arithmetic result for the current sample; the driver supplies latency, do not add a pipeline queue.",
+          "clock_domains": [
+            "clk"
+          ],
+          "compare_mode": "fixed_latency",
+          "examples": [
+            {
+              "after_cycles": 1,
+              "expected": {
+                "pair23_sum": 130050
+              },
+              "inputs": {
+                "a2": 255,
+                "a3": 255,
+                "b2": 255,
+                "b3": 255,
+                "rst": 0
+              }
+            }
+          ],
+          "golden_model": "",
+          "interface_signature": null,
+          "latency": 1,
+          "latency_known": true,
+          "name": "dot4_pair23",
+          "parameters": {},
+          "ports": [
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "clk",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "rst",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "a2",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 8
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "b2",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 8
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "a3",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 8
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "b3",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 8
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "pair23_sum",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 17
+            }
+          ],
+          "reset": {
+            "active_high": true,
+            "duration_cycles": 3,
+            "kind": "sync",
+            "signal": "rst"
+          }
+        },
+        {
+          "behavior": "At each rising clk edge synchronous active-high rst sets dot_result=0. Otherwise register the unsigned exact sum left_sum + right_sum, each independent unsigned 17-bit input 0..131071; output range 0..262142, including combinations not reachable from the pair modules. Zero-extend operands before addition; preserve the carry. Output holds between edges, including off-edge reset pulses. Throughput one input sample per edge. Python oracle returns current arithmetic result; driver supplies latency, do not queue samples.",
+          "clock_domains": [
+            "clk"
+          ],
+          "compare_mode": "fixed_latency",
+          "examples": [
+            {
+              "after_cycles": 1,
+              "expected": {
+                "dot_result": 262142
+              },
+              "inputs": {
+                "left_sum": 131071,
+                "right_sum": 131071,
+                "rst": 0
+              }
+            },
+            {
+              "after_cycles": 1,
+              "expected": {
+                "dot_result": 65536
+              },
+              "inputs": {
+                "left_sum": 65535,
+                "right_sum": 1,
+                "rst": 0
+              }
+            }
+          ],
+          "golden_model": "",
+          "interface_signature": null,
+          "latency": 1,
+          "latency_known": true,
+          "name": "dot4_merge",
+          "parameters": {},
+          "ports": [
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "clk",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "rst",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "left_sum",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 17
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "right_sum",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 17
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "dot_result",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 18
+            }
+          ],
+          "reset": {
+            "active_high": true,
+            "duration_cycles": 3,
+            "kind": "sync",
+            "signal": "rst"
+          }
+        }
+      ],
+      "top_name": "dot4_pipeline"
+    },
+    "sha256": "0762df6c91af51c96fd791ead6cfe455a2d6afafee8507053c5e3e4e7816a9cd",
+    "truncated": false
+  },
+  "clock_period_ns": 10.0,
+  "declared_latency": {
+    "cycles": null,
+    "known": false,
+    "meaning": "A source annotation declares numeric latency only when present. This known/cycles pair is authoritative for the current top module's annotation requirement. Only known=true requires a matching numeric top annotation. Child typed-module latency does not invent a top annotation for arbitrary aggregate wrappers. When known=false, absence of a top annotation is not a failed or unverifiable criterion. Unannotated numeric latency is UNKNOWN, not zero. Preserve the source's exact observable cycles and registered behavior. Annotation presence or absence alone is not independent proof of behavioral correctness; use the fixed source contract, all defined typed latency/minimum transfer age and deterministic verification, without inventing a numeric requirement.",
+    "source_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-dot4-01\\iter_000\\dot4_pipeline.v",
+    "source_sha256": "91e6a4c261739806e60c94a68a3d017419d3884dd9ec2df3eff5f63c2338cec8"
+  },
+  "execution_context": {
+    "dependencies": [
+      {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-dot4-01\\modules\\dot4_pair01\\dot4_pair01.v",
+        "sha256": "35703116aef075679e296cb5b511f91a37f7a28956a7b1cc47bcea3f9951d4a6"
+      },
+      {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-dot4-01\\modules\\dot4_pair23\\dot4_pair23.v",
+        "sha256": "86289986b5931760f2a786af6912b69b9db3719bb7eb6e90ab5718d183cdff2f"
+      },
+      {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-dot4-01\\modules\\dot4_merge\\dot4_merge.v",
+        "sha256": "68c218e7310c903694b489133ebd0e607f4445ec39e16fe8e7fe0f8909a9ae1a"
+      }
+    ],
+    "part": "xc7a35tcpg236-1",
+    "period_ns": 10.0,
+    "promotions": {
+      "Designutils 20-1307": "ERROR",
+      "Synth 8-327": "ERROR",
+      "Synth 8-3352": "ERROR",
+      "Synth 8-9873": "ERROR",
+      "VRFC 10-3609": "ERROR"
+    },
+    "synthesis_template": "c9d0bf78e20ec5b5854a3e48a12cb9d6ce15be79e660b27b3bf703670a77197a",
+    "tb": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-dot4-01\\inputs\\testbench_path.v",
+      "sha256": "dc325ab3047fd761c9dc3ad3d5c57e86ec91f5840953d8f2379f648527525205"
+    },
+    "tools": {
+      "vivado_bin": {
+        "path": "C:\\AMDDesignTools\\2025.2\\Vivado\\bin\\vivado.bat",
+        "sha256": "4f9c05aea82a71c7086a9e5edf01ba16ea70255f69cf3420c58b805ec113e994"
+      },
+      "xelab_bin": {
+        "path": "C:\\AMDDesignTools\\2025.2\\Vivado\\bin\\xelab.bat",
+        "sha256": "512a29ace988992d7fab14ca84f20f0b4515bb69ef1d5fef0a57c5f28b72c9b1"
+      },
+      "xsim_bin": {
+        "path": "C:\\AMDDesignTools\\2025.2\\Vivado\\bin\\xsim.bat",
+        "sha256": "8819fbb54fdf9cbcaaf24c2bf72801b403d5c93e0990ba32408b56c666761d21"
+      },
+      "xvlog_bin": {
+        "path": "C:\\AMDDesignTools\\2025.2\\Vivado\\bin\\xvlog.bat",
+        "sha256": "512a29ace988992d7fab14ca84f20f0b4515bb69ef1d5fef0a57c5f28b72c9b1"
+      }
+    },
+    "top": "dot4_pipeline"
+  },
+  "first_violated_path_excerpt": null,
+  "flow_and_constraints": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-dot4-01\\iter_000\\synth.tcl",
+      "sha256": "f1242104756a8ef8ba0dc24861be2c6fc6965f11c495076ce153c0a9f0e689c5",
+      "text": "set_msg_config -id {VRFC 10-3609} -new_severity ERROR\r\nset_msg_config -id {Synth 8-9873} -new_severity ERROR\r\nset_msg_config -id {Designutils 20-1307} -new_severity ERROR\r\nset_msg_config -id {Synth 8-327} -new_severity ERROR\r\nset_msg_config -id {Synth 8-3352} -new_severity ERROR\r\nset_part xc7a35tcpg236-1\r\nread_verilog \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-dot4-01/iter_000/dot4_pipeline.v\" \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-dot4-01/modules/dot4_pair01/dot4_pair01.v\" \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-dot4-01/modules/dot4_pair23/dot4_pair23.v\" \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-dot4-01/modules/dot4_merge/dot4_merge.v\"\r\nset fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-dot4-01/iter_000/timing.xdc\" w]\r\nputs $fp {create_clock -period 10.000 -name clk [get_ports clk]}\r\nclose $fp\r\nread_xdc \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-dot4-01/iter_000/timing.xdc\"\r\nsynth_design -top dot4_pipeline -flatten_hierarchy rebuilt \r\nset fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-dot4-01/iter_000/timing_io.tcl\" w]\r\nputs $fp {set data_inputs [get_ports -filter {DIRECTION == IN && NAME != clk}]}\r\nputs $fp {if {[llength $data_inputs] > 0} {set_input_delay -clock clk -max 0.000 $data_inputs; set_input_delay -clock clk -min 0.000 $data_inputs}}\r\nputs $fp {if {[llength [all_outputs]] > 0} {set_output_delay -clock clk -max 0.000 [all_outputs]; set_output_delay -clock clk -min 0.000 [all_outputs]}}\r\nclose $fp\r\nsource \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-dot4-01/iter_000/timing_io.tcl\"\r\nreport_utilization -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-dot4-01/iter_000/utilization.rpt\"\r\nreport_timing_summary -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-dot4-01/iter_000/timing.rpt\"\r\nopt_design\r\nplace_design\r\n\r\nroute_design\r\nreport_utilization -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-dot4-01/iter_000/utilization_routed.rpt\"\r\nreport_timing_summary -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-dot4-01/iter_000/timing_routed.rpt\"\r\nreport_design_analysis -logic_level_distribution -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-dot4-01/iter_000/design_analysis.rpt\"\r\nreport_power -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-dot4-01/iter_000/power.rpt\"\r\ncatch { report_methodology -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-dot4-01/iter_000/methodology.rpt\" }\r\ncatch { report_qor_suggestions -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-dot4-01/iter_000/qor_suggestions.rpt\" }\r\nputs \"SYNTH_COMPLETE\"\r\n",
+      "truncated": false
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-dot4-01\\iter_000\\timing.xdc",
+      "sha256": "fa142c09f0fadb5e303ca9fea08c02bc353451533e44aeee9cd9a0231cc8bede",
+      "text": "create_clock -period 10.000 -name clk [get_ports clk]\r\n",
+      "truncated": false
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-dot4-01\\iter_000\\timing_io.tcl",
+      "sha256": "6b38098841a48bbb3ab15de49d2bf2baf7e4384f599259ff5f3afa2c2b1daf00",
+      "text": "set data_inputs [get_ports -filter {DIRECTION == IN && NAME != clk}]\r\nif {[llength $data_inputs] > 0} {set_input_delay -clock clk -max 0.000 $data_inputs; set_input_delay -clock clk -min 0.000 $data_inputs}\r\nif {[llength [all_outputs]] > 0} {set_output_delay -clock clk -max 0.000 [all_outputs]; set_output_delay -clock clk -min 0.000 [all_outputs]}\r\n",
+      "truncated": false
+    }
+  ],
+  "hard_gates": [
+    "Preserve typed build spec defined behavior, ports, parameter defaults, reset and observable cycles; explicitly unspecified cases remain unspecified.",
+    "Use the fixed provided testbench, tools, device and constraints without modification.",
+    "Static/interface checks, compile, simulation and real routed metric integrity must pass.",
+    "Timing closure requires setup slack >= 0 and hold slack >= 0.",
+    "Unknown or absent evidence cannot count as success."
+  ],
+  "metric_provenance": "Structured metrics are parsed from retained reports; routed utilization/timing reports take precedence when present. The manifest identifies complete files by hash. Header excerpts are bounded previews, not complete reports or an independent metric source.",
+  "objective": "minimize_luts",
+  "objective_policy": "First establish timing feasibility. A verified timing-feasible candidate may replace a known timing-infeasible previous best even with higher area or power; classify this as timing_recovery, not objective savings. Once both are timing-feasible, require strict improvement of the chosen objective. Unknown or contradictory incumbent timing evidence cannot establish recovery. A completed experiment may find no improvement. Do not invent mandatory savings, slack margins, tool versions, timing corners, new tests, thresholds, code-style quotas or external environment requirements.",
+  "part": "xc7a35tcpg236-1",
+  "report_headers": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-dot4-01\\iter_000\\power.rpt",
+      "sha256": "b6e2bfe622ff4c8f80c5105dc0c171a10d0f9fe937aa94396864947eea8c1ae4",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n-------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version     : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date             : Sat Oct 24 04:42:58 2026\r\n| Host             : Baah running 64-bit major release  (build 9200)\r\n| Command          : report_power -file C:/Users/prince.baah/Downloads/autortl-work/logs/build-dot4-01/iter_000/power.rpt\r\n| Design           : dot4_pipeline\r\n| Device           : xc7a35tcpg236-1\r\n| Design State     : routed\r\n| Grade            : commercial\r\n| Process          : typical\r\n| Characterization : Production\r\n-------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nPower Report\r\n\r\nTable of Contents\r\n-----------------\r\n1. Summary\r\n1.1 On-Chip Components\r\n1.2 Power Supply Summary\r\n1.3 Confidence Level\r\n2. Settings\r\n2.1 Environment\r\n2.2 Clock Constraints\r\n3. Detailed Reports\r\n3.1 By Hierarchy\r\n\r\n1. Summary\r\n----------\r\n\r\n+--------------------------+--------------+\r\n| Total On-Chip Power (W)  | 0.157        |\r\n| Design Power Budget (W)  | Unspecified* |\r\n| Power Budget Margin (W)  | NA           |\r\n| Dynamic (W)              | 0.087        |\r\n| Device Static (W)        | 0.070        |\r\n| Effective TJA (C/W)      | 5.0          |\r\n| Max Ambient (C)          | 84.2         |\r\n| Junction Temperature (C) | 25.8         |\r\n| Confidence Level         | Low          |\r\n| Setting File             | ---          |\r\n| Simulation Activity File | ---          |\r\n| Design Nets Matched      | NA           |\r\n+-------",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-dot4-01\\iter_000\\timing.rpt",
+      "sha256": "418f00d2bb00133f7f1ba55387178f1ebea917333400192152adc8fef0336830",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n---------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date         : Sat Oct 24 04:42:26 2026\r\n| Host         : Baah running 64-bit major release  (build 9200)\r\n| Command      : report_timing_summary -file C:/Users/prince.baah/Downloads/autortl-work/logs/build-dot4-01/iter_000/timing.rpt\r\n| Design       : dot4_pipeline\r\n| Device       : 7a35t-cpg236\r\n| Speed File   : -1  PRODUCTION 1.23 2018-06-13\r\n| Design State : Synthesized\r\n---------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nTiming Summary Report\r\n\r\n------------------------------------------------------------------------------------------------\r\n| Timer Settings\r\n| --------------\r\n------------------------------------------------------------------------------------------------\r\n\r\n  Enable Multi Corner Analysis               :  Yes\r\n  Enable Pessimism Removal                   :  Yes\r\n  Pessimism Removal Resolution               :  Nearest Common Node\r\n  Enable Input Delay Default Clock           :  No\r\n  Enable Preset / Clear Arcs                 :  No\r\n  Disable Flight Delays                      :  No\r\n  Ignore I/O Paths                           :  No\r\n  Timing Early Launch at Borrowing Latches   :  No\r\n  Borrow Time for Max Delay Exceptions       :  Yes\r\n  Merge Timing Exceptions                    :  Yes\r\n  Inter-SLR Compensation                     :  Conservative\r\n\r\n  Corner  Analyze    Analyze    \r\n  Name    Max Paths  Min",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-dot4-01\\iter_000\\timing_routed.rpt",
+      "sha256": "42fe116e4252a8c8bfb5b1795bbb18a209dd2051c001c6a88e80f51094f790bb",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n---------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date         : Sat Oct 24 04:42:57 2026\r\n| Host         : Baah running 64-bit major release  (build 9200)\r\n| Command      : report_timing_summary -file C:/Users/prince.baah/Downloads/autortl-work/logs/build-dot4-01/iter_000/timing_routed.rpt\r\n| Design       : dot4_pipeline\r\n| Device       : 7a35t-cpg236\r\n| Speed File   : -1  PRODUCTION 1.23 2018-06-13\r\n| Design State : Routed\r\n---------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nTiming Summary Report\r\n\r\n------------------------------------------------------------------------------------------------\r\n| Timer Settings\r\n| --------------\r\n------------------------------------------------------------------------------------------------\r\n\r\n  Enable Multi Corner Analysis               :  Yes\r\n  Enable Pessimism Removal                   :  Yes\r\n  Pessimism Removal Resolution               :  Nearest Common Node\r\n  Enable Input Delay Default Clock           :  No\r\n  Enable Preset / Clear Arcs                 :  No\r\n  Disable Flight Delays                      :  No\r\n  Ignore I/O Paths                           :  No\r\n  Timing Early Launch at Borrowing Latches   :  No\r\n  Borrow Time for Max Delay Exceptions       :  Yes\r\n  Merge Timing Exceptions                    :  Yes\r\n  Inter-SLR Compensation                     :  Conservative\r\n\r\n  Corner  Analyze    Analyze    \r\n  Name    Max Paths  M",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-dot4-01\\iter_000\\utilization.rpt",
+      "sha256": "5b28ed677868f6ac066ffa91aa2e6537811208e311b36a017e9a787b41e3db51",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\n---------------------------------------------------------------------------------------------------------------------------------------------\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\n| Date         : Sat Oct 24 04:42:26 2026\n| Host         : Baah running 64-bit major release  (build 9200)\n| Command      : report_utilization -file C:/Users/prince.baah/Downloads/autortl-work/logs/build-dot4-01/iter_000/utilization.rpt\n| Design       : dot4_pipeline\n| Device       : xc7a35tcpg236-1\n| Speed File   : -1\n| Design State : Synthesized\n---------------------------------------------------------------------------------------------------------------------------------------------\n\nUtilization Design Information\n\nTable of Contents\n-----------------\n1. Slice Logic\n1.1 Summary of Registers by Type\n2. Memory\n3. DSP\n4. IO and GT Specific\n5. Clocking\n6. Specific Feature\n7. Primitives\n8. Black Boxes\n9. Instantiated Netlists\n\n1. Slice Logic\n--------------\n\n+-------------------------+------+-------+------------+-----------+-------+\n|        Site Type        | Used | Fixed | Prohibited | Available | Util% |\n+-------------------------+------+-------+------------+-----------+-------+\n| Slice LUTs*             |  329 |     0 |          0 |     20800 |  1.58 |\n|   LUT as Logic          |  329 |     0 |          0 |     20800 |  1.58 |\n|   LUT as Memory         |    0 |     0 |          0 |      9600 |  0.00 |\n| Slice Registers         |   52 |     0 |          0 |     41600 |  0.13 |\n|   Register as Flip Flop |   52 |     0 |          0 |     41600 |  0.13 |\n|   Register as Latch     |    0 |     0 |          0 |     41600 |  0.00 |\n",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-dot4-01\\iter_000\\utilization_routed.rpt",
+      "sha256": "c3c53412eeb6c71b185904b73f33a6c6ba0cb0647dd462de111c7d6aeb4e1053",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\n---------------------------------------------------------------------------------------------------------------------------------------------\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\n| Date         : Sat Oct 24 04:42:57 2026\n| Host         : Baah running 64-bit major release  (build 9200)\n| Command      : report_utilization -file C:/Users/prince.baah/Downloads/autortl-work/logs/build-dot4-01/iter_000/utilization_routed.rpt\n| Design       : dot4_pipeline\n| Device       : xc7a35tcpg236-1\n| Speed File   : -1\n| Design State : Routed\n---------------------------------------------------------------------------------------------------------------------------------------------\n\nUtilization Design Information\n\nTable of Contents\n-----------------\n1. Slice Logic\n1.1 Summary of Registers by Type\n2. Slice Logic Distribution\n3. Memory\n4. DSP\n5. IO and GT Specific\n6. Clocking\n7. Specific Feature\n8. Primitives\n9. Black Boxes\n10. Instantiated Netlists\n\n1. Slice Logic\n--------------\n\n+-------------------------+------+-------+------------+-----------+-------+\n|        Site Type        | Used | Fixed | Prohibited | Available | Util% |\n+-------------------------+------+-------+------------+-----------+-------+\n| Slice LUTs              |  325 |     0 |          0 |     20800 |  1.56 |\n|   LUT as Logic          |  325 |     0 |          0 |     20800 |  1.56 |\n|   LUT as Memory         |    0 |     0 |          0 |      9600 |  0.00 |\n| Slice Registers         |   52 |     0 |          0 |     41600 |  0.13 |\n|   Register as Flip Flop |   52 |     0 |          0 |     41600 |  0.13 |\n|   Register as Latch     |    0 |     0 |   ",
+      "truncated": true
+    }
+  ],
+  "report_manifest": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-dot4-01\\iter_000\\power.rpt",
+      "sha256": "b6e2bfe622ff4c8f80c5105dc0c171a10d0f9fe937aa94396864947eea8c1ae4"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-dot4-01\\iter_000\\timing.rpt",
+      "sha256": "418f00d2bb00133f7f1ba55387178f1ebea917333400192152adc8fef0336830"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-dot4-01\\iter_000\\timing_routed.rpt",
+      "sha256": "42fe116e4252a8c8bfb5b1795bbb18a209dd2051c001c6a88e80f51094f790bb"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-dot4-01\\iter_000\\utilization.rpt",
+      "sha256": "5b28ed677868f6ac066ffa91aa2e6537811208e311b36a017e9a787b41e3db51"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-dot4-01\\iter_000\\utilization_routed.rpt",
+      "sha256": "c3c53412eeb6c71b185904b73f33a6c6ba0cb0647dd462de111c7d6aeb4e1053"
+    }
+  ],
+  "schema_version": 1,
+  "simulation": {
+    "failure_verdict": "TEST FAILED",
+    "required_verdict": "TEST PASSED",
+    "scope": "Provided testbench checks; not a formal equivalence proof.",
+    "tools": [
+      "xvlog",
+      "xelab",
+      "xsim -runall"
+    ]
+  },
+  "sources": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-dot4-01\\iter_000\\dot4_pipeline.v",
+      "sha256": "91e6a4c261739806e60c94a68a3d017419d3884dd9ec2df3eff5f63c2338cec8",
+      "text": "`timescale 1ns/1ps\r\nmodule dot4_pipeline (\r\n    input wire clk,\r\n    input wire rst,\r\n    input wire [7:0] a0,\r\n    input wire [7:0] b0,\r\n    input wire [7:0] a1,\r\n    input wire [7:0] b1,\r\n    input wire [7:0] a2,\r\n    input wire [7:0] b2,\r\n    input wire [7:0] a3,\r\n    input wire [7:0] b3,\r\n    output wire [17:0] dot_result\r\n);\r\n    wire [16:0] w_dot4_pair01_pair01_sum;\r\n    wire [16:0] w_dot4_pair23_pair23_sum;\r\n\r\n    dot4_pair01 u_dot4_pair01 (\r\n        .clk(clk),\r\n        .rst(rst),\r\n        .a0(a0),\r\n        .b0(b0),\r\n        .a1(a1),\r\n        .b1(b1),\r\n        .pair01_sum(w_dot4_pair01_pair01_sum)\r\n    );\r\n\r\n    dot4_pair23 u_dot4_pair23 (\r\n        .clk(clk),\r\n        .rst(rst),\r\n        .a2(a2),\r\n        .b2(b2),\r\n        .a3(a3),\r\n        .b3(b3),\r\n        .pair23_sum(w_dot4_pair23_pair23_sum)\r\n    );\r\n\r\n    dot4_merge u_dot4_merge (\r\n        .clk(clk),\r\n        .rst(rst),\r\n        .left_sum(w_dot4_pair01_pair01_sum),\r\n        .right_sum(w_dot4_pair23_pair23_sum),\r\n        .dot_result(dot_result)\r\n    );\r\nendmodule",
+      "truncated": false
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-dot4-01\\modules\\dot4_pair01\\dot4_pair01.v",
+      "sha256": "35703116aef075679e296cb5b511f91a37f7a28956a7b1cc47bcea3f9951d4a6",
+      "text": "`timescale 1ns/1ps\r\n// @latency 1\r\nmodule dot4_pair01 (\r\n    input wire clk,\r\n    input wire rst,\r\n    input wire [7:0] a0,\r\n    input wire [7:0] b0,\r\n    input wire [7:0] a1,\r\n    input wire [7:0] b1,\r\n    output wire [16:0] pair01_sum\r\n);\r\n\r\n    wire [15:0] product0 = a0 * b0;\r\n    wire [15:0] product1 = a1 * b1;\r\n    wire [16:0] sum = {1'b0, product0} + {1'b0, product1};\r\n\r\n    reg [16:0] pair01_sum_reg;\r\n\r\n    assign pair01_sum = pair01_sum_reg;\r\n\r\n    always @(posedge clk) begin\r\n        if (rst)\r\n            pair01_sum_reg <= 17'd0;\r\n        else\r\n            pair01_sum_reg <= sum;\r\n    end\r\n\r\nendmodule",
+      "truncated": false
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-dot4-01\\modules\\dot4_pair23\\dot4_pair23.v",
+      "sha256": "86289986b5931760f2a786af6912b69b9db3719bb7eb6e90ab5718d183cdff2f",
+      "text": "`timescale 1ns/1ps\r\n// @latency 1\r\nmodule dot4_pair23 (\r\n    input wire clk,\r\n    input wire rst,\r\n    input wire [7:0] a2,\r\n    input wire [7:0] b2,\r\n    input wire [7:0] a3,\r\n    input wire [7:0] b3,\r\n    output reg [16:0] pair23_sum\r\n);\r\n\r\n    wire [15:0] product2 = a2 * b2;\r\n    wire [15:0] product3 = a3 * b3;\r\n    wire [16:0] sum = {1'b0, product2} + {1'b0, product3};\r\n\r\n    always @(posedge clk) begin\r\n        if (rst)\r\n            pair23_sum <= 17'd0;\r\n        else\r\n            pair23_sum <= sum;\r\n    end\r\n\r\nendmodule",
+      "truncated": false
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-dot4-01\\modules\\dot4_merge\\dot4_merge.v",
+      "sha256": "68c218e7310c903694b489133ebd0e607f4445ec39e16fe8e7fe0f8909a9ae1a",
+      "text": "`timescale 1ns/1ps\r\n// @latency 1\r\nmodule dot4_merge (\r\n    input wire clk,\r\n    input wire rst,\r\n    input wire [16:0] left_sum,\r\n    input wire [16:0] right_sum,\r\n    output wire [17:0] dot_result\r\n);\r\n\r\n    reg [17:0] dot_result_reg;\r\n\r\n    assign dot_result = dot_result_reg;\r\n\r\n    always @(posedge clk) begin\r\n        if (rst)\r\n            dot_result_reg <= 18'b0;\r\n        else\r\n            dot_result_reg <= {1'b0, left_sum} + {1'b0, right_sum};\r\n    end\r\n\r\nendmodule",
+      "truncated": false
+    }
+  ],
+  "testbench": {
+    "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-dot4-01\\inputs\\testbench_path.v",
+    "sha256": "dc325ab3047fd761c9dc3ad3d5c57e86ec91f5840953d8f2379f648527525205",
+    "text": "`timescale 1ns/1ps\nmodule dot4_pipeline_tb;\n    reg clk=0, rst=1;\n    reg [7:0] a0=0,b0=0,a1=0,b1=0,a2=0,b2=0,a3=0,b3=0;\n    wire [17:0] dot_result;\n    dot4_pipeline dut(.clk(clk),.rst(rst),.a0(a0),.b0(b0),.a1(a1),.b1(b1),\n        .a2(a2),.b2(b2),.a3(a3),.b3(b3),.dot_result(dot_result));\n    // Probe the merge's complete declared domain, beyond reachable pair sums.\n    reg merge_rst=1;\n    reg [16:0] merge_left=0, merge_right=0;\n    wire [17:0] merge_result;\n    dot4_merge merge_probe(.clk(clk),.rst(merge_rst),.left_sum(merge_left),\n        .right_sum(merge_right),.dot_result(merge_result));\n    reg [17:0] pending_dot=0, expected_dot=0;\n    reg started=0, merge_done=0, pipeline_done=0;\n    integer errors=0, checked=0, reset_checks=0, held_checks=0, pulse_checks=0;\n    integer i, term;\n    reg [63:0] vector_value, seed=64'h3141592653589793;\n    always #5 clk=~clk;\n    task fail;\n        input [511:0] message;\n        begin\n            errors=errors+1;\n            if(errors<=12) $display(\"FAIL cycle=%0d: %0s\",checked,message);\n        end\n    endtask\n    function [17:0] arithmetic;\n        input [63:0] value;\n        integer t;\n        reg [31:0] total, left_operand, right_operand;\n        begin\n            total=0;\n            for(t=0;t<4;t=t+1) begin\n                left_operand=(value >> (56-16*t)) & 255;\n                right_operand=(value >> (48-16*t)) & 255;\n                total=total+left_operand*right_operand;\n            end\n            arithmetic=total[17:0];\n        end\n    endfunction\n    task step;\n        input reset_value;\n        input [63:0] value;\n        begin\n            @(negedge clk);\n            rst=reset_value;\n            {a0,b0,a1,b1,a2,b2,a3,b3}=value;\n            #1;\n            if(started) begin\n                held_checks=held_checks+1;\n                if(dot_result !== expected_dot) fail(\"output changed away from active edge\");\n            end\n            @(posedge clk);\n            if(rst) begin\n                expected_dot=0; pending_dot=0; reset_checks=reset_checks+1;\n            end else begin\n                expected_dot=pending_dot;\n                pending_dot=arithmetic(value);\n            end\n            #1; started=1; checked=checked+1;\n            if(dot_result !== expected_dot) fail(\"unsigned arithmetic/order/two-edge latency/reset\");\n            #1;\n        end\n    endtask\n    task short_reset_pulse;\n        begin\n            // Called two ns after a rising edge; no rising edge sees this pulse.\n            rst=1; #1;\n            if(dot_result !== expected_dot) fail(\"asynchronous top reset response\");\n            rst=0; #1;\n            if(dot_result !== expected_dot) fail(\"off-edge reset output hold\");\n            pulse_checks=pulse_checks+1;\n            // Next step verifies the stored partial sums survived the pulse.\n        end\n    endtask\n    task merge_step;\n        input reset_value;\n        input [16:0] left_value,right_value;\n        reg [17:0] old_result, expected_result;\n        begin\n            @(negedge clk);\n            old_result=merge_result;\n            merge_rst=reset_value; merge_left=left_value; merge_right=right_value;\n            expected_result=reset_value ? 18'd0 : ({1'b0,left_value}+{1'b0,right_value});\n            #1;\n            if(merge_result !== old_result) fail(\"merge probe changed off edge\");\n            @(posedge clk); #1;\n            if(merge_result !== expected_result) fail(\"merge full 17-bit input domain\");\n        end\n    endtask\n    initial begin\n        step(1,0); step(1,0);\n        step(0,0); step(0,64'hffffffffffffffff);\n        step(0,64'hffffffffffffffff); step(0,0);\n        // Isolate every product; then vary left and right halves independently.\n        for(term=0;term<4;term=term+1) begin\n            vector_value=64'hffff << (48-16*term);\n            step(0,vector_value); step(0,0);\n        end\n        step(0,64'hffff010100000000); // pair carry 65026\n        step(0,64'hffffffff00000000); // pair carry above bit15\n        step(0,64'hffffffffffffffff); // final carry above bit16\n        step(0,64'h8001ff02037f0481);\n        step(0,64'h0102030405060708);\n        step(0,64'hf1e2d3c4b5a69788);\n        for(i=0;i<256;i=i+1) begin\n            vector_value={i[7:0],8'hff,8'h81,i[7:0],8'h03,8'h7f,i[7:0],8'hc5};\n            step(0,vector_value);\n        end\n        step(0,64'hffffffffffffffff);\n        step(0,64'hffffffffffffffff);\n        short_reset_pulse;\n        step(0,64'h0101010101010101);\n        // Clear occupied stages, then verify the first released edge is zero.\n        step(1,64'hffffffffffffffff);\n        step(0,64'h0102030405060708);\n        step(0,64'hffffffffffffffff);\n        for(i=0;i<400;i=i+1) begin\n            seed=seed^(seed<<13); seed=seed^(seed>>7); seed=seed^(seed<<17);\n            step((i==131)||(i==317),seed);\n        end\n        step(0,0); step(0,0); step(0,0);\n        if(checked<680 || held_checks<675 || reset_checks<5 || pulse_checks!=1)\n            fail(\"required scenario coverage missing\");\n        $display(\"COVERAGE checked=%0d holds=%0d resets=%0d pulses=%0d\",checked,held_checks,reset_checks,pulse_checks);\n        pipeline_done=1;\n    end\n    initial begin\n        repeat(2) @(posedge clk);\n        #1;\n        if(merge_result !== 0) fail(\"merge probe initial reset\");\n        merge_step(0,17'd131071,17'd131071);\n        merge_step(0,17'd65535,17'd1);\n        merge_step(0,17'd65536,17'd65536);\n        merge_step(0,17'd1,17'd131071);\n        merge_step(1,17'd131071,17'd131071);\n        merge_step(0,0,0);\n        merge_done=1;\n    end\n    initial begin\n        wait(pipeline_done && merge_done); #1;\n        if(errors==0) $display(\"TEST PASSED\");\n        else $display(\"TEST FAILED: %0d assertions\",errors);\n        $finish;\n    end\n    initial begin\n        #15000;\n        $display(\"TEST FAILED: watchdog\");\n        $finish;\n    end\nendmodule\n",
+    "truncated": false
+  },
+  "testbench_top": "dot4_pipeline_tb",
+  "tool_exit_evidence": {
+    "history_count": 6,
+    "latest_by_tool": {
+      "vivado": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-dot4-01\\iter_000\\vivado_synth_output.log",
+        "output_log_sha256": "367e5df72492f901ee3561bcca386b65b1cc04af2c1a89f227dd42a40123542b",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xelab": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-dot4-01\\iter_000\\xelab.log",
+        "output_log_sha256": "38c05e1d2b612518fc2980f69b39471c611c50ee4f4fbeaf3926075621ed6c99",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xsim": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-dot4-01\\iter_000\\xsim.log",
+        "output_log_sha256": "c89fa3f70a79251edf33b13906e96d2ebeb4ef92f7aeab90b2443ab8aff34a31",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xvlog": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-dot4-01\\iter_000\\xvlog.log",
+        "output_log_sha256": "b58f59905364be7c766bcbbb0c3124d6454f31bd170207042ed85cad787f7009",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      }
+    },
+    "missing_required_tools": [],
+    "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-dot4-01\\iter_000\\tool_exit_records.log",
+    "records": [
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-dot4-01\\iter_000",
+        "driver_returncode": 0,
+        "elapsed_seconds": 0.875,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xvlog.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-dot4-01\\iter_000\\xvlog.log",
+        "output_log_sha256": "b58f59905364be7c766bcbbb0c3124d6454f31bd170207042ed85cad787f7009",
+        "pid": 19448,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xvlog"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-dot4-01\\iter_000",
+        "driver_returncode": 1,
+        "elapsed_seconds": 0.875,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xelab.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-dot4-01\\iter_000\\xelab.log",
+        "output_log_sha256": "bc37e1f73bd062e0a874825b8110c8c586c6a115c5c4be3787cf862d95fe3f5c",
+        "pid": 22896,
+        "returncode": 1,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xelab"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-dot4-01\\iter_000",
+        "driver_returncode": 0,
+        "elapsed_seconds": 0.8590000000112923,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xvlog.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-dot4-01\\iter_000\\xvlog.log",
+        "output_log_sha256": "b58f59905364be7c766bcbbb0c3124d6454f31bd170207042ed85cad787f7009",
+        "pid": 1576,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xvlog"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-dot4-01\\iter_000",
+        "driver_returncode": 0,
+        "elapsed_seconds": 1.4840000000112923,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xelab.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-dot4-01\\iter_000\\xelab.log",
+        "output_log_sha256": "38c05e1d2b612518fc2980f69b39471c611c50ee4f4fbeaf3926075621ed6c99",
+        "pid": 16912,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xelab"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-dot4-01\\iter_000",
+        "driver_returncode": 0,
+        "elapsed_seconds": 2.7810000000026776,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xsim.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-dot4-01\\iter_000\\xsim.log",
+        "output_log_sha256": "c89fa3f70a79251edf33b13906e96d2ebeb4ef92f7aeab90b2443ab8aff34a31",
+        "pid": 5324,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xsim"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-dot4-01\\iter_000",
+        "driver_returncode": 0,
+        "elapsed_seconds": 82.98500000000058,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/vivado.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-dot4-01\\iter_000\\vivado_synth_output.log",
+        "output_log_sha256": "367e5df72492f901ee3561bcca386b65b1cc04af2c1a89f227dd42a40123542b",
+        "pid": 12220,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "vivado"
+      }
+    ],
+    "schema_valid": true,
+    "sha256": "a9a619b403b58b410e010c726e0bfe4df2c39219b1a17604240b586d26b2ea54",
+    "status": "recorded",
+    "truncated": false
+  },
+  "top_module": "dot4_pipeline",
+  "verification_logs": [
+    {
+      "head": "INFO: [VRFC 10-2263] Analyzing Verilog file \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-dot4-01/iter_000/dot4_pipeline.v\" into library work\r\nINFO: [VRFC 10-311] analyzing module dot4_pipeline\r\nINFO: [VRFC 10-2263] Analyzing Verilog file \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-dot4-01/modules/dot4_pair01/dot4_pair01.v\" into library work\r\nINFO: [VRFC 10-311] analyzing module dot4_pair01\r\nINFO: [VRFC 10-2263] Analyzing Verilog file \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-dot4-01/modules/dot4_pair23/dot4_pair23.v\" into library work\r\nINFO: [VRFC 10-311] analyzing module dot4_pair23\r\nINFO: [VRFC 10-2263] Analyzing Verilog file \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-dot4-01/modules/dot4_merge/dot4_merge.v\" into library work\r\nINFO: [VRFC 10-311] analyzing module dot4_merge\r\nINFO: [VRFC 10-2263] Analyzing Verilog file \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-dot4-01/inputs/testbench_path.v\" into library work\r\nINFO: [VRFC 10-311] analyzing module dot4_pipeline_tb\r\n\r\n",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-dot4-01\\iter_000\\xvlog.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "b58f59905364be7c766bcbbb0c3124d6454f31bd170207042ed85cad787f7009",
+      "tail": "",
+      "truncated": false
+    },
+    {
+      "head": "Vivado Simulator v2025.2\r\nCopyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\nCopyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\nRunning: C:/AMDDesignTools/2025.2/Vivado/bin/unwrapped/win64.o/xelab.exe dot4_pipeline_tb -s dot4_pipeline_tb_snap --debug off \r\nMulti-threading is on. Using 10 slave threads.\r\nStarting static elaboration\r\nPass Through NonSizing Optimizer\r\nCompleted static elaboration\r\nStarting simulation data flow analysis\r\nCompleted simulation data flow analysis\r\nTime Resolution for simulation is 1ps\r\nCompiling module work.dot4_pair01\r\nCompiling module work.dot4_pair23\r\nCompiling module work.dot4_merge\r\nCompiling module work.dot4_pipeline\r\nCompiling module work.dot4_pipeline_tb\r\nBuilt simulation snapshot dot4_pipeline_tb_snap\r\n\r\n",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-dot4-01\\iter_000\\xelab.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "38c05e1d2b612518fc2980f69b39471c611c50ee4f4fbeaf3926075621ed6c99",
+      "tail": "",
+      "truncated": false
+    },
+    {
+      "head": "\r\n****** xsim v2025.2 (64-bit)\r\n  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025\r\n  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025\r\n  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025\r\n  **** Start of session at: Sat Oct 24 04:41:34 2026\r\n    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\n    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n\r\nsource xsim.dir/dot4_pipeline_tb_snap/xsim_script.tcl\r\n# xsim {dot4_pipeline_tb_snap} -autoloadwcfg -runall\r\nTime resolution is 1 ps\r\nrun -all\r\nCOVERAGE checked=685 holds=684 resets=5 pulses=1\r\nTEST PASSED\r\n$finish called at time : 6858 ns : File \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-dot4-01/inputs/testbench_path.v\" Line 144\r\nexit\r\nINFO: [Common 17-206] Exiting xsim at Sat Oct 24 04:41:36 2026...\r\n\r\n",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-dot4-01\\iter_000\\sim_log.txt",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "c89fa3f70a79251edf33b13906e96d2ebeb4ef92f7aeab90b2443ab8aff34a31",
+      "tail": "",
+      "truncated": false
+    },
+    {
+      "head": "\r\n****** Vivado v2025.2 (64-bit)\r\n  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025\r\n  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025\r\n  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025\r\n  **** Start of session at: Sat Oct 24 04:41:37 2026\r\n    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\n    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n\r\nsource C:/Users/prince.baah/Downloads/autortl-work/logs/build-dot4-01/iter_000/synth.tcl\r\n# set_msg_config -id {VRFC 10-3609} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-9873} -new_severity ERROR\r\n# set_msg_config -id {Designutils 20-1307} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-327} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-3352} -new_severity ERROR\r\n# set_part xc7a35tcpg236-1\r\nINFO: [Coretcl 2-1500] The part has been set to 'xc7a35tcpg236-1' for the current project only. Run set_part -help for more details. To evaluate different speed grades in the current design, use the set_speed_grade command, or use the open_checkpoint -part command to change the part used by an existing checkpoint design.\r\nset_part: Time (s): cpu = 00:00:10 ; elapsed = 00:00:07 . Memory (MB): peak = 532.465 ; gain = 228.082\r\n# read_verilog \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-dot4-01/iter_000/dot4_pipeline.v\" \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-dot4-01/modules/dot4_pair01/dot4_pair01.v\" \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-dot4-01/modules/dot4_pair23/dot4_pair23.v\" \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-dot4-01/modules/dot4_merge/dot4_merge.v\"\r\n# set fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-dot4-01/iter_000/timing.xdc\" w]\r\n# puts $fp {create_clock -period 10.000 -name clk",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-dot4-01\\iter_000\\vivado_synth_output.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "367e5df72492f901ee3561bcca386b65b1cc04af2c1a89f227dd42a40123542b",
+      "tail": "rpt\"\r\n# report_power -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-dot4-01/iter_000/power.rpt\"\r\nCommand: report_power -file C:/Users/prince.baah/Downloads/autortl-work/logs/build-dot4-01/iter_000/power.rpt\r\nRunning Vector-less Activity Propagation...\r\n\r\nFinished Running Vector-less Activity Propagation\r\n0 Infos, 0 Warnings, 0 Critical Warnings and 0 Errors encountered.\r\nreport_power completed successfully\r\n# catch { report_methodology -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-dot4-01/iter_000/methodology.rpt\" }\r\nCommand: report_methodology -file C:/Users/prince.baah/Downloads/autortl-work/logs/build-dot4-01/iter_000/methodology.rpt\r\nINFO: [Timing 38-35] Done setting XDC timing constraints.\r\nINFO: [DRC 23-133] Running Methodology with 2 threads\r\nINFO: [Vivado_Tcl 2-1520] The results of Report Methodology are in file C:/Users/prince.baah/Downloads/autortl-work/logs/build-dot4-01/iter_000/methodology.rpt.\r\nreport_methodology completed successfully\r\n# catch { report_qor_suggestions -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/build-dot4-01/iter_000/qor_suggestions.rpt\" }\r\nCommand: report_qor_suggestions -file C:/Users/prince.baah/Downloads/autortl-work/logs/build-dot4-01/iter_000/qor_suggestions.rpt\r\nCongestion Prediction Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.034 . Memory (MB): peak = 1988.898 ; gain = 0.000\r\nINFO: [Implflow 47-1309] PredResultString: 1:45.01:54.99\r\nfeatureProvider Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.039 . Memory (MB): peak = 1988.898 ; gain = 0.000\r\nINFO: [Implflow 47-1274] ML strategy prediction is not supported for 7-series devices.\r\nreport_qor_suggestions completed successfully\r\n# puts \"SYNTH_COMPLETE\"\r\nSYNTH_COMPLETE\r\nINFO: [Common 17-206] Exiting Vivado at Sat Oct 24 04:42:59 2026...\r\n\r\n",
+      "truncated": true
+    }
+  ]
+}

@@ -1,70 +1,66 @@
 # Current AutoRTL checkpoint
 
-Updated October 24, 2026 (America/New_York). Recover actual Git heads,
-ownership, source hashes and live jobs before resuming. Preserve Downloads/autortl.
+Updated October24,2026 (America/New_York). Recover Git, ownership, source hashes
+and actual jobs before acting. Canonical Downloads/autortl-work; preserve autortl.
 
-## Tested implementation; fresh live and merge gates next
+## Main milestone complete; complex three-module build active
 
-Canonical: C:/Users/prince.baah/Downloads/autortl-work.
-Branch codex/contract-context; published tested runtime965251f (remote verified); study milestone fba4b3e. Main remains
-e6dc558. Reviewed implementation is now applied and full regression passed:
-**1,340 tests in 507.21 seconds**, all 203 frozen source identities unchanged.
-Freeze: workspace/work/proposal-fixes-source-freeze-02.json. Raw output:
-workspace/outputs/AutoRTL-proposal-fixes-full-02.txt. Archive:
-evidence/2026-10-23/proposal-fixes-tests-02. Tested runtime committed/pushed965251f; all203hashes unchanged afterward.
+Main/development atomic publication verified at8bbacf3588ecca74c886bc04622a149af659d344.
+Working branch codex/contract-context; tested runtime965251f unchanged203files.
+All merge gates DONE:1,340tests507.21seconds; actual accepted-source fresh-plan
+path/no unbound inputs; exact33LUT/46FF six-width winner PASS; five actual DONE
+tamper probes rejected/267 identities unchanged; fresh FULL tier0campaign10
+passed2/2,newcohort9ce241c0,streak1/heldfalse. Counter55→53LUT,mux8LUT.
+Do NOT repeat counter as new design work. Only rerun required regression gates
+when harness implementation or relevant contracts change; current code is frozen.
 
-Changes: planner receives actual editable RTL and binds plans to exact seed text;
-changed accepted source forces fresh planning; unavailable required planning
-preserves incumbent. Exact UTF8 SHA256 dedupe replaces unsafe normalization.
-Advisory proposal context defaults off, explicit positive/negative CLI retained;
-chronological immutable evidence is always retained. No new role/framework,
-retry or budget allowance.
+Original quota-blocked live row retained; recovery1→10calls/637.920toolseconds,
+no budget reset. Recovery observer Unicode printing error occurred after harness
+DONE; original first CLI exit/wall timing unknown. Separate actual completed CLI
+reuse0, independent winner and integrity proof passed. Recovery268-file archive,
+quota60-file archive and tier0campaign213-file archive in evidence/2026-10-24.
 
-First full run failed: 1 failed / 1,339 passed in 497.32 seconds. Local planner
-budget exception handling incorrectly converted exhausted resume into DONE.
-Removed both local catches, retained existing budget_exhausted status and
-untouched original regression. Two new tests require retained verified source;
-56 focused tests passed121.24seconds. Original failed203-file snapshot archived
-in evidence/2026-10-23/proposal-fixes-tests-01 before source repair.
+## Complex dot4 design COMPLETE and independently verified
 
-Completed frozen study: six original rows, three repeats in each mode; original
-pair2 baseline quota row retained, separate actual6→9call recovery independently
-passed. Context retention criterion failed; unknown model/usage/host load prevent
-causal efficiency claims. Old runtime776e61b/202files archived1500files before
-new source. Actual DONE252 proof: nominal0/four restored tamper probes1,
-identities/budget/routerstats/fileset unchanged. Actual dedupe simulations proved
-distinct2f41/2f42 outputs collided and old dedupe retained one;21-file archive.
+Generated3 RTL children and Python goldens; mechanical integration; optimizer
+validly inlined equivalent arithmetic in editable top and selected4DSP mapping.
+Baseline325LUT/52sliceFF/0DSP,+.087/.202ns ->17LUT/18sliceFF/4DSP,+.354/.254ns.
+Fabric-resource trade, not universal area/register/power reduction; totalpower
+.157->.158W.11calls,235.344chargedtoolseconds,339.915savedelapsedseconds.
+Independent exact savedtop+all3frozenchildren passed685cycles. Actual DONE
+nominal0/eight restored tamper probes1,364identities/file set/budget/stats unchanged.
+Archive651files verified before any source changes:
+evidence/2026-10-24/generated-dot4-attempt-01. Checker admission144files/13of13
+cases passed (control+12actualassertionfaults), no modelcalls.
 
-## All integration gates passed on runtime965251f
+Observed scaffold defect: mechanical top lacked timescale; first top-first
+simulation failedXSIM43-4099. Existing baseline repair call added directive.
+The repaired baseline, initial failure, golden syntax repair and source/report
+identities are retained. No rejected run was reset or acceptance weakened.
 
-Full suite1,340passed507.21seconds; all203 frozen identities unchanged.
-Live same-runtime quota recovery:1→10calls,637.920 cumulative tool seconds,
-one accepted-source fresh-plan path/no unbound inputs. Exact saved33LUT/46FF
-winner six-widthPASS,+.313/.095ns. Actual DONE nominal0/five tamper probes1,
-267 identities/file set/budget/stats unchanged. Original quota-blocked row and
-observer Unicode printing failure retained separately; original first CLI exit
-and observer wall duration remain unknown, separate completed CLI reuse0.
+## Next permanent fix, isolated and tested but NOT canonical
 
-Fresh FULL tier0 campaign10 PASSED2/2; new cohort 9ce241c06f496aabc8bf5a74e161915cef9b3e871b302c087c8bd20aa262d028,
-streak1/heldfalse. Counter55→53LUT,
-mux8LUT. Per-entry original1iter/N1/16calls/20tool/30wall,
-1infraretry. All runtime manifests match frozen source. No higher held tier.
-Campaign archive213files verified;
-recovery archive268files and pre-recovery quota archive60files also retained.
+work/top-timescale-stage: autortl/linter.py one-line prefix, existing wrapper
+latency assertions updated, newtests/test_top_timescale.py;74focusedpassed.
+Controlledactual experiment: identical generated3children/TB, topfirst both;
+oldwrapper reproduces43-4099, addingonlytimescale passes685checks,0modelcalls.
+Archive31files evidence/2026-10-24/top-timescale-order-01. Canonical203source
+hashes still unchanged. No active vendor/model/test job at this checkpoint.
 
-No vendor/model/test jobs active. Preparing authorized main/development atomic
-fast-forward publication after checking actual remote heads/ancestry. Current
-source remains965251f; pending changes are documentation/evidence only.
-Do not repeat old study or optimization under changed runtime.
+Worker curriculum_plan preparing combined isolated fixture+pure tests at
+work/dot4-fixture-tests-stage; do not blindly copy all203 files. Root must review
+and claim exact scopes. Original7stagedfixturefiles remain frozen and archived.
+Before hotfix: record taxonomy, copy ONLY reviewed linter/wrapper/newtimescale
+tests plus six qualified fixture files and new fixture tests. Full regression,
+fresh no-model canonical topfirst verification and one final full tier0 gate
+before main merge (runtime actually changes). No counter design experiment.
+Never resume/regrade originaldot4 on changed runtime. Publish current verified
+complex result separately from this upcoming implementation.
 
-Next: isolated dot4-fixture-stage proposal reviewed structurally,7files,
-13 intended admission cases,52 port checks. Not compiled/simulated/admitted.
-Admit independently before copying into canonical or generating designs; it
-exercises three generated children and fixed pipeline integration. Any new
-source cohort requires fresh regression and full tier0 before another main merge.
-
-Temporary awake51802 bounded120min; release flag when queue ends. Coordinator
-lease/scopes remain active. User deferred scheduling; no automatic failover.
+Awake51802 bounded120min, notes/evidence coordinator active; release atqueueend.
+Scheduling deferred; no automatic provider failover. Public README holds actual
+verified result; handoff stays here. Runtime965251f/main8bbacf3 remain until next
+authorized documentation/evidence publication; inspect actual Git heads.
 
 ## Checkout and integration
 

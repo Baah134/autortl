@@ -1067,3 +1067,29 @@ changes, commands, outcomes, evidence locations, limitations, and next action.
   planning refresh, exact independent winner, five DONE integrity probes and
   fresh full tier0. Preparing authorized main integration; no comparative
   efficiency, weak-model or product-superiority claim.
+
+- Authorized atomic main/development integration verified at
+  8bbacf3588ecca74c886bc04622a149af659d344; remote heads match. Local main
+  fast-forwarded without checking out/re-encoding tested source. Runtime965251f
+  and all203 source hashes unchanged; clean checkout after publication.
+
+- User correctly distinguishes regression gates from new designs. Counter/mux
+  gates are complete and merged8bbacf3; no counter redesign is active.
+- Dot4 checker admitted13/13 actual cases in70.219seconds: controlPASS plus all12
+  assertion-detected width/wiring/pipeline/reset faults. Archived144files first.
+- Fresh three-child generated build33202 launched on unchanged965251f runtime,
+  generated goldens enabled plus independent admitted top TB.16calls/25tool/
+  35wallminutes/1infraretry,N1,one top iteration; no supervisedreference seed.
+  Per-child verification active; no new harness source or counter run.
+
+- Complex dot4 build completed: three generated children/goldens, valid top-level
+  inlining with4DSPs.325→17LUT,52→18sliceFF,+.354/.254ns. DSP0→4; internalDSP
+  registers excluded, power.157→.158W, no universal area/register/power claim.
+ 11calls,235.344toolseconds,339.915savedelapsed. Independent exacttop+3children
+ 685cyclesPASS; DONE eightprobes rejected,364protectedidentities unchanged.
+  Archived651files before anyruntime edit; original13-case admission144files.
+- Observed deterministic scaffoldtimescale omission caused first43-4099failure;
+  LLM baseline repair worked, but this should cost no model call. Isolated1line
+  templateprefix fix74focusedPASS; actualcontrolled samechildren/TB topfirst
+  oldfailure reproduced/new685PASS/0modelcalls. Controlledarchive31files.
+  Preparing one permanent fix batch with qualified complex fixture/tests.

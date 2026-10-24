@@ -1,0 +1,5 @@
+{
+  "stage": "module_dot4_merge:model:generator.generate:0",
+  "result": "`timescale 1ns/1ps\n// @latency 1\nmodule dot4_merge (\n    input wire clk,\n    input wire rst,\n    input wire [16:0] left_sum,\n    input wire [16:0] right_sum,\n    output wire [17:0] dot_result\n);\n\n    reg [17:0] dot_result_reg;\n\n    assign dot_result = dot_result_reg;\n\n    always @(posedge clk) begin\n        if (rst)\n            dot_result_reg <= 18'b0;\n        else\n            dot_result_reg <= {1'b0, left_sum} + {1'b0, right_sum};\n    end\n\nendmodule",
+  "artifacts": {}
+}

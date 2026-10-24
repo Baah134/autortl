@@ -1,0 +1,9 @@
+# PLAN — iteration 1
+## Current state assessment
+The routed incumbent uses 325 LUTs, 52 FFs, no DSPs, and meets timing with WNS 0.087 ns and WHS 0.202 ns at 10 ns. The objective is strictly fewer LUTs while retaining timing feasibility and every verification gate. The top’s numeric latency is unknown, so no numeric top annotation is required; its existing cycle behavior must still be preserved.
+
+## Hypothesis
+Inferring the four unsigned 8×8 products into DSP48s should reduce LUT use, at the cost of four DSP48s, while keeping the pair-sum and final-output registers and their timing paths intact.
+
+## Instruction for generator
+Replace the top’s pair and merge instances with equivalent inline logic, and add `(* use_dsp = "yes" *)` to each 16-bit unsigned product expression. Keep the pair sums registered on `posedge clk` with synchronous active-high reset, then register the zero-extended pair-sum addition into `dot_result` with the same reset behavior. Preserve the two-stage observable behavior, full unsigned arithmetic ranges, output hold behavior, and exact interface; do not add a top latency annotation.
