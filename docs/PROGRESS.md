@@ -1106,3 +1106,23 @@ changes, commands, outcomes, evidence locations, limitations, and next action.
   admission passed13/13/control+12assertionfaults,0modelcalls. Fullsource/log/
   case receipts archived before committing tested runtime. Final fresh tier0
   gate remains before main integration of this runtime change.
+
+
+## October25 — finish tested wrapper fix after approval-review usage interruption
+
+- Last archive/push command was not executed: automatic approval review could
+  not run because its usage was exhausted. No source/result was reset.
+- On return, no old jobs active; all211 frozen source hashes still matched.
+  Preserved1366tests300.38seconds and canonical13/13top-first admission evidence;
+  archived360files. Reclaimed expired coordinator lease/scopes.
+- Published3d7813defd3bfef7caea2381506bbc9e2ca8065b todevelopment, remote verified.
+  Fresh finalfulltier0campaign11 session36532 active with original budgets;
+  source211unchangedaftercommit. Mainbe9d1e6 retains completed complex result.
+
+- Final runtime gate campaign11 PASSED2/2,newcohort4c34a6b14b8633c3007d246063cad7ad4453f219eb3e69b0a65a60e47019989d,
+  streak1/heldfalse; verified baseline retention, no PPA gain claimed. All211
+  frozen source identities remained unchanged aftercommit and through gate.
+- All permanent-fix gates now complete:1,366 tests, actual canonical13-case
+  top-first qualification and fresh full tier0. Preparing gated main integration.
+  The published complex design remains verified on its original runtime, with
+  DSP/fabric/power tradeoffs and initial timescale failure retained.

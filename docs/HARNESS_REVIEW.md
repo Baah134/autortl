@@ -524,3 +524,12 @@ reproduce that failure; addingonlytimescale passes685checks without modelcalls.
 This is deterministic scaffold generation, so fix the template rather than spend
 LLM repair budget. Preserve latency authority and severity policy; retain the
 original completed run before integrating the tested patch.
+
+
+## Permanent timescale correction: keep the minimal deterministic fix
+
+The one-line wrapper directive passed1,366 full tests and canonical13-case
+top-first qualification, then fresh fulltier0 passed2/2 in a new cohort. Keep
+the corrected scaffold and complex fixture. No role, retry, severity or
+interface/latency policy changed. The observed missing-directive repair no
+longer requires a model call; no broad model-cost savings claim is inferred.

@@ -1,66 +1,58 @@
 # Current AutoRTL checkpoint
 
-Updated October24,2026 (America/New_York). Recover Git, ownership, source hashes
+Updated October25,2026 (America/New_York). Recover Git, ownership, source hashes
 and actual jobs before acting. Canonical Downloads/autortl-work; preserve autortl.
 
-## Main milestone complete; complex three-module build active
+## Completed permanent wrapper fix and complex-design milestone
 
-Main/development complex-design publication verified atbe9d1e649f7ef13bd7b72a028d74ef02e4564185.
-Prior harness integration8bbacf3; completed complex run used runtime965251f.
-Working branch codex/contract-context; tested runtime965251f unchanged203files.
-All merge gates DONE:1,340tests507.21seconds; actual accepted-source fresh-plan
-path/no unbound inputs; exact33LUT/46FF six-width winner PASS; five actual DONE
-tamper probes rejected/267 identities unchanged; fresh FULL tier0campaign10
-passed2/2,newcohort9ce241c0,streak1/heldfalse. Counter55→53LUT,mux8LUT.
-Do NOT repeat counter as new design work. Only rerun required regression gates
-when harness implementation or relevant contracts change; current code is frozen.
+Canonical Downloads/autortl-work; branch codex/contract-context. Tested runtime
+3d7813defd3bfef7caea2381506bbc9e2ca8065b published todevelopment. Final gates:
+- Full regression1,366passed300.38seconds on211frozen source files.
+- Canonical dot4 admission13/13: control and12 real assertion faults, top compiled
+  FIRST in every case, no model calls; frozen source/stat identities unchanged.
+- Fresh FULL tier0campaign11 PASSED2/2. New cohort4c34a6b14b8633c3007d246063cad7ad4453f219eb3e69b0a65a60e47019989d,
+  streak1/heldfalse. Verified counter55LUT and mux8LUT baselines
+  retained; no optimization gain claimed. Original1iter/N1/16call/20tool/30wall/
+  1infraretry perentry. No higher held tier. All runtime/source/report hashes match.
 
-Original quota-blocked live row retained; recovery1→10calls/637.920toolseconds,
-no budget reset. Recovery observer Unicode printing error occurred after harness
-DONE; original first CLI exit/wall timing unknown. Separate actual completed CLI
-reuse0, independent winner and integrity proof passed. Recovery268-file archive,
-quota60-file archive and tier0campaign213-file archive in evidence/2026-10-24.
+Actual runtime change is one explicit mechanical top timescale line. Compatible
+latency assertions, pure tests, observed taxonomy and qualified six-file dot4
+curriculum fixture are integrated. Earlier controlledexperiment reproduced
+XSIM43-4099 with oldtopfirst order and passed685checks withonlydirectiveadded.
+Original model repair/failure is retained; no severity suppression/new role.
 
-## Complex dot4 design COMPLETE and independently verified
+Completed complex design is not a counter experiment: three generated children
+and Python goldens; optimizer validly inlined arithmetic into editable top,
+325→17LUT,52→18sliceFF,DSP0→4,+.354/.254ns. Total power.157→.158W; DSP internal
+registers excluded fromsliceFF count.11calls,235.344toolsec,339.915savedelapsed.
+Exact winner+all3frozenchildren independentlypassed685cycles. DONE nominal0/
+eighttamperprobes1,364identities/budgets/stats/fileset restored. Archived651files
+on original runtime965251f BEFORE this fix; never resume/regrade on new code.
 
-Generated3 RTL children and Python goldens; mechanical integration; optimizer
-validly inlined equivalent arithmetic in editable top and selected4DSP mapping.
-Baseline325LUT/52sliceFF/0DSP,+.087/.202ns ->17LUT/18sliceFF/4DSP,+.354/.254ns.
-Fabric-resource trade, not universal area/register/power reduction; totalpower
-.157->.158W.11calls,235.344chargedtoolseconds,339.915savedelapsedseconds.
-Independent exact savedtop+all3frozenchildren passed685cycles. Actual DONE
-nominal0/eight restored tamper probes1,364identities/file set/budget/stats unchanged.
-Archive651files verified before any source changes:
-evidence/2026-10-24/generated-dot4-attempt-01. Checker admission144files/13of13
-cases passed (control+12actualassertionfaults), no modelcalls.
+Evidence: generated-dot4-attempt-01, dot4-admission-01, top-timescale-order-01,
+top-timescale-tests-01 under evidence/2026-10-24; final campaign under
+evidence/2026-10-25/contract-campaign-11. Full test/stage source snapshots retained.
 
-Observed scaffold defect: mechanical top lacked timescale; first top-first
-simulation failedXSIM43-4099. Existing baseline repair call added directive.
-The repaired baseline, initial failure, golden syntax repair and source/report
-identities are retained. No rejected run was reset or acceptance weakened.
+No vendor/model/test jobs active after gate. Preparing authorized atomic main/
+development integration; verify returned remoteheads and record actualcommit.
+Current pending edits are documentation/evidence only. Source211 remains frozen.
+Temporaryawake55960 watches work/final-timescale-awake.flag; REMOVE flag and
+verify release when queueends. CoordinatorOct25 lease/scopesactive.
 
-## Permanent fix tested; final runtime merge gate next
+Next complex design assessment: elastic_dot4_build, one transparent child,
+8unsigned operands,18bit result, two elastic slots/capacity2, ready/valid,
+minimum accepted-transfer age2. Combine arithmetic with multiple outstanding
+transactions, backpressure, resetabort and held-result stability. Existing
+scoreboard can grade arithmetic/order/minage, independent TB must enforce exact
+pipeline availability/throughput/conservation. No code or experiment started.
+Use a control+meaningfulfault admission before generation; no new framework
+unless concrete unsupported behavior is reproduced. Full contract proposal is
+available from curriculum_plan agent; record it in TASKS before implementation.
 
-Applied only: deterministic1line top timescale prefix, compatible scoped latency
-assertions/new tests, six qualified complex curriculum fixture files and pure
-invariant tests; observed taxonomy first. Full regression1,366passed300.38seconds,
-all211 frozen source identities unchanged. Canonical top-FIRST control+12fault
-admission passed13/13 with actual assertions and0modelcalls. Archive:
-evidence/2026-10-24/top-timescale-tests-01; full211 source snapshot/raw receipts.
-Original controlled43-4099→685PASS experiment and completed oldcomplexrun stay
-separate/frozen; do not resume/regrade either under this new runtime.
-
-Publish tested source to development, then fresh FULL tier0 campaign11 on final
-unchanged code, original per-entry budgets1iter/N1/16calls/20tool/30wall/1infra.
-This is the final required regression gate for an actual runtime change, not
-counter design work. New cohort must not inherit old streak. No held higher tier.
-Fullsuite helper work/test_top_timescale_batch.py; canonicaladmission helper
-work/admit_dot4_canonical.py; archive helper work/archive_timescale_batch.py.
-No active model/vendor/test job at this checkpoint. Main stillbe9d1e6 until gate.
-
-Awake51802 bounded120min, notes/evidence coordinator active; release atqueueend.
-Scheduling deferred; no automatic provider failover. Public README holds actual
-verified result; handoff stays here. Mainbe9d1e6/runtime965251f remain published until finalfix gates pass; inspect actual Git heads.
+User explicitly distinguishes old counter regression from new design work.
+Do not restart completed counter/divider work as the design objective. Preserve
+bounded budgets and measured tradeoffs; public README is product-facing. No
+automatic scheduling/cross-provider failover configured (user deferred it).
 
 ## Checkout and integration
 

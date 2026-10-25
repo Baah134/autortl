@@ -406,3 +406,17 @@ then one fresh final tier0 gate. Old complex run stays frozen, never regraded.
 Permanent timescale+fixture stage:1,366 full tests and canonical13/13 actual
 top-first admission passed. Final fresh tier0campaign11 remains before main.
 The previously generated complex design remains verified on its original runtime.
+
+
+October25: permanent wrapper timescale and complex fixture gates complete:
+1,366 tests, canonical13-case top-first admission, fresh full tier0campaign11.
+Integrate main; original complex experiment stays frozen on its prior runtime.
+
+Next scoped design: elastic_dot4_build. One single-clock transparent child,
+two elastic slots, eight unsigned8-bit operands,18-bit result, capacity2,
+ready/valid, minimum output transfer age2; preserve full-rate retirement/
+replacement and stable stalled results. Independent checker must distinguish
+stage1 occupancy from output-valid and enforce exact availability, throughput,
+reset abort at every occupancy and off-edge reset pulses. Qualify arithmetic,
+overwrite/full/valid/stall/early/late/reset faults before generating RTL. Reuse
+existing scoreboard and bounded roles; no protocol/framework expansion yet.

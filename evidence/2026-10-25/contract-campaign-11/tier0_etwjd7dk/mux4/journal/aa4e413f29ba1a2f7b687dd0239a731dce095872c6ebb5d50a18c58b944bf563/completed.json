@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_1:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 1,
+    "instruction": "Replace the `case (sel)` data-selection pattern with two MUXF7 stages feeding one MUXF8 per output bit, selecting `a/b` and `c/d` with `sel[0]`, then selecting between those results with `sel[1]`. Keep the existing rising-edge output register and synchronous active-high reset, with reset taking priority and setting `y` to zero. Preserve the full 8-bit data paths and the exact selection behavior; do not add pipeline stages or a numeric latency annotation.",
+    "candidates": [
+      {
+        "iteration": 1,
+        "mutation": "standard",
+        "instruction": "Replace the `case (sel)` data-selection pattern with two MUXF7 stages feeding one MUXF8 per output bit, selecting `a/b` and `c/d` with `sel[0]`, then selecting between those results with `sel[1]`. Keep the existing rising-edge output register and synchronous active-high reset, with reset taking priority and setting `y` to zero. Preserve the full 8-bit data paths and the exact selection behavior; do not add pipeline stages or a numeric latency annotation.",
+        "generated_source_sha256": "e754cf6bace55c20d6684e3f92dbf347494a06902ed4aa398cd749eefdea5b26",
+        "final_source_sha256": "4293473707407accd3bc4ab77f3a90e5595080658aaa1ac4b38c7e488104e121",
+        "generated_code_hash": "7db39507c83fc735",
+        "final_code_hash": "1d8ee3b4eb12a470",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.579,
+          "whs_ns": 0.052,
+          "lut_used": 8,
+          "ff_used": 8,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.04,
+          "total_power_w": 0.111
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\contract-campaign-11\\tier0_etwjd7dk\\mux4\\iter_001\\cand_standard\\repair_001",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\contract-campaign-11\\tier0_etwjd7dk\\mux4\\iter_001\\cand_standard\\repair_001\\synth.tcl",
+          "sha256": "0f0b75a23d82959426c17b15bb49813edef86cc73775a106f7b1249b2e5d8b36"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\contract-campaign-11\\tier0_etwjd7dk\\mux4\\iter_001\\cand_standard\\repair_001\\mux4.v",
+          "sha256": "c871574dba4ed9b8d60c649f5c74b3b57f5e61794dc0d959dddac8c77b40fa7b"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": "4293473707407accd3bc4ab77f3a90e5595080658aaa1ac4b38c7e488104e121"
+  },
+  "artifacts": {}
+}
