@@ -1,0 +1,365 @@
+"""Immutable evidence supplied to contract roles; model proposals cannot edit it."""
+from __future__ import annotations
+import hashlib
+import json
+import math
+import re
+from pathlib import Path
+from .state import atomic_write_text
+from .timing_doctor import first_violated_path
+
+
+def file_evidence(path: Path, limit: int = 16000) -> dict:
+    path = Path(path)
+    data = path.read_bytes()
+    return _snapshot_evidence(path, data, limit)
+
+
+def _snapshot_evidence(path, data, limit):
+    content = data.decode("utf-8", errors="replace")
+    return {"path": str(path.resolve()), "sha256": hashlib.sha256(data).hexdigest(),
+            "text": content[:limit], "truncated": len(content) > limit}
+
+
+_REQUIRED_TOOLS = ("xvlog", "xelab", "xsim", "vivado")
+
+
+def _valid_tool_exit_record(record) -> bool:
+    if not isinstance(record, dict):
+        return False
+    required = {"schema_version", "tool", "executable", "cwd", "pid", "status",
+                "returncode", "driver_returncode", "elapsed_seconds", "output_log_path",
+                "output_log_sha256"}
+    if set(record) != required or type(record["schema_version"]) is not int or record["schema_version"] != 1:
+        return False
+    for name in ("executable", "cwd", "output_log_path"):
+        if not isinstance(record[name], str) or not record[name]:
+            return False
+    if not isinstance(record["tool"], str) or not re.fullmatch(r"[a-z0-9_.-]+", record["tool"]):
+        return False
+    if record["status"] not in ("exited", "timed_out", "launch_failed", "cancelled"):
+        return False
+    if record["pid"] is not None and (type(record["pid"]) is not int or record["pid"] <= 0):
+        return False
+    for name in ("returncode", "driver_returncode"):
+        if record[name] is not None and type(record[name]) is not int:
+            return False
+    elapsed = record["elapsed_seconds"]
+    if type(elapsed) not in (int, float) or not math.isfinite(elapsed) or elapsed < 0:
+        return False
+    digest = record["output_log_sha256"]
+    if digest is not None and (not isinstance(digest, str) or not re.fullmatch(r"[a-f0-9]{64}", digest)):
+        return False
+    if record["status"] == "launch_failed" and (record["returncode"] is not None or record["pid"] is not None
+                                                  or record["driver_returncode"] not in (126, 127)):
+        return False
+    if record["status"] == "timed_out" and record["driver_returncode"] != 124:
+        return False
+    if record["status"] == "cancelled" and record["driver_returncode"] is not None:
+        return False
+    if record["status"] == "exited":
+        if record["driver_returncode"] is None:
+            return False
+        if record["returncode"] is not None and record["returncode"] != record["driver_returncode"]:
+            return False
+    return True
+
+
+def tool_exit_evidence(directory: Path) -> dict:
+    """Expose actual process receipts; missing/malformed evidence stays unknown.
+
+    No prior success is substituted for a later failure or malformed record.
+    Full history remains in the hashed raw file; context includes at most 32.
+    """
+    path = Path(directory) / "tool_exit_records.log"
+    result = {"path": str(path.resolve()), "sha256": None, "status": "missing",
+              "schema_valid": False, "history_count": 0, "records": [], "truncated": False,
+              "latest_by_tool": {}, "missing_required_tools": list(_REQUIRED_TOOLS)}
+    if not path.is_file():
+        return result
+    data = path.read_bytes()
+    result["sha256"] = hashlib.sha256(data).hexdigest()
+    lines = data.splitlines()
+    result["history_count"] = len(lines)
+    result["truncated"] = len(lines) > 32
+    try:
+        records = [json.loads(line) for line in lines]
+    except (ValueError, UnicodeError):
+        result["status"] = "invalid"
+        return result
+    if not records or not all(_valid_tool_exit_record(item) for item in records):
+        result["status"] = "invalid"
+        return result
+    latest_records = {item["tool"]: item for item in records if item["tool"] in _REQUIRED_TOOLS}
+    latest = {}
+    for name, item in latest_records.items():
+        # Earlier invocations may legitimately overwrite the same log path.
+        # Only the latest receipt per tool must match the retained current log.
+        log_status = "missing_hash"
+        if item["output_log_sha256"] is not None:
+            output = Path(item["output_log_path"])
+            if not output.is_file():
+                log_status = "missing"
+            else:
+                try:
+                    digest = hashlib.sha256(output.read_bytes()).hexdigest()
+                    log_status = "verified" if digest == item["output_log_sha256"] else "mismatch"
+                except OSError:
+                    log_status = "unreadable"
+        latest[name] = {"status": item["status"], "returncode": item["returncode"],
+            "driver_returncode": item["driver_returncode"],
+            "output_log_path": item["output_log_path"],
+            "output_log_sha256": item["output_log_sha256"],
+            "log_status": log_status, "log_verified": log_status == "verified",
+            "successful": item["status"] == "exited" and item["returncode"] == 0
+                          and item["driver_returncode"] == 0 and log_status == "verified"}
+    result.update(status="recorded", schema_valid=True, records=records[-32:], latest_by_tool=latest,
+                  missing_required_tools=[name for name in _REQUIRED_TOOLS if name not in latest])
+    return result
+
+
+def flow_evidence(directory) -> dict:
+    directory = Path(directory)
+    reports = sorted({path for pattern in ("*utilization*.rpt", "*timing*.rpt", "power.rpt")
+                      for path in directory.glob(pattern) if path.is_file()})
+    snapshots = {path: path.read_bytes() for path in reports}
+    headers = [_snapshot_evidence(path, data, 1800) for path, data in snapshots.items()]
+    timing = directory / "timing_routed.rpt"
+    if timing not in snapshots:
+        timing = directory / "timing.rpt"
+    path_excerpt = None
+    if timing in snapshots:
+        raw = snapshots[timing]
+        selected = first_violated_path(raw.decode("utf-8", errors="replace"))
+        if selected is not None:
+            path_excerpt = {"path":str(timing.resolve()),"sha256":hashlib.sha256(raw).hexdigest(),**selected}
+    verification_logs = []
+    for name in ("xvlog.log", "xelab.log", "sim_log.txt", "vivado_synth_output.log"):
+        path = directory / name
+        if path.is_file():
+            raw = path.read_bytes()
+            item = _snapshot_evidence(path, raw, 1800)
+            full = raw.decode("utf-8", errors="replace")
+            verification_logs.append({"path": item["path"], "sha256": item["sha256"],
+                "head": full[:1800], "tail": full[-1800:] if len(full) > 1800 else "",
+                "truncated": len(full) > 3600,
+                "preview_policy": "At most 1800 characters each from the start and end; "
+                                  "hash covers the complete original file. "
+                                  "Excerpts do not independently establish successful tool exit."})
+    return {
+        "flow_and_constraints": [file_evidence(directory / name) for name in
+                                 ("synth.tcl", "timing.xdc", "timing_io.tcl")
+                                 if (directory / name).is_file()],
+        "report_manifest": [{"path": item["path"], "sha256": item["sha256"]}
+                            for item in headers],
+        "report_headers": headers,
+        "first_violated_path_excerpt": path_excerpt,
+        "verification_logs": verification_logs,
+        "tool_exit_evidence": tool_exit_evidence(directory),
+        "metric_provenance": "Structured metrics are parsed from retained reports; routed "
+                             "utilization/timing reports take precedence when present. "
+                             "The manifest identifies complete files by hash. Header excerpts "
+                             "are bounded previews, not complete reports or an independent metric source.",
+    }
+
+
+MAX_BUILD_SPEC_CHARS = 64000
+
+
+def _build_spec_evidence(path, top_module):
+    from .spec import DesignSpec
+    from .linter import lint_spec
+    path=Path(path)
+    raw=path.read_bytes()
+    if len(raw)>1000000:
+        raise ValueError("typed build spec source exceeds evidence size limit")
+    try:
+        spec=DesignSpec.from_json(raw.decode("utf-8"))
+        errors=lint_spec(spec)
+    except (ValueError,TypeError,KeyError,AttributeError,UnicodeError) as exc:
+        raise ValueError("invalid typed build spec evidence: "+str(exc)) from exc
+    if errors:
+        raise ValueError("invalid typed build spec evidence: "+"; ".join(errors))
+    if spec.top_name!=top_module:
+        raise ValueError("typed build spec top does not match measured top")
+    resolved=spec.to_json()
+    if len(resolved)>MAX_BUILD_SPEC_CHARS:
+        raise ValueError("typed build spec semantic evidence exceeds budget; partition the design rather than truncate obligations or qualifiers")
+    return {"path":str(path.resolve()),"sha256":hashlib.sha256(raw).hexdigest(),
+            "resolved_spec":json.loads(resolved),"truncated":False,
+            "authority":"Complete resolved typed build contract. Defined behavior is mandatory; "
+                        "explicitly unspecified cases remain unspecified. Frozen implementation identities "
+                        "do not turn incidental values in unspecified cases into requirements."}
+
+
+def run_evidence(cfg, baseline, sources, tb, directory, execution_context, *, build_spec_path=None) -> dict:
+    from .verilog_interface import infer_module
+    directory = Path(directory)
+    if cfg.mode == "build" and build_spec_path is None:
+        raise ValueError("build mode requires complete typed build spec evidence")
+    if cfg.mode != "build" and build_spec_path is not None:
+        raise ValueError("standalone optimization cannot use a typed build spec exception")
+    build_spec = _build_spec_evidence(build_spec_path,cfg.top_module) if build_spec_path is not None else None
+    source_facts = [file_evidence(path) for path in sources]
+    source_contract = infer_module(Path(sources[0]).read_text(encoding="utf-8", errors="replace"), cfg.top_module)
+    declared_latency = {
+        "known": source_contract.latency_known,
+        "cycles": source_contract.latency if source_contract.latency_known else None,
+        "source_path": source_facts[0]["path"], "source_sha256": source_facts[0]["sha256"],
+        "meaning": "A source annotation declares numeric latency only when present. "
+                   "This known/cycles pair is authoritative for the current top module's annotation requirement. "
+                   "Only known=true requires a matching numeric top annotation. Child typed-module latency "
+                   "does not invent a top annotation for arbitrary aggregate wrappers. "
+                   "When known=false, absence of a top annotation is not a failed or unverifiable criterion. "
+                   "Unannotated numeric latency is UNKNOWN, not zero. Preserve the source's "
+                   "exact observable cycles and registered behavior. Annotation presence or "
+                   "absence alone is not independent proof of behavioral correctness; use the "
+                   "fixed source contract, all defined typed latency/minimum transfer age and deterministic "
+                   "verification, without inventing a numeric requirement.",
+    }
+    return {
+        "schema_version": 1,
+        "authority": "Harness evidence is fixed. Proposed architectural goals cannot redefine it.",
+        "top_module": cfg.top_module, "part": cfg.target_part,
+        "objective": cfg.objective, "clock_period_ns": cfg.target_period_ns,
+        "baseline_metrics": baseline.to_dict(),
+        "sources": source_facts, "declared_latency": declared_latency,
+        "build_spec": build_spec,
+        "testbench": file_evidence(tb), "testbench_top": cfg.top_module + "_tb",
+        "simulation": {"tools": ["xvlog", "xelab", "xsim -runall"],
+                       "required_verdict": "TEST PASSED", "failure_verdict": "TEST FAILED",
+                       "scope": "Provided testbench checks; not a formal equivalence proof."},
+        "execution_context": execution_context,
+        **flow_evidence(directory),
+        "allowed_flow_variations": "The harness may enable retiming or physical optimization. "
+                                   "The candidate's retained synthesis script is authoritative for its actual settings.",
+        "hard_gates": [
+            ("Preserve typed build spec defined behavior, ports, parameter defaults, reset and observable cycles; "
+             "explicitly unspecified cases remain unspecified." if build_spec is not None else
+             "Preserve ports, parameter defaults, reset behavior and observable cycle behavior."),
+            "Use the fixed provided testbench, tools, device and constraints without modification.",
+            "Static/interface checks, compile, simulation and real routed metric integrity must pass.",
+            "Timing closure requires setup slack >= 0 and hold slack >= 0.",
+            "Unknown or absent evidence cannot count as success.",
+        ],
+        "objective_policy": "First establish timing feasibility. A verified timing-feasible candidate "
+                            "may replace a known timing-infeasible previous best even with higher area or power; "
+                            "classify this as timing_recovery, not objective savings. Once both are timing-feasible, "
+                            "require strict improvement of the chosen objective. Unknown or contradictory incumbent "
+                            "timing evidence cannot establish recovery. A completed experiment may find no improvement. "
+                            "Do not invent mandatory savings, slack margins, tool versions, timing corners, "
+                            "new tests, thresholds, code-style quotas or external environment requirements.",
+    }
+
+
+def save_evidence(path: Path, evidence: dict) -> str:
+    payload = json.dumps(evidence, sort_keys=True, indent=2, allow_nan=False)
+    if path.exists():
+        if path.read_text(encoding="utf-8") != payload:
+            raise ValueError("Contract evidence changed since checkpoint: " + str(path))
+    else:
+        atomic_write_text(path, payload)
+    return payload
+
+
+def render_fixed_optimize_contract(evidence: dict) -> str:
+    """Render the harness's immutable optimize obligations without model negotiation.
+
+    Source and testbench hashes identify the exact behavioral authority; report
+    hashes and actual constraints identify the measurement environment. This is
+    deliberately a fixed policy, not a model-authored set of acceptance goals.
+    """
+    objectives = {
+        "minimize_luts": ("lut_used", "strictly lower"),
+        "minimize_ffs": ("ff_used", "strictly lower"),
+        "maximize_freq": ("wns_ns", "strictly higher at the same clock period"),
+        "minimize_power": ("dynamic_power_w", "strictly lower"),
+    }
+    field, direction = objectives[evidence["objective"]]
+    identity = lambda item: {"path": item["path"], "sha256": item["sha256"]}
+    fixed = {
+        "top_module": evidence["top_module"], "part": evidence["part"],
+        "clock_period_ns": evidence["clock_period_ns"],
+        "sources": [identity(item) for item in evidence["sources"]],
+        "testbench": identity(evidence["testbench"]),
+        "testbench_top": evidence["testbench_top"],
+        "baseline_metrics": evidence["baseline_metrics"],
+        "declared_latency": evidence["declared_latency"],
+        "execution_context": evidence["execution_context"],
+        "flow_and_constraints": evidence["flow_and_constraints"],
+        "report_manifest": evidence["report_manifest"],
+        "build_spec": evidence.get("build_spec"),
+    }
+    if evidence.get("build_spec") is not None:
+        obligations = (
+            "The complete resolved typed build specification below is the behavioral authority. "
+            "Preserve all defined behavior, supported parameter semantics, reset priority, observable cycles, "
+            "latency, throughput, flags and handshakes. Preserve top ports and parameter defaults. "
+            "Explicitly unspecified cases remain unspecified: do not impose blanket equality to incidental "
+            "frozen implementation values in those cases, including invalid output payload when the spec "
+            "leaves it unspecified. This does not relax specified valid payloads, transfers or cycle behavior. "
+            "Source hashes identify the measured implementation, not additional semantic obligations. "
+            "No new pipeline stages, extra cycles, interfaces or invented thresholds.")
+    else:
+        obligations = (
+            "Preserve the frozen source's ports, names, directions, widths, parameters and parameter defaults. "
+            "Preserve reset polarity, synchronous/asynchronous behavior, priority, state initialization and "
+            "every observable cycle of latency, throughput, flags and handshakes, including disabled cycles. "
+            "Preserve supported parameter behavior and high-bit semantics. No new pipeline stages, extra "
+            "clock cycles, interfaces or invented thresholds. Standalone optimization has no typed build "
+            "spec exception: do not infer unspecified behavior merely from missing test coverage.")
+    latency = evidence["declared_latency"]
+    if latency["known"] is True:
+        annotation_rule = (
+            f"The current top has known numeric latency {latency['cycles']}; require a matching "
+            f"// @latency {latency['cycles']} annotation. Preserve its defined cycle behavior. ")
+    else:
+        annotation_rule = (
+            "The current top's numeric latency is UNKNOWN, not zero. Its missing @latency annotation "
+            "is neither FAIL nor INVESTIGATE and must not block ACCEPT. Do not invent a numeric top "
+            "annotation from child typed-module metadata or an arbitrary aggregate wrapper. ")
+    annotation_rule += (
+        "Only authoritative current-top declared_latency.known=true creates a numeric annotation "
+        "requirement. Preserve defined typed latency semantics, minimum transfer age, registered "
+        "outputs, reset and cycle behavior; all deterministic checks remain mandatory. ")
+    return ("# Fixed optimization contract\n\n"
+        "This contract is rendered by the harness from immutable run evidence. "
+        "Planner, generator and evaluator cannot amend its requirements.\n\n"
+        "## Behavioral obligations\n\n"
+        + obligations + "\n\n"
+        + "## Verification gates\n\n"
+        + annotation_rule + "\n\n"
+        + "Use the frozen testbench unchanged. Pass static/interface and declared "
+        "latency checks when a numeric declaration is known, xvlog compilation, "
+        "xelab elaboration and xsim -runall. Unannotated numeric latency is UNKNOWN, "
+        "not zero; an annotation alone is not independent behavioral proof. "
+        "Tool stages require successful exit codes; synthesis also requires the "
+        "SYNTH_COMPLETE marker. Simulation requires the exact standalone TEST PASSED verdict and rejects "
+        "TEST FAILED, missing verdicts, tool errors and timeouts. Provided testbench "
+        "coverage is not formal equivalence. Require valid retained routed reports "
+        "and metric integrity; setup WNS >= 0 and hold WHS >= 0 are both mandatory "
+        "for promotion. Missing or unknown evidence is not success.\n\n"
+        "## Objective and completion\n\n"
+        "First establish timing feasibility: the candidate must pass simulation and all "
+        "verification/metric/receipt gates, with timing_met=true, WNS >= 0 and WHS >= 0. "
+        "A candidate meeting those gates may replace a previous verified best whose known "
+        "consistent timing evidence fails setup or hold, even when area or power increases "
+        "or stays equal. Classify this as timing_recovery: a feasibility recovery, not "
+        "resource or power savings. Unknown, missing or contradictory timing evidence "
+        "does not establish a timing recovery. Once both designs are timing-feasible, "
+        f"objective {evidence['objective']} maps to {field}: require {direction} "
+        "than the previous verified best, under the same device, clock and "
+        "constraints. No minimum percentage gain or extra slack margin is imposed. "
+        "Final evaluator ACCEPT with zero failed criteria and all deterministic "
+        "promotion gates are required. DONE describes a completed experiment; "
+        "best_iteration 0 retains the baseline and claims no accepted improvement. "
+        "Only a promoted best_iteration > 0 establishes an accepted improvement; "
+        "its recorded kind distinguishes timing recovery from objective gain.\n\n"
+        "## Fixed measurement authority\n\n"
+        "The JSON below records source/testbench identities, actual device, clock, "
+        "tool context, constraints and retained report hashes. Numeric metrics are "
+        "the parsed structured evidence, with routed reports preferred. The "
+        "candidate's retained synthesis script records actual permitted retiming "
+        "or physical optimization settings; these never change behavioral obligations.\n\n"
+        "```json\n" + json.dumps(fixed, sort_keys=True, indent=2, allow_nan=False)
+        + "\n```\n")

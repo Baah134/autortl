@@ -266,9 +266,27 @@ Public parameter defaults: {parameters}
 Inputs and outputs remain masked nonnegative bit patterns even for signed ports.
 For signed arithmetic, explicitly interpret two's-complement operands at their
 specified widths, then mask outputs. Signed declarations do not change this API.
-It must define exactly:
-    def init(): return state
-    def step(state, inputs: dict) -> (state, outputs: dict)
+Required API scaffold (syntax only, not a complete behavioral implementation):
+```python
+def init():
+    return dict()
+
+def step(state, inputs):
+    outputs = dict()
+    return state, outputs
+```
+Replace the empty state/output placeholders with the specified behavior; fill
+outputs with every named data output below. Use unannotated function signatures.
+Restricted Python execution, not general Python:
+Allowed builtins: {safe_builtins}
+Allowed methods: {safe_methods}
+Use integer arithmetic/bit operations, assignments, if/else and bounded loops.
+Helper functions are allowed. No imports, classes, try/except, raise, lambda,
+f-strings, list/dict/set comprehensions, floats, decorators or default arguments.
+Generator expressions are supported. Do not use private names starting with '_'.
+Use literal port names, for example inputs.get("port_name", 0), replacing the
+placeholder with a declared name. str() and .format() are unsupported; do not
+construct port names with string formatting. No file/network/system access.
 Comparison mode: {compare_mode}. Declared RTL latency: {latency}. Reset: {reset_desc}.
 Output keys must be exactly these data outputs: {data_outputs}; do not return
 valid/ready control outputs. Values are masked plain integers. The clock edge

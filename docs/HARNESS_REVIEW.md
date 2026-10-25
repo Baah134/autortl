@@ -533,3 +533,28 @@ top-first qualification, then fresh fulltier0 passed2/2 in a new cohort. Keep
 the corrected scaffold and complex fixture. No role, retry, severity or
 interface/latency policy changed. The observed missing-directive repair no
 longer requires a model call; no broad model-cost savings claim is inferred.
+
+
+## Elastic arithmetic: fix the documented API before expanding the agent loop
+
+Build01 copied an invalid signature from the prompt, then repaired it using
+f-strings unsupported by the restricted oracle interpreter. Keep the rejection
+gate and originalfailedrun. Replace the invalid scaffold and expose actualpolicy
+names in the prompt. This follows the interface-clarity/evaluation rationale in
+[Anthropic Writing effective tools](https://www.anthropic.com/research/writing-tools-for-agents);
+our actual failure and tests motivate/validate the change, not an imported score.
+
+The failedreturn also exposed stale final activewall accounting. Persist active
+exit walltime using the existing atomic budget save, without changing charges
+or completedreuse semantics. No new role/framework, language feature or retries
+are justified. Hard process termination remains a separate evidence boundary.
+
+
+## Target/deployment scope clarified with the user
+
+Current reference targets Artix-7 xc7a35tcpg236-1 at100MHz/10ns with idealzero
+external delays, not a complete board profile. Part/frequency are configurable;
+board pin/interface constraints and hardware validation are separate work.
+See TARGETS.md for current evidence, limits and acceptance criteria. Keep those
+assumptions explicit; do not add unverified board-support claims while fixing
+the observed oracle/API and active-wall accounting failures.

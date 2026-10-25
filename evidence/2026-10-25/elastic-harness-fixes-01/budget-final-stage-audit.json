@@ -1,0 +1,28 @@
+{
+  "canonical_freeze_files_verified_unchanged": 211,
+  "stage_files_changed": [
+    "autortl/budget.py",
+    "autortl/fsm.py",
+    "tests/test_budget_final_checkpoint.py"
+  ],
+  "stage_hashes": {
+    "autortl/budget.py": "b698e5d3c1d1a0a95ed26d04a62070b455d1b373f832cbff2a21959624ae353f",
+    "autortl/fsm.py": "31eb4e1b7e5006175637cbbd96b52ecdb74438175bc13205c4fd1096abccd2b0",
+    "tests/test_budget_final_checkpoint.py": "280529d7d637a9102180cd66c1a6975d1cec54c3490abfd1834f22b981c0c9df"
+  },
+  "tests": {
+    "command": "python -B -m pytest tests/test_budget_final_checkpoint.py tests/test_budget.py tests/test_fsm_resume.py -q -p no:cacheprovider --basetemp ../budget-final-testtmp-02",
+    "outcome": "44 passed in 48.44s",
+    "output": "work/budget-final-focused-02.txt",
+    "scope": "Synthetic only; existing mocktool/model fixtures and module-local fake clock; no actual vendor or model calls",
+    "prior_run": "44 passed in 49.71s before correcting nonASCII source text preservation; superseded by final run"
+  },
+  "new_active_DONE_budget_excluded_from_final_artifacts": true,
+  "DONE_reuse_tamper_and_prepare_guard_budget_bytes_unchanged": true,
+  "limits": [
+    "No hard-kill/uncommitted-provider/journal atomicity claim",
+    "No fullsuite run",
+    "Checkpoint I/O errors propagate; finally cannot persist after a hard process kill"
+  ],
+  "behavior": "Public Budget.checkpoint delegates existing atomic _save; active dispatch/catch/return finally saves wall after clean, handled and raised exits, including graceful KeyboardInterrupt; guards and preexisting DONE branch remain before finally."
+}

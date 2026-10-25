@@ -79,6 +79,10 @@ class Budget:
     def allow_replan(self) -> bool:
         return self.fraction_left() > 0.3
 
+    def checkpoint(self) -> None:
+        """Persist active wall time without charging calls or tool time."""
+        self._save()
+
     def _save(self) -> None:
         if self.state_path:
             self.state_path.parent.mkdir(parents=True, exist_ok=True)

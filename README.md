@@ -14,11 +14,12 @@ learn from failures, and retain the best correct design within a fixed budget.
 
 | Validation | Recorded result |
 |---|---|
-| Harness regression suite | **1,366 tests passed** |
+| Harness regression suite | **1,415 tests passed** |
 | Generated pipelined dot product (3 modules) | **325 → 17 LUTs · 4 DSPs · setup +0.354 ns / hold +0.254 ns · 685-cycle independent test passed** |
 | FIFO timing recovery (8-bit, depth 3) | **Setup −0.931 → +0.108 ns · hold +0.076 ns · 22 LUTs / 13 FFs · exact saved winner independently passed** |
 | Generated packet-tagged FIFO | **23 LUTs / 31 FFs · setup +0.078 ns · hold +0.106 ns · saved winner independently passed** |
 | Generated iterative divider (8-bit) | **38 → 26 LUTs (31.6%) · 38 FFs · setup +0.315 ns / hold +0.129 ns · saved winner independently passed** |
+| Elastic arithmetic verification | **Two pipeline slots; control passed and all 18 named behavioral faults detected** |
 | Multi-cycle divider verification | **Six widths passed; all 20 named faults detected, including stalled-result reset** |
 | Packet-tagged FIFO verification | **Six configurations passed; all 19 named source mutations detected** |
 | Parameterized FIFO verification | **Six configurations passed; all 13 planned faults detected** |
@@ -31,7 +32,7 @@ learn from failures, and retain the best correct design within a fixed budget.
 
 Measurements use Vivado 2025.2, `xc7a35tcpg236-1` and a 10 ns clock,
 with explicit ideal zero minimum/maximum I/O delays. These are experiment
-constraints, not board timing requirements.
+constraints, not board timing requirements. See [hardware targets and validation scope](docs/TARGETS.md).
 
 The 32-bit counter result passed the independent frozen testbench, actual tool-exit
 checks, routed timing and final review in three model calls. Completed-run
@@ -58,7 +59,7 @@ closure. The loop then reduced its first feasible implementation from 24 to
 See the [three-module dot-product evidence](evidence/2026-10-24/generated-dot4-attempt-01/README.md),
 [FIFO recovery evidence](evidence/2026-10-22/generated-fifo-attempt-05/README.md),
 [test evidence](evidence/2026-10-20/README.md),
-[full-suite result](evidence/2026-10-24/top-timescale-tests-01/AutoRTL-top-timescale-full-01.txt) and
+[full-suite result](evidence/2026-10-25/elastic-harness-fixes-01/AutoRTL-elastic-fixes-full-01.txt) and
 [scoreboard coverage](evidence/2026-10-23/scoreboard-example-coverage/README.md),
 [divider optimization](evidence/2026-10-23/generated-divider-attempt-01/README.md),
 [divider verification](evidence/2026-10-23/divider-admission-attempt-02/README.md),

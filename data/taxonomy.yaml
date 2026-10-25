@@ -347,6 +347,16 @@ harness_failures:
     meaning: "The mechanical build wrapper omitted a timescale and failed XSIM43-4099 when compiled before timescaled generated children"
     repair: "Emit the deterministic timescale before optional scoped latency metadata and verify top-first elaboration without spending model repair budget"
 
+  invalid_golden_api_prompt:
+    meaning: "The golden prompt showed an invalid Python return annotation and the model copied it into an oracle"
+    repair: "Provide an executable unannotated API scaffold and regression-test it against the unchanged restricted interpreter"
+  undocumented_golden_language_subset:
+    meaning: "Oracle repair used f-strings accepted by general Python but rejected by the restricted execution policy"
+    repair: "Expose current supported builtins and methods in the prompt, use literal port names, and preserve rejection of unsupported syntax"
+  uncheckpointed_active_exit_walltime:
+    meaning: "A clean failed run returned after a completed model call without persisting its final active wall time"
+    repair: "Checkpoint active dispatch exits with the existing atomic save; preserve charge counts and keep completed reuse/input guards outside the checkpoint"
+
 methodology:
   "TIMING-6":
     meaning: "No common primary clock between related clocks | timing between them is unsafe"

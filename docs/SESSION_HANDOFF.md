@@ -3,6 +3,40 @@
 Updated October25,2026 (America/New_York). Recover Git, ownership, source hashes
 and actual jobs before acting. Canonical Downloads/autortl-work; preserve autortl.
 
+## Current stage: qualified elastic pipeline and observed harness fixes
+
+Branch codex/contract-context, base83c52f6. Canonical Downloads/autortl-work;
+preserve Downloads/autortl. Full regression26716 completed0: 1415passed
+685.29seconds, all220frozen identities unchanged. Archived in
+evidence/2026-10-25/elastic-harness-fixes-01, with full source and focused logs.
+No model/vendor job active at this checkpoint. Publication/build02 remain next.
+
+Elastic checker control plus18 actual behavior faults qualified19/19 in114.203s,
+0modelcalls. Original rejected framing01 and successful admission02 each archived
+204files under evidence/2026-10-25/elastic-dot4-admission-attempt-{01,02}.
+Generated build01 FAILED before RTL: prompt invalid signature, then unsupported
+f-string. Two charged calls; last saved8.4238sec elapsed is stale, NOT fullwall.
+Original211source/run/responses archived251files in generated-elastic-dot4-attempt-01.
+Never resume/regrade that run after source changes.
+
+Reviewed fixes now applied: valid oracle API/policy prompt (7focusedPASS), final
+active-exit wall checkpoint (44focusedPASS), qualified fixture/tests(122PASS).
+Golden interpreter, retry/call budgets unchanged. Finalcheckpoint cannot survive
+hardkill; DONEreuse/input guards remain outside it. Target assumptions and board
+acceptance criteria documented in docs/TARGETS.md; no board deployment claimed.
+
+Next: commit/push tested development fixes; verify220source hashes aftercommit.
+Then NEW build-elastic-dot4-02, SAMEspec/TB, N1/3iter/16calls/25tool/35wall/1infra,
+generatedgolden plus independentTB; reference never used as generationseed.
+Independently validate exact saved winner+frozenchild and restored DONEtamper
+guards. Archive all outcomes before further runtime edits. Fresh fulltier0
+campaign12 required before main integration; no higherheldtier.
+
+Coordinator token held privately; active claims prompt,budget,fixture,notes,
+target-scope-doc. Renew/recover actualSQLite ownership before edits. Temporary
+awake33495 bounded120min started15:34Oct25; flagworkspace/work/elastic-awake.flag;
+remove when jobsfinish and verifyrelease. No automatic scheduling configured.
+
 ## Completed permanent wrapper fix and complex-design milestone
 
 Canonical Downloads/autortl-work; branch codex/contract-context. Tested runtime

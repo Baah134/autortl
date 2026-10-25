@@ -1,0 +1,500 @@
+{
+  "schema_version": 1,
+  "status": "prepared_not_simulated",
+  "top": "elastic_dot4_tb",
+  "cases": [
+    {
+      "name": "reference",
+      "expected_verdict": "TEST PASSED",
+      "required_failure_kind": null,
+      "mutation_targets": [],
+      "files": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\elastic-dot4-admission-01\\reference\\children.v",
+          "sha256": "97d1ece8654a4a0006257cddf7d2df59e6e39b2e5777632d2ac37a792624b4f1"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\elastic-dot4-admission-01\\reference\\elastic_dot4.v",
+          "sha256": "d6e73dc9274680d9ef5cc829c266ecd7bb394e6c763d3ac4fb9eeadb18c26283"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\elastic-dot4-admission-01\\reference\\elastic_dot4_tb.v",
+          "sha256": "2a7666de2e9f2125aa9b07db317d6740dcabf327955933a52210047cc5eb44f2"
+        }
+      ]
+    },
+    {
+      "name": "dropped_product",
+      "expected_verdict": "TEST FAILED",
+      "required_failure_kind": "behavioral_assertion",
+      "mutation_targets": [
+        {
+          "original": "partial01<={1'b0,product0}+{1'b0,product1};",
+          "replacement": "partial01<={1'b0,product0};",
+          "original_occurrences": 1
+        }
+      ],
+      "files": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\elastic-dot4-admission-01\\dropped_product\\children.v",
+          "sha256": "3d1edd0c77ec2b75085446d6b78ed5748d8fdec03732c4e87f526513391e5824"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\elastic-dot4-admission-01\\dropped_product\\elastic_dot4.v",
+          "sha256": "d6e73dc9274680d9ef5cc829c266ecd7bb394e6c763d3ac4fb9eeadb18c26283"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\elastic-dot4-admission-01\\dropped_product\\elastic_dot4_tb.v",
+          "sha256": "2a7666de2e9f2125aa9b07db317d6740dcabf327955933a52210047cc5eb44f2"
+        }
+      ]
+    },
+    {
+      "name": "signed_arithmetic",
+      "expected_verdict": "TEST FAILED",
+      "required_failure_kind": "behavioral_assertion",
+      "mutation_targets": [
+        {
+          "original": "wire [15:0] product0=a0*b0;",
+          "replacement": "wire [15:0] product0=$signed(a0)*$signed(b0);",
+          "original_occurrences": 1
+        }
+      ],
+      "files": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\elastic-dot4-admission-01\\signed_arithmetic\\children.v",
+          "sha256": "195a87ed6b674188e66d2de420475e56e57413ea8795610aab5737ed8d7d131f"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\elastic-dot4-admission-01\\signed_arithmetic\\elastic_dot4.v",
+          "sha256": "d6e73dc9274680d9ef5cc829c266ecd7bb394e6c763d3ac4fb9eeadb18c26283"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\elastic-dot4-admission-01\\signed_arithmetic\\elastic_dot4_tb.v",
+          "sha256": "2a7666de2e9f2125aa9b07db317d6740dcabf327955933a52210047cc5eb44f2"
+        }
+      ]
+    },
+    {
+      "name": "pair_carry_truncation",
+      "expected_verdict": "TEST FAILED",
+      "required_failure_kind": "behavioral_assertion",
+      "mutation_targets": [
+        {
+          "original": "partial01<={1'b0,product0}+{1'b0,product1};",
+          "replacement": "partial01<=({1'b0,product0}+{1'b0,product1}) & 17'h0ffff;",
+          "original_occurrences": 1
+        }
+      ],
+      "files": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\elastic-dot4-admission-01\\pair_carry_truncation\\children.v",
+          "sha256": "c73efbc67d09922b09790aff61effea1473a7926f26d57b72b57fb6949c4895f"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\elastic-dot4-admission-01\\pair_carry_truncation\\elastic_dot4.v",
+          "sha256": "d6e73dc9274680d9ef5cc829c266ecd7bb394e6c763d3ac4fb9eeadb18c26283"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\elastic-dot4-admission-01\\pair_carry_truncation\\elastic_dot4_tb.v",
+          "sha256": "2a7666de2e9f2125aa9b07db317d6740dcabf327955933a52210047cc5eb44f2"
+        }
+      ]
+    },
+    {
+      "name": "final_carry_truncation",
+      "expected_verdict": "TEST FAILED",
+      "required_failure_kind": "behavioral_assertion",
+      "mutation_targets": [
+        {
+          "original": "if(v1) result<={1'b0,partial01}+{1'b0,partial23};",
+          "replacement": "if(v1) result<=({1'b0,partial01}+{1'b0,partial23}) & 18'h1ffff;",
+          "original_occurrences": 1
+        }
+      ],
+      "files": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\elastic-dot4-admission-01\\final_carry_truncation\\children.v",
+          "sha256": "1d6504228d09d0a2c11ff44a95d6bbcaeb548f5f5611ac54be7e2c36861833e5"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\elastic-dot4-admission-01\\final_carry_truncation\\elastic_dot4.v",
+          "sha256": "d6e73dc9274680d9ef5cc829c266ecd7bb394e6c763d3ac4fb9eeadb18c26283"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\elastic-dot4-admission-01\\final_carry_truncation\\elastic_dot4_tb.v",
+          "sha256": "2a7666de2e9f2125aa9b07db317d6740dcabf327955933a52210047cc5eb44f2"
+        }
+      ]
+    },
+    {
+      "name": "early_output",
+      "expected_verdict": "TEST FAILED",
+      "required_failure_kind": "behavioral_assertion",
+      "mutation_targets": [
+        {
+          "original": "assign out_valid=v2;",
+          "replacement": "assign out_valid=v2 || v1;",
+          "original_occurrences": 1
+        }
+      ],
+      "files": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\elastic-dot4-admission-01\\early_output\\children.v",
+          "sha256": "72461ebd5911cf6f2214c73d4b44ecb69cb9ab8e096192bd226b924b487e693b"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\elastic-dot4-admission-01\\early_output\\elastic_dot4.v",
+          "sha256": "d6e73dc9274680d9ef5cc829c266ecd7bb394e6c763d3ac4fb9eeadb18c26283"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\elastic-dot4-admission-01\\early_output\\elastic_dot4_tb.v",
+          "sha256": "2a7666de2e9f2125aa9b07db317d6740dcabf327955933a52210047cc5eb44f2"
+        }
+      ]
+    },
+    {
+      "name": "late_output",
+      "expected_verdict": "TEST FAILED",
+      "required_failure_kind": "behavioral_assertion",
+      "mutation_targets": [
+        {
+          "original": "reg v1,v2;",
+          "replacement": "reg v1,v2;\n    reg delayed_valid;\n    always @(posedge clk) begin\n        if(rst) delayed_valid<=0; else delayed_valid<=v2;\n    end",
+          "original_occurrences": 1
+        },
+        {
+          "original": "assign out_valid=v2;",
+          "replacement": "assign out_valid=delayed_valid;",
+          "original_occurrences": 1
+        }
+      ],
+      "files": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\elastic-dot4-admission-01\\late_output\\children.v",
+          "sha256": "14b7110ceef203c16b87e93399daed8de34b6e9debf1c623850fd38b87afbbab"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\elastic-dot4-admission-01\\late_output\\elastic_dot4.v",
+          "sha256": "d6e73dc9274680d9ef5cc829c266ecd7bb394e6c763d3ac4fb9eeadb18c26283"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\elastic-dot4-admission-01\\late_output\\elastic_dot4_tb.v",
+          "sha256": "2a7666de2e9f2125aa9b07db317d6740dcabf327955933a52210047cc5eb44f2"
+        }
+      ]
+    },
+    {
+      "name": "accept_full",
+      "expected_verdict": "TEST FAILED",
+      "required_failure_kind": "behavioral_assertion",
+      "mutation_targets": [
+        {
+          "original": "assign in_ready=!v1 || ready2;",
+          "replacement": "assign in_ready=1'b1;",
+          "original_occurrences": 1
+        }
+      ],
+      "files": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\elastic-dot4-admission-01\\accept_full\\children.v",
+          "sha256": "6b4ff089c8a43e8d4c4492cd1ce8da0758da5a0ac6c640a4541aafcafaea990c"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\elastic-dot4-admission-01\\accept_full\\elastic_dot4.v",
+          "sha256": "d6e73dc9274680d9ef5cc829c266ecd7bb394e6c763d3ac4fb9eeadb18c26283"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\elastic-dot4-admission-01\\accept_full\\elastic_dot4_tb.v",
+          "sha256": "2a7666de2e9f2125aa9b07db317d6740dcabf327955933a52210047cc5eb44f2"
+        }
+      ]
+    },
+    {
+      "name": "overwrite_blocked_stage1",
+      "expected_verdict": "TEST FAILED",
+      "required_failure_kind": "behavioral_assertion",
+      "mutation_targets": [
+        {
+          "original": "if(in_ready) begin // capture_gate",
+          "replacement": "if(in_ready || in_valid) begin // capture_gate",
+          "original_occurrences": 1
+        }
+      ],
+      "files": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\elastic-dot4-admission-01\\overwrite_blocked_stage1\\children.v",
+          "sha256": "c910a0f81381842d710ef89a648460304721623bc014738d40ac080676ec7ef8"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\elastic-dot4-admission-01\\overwrite_blocked_stage1\\elastic_dot4.v",
+          "sha256": "d6e73dc9274680d9ef5cc829c266ecd7bb394e6c763d3ac4fb9eeadb18c26283"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\elastic-dot4-admission-01\\overwrite_blocked_stage1\\elastic_dot4_tb.v",
+          "sha256": "2a7666de2e9f2125aa9b07db317d6740dcabf327955933a52210047cc5eb44f2"
+        }
+      ]
+    },
+    {
+      "name": "drop_blocked_stage1",
+      "expected_verdict": "TEST FAILED",
+      "required_failure_kind": "behavioral_assertion",
+      "mutation_targets": [
+        {
+          "original": "end // capture_end",
+          "replacement": "end else v1<=0; // capture_end",
+          "original_occurrences": 1
+        }
+      ],
+      "files": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\elastic-dot4-admission-01\\drop_blocked_stage1\\children.v",
+          "sha256": "3a26aa7d0ac57ccb1b4eed32de1284402645cd3fe8974e6e878adeef3ec4626c"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\elastic-dot4-admission-01\\drop_blocked_stage1\\elastic_dot4.v",
+          "sha256": "d6e73dc9274680d9ef5cc829c266ecd7bb394e6c763d3ac4fb9eeadb18c26283"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\elastic-dot4-admission-01\\drop_blocked_stage1\\elastic_dot4_tb.v",
+          "sha256": "2a7666de2e9f2125aa9b07db317d6740dcabf327955933a52210047cc5eb44f2"
+        }
+      ]
+    },
+    {
+      "name": "clear_stalled_valid",
+      "expected_verdict": "TEST FAILED",
+      "required_failure_kind": "behavioral_assertion",
+      "mutation_targets": [
+        {
+          "original": "end // normal_end",
+          "replacement": "if(!ready2) v2<=0;\n        end // normal_end",
+          "original_occurrences": 1
+        }
+      ],
+      "files": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\elastic-dot4-admission-01\\clear_stalled_valid\\children.v",
+          "sha256": "764c7d8f133718b79edd07207abb09245ae08fed994bc8ec4657a1d1bab864b9"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\elastic-dot4-admission-01\\clear_stalled_valid\\elastic_dot4.v",
+          "sha256": "d6e73dc9274680d9ef5cc829c266ecd7bb394e6c763d3ac4fb9eeadb18c26283"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\elastic-dot4-admission-01\\clear_stalled_valid\\elastic_dot4_tb.v",
+          "sha256": "2a7666de2e9f2125aa9b07db317d6740dcabf327955933a52210047cc5eb44f2"
+        }
+      ]
+    },
+    {
+      "name": "corrupt_held_output",
+      "expected_verdict": "TEST FAILED",
+      "required_failure_kind": "behavioral_assertion",
+      "mutation_targets": [
+        {
+          "original": "end // normal_end",
+          "replacement": "if(!ready2) result<=result ^ 18'd1;\n        end // normal_end",
+          "original_occurrences": 1
+        }
+      ],
+      "files": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\elastic-dot4-admission-01\\corrupt_held_output\\children.v",
+          "sha256": "69ca9c4d728dafc286b3c4bc29e63ad41071f816973d6aced652001094e50e68"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\elastic-dot4-admission-01\\corrupt_held_output\\elastic_dot4.v",
+          "sha256": "d6e73dc9274680d9ef5cc829c266ecd7bb394e6c763d3ac4fb9eeadb18c26283"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\elastic-dot4-admission-01\\corrupt_held_output\\elastic_dot4_tb.v",
+          "sha256": "2a7666de2e9f2125aa9b07db317d6740dcabf327955933a52210047cc5eb44f2"
+        }
+      ]
+    },
+    {
+      "name": "duplicate_retirement",
+      "expected_verdict": "TEST FAILED",
+      "required_failure_kind": "behavioral_assertion",
+      "mutation_targets": [
+        {
+          "original": "v2<=v1; // advance_valid",
+          "replacement": "v2<=v1 || v2; // advance_valid",
+          "original_occurrences": 1
+        }
+      ],
+      "files": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\elastic-dot4-admission-01\\duplicate_retirement\\children.v",
+          "sha256": "2cbd2a693f7669aa0441865fdddd7ed6b729c9f95b5ac0aa5c0ccd5aebad9cab"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\elastic-dot4-admission-01\\duplicate_retirement\\elastic_dot4.v",
+          "sha256": "d6e73dc9274680d9ef5cc829c266ecd7bb394e6c763d3ac4fb9eeadb18c26283"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\elastic-dot4-admission-01\\duplicate_retirement\\elastic_dot4_tb.v",
+          "sha256": "2a7666de2e9f2125aa9b07db317d6740dcabf327955933a52210047cc5eb44f2"
+        }
+      ]
+    },
+    {
+      "name": "lose_full_replacement",
+      "expected_verdict": "TEST FAILED",
+      "required_failure_kind": "behavioral_assertion",
+      "mutation_targets": [
+        {
+          "original": "v1<=in_valid; // capture_valid",
+          "replacement": "v1<=in_valid && !v2; // capture_valid",
+          "original_occurrences": 1
+        }
+      ],
+      "files": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\elastic-dot4-admission-01\\lose_full_replacement\\children.v",
+          "sha256": "8f29d55b8410096ada93461037893598af7b78e436362b00676f082b80902922"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\elastic-dot4-admission-01\\lose_full_replacement\\elastic_dot4.v",
+          "sha256": "d6e73dc9274680d9ef5cc829c266ecd7bb394e6c763d3ac4fb9eeadb18c26283"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\elastic-dot4-admission-01\\lose_full_replacement\\elastic_dot4_tb.v",
+          "sha256": "2a7666de2e9f2125aa9b07db317d6740dcabf327955933a52210047cc5eb44f2"
+        }
+      ]
+    },
+    {
+      "name": "throughput_bubble",
+      "expected_verdict": "TEST FAILED",
+      "required_failure_kind": "behavioral_assertion",
+      "mutation_targets": [
+        {
+          "original": "assign in_ready=!v1 || ready2;",
+          "replacement": "assign in_ready=!v1 || (ready2 && !v2);",
+          "original_occurrences": 1
+        }
+      ],
+      "files": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\elastic-dot4-admission-01\\throughput_bubble\\children.v",
+          "sha256": "c76d88954b180e3319a6cb03bc4a093c849a4ded75c532b7ee2772f08f2ad4d3"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\elastic-dot4-admission-01\\throughput_bubble\\elastic_dot4.v",
+          "sha256": "d6e73dc9274680d9ef5cc829c266ecd7bb394e6c763d3ac4fb9eeadb18c26283"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\elastic-dot4-admission-01\\throughput_bubble\\elastic_dot4_tb.v",
+          "sha256": "2a7666de2e9f2125aa9b07db317d6740dcabf327955933a52210047cc5eb44f2"
+        }
+      ]
+    },
+    {
+      "name": "retained_stage1_reset",
+      "expected_verdict": "TEST FAILED",
+      "required_failure_kind": "behavioral_assertion",
+      "mutation_targets": [
+        {
+          "original": "v1<=0; // reset_stage1",
+          "replacement": "if(v1) v1<=v1; else v1<=0; // reset_stage1",
+          "original_occurrences": 1
+        }
+      ],
+      "files": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\elastic-dot4-admission-01\\retained_stage1_reset\\children.v",
+          "sha256": "a8c241a9f3899b6124ad6b0e6077658289c8206603ad286525d2568e16c9dc5b"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\elastic-dot4-admission-01\\retained_stage1_reset\\elastic_dot4.v",
+          "sha256": "d6e73dc9274680d9ef5cc829c266ecd7bb394e6c763d3ac4fb9eeadb18c26283"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\elastic-dot4-admission-01\\retained_stage1_reset\\elastic_dot4_tb.v",
+          "sha256": "2a7666de2e9f2125aa9b07db317d6740dcabf327955933a52210047cc5eb44f2"
+        }
+      ]
+    },
+    {
+      "name": "retained_stage2_reset",
+      "expected_verdict": "TEST FAILED",
+      "required_failure_kind": "behavioral_assertion",
+      "mutation_targets": [
+        {
+          "original": "v2<=0; // reset_stage2",
+          "replacement": "if(v2) v2<=v2; else v2<=0; // reset_stage2",
+          "original_occurrences": 1
+        }
+      ],
+      "files": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\elastic-dot4-admission-01\\retained_stage2_reset\\children.v",
+          "sha256": "d0f2b8fc6c8fb3a1cb428b58715de68fab8b98b231ce397c36b5df2c54a380ef"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\elastic-dot4-admission-01\\retained_stage2_reset\\elastic_dot4.v",
+          "sha256": "d6e73dc9274680d9ef5cc829c266ecd7bb394e6c763d3ac4fb9eeadb18c26283"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\elastic-dot4-admission-01\\retained_stage2_reset\\elastic_dot4_tb.v",
+          "sha256": "2a7666de2e9f2125aa9b07db317d6740dcabf327955933a52210047cc5eb44f2"
+        }
+      ]
+    },
+    {
+      "name": "asynchronous_reset",
+      "expected_verdict": "TEST FAILED",
+      "required_failure_kind": "behavioral_assertion",
+      "mutation_targets": [
+        {
+          "original": "always @(posedge clk) begin",
+          "replacement": "always @(posedge clk or posedge rst) begin",
+          "original_occurrences": 1
+        }
+      ],
+      "files": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\elastic-dot4-admission-01\\asynchronous_reset\\children.v",
+          "sha256": "f33ff0319ab0f42789a984e06173d8bd66e7548a7b7a948c9657cff0aceb98bd"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\elastic-dot4-admission-01\\asynchronous_reset\\elastic_dot4.v",
+          "sha256": "d6e73dc9274680d9ef5cc829c266ecd7bb394e6c763d3ac4fb9eeadb18c26283"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\elastic-dot4-admission-01\\asynchronous_reset\\elastic_dot4_tb.v",
+          "sha256": "2a7666de2e9f2125aa9b07db317d6740dcabf327955933a52210047cc5eb44f2"
+        }
+      ]
+    },
+    {
+      "name": "incorrect_downstream_ready",
+      "expected_verdict": "TEST FAILED",
+      "required_failure_kind": "behavioral_assertion",
+      "mutation_targets": [
+        {
+          "original": "wire ready2=!v2 || out_ready;",
+          "replacement": "wire ready2=!v2 || in_valid;",
+          "original_occurrences": 1
+        }
+      ],
+      "files": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\elastic-dot4-admission-01\\incorrect_downstream_ready\\children.v",
+          "sha256": "662cbf0ddedf43bbf542de375ac4d0923b896e5ca2c4023b0b4b2291262ba274"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\elastic-dot4-admission-01\\incorrect_downstream_ready\\elastic_dot4.v",
+          "sha256": "d6e73dc9274680d9ef5cc829c266ecd7bb394e6c763d3ac4fb9eeadb18c26283"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\elastic-dot4-admission-01\\incorrect_downstream_ready\\elastic_dot4_tb.v",
+          "sha256": "2a7666de2e9f2125aa9b07db317d6740dcabf327955933a52210047cc5eb44f2"
+        }
+      ]
+    }
+  ]
+}

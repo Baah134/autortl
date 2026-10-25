@@ -131,7 +131,10 @@ class Generator:
         return generated_rtl(resp)
 
     def golden_model(self, module: ModuleSpec, budget, feedback: str = "") -> str:
+        from .golden_worker import SAFE_BUILTINS, SAFE_METHODS
         p = prompts.GOLDEN_MODEL.format(behavior=module.behavior,
+                                        safe_builtins=", ".join(sorted(SAFE_BUILTINS)),
+                                        safe_methods=", ".join(sorted(SAFE_METHODS)),
                                         ports_table=_ports_table(module),
                                         parameters=json.dumps(module.parameters),
                                         compare_mode=module.compare_mode, latency=module.latency,

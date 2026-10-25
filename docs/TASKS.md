@@ -420,3 +420,72 @@ stage1 occupancy from output-valid and enforce exact availability, throughput,
 reset abort at every occupancy and off-edge reset pulses. Qualify arithmetic,
 overwrite/full/valid/stall/early/late/reset faults before generating RTL. Reuse
 existing scoreboard and bounded roles; no protocol/framework expansion yet.
+
+
+## October25: elastic_dot4_build admission and generated-build plan
+
+Extend the verified arithmetic pipeline with two elastic slots and backpressure.
+One transparent child elastic_dot4_core, eight unsigned8-bit operands,18-bit sum,
+ready/valid, synchronous active-high reset, no parameters. Capacity exactly2.
+Output is stage2-valid; stage2_ready=!v2||out_ready, stage1_ready=!v1||stage2_ready.
+Stage1 captures17-bit partial sums on an accepted input; stage2 advances old
+partials when ready. Earliest availability after edgek+1 for capture atedgek;
+earliest handshake edgek+2, minimum transfer age2. Sustain one input/output per
+edge after filling. Reset overrides transfers and clears both valid slots only
+at rising edges; an entirely off-edge pulse has no effect. Hold valid output
+payload during stall; invalid payload unspecified. All eight producer operands
+remain stable while blocked. Golden maps one accepted tuple to arithmetic,
+not pipeline occupancy/delay. No new framework or role is planned.
+
+Prepare isolated spec/meta/reference/independentTB/faultmaterializer first,
+then independent checker review. TB must model two slots and queue conservation,
+pre-edge transfers vs post-edge availability, fill/full rejection, simultaneous
+retire/advance/replace, bubbles/longstalls, all arithmetic boundaries and repeated
+results, resets at stage1-only/stage2-only/both/stalled occupancy, and off-edge
+reset pulses. Do not use FIFO occupancy!=0 as outputvalid.
+
+Intended admission: passing control plus18 distinct compiling behavioral faults:
+dropped product, signed arithmetic, pair/final carry truncation, early output,
+late output, accept-full, overwrite blockedstage1, drop blockedstage1, clear
+stalledvalid, corrupt heldoutput, duplicate retirement, lose full replacement,
+throughput bubble, retainedstage1/reset, retainedstage2/reset, asynchronous reset,
+and incorrect downstream-ready propagation. Compile failures/timeouts are not
+assertion kills; preserve misses and input hashes before any checker correction.
+Amend this plan explicitly before tool launch if fault definitions need revision.
+
+After admission, fresh generated build with generated golden plus independent
+TB, no qualification-reference seed. N1/max3iterations/16calls/25toolminutes/
+35wallminutes/1infraretry; Vivado2025.2,xc7a35tcpg236-1,100MHz idealzeroI/O.
+Freeze runtime/inputs before model calls, retain all failed attempts and costs.
+Independently simulate exact savedwinner plus generated child; actual DONE
+source/spec/plan integrity probes. Retain fixture on correct verified build even
+without PPA gain; record DSP/fabric/timing/power together. Harness changes require
+a reproduced gap, taxonomy first, tests and final regression gate.
+
+
+### Elastic build01 exposed two concrete harness gaps
+
+Qualified19/19 checker and frozen inputs remained unchanged. Firstactualbuild
+failed beforeRTL: two oracle attempts, invalid signature copied from our own
+prompt, then f-string rejected by unchangedrestricted interpreter. Preserve251
+file failed-run archive before correction; original2calls are never reset.
+
+Smallest prompt fix: syntacticallyvalid unannotated init/step scaffold; explicitly
+document existing supportedPython subset, derive builtin/methodlists fromworker
+policy, literalportnames. No interpreter/ALLOWED/retry/budget expansion. Tests
+parse+validate scaffold, preserve oldresponse rejection and mode/reset/IOcontext.
+Primarydesignbasis: existing RESEARCH workflow/interface decisions and Anthropic
+Writing effective tools guidance; improve accurate API descriptions before adding
+roles/tools. Runtime tests, not that article, establish our correctness.
+
+Accounting audit: savedelapsed8.4238 precedes final10.31second completedmodelcall.
+A clean module_failed return never checkpoints its final activewall time, losing
+thatinterval on unchangedruntime resume. AddBudget.checkpoint usingexistingatomic
+save, active-dispatch finally afterinput guards/DONEearlyreturn. Preserve call/tool
+counts/schema/limits; testclean/handled/unhandled/gracefulinterrupt, pauseexclusion,
+rawDONEreuse/tamper/inputguard budgetimmutability. Nohardkillatomicity claim.
+
+Integrate both reviewed minimalfixes plus qualifiedfixture/puretests as onebatch;
+taxonomyfirst; fullregression before NEWbuild-elastic-dot4-02 with byteidentical
+spec/TB and original16call/25tool/35wall budgets. Neverresume/regradetheoldrun
+underchangedruntime. Actualnewruntime requires finalfreshfulltier0 beforemain.

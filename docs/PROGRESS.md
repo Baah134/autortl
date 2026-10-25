@@ -1133,3 +1133,36 @@ changes, commands, outcomes, evidence locations, limitations, and next action.
   archive content blobs against five SHA256 manifests. Temporary awake55960
   released after flag removal; no owned vendor/model/test jobs remain.
   Next design contract is elastic_dot4_build; no new experiment started.
+
+
+## October25 — begin elastic arithmetic verification stage
+
+- Recovered clean83c52f6; no previous tool jobs. Renewed coordinator and claimed
+  isolated next-fixture integration scopes. Exact contract/fault/budget plan
+  recorded before implementation. Existing scoreboard API is sufficient.
+- Independent contract review separates transfer correctness from exact
+  availability/capacity/throughput/reset properties. Two-slot independent checker
+  must compare pre-edge transfers and post-NBA state; avoid occupancy-based valid.
+  Isolated fixture preparation active; no new harness feature or tool experiment.
+
+
+## October25 — fault-qualified elastic pipeline exposes two harness defects
+
+- Actual control+18compilingfault qualification initially rejected18 because the
+  TB printed BEHAVIOR_FAIL rather than required raw FAIL. Preserved204files;
+  changed only assertion framing. Fresh admission02 qualified19/19,114.203s,
+  0modelcalls,204filearchive. No predicate/gate relaxation.
+- Generated build01 then failed both golden attempts before RTL. First copied
+  invalid prompt signature; repair used forbidden f-string. Original251file
+  archive retains211source and bothresponses.2calls/tool1.172s; savedelapsed
+  8.4238 is stale and must not be reported as fullwall. No PPAresult.
+- Applied valid API/actualpolicy prompt and existingatomic activeexit wall save;
+  unchanged interpreter/retries/budgets. Focus7/44 passed. Qualified fixture and
+  pure verification tests122passed. Full220source regression26716 inprogress.
+- Documented currentA7part/100MHz/idealIO benchmark and exact boardvalidation
+  requirements in TARGETS; no unverifiedboardprofile/framework added.
+
+- Full frozen regression passed1415tests in685.29seconds;
+  all220source hashes unchanged. Complete source/test/focused evidence archived
+  in elastic-harness-fixes-01. Next freshbuild02 and fulltier0 mergegate; main
+  still83c52f6. README reflects tests/checker evidence, no generatedelastic claim.

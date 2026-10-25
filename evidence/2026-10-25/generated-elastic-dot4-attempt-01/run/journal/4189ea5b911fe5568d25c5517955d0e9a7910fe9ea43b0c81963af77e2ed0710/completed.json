@@ -1,0 +1,5 @@
+{
+  "stage": "module_elastic_dot4_core:model:generator.golden_model:1",
+  "result": "def init():\n    return {}\n\n\ndef step(state, inputs: dict) -> (dict, dict):\n    if inputs.get(\"rst\", 0) & 1:\n        return init(), {\"out_data\": 0}\n\n    total = sum(\n        (inputs.get(f\"a{i}\", 0) & 0xFF) * (inputs.get(f\"b{i}\", 0) & 0xFF)\n        for i in range(4)\n    )\n    return state, {\"out_data\": total & 0x3FFFF}",
+  "artifacts": {}
+}

@@ -191,36 +191,39 @@ class Orchestrator:
             print(f"[resume] continuing from phase={saved['phase']} "
                   f"iter={saved.get('iteration', '?')}")
         try:
-            if self.cfg.mode == "build":
-                result = self._run_build(saved)
-            else:
-                result = self._run_optimize(saved)
-        except VerificationEvidenceError as exc:
-            best = self._verified_best_iteration()
-            result = {"status": "infra_blocked", "failure_kind": FailureKind.INFRA.value,
-                      "error": str(exc), "best_iteration": best, "run_dir": str(self.state.run_dir)}
-            self._snapshot(phase="INFRA_BLOCKED", best_iteration=best, evidence_failure=[str(exc)])
-            self.state.append_event({"stage": "verification_input_integrity", "outcome": "infra_blocked",
-                                     "reason": str(exc)})
-        except ModelCallError as exc:
-            checkpoint = self.state.load_fsm() or {}
-            # Baseline planning can fail before the first iteration snapshot.
-            best = self._verified_best_iteration()
-            result = {"status": "model_blocked", "failure_kind": FailureKind.INFRA.value,
-                      "role": exc.role, "error_code": exc.code, "error": str(exc),
-                      "diagnostics": exc.metadata, "run_dir": str(self.state.run_dir),
-                      "best_iteration": best, "llm_calls": self.budget.llm_calls}
-            self._snapshot(phase="MODEL_BLOCKED", blocked_phase=checkpoint.get("phase"),
-                           best_iteration=best, error_code=exc.code, role=exc.role)
-            self.state.append_event({"stage": "model_worker", "scope": self._scope,
-                                     "outcome": "INFRA_FAIL", **result})
-        except RuntimeError as exc:
-            if not str(exc).startswith(("LLM_BUDGET:", "TOOL_BUDGET:")):
-                raise
-            result = self._baseline_stop("budget_exhausted", str(exc))
-        if result.get("status") != "done":
-            atomic_write_text(self.state.run_dir / "run_summary.json", json.dumps(result, indent=2))
-        return result
+            try:
+                if self.cfg.mode == "build":
+                    result = self._run_build(saved)
+                else:
+                    result = self._run_optimize(saved)
+            except VerificationEvidenceError as exc:
+                best = self._verified_best_iteration()
+                result = {"status": "infra_blocked", "failure_kind": FailureKind.INFRA.value,
+                          "error": str(exc), "best_iteration": best, "run_dir": str(self.state.run_dir)}
+                self._snapshot(phase="INFRA_BLOCKED", best_iteration=best, evidence_failure=[str(exc)])
+                self.state.append_event({"stage": "verification_input_integrity", "outcome": "infra_blocked",
+                                         "reason": str(exc)})
+            except ModelCallError as exc:
+                checkpoint = self.state.load_fsm() or {}
+                # Baseline planning can fail before the first iteration snapshot.
+                best = self._verified_best_iteration()
+                result = {"status": "model_blocked", "failure_kind": FailureKind.INFRA.value,
+                          "role": exc.role, "error_code": exc.code, "error": str(exc),
+                          "diagnostics": exc.metadata, "run_dir": str(self.state.run_dir),
+                          "best_iteration": best, "llm_calls": self.budget.llm_calls}
+                self._snapshot(phase="MODEL_BLOCKED", blocked_phase=checkpoint.get("phase"),
+                               best_iteration=best, error_code=exc.code, role=exc.role)
+                self.state.append_event({"stage": "model_worker", "scope": self._scope,
+                                         "outcome": "INFRA_FAIL", **result})
+            except RuntimeError as exc:
+                if not str(exc).startswith(("LLM_BUDGET:", "TOOL_BUDGET:")):
+                    raise
+                result = self._baseline_stop("budget_exhausted", str(exc))
+            if result.get("status") != "done":
+                atomic_write_text(self.state.run_dir / "run_summary.json", json.dumps(result, indent=2))
+            return result
+        finally:
+            self.budget.checkpoint()
 
     def _prepare_inputs(self):
         """Freeze user inputs once; resume never follows changed external files."""
