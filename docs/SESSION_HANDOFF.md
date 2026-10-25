@@ -6,7 +6,7 @@ and actual jobs before acting. Canonical Downloads/autortl-work; preserve autort
 ## Current stage: elastic milestone and all runtime gates complete
 
 Canonical Downloads/autortl-work; branch codex/contract-context; preserve autortl.
-Runtimebe60de7 published/remoteverified; main83c52f6 remains gated. No executable
+Runtimebe60de7 validated; gated main/development integration now verified below. No executable
 source changed since frozen full1415tests685.29s; all220identities unchanged.
 
 NEWelasticbuild02 completed0:328→20LUT,54→20sliceFF,DSP0→4,setup−.052→+.155ns,
@@ -35,20 +35,24 @@ regression, not a newcounterobjective. Archive contract-campaign-12 retains
 reports/history/actuallaunch/result and sourceverification. All220identities
 unchanged. No sourcechanges after1415testfullsuite; no repeatpytest needed.
 
-Next: commit/push verified docs/evidence and integrate main+development after
-checkingactualheads. Verify committed archiveblobs and source220; recordreturned
-remotecommit. Release temporaryawake33495 whenqueueends. No model/vendor/test
-jobs remain aftercampaign; inspectactualprocesses before claimingcleanqueue.
+Authorized atomic main/development integration verified at
+acdc5921313c151d3cf62e5700c182fe315a68c1; both remoteheads matched. Verified
+1658 committed archiveblobs across allsevennewmanifests, not just workingfiles.
+Initialab0269a audit caught11ignored.joufiles; evidence-only Gitignoreexception
+and4actualGitpolicychecks correctedpackaging. Originalfailure retained in
+publication-check-01; no completed FPGA run was reset/regraded for thatfix.
+All220testedsource identities remained unchanged through integration. Subsequent
+publication-checkpoint commit may update only documentation; inspectactualheads.
+No model/vendor/test jobs active afterfinished50164; temporaryawake33495 released
+after flagremoval and verifiedtoolcompletion. No permanentpowersettings changed.
+Coordinator notes/checkpoint active for continueduser-authorizedwork; runtime/
+fixtureworkerclaims complete. No automatic scheduling/providerfailover.
 
-Publicationaudit caught11ignored.joublobs afterinitialab0269aintegration;
-originalfailedaudit/missinglist retained in workspace. .gitignore evidence-only
-journalexception and4GitpolicychecksPASS; packagingclosure/republication and
-fullcommittedblobverification required beforedeclaringarchivecompletion.
-All220sourcehashes unchanged; runtimegates remainvalid.
+Next: select a distinct stateful/signed arithmetic behavior and plan its fixed
+contract/independentfaultqualification before implementation. Do not repeat old
+counterdesignwork as a newobjective. Keep harnesschanges justified by observed
+gaps; retain allfailedexperiments and measuredresource/powertradeoffs.
 
-Coordinator token private; lease/scopes verifySQLite beforeedits. Workerclaims
-done afterreview; notes active. Temporaryawake33495 bounded120min started15:34
-Oct25, workspace/work/elastic-awake.flag; removeflag atqueueend, verifyrelease.
 TARGETS documents A7/100MHz idealIOprofile and boardvalidation requirements;
 no boardprofile, arbitraryboardXDC or hardwaredeployment claimed. Scheduling
 and crossprovider automaticfailover remain deferred. No superiority/weakmodel

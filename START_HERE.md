@@ -8,7 +8,8 @@ GitHub integration branch: `main`. Development branch: `codex/contract-context`.
 Verified runtime **be60de7**: **1,415 tests**, qualified elastic arithmetic
 checker19/19, generated elastic winner independently passed852cycles, and fresh
 full tier0campaign12 passed2/2. Oracle API and active-exit wall accounting fixes
-are tested. Inspect SESSION_HANDOFF and actual Git heads for publication state.
+are tested. Gated main/development integration verified at **acdc592**; inspect actual
+Git heads for any documentation-only publication follow-up.
 
 Elastic dot product:328→20LUT,54→20sliceFF,DSP0→4, setup+.155ns/hold+.206ns.
 Estimated power.138→.149W increased; DSP internalregisters excludedfromsliceFF.
