@@ -5,14 +5,17 @@ You can continue without access to the previous provider's conversation.
 
 Canonical checkout: `C:/Users/prince.baah/Downloads/autortl-work`.
 GitHub integration branch: `main`. Development branch: `codex/contract-context`.
-Integrated runtime **3d7813d**: **1,366 tests**, 13 canonical top-first
-verification cases and fresh full tier0 campaign11 passed. Main/development
-integration verified at **51ab66b**; inspect actual Git heads for subsequent
-documentation commits.
+Verified runtime **be60de7**: **1,415 tests**, qualified elastic arithmetic
+checker19/19, generated elastic winner independently passed852cycles, and fresh
+full tier0campaign12 passed2/2. Oracle API and active-exit wall accounting fixes
+are tested. Inspect SESSION_HANDOFF and actual Git heads for publication state.
 
-The verified three-module dot product trades325→17LUT for4DSPs, with685
-independent checks and eight restored DONE probes. Other prior divider/FIFO
-results remain separately archived; no broad model-strength claim is made.
+Elastic dot product:328→20LUT,54→20sliceFF,DSP0→4, setup+.155ns/hold+.206ns.
+Estimated power.138→.149W increased; DSP internalregisters excludedfromsliceFF.
+Actual DONEreuse/sixrestoredprobes preserved372identities/budget/stats/fileset.
+Prior three-module dot product/divider/FIFO results remain separately archived.
+Target isA7xc7a35tcpg236-1/100MHz idealIO benchmark, not verifiedboarddeployment;
+see docs/TARGETS.md. No broadmodelstrength/superiority claim is made.
 
 Keep source-bound planning and exact candidate dedupe. Additional prior-proposal
 prompt context is experimental/opt-in after its study did not establish a benefit.

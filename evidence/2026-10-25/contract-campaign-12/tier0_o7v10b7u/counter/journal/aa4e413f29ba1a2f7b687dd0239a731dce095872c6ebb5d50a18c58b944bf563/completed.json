@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_1:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 1,
+    "instruction": "Remove `prev_count` and its assignments, since it is never read. Replace the blocking `count_next` temporary and full-width all-ones comparison with a width-limited increment whose natural modulo wrap sets `overflow` on the enabled wrap cycle; preserve synchronous reset priority, load-over-enable priority, disabled count hold, and overflow hold while disabled. Keep all registered threshold flags evaluating the pre-edge `count`, including their reset values and updates during disabled and load cycles. Do not change ports, parameters, or observable cycles.",
+    "candidates": [
+      {
+        "iteration": 1,
+        "mutation": "standard",
+        "instruction": "Remove `prev_count` and its assignments, since it is never read. Replace the blocking `count_next` temporary and full-width all-ones comparison with a width-limited increment whose natural modulo wrap sets `overflow` on the enabled wrap cycle; preserve synchronous reset priority, load-over-enable priority, disabled count hold, and overflow hold while disabled. Keep all registered threshold flags evaluating the pre-edge `count`, including their reset values and updates during disabled and load cycles. Do not change ports, parameters, or observable cycles.",
+        "generated_source_sha256": "b34edca96b3074065043ab091b67cd77b357bf3d8b0ebd166b3f832e124259f1",
+        "final_source_sha256": "b34edca96b3074065043ab091b67cd77b357bf3d8b0ebd166b3f832e124259f1",
+        "generated_code_hash": "eec13e417f50e549",
+        "final_code_hash": "eec13e417f50e549",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.456,
+          "whs_ns": 0.282,
+          "lut_used": 53,
+          "ff_used": 37,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.05,
+          "total_power_w": 0.12
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\contract-campaign-12\\tier0_o7v10b7u\\counter\\iter_001\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\contract-campaign-12\\tier0_o7v10b7u\\counter\\iter_001\\cand_standard\\synth.tcl",
+          "sha256": "ab4d17aa1c4513d45f573c0a418e7edab296f89dc04935a497d4cbfa0c8e386e"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\contract-campaign-12\\tier0_o7v10b7u\\counter\\iter_001\\cand_standard\\counter.v",
+          "sha256": "583ed34da2f9aec18c0fa2878a418775ca0c0c91f35e8784c40fcd54a5f9ec22"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "ACCEPT",
+    "is_best": true,
+    "selected_source_sha256": "b34edca96b3074065043ab091b67cd77b357bf3d8b0ebd166b3f832e124259f1"
+  },
+  "artifacts": {}
+}

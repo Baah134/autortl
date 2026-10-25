@@ -15,6 +15,7 @@ learn from failures, and retain the best correct design within a fixed budget.
 | Validation | Recorded result |
 |---|---|
 | Harness regression suite | **1,415 tests passed** |
+| Generated elastic dot product | **328 → 20 LUTs · 4 DSPs · setup +0.155 ns / hold +0.206 ns · independent 852-cycle test passed** |
 | Generated pipelined dot product (3 modules) | **325 → 17 LUTs · 4 DSPs · setup +0.354 ns / hold +0.254 ns · 685-cycle independent test passed** |
 | FIFO timing recovery (8-bit, depth 3) | **Setup −0.931 → +0.108 ns · hold +0.076 ns · 22 LUTs / 13 FFs · exact saved winner independently passed** |
 | Generated packet-tagged FIFO | **23 LUTs / 31 FFs · setup +0.078 ns · hold +0.106 ns · saved winner independently passed** |
@@ -28,7 +29,7 @@ learn from failures, and retain the best correct design within a fixed budget.
 | Generated 8-bit counter build | **Golden oracle repaired automatically; independent 700-cycle test passed · 6 LUTs / 8 FFs** |
 | Generated priority encoder optimization | **6 → 5 LUTs (16.7%) · 4 FFs · exhaustive independent test passed** |
 | Accepted 32-bit counter optimization | **55 → 31 LUTs (43.6%) · 37 FFs · setup slack 0.126 ns · hold slack 0.026 ns** |
-| Fresh full tier 0 campaign | **2/2 passed · verified baselines retained when proposals did not improve them** |
+| Fresh full tier 0 campaign | **2/2 passed under fixed budgets** |
 
 Measurements use Vivado 2025.2, `xc7a35tcpg236-1` and a 10 ns clock,
 with explicit ideal zero minimum/maximum I/O delays. These are experiment
@@ -41,6 +42,12 @@ Counter setup slack decreased from 0.494 ns to 0.126 ns while area improved.
 Additional build, weaker-model and in-flight interruption coverage remains under
 validation. No held curriculum tier is claimed. Earlier unsuccessful cohorts
 remain in the evidence record.
+
+The elastic dot product recovers timing from −0.052 ns setup slack. Slice FFs
+fall from 54 to 20 while DSPs rise from zero to four; DSP internal registers are
+excluded. Estimated total power increases from 0.138 W to 0.149 W. Its checker
+passed the control and detected all 18 named behavioral faults; completed-run
+replay and six restored integrity probes preserved the saved result and budget.
 
 The dot product trades fabric logic for four DSPs (baseline: zero). Slice FFs
 fall from 52 to 18; DSP internal registers are excluded. Reported total power
@@ -56,7 +63,8 @@ The FIFO trades higher area than its failing baseline (13 LUTs) for timing
 closure. The loop then reduced its first feasible implementation from 24 to
 22 LUTs (8.3%).
 
-See the [three-module dot-product evidence](evidence/2026-10-24/generated-dot4-attempt-01/README.md),
+See the [elastic dot-product evidence](evidence/2026-10-25/generated-elastic-dot4-attempt-02/README.md),
+[three-module dot-product evidence](evidence/2026-10-24/generated-dot4-attempt-01/README.md),
 [FIFO recovery evidence](evidence/2026-10-22/generated-fifo-attempt-05/README.md),
 [test evidence](evidence/2026-10-20/README.md),
 [full-suite result](evidence/2026-10-25/elastic-harness-fixes-01/AutoRTL-elastic-fixes-full-01.txt) and
@@ -65,7 +73,7 @@ See the [three-module dot-product evidence](evidence/2026-10-24/generated-dot4-a
 [divider verification](evidence/2026-10-23/divider-admission-attempt-02/README.md),
 [packet FIFO build](evidence/2026-10-22/generated-packet-attempt-01/README.md),
 [packet FIFO admission](evidence/2026-10-22/packet-fifo-admission/README.md),
-[fresh full tier 0](evidence/2026-10-25/contract-campaign-11/README.md),
+[fresh full tier 0](evidence/2026-10-25/contract-campaign-12/README.md),
 [accepted optimization](evidence/2026-10-22/contract-campaign-07/README.md),
 [generated-build verification](evidence/2026-10-20/generated-counter/README.md) and
 [streaming build](evidence/2026-10-20/generated-streaming/README.md).

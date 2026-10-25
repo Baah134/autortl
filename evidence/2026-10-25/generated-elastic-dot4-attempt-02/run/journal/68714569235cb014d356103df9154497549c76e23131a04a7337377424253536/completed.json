@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Top interface and latency annotation: PASS \u2014 required ports and widths are preserved; top declares `// @latency 2`.\n- Defined behavior and cycle semantics: PASS \u2014 candidate instantiates the frozen two-stage core without changing its arithmetic, handshakes, reset behavior, or latency.\n- Compile, elaboration, and synthesis receipt: PASS \u2014 required tool exits succeeded and synthesis reports `SYNTH_COMPLETE`.\n- Frozen testbench simulation: PASS \u2014 simulation returned the exact `TEST PASSED` verdict; standard ladder is ALIVE.\n- Routed report and metric integrity: PASS \u2014 retained routed reports and verified process evidence are present.\n- Setup and hold feasibility: PASS \u2014 timing is met with WNS 0.137 ns and WHS 0.138 ns.\n- Improvement over previous best: PASS \u2014 verified timing recovery from a known setup-infeasible best; equal LUT count is allowed for timing recovery.\n## Summary\n- Passed: 7 of 7\n- Failed: 0 of 7\n- Improved over previous best: YES\n## Recommendation\nACCEPT\n## Reason\nThe candidate passes the deterministic behavioral, tool, report, and timing gates. Its LUT count remains 328, but the previous best was timing-infeasible while this candidate meets setup and hold, so the recorded timing recovery qualifies for promotion without requiring resource savings.",
+      "recommendation": "ACCEPT",
+      "passed": 7,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}

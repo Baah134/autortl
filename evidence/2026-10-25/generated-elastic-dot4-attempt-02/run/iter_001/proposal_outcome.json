@@ -1,0 +1,45 @@
+{
+  "candidates": [
+    {
+      "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-elastic-dot4-02\\iter_001\\cand_standard\\repair_001",
+      "cache_hit": false,
+      "final_code_hash": "d5ce7532c7744312",
+      "final_source_sha256": "7c284207940cb91f1ada01d02e4a2f8893a0bcd9771d33959156b7d2ca50530a",
+      "flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-elastic-dot4-02\\iter_001\\cand_standard\\repair_001\\synth.tcl",
+        "sha256": "a1e2ca0c6b2b4a4bc841ab1e87102a7a798ddbcfbf162f17234cb00df16f5ea0"
+      },
+      "generated_code_hash": "f713996ef44e78da",
+      "generated_source_sha256": "6705e3775d60ba2c42ba11021642a19778528b3c4f9521f7da8a538729a295eb",
+      "instruction": "Inline the frozen core\u2019s two-slot logic in `elastic_dot4` and add a resettable `full` register that tracks `v1 && v2` after each edge; derive `in_ready` as `!full || out_ready`. Update `full` from the same next-state conditions as the existing valid bits, including simultaneous retire, advance, and replacement, and preserve synchronous reset priority and the exact stage movement. Keep arithmetic widths, registered payload behavior, ports, and `// @latency 2` unchanged. Retain the candidate only if it passes every deterministic gate and routed timing feasibility; classify any promotion over thi",
+      "iteration": 1,
+      "metrics": {
+        "bram_used": 0.0,
+        "dsp_used": 0,
+        "dynamic_power_w": 0.063,
+        "ff_used": 54,
+        "lut_used": 328,
+        "sim_passed": true,
+        "timing_met": true,
+        "total_power_w": 0.134,
+        "whs_ns": 0.138,
+        "wns_ns": 0.137
+      },
+      "mutation": "standard",
+      "reason": "",
+      "rungs": 5,
+      "source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-elastic-dot4-02\\iter_001\\cand_standard\\repair_001\\elastic_dot4.v",
+        "sha256": "edd754b40f1f0d406b7a2cefeb8e26e5f9be45d71dc0b113afcb9e84896c8f13"
+      },
+      "status": "measured"
+    }
+  ],
+  "doctor": null,
+  "instruction": "Inline the frozen core\u2019s two-slot logic in `elastic_dot4` and add a resettable `full` register that tracks `v1 && v2` after each edge; derive `in_ready` as `!full || out_ready`. Update `full` from the same next-state conditions as the existing valid bits, including simultaneous retire, advance, and replacement, and preserve synchronous reset priority and the exact stage movement. Keep arithmetic widths, registered payload behavior, ports, and `// @latency 2` unchanged. Retain the candidate only if it passes every deterministic gate and routed timing feasibility; classify any promotion over thi",
+  "is_best": true,
+  "iteration": 1,
+  "recommendation": "ACCEPT",
+  "schema_version": 1,
+  "selected_source_sha256": "7c284207940cb91f1ada01d02e4a2f8893a0bcd9771d33959156b7d2ca50530a"
+}

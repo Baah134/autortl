@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_1:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 1,
+    "instruction": "Inline the frozen core\u2019s two-slot logic in `elastic_dot4` and add a resettable `full` register that tracks `v1 && v2` after each edge; derive `in_ready` as `!full || out_ready`. Update `full` from the same next-state conditions as the existing valid bits, including simultaneous retire, advance, and replacement, and preserve synchronous reset priority and the exact stage movement. Keep arithmetic widths, registered payload behavior, ports, and `// @latency 2` unchanged. Retain the candidate only if it passes every deterministic gate and routed timing feasibility; classify any promotion over thi",
+    "candidates": [
+      {
+        "iteration": 1,
+        "mutation": "standard",
+        "instruction": "Inline the frozen core\u2019s two-slot logic in `elastic_dot4` and add a resettable `full` register that tracks `v1 && v2` after each edge; derive `in_ready` as `!full || out_ready`. Update `full` from the same next-state conditions as the existing valid bits, including simultaneous retire, advance, and replacement, and preserve synchronous reset priority and the exact stage movement. Keep arithmetic widths, registered payload behavior, ports, and `// @latency 2` unchanged. Retain the candidate only if it passes every deterministic gate and routed timing feasibility; classify any promotion over thi",
+        "generated_source_sha256": "6705e3775d60ba2c42ba11021642a19778528b3c4f9521f7da8a538729a295eb",
+        "final_source_sha256": "7c284207940cb91f1ada01d02e4a2f8893a0bcd9771d33959156b7d2ca50530a",
+        "generated_code_hash": "f713996ef44e78da",
+        "final_code_hash": "d5ce7532c7744312",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.137,
+          "whs_ns": 0.138,
+          "lut_used": 328,
+          "ff_used": 54,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.063,
+          "total_power_w": 0.134
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-elastic-dot4-02\\iter_001\\cand_standard\\repair_001",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-elastic-dot4-02\\iter_001\\cand_standard\\repair_001\\synth.tcl",
+          "sha256": "a1e2ca0c6b2b4a4bc841ab1e87102a7a798ddbcfbf162f17234cb00df16f5ea0"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-elastic-dot4-02\\iter_001\\cand_standard\\repair_001\\elastic_dot4.v",
+          "sha256": "edd754b40f1f0d406b7a2cefeb8e26e5f9be45d71dc0b113afcb9e84896c8f13"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "ACCEPT",
+    "is_best": true,
+    "selected_source_sha256": "7c284207940cb91f1ada01d02e4a2f8893a0bcd9771d33959156b7d2ca50530a"
+  },
+  "artifacts": {}
+}

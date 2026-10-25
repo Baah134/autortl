@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_1:decision:instruction:0",
+  "result": "Remove `prev_count` and its assignments, since it is never read. Replace the blocking `count_next` temporary and full-width all-ones comparison with a width-limited increment whose natural modulo wrap sets `overflow` on the enabled wrap cycle; preserve synchronous reset priority, load-over-enable priority, disabled count hold, and overflow hold while disabled. Keep all registered threshold flags evaluating the pre-edge `count`, including their reset values and updates during disabled and load cycles. Do not change ports, parameters, or observable cycles.",
+  "artifacts": {}
+}

@@ -1166,3 +1166,23 @@ changes, commands, outcomes, evidence locations, limitations, and next action.
   all220source hashes unchanged. Complete source/test/focused evidence archived
   in elastic-harness-fixes-01. Next freshbuild02 and fulltier0 mergegate; main
   still83c52f6. README reflects tests/checker evidence, no generatedelastic claim.
+
+- Published testedbe60de7 todevelopment;remoteverified. Main83c52f6 remainsgated.
+  Freshbuild02 active11228, samefrozencontract/TB andoriginalbudgets; source220
+  unchangedaftercommit. No qualificationreference seed.
+
+- Freshelasticbuild02 DONE:328→20LUT,54→20sliceFF,DSP0→4,setup−.052→+.155ns,
+  hold+.206ns;power.138→.149W increased.9calls,1165.485toolseconds,
+  1303.942savedactive vs1304.797CLIwall. Firstoptimizationfault caught30assertions,
+  repairedautomatically; no invalidproposal accepted. Budgetpolicy stoppedbefore
+  staleplaniter3. No reference seed, sameoriginalspec/TB andlimits.
+- Exactwinner+frozenchild independentlypassed852cycles, actualDONE0/sixrestored
+  probes1,372identities/budget/stats/filesetunchanged.538filearchive verified.
+- Finalfreshfulltier0campaign12 active50164 on unchanged220source/be60de7;
+  main83c52f6 gated. Requiredregression is separate fromnewcomplexdesignwork.
+
+- Finalfreshfulltier0campaign12 PASSED2/2,newcohort7926a7d8192af0159e8eaadab002344259f3f298ff579739f7368f456ac1295f,
+  streak1/heldfalse; nohighertierheld. Entries:{"counter": {"baseline_lut": 55, "best_lut": 53, "calls": 3}, "mux4": {"baseline_lut": 8, "best_lut": 8, "calls": 3}}.
+  Runtime/source identities matchbe60de7 and frozen220tests. No repeatcounter
+  designobjective or weakmodel/superiorityclaim. Full1415tests and newcomplex
+  design/replayproof complete; preparinggatedmain+developmentintegration.

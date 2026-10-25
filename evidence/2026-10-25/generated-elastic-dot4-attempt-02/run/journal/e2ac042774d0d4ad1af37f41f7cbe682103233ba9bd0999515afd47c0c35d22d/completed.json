@@ -1,0 +1,5 @@
+{
+  "stage": "module_elastic_dot4_core:model:generator.golden_model:0",
+  "result": "def init():\n    return dict()\n\n\ndef step(state, inputs):\n    outputs = dict()\n    if inputs.get(\"rst\", 0):\n        outputs[\"out_data\"] = 0\n        return state, outputs\n\n    a0 = int(inputs.get(\"a0\", 0)) & 255\n    b0 = int(inputs.get(\"b0\", 0)) & 255\n    a1 = int(inputs.get(\"a1\", 0)) & 255\n    b1 = int(inputs.get(\"b1\", 0)) & 255\n    a2 = int(inputs.get(\"a2\", 0)) & 255\n    b2 = int(inputs.get(\"b2\", 0)) & 255\n    a3 = int(inputs.get(\"a3\", 0)) & 255\n    b3 = int(inputs.get(\"b3\", 0)) & 255\n\n    outputs[\"out_data\"] = (a0 * b0 + a1 * b1 + a2 * b2 + a3 * b3) & 262143\n    return state, outputs",
+  "artifacts": {}
+}

@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_1:decision:instruction:0",
+  "result": "Inline the frozen core\u2019s two-slot logic in `elastic_dot4` and add a resettable `full` register that tracks `v1 && v2` after each edge; derive `in_ready` as `!full || out_ready`. Update `full` from the same next-state conditions as the existing valid bits, including simultaneous retire, advance, and replacement, and preserve synchronous reset priority and the exact stage movement. Keep arithmetic widths, registered payload behavior, ports, and `// @latency 2` unchanged. Retain the candidate only if it passes every deterministic gate and routed timing feasibility; classify any promotion over this timing-infeasible incumbent as timing recovery, not LUT savings.",
+  "artifacts": {}
+}

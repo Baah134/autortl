@@ -3,39 +3,50 @@
 Updated October25,2026 (America/New_York). Recover Git, ownership, source hashes
 and actual jobs before acting. Canonical Downloads/autortl-work; preserve autortl.
 
-## Current stage: qualified elastic pipeline and observed harness fixes
+## Current stage: elastic milestone and all runtime gates complete
 
-Branch codex/contract-context, base83c52f6. Canonical Downloads/autortl-work;
-preserve Downloads/autortl. Full regression26716 completed0: 1415passed
-685.29seconds, all220frozen identities unchanged. Archived in
-evidence/2026-10-25/elastic-harness-fixes-01, with full source and focused logs.
-No model/vendor job active at this checkpoint. Publication/build02 remain next.
+Canonical Downloads/autortl-work; branch codex/contract-context; preserve autortl.
+Runtimebe60de7 published/remoteverified; main83c52f6 remains gated. No executable
+source changed since frozen full1415tests685.29s; all220identities unchanged.
 
-Elastic checker control plus18 actual behavior faults qualified19/19 in114.203s,
-0modelcalls. Original rejected framing01 and successful admission02 each archived
-204files under evidence/2026-10-25/elastic-dot4-admission-attempt-{01,02}.
-Generated build01 FAILED before RTL: prompt invalid signature, then unsupported
-f-string. Two charged calls; last saved8.4238sec elapsed is stale, NOT fullwall.
-Original211source/run/responses archived251files in generated-elastic-dot4-attempt-01.
-Never resume/regrade that run after source changes.
+NEWelasticbuild02 completed0:328→20LUT,54→20sliceFF,DSP0→4,setup−.052→+.155ns,
+hold+.206ns. Power.138→.149W increased; DSPinternalregisters excludedfromsliceFF.
+9calls,1165.485toolsec,1303.942savedactive/1304.797CLIwallsec. Same originalspec/TB,
+N1/3iter/16calls/25tool/35wall/1infra. No reference seed. Firstproposal failed30
+independent assertions; boundedrepair restored behavior. Second acceptedproposal
+mappedmultipliers toDSP. Loop stopped beforeiter3 because freshplan unavailable
+underbudgetdegradation; no staleplan execution or extra calls.
 
-Reviewed fixes now applied: valid oracle API/policy prompt (7focusedPASS), final
-active-exit wall checkpoint (44focusedPASS), qualified fixture/tests(122PASS).
-Golden interpreter, retry/call budgets unchanged. Finalcheckpoint cannot survive
-hardkill; DONEreuse/input guards remain outside it. Target assumptions and board
-acceptance criteria documented in docs/TARGETS.md; no board deployment claimed.
+Exactsavedtop+frozenchild independentlypassed852cycles; nominalDONE0 andsix
+restoredtamperprobes1.372protectedidentities/budget/stats/fileset unchanged.
+Completedarchive538files in evidence/2026-10-25/generated-elastic-dot4-attempt-02.
+Proof is completedreuse/tamper, not arbitraryinflightcrash/formalequivalence.
+Originalbuild01 failedbeforeRTL,2calls,invalidpromptsignature thenfstring;
+oldstale8.4238elapsed NOTfullwall. Original251filearchive neverreset/regraded.
+Checkerframing01 rejected/assertionprefixonlyfix; admission02 qualified19/19,
+0models. Both204filearchives retained. Fixsuitearchive236files retains220source
+andfocus7prompt/44budget/122fixturetests. Interpreter/retries unchanged.
 
-Next: commit/push tested development fixes; verify220source hashes aftercommit.
-Then NEW build-elastic-dot4-02, SAMEspec/TB, N1/3iter/16calls/25tool/35wall/1infra,
-generatedgolden plus independentTB; reference never used as generationseed.
-Independently validate exact saved winner+frozenchild and restored DONEtamper
-guards. Archive all outcomes before further runtime edits. Fresh fulltier0
-campaign12 required before main integration; no higherheldtier.
+FINALfreshFULLtier0campaign12 PASSED2/2 on be60de7/frozen220source.
+Newcohort7926a7d8192af0159e8eaadab002344259f3f298ff579739f7368f456ac1295f,streak1/heldfalse; nohigherheldtier.
+Actualentries:{"counter":{"baseline_lut":55,"best_lut":53,"calls":3},"mux4":{"baseline_lut":8,"best_lut":8,"calls":3}}.
+Original1iter/N1/16calls/20tool/30wall/1infra perentry. This is requiredruntime
+regression, not a newcounterobjective. Archive contract-campaign-12 retains
+reports/history/actuallaunch/result and sourceverification. All220identities
+unchanged. No sourcechanges after1415testfullsuite; no repeatpytest needed.
 
-Coordinator token held privately; active claims prompt,budget,fixture,notes,
-target-scope-doc. Renew/recover actualSQLite ownership before edits. Temporary
-awake33495 bounded120min started15:34Oct25; flagworkspace/work/elastic-awake.flag;
-remove when jobsfinish and verifyrelease. No automatic scheduling configured.
+Next: commit/push verified docs/evidence and integrate main+development after
+checkingactualheads. Verify committed archiveblobs and source220; recordreturned
+remotecommit. Release temporaryawake33495 whenqueueends. No model/vendor/test
+jobs remain aftercampaign; inspectactualprocesses before claimingcleanqueue.
+
+Coordinator token private; lease/scopes verifySQLite beforeedits. Workerclaims
+done afterreview; notes active. Temporaryawake33495 bounded120min started15:34
+Oct25, workspace/work/elastic-awake.flag; removeflag atqueueend, verifyrelease.
+TARGETS documents A7/100MHz idealIOprofile and boardvalidation requirements;
+no boardprofile, arbitraryboardXDC or hardwaredeployment claimed. Scheduling
+and crossprovider automaticfailover remain deferred. No superiority/weakmodel
+claim follows from this singlegenerateddesign.
 
 ## Completed permanent wrapper fix and complex-design milestone
 

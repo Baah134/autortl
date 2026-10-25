@@ -558,3 +558,20 @@ board pin/interface constraints and hardware validation are separate work.
 See TARGETS.md for current evidence, limits and acceptance criteria. Keep those
 assumptions explicit; do not add unverified board-support claims while fixing
 the observed oracle/API and active-wall accounting failures.
+
+
+## Elastic pipeline: retain independent checks and bounded existing roles
+
+Corrected prompt produced a valid first oracle in freshbuild02; this single
+trial is not a causal/repeated efficiency estimate. Independent checker then
+caught30assertions in a proposed ready-control transformation. Existing bounded
+repair restored validtwo-slot behavior. Keep the qualified independentTB and
+generatedoracle paths: no newreviewrole or weaker gate was necessary.
+
+Timing recovered−.052→+.137ns at328LUT before4DSPmapping yielded20LUT,+.155/.206ns.
+Keep allresource/powertradeoffs:54→20sliceFF excludesDSPregisters;power increased.
+Fresh-seed plan binding/budgetdegradation correctly stopped beforeiter3 when no
+newplan was permitted. ActualDONE plus sixrestoredprobes preserved372identities.
+No runtimeextension is justified by these successful existing paths. Hardkill
+atomicity, realboard validation and matchedweakmodel/generalagent comparisons
+remain separate unestablished claims; do not substitute unit counts for them.
