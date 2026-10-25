@@ -1186,3 +1186,10 @@ changes, commands, outcomes, evidence locations, limitations, and next action.
   Runtime/source identities matchbe60de7 and frozen220tests. No repeatcounter
   designobjective or weakmodel/superiorityclaim. Full1415tests and newcomplex
   design/replayproof complete; preparinggatedmain+developmentintegration.
+
+- Initialmain/devintegrationab0269a passedruntimegates but postpush committedblob
+  audit rejected11missingXSIM.joufiles. Alllocalmanifesthashes werevalid; Git's
+  broadjournalignore omittedthoseblobs. Originalfailedaudit/missinglist preserved.
+  Developmentpublication taxonomy recordedbeforewhitelistfix; scopedexception
+  nowallows evidencejournals whilelivejournals/logs stayignored. FouractualGit
+  policychecksPASS; all220runtime/testsourceidentities unchanged. No RTLregrade.

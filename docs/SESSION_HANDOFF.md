@@ -40,6 +40,12 @@ checkingactualheads. Verify committed archiveblobs and source220; recordreturned
 remotecommit. Release temporaryawake33495 whenqueueends. No model/vendor/test
 jobs remain aftercampaign; inspectactualprocesses before claimingcleanqueue.
 
+Publicationaudit caught11ignored.joublobs afterinitialab0269aintegration;
+originalfailedaudit/missinglist retained in workspace. .gitignore evidence-only
+journalexception and4GitpolicychecksPASS; packagingclosure/republication and
+fullcommittedblobverification required beforedeclaringarchivecompletion.
+All220sourcehashes unchanged; runtimegates remainvalid.
+
 Coordinator token private; lease/scopes verifySQLite beforeedits. Workerclaims
 done afterreview; notes active. Temporaryawake33495 bounded120min started15:34
 Oct25, workspace/work/elastic-awake.flag; removeflag atqueueend, verifyrelease.
