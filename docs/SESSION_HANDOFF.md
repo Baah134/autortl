@@ -33,11 +33,16 @@ Evidence: generated-dot4-attempt-01, dot4-admission-01, top-timescale-order-01,
 top-timescale-tests-01 under evidence/2026-10-24; final campaign under
 evidence/2026-10-25/contract-campaign-11. Full test/stage source snapshots retained.
 
-No vendor/model/test jobs active after gate. Preparing authorized atomic main/
-development integration; verify returned remoteheads and record actualcommit.
-Current pending edits are documentation/evidence only. Source211 remains frozen.
-Temporaryawake55960 watches work/final-timescale-awake.flag; REMOVE flag and
-verify release when queueends. CoordinatorOct25 lease/scopesactive.
+Authorized atomic main/development integration verified at
+51ab66b4cd7b95f2ad74b5d150e3741e3592ddcb. Runtime remains
+3d7813defd3bfef7caea2381506bbc9e2ca8065b; any publication follow-up changes
+only documentation. Working branch remains codex/contract-context.
+All 211 tested source identities remained unchanged through integration.
+Verified 1,410 committed archive content blobs across five manifests.
+No owned vendor, model or test jobs remain. Temporary awake55960 released
+after removing its flag; no permanent power settings changed.
+Coordinator Oct25 lease and notes scope remain active; implementation claims
+are complete. Scheduling remains deferred.
 
 Next complex design assessment: elastic_dot4_build, one transparent child,
 8unsigned operands,18bit result, two elastic slots/capacity2, ready/valid,

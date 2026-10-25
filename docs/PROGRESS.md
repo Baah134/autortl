@@ -1126,3 +1126,10 @@ changes, commands, outcomes, evidence locations, limitations, and next action.
   top-first qualification and fresh full tier0. Preparing gated main integration.
   The published complex design remains verified on its original runtime, with
   DSP/fabric/power tradeoffs and initial timescale failure retained.
+
+- Authorized atomic main/development integration verified at
+  51ab66b4cd7b95f2ad74b5d150e3741e3592ddcb; both remote heads matched.
+  Runtime3d7813d retains all211 tested source hashes. Verified1,410 committed
+  archive content blobs against five SHA256 manifests. Temporary awake55960
+  released after flag removal; no owned vendor/model/test jobs remain.
+  Next design contract is elastic_dot4_build; no new experiment started.

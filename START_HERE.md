@@ -5,10 +5,10 @@ You can continue without access to the previous provider's conversation.
 
 Canonical checkout: `C:/Users/prince.baah/Downloads/autortl-work`.
 GitHub integration branch: `main`. Development branch: `codex/contract-context`.
-Tested runtime **3d7813d**: **1,366 tests**, canonical13-case top-first
-verification and fresh full tier0campaign11 passed. Permanent wrapper timescale
-and reusable complex fixture are ready for gated main/development integration.
-Inspect actual Git heads and SESSION_HANDOFF for publication state.
+Integrated runtime **3d7813d**: **1,366 tests**, 13 canonical top-first
+verification cases and fresh full tier0 campaign11 passed. Main/development
+integration verified at **51ab66b**; inspect actual Git heads for subsequent
+documentation commits.
 
 The verified three-module dot product trades325→17LUT for4DSPs, with685
 independent checks and eight restored DONE probes. Other prior divider/FIFO
