@@ -1,0 +1,21 @@
+........................................F............................... [ 97%]
+..                                                                       [100%]
+================================== FAILURES ===================================
+_______________ test_project_writer_emits_inherited_top_as_utf8 _______________
+
+tmp_path = WindowsPath('C:/Users/prince.baah/Documents/Codex/2026-10-15/hey/work/top-timescale-testtmp-02/test_project_writer_emits_inhe0')
+
+    def test_project_writer_emits_inherited_top_as_utf8(tmp_path):
+        files=write_stub_project(fixture(3),tmp_path)
+        top=next(p for p in files if p.name=="top.v")
+>       assert top.read_text(encoding="utf-8").startswith("// @latency 3\n")
+E       AssertionError: assert False
+E        +  where False = <built-in method startswith of str object at 0x00000253F81C4630>('// @latency 3\n')
+E        +    where <built-in method startswith of str object at 0x00000253F81C4630> = '`timescale 1ns/1ps\n// @latency 3\n// Inherited fixed logical latency from transparent typed child wiring; not measur...] y\n);\n    core u_core (\n        .clk(clk),\n        .rst(rst),\n        .a(a),\n        .y(y)\n    );\nendmodule\n'.startswith
+E        +      where '`timescale 1ns/1ps\n// @latency 3\n// Inherited fixed logical latency from transparent typed child wiring; not measur...] y\n);\n    core u_core (\n        .clk(clk),\n        .rst(rst),\n        .a(a),\n        .y(y)\n    );\nendmodule\n' = read_text(encoding='utf-8')
+E        +        where read_text = WindowsPath('C:/Users/prince.baah/Documents/Codex/2026-10-15/hey/work/top-timescale-testtmp-02/test_project_writer_emits_inhe0/top.v').read_text
+
+tests\test_wrapper_latency.py:138: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_wrapper_latency.py::test_project_writer_emits_inherited_top_as_utf8
+1 failed, 73 passed in 1.21s

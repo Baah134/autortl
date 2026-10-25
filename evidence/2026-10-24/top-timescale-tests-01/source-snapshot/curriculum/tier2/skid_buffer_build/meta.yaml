@@ -1,0 +1,11 @@
+mode: build
+generate_golden: true
+top: skid_buffer
+spec: design_spec.json
+tb: skid_buffer_tb.v
+iterations: 2
+objective: minimize_luts
+target_freq_mhz: 100.0
+stresses: "two-entry elasticity; ready/valid ordering; full simultaneous transfers; reset and backpressure"
+pass_criteria:
+  timing_met: true

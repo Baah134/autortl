@@ -343,6 +343,10 @@ harness_failures:
     meaning: "Local planner budget handling converted an exhausted resumed execution into DONE instead of the established budget_exhausted outcome"
     repair: "Let execution budget exceptions reach the existing budget handler; retain the verified incumbent and distinguish a deliberate no-replan policy stop from a raised budget failure"
 
+  mechanical_top_missing_timescale:
+    meaning: "The mechanical build wrapper omitted a timescale and failed XSIM43-4099 when compiled before timescaled generated children"
+    repair: "Emit the deterministic timescale before optional scoped latency metadata and verify top-first elaboration without spending model repair budget"
+
 methodology:
   "TIMING-6":
     meaning: "No common primary clock between related clocks | timing between them is unsafe"

@@ -1093,3 +1093,16 @@ changes, commands, outcomes, evidence locations, limitations, and next action.
   templateprefix fix74focusedPASS; actualcontrolled samechildren/TB topfirst
   oldfailure reproduced/new685PASS/0modelcalls. Controlledarchive31files.
   Preparing one permanent fix batch with qualified complex fixture/tests.
+
+- Published verified complex design and controlled defect evidence atomically
+  to main/developmentbe9d1e649f7ef13bd7b72a028d74ef02e4564185, remote heads match.
+- Applied reviewed deterministic timescale fix and qualified complex fixture/pure
+  tests only AFTER original run archival. Taxonomy first;211sourcefiles frozen.
+  Full regression4054 active. Nextcanonical13-case top-first admission uses no
+  model; final runtime merge gate only after this complete implementation batch.
+
+- Permanent scaffold correction and qualified complex fixture passed1,366full
+  tests300.38seconds; all211 source hashes unchanged. Actual canonical top-first
+  admission passed13/13/control+12assertionfaults,0modelcalls. Fullsource/log/
+  case receipts archived before committing tested runtime. Final fresh tier0
+  gate remains before main integration of this runtime change.

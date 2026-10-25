@@ -14,7 +14,7 @@ learn from failures, and retain the best correct design within a fixed budget.
 
 | Validation | Recorded result |
 |---|---|
-| Harness regression suite | **1,340 tests passed** |
+| Harness regression suite | **1,366 tests passed** |
 | Generated pipelined dot product (3 modules) | **325 → 17 LUTs · 4 DSPs · setup +0.354 ns / hold +0.254 ns · 685-cycle independent test passed** |
 | FIFO timing recovery (8-bit, depth 3) | **Setup −0.931 → +0.108 ns · hold +0.076 ns · 22 LUTs / 13 FFs · exact saved winner independently passed** |
 | Generated packet-tagged FIFO | **23 LUTs / 31 FFs · setup +0.078 ns · hold +0.106 ns · saved winner independently passed** |
@@ -58,7 +58,7 @@ closure. The loop then reduced its first feasible implementation from 24 to
 See the [three-module dot-product evidence](evidence/2026-10-24/generated-dot4-attempt-01/README.md),
 [FIFO recovery evidence](evidence/2026-10-22/generated-fifo-attempt-05/README.md),
 [test evidence](evidence/2026-10-20/README.md),
-[full-suite result](evidence/2026-10-23/proposal-fixes-tests-02/AutoRTL-proposal-fixes-full-02.txt) and
+[full-suite result](evidence/2026-10-24/top-timescale-tests-01/AutoRTL-top-timescale-full-01.txt) and
 [scoreboard coverage](evidence/2026-10-23/scoreboard-example-coverage/README.md),
 [divider optimization](evidence/2026-10-23/generated-divider-attempt-01/README.md),
 [divider verification](evidence/2026-10-23/divider-admission-attempt-02/README.md),

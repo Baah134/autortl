@@ -401,3 +401,8 @@ correction: explicit mechanical top timescale (actual controlled43-4099→685PAS
 zero modelcalls). Integrate reviewed tiny patch plus qualified fixture/pure tests
 in one batch; taxonomy first, full regression and actual canonical topfirst check,
 then one fresh final tier0 gate. Old complex run stays frozen, never regraded.
+
+
+Permanent timescale+fixture stage:1,366 full tests and canonical13/13 actual
+top-first admission passed. Final fresh tier0campaign11 remains before main.
+The previously generated complex design remains verified on its original runtime.

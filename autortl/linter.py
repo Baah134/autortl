@@ -155,7 +155,7 @@ def _transparent_wrapper_latency(spec: DesignSpec) -> int | None:
 
 def top_verilog(spec: DesignSpec) -> str:
     """Deterministic, mechanical top-level wiring. Zero LLM involvement."""
-    lines = []
+    lines = ["`timescale 1ns/1ps"]
     latency = _transparent_wrapper_latency(spec)
     if latency is not None:
         lines.append(f"// @latency {latency}")

@@ -5,7 +5,8 @@ and actual jobs before acting. Canonical Downloads/autortl-work; preserve autort
 
 ## Main milestone complete; complex three-module build active
 
-Main/development atomic publication verified at8bbacf3588ecca74c886bc04622a149af659d344.
+Main/development complex-design publication verified atbe9d1e649f7ef13bd7b72a028d74ef02e4564185.
+Prior harness integration8bbacf3; completed complex run used runtime965251f.
 Working branch codex/contract-context; tested runtime965251f unchanged203files.
 All merge gates DONE:1,340tests507.21seconds; actual accepted-source fresh-plan
 path/no unbound inputs; exact33LUT/46FF six-width winner PASS; five actual DONE
@@ -38,29 +39,28 @@ simulation failedXSIM43-4099. Existing baseline repair call added directive.
 The repaired baseline, initial failure, golden syntax repair and source/report
 identities are retained. No rejected run was reset or acceptance weakened.
 
-## Next permanent fix, isolated and tested but NOT canonical
+## Permanent fix tested; final runtime merge gate next
 
-work/top-timescale-stage: autortl/linter.py one-line prefix, existing wrapper
-latency assertions updated, newtests/test_top_timescale.py;74focusedpassed.
-Controlledactual experiment: identical generated3children/TB, topfirst both;
-oldwrapper reproduces43-4099, addingonlytimescale passes685checks,0modelcalls.
-Archive31files evidence/2026-10-24/top-timescale-order-01. Canonical203source
-hashes still unchanged. No active vendor/model/test job at this checkpoint.
+Applied only: deterministic1line top timescale prefix, compatible scoped latency
+assertions/new tests, six qualified complex curriculum fixture files and pure
+invariant tests; observed taxonomy first. Full regression1,366passed300.38seconds,
+all211 frozen source identities unchanged. Canonical top-FIRST control+12fault
+admission passed13/13 with actual assertions and0modelcalls. Archive:
+evidence/2026-10-24/top-timescale-tests-01; full211 source snapshot/raw receipts.
+Original controlled43-4099→685PASS experiment and completed oldcomplexrun stay
+separate/frozen; do not resume/regrade either under this new runtime.
 
-Worker curriculum_plan preparing combined isolated fixture+pure tests at
-work/dot4-fixture-tests-stage; do not blindly copy all203 files. Root must review
-and claim exact scopes. Original7stagedfixturefiles remain frozen and archived.
-Before hotfix: record taxonomy, copy ONLY reviewed linter/wrapper/newtimescale
-tests plus six qualified fixture files and new fixture tests. Full regression,
-fresh no-model canonical topfirst verification and one final full tier0 gate
-before main merge (runtime actually changes). No counter design experiment.
-Never resume/regrade originaldot4 on changed runtime. Publish current verified
-complex result separately from this upcoming implementation.
+Publish tested source to development, then fresh FULL tier0 campaign11 on final
+unchanged code, original per-entry budgets1iter/N1/16calls/20tool/30wall/1infra.
+This is the final required regression gate for an actual runtime change, not
+counter design work. New cohort must not inherit old streak. No held higher tier.
+Fullsuite helper work/test_top_timescale_batch.py; canonicaladmission helper
+work/admit_dot4_canonical.py; archive helper work/archive_timescale_batch.py.
+No active model/vendor/test job at this checkpoint. Main stillbe9d1e6 until gate.
 
 Awake51802 bounded120min, notes/evidence coordinator active; release atqueueend.
 Scheduling deferred; no automatic provider failover. Public README holds actual
-verified result; handoff stays here. Runtime965251f/main8bbacf3 remain until next
-authorized documentation/evidence publication; inspect actual Git heads.
+verified result; handoff stays here. Mainbe9d1e6/runtime965251f remain published until finalfix gates pass; inspect actual Git heads.
 
 ## Checkout and integration
 

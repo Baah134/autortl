@@ -25,6 +25,8 @@ supported schema and limits.
    generated mechanically (`linter.top_verilog`) — zero LLM. A validated complete
    transparent single-child wrapper inherits that child's known latency contract;
    arbitrary module graphs receive no inferred aggregate numeric latency.
+   Mechanical wrappers explicitly declare a 1 ns / 1 ps timescale before optional
+   latency metadata, so elaboration does not depend on file order.
 2. **Verification ladder.** static checks (ms) → xvlog (s) → unit sim →
    integration sim → synthesis. A candidate that dies at rung 1 costs
    milliseconds, not minutes.

@@ -19,7 +19,7 @@ def test_known_transparent_wrapper_inherits_numeric_contract(latency):
     spec=fixture(latency)
     assert lint_spec(spec)==[]
     text=top_verilog(spec)
-    assert text.startswith(f"// @latency {latency}\n")
+    assert text.startswith(f"`timescale 1ns/1ps\n// @latency {latency}\n")
     top=infer_module(text,"top")
     assert top.latency_known is True and top.latency==latency
     assert "not measured timing" in text
@@ -135,4 +135,4 @@ def test_implicit_and_explicit_same_packed_shape_can_inherit():
 def test_project_writer_emits_inherited_top_as_utf8(tmp_path):
     files=write_stub_project(fixture(3),tmp_path)
     top=next(p for p in files if p.name=="top.v")
-    assert top.read_text(encoding="utf-8").startswith("// @latency 3\n")
+    assert top.read_text(encoding="utf-8").startswith("`timescale 1ns/1ps\n// @latency 3\n")
