@@ -1,0 +1,11 @@
+mode: build
+top: signed_fir4
+spec: design_spec.json
+tb: signed_fir4_tb.v
+generate_golden: true
+iterations: 3
+objective: minimize_luts
+target_freq_mhz: 100.0
+stresses: "signed stateful accepted history; three elastic slots; stalls reset and exact transfer age"
+pass_criteria:
+  timing_met: true

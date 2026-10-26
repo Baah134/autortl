@@ -1,7 +1,24 @@
 # Current AutoRTL checkpoint
 
-Updated October25,2026 (America/New_York). Recover Git, ownership, source hashes
+Updated October26,2026 (America/New_York). Recover Git, ownership, source hashes
 and actual jobs before acting. Canonical Downloads/autortl-work; preserve autortl.
+
+## Current stage: tested signed FIR4 fixture ready for generated build
+
+Completed 1429 tests in 558.54 seconds on227frozen
+source files; all unchanged, including56runtime implementation files. Prior
+control+27realbehaviorfault admission passed28/28,307-file archive retained.
+Fullsuite/source archive in evidence/2026-10-26/signed-fir4-tests-01.
+Independent reviewer found no correctness issue. Generated FIR build NOT yet
+launched. Test76669 completed; no vendor/model queue active at this checkpoint.
+Awake6908 remains bounded for the next actual verification queue.
+
+Next: NEWwork/run_signed_fir4_build01.py, same admitted spec/TB and N1/3iter/
+16call/25tool/35wall/1infra limits, no qualificationreference seed. Preserve any
+failure before changing source. Exactwinner+child and actualDONE/restoredtamper
+checks beforemain integration. Runtimeunchanged: no oldcounterobjective/redundant
+runtime tier0 gate. Minor fixtureREADME staged-status/path references will be
+corrected as an explicit doc-only delta after the frozen experiments.
 
 ## Current stage: elastic milestone and all runtime gates complete
 

@@ -1199,3 +1199,61 @@ changes, commands, outcomes, evidence locations, limitations, and next action.
   All220testedsourcehashes unchanged. Queueclosed; temporaryawake33495 released
   afterflagremoval/toolcompletion, no permanentpowerchanges. Finalpublication
   checkpoint may be documentationonly; inspectactualGitheads.
+
+
+## October25 — begin stateful signed streaming arithmetic
+
+- Recovered clean85266b9 and unchanged220testedsource; no old batch jobs.
+  Selected signed FIR4 with accepted-sample history and3elastic slots/age3.
+  Contract/fault/budget plan recorded before implementation. No harness feature.
+- Read-only reviewer confirms stateful scoreboard support. Existing IOExamples
+  repeat one input per fresh oracle invocation; they cannot express impulse-tail
+  sequences. Independent TB will own those checks; no API expansion needed.
+- Fixtureworker hit quota before creating stage. User resumed; no vendor/model
+  experiment or canonical source edit occurred during that interruption.
+
+- Pre-tool review caughtincompatibleTESTFAILEDsummary; firstfocus1failed13passed
+  preserved. Fourreporting-onlyedits correctedcolon and3setupcoveragecategories;
+  allpredicates/stimulus/fiveothersources unchanged. Final207focusedPASS109.69s.
+- Actual28caseadmission01 active13539 onfrozen220source/7stagefiles. ControlPASS
+  800cycles,525accepted/502retired/23aborted,7nonemptyresetpatterns. Faultmatrix
+  incompleteuntilfinalreceipt; no model/synthesiscalls or canonicalruntimeedits.
+
+
+## October26 — resume signed stateful FIR integration
+
+Recovered85266b9 after prior approval-review quota reset. Previous integration
+was not executed during quota failure. Reclaimed expired coordinator lease;
+no previous vendor/model/test jobs remained. Verified original220source and
+307-file immutable admission archive:28/28 qualified,0models,339.797seconds.
+Integrated six curriculum files plus14-case test module;56 runtime implementation
+files unchanged. Full pytest ACTIVE76669 on227frozen sourcefiles, raw workspace
+outputs/AutoRTL-signed-fir4-full-01.txt. Independent read-only review found no
+correctness issue; fixture README has two minor staged-status/path references
+to correct after experiment freeze. No source/fixture/test edits while tests or
+generated experiment active. Temporary awake6908 watches fir4-oct26-awake.flag,
+bounded120minutes. No model/vendor job launched yet.
+
+Next: full result receipt then archive_signed_fir4_tests.py, publish tested
+development milestone; NEWrun_signed_fir4_build01.py, fixed N1/3iter/16calls/
+25tool/35wall/1infra, same admitted spec/TB, no qualification reference seed.
+Independent exact winner+child and DONE tamper proof before main integration.
+Runtime unchanged: no fresh counter objective or redundant runtime tier0 gate.
+
+
+## October26 — signed FIR checker and full regression complete
+
+Completed 1429 tests in 558.54 seconds on227frozen
+source files; all unchanged, including56runtime implementation files. Prior
+control+27realbehaviorfault admission passed28/28,307-file archive retained.
+Fullsuite/source archive in evidence/2026-10-26/signed-fir4-tests-01.
+Independent reviewer found no correctness issue. Generated FIR build NOT yet
+launched. Test76669 completed; no vendor/model queue active at this checkpoint.
+Awake6908 remains bounded for the next actual verification queue.
+
+Next: NEWwork/run_signed_fir4_build01.py, same admitted spec/TB and N1/3iter/
+16call/25tool/35wall/1infra limits, no qualificationreference seed. Preserve any
+failure before changing source. Exactwinner+child and actualDONE/restoredtamper
+checks beforemain integration. Runtimeunchanged: no oldcounterobjective/redundant
+runtime tier0 gate. Minor fixtureREADME staged-status/path references will be
+corrected as an explicit doc-only delta after the frozen experiments.

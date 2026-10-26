@@ -14,12 +14,13 @@ learn from failures, and retain the best correct design within a fixed budget.
 
 | Validation | Recorded result |
 |---|---|
-| Harness regression suite | **1,415 tests passed** |
+| Harness regression suite | **1,429 tests passed** |
 | Generated elastic dot product | **328 → 20 LUTs · 4 DSPs · setup +0.155 ns / hold +0.206 ns · independent 852-cycle test passed** |
 | Generated pipelined dot product (3 modules) | **325 → 17 LUTs · 4 DSPs · setup +0.354 ns / hold +0.254 ns · 685-cycle independent test passed** |
 | FIFO timing recovery (8-bit, depth 3) | **Setup −0.931 → +0.108 ns · hold +0.076 ns · 22 LUTs / 13 FFs · exact saved winner independently passed** |
 | Generated packet-tagged FIFO | **23 LUTs / 31 FFs · setup +0.078 ns · hold +0.106 ns · saved winner independently passed** |
 | Generated iterative divider (8-bit) | **38 → 26 LUTs (31.6%) · 38 FFs · setup +0.315 ns / hold +0.129 ns · saved winner independently passed** |
+| Signed stateful FIR verification | **800-cycle control passed; all 27 named behavioral faults detected** |
 | Elastic arithmetic verification | **Two pipeline slots; control passed and all 18 named behavioral faults detected** |
 | Multi-cycle divider verification | **Six widths passed; all 20 named faults detected, including stalled-result reset** |
 | Packet-tagged FIFO verification | **Six configurations passed; all 19 named source mutations detected** |
@@ -63,11 +64,12 @@ The FIFO trades higher area than its failing baseline (13 LUTs) for timing
 closure. The loop then reduced its first feasible implementation from 24 to
 22 LUTs (8.3%).
 
-See the [elastic dot-product evidence](evidence/2026-10-25/generated-elastic-dot4-attempt-02/README.md),
+See the [signed FIR verification](evidence/2026-10-25/signed-fir4-admission-attempt-01/README.md),
+[elastic dot-product evidence](evidence/2026-10-25/generated-elastic-dot4-attempt-02/README.md),
 [three-module dot-product evidence](evidence/2026-10-24/generated-dot4-attempt-01/README.md),
 [FIFO recovery evidence](evidence/2026-10-22/generated-fifo-attempt-05/README.md),
 [test evidence](evidence/2026-10-20/README.md),
-[full-suite result](evidence/2026-10-25/elastic-harness-fixes-01/AutoRTL-elastic-fixes-full-01.txt) and
+[full-suite result](evidence/2026-10-26/signed-fir4-tests-01/README.md) and
 [scoreboard coverage](evidence/2026-10-23/scoreboard-example-coverage/README.md),
 [divider optimization](evidence/2026-10-23/generated-divider-attempt-01/README.md),
 [divider verification](evidence/2026-10-23/divider-admission-attempt-02/README.md),

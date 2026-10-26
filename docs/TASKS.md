@@ -501,3 +501,67 @@ signed arithmetic under backpressure) and be planned/fault-qualified first.
 Realboardprofile work needs exactboard/interface requirements; TARGETS defines
 acceptance. Do not advertise arbitraryboardXDC/multiclock/hardwarevalidation or
 formal/hardkillatomicity without implementing and measuring those capabilities.
+
+
+## October25: signed stateful FIR4 admission/build plan
+
+Exercise a new behavior, not another counter or stateless dot product. Top
+signed_fir4, one transparent signed_fir4_core, signed8 x, signed13 out_data,
+single clk, synchronous active-high rst, no parameters, ready/valid scoreboard.
+Each accepted sample produces y[n]=3*x[n]-5*x[n-1]+7*x[n-2]-2*x[n-3]. History
+is the three previous ACCEPTED samples, initially/reset zero; only input
+handshakes advance it. Arithmetic is exact signed13 (range[-2169,2166]), no
+saturation. External oracle values are masked integers. Reset overrides all
+transfers at rising edges, clears history and all three valid slots. No
+asynchronous history or valid effect, including off-edge pulses. Ready/valid
+reflect slot state even before the edge while reset is asserted.
+
+Three elastic slots, capacity3: r3=!v3||out_ready, r2=!v2||r3, r1=!v1||r2;
+in_ready=r1, out_valid=v3. Capture edgek gives stage3 availability afteredgek+2,
+earliest transferedgek+3 (scoreboard age3). Sustain one/cycle afterfill and full
+simultaneous retire/advance/replace. Stalled valid output remains stable;
+invalid payload unspecified. Producer holds x/valid while blocked.
+
+Golden API already supports accepted-transaction state. Existing IOExamples
+restart the oracle per example and repeat the same tuple after_cycles times;
+they are not a temporal trace. Use truthful first/repeated-constant anchors;
+independent TB owns impulse/tail, alternating extrema and reset-history checks.
+No new oracle protocol, role, framework or harness extension is proposed.
+
+Prepare isolated spec/meta/README/reference/independentTB/faultmaterializer;
+review checker before actual tools. Checker stores whole mathematical results
+in independent slots/queue while reference may use partials/history; compare
+preedge transfers and postNBA availability, exact readiness/capacity/latency,
+held output, accepted-history math, queue age/conservation and reset abort.
+Cover both-sign impulses/tails, mixed sequences, extrema forcing13bits,
+long stalls with nonzerohistory, invalid cycles with changing data, all seven
+nonempty occupancy patterns at reset, stalled resets, offedge pulses with
+history-only/empty pipeline and full blocked pipeline. Check during pulse too.
+
+Planned admission: controlPASS plus27 distinct compiling behavioral faults:
+current_coefficient, history_coefficient, swapped_taps, unsigned_input,
+unsigned_history, truncate12, history_on_invalid, history_on_blocked,
+history_delay, reverse_history_shift, stale_history_reset, async_history_reset,
+early_output, late_output, accept_full, overwrite_stage1, overwrite_stage2,
+clear_stalled_valid, corrupt_held_output, lose_full_replacement,
+throughput_bubble, retained_stage1_reset, retained_stage2_reset,
+retained_stage3_reset, async_valid_reset, incorrect_downstream_ready,
+combinational_reset_gate. No compile failure/timeout/coverage-only kill counts.
+Require actual exits and raw FAIL BEHAVIOR detail. Retain misses and all hashes
+before correcting a checker. Explicitly amend fault definitions before launch
+if a proposed mutation cannot isolate the intended behavior; never silently
+drop a miss from the denominator.
+
+After qualification, NEW generated build with generated stateful golden plus
+independently admitted TB, no qualification-reference seed. N1, max3iterations,
+16modelcalls,25tool/35wallminutes,1infraretry. Vivado2025.2,xc7a35tcpg236-1,
+100MHz,idealzero min/max IO. Freeze source/inputs/budgets and preserve all
+attempts. Independently simulate exact saved winner+frozenchild, actual DONE
+nominal/restored child/spec/plan/input/outcome/winner tamper checks. Record LUT,
+DSP,RAM,sliceFF,timing,power and total costs together. Full regressions for
+actual implementation changes; fresh tier0 only if runtime changes require it.
+
+
+October26 admission/integration gate complete:28/28actualcases,207focusedtests,
+1429fulltests/558.54seconds;227sourceidentities and56runtimefiles unchanged.
+Next generatedFIRbuild01 retains originalcontract/referenceexclusion/budgets.
