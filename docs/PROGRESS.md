@@ -1257,3 +1257,34 @@ failure before changing source. Exactwinner+child and actualDONE/restoredtamper
 checks beforemain integration. Runtimeunchanged: no oldcounterobjective/redundant
 runtime tier0 gate. Minor fixtureREADME staged-status/path references will be
 corrected as an explicit doc-only delta after the frozen experiments.
+
+
+- Tested milestone9280888d1c57f38246e6a3bbbd34923ece66df3f pushed todevelopment;
+  remotehead/source227verified. All545newarchiveblobs match committedbytes.
+  NEWgeneratedsignedFIRbuild01 ACTIVE57929, originalfixedbudgets, no reference
+  seed. Main85266b9 remainsgated; no runtimeimplementationchange.
+
+- Interim build01 iter1 timing recovery accepted:78to80LUT,66to67FF,setup
+  -.327to+.400ns,hold+.119ns,DSP0,power.088W unchanged. Iter2 measuring;
+  not finalwinner/independent replay proof yet. Postrun frozen-generated-grader
+  audit plan recorded beforelaunch; no source changes while originalrun active.
+
+
+## October26 — generated signed stateful FIR optimization verified
+
+- Original build01 completed on frozen227source/runtimeunchanged.78to52LUT
+  (33.3% below timing-failing baseline); firstfeasible80to52LUT(35%).66to67FF,
+  DSP0,setup-.327to+.169ns,hold+.106ns,power.088W unchanged.12modelcalls,
+  1190.343toolsec,1428.322savedactive vs1429.016CLIwallsec. Originalbudget.
+- Existingplanner used actualreadycriticalpath: registeredfullflag recovered
+  timing at80LUT. Revertingreadychain failed-.574ns and was rejected; Doctor
+  attempted boundedrepair. Finalexplicitconstant shift/add arithmetic retained
+  readiness logic and reached52LUT. Keep bothfailed andsuccessfultrajectories.
+- Exactsavedtop+frozenchild independentlypassed800cycles; nominalDONE0 and
+  sixrestoredprobes1 preserved454identities/budget/routerstats/fileset.
+  Originalrun610-filearchive frozen before diagnosticgeneratedgraderaudit67688.
+  No hardkill/formal/weaker-model/board claim; no runtimefeature added yet.
+- PublicREADME now emphasizes complexverifieddesigns with conciseevidence and
+  measuredtradeoffs; oldcounterhistory remains inPROGRESS/evidence. Current
+  handoff was condensed to one livecheckpoint with historylinks to reduce stale
+  recovery context. Nextaudit and correctioncriteria were recorded beforelaunch.

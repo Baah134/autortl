@@ -1,0 +1,77 @@
+{
+  "candidates": [
+    {
+      "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-signed-fir4-01\\iter_002\\cand_standard",
+      "cache_hit": false,
+      "final_code_hash": "7959320202fc4347",
+      "final_source_sha256": "fb670f1343ebc4787988aa1f523c1994efcc8ed2effc01ea83901a4efba6d976",
+      "flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-signed-fir4-01\\iter_002\\cand_standard\\synth.tcl",
+        "sha256": "c9fa3a70692f1233debbd786dd58060ef640e70aed564dbbe4fb6fc2120f6edb"
+      },
+      "generated_code_hash": "7959320202fc4347",
+      "generated_source_sha256": "fb670f1343ebc4787988aa1f523c1994efcc8ed2effc01ea83901a4efba6d976",
+      "instruction": "In the top module, remove `full` and its `next_valid1/2/3` calculation, and derive `ready3 = !valid3 || out_ready`, `ready2 = !valid2 || ready3`, `ready1 = !valid1 || ready2`, with `in_ready = ready1`. Keep the three valid/data slots, accepted-sample history update, FIR arithmetic, and synchronous reset behavior unchanged; preserve the `// @latency 3` annotation. The candidate must pass the unchanged verification gates and routed setup/hold checks, and improve on the incumbent\u2019s 80 LUTs to qualify as an objective gain.",
+      "iteration": 2,
+      "metrics": {
+        "bram_used": 0.0,
+        "dsp_used": 0,
+        "dynamic_power_w": 0.018,
+        "ff_used": 66,
+        "lut_used": 78,
+        "sim_passed": true,
+        "timing_met": false,
+        "total_power_w": 0.088,
+        "whs_ns": 0.106,
+        "wns_ns": -0.574
+      },
+      "mutation": "standard",
+      "reason": "",
+      "rungs": 5,
+      "source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-signed-fir4-01\\iter_002\\cand_standard\\signed_fir4.v",
+        "sha256": "486a7eb1bc08bfbaa6cb0235c83a84a57fbfcf3e0c238c5d3179455321ecd13f"
+      },
+      "status": "measured"
+    }
+  ],
+  "doctor": {
+    "action": "rtl_surgery",
+    "adopted": false,
+    "identity_count": 3,
+    "input_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-signed-fir4-01\\iter_002\\cand_standard\\signed_fir4.v",
+      "sha256": "486a7eb1bc08bfbaa6cb0235c83a84a57fbfcf3e0c238c5d3179455321ecd13f"
+    },
+    "measured_metrics": {
+      "bram_used": 0.0,
+      "dsp_used": 0,
+      "dynamic_power_w": 0.017,
+      "ff_used": 67,
+      "lut_used": 80,
+      "sim_passed": true,
+      "timing_met": false,
+      "total_power_w": 0.087,
+      "whs_ns": 0.031,
+      "wns_ns": -0.146
+    },
+    "proposed_source_text_sha256": "dbeac205a38e44f038d2f29485869aee027379528bd12fa2b276181820ac5243",
+    "reason": "timing_not_closed",
+    "status": "NOT_ADOPTED",
+    "tools_ran": true,
+    "trial_flow_script": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-signed-fir4-01\\iter_002\\doctor_rtl_surgery_trial\\synth.tcl",
+      "sha256": "ecb6e8de760d1bfc012f1b634c5f6faa27bb73654635cd1a4d76d8bfa1789f05"
+    },
+    "trial_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-signed-fir4-01\\iter_002\\doctor_rtl_surgery_trial\\signed_fir4.v",
+      "sha256": "b946b0f3db623a60c439f36045a28174dcfdb2f957e389c0cc538fbbb1578a51"
+    }
+  },
+  "instruction": "In the top module, remove `full` and its `next_valid1/2/3` calculation, and derive `ready3 = !valid3 || out_ready`, `ready2 = !valid2 || ready3`, `ready1 = !valid1 || ready2`, with `in_ready = ready1`. Keep the three valid/data slots, accepted-sample history update, FIR arithmetic, and synchronous reset behavior unchanged; preserve the `// @latency 3` annotation. The candidate must pass the unchanged verification gates and routed setup/hold checks, and improve on the incumbent\u2019s 80 LUTs to qualify as an objective gain.",
+  "is_best": false,
+  "iteration": 2,
+  "recommendation": "REJECT",
+  "schema_version": 1,
+  "selected_source_sha256": "fb670f1343ebc4787988aa1f523c1994efcc8ed2effc01ea83901a4efba6d976"
+}

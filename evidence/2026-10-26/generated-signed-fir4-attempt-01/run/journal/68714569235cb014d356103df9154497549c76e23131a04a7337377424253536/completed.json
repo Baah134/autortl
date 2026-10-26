@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Interface and top latency annotation: PASS \u2014 Required ports and widths are preserved; the top declares `// @latency 3`.\n- Defined behavior and deterministic ladder: PASS \u2014 Standard ladder is ALIVE; simulation passes the specified transaction, reset, latency, throughput, and stall checks.\n- Compile, elaboration, and simulation gates: PASS \u2014 xvlog, xelab, and xsim exited successfully; the simulation reports `TEST PASSED`.\n- Synthesis and metric integrity: PASS \u2014 Vivado exited successfully with `SYNTH_COMPLETE`; routed reports and structured metrics are retained.\n- Timing feasibility: PASS \u2014 Candidate timing is met, with WNS 0.4 ns and WHS 0.119 ns.\n- Improvement over previous best: PASS \u2014 This is valid timing recovery from a known setup-infeasible best (WNS \u22120.327 ns). LUTs rose from 78 to 80, which is permitted for timing recovery.\n## Summary\n- Passed: 6 of 6\n- Failed: 0 of 6\n- Improved over previous best: YES\n## Recommendation\nACCEPT\n## Reason\nThe candidate passes the deterministic behavioral and tool gates and meets setup and hold timing. The previous best had known negative setup slack, so the recorded `timing_recovery` qualifies as improvement even though LUT usage increased.",
+      "recommendation": "ACCEPT",
+      "passed": 6,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}

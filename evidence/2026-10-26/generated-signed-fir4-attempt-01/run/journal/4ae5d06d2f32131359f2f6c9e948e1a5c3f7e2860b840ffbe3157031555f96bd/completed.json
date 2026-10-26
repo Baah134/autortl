@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_2:decision:instruction:0",
+  "result": "In the top module, remove `full` and its `next_valid1/2/3` calculation, and derive `ready3 = !valid3 || out_ready`, `ready2 = !valid2 || ready3`, `ready1 = !valid1 || ready2`, with `in_ready = ready1`. Keep the three valid/data slots, accepted-sample history update, FIR arithmetic, and synchronous reset behavior unchanged; preserve the `// @latency 3` annotation. The candidate must pass the unchanged verification gates and routed setup/hold checks, and improve on the incumbent\u2019s 80 LUTs to qualify as an objective gain.",
+  "artifacts": {}
+}

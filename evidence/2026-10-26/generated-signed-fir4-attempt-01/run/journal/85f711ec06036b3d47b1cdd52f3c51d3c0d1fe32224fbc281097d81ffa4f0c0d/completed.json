@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_2:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 2\n## Contract check\n- Interface and defined behavior: PASS \u2014 ladder reports 5 rungs ALIVE; candidate preserves the specified ports, signed widths, reset, handshakes, and cycle behavior.\n- Top latency annotation: PASS \u2014 `// @latency 3` matches the authoritative known latency.\n- Compilation, elaboration, and simulation: PASS \u2014 required tools exited successfully; simulation reports `TEST PASSED`.\n- Routed reports and metric integrity: PASS \u2014 retained routed reports and process evidence are present and consistent.\n- Timing feasibility: FAIL \u2014 `timing_met=false` and WNS is \u22120.574 ns; positive WHS does not satisfy setup timing.\n- Promotion objective: FAIL \u2014 although LUTs fall from 80 to 78, the candidate is not timing-feasible while the previous best is; it cannot replace that incumbent.\n## Summary\n- Passed: 4 of 6\n- Failed: 2 of 6\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes the deterministic behavior and verification checks and has the required latency annotation. It does not meet the mandatory setup timing gate, while the previous best is timing-feasible, so the LUT reduction does not qualify it for promotion.",
+      "recommendation": "REJECT",
+      "passed": 4,
+      "failed": 2
+    }
+  },
+  "artifacts": {}
+}

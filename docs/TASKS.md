@@ -565,3 +565,30 @@ actual implementation changes; fresh tier0 only if runtime changes require it.
 October26 admission/integration gate complete:28/28actualcases,207focusedtests,
 1429fulltests/558.54seconds;227sourceidentities and56runtimefiles unchanged.
 Next generatedFIRbuild01 retains originalcontract/referenceexclusion/budgets.
+
+
+## October26: frozen generated FIR grader audit (diagnostic, before any correction)
+
+After build01 and exactwinner/DONEproof are archived, run fresh generated-audit01
+with the original generated unit TB/golden/stimulus unchanged against reference
+plus ALL27 original FIR faults. Everyfault applies; exclude none based on expected
+coverage. Childbytes must match independent28/28admission. Actual successful
+compile/elaboration/sim exits and existing strict FAIL/TESTFAILED verdict required;
+no timeout/compile/coverage-only kill. Reference mustpass or stop. No model or
+synthesis calls. Keep originalrun identities/fileset/budget/routerstats/source227
+unchanged. Record detected/missed/ungraded and actual diagnostic costs separately.
+
+Static hypotheses only: generated unittraffic continuouslyoffers104payloads,
+periodicready, startupreset, minage/order/heldchecks. Expectedvalues appear wholly
+within signed12; truncate12 may escape. No midstream/offedge reset or invalid
+bubbles followed by accepted samples; temporal/state faults may escape. Audit
+results, not these hypotheses, establish measured misses. Independentchecker
+already detects all27; do not rerun it if exactsource/TB identities match.
+
+If arithmetic truncation is actuallymissed, first inspect the smallest existing
+stimulus change: deterministic signed extrema/alternating accepted payloads,
+without a new sequence API, role, or framework. Preserve originalrun/audit before
+anyruntimefix; document taxonomy, tests and controlled unchanged oracle/reference/
+mutant comparison. Runtimechange requires fullregression/fresh tier0 and a NEW
+FIR trial with originalcontract/budgets, never regrade build01. Expected generic
+temporal misses alone do not justify replacing the acceptedtransaction scoreboard.
