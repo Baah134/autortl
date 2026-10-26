@@ -1,0 +1,158 @@
+FFF....FFFF                                                              [100%]
+================================== FAILURES ===================================
+________ test_real_restricted_fir_oracle_reaches_both_signed13_extrema ________
+
+tmp_path = WindowsPath('C:/Users/prince.baah/Documents/Codex/2026-10-15/hey/work/fir4-signed-corners-old-tmp/test_real_restricted_fir_oracl0')
+
+    def test_real_restricted_fir_oracle_reaches_both_signed13_extrema(tmp_path):
+        root = Path(__file__).resolve().parents[1]
+        spec = DesignSpec.load(root/'curriculum/tier3/signed_fir4_build/design_spec.json').modules[0]
+        path = tmp_path/'fir_oracle.py'
+        path.write_text('''def init():
+        return [0,0,0]
+    def step(state, inputs):
+        if inputs.get("rst",0):
+            return init(), {"out_data":0}
+        x=inputs["x"]
+        if x>=128:
+            x=x-256
+        result=3*x-5*state[0]+7*state[1]-2*state[2]
+        return [x,state[0],state[1]], {"out_data":result & 8191}
+    ''', encoding='utf-8')
+        oracle = GoldenModel(path)
+        oracle.work_parent = tmp_path
+        rows = tbgen.gen_stimulus(spec, n_random=100, seed=1234)
+        result = tbgen.expected_outputs(spec, oracle, rows)
+        values = [row['out_data']-8192 if row['out_data']>=4096 else row['out_data'] for row in result]
+>       assert 2166 in values and -2169 in values
+E       assert (2166 in [0, -3, -379, 1014, -1622, 1477, ...])
+
+tests\test_tbgen_signed_corners.py:55: AssertionError
+______ test_mixed_signed_widths_preserve_prefix_examples_and_random_tail ______
+
+    def test_mixed_signed_widths_preserve_prefix_examples_and_random_tail():
+        spec = channel()
+        spec.ports.insert(3, Port('s', 'input', 9, signed=True))
+        spec.examples = [IOExample({'rst':0, 'in_valid':1, 'a':3, 's':17, 'b':9}, {'y':0}),
+                         IOExample({'rst':0, 'in_valid':1, 'a':3, 's':17, 'b':9}, {'y':0})]
+        before = copy.deepcopy(spec)
+        corners, tail = legacy_corners_and_tail(spec, 17, 61)
+        rows = tbgen.gen_stimulus(spec, n_random=17, seed=61)
+        assert rows[:4] == corners + [{'a':3, 's':17, 'b':9}]
+>       assert rows[4:10] == [{'a':8, 's':256, 'b':0}, {'a':7, 's':255, 'b':0}] * 3
+E       AssertionError: assert [{'a': 15, 's...: 6, 'b': 23}] == [{'a': 8, 's'... 255, 'b': 0}]
+E         
+E         At index 0 diff: {'a': 15, 's': 186, 'b': 55} != {'a': 8, 's': 256, 'b': 0}
+E         Use -v to get more diff
+
+tests\test_tbgen_signed_corners.py:73: AssertionError
+___________ test_signed_one_bit_trace_keeps_repeated_temporal_rows ____________
+
+    def test_signed_one_bit_trace_keeps_repeated_temporal_rows():
+        spec = channel(width=1)
+>       assert tbgen.gen_stimulus(spec, n_random=0) == [
+            {'a':0,'b':0}, {'a':1,'b':127}, {'a':1,'b':64},
+            *([{'a':1,'b':0}, {'a':0,'b':0}]*3)]
+E       AssertionError: assert [{'a': 0, 'b'...: 1, 'b': 64}] == [{'a': 0, 'b'... 'b': 0}, ...]
+E         
+E         Right contains 6 more items, first extra item: {'a': 1, 'b': 0}
+E         Use -v to get more diff
+
+tests\test_tbgen_signed_corners.py:84: AssertionError
+__ test_signed_trace_exact_total_limit_includes_reset_and_unique_examples[1] __
+
+reset_cycles = 1
+
+    @pytest.mark.parametrize('reset_cycles', [1,3,1000])
+    def test_signed_trace_exact_total_limit_includes_reset_and_unique_examples(reset_cycles):
+        spec = channel(reset_cycles=reset_cycles)
+        spec.examples = [IOExample({'rst':0, 'in_valid':1, 'a':3, 'b':9}, {'y':0})]
+        count = 10000-reset_cycles-3-1-6
+        rows = tbgen.gen_stimulus(spec, n_random=count)
+>       assert len(rows)+reset_cycles == 10000
+E       AssertionError: assert (9993 + 1) == 10000
+E        +  where 9993 = len([{'a': 0, 'b': 0}, {'a': 15, 'b': 127}, {'a': 8, 'b': 64}, {'a': 3, 'b': 9}, {'a': 14, 'b': 29}, {'a': 0, 'b': 23}, ...])
+
+tests\test_tbgen_signed_corners.py:118: AssertionError
+__ test_signed_trace_exact_total_limit_includes_reset_and_unique_examples[3] __
+
+reset_cycles = 3
+
+    @pytest.mark.parametrize('reset_cycles', [1,3,1000])
+    def test_signed_trace_exact_total_limit_includes_reset_and_unique_examples(reset_cycles):
+        spec = channel(reset_cycles=reset_cycles)
+        spec.examples = [IOExample({'rst':0, 'in_valid':1, 'a':3, 'b':9}, {'y':0})]
+        count = 10000-reset_cycles-3-1-6
+        rows = tbgen.gen_stimulus(spec, n_random=count)
+>       assert len(rows)+reset_cycles == 10000
+E       AssertionError: assert (9991 + 3) == 10000
+E        +  where 9991 = len([{'a': 0, 'b': 0}, {'a': 15, 'b': 127}, {'a': 8, 'b': 64}, {'a': 3, 'b': 9}, {'a': 14, 'b': 29}, {'a': 0, 'b': 23}, ...])
+
+tests\test_tbgen_signed_corners.py:118: AssertionError
+_ test_signed_trace_exact_total_limit_includes_reset_and_unique_examples[1000] _
+
+reset_cycles = 1000
+
+    @pytest.mark.parametrize('reset_cycles', [1,3,1000])
+    def test_signed_trace_exact_total_limit_includes_reset_and_unique_examples(reset_cycles):
+        spec = channel(reset_cycles=reset_cycles)
+        spec.examples = [IOExample({'rst':0, 'in_valid':1, 'a':3, 'b':9}, {'y':0})]
+        count = 10000-reset_cycles-3-1-6
+        rows = tbgen.gen_stimulus(spec, n_random=count)
+>       assert len(rows)+reset_cycles == 10000
+E       AssertionError: assert (8994 + 1000) == 10000
+E        +  where 8994 = len([{'a': 0, 'b': 0}, {'a': 15, 'b': 127}, {'a': 8, 'b': 64}, {'a': 3, 'b': 9}, {'a': 14, 'b': 29}, {'a': 0, 'b': 23}, ...])
+
+tests\test_tbgen_signed_corners.py:118: AssertionError
+____ test_signed_trace_overflow_rejected_before_random_or_oracle_or_output ____
+
+tmp_path = WindowsPath('C:/Users/prince.baah/Documents/Codex/2026-10-15/hey/work/fir4-signed-corners-old-tmp/test_signed_trace_overflow_rej0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000026BFCF23B00>
+
+    def test_signed_trace_overflow_rejected_before_random_or_oracle_or_output(tmp_path, monkeypatch):
+        spec = channel()
+        rng = Mock(side_effect=AssertionError('must not allocate RNG'))
+        monkeypatch.setattr(tbgen.random, 'Random', rng)
+        golden = Mock()
+        output = tmp_path/'must_not_exist'
+        with pytest.raises(ValueError, match='exceeds 10000 steps'):
+>           tbgen.generate(spec, golden, output, n_random=9989)
+
+tests\test_tbgen_signed_corners.py:130: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+autortl\tbgen.py:263: in generate
+    stimulus = gen_stimulus(spec, n_random, seed)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+autortl\tbgen.py:117: in gen_stimulus
+    rng = random.Random(seed)
+          ^^^^^^^^^^^^^^^^^^^
+..\..\..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\unittest\mock.py:1139: in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\..\..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\unittest\mock.py:1143: in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <Mock id='2662828480784'>, args = (1234,), kwargs = {}
+
+    def _execute_mock_call(self, /, *args, **kwargs):
+        # separate from _increment_mock_call so that awaited functions are
+        # executed separately from their call, also AsyncMock overrides this method
+    
+        effect = self.side_effect
+        if effect is not None:
+            if _is_exception(effect):
+>               raise effect
+E               AssertionError: must not allocate RNG
+
+..\..\..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\unittest\mock.py:1198: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_tbgen_signed_corners.py::test_real_restricted_fir_oracle_reaches_both_signed13_extrema
+FAILED tests/test_tbgen_signed_corners.py::test_mixed_signed_widths_preserve_prefix_examples_and_random_tail
+FAILED tests/test_tbgen_signed_corners.py::test_signed_one_bit_trace_keeps_repeated_temporal_rows
+FAILED tests/test_tbgen_signed_corners.py::test_signed_trace_exact_total_limit_includes_reset_and_unique_examples[1]
+FAILED tests/test_tbgen_signed_corners.py::test_signed_trace_exact_total_limit_includes_reset_and_unique_examples[3]
+FAILED tests/test_tbgen_signed_corners.py::test_signed_trace_exact_total_limit_includes_reset_and_unique_examples[1000]
+FAILED tests/test_tbgen_signed_corners.py::test_signed_trace_overflow_rejected_before_random_or_oracle_or_output
+7 failed, 4 passed in 1.75s

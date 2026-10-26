@@ -1,0 +1,81 @@
+{
+  "top_name": "counter8",
+  "modules": [
+    {
+      "name": "counter8_core",
+      "behavior": "At each rising clk edge synchronous active-high rst sets count=0, else enable increments count modulo 256, else hold. Reset has priority. No changes between clock edges.",
+      "ports": [
+        {
+          "name": "clk",
+          "direction": "input",
+          "width": 1
+        },
+        {
+          "name": "rst",
+          "direction": "input",
+          "width": 1
+        },
+        {
+          "name": "enable",
+          "direction": "input",
+          "width": 1
+        },
+        {
+          "name": "count",
+          "direction": "output",
+          "width": 8
+        }
+      ],
+      "latency": 1,
+      "compare_mode": "fixed_latency",
+      "reset": {
+        "signal": "rst",
+        "kind": "sync",
+        "active_high": true
+      },
+      "examples": [
+        {
+          "inputs": {
+            "rst": 1,
+            "enable": 1
+          },
+          "expected": {
+            "count": 0
+          }
+        },
+        {
+          "inputs": {
+            "rst": 0,
+            "enable": 1
+          },
+          "expected": {
+            "count": 1
+          }
+        }
+      ]
+    }
+  ],
+  "external_ports": [
+    {
+      "name": "clk",
+      "direction": "input",
+      "width": 1
+    },
+    {
+      "name": "rst",
+      "direction": "input",
+      "width": 1
+    },
+    {
+      "name": "enable",
+      "direction": "input",
+      "width": 1
+    },
+    {
+      "name": "count",
+      "direction": "output",
+      "width": 8
+    }
+  ],
+  "connections": []
+}

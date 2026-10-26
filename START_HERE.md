@@ -5,18 +5,21 @@ You can continue without access to the previous provider's conversation.
 
 Canonical checkout: `C:/Users/prince.baah/Downloads/autortl-work`.
 GitHub integration branch: `main`. Development branch: `codex/contract-context`.
-Verified runtime **be60de7**: **1,415 tests**, qualified elastic arithmetic
-checker19/19, generated elastic winner independently passed852cycles, and fresh
-full tier0campaign12 passed2/2. Oracle API and active-exit wall accounting fixes
-are tested. Gated main/development integration verified at **acdc592**; inspect actual
-Git heads for any documentation-only publication follow-up.
+Verified main/development milestone **185dadc**: generated signed FIR reduced
+78 to 52 LUTs and recovered setup timing to +0.169 ns (hold +0.106 ns), with an
+independent 800-cycle replay and six restored integrity probes. Full 1,429-test
+regression and 28-case independent checker admission passed. All 1,155 newly
+published evidence blobs were verified against committed bytes.
 
-Elastic dot product:328→20LUT,54→20sliceFF,DSP0→4, setup+.155ns/hold+.206ns.
-Estimated power.138→.149W increased; DSP internalregisters excludedfromsliceFF.
-Actual DONEreuse/sixrestoredprobes preserved372identities/budget/stats/fileset.
-Prior three-module dot product/divider/FIFO results remain separately archived.
-Target isA7xc7a35tcpg236-1/100MHz idealIO benchmark, not verifiedboarddeployment;
-see docs/TARGETS.md. No broadmodelstrength/superiority claim is made.
+Current local work strengthens generated verification: a frozen 27-fault audit
+measured 18 detections before correction and 22 after it, with five legal driver
+controls and a detected faulty-producer probe. The exact 230-file runtime passed 1,450 tests in 457.63
+seconds. Tested development publication is next; fresh FPGA gates remain pending. Read SESSION_HANDOFF
+for actual jobs and exact next commands before editing or launching tools.
+
+The prior elastic dot product and multi-module/FIFO/divider results remain in
+their separate archives. Target is Artix-7 at100MHz with ideal I/O, not a verified
+board deployment; see docs/TARGETS.md. No model-strength comparison is claimed.
 
 Keep source-bound planning and exact candidate dedupe. Additional prior-proposal
 prompt context is experimental/opt-in after its study did not establish a benefit.

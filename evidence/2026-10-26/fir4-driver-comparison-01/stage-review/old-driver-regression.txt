@@ -1,0 +1,61 @@
+FFFF......                                                               [100%]
+================================== FAILURES ===================================
+_______ test_driver_preserves_offer_using_previous_rising_edge_snapshot _______
+
+    def test_driver_preserves_offer_using_previous_rising_edge_snapshot():
+        _,_,_,text=generated()
+        drive=text.split('for (_autortl_cycle=',1)[1]
+        hold='if (!_autortl_input_stalled) begin'
+        sample="_autortl_input_stalled=(in_valid === 1'b1 && in_ready === 1'b0);"
+>       assert hold in drive and sample in drive
+E       assert ('if (!_autortl_input_stalled) begin' in '0; _autortl_cycle<71 && _autortl_drain<4; _autortl_cycle=_autortl_cycle+1) begin\nif (_autortl_cycle > 0) @(negedge _...ortl_errors);\n$finish;\nend\ninitial begin #940; $display("TEST FAILED: watchdog timeout"); $finish; end\nendmodule\n')
+
+tests\test_tbgen_driver_stimulus.py:26: AssertionError
+_________ test_invalid_payloads_change_with_width_sized_masked_noise __________
+
+    def test_invalid_payloads_change_with_width_sized_masked_noise():
+        spec=ModuleSpec('odd_names','identity',[
+            Port('clk','input',1),Port('reset_low','input',1),
+            Port('one','input',1,signed=True),Port('wide','input',130),Port('result','output',1),
+            Port('request_valid','input',1,protocol='valid_ready'),Port('request_ready','output',1,protocol='valid_ready'),
+            Port('reply_valid','output',1,protocol='valid_ready'),Port('reply_ready','input',1,protocol='valid_ready')],
+            compare_mode='scoreboard',reset=ResetSpec(signal='reset_low',active_high=False))
+        text=tbgen.generate_scoreboard_tb(spec,[{'one':0,'wide':0}],[{'result':0}])
+>       assert '_autortl_noise = !_autortl_noise;' in text
+E       assert '_autortl_noise = !_autortl_noise;' in '`timescale 1ns/1ps\nmodule odd_names_tb;\nreg _autortl_clk = 0;\nalways #5 _autortl_clk = ~_autortl_clk;\nreg reset_l...ortl_errors);\n$finish;\nend\ninitial begin #690; $display("TEST FAILED: watchdog timeout"); $finish; end\nendmodule\n'
+
+tests\test_tbgen_driver_stimulus.py:42: AssertionError
+__ test_sync_pulse_is_polarity_aware_off_edge_and_does_not_flush_queue[True] __
+
+active_high = True
+
+    @pytest.mark.parametrize('active_high',[True,False])
+    def test_sync_pulse_is_polarity_aware_off_edge_and_does_not_flush_queue(active_high):
+        spec,stimulus,expected,_=generated(renamed=not active_high)
+        text=tbgen.generate_scoreboard_tb(spec,stimulus,expected)
+        rst=spec.reset.signal
+        body=text.split('for (_autortl_cycle=',1)[1]
+>       assert f"#1; {rst} = 1'b{int(active_high)};" in body
+E       assert "#1; rst = 1'b1;" in '0; _autortl_cycle<71 && _autortl_drain<4; _autortl_cycle=_autortl_cycle+1) begin\nif (_autortl_cycle > 0) @(negedge _...ortl_errors);\n$finish;\nend\ninitial begin #940; $display("TEST FAILED: watchdog timeout"); $finish; end\nendmodule\n'
+
+tests\test_tbgen_driver_stimulus.py:55: AssertionError
+_ test_sync_pulse_is_polarity_aware_off_edge_and_does_not_flush_queue[False] __
+
+active_high = False
+
+    @pytest.mark.parametrize('active_high',[True,False])
+    def test_sync_pulse_is_polarity_aware_off_edge_and_does_not_flush_queue(active_high):
+        spec,stimulus,expected,_=generated(renamed=not active_high)
+        text=tbgen.generate_scoreboard_tb(spec,stimulus,expected)
+        rst=spec.reset.signal
+        body=text.split('for (_autortl_cycle=',1)[1]
+>       assert f"#1; {rst} = 1'b{int(active_high)};" in body
+E       assert "#1; reset_n = 1'b0;" in '0; _autortl_cycle<71 && _autortl_drain<4; _autortl_cycle=_autortl_cycle+1) begin\nif (_autortl_cycle > 0) @(negedge _...ortl_errors);\n$finish;\nend\ninitial begin #940; $display("TEST FAILED: watchdog timeout"); $finish; end\nendmodule\n'
+
+tests\test_tbgen_driver_stimulus.py:55: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_tbgen_driver_stimulus.py::test_driver_preserves_offer_using_previous_rising_edge_snapshot
+FAILED tests/test_tbgen_driver_stimulus.py::test_invalid_payloads_change_with_width_sized_masked_noise
+FAILED tests/test_tbgen_driver_stimulus.py::test_sync_pulse_is_polarity_aware_off_edge_and_does_not_flush_queue[True]
+FAILED tests/test_tbgen_driver_stimulus.py::test_sync_pulse_is_polarity_aware_off_edge_and_does_not_flush_queue[False]
+4 failed, 6 passed in 1.33s

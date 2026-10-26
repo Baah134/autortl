@@ -357,6 +357,17 @@ harness_failures:
     meaning: "A clean failed run returned after a completed model call without persisting its final active wall time"
     repair: "Checkpoint active dispatch exits with the existing atomic save; preserve charge counts and keep completed reuse/input guards outside the checkpoint"
 
+  signed_extrema_trace_gap:
+    meaning: "Generated signed accepted-transaction inputs omitted a boundary sequence and missed a compiling 12-bit truncation fault in a 13-bit FIR result"
+    repair: "Add a bounded signed minimum/maximum payload burst before the unchanged random tail; preserve oracle semantics, driver ownership, strict verdicts and reset-inclusive step limits"
+
+  missing_invalid_payload_stimulus:
+    meaning: "Continuously valid generated traffic missed a FIR fault that advances accepted-sample history on invalid input"
+    repair: "Insert legal input bubbles with masked noise; preserve valid and payload when the prior rising edge sampled a blocked input"
+  missing_sync_reset_pulse_stimulus:
+    meaning: "Startup-only reset stimulus missed asynchronous history and validity changes under a synchronous-reset contract"
+    repair: "Pulse reset wholly between sampling edges for synchronous contracts only; retain oracle and queue state and compare normal transfers after deassertion"
+
 methodology:
   "TIMING-6":
     meaning: "No common primary clock between related clocks | timing between them is unsafe"

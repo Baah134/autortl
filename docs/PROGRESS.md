@@ -1288,3 +1288,53 @@ corrected as an explicit doc-only delta after the frozen experiments.
   measuredtradeoffs; oldcounterhistory remains inPROGRESS/evidence. Current
   handoff was condensed to one livecheckpoint with historylinks to reduce stale
   recovery context. Nextaudit and correctioncriteria were recorded beforelaunch.
+
+
+## October26 — audit the generated verifier and correct concrete gaps
+
+- Frozen full audit measured18/27detections,9misses,0ungraded; originalreference
+  passed.344.062s diagnosticwall,319.626s actualtool,0models/synthesis.287files
+  archived before runtime correction; originalFIRrun/source/budget/stats intact.
+- Six accepted signed boundary samples fixed the measured truncate12 escape:
+  sameoldoracle/reference/fault; oldmutantPASS/new5assertions; controlsPASS.
+ 104to110payloads, originalprefix/randominputtail preserved, actualfullrange
+ -2169to2166.107purefocuspassed; original7failed/4passed retained.266files
+  archive exactintermediate228source and proof before furtherdriverwork.
+- Read-only assessment rejected generic occupied-reset replay because typed
+  ResetSpec lacks pending-transaction flush/retain policy. Legalinvalidbubbles
+  and sync-onlyoff-edgepulses can instead target three other measuredstate misses
+  without oracle/API changes. Plan/taxonomy recorded BEFORE isolatedpatch;
+  actualproducer/control/fault validation and fullruntime gates remain pending.
+
+
+## October26 — verified original milestone merged; driver correction gated
+
+- Fast-forwarded main to185dadc after the original FIR's completed gates;
+  remote verified and local main updated without touching the active worktree.
+  All1,155 committed archive blobs were verified. Local runtime work excluded.
+- Actual driver controls passed5/5. Prolonged input held16cycles; ready-release
+  and bubbles preserved producer legality. Deliberately faulty hold logic caused
+  nine observed producer errors, qualifying the independent monitor.
+- Corrected generated grader detected22/27 versus original18/27, five misses
+  and zero ungraded. Same oldoracle/reference/faults and unchanged110payload/
+  expectation arrays isolate scheduling effects. No models/synthesis;415.375s.
+  Archived597files before copying exact230stage identities into canonical source.
+- Full changed-runtime regression56345 active on frozen230files. Runtime changes
+  only tbgen/data taxonomy; oracle/schema/roles/budgets unchanged. Remaining
+  reset-policy checks stay with the independent contract verifier. Fresh newFIR
+  and fulltier0 gates remain mandatory before publishing this runtime to main.
+
+
+## October26 — coverage runtime passes its complete regression
+
+- 1450 tests passed in 457.63 seconds; all230 frozen source
+  identities match the vendor-tested stage and remain unchanged. Full source,
+  failing/passing focus and controlled evidence bindings retained in the new
+  fir4-coverage-tests-01 archive.
+- Generated sensitivity18to22/27 with five remaining misses; five nominal
+  controls and the faulty-producer monitor probe separately validated. Only
+  tbgen.py and data/taxonomy.yaml changed in runtime implementation. Oracle,
+  schema, roles, retries, budgets and strict assertion verdicts unchanged.
+- Preparing tested development publication, then NEW fixed-budget FIRbuild02
+  and fresh fulltier0campaign13 before main runtime integration. Original
+  verified52LUT milestone remains published at185dadc with its own source/costs.

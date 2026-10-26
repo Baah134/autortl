@@ -112,6 +112,12 @@ def gen_stimulus(spec: ModuleSpec, n_random=100, seed=1234):
             if payload not in seen:
                 stimulus.append(dict(zip(names, payload)))
                 seen.add(payload)
+        if any(p.signed for p in inputs):
+            # Preserve this temporal burst, including repeated tuples: signed
+            # stateful arithmetic needs consecutive extrema, not just a set.
+            for high in (False, True) * 3:
+                stimulus.append({p.name: ((1 << (p.width-1))-1 if high else 1 << (p.width-1))
+                                 if p.signed else 0 for p in inputs})
         if len(stimulus) + n_random + reset_steps > 10000:
             raise ValueError("stimulus including example payloads and reset exceeds 10000 steps")
     rng = random.Random(seed)
@@ -224,19 +230,34 @@ def generate_scoreboard_tb(spec, stimulus, expected):
                        _scoreboard_control(controls, "input", "ready"))
     n, cycles = len(stimulus), len(stimulus)*(12+spec.latency)+32
     extra = "integer _autortl_push, _autortl_pop, _autortl_drain;\nreg _autortl_stalled;\n"
+    extra += "reg _autortl_input_stalled, _autortl_noise;\n"
     extra += f"integer _autortl_accepted_cycle [0:{n-1}];\n"
     extra += "\n".join(port_declaration(p, "reg", name=f"_autortl_held_{p.name}") + ";" for p in outputs)
     lines = _header(spec, stimulus, expected, inputs, outputs, extra)
-    lines += ["_autortl_push=0; _autortl_pop=0; _autortl_drain=0; _autortl_stalled=0;",
+    lines += ["_autortl_push=0; _autortl_pop=0; _autortl_drain=0; _autortl_stalled=0; _autortl_input_stalled=0; _autortl_noise=0;",
               f"for (_autortl_cycle=0; _autortl_cycle<{cycles} && _autortl_drain<4; _autortl_cycle=_autortl_cycle+1) begin",
               "if (_autortl_cycle > 0) @(negedge _autortl_clk);",
-              f"{iv} = (_autortl_push < {n});",
               f"{ore} = (_autortl_cycle % 7 >= 2); // periodic backpressure",
-              f"if (_autortl_push < {n}) begin"]
+              # The previous rising edge owns producer stability. Ready may
+              # recompute after consumer-ready changes at this falling edge.
+              "if (!_autortl_input_stalled) begin",
+              f"{iv} = (_autortl_push < {n} && _autortl_cycle % 5 != 0);",
+              f"if ({iv}) begin"]
     lines += [f"{p.name} = _autortl_stim_{p.name}[_autortl_push];" for p in inputs]
-    lines += ["end", "@(posedge _autortl_clk); // sample accepted transfers BEFORE NBA",
+    lines += ["end else begin", "_autortl_noise = !_autortl_noise;"]
+    lines += [f"{p.name} = _autortl_noise ? {p.width}'d{(1 << p.width)-1} : {p.width}'d0;" for p in inputs]
+    lines += ["end", "end"]
+    if spec.reset.kind == "sync":
+        # No rising edge occurs inside this pulse, so accepted history and the
+        # scoreboard remain untouched. Ports are not checked while asserted.
+        lines += [f"if (_autortl_push > 0 && (_autortl_push < {n} || _autortl_pop < _autortl_push) && _autortl_cycle % 11 == 5) begin",
+                  "// complete off-edge pulse; all other inputs stay held",
+                  f"#1; {spec.reset.signal} = 1'b{int(spec.reset.active_high)};",
+                  f"#2; {spec.reset.signal} = 1'b{1-int(spec.reset.active_high)};", "end"]
+    lines += ["@(posedge _autortl_clk); // sample accepted transfers BEFORE NBA",
               f"if (({ir} !== 1'b0 && {ir} !== 1'b1) || ({ov} !== 1'b0 && {ov} !== 1'b1)) begin",
               '$display("FAIL unknown handshake"); _autortl_errors=_autortl_errors+1; end',
+              f"_autortl_input_stalled=({iv} === 1'b1 && {ir} === 1'b0);",
               "if (_autortl_stalled) begin",
               f"if ({ov} !== 1'b1) begin $display(\"FAIL valid dropped under backpressure\"); _autortl_errors=_autortl_errors+1; end"]
     lines += [f"if ({p.name} !== _autortl_held_{p.name}) begin $display(\"FAIL unstable {p.name}\"); _autortl_errors=_autortl_errors+1; end" for p in outputs]

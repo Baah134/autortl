@@ -38,9 +38,14 @@ supported schema and limits.
    Scoreboard stimulus includes unique complete payload vectors from declared
    examples that explicitly assert input-valid and deassert the configured
    reset. Scheduling remains driver-owned; oracle outputs remain authoritative.
-   Three existing corners and the seeded random tail are preserved. This is
+   Three existing corners and the seeded random tail are preserved. Signed-data scoreboard modules also receive six alternating
+   minimum/maximum accepted payloads between examples and the random tail, with
+   unsigned payloads zero and no change to driver scheduling or oracle semantics. This is
    payload coverage, not replay of example timing/state traces. Fixed-latency
    example sequences are unchanged; total stimulus plus reset remains bounded.
+   Scoreboard traffic includes legal invalid bubbles/noise while preserving blocked
+   producer offers. Sync-only reset pulses end before sampling edges, preserving
+   oracle/queue state; occupied reset policy remains independently specified.
 4. **Best-of-N (N=4)** with objective-weighted mutation prompts (bestofn.py),
    hash dedupe, deterministic selection: (rungs, timing feasibility, objective
    metric, brevity). A verified timing recovery can use more resources; it is

@@ -575,3 +575,88 @@ newplan was permitted. ActualDONE plus sixrestoredprobes preserved372identities.
 No runtimeextension is justified by these successful existing paths. Hardkill
 atomicity, realboard validation and matchedweakmodel/generalagent comparisons
 remain separate unestablished claims; do not substitute unit counts for them.
+
+
+## October26: observed signed-extrema trace coverage gap
+
+During frozen generated-audit01, correctreference passed and truncate12 mutant
+also passed the original generated unitgrader, with successful actual tool exits.
+The independentchecker detected this identicalfault. All27faults remain in the
+ongoing audit; this observation is not its finalscore. Frozen104 acceptedpayloads
+produce expectedrange[-1703,1539], never requiring signed13. Rootcause is stimulus
+coverage, not oracle API, RTL repair count, or missing specialist role.
+
+Development failure taxonomy: signed_extrema_trace_gap = generated accepted-
+transaction vectors omit a sensitizing sequence at signed arithmetic boundaries,
+allowing compiling narrowing/sign-extension faults to pass. Preserve original
+build01/archive and complete originalaudit before integrating runtimecorrection.
+
+Smallest proposed fix: after existing3corners and eligibleexamplepayloads, append
+six alternating signed minimum/maximum acceptedpayloads (three balanced pairs),
+only for scoreboard modules with signed DATA inputs. Unsigned data inputs hold0
+within this burst; reset/handshake ports staydriver-owned. Preserve fixedlatency
+and unsigned-only behavior, all originalorderedprefix and exactseededrandominput
+sequence. No oracle/IOExample trace schema or driver scheduling change. Recompute
+expectedhistory via same restrictedoracle. Guard total10000 includingreset;
+intentional temporal duplicates must not be deduplicated. This boundedpattern
+is not exhaustive signed/stateful coverage.
+
+Testsbeforeimplementation: stage source227 separately; first reproduce missing
+fullrange on newbehavior regression with oldcode, retainfailure; then patchonly
+stagedtbgen plusnewtestmodule. Verify actual restricted FIRoracle reaches2166
+and-2169, legacycorners/examples/randomtail preserved, signed1/mixedwidth/mixed
+unsigned/maskedintegers/countboundary, fixedlatency/unsignedunchanged. Stagepure
+focus, coordinatorreview, completedoldauditarc beforecanonicalintegration. Data
+failuretaxonomy BEFORE runtimepatch. Controlledactualunchangedoldgolden/reference/
+truncate12 oldPASS/newassertion, newcontrolPASS; preserve all artifacts. Fullsuite
+and freshfulltier0 then NEWFIRbuild02, originalcontract/budgets, no regrade01.
+
+Primary sources rechecked October26: VerilogEval compares transient simulation
+against goldens (https://arxiv.org/abs/2309.07544); MAGE uses targeted state-check
+feedback (https://arxiv.org/abs/2412.07822); AutoChip finds iterativefeedback benefit
+model-dependent (https://arxiv.org/abs/2411.11856). Our inference from OUR measured
+miss is to strengthen a deterministic inputpattern before adding agents. These
+sources do not validate our patch, prescribe sixsamples, or establish modelgain.
+
+
+## October26: measured generic driver gaps, plan before implementation
+
+The completed frozen generated audit measured 18/27 detections, nine misses and
+zero ungraded cases. All faults compiled and ran. The signed-only correction is
+now separately archived with a successful same-oracle/reference/truncation
+comparison (old fault passed; new fault triggers five assertions; both controls
+pass). No original run was regraded or changed.
+
+Independent read-only assessment identifies two additional small, typed-safe
+corrections for actual misses: history_on_invalid, async_history_reset and
+async_valid_reset. Add legal periodic input bubbles with width-masked invalid
+payload noise, retaining input-valid and data whenever the PREVIOUS rising edge
+sampled valid && !ready. Never decide producer hold using ready recomputed after
+changing consumer-ready at the next falling edge. Keep all accepted payloads,
+expected outputs and Python oracle calls unchanged. Preserve same-edge push/pop
+for zero latency and the existing finite drain budget; prove it with real controls.
+
+For synchronous-reset contracts only, inject a bounded pulse wholly between a
+falling and rising edge, ending with settling margin. Keep all other inputs
+stable during it. Do not reset the oracle or queue and do not check ports while
+reset is asserted. Apply the configured polarity. No pulse for asynchronous
+contracts. A two-nanosecond pulse fits the generated 10 ns clock/1 ns timescale.
+
+These changes do not infer occupied-reset flush/preserve policy, output reset
+values, exact capacity or earliest valid timing. ResetSpec lacks those typed
+policies; those properties remain independently checked against each contract.
+This avoids rejecting a legitimate contract that retains specified state.
+
+Prepare a NEW isolated stage, preserving the signed-only stage and all archives.
+Add behavior regressions and executable legal-traffic controls for zero-latency
+forwarding, busy sequential operation, prolonged input blocking, renamed active-
+low sync reset and async reset (no off-edge pulse). Include a producer-stability
+monitor, accepted/retired counts, invalid-noise and pulse timing/coverage. Failing
+old-driver tests must be retained before patch. Root reviews source and actual
+serial Vivado control/fault outcomes before integrating the driver change.
+Frozen original oracle/reference/faults and signed-only payload/expected arrays
+must remain identical in the controlled comparison. Fresh full27-fault audit
+measures the new score; no expected detection is counted without raw assertions
+and successful tool receipts. Taxonomy precedes runtime patch; no role, framework,
+sequence API, oracle reset epoch, retries or budget expansion. Full regression,
+fresh fulltier0 and new fixed-budget FIR trial remain mandatory before main.

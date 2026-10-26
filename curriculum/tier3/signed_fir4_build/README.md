@@ -1,4 +1,4 @@
-# Signed FIR4 stream: isolated admission proposal
+# Signed FIR4 stream
 
 This fixture exercises signed accepted-sample history and a three-slot elastic
 pipeline. Actual Vivado checker admission passed **28/28**: a correct800-cycle
@@ -66,7 +66,7 @@ elaborate, and produce a real behavioral assertion. Compile errors, timeouts,
 coverage-only failures, and checker errors do not count. Preserve misses and
 all frozen inputs before changing any checker; do not reduce the denominator.
 
-`pure-validation.json` records structural checks only. It does not establish
+[Archived pure-validation.json](../../../evidence/2026-10-25/signed-fir4-admission-attempt-01/fixture/pure-validation.json) records structural checks only. It does not establish
 Verilog compilation, coverage completion, mutation kills, or synthesis results.
 The reference is exclusively an admission control, never a generation seed.
 

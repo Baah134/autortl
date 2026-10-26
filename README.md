@@ -14,7 +14,8 @@ learn from failures, and retain the best correct design within a fixed budget.
 
 | Validation | Recorded result |
 |---|---|
-| Harness regression | **1,429 tests passed** |
+| Harness regression | **1,450 tests passed** |
+| Generated verifier coverage | **18 → 22 of 27 FIR faults detected with the same oracle and RTL; five legal traffic controls passed** |
 | Signed stateful FIR filter | **78 → 52 LUTs · setup −0.327 → +0.169 ns · hold +0.106 ns · independent 800-cycle test passed** |
 | Elastic dot product | **328 → 20 LUTs · 4 DSPs · setup +0.155 ns / hold +0.206 ns · independent 852-cycle test passed** |
 | Three-module pipelined dot product | **325 → 17 LUTs · 4 DSPs · independent 685-cycle test passed** |
@@ -39,6 +40,12 @@ for the elastic design and from 0.157 to 0.158 W for the three-module design.
 The divider's estimate increased from 0.092 to 0.103 W. FIFO timing recovery
 uses more area than its failing baseline. Report these tradeoffs together.
 
+The generated-verifier audit retains all 27 faults. Signed boundary sequences,
+invalid input traffic and synchronous off-edge reset pulses add four detections
+without extra runtime model calls. The independent checker covers all 27,
+including the five remaining contract-specific reset cases. See the
+[verification guide](docs/GOLDEN_VERIFICATION.md) for the generic checks and limits.
+
 These are bounded experiments, not formal equivalence, arbitrary-board support
 or evidence that every model improves. No held curriculum tier or controlled
 weak-model advantage is claimed. Unsuccessful proposals and earlier designs
@@ -46,7 +53,8 @@ remain in the [engineering evidence log](docs/PROGRESS.md).
 
 Evidence: [signed FIR](evidence/2026-10-26/generated-signed-fir4-attempt-01/README.md),
 [FIR fault qualification](evidence/2026-10-25/signed-fir4-admission-attempt-01/README.md),
-[full regression](evidence/2026-10-26/signed-fir4-tests-01/README.md),
+[full regression](evidence/2026-10-26/fir4-coverage-tests-01/README.md),
+[generated-verifier audit](evidence/2026-10-26/fir4-driver-comparison-01/README.md),
 [elastic dot product](evidence/2026-10-25/generated-elastic-dot4-attempt-02/README.md),
 [three-module dot product](evidence/2026-10-24/generated-dot4-attempt-01/README.md),
 [divider](evidence/2026-10-23/generated-divider-attempt-01/README.md),

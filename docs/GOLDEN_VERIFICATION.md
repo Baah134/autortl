@@ -24,6 +24,44 @@ latency per transaction plus backpressure allowance; it is not a liveness proof
 for arbitrary initiation intervals or unbounded internal stalls. This minimum transfer age does
 not by itself prove exact capacity, readiness, or earliest valid assertion.
 
+## Signed boundary sequences
+
+Scoreboard modules with signed data inputs receive six alternating minimum and
+maximum signed payloads after the original corners and eligible example payloads,
+before the unchanged seeded random input sequence. These are accepted transactions,
+not a clock schedule. Unsigned data inputs are zero during this burst; the driver
+continues to own reset, valid and ready. Values stay masked to their declared widths.
+
+Consecutive extrema exercise arithmetic state that isolated corner values can miss.
+For the four-tap FIR, they reach both exact signed13 bounds, 2166 and -2169.
+The oracle computes expectations through the full sequence, including its history.
+Intentional repeated payloads remain in the sequence. The 10000-step limit includes
+the reset prefix, examples, signed burst and random inputs. Fixed-latency and
+unsigned-only stimulus sequences retain their previous behavior.
+
+This bounded burst is not exhaustive state, sign-combination or reset coverage.
+Keep qualified independent checks for contract-specific timing and reset behavior.
+
+## Legal invalid traffic and synchronous reset pulses
+
+The scoreboard periodically offers no input transaction and drives alternating,
+width-masked invalid payloads. A pending offer keeps valid and data stable until
+it is accepted. Producer hold uses the previous rising-edge handshake, so changing
+consumer-ready at the next falling edge cannot withdraw a blocked transaction.
+Accepted payload order, expected arrays and oracle steps stay unchanged.
+
+For synchronous-reset contracts, the driver also pulses reset entirely between
+clock edges while traffic remains. It honors polarity, holds other inputs and
+deasserts with settling margin before the next rising edge. The oracle and queue
+remain unchanged because no sampling edge occurred. Comparisons resume after
+deassertion; port values while reset is asserted are not assumed. Asynchronous
+contracts receive no such pulse. Startup reset is unchanged in both modes.
+
+These checks target unintended state changes on invalid input or asynchronous
+reset response. They do not define what an occupied pipeline must do on a sampled
+reset. The generic reset metadata does not specify flush/preserve policy or
+reset output values; those properties require independent contract checks.
+
 ## Independent authority and limits
 
 Examples anchor the generated Python reference but are not automatically inserted

@@ -1,0 +1,15 @@
+--- a/autortl/tbgen.py
++++ b/autortl/tbgen.py
+@@ -112,6 +112,12 @@
+             if payload not in seen:
+                 stimulus.append(dict(zip(names, payload)))
+                 seen.add(payload)
++        if any(p.signed for p in inputs):
++            # Preserve this temporal burst, including repeated tuples: signed
++            # stateful arithmetic needs consecutive extrema, not just a set.
++            for high in (False, True) * 3:
++                stimulus.append({p.name: ((1 << (p.width-1))-1 if high else 1 << (p.width-1))
++                                 if p.signed else 0 for p in inputs})
+         if len(stimulus) + n_random + reset_steps > 10000:
+             raise ValueError("stimulus including example payloads and reset exceeds 10000 steps")
+     rng = random.Random(seed)

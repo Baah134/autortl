@@ -1,0 +1,11 @@
+mode: build
+top: dot4_pipeline
+spec: design_spec.json
+tb: dot4_pipeline_tb.v
+generate_golden: true
+iterations: 1
+objective: minimize_luts
+target_freq_mhz: 100.0
+stresses: "three generated children; explicit 17-bit connections; unsigned carry; two-edge integrated latency"
+pass_criteria:
+  timing_met: true
