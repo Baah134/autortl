@@ -1417,3 +1417,21 @@ corrected as an explicit doc-only delta after the frozen experiments.
   paths only). Not launched: the keep-awake request was denied by the session
   classifier, and an unattended gate of up to about 60 minutes needs the PC
   awake. Awaiting the user's decision.
+
+## October28 - Claude Code: harness FIR runs on the Basys 3
+
+- Human decision: leave campaign14 for Codex; continue with other work.
+- Ran the FIR01 winner (signed_fir4_best.v, SHA-256 55e3c7d0..., byte-identical
+  and unedited) on the user's Basys 3 behind a hand-written UART shell (input
+  FIFO, FIR, output FIFO, 2-byte serializer; a UART break restarts the filter).
+- Sim: 256/256 outputs matched a behavioral model, including a mid-stream
+  restart. Faulted copies (tap coefficient 7->6; newest history register not
+  reset) both fail. Vivado: 0 warnings, WNS +2.718 / WHS +0.113 ns; 160 LUT in
+  total, 49 LUT / 67 FF in the FIR instance (in context, not comparable to the
+  standalone 52).
+- Board: 100,000 random samples (signed extremes first, |y| up to 2,169)
+  matched a Python model with 0 mismatches and 4 restarts; a model with a
+  wrong coefficient failed (4,965 of 5,000 differ); 10,000 samples with 10
+  restarts passed. Evidence: evidence/2026-10-28/basys3-fir4-01.
+- README highlights now lead with the hardware result. No harness source,
+  frozen identity or campaign file changed.

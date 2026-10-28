@@ -19,9 +19,9 @@ acceptance gates.
   faults into the FIR. The generated testbenches caught only 18. Better
   stimulus raised that to 22 with no extra model calls, and the independent
   checker catches all 27.
-- **Real hardware path.** A hand-written UART design runs on a Digilent
-  Basys 3 and streams 1,000,000 bytes at line rate with zero loss. It is the
-  base for running harness-built designs on the board.
+- **Runs on real hardware.** The harness-optimized FIR, unedited, runs on a
+  Digilent Basys 3. 100,000 outputs matched an independent Python model
+  exactly, and a deliberately wrong model was rejected.
 - **Engineering discipline.** A 1,450-test regression suite, crash-safe
   resumable runs, fixed model-call and tool-time budgets, and an error
   taxonomy keyed to Vivado message IDs.
@@ -118,10 +118,23 @@ Evidence: [signed FIR](evidence/2026-10-26/generated-signed-fir4-attempt-01/READ
 
 ## Hardware validation on a Basys 3
 
-[`hardware/basys3/uart_echo`](hardware/basys3/uart_echo/README.md) is a
-hand-written UART echo, not harness output. It establishes the board path:
-real pin constraints, bitstream, programming, and a PC-side checker that
-compares every byte.
+[`hardware/basys3/fir4_on_board`](hardware/basys3/fir4_on_board/README.md)
+runs the harness's FIR winner, byte-identical to the verified file, behind a
+hand-written UART shell. The PC streams signed samples, starting with the
+worst-case extremes, and checks every output against a Python model of the
+filter. A UART break restarts the filter between runs.
+
+- 100,000 samples matched with 0 mismatches across 4 restarts.
+- A model with one wrong coefficient failed on 4,965 of 5,000 outputs.
+- In simulation, a faulted copy of the FIR fails the testbench, whether the
+  fault is a wrong coefficient or a missing reset.
+- Build: 0 warnings, setup +2.718 ns at 100 MHz
+  ([evidence](evidence/2026-10-28/basys3-fir4-01/README.md)).
+
+The board path itself was proven first with a hand-written UART echo,
+[`hardware/basys3/uart_echo`](hardware/basys3/uart_echo/README.md): real pin
+constraints, bitstream, programming, and a PC-side checker that compares every
+byte.
 
 The first version passed chunked tests. An independent review then predicted
 it would drop bytes under continuous traffic, because its transmitter was
@@ -131,7 +144,8 @@ stop bit by 1/16 bit and handles line breaks. Each fix has a simulation that
 fails when it is reverted, and the fixed design streamed 1,000,000 bytes with
 zero loss ([evidence](evidence/2026-10-28/basys3-uart-echo-02/README.md)).
 
-Next: run harness-built designs on the board with the same checks.
+Next: let the harness build designs for the board directly, with real pin
+constraints and this hardware check as an acceptance gate.
 
 ## What went wrong, and what changed
 

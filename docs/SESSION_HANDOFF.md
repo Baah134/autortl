@@ -42,6 +42,14 @@ Completed and verified this session:
   CLI (codex is not on PATH in non-Codex shells).
 - README rewritten as a portfolio front page (0d468ff, development only; main
   still shows the old README until the gates allow integration).
+- **Harness FIR on hardware.** `hardware/basys3/fir4_on_board` runs the FIR01
+  winner, byte-identical (SHA-256 55e3c7d0…), behind a hand-written UART
+  shell. On the board, 100,000 samples matched a Python model with 0
+  mismatches and 4 break-restarts, and a wrong-coefficient model failed as
+  required. In simulation, faulted copies (coefficient, missing reset) fail.
+  Build: 0 warnings, WNS +2.718 ns. Evidence: evidence/2026-10-28/basys3-fir4-01.
+  No harness source was touched; it is a board-level replay of an existing result.
+- Campaign14 is left for Codex (user decision); see mailbox #3.
 
 Deliberately untouched: every file in the frozen 230- and 201-file identity
 sets (autortl/, llm/, tests/, curriculum/, scripts/, data/, .claude/, run.py),
