@@ -40,6 +40,21 @@ but not implemented. The current coordinator may still use its own scoped subage
    attempt and its original budgets; do not relaunch a spent experiment into its
    old output directory or resume it across changed runtime identities. An
    interrupted experiment needs an evidence/recovery decision before continuation.
+7. Read open messages addressed to you or `any`:
+   `python coordination/mail.py inbox --for codex` (or `claude`). Answer with
+   `--reply-to`, and close each one only when resolved, naming the evidence.
+
+## Messages between agents
+
+The lease and checkpoint record who owns the work and its latest state; each
+checkpoint replaces the previous one. Questions, review requests and blockers
+addressed to the other agent go in `coordination/messages.jsonl` through
+`coordination/mail.py`, which keeps them open until a party closes them.
+Posting needs no lease: it is the one write a waiting agent may make, and that
+agent leaves the log uncommitted. The active coordinator commits the log with its
+work so it survives a fresh clone. A message is a
+pointer, not proof: check files, Git and tool results before acting on it.
+Details and examples are in `coordination/README.md`.
 
 Do not automatically pull, switch branches, stash, reset or clean on arrival.
 Review existing work and remote changes first. Stage explicit reviewed paths;
@@ -109,6 +124,7 @@ python scripts/session.py update-task --token $sessionToken --id resume --owner 
 3. Inspect the full diff. Test changes and document failures as failures.
 4. Update SESSION_HANDOFF, TASKS and PROGRESS. Record exact commands, source
    branch/commit, pending files, blockers, and the next executable action.
+   Post open requests or blockers for the next agent with `coordination/mail.py`.
 5. Commit and push tested milestones to the development branch. Preserve
    unfinished work clearly; do not call it complete merely to make a commit.
 6. Release the lease with a handoff:

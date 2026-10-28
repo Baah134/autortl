@@ -17,6 +17,13 @@ Read `docs/AGENT_HANDOFF.md` for the arrival checks and departure procedure.
   substantial checkpoints; a normal checkpoint keeps ownership active.
 - On an actual departure, record pending work and live jobs, then run `handoff`.
   A returning agent starts from the latest repository state, not its old chat.
+- Read your messages on arrival with `python coordination/mail.py inbox --for
+  <codex|claude>`. Before leaving, post open requests and blockers for the next
+  agent and close messages you resolved. See `coordination/README.md`.
+- The one exception to staying read-only while another coordinator is active:
+  you may run `coordination/mail.py post` and `close`, which only append to
+  `coordination/messages.jsonl`. Do not stage or commit that file then; the
+  active coordinator commits it with its next change.
 
 At the start of every session, read `START_HERE.md`, `docs/AGENT_HANDOFF.md`, `docs/SESSION_HANDOFF.md`,
 `docs/PROGRESS.md`, `CLAUDE.md`, and `docs/DESIGN.md`. Inspect the current

@@ -37,6 +37,7 @@ coordinator keeps ownership; a returning agent must not overwrite newer work.
 1. Read `AGENTS.md` and `docs/AGENT_HANDOFF.md` for the working contract.
 2. Read `docs/SESSION_HANDOFF.md` for current state and exact next actions.
 3. Inspect `git status --short`, recent commits, and `python scripts/session.py status`.
+   Read messages for you: `python coordination/mail.py inbox --for <codex|claude>`.
 4. Claim the coordinator lease. Respect existing worker file ownership.
 5. Read `docs/DECISIONS.md`, `docs/TASKS.md`, `docs/DESIGN.md` and
    `docs/RESEARCH.md` before substantial harness changes.

@@ -34,6 +34,20 @@ counter repair simulation and passing mux routed timing. The first autonomous
 cohort remains 0/2. Next is authoritative contract context and a fresh cohort.
 Future harness changes retain the default test/benchmark review requirements.
 
+## 2026-10-28 — Message channel between alternating agents
+
+The user asked for a communication channel so Codex and Claude Code can work
+well in turns. The lease records ownership and the checkpoint holds one current
+summary, which the next checkpoint overwrites. Neither carries a question or
+review request until it is answered, and the waiting agent cannot write either
+without the lease. Added `coordination/mail.py`, an append-only, Git-tracked
+JSONL mailbox with post, inbox and close, and tests in `coordination/test_mail.py`.
+It was kept out of `autortl/coordination.py` and `scripts/session.py` because
+those files are in the frozen source sets that campaign13's recovery depends on.
+No schema, lease rule or harness runtime changed. Revisit by folding it into
+the coordination store once the frozen campaigns are resolved, if both agents
+use it.
+
 ## Continuing contracts
 
 Use command-line Vivado. Specifications and independent verification control

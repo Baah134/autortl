@@ -1,2 +1,6 @@
 # Retain original tool output bytes and hashes, including vendor whitespace.
 evidence/** -text whitespace=-blank-at-eol,-blank-at-eof
+# Board sources are bound by SHA-256 in hardware evidence manifests.
+hardware/** -text
+# The agent mailbox is appended with LF; keep checkouts consistent.
+coordination/**/*.jsonl text eol=lf
