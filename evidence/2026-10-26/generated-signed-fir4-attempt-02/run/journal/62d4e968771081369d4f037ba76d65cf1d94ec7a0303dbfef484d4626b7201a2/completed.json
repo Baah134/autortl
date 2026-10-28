@@ -1,0 +1,5 @@
+{
+  "stage": "module_signed_fir4_core:model:generator.golden_model:0",
+  "result": "def init():\n    return dict(x1=0, x2=0, x3=0)\n\ndef step(state, inputs):\n    outputs = dict()\n    if int(inputs.get(\"rst\", 0)):\n        state[\"x1\"] = 0\n        state[\"x2\"] = 0\n        state[\"x3\"] = 0\n        outputs[\"out_data\"] = 0\n        return state, outputs\n\n    x = int(inputs.get(\"x\", 0)) & 255\n    if x >= 128:\n        x = x - 256\n\n    y = 3 * x - 5 * state.get(\"x1\", 0) + 7 * state.get(\"x2\", 0) - 2 * state.get(\"x3\", 0)\n    outputs[\"out_data\"] = y & 8191\n\n    state[\"x3\"] = state.get(\"x2\", 0)\n    state[\"x2\"] = state.get(\"x1\", 0)\n    state[\"x1\"] = x\n    return state, outputs",
+  "artifacts": {}
+}

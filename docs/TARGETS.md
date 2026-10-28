@@ -22,6 +22,21 @@ their Vivado installation. These options do not install a board profile or
 automatically supply realistic external timing. Changing the device or clock
 creates a different experiment; keep its measurements separate.
 
+## Package I/O feasibility
+
+The reference part has **106 bonded IOBs** in the retained
+[FIR routed utilization report](../evidence/2026-10-26/generated-signed-fir4-attempt-01/run/iter_003/cand_standard/utilization_routed.rpt).
+The FIR uses 27. This fully implemented benchmark maps external core ports to
+package I/O resources, so count the complete top-level interface before freezing
+its contract. This is a planning check, not an automated pin-allocation feature.
+
+A parallel signed8 4x4 matrix/vector interface would need 238 external bits and
+cannot fit this package as proposed. Serialization, a board wrapper, another
+part or a separately validated core-only flow would change the experiment and
+needs an explicit interface/target plan. A count within106 is only a necessary
+condition: bank/voltage, clock-capable pins, board connections and timing still
+require their own checks. Do not silently relax a contract to force placement.
+
 ## Meaning of a timing pass
 
 Setup/hold gates use the retained routed reports and exact constraint/script

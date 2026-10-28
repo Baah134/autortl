@@ -1,0 +1,81 @@
+{
+  "stage": "iteration_3:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 3,
+    "instruction": "Keep the occupancy/full readiness logic and all valid, data, history, reset, and pipeline registers unchanged. Change only the `fir_value` datapath: express the four constant-coefficient products using signed shifts and adds, size each partial to preserve its full signed range, sign-extend before a balanced final sum, and retain the exact signed 13-bit result. Preserve `// @latency 3` and all defined cycle behavior; promotion still requires the frozen checks and routed WNS and WHS of at least zero.",
+    "candidates": [
+      {
+        "iteration": 3,
+        "mutation": "standard",
+        "instruction": "Keep the occupancy/full readiness logic and all valid, data, history, reset, and pipeline registers unchanged. Change only the `fir_value` datapath: express the four constant-coefficient products using signed shifts and adds, size each partial to preserve its full signed range, sign-extend before a balanced final sum, and retain the exact signed 13-bit result. Preserve `// @latency 3` and all defined cycle behavior; promotion still requires the frozen checks and routed WNS and WHS of at least zero.",
+        "generated_source_sha256": "cc3394dec36a03d09d7037e19050b30e6abbcca44dff6bd5e595fc5c1c35a052",
+        "final_source_sha256": "6607f9f25c7b0c402af3a6288da9bd182f3df737ebbf49777153c19e7de755fd",
+        "generated_code_hash": "f72df9be3d5d9a81",
+        "final_code_hash": "fc3151cea03be58d",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": false,
+          "wns_ns": -0.735,
+          "whs_ns": 0.072,
+          "lut_used": 81,
+          "ff_used": 66,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.018,
+          "total_power_w": 0.088
+        },
+        "cache_hit": true,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-signed-fir4-02\\iter_002\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-signed-fir4-02\\iter_002\\cand_standard\\synth.tcl",
+          "sha256": "7365d7e50c659f94b9da928b6085ed493a7c447b96a51aa3fe1e4ba97b9782ac"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-signed-fir4-02\\iter_002\\cand_standard\\signed_fir4.v",
+          "sha256": "1d97cce9c04f6cc7c7ee01b577eeabb4c4843c8e714f50445eae9539dedec39e"
+        }
+      }
+    ],
+    "doctor": {
+      "status": "NOT_ADOPTED",
+      "action": "rtl_surgery",
+      "reason": "timing_not_closed",
+      "tools_ran": true,
+      "measured_metrics": {
+        "sim_passed": true,
+        "timing_met": false,
+        "wns_ns": -0.041,
+        "whs_ns": 0.058,
+        "lut_used": 83,
+        "ff_used": 67,
+        "dsp_used": 0,
+        "bram_used": 0.0,
+        "dynamic_power_w": 0.017,
+        "total_power_w": 0.087
+      },
+      "adopted": false,
+      "input_source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-signed-fir4-02\\iter_002\\cand_standard\\signed_fir4.v",
+        "sha256": "1d97cce9c04f6cc7c7ee01b577eeabb4c4843c8e714f50445eae9539dedec39e"
+      },
+      "trial_source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-signed-fir4-02\\iter_003\\doctor_rtl_surgery_trial\\signed_fir4.v",
+        "sha256": "796ea41282d2923ba61483f1ca2e6344df3a24fd5fbae16d9e481fceddf51b04"
+      },
+      "trial_flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-signed-fir4-02\\iter_003\\doctor_rtl_surgery_trial\\synth.tcl",
+        "sha256": "b98f31740385d71751ad2009985248797cc5c37963b903e4bdb9d710f4df7ff5"
+      },
+      "identity_count": 3,
+      "proposed_source_text_sha256": "e92c8ae48e09ae4bfadcdcd131c8234a9e978599194c778c28fed50c4097a178"
+    },
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": "6607f9f25c7b0c402af3a6288da9bd182f3df737ebbf49777153c19e7de755fd"
+  },
+  "artifacts": {}
+}

@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_2:decision:instruction:0",
+  "result": "Keep the existing FIR datapath and three-slot registers, but replace `occupancy`, `occupancy_next`, and `full` bookkeeping with `r3 = !v3 || out_ready`, `r2 = !v2 || r3`, `r1 = !v1 || r2`, and use `r1` for `in_ready` and stage 1 advancement. Preserve the `// @latency 3` annotation and all signed arithmetic, transfer, hold, and synchronous reset behavior. Verify the unchanged testbench and routed reports; retain the candidate only if every gate passes, WNS and WHS are nonnegative, and routed LUTs are strictly below 84.",
+  "artifacts": {}
+}

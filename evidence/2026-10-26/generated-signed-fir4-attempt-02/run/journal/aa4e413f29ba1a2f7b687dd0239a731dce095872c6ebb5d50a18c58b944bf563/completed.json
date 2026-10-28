@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_1:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 1,
+    "instruction": "Replace the top\u2019s pass-through core instance with equivalent three-slot pipeline logic, preserving signed FIR results, valid/data hold behavior, synchronous reset, and the existing `// @latency 3` annotation. Keep the three stage valid/data registers and add a 2-bit occupancy counter updated only from accepted input and retired output handshakes; derive a registered full flag from that count and drive `in_ready` as `!full || out_ready`, while keeping `out_valid` tied to the output slot. This may use additional FFs or LUTs, so assess it first as a timing-recovery candidate; do not claim LUT sav",
+    "candidates": [
+      {
+        "iteration": 1,
+        "mutation": "standard",
+        "instruction": "Replace the top\u2019s pass-through core instance with equivalent three-slot pipeline logic, preserving signed FIR results, valid/data hold behavior, synchronous reset, and the existing `// @latency 3` annotation. Keep the three stage valid/data registers and add a 2-bit occupancy counter updated only from accepted input and retired output handshakes; derive a registered full flag from that count and drive `in_ready` as `!full || out_ready`, while keeping `out_valid` tied to the output slot. This may use additional FFs or LUTs, so assess it first as a timing-recovery candidate; do not claim LUT sav",
+        "generated_source_sha256": "162a355e81578c93d618c9269b9b39841fe4fe33376471d9d07dc6bdadef0ad8",
+        "final_source_sha256": "162a355e81578c93d618c9269b9b39841fe4fe33376471d9d07dc6bdadef0ad8",
+        "generated_code_hash": "b7e468bcb871edbd",
+        "final_code_hash": "b7e468bcb871edbd",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.147,
+          "whs_ns": 0.071,
+          "lut_used": 84,
+          "ff_used": 69,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.017,
+          "total_power_w": 0.087
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-signed-fir4-02\\iter_001\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-signed-fir4-02\\iter_001\\cand_standard\\synth.tcl",
+          "sha256": "9886a68c673435a406f29c406f512b862634ad24d21b8284eef39fc77dd7e34f"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-signed-fir4-02\\iter_001\\cand_standard\\signed_fir4.v",
+          "sha256": "d8f867bbfef93974dff71f67dddcf8f3b0f103d2c54b4973ff2f30f69cc822ec"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "ACCEPT",
+    "is_best": true,
+    "selected_source_sha256": "162a355e81578c93d618c9269b9b39841fe4fe33376471d9d07dc6bdadef0ad8"
+  },
+  "artifacts": {}
+}

@@ -1,0 +1,81 @@
+{
+  "stage": "iteration_2:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 2,
+    "instruction": "Keep the existing FIR datapath and three-slot registers, but replace `occupancy`, `occupancy_next`, and `full` bookkeeping with `r3 = !v3 || out_ready`, `r2 = !v2 || r3`, `r1 = !v1 || r2`, and use `r1` for `in_ready` and stage 1 advancement. Preserve the `// @latency 3` annotation and all signed arithmetic, transfer, hold, and synchronous reset behavior. Verify the unchanged testbench and routed reports; retain the candidate only if every gate passes, WNS and WHS are nonnegative, and routed LUTs are strictly below 84.",
+    "candidates": [
+      {
+        "iteration": 2,
+        "mutation": "standard",
+        "instruction": "Keep the existing FIR datapath and three-slot registers, but replace `occupancy`, `occupancy_next`, and `full` bookkeeping with `r3 = !v3 || out_ready`, `r2 = !v2 || r3`, `r1 = !v1 || r2`, and use `r1` for `in_ready` and stage 1 advancement. Preserve the `// @latency 3` annotation and all signed arithmetic, transfer, hold, and synchronous reset behavior. Verify the unchanged testbench and routed reports; retain the candidate only if every gate passes, WNS and WHS are nonnegative, and routed LUTs are strictly below 84.",
+        "generated_source_sha256": "6607f9f25c7b0c402af3a6288da9bd182f3df737ebbf49777153c19e7de755fd",
+        "final_source_sha256": "6607f9f25c7b0c402af3a6288da9bd182f3df737ebbf49777153c19e7de755fd",
+        "generated_code_hash": "fc3151cea03be58d",
+        "final_code_hash": "fc3151cea03be58d",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": false,
+          "wns_ns": -0.735,
+          "whs_ns": 0.072,
+          "lut_used": 81,
+          "ff_used": 66,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.018,
+          "total_power_w": 0.088
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-signed-fir4-02\\iter_002\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-signed-fir4-02\\iter_002\\cand_standard\\synth.tcl",
+          "sha256": "7365d7e50c659f94b9da928b6085ed493a7c447b96a51aa3fe1e4ba97b9782ac"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-signed-fir4-02\\iter_002\\cand_standard\\signed_fir4.v",
+          "sha256": "1d97cce9c04f6cc7c7ee01b577eeabb4c4843c8e714f50445eae9539dedec39e"
+        }
+      }
+    ],
+    "doctor": {
+      "status": "NOT_ADOPTED",
+      "action": "rtl_surgery",
+      "reason": "timing_not_closed",
+      "tools_ran": true,
+      "measured_metrics": {
+        "sim_passed": true,
+        "timing_met": false,
+        "wns_ns": -0.448,
+        "whs_ns": 0.15,
+        "lut_used": 81,
+        "ff_used": 66,
+        "dsp_used": 0,
+        "bram_used": 0.0,
+        "dynamic_power_w": 0.018,
+        "total_power_w": 0.088
+      },
+      "adopted": false,
+      "input_source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-signed-fir4-02\\iter_002\\cand_standard\\signed_fir4.v",
+        "sha256": "1d97cce9c04f6cc7c7ee01b577eeabb4c4843c8e714f50445eae9539dedec39e"
+      },
+      "trial_source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-signed-fir4-02\\iter_002\\doctor_rtl_surgery_trial\\signed_fir4.v",
+        "sha256": "a8c25ce5f42a2c018209a6e9e13f7172fcf3d5389ae61593608615405e674897"
+      },
+      "trial_flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\build-signed-fir4-02\\iter_002\\doctor_rtl_surgery_trial\\synth.tcl",
+        "sha256": "e13af1d8f1b0301712f5c5ef916a9772a94d1a3757937cf5cf2ab1393080957e"
+      },
+      "identity_count": 3,
+      "proposed_source_text_sha256": "31a58c09fc0f1811c70c41bd16ac4325862e69c1ff54f93abc4a5379e77518b7"
+    },
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": "6607f9f25c7b0c402af3a6288da9bd182f3df737ebbf49777153c19e7de755fd"
+  },
+  "artifacts": {}
+}

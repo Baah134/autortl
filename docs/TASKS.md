@@ -682,3 +682,32 @@ probe qualifies the monitor and is not a DUT mutant or part of denominator27.
 Then run all28 reference/fault cases with the new mechanical grader, unchanged
 old generated oracle and byte-identical signed-only110payload/expected arrays.
 Do not count desired22/27 before measured outcomes; preserve misses and failures.
+
+
+## Provisional next design after the current FIR runtime gates
+
+Physical planning check rejected the raw4x4 matrix interface before generation:
+16*8 coefficient bits +4*8 vector bits +4*18 result bits +6controls =238IOBs,
+while the retained reference report has106. No matrix code/model/tool experiment
+was started. Keep the current target and interface feasibility explicit.
+
+Prefer signed iterative MAC12: signed12 A/B, signed24 C, exact signed25
+Y=A*B+C, mathematical range[-12580864,12582911]. Data73bits plus6controls gives
+79IOBs (27spare); MAC16 would use103 and leave3. This remains an IP benchmark,
+not board pin/bank validation. No new wrapper/OOC flow or harness feature needed.
+
+Provisional timing: capture atedgek,12computationedgesk+1..k+12, resultvalid
+afterk+12, earliesttransferk+13 (scoreboard age13). Oneoutstanding, holdblocked
+result, sameedge retirement/replacement, in_ready=idle||(out_valid&&out_ready).
+Synchronous reset aborts computation/result at risingedge; offedgepulses inert.
+Oracle is stateless accepted-transaction signedmath/maskedoutput. IndependentTB
+must enforce exactfirstvalid, busyreadiness, capture/holding/replacement/reset.
+
+Before implementation, freeze full contract/examples (both exactextrema) and
+meaningfulfaults: unsigned operands/addend, signextension, product/output
+truncation, omittedmultiplyterm/addend, repeatedaddend, uncaptured operands,
+early/latecompletion, illegalready, heldcorruption, lostreplacement, occupied
+reset and async internalreset. Pure operand swapping in multiplication is
+commutative and must NOT be counted as a behavioral mutant. Qualify all planned
+faults before any newgeneration. Do not start this fixture during frozenFIR02
+or requiredcampaign13; complete currentruntimepublication gates first.

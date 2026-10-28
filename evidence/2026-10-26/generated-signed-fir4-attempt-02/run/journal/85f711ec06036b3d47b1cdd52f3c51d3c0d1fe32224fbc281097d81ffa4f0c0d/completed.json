@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_2:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 2\n## Contract check\n- Top interface: PASS \u2014 ports, widths, signedness, and directions match the contract.\n- Declared latency: PASS \u2014 top declares `// @latency 3`, matching the authoritative value.\n- Compile and elaboration: PASS \u2014 xvlog and xelab exited successfully.\n- Simulation: PASS \u2014 xsim exited successfully and reported the exact `TEST PASSED` verdict.\n- Synthesis and metric integrity: PASS \u2014 Vivado exited successfully with `SYNTH_COMPLETE`; retained routed reports and metrics are present.\n- Timing feasibility: FAIL \u2014 timing is not met; WNS is -0.735 ns, below the required 0 ns. WHS is 0.072 ns.\n- Promotion objective: FAIL \u2014 LUTs fell from 84 to 81, but the candidate is timing-infeasible while the previous best is timing-feasible, so it cannot replace it.\n## Summary\n- Passed: 5 of 7\n- Failed: 2 of 7\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes interface, latency annotation, tool, simulation, synthesis, and metric integrity checks, but fails the mandatory setup timing gate. Its lower LUT count does not qualify as an improvement because the previous best is timing-feasible and the candidate is not.",
+      "recommendation": "REJECT",
+      "passed": 5,
+      "failed": 2
+    }
+  },
+  "artifacts": {}
+}

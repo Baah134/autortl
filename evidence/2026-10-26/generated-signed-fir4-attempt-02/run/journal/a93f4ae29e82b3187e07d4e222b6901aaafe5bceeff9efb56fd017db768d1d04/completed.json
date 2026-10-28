@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_3:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 3\n## Contract check\n- Interface and defined behavior: PASS \u2014 the candidate preserves the top interface, and the authoritative ladder reports ALIVE.\n- Top latency annotation: PASS \u2014 `// @latency 3` matches the known current-top latency.\n- Compilation, elaboration, and simulation: PASS \u2014 required tool exits are successful and the frozen testbench reports `TEST PASSED`.\n- Routed metric and receipt integrity: PASS \u2014 routed metrics and retained reports are present; setup and hold evidence is available.\n- LUT objective comparison: PASS \u2014 81 LUTs is lower than the previous best\u2019s 84.\n- Timing feasibility and promotion: FAIL \u2014 candidate timing is infeasible: WNS is \u22120.735 ns, despite WHS of +0.072 ns. The previous best was timing-feasible, so this is not timing recovery; the LUT reduction cannot qualify for promotion.\n## Summary\n- Passed: 5 of 6\n- Failed: 1 of 6\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes the behavioral, annotation, tool, and metric checks and reduces LUT usage, but it fails the mandatory setup timing gate. Since the previous best is timing-feasible, this candidate does not qualify as timing recovery, and its lower LUT count cannot establish an accepted improvement. Stall count is 1, below the threshold for RESTART.",
+      "recommendation": "REJECT",
+      "passed": 5,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

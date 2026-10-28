@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Interface and fixed top ports: PASS \u2014 Candidate preserves the `signed_fir4` ports, widths, and signedness.\n- Declared latency: PASS \u2014 Top has `// @latency 3`, matching the authoritative current-top latency.\n- Defined behavior: PASS \u2014 Authoritative ladder reports 5 rungs ALIVE; candidate preserves the specified FIR, handshake, cycle, and reset behavior.\n- Compile, elaboration, and simulation: PASS \u2014 Required tool exits succeeded and the frozen testbench reports `TEST PASSED`.\n- Synthesis and process receipts: PASS \u2014 Vivado exited successfully, `SYNTH_COMPLETE` is present, and the process exit gate passed.\n- Routed metric integrity: PASS \u2014 Retained routed reports and structured metrics are provided.\n- Timing feasibility: PASS \u2014 `timing_met=true`, WNS is 0.147 ns, and WHS is 0.071 ns.\n- Improvement over previous best: PASS \u2014 Recorded `timing_recovery` is supported by the candidate\u2019s feasible timing and the previous best\u2019s known setup failure; higher LUT use is permitted for this recovery.\n## Summary\n- Passed: 8 of 8\n- Failed: 0 of 8\n- Improved over previous best: YES\n## Recommendation\nACCEPT\n## Reason\nThe candidate passes the deterministic correctness and verification gates, has matching top latency annotation, and meets both setup and hold timing requirements. The previous best was timing-infeasible, so the recorded timing recovery qualifies despite LUT use increasing from 81 to 84.",
+      "recommendation": "ACCEPT",
+      "passed": 8,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}

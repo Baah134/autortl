@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_1:decision:instruction:0",
+  "result": "Replace the top\u2019s pass-through core instance with equivalent three-slot pipeline logic, preserving signed FIR results, valid/data hold behavior, synchronous reset, and the existing `// @latency 3` annotation. Keep the three stage valid/data registers and add a 2-bit occupancy counter updated only from accepted input and retired output handshakes; derive a registered full flag from that count and drive `in_ready` as `!full || out_ready`, while keeping `out_valid` tied to the output slot. This may use additional FFs or LUTs, so assess it first as a timing-recovery candidate; do not claim LUT savings unless routed evidence shows a strict reduction after timing and all other gates pass.",
+  "artifacts": {}
+}
