@@ -1402,3 +1402,18 @@ corrected as an explicit doc-only delta after the frozen experiments.
   files verified against its manifest), TARGETS I/O notes, TASKS MAC12 notes.
 - Not run: the full regression and tier0 bench. No harness source changed, and
   campaign13 remains interrupted/unverified and Codex's open action.
+
+## October28 - Claude Code: campaign13 assessment; README; campaign14 prepared
+
+- README rewritten as a portfolio front page from committed evidence (0d468ff);
+  all links resolve and code excerpts match their sources. Two claims the code
+  does not support were removed.
+- Campaign13 inspected: only `counter` started, stopping at iteration 1 synthesis
+  RUNNING (2 model calls, 140.8 tool s). No launch result, no completion and no
+  history record; the history and router-stats prefixes are unchanged, and 0 of
+  230 frozen identities changed. Archived as an interrupted attempt in
+  evidence/2026-10-28/campaign13-interrupted-01 (not a pass, not resumed).
+- Prepared campaign14 (run_campaign14.py: campaign13's runner with new output
+  paths only). Not launched: the keep-awake request was denied by the session
+  classifier, and an unattended gate of up to about 60 minutes needs the PC
+  awake. Awaiting the user's decision.

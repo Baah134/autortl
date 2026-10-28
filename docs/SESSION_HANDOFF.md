@@ -29,6 +29,20 @@ Completed and verified this session:
 - Arrival/departure steps in AGENTS, AGENT_HANDOFF and START_HERE now include
   the inbox.
 
+- **Campaign13 assessed and archived** (evidence/2026-10-28/campaign13-interrupted-01).
+  Only `counter` started; it stopped during iteration 1 synthesis after 2 model
+  calls, with no completion receipt or history record. It is not a pass and is
+  not resumed. The 230 frozen identities still match its prelaunch record.
+  **Next gate: campaign14**, a fresh full tier0 run with the original budgets.
+  `work/run_campaign14.py` differs from run_campaign13.py only in its output
+  paths. It is not launched yet: the session's keep-awake request was denied,
+  and a PC sleeping mid-run is the likely cause of campaign13's interruption.
+  The user decides how to proceed. Launch with the Codex 3.12 Python,
+  PYTHONPATH=work/review_deps and AUTORTL_CODEX_BIN set to the installed Codex
+  CLI (codex is not on PATH in non-Codex shells).
+- README rewritten as a portfolio front page (0d468ff, development only; main
+  still shows the old README until the gates allow integration).
+
 Deliberately untouched: every file in the frozen 230- and 201-file identity
 sets (autortl/, llm/, tests/, curriculum/, scripts/, data/, .claude/, run.py),
 and campaign13 and its output. The previously pending Codex docs/TARGETS.md and
