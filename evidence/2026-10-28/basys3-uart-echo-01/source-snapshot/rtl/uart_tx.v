@@ -1,0 +1,44 @@
+`timescale 1ns / 1ps
+// 8N1 UART transmitter. Pulse start for one cycle while busy is low;
+// busy rises on the next cycle and falls after the stop bit.
+module uart_tx #(
+    parameter CLKS_PER_BIT = 868          // 100 MHz / 115200 baud
+) (
+    input       clk,
+    input       rst,                      // synchronous, active high
+    input       start,
+    input [7:0] data,
+    output      tx,
+    output reg  busy
+);
+    // Frame = {stop, data[7:0], start}, shifted out LSB first.
+    // Ones shift in behind it, so the line rests high when idle.
+    reg [9:0]  frame;
+    reg [3:0]  bits_sent;
+    reg [15:0] cnt;
+
+    assign tx = frame[0];
+
+    always @(posedge clk) begin
+        if (rst) begin
+            frame     <= 10'h3FF;
+            bits_sent <= 4'd0;
+            cnt       <= 16'd0;
+            busy      <= 1'b0;
+        end else if (!busy) begin
+            if (start) begin
+                frame     <= {1'b1, data, 1'b0};
+                bits_sent <= 4'd0;
+                cnt       <= 16'd0;
+                busy      <= 1'b1;
+            end
+        end else if (cnt == CLKS_PER_BIT - 1) begin
+            cnt   <= 16'd0;
+            frame <= {1'b1, frame[9:1]};
+            if (bits_sent == 4'd9) busy      <= 1'b0;
+            else                   bits_sent <= bits_sent + 4'd1;
+        end else begin
+            cnt <= cnt + 16'd1;
+        end
+    end
+endmodule

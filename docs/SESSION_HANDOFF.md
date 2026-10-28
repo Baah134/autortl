@@ -4,7 +4,52 @@ Updated October 28, 2026 (America/New_York). Verify files, Git, ownership and
 actual jobs before acting. Canonical checkout: Downloads/autortl-work. Preserve
 the separate Downloads/autortl copy. User choice: command-line Vivado.
 
-## Current state â€” October 28: sequential-agent accommodation
+## Current state - October 28 (Claude Code): Basys 3 hardware and agent mailbox
+
+Claude Code claimed the released lease normally (no takeover) and checkpoints
+there; query `python scripts/session.py status` for the live owner. Read your
+messages first: `python coordination/mail.py inbox --for codex`.
+
+Completed and verified this session:
+
+- **First physical-hardware evidence.** A hand-written UART echo
+  (`hardware/basys3/uart_echo`) runs on the user's Basys 3. Version 01 passed
+  chunked tests but lost bytes under a line-rate stream (first loss at byte
+  9,696), as an independent review predicted; evidence/2026-10-28/basys3-uart-echo-01.
+  Version 02 shortens the transmitted stop bit by 1/16 bit, waits for the
+  line to go high after a frame error (break handling), and adds overflow and
+  frame-error LEDs. It streamed 1,000,000 bytes at line rate with 0 loss; the
+  wrong-baud control failed as required. Each fix has a fault check that fails
+  when that fix is reverted. Build: 0 warnings, WNS +4.529 / WHS +0.106 ns,
+  77 LUT / 94 FF; evidence/2026-10-28/basys3-uart-echo-02.
+  The board's UART is COM10 and its JTAG target is Digilent 210183B31D15A.
+- **Agent mailbox.** `coordination/mail.py` with `coordination/messages.jsonl`
+  for questions, requests and blockers between agents (21 tests in
+  `coordination/test_mail.py` with fixture logs). See coordination/README.md and DECISIONS.
+- Arrival/departure steps in AGENTS, AGENT_HANDOFF and START_HERE now include
+  the inbox.
+
+Deliberately untouched: every file in the frozen 230- and 201-file identity
+sets (autortl/, llm/, tests/, curriculum/, scripts/, data/, .claude/, run.py),
+and campaign13 and its output. The previously pending Codex docs/TARGETS.md and
+docs/TASKS.md edits and the FIR02 archive (642 files verified against its
+manifest) were committed unchanged in b0e6c61. The Codex next action below is
+still open.
+
+User direction recorded this session: the project's goal is a strong portfolio
+piece for FPGA graduate roles. The agreed flagship is a harness-built design
+running on the Basys 3 with real pin constraints and a hardware-in-the-loop
+check against the Python reference. A fixed-point CORDIC/exponential unit is
+the candidate block; it must be a fresh design unless the user's research
+advisor approves reuse. Harness support needs a checked-in board XDC (never
+model-generated), a bitstream step and an optional programming step. These
+touch frozen source, so start only after campaign13 has a recovery decision.
+
+Tooling note: the default `python` here is 3.14 without pytest. Tests ran with
+`C:/Users/prince.baah/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe`
+and `PYTHONPATH=C:/Users/prince.baah/Documents/Codex/2026-10-15/hey/work/review_deps`.
+
+## Earlier October 28 checkpoint (Codex): sequential-agent accommodation
 
 The user clarified that Codex and Claude Code take turns. No concurrent-worker
 runtime or schema was implemented. The existing transactional coordinator lease,

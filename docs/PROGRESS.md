@@ -1363,3 +1363,42 @@ corrected as an explicit doc-only delta after the frozen experiments.
 - Existing coordination regression: **15 passed in 2.36 seconds**. All201
   executable/design input identities checked before/after remain unchanged.
   Independent content review found no blocker; main/development scope clarified.
+
+## October28 - Claude Code: first Basys 3 hardware run and agent mailbox
+
+- Human decisions: the user's goal is a strong FPGA portfolio piece for graduate
+  roles; robotics framing set aside. Codex and Claude Code take turns; the user
+  asked for a communication channel and progress reports at every stopping point.
+- Hand-written (not harness-generated) Basys 3 UART echo in hardware/basys3/uart_echo.
+  Pins checked against Digilent's Basys-3-Master.xdc.
+- Version 01 (evidence/2026-10-28/basys3-uart-echo-01): sim 64/64 at the exact
+  rate; route 0 warnings, WNS +5.451 / WHS +0.081 ns. On the board, chunked
+  echo tests passed (20,000 and 5,000 bytes) and a wrong-baud control failed.
+  An independent review subagent then found that TX needed 8,681 clocks per
+  byte, so a slightly fast sender overflows the FIFO silently. A new line-rate
+  streaming checker confirmed this on the board: first lost byte at 9,696;
+  150 of 100,000 missing.
+- Version 02 (evidence/2026-10-28/basys3-uart-echo-02): TX stop bit 1/16 bit
+  short (8,627 clocks per byte), receiver waits for a high line after a frame
+  error (a second review found a held-low break could echo a phantom 0xFF),
+  sticky overflow/frame-error LEDs, ASYNC_REG synchronizers. Sims: exact rate
+  with glitch/bad-frame/break/reset checks; 0.5%-fast sender, 1,500 bytes
+  through a 2-entry FIFO, no loss; 3.1%-fast sender latches overflow. Fault
+  checks: reverting the stop bit fails the 0.5% scenario (first loss at byte
+  381); reverting the break wait fails the break check. Route 0 warnings,
+  WNS +4.529 / WHS +0.106 ns, 77 LUT / 94 FF / 14 IOB. Board: 1,000,000 bytes
+  at line rate, 0 missing, 11,537 B/s; wrong-baud control failed; 100,000
+  bytes recovery passed. I/O false paths, so slack covers internal paths only.
+  One board and one session.
+- Added coordination/mail.py, an append-only Git-tracked JSONL mailbox
+  (post/inbox/close). The same review found duplicate ids hiding a message, a
+  cp1252 crash, and a lease-token check that failed open; all are fixed.
+  coordination/test_mail.py: 21 passed, using checked-in fixture logs and a
+  real CoordinationStore lease. Two review rounds by an independent subagent. Kept outside autortl/ and scripts/ because
+  those are in the frozen identity sets for campaign13's recovery; no harness
+  runtime, schema or lease rule changed. AGENTS now states the read-only
+  exception: posting only.
+- Committed the pending Codex work unchanged in b0e6c61: FIR02 archive (642
+  files verified against its manifest), TARGETS I/O notes, TASKS MAC12 notes.
+- Not run: the full regression and tier0 bench. No harness source changed, and
+  campaign13 remains interrupted/unverified and Codex's open action.
