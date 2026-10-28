@@ -3,7 +3,7 @@
 Project owner: Prince Baah. AI-assisted review and development are recorded
 separately from the owner's project direction and prior implementation.
 
-## 2026-10-15 — Review baseline
+## 2026-10-15 â€” Review baseline
 
 - User defined the autonomous design/improvement objective and requested
   a full review and progressive development with a CV evidence log.
@@ -15,7 +15,7 @@ separately from the owner's project direction and prior implementation.
 - No verified hardware improvement. Historical README LUT savings remain
   unreplicated by this work.
 
-## 2026-10-15 — CLI access and durable handoff
+## 2026-10-15 â€” CLI access and durable handoff
 
 - User selected command-line Vivado and requested continuity across sessions.
 - MCP protocol discovery had worked (41 tools), but its live launcher failed
@@ -30,7 +30,7 @@ separately from the owner's project direction and prior implementation.
   synthesis, timing, area, power, or optimization success claimed.
 - Next: bounded counter simulation/synthesis, followed by integrity repairs.
 
-## 2026-10-15 — Verification repairs and live counter checks
+## 2026-10-15 â€” Verification repairs and live counter checks
 
 - User authorized iterative improvements and testing; command-line flow retained.
 - Simulation verdicts now reject mixed pass/failure logs and bare termination.
@@ -72,7 +72,7 @@ separately from the owner's project direction and prior implementation.
 - Full tier benchmarks not run; no merge, no held-tier claim, no autonomous
   improvement or area-saving claim. Baseline/resume/restart defects remain.
 
-## 2026-10-16 — Codex-only workers and recovery from interruption
+## 2026-10-16 â€” Codex-only workers and recovery from interruption
 
 - User no longer has access to previous providers and authorized Codex-only
   workers with main-agent supervision and iterative implementation/testing.
@@ -137,7 +137,7 @@ autonomy claims. A passing startup check is not an autonomous design result.
 For each future entry record: objective, user decision, branch/commit,
 changes, commands, outcomes, evidence locations, limitations, and next action.
 
-## 2026-10-19 — shared memory, Downloads workspace and recoverable stages
+## 2026-10-19 â€” shared memory, Downloads workspace and recoverable stages
 
 - User decision: continue while usage is available; another provider can take
   over when needed, and returning agents resume from the latest repository.
@@ -166,7 +166,7 @@ changes, commands, outcomes, evidence locations, limitations, and next action.
   Next: bounded tier0 counter/mux campaign, then counter8/encoder builds and real
   interruption/resume checks. Keep recording unsuccessful attempts as evidence.
 
-## 2026-10-19 — first live cohort, reproduced failures and verified repairs
+## 2026-10-19 â€” first live cohort, reproduced failures and verified repairs
 
 - Continued after publishing 8d5eb09 and d1a02fb; no provider handoff requested
   or performed. Remote and local development hashes matched; all 69 first
@@ -208,7 +208,7 @@ changes, commands, outcomes, evidence locations, limitations, and next action.
   fixtures and real interruption/resume. A successful autonomous cohort is still
   pending. Required main-merge tier gates have not passed.
 
-## 2026-10-19 — user-requested integration into main
+## 2026-10-19 â€” user-requested integration into main
 
 - User requested the next plan and explicitly instructed merging all completed
   work so the project can improve incrementally. This authorizes integrating
@@ -775,7 +775,7 @@ changes, commands, outcomes, evidence locations, limitations, and next action.
   This is an accepted intermediatebest, not yetfinalsavedwinner/DONEvalidation.
 
 - FIFO05 DONEiter3 **22LUT/13FF,WNS+.108/WHS+.076ns** via boundedRTLDoctor
-  registering equivalentvalidstate. Iter2firstfeasible24LUT→22LUT=8.33%reduction;
+  registering equivalentvalidstate. Iter2firstfeasible24LUTâ†’22LUT=8.33%reduction;
  baseline13LUTfailedtiming, sooverallresultistiming_recoverywithareacost.
  13calls,856.39chargedtoolseconds,1041.5565elapsedseconds. Finalreview5/5PASS.
 - Exact savedwinner+declaredchildren separately passed independentmatrix.
@@ -789,12 +789,12 @@ changes, commands, outcomes, evidence locations, limitations, and next action.
 
 - Final read-only FIFO05 review found no blocker; verified registered valid-state
   invariant and tail-pointer transitions. Recorded source equivalence explicitly:
-  measured stage uses CRLF, saved winner LF; full text equal after ONLY CRLF→LF,
+  measured stage uses CRLF, saved winner LF; full text equal after ONLY CRLFâ†’LF,
   independent source_0 byte-identical to saved winner. Raw measured source and
   all actual hashes retained. Archive now369files including this hash link.
 
 - Fresh fulltier0campaign07 **2/2PASS**, qualificationtrue, streak1, heldfalse.
-  Counter55→31LUT(43.64%),37FF,WNS+.126/WHS+.026ns; baseline+.494/+.113ns.
+  Counter55â†’31LUT(43.64%),37FF,WNS+.126/WHS+.026ns; baseline+.494/+.113ns.
  3calls,249.126toolseconds/272.556elapsed. CounteractualDONEreuse preserved80
   hashes/fileset/budget with no newcalls. Unknown latencycriterionpassed8/8review.
 - Mux baseline8LUT/8FF,+.579/+.052ns retained. Initial primitive proposal failed
@@ -868,7 +868,7 @@ changes, commands, outcomes, evidence locations, limitations, and next action.
 - Read-only next-stage source audit refined earlier causal wording: CHURN is printed and passed to planner, but need_plan directly checks initial/stall/periodic/STAGNATION. Packet iter3 replanned via scheduled/stall condition, not a direct CHURN trigger. Corrected summary README/review and its manifest; raw evidence unchanged. Concrete next study: bounded journaled previous-proposal instruction/source/outcome feedback, separate standard vs Doctor flow outcomes; retain repeated-source tool exploration. No runtime edits during campaign.
 
 - Fresh fulltier0campaign08 completed **2/2 PASS, matching cohort streak2,
-  heldfalse**. Counter55→53LUT/37FF,WNS+.456/WHS+.282ns,3calls; smaller gain
+  heldfalse**. Counter55â†’53LUT/37FF,WNS+.456/WHS+.282ns,3calls; smaller gain
   than prior31LUT trial is retained honestly. Mux8LUT/8FF,+.579/.052ns baseline
   retained;8LUT no-gain proposal rejected,3calls. No primitive failure thisrun.
 - Campaign archive195 files verified; both55-file runtime manifests unchanged,
@@ -959,7 +959,7 @@ changes, commands, outcomes, evidence locations, limitations, and next action.
 - Authorizedatomicmain/dev integration verified at e4894cbb29a264be50916805bcf7855c67c7c78c. Allgatespassed; noownedtooljobs; temporaryawakeflagremoved. Documentation-onlyfollowup recordsactualpublication. Workingbranch remainscodex/contract-context.
 
 
-## October23 — previous-proposal feedback engineering stage
+## October23 â€” previous-proposal feedback engineering stage
 
 - User requests continued harness-first autonomous FPGA work and meaningful
   GitHub progress. Recovered actual clean e6dc558 and existing coordinator;
@@ -995,7 +995,7 @@ changes, commands, outcomes, evidence locations, limitations, and next action.
   reviewed,37focusedPASS. Canonical202files remainfrozen pending study/DONEproof.
 
 
-## October 23 — frozen feedback study completed
+## October 23 â€” frozen feedback study completed
 
 - Retained all six original rows and separate actual quota recovery. Each mode
   repeated three proposals; no established repetition benefit. Advisory context
@@ -1037,7 +1037,7 @@ changes, commands, outcomes, evidence locations, limitations, and next action.
   and3iter/N1/16call/25tool/35wall budgets. Main remains e6dc558 pending gates.
 
 
-## October 24 — recover actual live validation after quota reset
+## October 24 â€” recover actual live validation after quota reset
 
 - User returned and requested continuation. No old jobs remained. Original live01
   hit CODEX_QUOTA before generation after passing baseline37LUT/46FF; original
@@ -1060,7 +1060,7 @@ changes, commands, outcomes, evidence locations, limitations, and next action.
   per-entry budgets, no held higher tier. Dot4 proposal remains isolated/unadmitted.
 
 - Fresh FULL tier0campaign10 PASSED2/2, new cohort9ce241c06f496aabc8bf5a74e161915cef9b3e871b302c087c8bd20aa262d028,
-  streak1/heldfalse. Counter55→53LUT,
+  streak1/heldfalse. Counter55â†’53LUT,
   mux8LUT. Runtime/source/report identities verified;
   all203 tested source hashes unchanged. No higher held tier.
 - All gates for runtime965251f now passed:1,340 full tests, actual accepted-source
@@ -1083,8 +1083,8 @@ changes, commands, outcomes, evidence locations, limitations, and next action.
   Per-child verification active; no new harness source or counter run.
 
 - Complex dot4 build completed: three generated children/goldens, valid top-level
-  inlining with4DSPs.325→17LUT,52→18sliceFF,+.354/.254ns. DSP0→4; internalDSP
-  registers excluded, power.157→.158W, no universal area/register/power claim.
+  inlining with4DSPs.325â†’17LUT,52â†’18sliceFF,+.354/.254ns. DSP0â†’4; internalDSP
+  registers excluded, power.157â†’.158W, no universal area/register/power claim.
  11calls,235.344toolseconds,339.915savedelapsed. Independent exacttop+3children
  685cyclesPASS; DONE eightprobes rejected,364protectedidentities unchanged.
   Archived651files before anyruntime edit; original13-case admission144files.
@@ -1108,7 +1108,7 @@ changes, commands, outcomes, evidence locations, limitations, and next action.
   gate remains before main integration of this runtime change.
 
 
-## October25 — finish tested wrapper fix after approval-review usage interruption
+## October25 â€” finish tested wrapper fix after approval-review usage interruption
 
 - Last archive/push command was not executed: automatic approval review could
   not run because its usage was exhausted. No source/result was reset.
@@ -1135,7 +1135,7 @@ changes, commands, outcomes, evidence locations, limitations, and next action.
   Next design contract is elastic_dot4_build; no new experiment started.
 
 
-## October25 — begin elastic arithmetic verification stage
+## October25 â€” begin elastic arithmetic verification stage
 
 - Recovered clean83c52f6; no previous tool jobs. Renewed coordinator and claimed
   isolated next-fixture integration scopes. Exact contract/fault/budget plan
@@ -1146,7 +1146,7 @@ changes, commands, outcomes, evidence locations, limitations, and next action.
   Isolated fixture preparation active; no new harness feature or tool experiment.
 
 
-## October25 — fault-qualified elastic pipeline exposes two harness defects
+## October25 â€” fault-qualified elastic pipeline exposes two harness defects
 
 - Actual control+18compilingfault qualification initially rejected18 because the
   TB printed BEHAVIOR_FAIL rather than required raw FAIL. Preserved204files;
@@ -1171,8 +1171,8 @@ changes, commands, outcomes, evidence locations, limitations, and next action.
   Freshbuild02 active11228, samefrozencontract/TB andoriginalbudgets; source220
   unchangedaftercommit. No qualificationreference seed.
 
-- Freshelasticbuild02 DONE:328→20LUT,54→20sliceFF,DSP0→4,setup−.052→+.155ns,
-  hold+.206ns;power.138→.149W increased.9calls,1165.485toolseconds,
+- Freshelasticbuild02 DONE:328â†’20LUT,54â†’20sliceFF,DSP0â†’4,setupâˆ’.052â†’+.155ns,
+  hold+.206ns;power.138â†’.149W increased.9calls,1165.485toolseconds,
   1303.942savedactive vs1304.797CLIwall. Firstoptimizationfault caught30assertions,
   repairedautomatically; no invalidproposal accepted. Budgetpolicy stoppedbefore
   staleplaniter3. No reference seed, sameoriginalspec/TB andlimits.
@@ -1201,7 +1201,7 @@ changes, commands, outcomes, evidence locations, limitations, and next action.
   checkpoint may be documentationonly; inspectactualGitheads.
 
 
-## October25 — begin stateful signed streaming arithmetic
+## October25 â€” begin stateful signed streaming arithmetic
 
 - Recovered clean85266b9 and unchanged220testedsource; no old batch jobs.
   Selected signed FIR4 with accepted-sample history and3elastic slots/age3.
@@ -1220,7 +1220,7 @@ changes, commands, outcomes, evidence locations, limitations, and next action.
   incompleteuntilfinalreceipt; no model/synthesiscalls or canonicalruntimeedits.
 
 
-## October26 — resume signed stateful FIR integration
+## October26 â€” resume signed stateful FIR integration
 
 Recovered85266b9 after prior approval-review quota reset. Previous integration
 was not executed during quota failure. Reclaimed expired coordinator lease;
@@ -1241,7 +1241,7 @@ Independent exact winner+child and DONE tamper proof before main integration.
 Runtime unchanged: no fresh counter objective or redundant runtime tier0 gate.
 
 
-## October26 — signed FIR checker and full regression complete
+## October26 â€” signed FIR checker and full regression complete
 
 Completed 1429 tests in 558.54 seconds on227frozen
 source files; all unchanged, including56runtime implementation files. Prior
@@ -1270,7 +1270,7 @@ corrected as an explicit doc-only delta after the frozen experiments.
   audit plan recorded beforelaunch; no source changes while originalrun active.
 
 
-## October26 — generated signed stateful FIR optimization verified
+## October26 â€” generated signed stateful FIR optimization verified
 
 - Original build01 completed on frozen227source/runtimeunchanged.78to52LUT
   (33.3% below timing-failing baseline); firstfeasible80to52LUT(35%).66to67FF,
@@ -1290,7 +1290,7 @@ corrected as an explicit doc-only delta after the frozen experiments.
   recovery context. Nextaudit and correctioncriteria were recorded beforelaunch.
 
 
-## October26 — audit the generated verifier and correct concrete gaps
+## October26 â€” audit the generated verifier and correct concrete gaps
 
 - Frozen full audit measured18/27detections,9misses,0ungraded; originalreference
   passed.344.062s diagnosticwall,319.626s actualtool,0models/synthesis.287files
@@ -1307,7 +1307,7 @@ corrected as an explicit doc-only delta after the frozen experiments.
   actualproducer/control/fault validation and fullruntime gates remain pending.
 
 
-## October26 — verified original milestone merged; driver correction gated
+## October26 â€” verified original milestone merged; driver correction gated
 
 - Fast-forwarded main to185dadc after the original FIR's completed gates;
   remote verified and local main updated without touching the active worktree.
@@ -1325,7 +1325,7 @@ corrected as an explicit doc-only delta after the frozen experiments.
   and fulltier0 gates remain mandatory before publishing this runtime to main.
 
 
-## October26 — coverage runtime passes its complete regression
+## October26 â€” coverage runtime passes its complete regression
 
 - 1450 tests passed in 457.63 seconds; all230 frozen source
   identities match the vendor-tested stage and remain unchanged. Full source,
@@ -1338,3 +1338,28 @@ corrected as an explicit doc-only delta after the frozen experiments.
 - Preparing tested development publication, then NEW fixed-budget FIRbuild02
   and fresh fulltier0campaign13 before main runtime integration. Original
   verified52LUT milestone remains published at185dadc with its own source/costs.
+
+- Published tested runtime cbab6cf2a69070a0f3f4f19f78f7eab69453329c to development;
+  remote head and all230 source identities verified. All2,556 committed archive
+  blobs across seven manifests match raw bytes. NEWFIRbuild02 active64015 with
+  original admitted spec/TB, no reference seed and original16/25/35 budgets.
+
+## October28 â€” accommodate alternating Codex and Claude Code sessions
+
+- User clarified that development agents take turns. Concurrent-worker support
+  was reviewed but not implemented; no coordination schema/runtime was changed.
+  Existing SQLite lease/task scopes remain sufficient for the requested workflow.
+- Added arrival rules to AGENTS/CLAUDE/START_HERE and a concrete compact-status,
+  ownership, dirty-work preservation and departure checklist to AGENT_HANDOFF.
+  Active leases are respected; stale exports, process IDs and expired leases
+  alone do not justify overwriting work or assuming tools have stopped.
+- Inspected actual Git/process/run evidence: old October26 lease expired; no
+  Claude/Python/Vivado/XSIM process visible at inspection. FIR02 completed;
+  campaign13 lacks completion evidence and is interrupted/unverified. Corrected
+  current memory while preserving historical entries and original results.
+- Existing pending TARGETS/TASKS edits and the untracked FIR02 archive were
+  preserved. Only documentation and new verification evidence are in this change.
+  Coordination checks/publication outcome are recorded in the new evidence folder.
+- Existing coordination regression: **15 passed in 2.36 seconds**. All201
+  executable/design input identities checked before/after remain unchanged.
+  Independent content review found no blocker; main/development scope clarified.

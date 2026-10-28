@@ -5,7 +5,9 @@ You can continue without access to the previous provider's conversation.
 
 Canonical checkout: `C:/Users/prince.baah/Downloads/autortl-work`.
 GitHub integration branch: `main`. Development branch: `codex/contract-context`.
-Verified main/development milestone **185dadc**: generated signed FIR reduced
+Last verified main milestone **185dadc** uses the older validated runtime;
+**cbab6cf** is development-only pending the remaining FPGA gates. The main
+milestone includes a generated signed FIR reduced
 78 to 52 LUTs and recovered setup timing to +0.169 ns (hold +0.106 ns), with an
 independent 800-cycle replay and six restored integrity probes. Full 1,429-test
 regression and 28-case independent checker admission passed. All 1,155 newly
@@ -14,7 +16,10 @@ published evidence blobs were verified against committed bytes.
 Current local work strengthens generated verification: a frozen 27-fault audit
 measured 18 detections before correction and 22 after it, with five legal driver
 controls and a detected faulty-producer probe. The exact 230-file runtime passed 1,450 tests in 457.63
-seconds. Tested development publication is next; fresh FPGA gates remain pending. Read SESSION_HANDOFF
+seconds. Tested runtime is published on development at cbab6cf; fresh FIR build02
+completed and its archive is still untracked. Campaign13 has no completion receipt
+and must be treated as interrupted/unverified, not a passing tier0 gate. Main retains the
+completed original FIR milestone until the changed runtime gates pass. Read SESSION_HANDOFF
 for actual jobs and exact next commands before editing or launching tools.
 
 The prior elastic dot product and multi-module/FIFO/divider results remain in
@@ -24,6 +29,10 @@ board deployment; see docs/TARGETS.md. No model-strength comparison is claimed.
 Keep source-bound planning and exact candidate dedupe. Additional prior-proposal
 prompt context is experimental/opt-in after its study did not establish a benefit.
 No held tier, controlled weak-model or product-superiority claim is made.
+
+**Agents take turns.** Before editing, check live coordinator ownership and
+actual jobs using the arrival checklist in `docs/AGENT_HANDOFF.md`. An active
+coordinator keeps ownership; a returning agent must not overwrite newer work.
 
 1. Read `AGENTS.md` and `docs/AGENT_HANDOFF.md` for the working contract.
 2. Read `docs/SESSION_HANDOFF.md` for current state and exact next actions.

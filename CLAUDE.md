@@ -5,6 +5,16 @@ and `docs/AGENT_HANDOFF.md`. These are the same shared memory and ownership
 rules used by Codex and Gemini. The current runtime client uses Codex, while
 development coordination may use any user-authorized agent.
 
+## Sharing this checkout
+
+The user wants Codex and Claude Code to take turns, not edit concurrently.
+Before making changes, read the arrival rules in `AGENTS.md`, inspect live
+`scripts/session.py status`, Git and actual tool jobs, and claim the lease
+only when the previous coordinator has released it or stopped. Never treat
+an expired lease as proof that a vendor process has ended. Preserve unfinished
+work, checkpoint during work, and use the handoff command when leaving.
+Starting Claude Code does not change the harness runtime model backend.
+
 ## What this repo is
 A harness-first agentic system that writes and optimises Verilog through
 Vivado. Read docs/DESIGN.md before changing anything — it is the single

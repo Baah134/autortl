@@ -1,5 +1,23 @@
 # AutoRTL session continuity
 
+## Agent arrival and departure (user decision, October 28)
+
+Codex, Claude Code and other user-authorized development agents **take turns**.
+An active coordinator is not an invitation to start a second editing session.
+Read `docs/AGENT_HANDOFF.md` for the arrival checks and departure procedure.
+
+- Query live ownership with `python scripts/session.py status`; the checked-in
+  handoff and an old JSON export can be stale. If another coordinator is active,
+  stay read-only until it hands off. Do not use takeover just to avoid waiting.
+- A released or expired lease is not proof that tool jobs have stopped. Inspect
+  Git, unfinished changes, actual processes and saved run evidence before claim.
+- Preserve dirty files and untracked artifacts. Do not reset, clean, stash,
+  switch branches or resume experiments merely to make the checkout look tidy.
+- Claim the coordinator lease and exact file scopes before editing. Renew at
+  substantial checkpoints; a normal checkpoint keeps ownership active.
+- On an actual departure, record pending work and live jobs, then run `handoff`.
+  A returning agent starts from the latest repository state, not its old chat.
+
 At the start of every session, read `START_HERE.md`, `docs/AGENT_HANDOFF.md`, `docs/SESSION_HANDOFF.md`,
 `docs/PROGRESS.md`, `CLAUDE.md`, and `docs/DESIGN.md`. Inspect the current
 Git branch, status, and recent commits before editing. Reconcile these

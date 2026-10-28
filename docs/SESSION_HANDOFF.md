@@ -1,8 +1,52 @@
 # Current AutoRTL checkpoint
 
-Updated October 26, 2026 (America/New_York). Verify files, Git, ownership and
+Updated October 28, 2026 (America/New_York). Verify files, Git, ownership and
 actual jobs before acting. Canonical checkout: Downloads/autortl-work. Preserve
 the separate Downloads/autortl copy. User choice: command-line Vivado.
+
+## Current state â€” October 28: sequential-agent accommodation
+
+The user clarified that Codex and Claude Code take turns. No concurrent-worker
+runtime or schema was implemented. The existing transactional coordinator lease,
+task scopes, checkpoint and handoff commands remain the coordination mechanism.
+Follow the new arrival/departure checklist in docs/AGENT_HANDOFF.md. Existing
+coordination tests passed15/15 (2.36s); all201 checked implementation/design
+input identities were unchanged. Evidence: evidence/2026-10-28/agent-coexistence.
+This documentation milestone is published only to development; the active
+coordinator releases its lease after publication. Query live status to confirm.
+
+At the inspection, no Claude Code, Python, Vivado or XSIM process was visible
+in the local process-name check. This is a point-in-time check, not a guarantee
+that another agent cannot start later. Query live ownership before editing.
+The October26 Codex lease had expired; a documentation-only coordinator claimed
+it normally without takeover. The current lease state must come from session.py.
+
+Development HEAD before this documentation change: cbab6cf. Local main:185dadc.
+No runtime implementation, test, hardware fixture or previous archive was edited.
+Unrelated pending docs/TARGETS.md and docs/TASKS.md changes and the untracked
+evidence/2026-10-26/generated-signed-fir4-attempt-02 archive are preserved.
+
+Important correction to the historical snapshot below: FIR02 is completed,
+not active64015. Its launch receipt reports exit0, source unchanged and
+1404.719s CLI wall time. Its independent evidence archive reports84LUT/69FF,
+setup+.147ns/hold+.071ns,800cycles,14calls. Keep its separate original52LUT result.
+Campaign13 has only the counter run; the last events show synthesis RUNNING,
+but no completion/launch-result receipt was found and no vendor process was
+visible. Treat this campaign as interrupted/unverified. Do not claim tier0 passed,
+merge the changed runtime to main, rerun into its old directory, or resume it
+without preserving/reconciling its original inputs, budgets and tool receipts.
+
+Next engineering action: inspect campaign13's complete saved state and receipts,
+preserve the interrupted attempt, then choose only a supported source-bound
+recovery or a separately budgeted fresh gate. Do not run the archive helper that
+requires a passing complete campaign against this incomplete attempt. The
+provisional MAC12 fixture has not started; finish runtime gates first.
+
+## Historical October26 checkpoint (superseded job status)
+
+The following records preserve the earlier checkpoint; its ACTIVE process IDs
+and exact-next-action list are historical. Use the current section above and
+actual files/processes rather than treating those jobs as still running.
 
 ## Published milestone
 
@@ -61,9 +105,10 @@ No further source, test or fixture edits during frozen experiments.
 
 Full regression 56345 completed: **1450 passed in 457.63 seconds**.
 All 230 identities stayed unchanged. Archive: evidence/2026-10-26/
-fir4-coverage-tests-01. No test/vendor/model job currently active. The tested
-runtime is ready for development publication and fresh FPGA gates. Source stays
-frozen; do not edit it during fresh build02 or campaign13.
+fir4-coverage-tests-01. No test/vendor/model job currently active. Tested runtime cbab6cf2a69070a0f3f4f19f78f7eab69453329c is pushed to
+development; all 2,556 committed archive blobs verified. NEW FIRbuild02 ACTIVE
+64015, original admitted spec/TB and original fixed budgets. Source230 stays
+frozen. Fullsuite56345 completed; do not edit source during build02/campaign13.
 
 Temporary system-awake helper: 96281, watching work/fir4-coverage-awake.flag,
 bounded 120 minutes since about 09:41. Previous 6908 released and completed.
@@ -106,3 +151,7 @@ One coordinator and one vendor queue. No automatic scheduling/provider failover.
 Target: xc7a35tcpg236-1, 100 MHz, ideal zero min/max I/O; no board deployment.
 Prior runtime gate was campaign12, 2/2, new-cohort streak one, held false.
 No controlled weak-model or product-superiority claim is made.
+
+Next-design feasibility: raw4x4matrix238IOBs exceeds106 available. Provisional
+MAC12 (79IOBs, signed25 result, age13) is recorded in TASKS; no implementation
+started. Freeze and admit its full contract only after currentruntime gates.

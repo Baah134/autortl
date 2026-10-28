@@ -3,6 +3,63 @@
 Use files and Git as the durable memory. A chat summary can help, but does not
 replace source code, test results or experiment artifacts.
 
+## Arrival checklist for alternating agents
+
+User decision, October 28: development coordinators take turns. Keep the existing
+single-coordinator protocol; independent concurrent worker sessions were considered
+but not implemented. The current coordinator may still use its own scoped subagents.
+
+1. Read START_HERE, AGENTS, this guide, the current SESSION_HANDOFF section and
+   relevant recent PROGRESS entries. Inspect branch, commit, index and untracked
+   files. Existing unfinished work belongs to the project; do not discard it.
+2. Query the database through the CLI, not only its previously saved JSON export.
+   A compact PowerShell view avoids loading the entire event history:
+
+   ```powershell
+   $ownership = python scripts/session.py status | ConvertFrom-Json
+   if ($LASTEXITCODE -ne 0) { throw "Coordination status failed; do not edit" }
+   $ownership.coordinator | Format-List
+   $ownership.tasks | Where-Object { $_.state -ne 'done' } | Select-Object id,state,owner,files
+   $ownership.checkpoint | Format-List
+   ```
+
+3. If another coordinator is active, remain read-only. Do not use
+   `--takeover-reason` merely because another model is available. If its session
+   ended abruptly, verify cessation or obtain an explicit user takeover request,
+   following the existing takeover rule below. A session token is private: never
+   put it in Git, progress files or exported logs.
+4. Even with a released/expired lease, inspect owned model/vendor jobs and
+   experiment events. A stale RUNNING record is not a live process or a successful
+   exit. Do not terminate unfamiliar processes. If a job is still active, preserve
+   its source and wait for its result before changing measured inputs.
+5. Start a lease without a takeover flag when eligible; a claim conflict means
+   another coordinator won the race, so stop editing. Reclaim only the required
+   unfinished task scopes. Never infer that blocked tasks are completed or that
+   their files are disposable.
+6. Reconcile old checkpoint instructions against actual results. Preserve each
+   attempt and its original budgets; do not relaunch a spent experiment into its
+   old output directory or resume it across changed runtime identities. An
+   interrupted experiment needs an evidence/recovery decision before continuation.
+
+Do not automatically pull, switch branches, stash, reset or clean on arrival.
+Review existing work and remote changes first. Stage explicit reviewed paths;
+avoid `git add .` when unrelated unfinished evidence is present. Only the active
+coordinator integrates and pushes tested changes or owns the Vivado job queue.
+
+## Departure record
+
+At a real switch/end, update the current SESSION_HANDOFF with branch/commit,
+pending tracked/untracked paths, completed checks and their evidence, failures,
+live job identities and output paths, and the next executable action. Distinguish
+confirmed running jobs from stale session IDs. Keep historical results in PROGRESS
+and put local coordination notes here, never in the public README.
+
+Save work before releasing ownership. Run the existing `handoff` command below;
+the next agent gets its own token and explicitly reclaims unfinished scopes.
+Do not hand off merely to save an intermediate checkpoint. Abrupt usage limits
+may prevent release: the next agent still checks actual jobs and lease state.
+These files do not schedule execution or automatically switch model providers.
+
 ## One coordinator, several workers
 
 The active coordinator owns the integration plan and the Vivado job queue.
