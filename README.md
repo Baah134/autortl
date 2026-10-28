@@ -1,67 +1,32 @@
 # AutoRTL
 
-**An AI-assisted RTL design and optimization harness with verification at every stage.**
+**An agentic FPGA design loop where the model only proposes and verification decides.**
 
-AutoRTL turns hardware specifications into Verilog and iteratively improves
-existing designs using AMD Vivado. Planner, generator, evaluator and timing
-specialist roles propose changes; simulation, implementation reports and
-deterministic acceptance gates decide which results survive.
+AutoRTL writes and optimizes Verilog with LLM agents, driving AMD Vivado
+from the command line. Every candidate must pass static checks, simulation
+against a testbench that has itself been shown to catch injected bugs, and
+place-and-route timing before it can replace the current design. The model
+reads the specification but cannot change it, the testbench, the TCL or the
+acceptance gates.
 
-The goal is a repeatable autonomous engineering loop: generate, verify, measure,
-learn from failures, and retain the best correct design within a fixed budget.
+## Highlights
 
-## Verified progress
+- **Verified optimization.** A generated signed FIR filter went from failing
+  timing at 78 LUTs to 52 LUTs with +0.169 ns setup slack. The saved winner
+  then passed the independent 800-cycle testbench admitted with the
+  specification.
+- **Verifiers that are tested themselves.** An audit injected 27 behavioral
+  faults into the FIR. The generated testbenches caught only 18. Better
+  stimulus raised that to 22 with no extra model calls, and the independent
+  checker catches all 27.
+- **Real hardware path.** A hand-written UART design runs on a Digilent
+  Basys 3 and streams 1,000,000 bytes at line rate with zero loss. It is the
+  base for running harness-built designs on the board.
+- **Engineering discipline.** A 1,450-test regression suite, crash-safe
+  resumable runs, fixed model-call and tool-time budgets, and an error
+  taxonomy keyed to Vivado message IDs.
 
-| Validation | Recorded result |
-|---|---|
-| Harness regression | **1,450 tests passed** |
-| Generated verifier coverage | **18 → 22 of 27 FIR faults detected with the same oracle and RTL; five legal traffic controls passed** |
-| Signed stateful FIR filter | **78 → 52 LUTs · setup −0.327 → +0.169 ns · hold +0.106 ns · independent 800-cycle test passed** |
-| Elastic dot product | **328 → 20 LUTs · 4 DSPs · setup +0.155 ns / hold +0.206 ns · independent 852-cycle test passed** |
-| Three-module pipelined dot product | **325 → 17 LUTs · 4 DSPs · independent 685-cycle test passed** |
-| Iterative divider (8-bit) | **38 → 26 LUTs · setup +0.315 ns / hold +0.129 ns · saved winner independently passed** |
-| FIFO timing recovery | **Setup −0.931 → +0.108 ns · hold +0.076 ns · 22 LUTs / 13 FFs** |
-| Packet-tagged FIFO | **23 LUTs / 31 FFs · setup +0.078 ns / hold +0.106 ns · saved winner independently passed** |
-| Fault-qualified independent verification | **27 signed FIR faults, 18 elastic arithmetic faults and 20 divider faults detected; correct controls passed** |
-
-Measurements use Vivado 2025.2, `xc7a35tcpg236-1`, a 10 ns clock and ideal zero
-minimum/maximum I/O delays. These are benchmark constraints; board pins,
-external interface timing and hardware deployment require separate validation.
-See [hardware targets and validation scope](docs/TARGETS.md).
-
-The FIR first recovered timing at 80 LUTs, then reduced that feasible design to
-52 LUTs. FFs change from 66 to 67, DSP use stays zero and reported estimated
-power stays 0.088 W. Its exact saved winner passed independent replay; completed
-reuse and six restored integrity probes preserved its result and budget.
-
-Dot-product area reductions trade fabric logic for four DSPs; slice FF counts
-exclude DSP internal registers. Estimated power increased from 0.138 to 0.149 W
-for the elastic design and from 0.157 to 0.158 W for the three-module design.
-The divider's estimate increased from 0.092 to 0.103 W. FIFO timing recovery
-uses more area than its failing baseline. Report these tradeoffs together.
-
-The generated-verifier audit retains all 27 faults. Signed boundary sequences,
-invalid input traffic and synchronous off-edge reset pulses add four detections
-without extra runtime model calls. The independent checker covers all 27,
-including the five remaining contract-specific reset cases. See the
-[verification guide](docs/GOLDEN_VERIFICATION.md) for the generic checks and limits.
-
-These are bounded experiments, not formal equivalence, arbitrary-board support
-or evidence that every model improves. No held curriculum tier or controlled
-weak-model advantage is claimed. Unsuccessful proposals and earlier designs
-remain in the [engineering evidence log](docs/PROGRESS.md).
-
-Evidence: [signed FIR](evidence/2026-10-26/generated-signed-fir4-attempt-01/README.md),
-[FIR fault qualification](evidence/2026-10-25/signed-fir4-admission-attempt-01/README.md),
-[full regression](evidence/2026-10-26/fir4-coverage-tests-01/README.md),
-[generated-verifier audit](evidence/2026-10-26/fir4-driver-comparison-01/README.md),
-[elastic dot product](evidence/2026-10-25/generated-elastic-dot4-attempt-02/README.md),
-[three-module dot product](evidence/2026-10-24/generated-dot4-attempt-01/README.md),
-[divider](evidence/2026-10-23/generated-divider-attempt-01/README.md),
-[FIFO](evidence/2026-10-22/generated-fifo-attempt-05/README.md) and
-[packet FIFO](evidence/2026-10-22/generated-packet-attempt-01/README.md).
-
-## The design loop
+## How it works
 
 ```mermaid
 flowchart LR
@@ -74,28 +39,127 @@ flowchart LR
     F --> B
 ```
 
-- **Fixed contracts:** optimization requirements come from immutable harness
-  facts. Interfaces, reset behavior and cycle latency
-  are checked against explicit module specifications. Plans are bound to the exact editable RTL.
-- **Verification before scoring:** testbench qualification requires a passing
-  control and detection of an injected fault. Scoreboard stimulus includes eligible
-  specification payload examples alongside corners and seeded random cases.
-  Missing or ambiguous evidence fails.
-- **Measured candidate selection:** configurable best-of-N generation and source
-  deduplication preserve exact candidate identity and use verified results. Timing feasibility precedes objective
-  scoring; timing recovery is recorded separately from resource savings.
-- **Recoverable execution:** atomic checkpoints, frozen inputs and stage journals
-  support replay; source, configuration and report drift invalidate reuse.
-- **Bounded experiments:** model-call, tool-time and wall-time budgets constrain
-  work. Infrastructure failures receive bounded retries without RTL mutation.
-- **Traceable feedback:** sources, constraints, hashes and reports connect results
-  to exact experiments. Routed path details and unsuccessful trial evidence
-  inform subsequent planning; rejected measurements remain separate from winners.
+- **Fixed contracts.** Interfaces, reset behavior and cycle latency come from
+  a typed specification. A candidate that changes them fails; it is never
+  renegotiated.
+- **Qualified verification.** Before a testbench grades anything, it must pass
+  a correct control and fail a deliberately broken design. Generated stimulus
+  covers specification examples, signed extremes, idle cycles and reset.
+- **Measured selection.** Timing feasibility comes before resource savings.
+  Candidates are deduplicated by exact source, and every score comes from
+  routed Vivado reports.
+- **Safe failure handling.** Tool crashes, locks and timeouts never alter the
+  design or count as a failed attempt. Message severities can be raised,
+  never lowered.
+- **Traceable evidence.** Every result is archived with source hashes,
+  constraints, tool version and raw reports, so it can be checked byte for
+  byte.
+
+## What the agent actually changed
+
+In the FIR run, the baseline core passed the backpressure signal through a
+three-stage combinational chain and multiplied by constants:
+
+```verilog
+wire ready3 = !valid3 || out_ready;
+wire ready2 = !valid2 || ready3;
+wire ready1 = !valid1 || ready2;
+assign in_ready = ready1;
+...
+(x_wide * 16'sd3) - (history1_wide * 16'sd5) + (history2_wide * 16'sd7) - (history3_wide * 16'sd2)
+```
+
+The verified winner tracks pipeline occupancy in a register instead, which
+cuts the input-ready path to a single gate, and it uses shift-and-add terms:
+
+```verilog
+assign in_ready = !full || out_ready;
+...
+full <= next_valid1 && next_valid2 && next_valid3;   // inside the clocked block
+...
+wire signed [15:0] x_times3        = (x_wide <<< 1) + x_wide;
+wire signed [15:0] history1_times5 = (history1_wide <<< 2) + history1_wide;
+wire signed [15:0] history2_times7 = (history2_wide <<< 3) - history2_wide;
+```
+
+Full sources: [baseline core](evidence/2026-10-26/generated-signed-fir4-attempt-01/run/modules/signed_fir4_core/signed_fir4_core.v)
+and [winner](evidence/2026-10-26/generated-signed-fir4-attempt-01/run/signed_fir4_best.v).
+
+## Verified results
+
+| Design | Recorded result |
+|---|---|
+| Signed stateful FIR filter | **78 → 52 LUTs · setup −0.327 → +0.169 ns · hold +0.106 ns · independent 800-cycle test passed** |
+| Elastic dot product | **328 → 20 LUTs · 4 DSPs · setup +0.155 ns / hold +0.206 ns · independent 852-cycle test passed** |
+| Three-module pipelined dot product | **325 → 17 LUTs · 4 DSPs · independent 685-cycle test passed** |
+| Iterative divider (8-bit) | **38 → 26 LUTs · setup +0.315 ns / hold +0.129 ns · saved winner independently passed** |
+| FIFO timing recovery | **Setup −0.931 → +0.108 ns · hold +0.076 ns · 22 LUTs / 13 FFs** |
+| Packet-tagged FIFO | **23 LUTs / 31 FFs · setup +0.078 ns / hold +0.106 ns · saved winner independently passed** |
+| Fault-qualified independent verification | **27 signed FIR faults, 18 elastic arithmetic faults and 20 divider faults detected; correct controls passed** |
+| Harness regression | **1,450 tests passed** |
+
+These use Vivado 2025.2 on `xc7a35tcpg236-1` (the Basys 3's FPGA) at
+100 MHz with ideal zero I/O delays. The dot-product savings trade fabric
+logic for DSP slices, and FIFO timing recovery uses more area than its
+failing baseline. Estimated power rose slightly for the dot products and the
+divider. A second, separate FIR run reached timing at 84 LUTs, so results
+vary between runs. Details: [hardware targets](docs/TARGETS.md).
+
+Evidence: [signed FIR](evidence/2026-10-26/generated-signed-fir4-attempt-01/README.md),
+[FIR fault qualification](evidence/2026-10-25/signed-fir4-admission-attempt-01/README.md),
+[second FIR run](evidence/2026-10-26/generated-signed-fir4-attempt-02/README.md),
+[generated-verifier audit](evidence/2026-10-26/fir4-driver-comparison-01/README.md),
+[elastic dot product](evidence/2026-10-25/generated-elastic-dot4-attempt-02/README.md),
+[three-module dot product](evidence/2026-10-24/generated-dot4-attempt-01/README.md),
+[divider](evidence/2026-10-23/generated-divider-attempt-01/README.md),
+[FIFO](evidence/2026-10-22/generated-fifo-attempt-05/README.md),
+[packet FIFO](evidence/2026-10-22/generated-packet-attempt-01/README.md),
+[full regression](evidence/2026-10-26/fir4-coverage-tests-01/README.md).
+
+## Hardware validation on a Basys 3
+
+[`hardware/basys3/uart_echo`](hardware/basys3/uart_echo/README.md) is a
+hand-written UART echo, not harness output. It establishes the board path:
+real pin constraints, bitstream, programming, and a PC-side checker that
+compares every byte.
+
+The first version passed chunked tests. An independent review then predicted
+it would drop bytes under continuous traffic, because its transmitter was
+fractionally slower than the PC. A line-rate test confirmed this on the
+board: the first byte was lost after 9,696. The fix shortens the transmitted
+stop bit by 1/16 bit and handles line breaks. Each fix has a simulation that
+fails when it is reverted, and the fixed design streamed 1,000,000 bytes with
+zero loss ([evidence](evidence/2026-10-28/basys3-uart-echo-02/README.md)).
+
+Next: run harness-built designs on the board with the same checks.
+
+## What went wrong, and what changed
+
+- **The generated verifiers missed bugs.** Generated testbenches passed 9 of
+  27 injected faults. The fix added signed boundary values, legal idle
+  traffic and off-edge reset pulses without changing the oracle or budgets,
+  and detection rose to 22/27. The remaining 5 involve reset behavior that
+  the generic specification cannot express, so independent contract checks
+  still cover them.
+- **A passing test is not proof.** The UART's first test paused between
+  chunks and could never fail the way the design actually failed. Every new
+  check here now ships with a fault that it must catch.
+- **Run-to-run variance is real.** Two FIR runs with the same specification
+  and budget ended at 52 and 84 LUTs, so single runs are reported as single
+  runs.
+
+## Limits
+
+These are bounded experiments on small designs. They are not formal
+equivalence proofs or board-level timing sign-off, and they do not show that
+the harness beats a skilled engineer or Vivado's own optimizations. No
+curriculum tier is held yet: that needs three consecutive qualifying full
+runs. Each run uses Codex CLI for its model calls.
 
 ## Quick start
 
 Requirements: Python 3.12, Vivado with the target device installed, and an
-authenticated Codex CLI for model-driven runs. Current runtime roles use the
+authenticated Codex CLI for model-driven runs. Runtime roles use the
 configured Codex model through [`llm/routing.yaml`](llm/routing.yaml).
 
 ```powershell
