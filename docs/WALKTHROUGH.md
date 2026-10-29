@@ -209,6 +209,33 @@ UART shell, checked against independent models. See its
 - the comparison between board and harness resources, including the divider
   replica analysis
 
+## Checking the evidence itself
+
+Every claim above is backed by a SHA-256 manifest under evidence/.
+`tools/evidence_audit.py` checks those digests against the bytes Git
+actually stores, at any revision, and CI runs it on every push:
+
+- `CommitSnapshot` (`evidence_audit.py:110`) reads blobs through one
+  `git cat-file --batch`. A file that exists on disk but was never committed
+  counts as missing, which is the failure a working-copy check would miss.
+- `claims` (`evidence_audit.py:281`) turns every manifest layout into claims:
+  archive entries, source bindings, and digests recorded without a path.
+  `unparsed_digests` (`:269`) fails a manifest holding a digest that no claim
+  accounts for.
+- `History.digests` (`:194`) gives source bindings every version a path
+  had in the audited revision's history, as stored and as a Windows CRLF
+  checkout. `claim_files_ever` (`:208`) makes a deleted or renamed manifest
+  fail.
+- `policy` (`:368`) loads the exceptions. Each one is pinned by digest and
+  failure status, and must be proven by readable bytes, for example
+  `reconstruct` (`:421`) rebuilding a mixed-line-ending working copy, or else
+  recorded as a loss.
+
+When it first ran, the audit found 837 claims the committed files did not
+back up. Most were simulator files that were never copied into their
+archives. The account is in
+[evidence-integrity-01](../evidence/2026-10-28/evidence-integrity-01/README.md).
+
 ## Questions you should be able to answer
 
 **Why not let the model write the testbench or the contract?** Because then
@@ -234,6 +261,13 @@ above the objective in `select` (`bestofn.py:81-84`).
 from the journal at no cost, verifies their artifact hashes, and retries only
 the unfinished or infrastructure-failed work. If the harness code itself
 changed, it refuses to continue (`fsm.py:240`).
+
+**How do you know the archived evidence wasn't edited or lost?** CI audits
+every recorded digest against the committed blobs on every push
+(`tools/evidence_audit.py`). An archive file that goes missing or changes,
+an emptied or deleted manifest, or a stale exception fails the build. When the
+audit was introduced it found real holes. Those were fixed by restoring the
+exact bytes or proving them another way, not by editing manifests.
 
 **What does it not do?** There is no formal equivalence; verification is
 simulation-based. There is no held curriculum tier yet, and the designs are
