@@ -18,7 +18,7 @@ ROOT = Path(__file__).resolve().parent
 RESULTS = ROOT / "results.jsonl"
 OVERRIDES = {"proposal_feedback", "vivado_bin", "xvlog_bin", "xelab_bin", "xsim_bin", "target_part",
              "target_freq_mhz", "objective", "max_iterations", "best_of_n",
-             "max_llm_calls", "max_vivado_minutes", "max_wall_minutes", "max_infra_retries"}
+             "max_llm_calls", "max_vivado_minutes", "max_wall_minutes", "max_infra_retries", "model"}
 
 
 def _hash(path):
@@ -229,6 +229,10 @@ def run_tier(tier: int, **overrides) -> int:
                 "runtime_sha256": frozen_identities[0]["sha256"] if known else None,
                 "governance_sha256": governance_sha256,
                 "model_identity": None, "model_identity_status": "unobserved_cli_default"}
+    requested = {cfg.model for _, _, _, cfg, _ in prepared}
+    if len(requested) == 1 and None not in requested:
+        # The model the run named for every role; the CLI does not report one back.
+        identity.update(model_identity=requested.pop(), model_identity_status="requested")
     if not known:
         identity["reason"] = ("governance implementation changed during campaign" if not governance_unchanged
                               else "runtime provenance missing, invalid or inconsistent across entries")

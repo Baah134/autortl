@@ -24,6 +24,23 @@ def generated_rtl(response: str) -> str:
     return source
 
 
+def golden_source(response: str) -> str:
+    """The Python reference from a golden-model answer, whatever its fence tag."""
+    fenced = re.findall(r"```[ \t]*([\w+-]*)[ \t]*\r?\n(.*?)```", response, re.DOTALL)
+    for tag, body in fenced:
+        if tag.lower() in ("python", "py", "python3"):
+            return body.strip()
+    for tag, body in fenced:
+        if re.search(r"(?m)^def init\(", body) and re.search(r"(?m)^def step\(", body):
+            return body.strip()
+    return response.strip()
+
+
+def _ask(role, name, prompt, **kwargs):
+    """Every role call uses the run's model when one is named (RunConfig.model)."""
+    return ask(name, prompt, model=getattr(role, "model", None), **kwargs)
+
+
 def _ports_table(spec: ModuleSpec) -> str:
     return "\n".join(f"  {port_declaration(p, include_direction=True)} "
                      f"(clock={p.clock_domain}, protocol={p.protocol})"
@@ -48,11 +65,14 @@ def role_system(instruction):
 
 
 class Planner:
-    def make_spec(self, intent: str, cfg, budget) -> str:
+    def make_spec(self, intent: str, cfg, budget, feedback: str = "") -> str:
         p = prompts.SPEC_PROMPT.format(intent=intent, target_part=cfg.target_part,
                                        target_freq_mhz=cfg.target_freq_mhz,
                                        objective=cfg.objective)
-        return ask("planner", evidence_prompt(self, p), system=role_system(prompts.PLANNER_SYSTEM),
+        if feedback:
+            p += ("\n\nYour previous design_spec failed the harness's structural check. Fix exactly "
+                  "these errors and output the complete corrected JSON only:\n" + str(feedback)[:1800])
+        return _ask(self, "planner", evidence_prompt(self, p), system=role_system(prompts.PLANNER_SYSTEM),
                    budget=budget)
 
     def propose_contract(self, mode, cfg, baseline: VivadoMetrics,
@@ -64,11 +84,11 @@ class Planner:
             lut_used=baseline.lut_used, ff_used=baseline.ff_used,
             wns_ns=baseline.wns_ns, design_context=design_context,
             device_budget=budget_text(cfg.target_part))
-        return ask("planner", evidence_prompt(self, p), system=role_system(prompts.PLANNER_SYSTEM), budget=budget)
+        return _ask(self, "planner", evidence_prompt(self, p), system=role_system(prompts.PLANNER_SYSTEM), budget=budget)
 
     def refine_contract(self, contract, feedback, budget) -> str:
         p = prompts.CONTRACT_REFINE.format(feedback=feedback, contract=contract)
-        return ask("planner", evidence_prompt(self, p), system=role_system(prompts.PLANNER_SYSTEM), budget=budget)
+        return _ask(self, "planner", evidence_prompt(self, p), system=role_system(prompts.PLANNER_SYSTEM), budget=budget)
 
     def plan(self, iteration, contract, progress, evaluations, best: VivadoMetrics,
              signals, budget, target_part="", advisor="", generation_seed=None) -> str:
@@ -82,7 +102,7 @@ class Planner:
             lut_used=best.lut_used, ff_used=best.ff_used, wns_ns=best.wns_ns,
             dsp_used=best.dsp_used, bram_used=best.bram_used,
             signals="\n".join(f"- {s.kind}: {s.detail}" for s in signals) or "(none)")
-        return ask("planner", evidence_prompt(self, p, include_proposals=True), system=role_system(prompts.PLANNER_SYSTEM), budget=budget)
+        return _ask(self, "planner", evidence_prompt(self, p, include_proposals=True), system=role_system(prompts.PLANNER_SYSTEM), budget=budget)
 
     def restart_plan(self, contract, stall_count, tried, best: VivadoMetrics,
                      budget, generation_seed=None) -> str:
@@ -90,7 +110,7 @@ class Planner:
                                         tried=tried, lut_used=best.lut_used,
                                         ff_used=best.ff_used, wns_ns=best.wns_ns,
                                         generation_seed=generation_seed if generation_seed is not None else "(not supplied)")
-        return ask("planner", evidence_prompt(self, p, include_proposals=True), system=role_system(prompts.PLANNER_SYSTEM), budget=budget)
+        return _ask(self, "planner", evidence_prompt(self, p, include_proposals=True), system=role_system(prompts.PLANNER_SYSTEM), budget=budget)
 
 
 class Generator:
@@ -112,7 +132,7 @@ class Generator:
             interface_signature=json.dumps(module.interface_signature, sort_keys=True),
             reset_desc=f"{r.kind}, active_{'high' if r.active_high else 'low'} '{r.signal}'",
             mutation=mutation_text, instruction=instruction, verilog=verilog)
-        resp = ask("generator", evidence_prompt(self, p, include_proposals=True), system=role_system(prompts.GENERATOR_SYSTEM),
+        resp = _ask(self, "generator", evidence_prompt(self, p, include_proposals=True), system=role_system(prompts.GENERATOR_SYSTEM),
                    budget=budget)
         return generated_rtl(resp)
 
@@ -126,7 +146,7 @@ class Generator:
         p = prompts.FIX.format(diagnosis=diagnosis, error=error[:1500],
                                verilog=verilog, tb_excerpt=tb_excerpt[:2000],
                                previous_attempts=prev)
-        resp = ask("generator", evidence_prompt(self, p), system=role_system(prompts.GENERATOR_SYSTEM),
+        resp = _ask(self, "generator", evidence_prompt(self, p), system=role_system(prompts.GENERATOR_SYSTEM),
                    budget=budget)
         return generated_rtl(resp)
 
@@ -142,9 +162,8 @@ class Generator:
                                         data_outputs=json.dumps([p.name for p in module.ports if p.direction == "output" and p.protocol == "none"]))
         if feedback:
             p += "\n\nThe previous Python reference failed validation. Repair this specific failure " + str(feedback)[:1800]
-        resp = ask("generator", p, system=conventions(), budget=budget)
-        m = re.search(r"```python\s*\n(.*?)```", resp, re.DOTALL)
-        return m.group(1).strip() if m else resp.strip()
+        resp = _ask(self, "generator", p, system=conventions(), budget=budget)
+        return golden_source(resp)
 
 
 @dataclass
@@ -156,14 +175,19 @@ class Evaluation:
 
     @staticmethod
     def parse(raw: str) -> "Evaluation":
-        rec = re.search(r"##\s*Recommendation\s*\n\s*(ACCEPT|REJECT|RESTART)",
-                        raw, re.IGNORECASE)
+        # Heading or label form, with or without emphasis: "## Recommendation\nACCEPT",
+        # "Recommendation: ACCEPT", "**Recommendation:** **ACCEPT**". The verdict line
+        # must name exactly one verdict; a copied "ACCEPT | REJECT" template is not one.
+        rec = re.search(r"(?im)^[ \t>#*_]*Recommendation[ \t*_]*:?[ \t*_]*(?:\r?\n[ \t>*_-]*)?"
+                        r"((?:ACCEPT|REJECT|RESTART)\b[^\n]*)", raw)
+        if rec and len(re.findall(r"(?i)\b(?:ACCEPT|REJECT|RESTART)\b", rec.group(1))) != 1:
+            rec = None
         p = re.search(r"Passed:\s*(\d+)\s+of\s+(\d+)", raw, re.IGNORECASE)
         f = re.search(r"Failed:\s*(\d+)", raw, re.IGNORECASE)
         passed, failed = int(p.group(1)) if p else 0, int(f.group(1)) if f else 1
         consistent = p and f and passed > 0 and passed + failed == int(p.group(2))
         unresolved = re.search(r"(?m)^\s*-\s+.*?:\s*(?:FAIL|INVESTIGATE)\b", raw, re.IGNORECASE)
-        recommendation = rec.group(1).upper() if rec else "REJECT"
+        recommendation = re.match(r"\w+", rec.group(1)).group(0).upper() if rec else "REJECT"
         if not consistent or unresolved or (recommendation == "ACCEPT" and failed):
             recommendation = "REJECT"
             failed = max(failed, 1)
@@ -172,7 +196,7 @@ class Evaluation:
 
 class Evaluator:
     def review_contract(self, contract: str, budget) -> str:
-        return ask("evaluator", evidence_prompt(self, prompts.CONTRACT_REVIEW.format(contract=contract)),
+        return _ask(self, "evaluator", evidence_prompt(self, prompts.CONTRACT_REVIEW.format(contract=contract)),
                    system=role_system(prompts.EVALUATOR_SYSTEM), budget=budget)
 
     def evaluate(self, iteration, contract, ladder_summary, m: VivadoMetrics,
@@ -184,7 +208,7 @@ class Evaluator:
             timing_met=m.timing_met, dsp_used=m.dsp_used, bram_used=m.bram_used,
             vivado_notes=vivado_notes or "(none)", stall_count=stall_count,
             restart_threshold=restart_threshold)
-        return Evaluation.parse(ask("evaluator", evidence_prompt(self, p, include_candidate=True), system=role_system(prompts.EVALUATOR_SYSTEM),
+        return Evaluation.parse(_ask(self, "evaluator", evidence_prompt(self, p, include_candidate=True), system=role_system(prompts.EVALUATOR_SYSTEM),
                                     budget=budget))
 
 
@@ -196,6 +220,6 @@ class TimingDoctor:
         p = (f"{skills}\n\n**Surgical instruction:** {instruction}\n\n"
              f"**Failing timing path:**\n```\n{path_snippet[:1200]}\n```\n\n"
              f"**Current module:**\n```verilog\n{verilog}\n```")
-        resp = ask("timing_doctor", evidence_prompt(self, p), system=role_system(prompts.DOCTOR_SYSTEM),
+        resp = _ask(self, "timing_doctor", evidence_prompt(self, p), system=role_system(prompts.DOCTOR_SYSTEM),
                    budget=budget, max_turns=3)
         return generated_rtl(resp)

@@ -49,9 +49,12 @@ def _record(role: str, entry: str, ok: bool, seconds: float,
 
 def ask(role: str, prompt: str, system: str = "",
         budget=None, route_override: str | None = None,
-        max_turns: int = 1) -> str:
+        max_turns: int = 1, model: str | None = None) -> str:
     cfg = _load_routing()
     chain = cfg["roles"].get(role, {}).get("chain", ["codex.default"])
+    if model:
+        # A run-pinned model keeps each entry's backend and replaces its alias.
+        chain = list(dict.fromkeys(entry.partition(".")[0] + "." + model for entry in chain))
     if route_override:
         chain = [route_override]
     retries = cfg.get("defaults", {}).get("max_retries_per_backend", 2)
@@ -101,7 +104,11 @@ def ask(role: str, prompt: str, system: str = "",
 def extract_verilog(response_text: str) -> str:
     """Pull the Verilog module out of a response; validates a module exists."""
     text = re.sub(r"<think>.*?</think>", "", response_text, flags=re.DOTALL).strip()
-    blocks = re.findall(r"```(?:verilog|systemverilog|sv)?\s*\n(.*?)```", text, re.DOTALL)
+    # Models differ in fence tags (verilog, Verilog, v, SystemVerilog). HDL or
+    # untagged fences come first; any other tag only if it holds a module.
+    fenced = re.findall(r"```[ \t]*([\w+-]*)[ \t]*\r?\n(.*?)```", text, re.DOTALL)
+    hdl = [b for tag, b in fenced if tag.lower() in ("", "verilog", "systemverilog", "sv", "v")]
+    blocks = hdl + [b for tag, b in fenced if tag.lower() not in ("", "verilog", "systemverilog", "sv", "v")]
     for b in blocks:
         s = b.strip()
         if re.search(r"^\s*module\s+\w+", s, re.MULTILINE):

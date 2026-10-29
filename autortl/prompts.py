@@ -66,7 +66,16 @@ Typed build modules require a known numeric latency; latency_known, if supplied,
 must be true. An absent annotation in an existing optimization source is a
 separate case and must never be interpreted as zero cycles.
 Every module MUST include 2-3 concrete examples. Keep modules under ~60 lines
-of eventual Verilog each; split anything bigger."""
+of eventual Verilog each; split anything bigger.
+Structural rules the harness checks before any generation:
+- top_name names the top wrapper the harness generates mechanically. It must be
+  a valid identifier that differs from every module name: a request for a single
+  module `foo` has modules [{{"name": "foo", ...}}] and top_name "foo_top".
+- Module names are unique. Every module input is driven by exactly one
+  connection or is an external port with the same name, direction, width,
+  protocol and signedness. Each external output is driven by exactly one
+  module output of that name. Connected ports agree in width, signedness,
+  shape, protocol and clock domain."""
 
 CONTRACT_PROPOSAL = """Propose a CONTRACT: a testable checklist of success for this run.
 Mode: {mode}. Objective: {objective}. Target: {target_part} @ {target_freq_mhz} MHz.
