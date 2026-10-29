@@ -1,57 +1,85 @@
 # AutoRTL
 
-[![tests](https://github.com/Baah134/autortl/actions/workflows/tests.yml/badge.svg?branch=codex%2Fcontract-context)](https://github.com/Baah134/autortl/actions/workflows/tests.yml)
+[![tests](https://github.com/Baah134/autortl/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/Baah134/autortl/actions/workflows/tests.yml)
 
 **An agentic FPGA design loop where the model only proposes and verification decides.**
 
-AutoRTL writes and optimizes Verilog with LLM agents, driving AMD Vivado
-from the command line. Every candidate must pass static checks, simulation
-against a testbench that has itself been shown to catch injected bugs, and
-place-and-route timing before it can replace the current design. The model
-reads the specification but cannot change it, the testbench, the TCL or the
-acceptance gates.
+AutoRTL writes and optimizes Verilog with a team of LLM agent roles, driving
+AMD Vivado from the command line. Every candidate must pass static checks,
+simulation against a testbench that has itself been shown to catch injected
+bugs, and place-and-route timing before it can replace the current design.
+The agents read the specification but cannot change it, the testbench, the
+TCL or the acceptance gates.
+
+Everything below was produced by the harness's own roles and measured by
+Vivado 2025.2 on the Basys 3's FPGA (`xc7a35tcpg236-1`), then run on a real
+board. Every number links to an archived run.
 
 ## Highlights
 
-- **Verified optimization.** A generated signed FIR filter went from failing
-  timing at 78 LUTs to 52 LUTs with +0.169 ns setup slack. The saved winner
-  then passed the independent 800-cycle testbench admitted with the
-  specification.
-- **Verifiers that are tested themselves.** An audit injected 27 behavioral
-  faults into the FIR. The generated testbenches caught only 18. Better
-  stimulus raised that to 22 with no extra model calls, and the independent
-  checker catches all 27.
-- **Every winner runs on real hardware.** All six designs the harness
-  produced run unedited on a Digilent Basys 3: the FIR, both dot products,
-  the divider and both FIFOs. Each passed 50,000 transactions against an
-  independent model with 0 mismatches, under randomized backpressure, and a
-  deliberately wrong model was rejected every time. The board builds reproduce
-  the harness's own resource measurements.
-- **Engineering discipline.** A 1,461-test regression suite, crash-safe
-  resumable runs, fixed model-call and tool-time budgets, and an error
-  taxonomy keyed to Vivado message IDs. Curriculum tier 0 is held: three
-  consecutive fresh runs on the same frozen harness source passed every gate
+- **Harness-built logic drives a real pin.** From a typed specification, the
+  harness generated and optimized a UART transmitter (40 → 24 LUTs). That
+  exact file drives the Basys 3's USB-UART pin and **streamed 1,000,000 of
+  1,000,000 bytes at full line rate with 0 errors**
+  ([evidence](evidence/2026-10-29/harness-uart-tx-v2-01/README.md)).
+- **Six optimized designs, all verified on hardware.** A signed FIR filter,
+  two dot products, a divider and two FIFOs. Each ran unedited on the board
+  and passed 50,000 transactions against an independent model under
+  randomized backpressure, with 0 mismatches.
+- **Real optimization, not just passing tests.** The FIR went from failing
+  timing at 78 LUTs to 52 LUTs with positive slack, and a dot product from
+  328 to 20 LUTs by moving arithmetic into DSP slices.
+- **Verifiers that are tested themselves.** Before a testbench may grade
+  anything, it must pass a correct design and fail deliberately broken ones.
+  An audit injected 27 faults into the FIR: generated testbenches first caught
+  18, improved stimulus raised that to 22, and the independent checker caught
+  all 27.
+- **Reproducible by construction.** 1,461 regression tests, crash-safe
+  resumable runs, fixed model-call and tool-time budgets, and a CI audit that
+  checks over 31,000 recorded SHA-256 claims against the committed bytes.
+  Curriculum tier 0 is held: three consecutive fresh runs on the same frozen
+  harness passed every gate
   ([campaign 17](evidence/2026-10-29/contract-campaign-17/README.md)).
 
 ## How it works
 
 ```mermaid
 flowchart LR
-    A[Specification and contract] --> B[Generate candidates]
-    B --> C[Static checks and compilation]
-    C --> D[Qualified simulation]
-    D --> E[Synthesis and routing]
-    E --> F[Evaluate verified metrics]
-    F --> G[Retain best design]
-    F --> B
+    A[Specification and contract] --> B[Planner]
+    B --> C[Generator]
+    C --> D[Static checks and compilation]
+    D --> E[Qualified simulation]
+    E --> F[Synthesis and routing]
+    F --> G[Evaluator]
+    G --> H[Retain best design]
+    G --> B
+    F -. timing failure .-> I[Timing doctor]
+    I --> D
 ```
+
+### Agent roles
+
+Each role gets an isolated view of the run and one job. None of them can
+change the specification, the testbench or the gates.
+
+| Role | Sees | Produces |
+|---|---|---|
+| **Planner** | The request, immutable run facts, progress and verified metrics | A typed design spec from a prose request; a plan and hypothesis for each iteration. It never writes Verilog. |
+| **Generator** | The plan, the fixed contract and the current source | Verilog candidates, the Python golden model, and repairs from compiler and simulator diagnostics |
+| **Evaluator** | The candidate, its verified metrics and the deterministic results | ACCEPT or REJECT on what the tools cannot judge. It can veto, but never overrule a failed gate. |
+| **Timing doctor** | A diagnosed critical path from the routed timing report | Targeted RTL surgery, measured as a separate trial and adopted only if it verifies |
+
+Deterministic code does everything else: spec lint, testbench generation,
+mutation qualification of testbenches, compilation, simulation, synthesis,
+routing, metric extraction and selection. Model output is stored only as
+Verilog, Python or JSON specification files, and is never interpolated into
+TCL, shell commands or paths.
+
+### Guarantees
 
 - **Fixed contracts.** Interfaces, reset behavior and cycle latency come from
   a typed specification. A candidate that changes them fails; it is never
   renegotiated.
-- **Qualified verification.** Before a testbench grades anything, it must pass
-  a correct control and fail a deliberately broken design. Generated stimulus
-  covers specification examples, signed extremes, idle cycles and reset.
 - **Measured selection.** Timing feasibility comes before resource savings.
   Candidates are deduplicated by exact source, and every score comes from
   routed Vivado reports.
@@ -59,9 +87,7 @@ flowchart LR
   design or count as a failed attempt. Message severities can be raised,
   never lowered.
 - **Traceable evidence.** Every result is archived with source hashes,
-  constraints, tool version and raw reports. On every push, CI checks every
-  SHA-256 claim in the evidence manifests and source freezes (over 27,000)
-  against the committed bytes
+  constraints, tool version and raw reports
   ([audit](evidence/2026-10-28/evidence-integrity-01/README.md)).
 
 ## What the agent actually changed
@@ -96,24 +122,29 @@ and [winner](evidence/2026-10-26/generated-signed-fir4-attempt-01/run/signed_fir
 
 ## Verified results
 
-| Design | Recorded result |
-|---|---|
-| Signed stateful FIR filter | **78 → 52 LUTs · setup −0.327 → +0.169 ns · hold +0.106 ns · independent 800-cycle test passed** |
-| Elastic dot product | **328 → 20 LUTs · 4 DSPs · setup +0.155 ns / hold +0.206 ns · independent 852-cycle test passed** |
-| Three-module pipelined dot product | **325 → 17 LUTs · 4 DSPs · independent 685-cycle test passed** |
-| Iterative divider (8-bit) | **38 → 26 LUTs · setup +0.315 ns / hold +0.129 ns · saved winner independently passed** |
-| FIFO timing recovery | **Setup −0.931 → +0.108 ns · hold +0.076 ns · 22 LUTs / 13 FFs** |
-| Packet-tagged FIFO | **23 LUTs / 31 FFs · setup +0.078 ns / hold +0.106 ns · saved winner independently passed** |
-| Fault-qualified independent verification | **27 signed FIR faults, 18 elastic arithmetic faults and 20 divider faults detected; correct controls passed** |
-| Harness regression | **1,461 tests passed** |
-| Curriculum tier 0 (counter, mux4) | **Held: 3 consecutive qualifying fresh runs · best counter 55 → 31 LUTs** |
+| Design | Result | Verification |
+|---|---|---|
+| Signed stateful FIR filter | 78 → 52 LUTs · setup −0.327 → +0.169 ns · hold +0.106 ns | Independent 800-cycle test |
+| Elastic dot product | 328 → 20 LUTs · 4 DSPs · setup +0.155 ns · hold +0.206 ns | Independent 852-cycle test |
+| Three-module pipelined dot product | 325 → 17 LUTs · 4 DSPs | Independent 685-cycle test |
+| Iterative divider (8-bit) | 38 → 26 LUTs · setup +0.315 ns · hold +0.129 ns | Independent test of the saved winner |
+| FIFO timing recovery | Setup −0.931 → +0.108 ns · hold +0.076 ns · 22 LUTs / 13 FFs | 50,000 transactions on the board |
+| Packet-tagged FIFO | 23 LUTs / 31 FFs · setup +0.078 ns · hold +0.106 ns | Independent test of the saved winner |
+| UART transmitter (harness-built) | 40 → 24 LUTs | 1,000,000-byte line-rate stream on the board |
+| Fault-qualified verification | 27 FIR, 18 elastic dot-product and 20 divider faults detected | Correct controls passed |
+| Curriculum tier 0 (counter, mux4) | Held: 3 consecutive qualifying runs · counter 55 → 31 LUTs | All mandatory gates |
 
-These use Vivado 2025.2 on `xc7a35tcpg236-1` (the Basys 3's FPGA) at
-100 MHz with ideal zero I/O delays. The dot-product savings trade fabric
-logic for DSP slices, and FIFO timing recovery uses more area than its
-failing baseline. Estimated power rose slightly for the dot products and the
-divider. A second, separate FIR run reached timing at 84 LUTs, so results
-vary between runs. Details: [hardware targets](docs/TARGETS.md).
+All at 100 MHz with ideal zero I/O delays. The dot-product savings trade fabric logic for DSP slices, and FIFO
+timing recovery uses more area than its failing baseline. Estimated power
+rose slightly for the dot products and the divider. A second FIR run with the
+same specification reached timing at 84 LUTs, so results vary between runs
+and single runs are reported as single runs. Details:
+[hardware targets](docs/TARGETS.md).
+
+**Fmax.** Out of context, the six winners close at 181.8 MHz (FIR) to
+425.5 MHz (packet FIFO). In the harness's own flow every critical path ends at
+an I/O buffer, so the harness's timing objective mostly measures pad delay
+([Fmax study](hardware/basys3/fmax/README.md)).
 
 Evidence: [signed FIR](evidence/2026-10-26/generated-signed-fir4-attempt-01/README.md),
 [FIR fault qualification](evidence/2026-10-25/signed-fir4-admission-attempt-01/README.md),
@@ -124,34 +155,9 @@ Evidence: [signed FIR](evidence/2026-10-26/generated-signed-fir4-attempt-01/READ
 [divider](evidence/2026-10-23/generated-divider-attempt-01/README.md),
 [FIFO](evidence/2026-10-22/generated-fifo-attempt-05/README.md),
 [packet FIFO](evidence/2026-10-22/generated-packet-attempt-01/README.md),
-[full regression](evidence/2026-10-26/fir4-coverage-tests-01/README.md).
+[Fmax](evidence/2026-10-29/fmax-characterization-01/README.md).
 
 ## Hardware validation on a Basys 3
-
-**Harness-built logic on the board's serial pin.** From a typed specification
-written for the board, the harness generated a UART transmitter and optimized
-it from 34 to 22 LUTs, in 14 model calls and 9.4 minutes. That exact file
-drives the Basys 3's USB-UART TX pin. It echoed 100,000 of 100,000 bytes
-from the PC with 0 errors, and a wrong-baud control failed as required. No
-human-written RTL is in the transmit path.
-
-The board then exposed a flaw in the contract. A continuous stream lost its
-first byte at 19,392, the same byte for two different generated designs,
-because the spec required a full-length stop bit while the PC sends about
-0.17% fast. The fix went into the specification, not the RTL: a stop bit
-shortened by 1/16. The harness regenerated the transmitter (40 to 24 LUTs),
-and the new one **streamed 1,000,000 of 1,000,000 bytes at full line rate
-with 0 errors** ([evidence](evidence/2026-10-29/harness-uart-tx-v2-01/README.md)).
-
-The run also exposed a harness verification gap. The winner flattened away
-its child module, and the stale child file let a testbench that names it
-keep passing. A winner-only check was added, and the winner passed it
-([evidence](evidence/2026-10-29/harness-uart-tx-01/README.md),
-[design](hardware/basys3/harness_built/uart_tx/README.md)). The harness
-now rejects such candidates, with the taxonomy entry recorded first and 9
-new tests. A rerun on the fixed harness kept the child and its parameter,
-and passed the same board checks
-([evidence](evidence/2026-10-29/harness-uart-tx-02/README.md)).
 
 [`hardware/basys3/harness_winners`](hardware/basys3/harness_winners/README.md)
 runs every harness winner on the board through one generic, tested shell:
@@ -165,87 +171,92 @@ runs every harness winner on the board through one generic, tested shell:
 | Packet FIFO | 50,000/50,000 | 22 / 29 / 0 | 23 / 31 / 0 |
 | Sync FIFO | 50,000/50,000 | 21 / 13 / 0 | 22 / 13 / 0 |
 
-- **Independent models.** Each is checked against a Python model written from
-  the frozen specification, not from the harness's own oracle.
+- **Independent models.** Each design is checked against a Python model
+  written from the frozen specification, not from the harness's own oracle.
 - **Real backpressure.** An LFSR traffic shaper creates the valid/ready stress
   that UART traffic alone never would. Coverage counters prove it happened,
   and each design's injected fault must make its simulation fail.
 - **Explained differences.** The divider's 8-FF difference turned out to be
   `opt_design` replicas that exist only when it is built standalone
   ([analysis](evidence/2026-10-28/divider-ff-replica-analysis-01/README.md)).
-- **Traceable.** The board's bitstream payloads are tied by hash to the hardware
-  runs ([evidence](evidence/2026-10-28/basys3-harness-winners-01/README.md)).
-  The tested bitstreams are archived, so a board and a fresh clone can rerun
-  every check without synthesis
-  ([bitstreams](evidence/2026-10-28/basys3-bitstreams-01/README.md)). A
-  replay from those files reproduced all six results exactly
+- **Replayable.** The tested bitstreams are archived and tied by hash to the
+  hardware runs, so a board and a fresh clone can rerun every check without
+  synthesis. A replay reproduced all six results exactly
   ([replay](evidence/2026-10-28/basys3-bitstream-replay-01/README.md)).
 
-The FIR was first run on its own, with its own shell:
-[`hardware/basys3/fir4_on_board`](hardware/basys3/fir4_on_board/README.md)
-runs the harness's FIR winner, byte-identical to the verified file, behind a
-hand-written UART shell. The PC streams signed samples, starting with the
-worst-case extremes, and checks every output against a Python model of the
-filter. A UART break restarts the filter between runs.
+### Harness-built UART transmitter
 
-- 100,000 samples matched with 0 mismatches across 4 restarts.
-- A model with one wrong coefficient failed on 4,965 of 5,000 outputs.
-- In simulation, a faulted copy of the FIR fails the testbench, whether the
-  fault is a wrong coefficient or a missing reset.
-- Build: 0 warnings, setup +2.718 ns at 100 MHz
+The harness generated a UART transmitter from a typed specification written
+for the board (34 → 22 LUTs, 14 model calls, 9.4 minutes). The unedited file
+drives the board's TX pin and echoed 100,000 of 100,000 bytes, while a
+wrong-baud control failed as required. No human-written RTL is in the
+transmit path ([design](hardware/basys3/harness_built/uart_tx/README.md),
+[evidence](evidence/2026-10-29/harness-uart-tx-01/README.md)).
+
+The board then exposed a flaw in the contract, not the RTL. A continuous
+stream lost a byte at 19,392 for two different generated designs, because the
+spec required a full-length stop bit while the PC sends about 0.17% fast. The
+specification was changed to a stop bit shortened by 1/16, the harness
+regenerated the transmitter, and the new one streamed 1,000,000 bytes with 0
+errors ([evidence](evidence/2026-10-29/harness-uart-tx-v2-01/README.md)).
+
+<details>
+<summary>Board bring-up history</summary>
+
+- **UART echo.** The board path was proven first with a hand-written echo
+  ([`uart_echo`](hardware/basys3/uart_echo/README.md)). It passed chunked tests;
+  an independent review predicted it would drop bytes under continuous
+  traffic, and a line-rate test confirmed a loss after 9,696 bytes. The fix
+  shortens the stop bit by 1/16, each fix has a simulation that fails when it
+  is reverted, and the fixed design streamed 1,000,000 bytes with zero loss
+  ([evidence](evidence/2026-10-28/basys3-uart-echo-02/README.md)).
+- **FIR alone.** [`fir4_on_board`](hardware/basys3/fir4_on_board/README.md)
+  ran the FIR winner, byte-identical to the verified file, behind a
+  hand-written UART shell: 100,000 samples matched across 4 restarts, a model
+  with one wrong coefficient failed on 4,965 of 5,000 outputs, and the build
+  had 0 warnings with +2.718 ns setup slack
   ([evidence](evidence/2026-10-28/basys3-fir4-01/README.md)).
 
-The board path itself was proven first with a hand-written UART echo,
-[`hardware/basys3/uart_echo`](hardware/basys3/uart_echo/README.md): real pin
-constraints, bitstream, programming, and a PC-side checker that compares every
-byte.
-
-The first version passed chunked tests. An independent review then predicted
-it would drop bytes under continuous traffic, because its transmitter was
-fractionally slower than the PC. A line-rate test confirmed this on the
-board: the first byte was lost after 9,696. The fix shortens the transmitted
-stop bit by 1/16 bit and handles line breaks. Each fix has a simulation that
-fails when it is reverted, and the fixed design streamed 1,000,000 bytes with
-zero loss ([evidence](evidence/2026-10-28/basys3-uart-echo-02/README.md)).
-
-Next: make the hardware check an acceptance gate inside the harness, and fix
-the stale-child verification gap the UART build exposed.
+</details>
 
 ## What went wrong, and what changed
 
 - **The generated verifiers missed bugs.** Generated testbenches passed 9 of
-  27 injected faults. The fix added signed boundary values, legal idle
-  traffic and off-edge reset pulses without changing the oracle or budgets,
-  and detection rose to 22/27. The remaining 5 involve reset behavior that
-  the generic specification cannot express, so independent contract checks
-  still cover them.
+  27 injected faults. Signed boundary values, legal idle traffic and
+  off-edge reset pulses raised detection to 22/27 without changing the oracle
+  or budgets. The remaining 5 involve reset behavior the generic specification
+  cannot express, so independent contract checks still cover them.
+- **A generated winner fooled a testbench.** The UART winner inlined its child
+  module, and the stale child file kept a testbench that names it passing. The
+  harness now rejects candidates that stop instantiating a component the
+  trusted testbench uses, and a rerun kept the child and passed the same board
+  checks ([evidence](evidence/2026-10-29/harness-uart-tx-02/README.md)).
 - **A passing test is not proof.** The UART's first test paused between
   chunks and could never fail the way the design actually failed. Every new
-  check here now ships with a fault that it must catch.
-- **Run-to-run variance is real.** Two FIR runs with the same specification
-  and budget ended at 52 and 84 LUTs, so single runs are reported as single
-  runs.
+  check now ships with a fault that it must catch.
 - **The archives had holes.** A repository-wide audit found 837 of 27,073
-  recorded claims that the committed files did not back up. Most were
-  simulator files that a manifest listed but that were never copied into the
-  archive. The exact bytes were restored from the original run folders where
-  they survived. The rest are proven another way or recorded as losses, each
-  one pinned to its digest. CI now fails if any claim stops matching
+  recorded claims that the committed files did not back up, mostly simulator
+  files a manifest listed but that were never copied. The bytes were restored
+  where they survived; the rest are proven another way or recorded as losses,
+  each pinned to its digest. CI now fails if any claim stops matching
   ([audit](evidence/2026-10-28/evidence-integrity-01/README.md)).
+
+Every new failure mode gets an entry in the error taxonomy
+([`data/taxonomy.yaml`](data/taxonomy.yaml)) before its fix lands.
 
 ## Limits
 
 These are bounded experiments on small designs. They are not formal
 equivalence proofs or board-level timing sign-off, and they do not show that
 the harness beats a skilled engineer or Vivado's own optimizations. Only
-tier 0 (two small designs) is held; no higher curriculum tier is. Each run
-uses Codex CLI for its model calls.
+tier 0 (two small designs) of the curriculum is held. Model calls go through
+the Codex CLI.
 
 ## Quick start
 
 Requirements: Python 3.12, Vivado with the target device installed, and an
-authenticated Codex CLI for model-driven runs. Runtime roles use the
-configured Codex model through [`llm/routing.yaml`](llm/routing.yaml).
+authenticated Codex CLI for model-driven runs. Roles are routed through
+[`llm/routing.yaml`](llm/routing.yaml).
 
 ```powershell
 python -m pip install -r requirements.txt
@@ -285,8 +296,17 @@ includes [signed FIR](curriculum/tier3/signed_fir4_build/),
 [priority encoder](curriculum/tier1/encoder8_build/) specifications with
 independent top-level testbenches. Supply these using `--spec`, `--tb` and `--top`.
 Add `--generate-golden` to combine generated Python/unit verification with the
-independent testbench, including child repair and optimization gates. See the
+independent testbench. See the
 [golden verification guide](docs/GOLDEN_VERIFICATION.md) for semantics and limits.
+
+Choose the model with `--model` (any model alias the Codex CLI accepts, for
+example `gpt-6-luna` or `gpt-5.6-luna`). Every role uses it, it is saved in the
+run's `config.json`, and the curriculum records it as the requested model
+identity, so runs on different models never share a cohort. Without `--model`
+the CLI's own default is used and the model identity is recorded as unobserved.
+The role parsers accept the fence tags and verdict layouts different models
+write (`Verilog`, `v`, `py`, `Recommendation: ACCEPT`), and a planner-written
+spec that fails the structural check gets its errors back for a bounded repair.
 
 Resume an interrupted experiment using its saved configuration:
 
@@ -297,16 +317,31 @@ python run.py resume --run runs/mux-trial
 Use a fresh output directory for each new experiment. Resume checks the saved
 inputs and execution environment; see [recovery behavior](docs/RECOVERY.md).
 
+## Repository map
+
+| Path | Contents |
+|---|---|
+| [`autortl/`](autortl/) | The harness: orchestrator (`fsm.py`), roles, prompts, verification ladder, Vivado driver |
+| [`llm/`](llm/) | Model client, backend adapter and role routing |
+| [`curriculum/`](curriculum/) | Tiered benchmark designs and the promotion rules |
+| [`data/taxonomy.yaml`](data/taxonomy.yaml) | Vivado message IDs and recorded harness failure modes |
+| [`hardware/basys3/`](hardware/basys3/) | Board shells, constraints, bitstream builds and PC-side checkers |
+| [`evidence/`](evidence/) | Archived runs, each with a README and a hash manifest |
+| [`tests/`](tests/) | Harness regression suite |
+| [`docs/`](docs/) | Architecture, code tour, recovery guide and progress log |
+
 ## Development and evaluation
 
 Continuous integration
 ([`.github/workflows/tests.yml`](.github/workflows/tests.yml)) runs the full
-harness suite on Windows. It also runs the mailbox and board-suite tests on
-Windows and Ubuntu. None of these need Vivado, a model login or a board.
+harness suite on Windows, the mailbox and board-suite tests on Windows and
+Ubuntu, and the evidence audit. None of these need Vivado, a model login or a
+board.
 
 ```powershell
 python -m pytest tests/ -q
 python -m pytest coordination hardware/basys3/harness_winners/tests -q
+python tools/evidence_audit.py --rev HEAD
 python run.py bench --tier 0 --iterations 1 --best-of-n 1 `
   --max-llm-calls 16 --max-vivado-minutes 20 --max-wall-minutes 30 `
   --output-dir runs/tier0 @vivadoArgs
@@ -320,5 +355,8 @@ Start with the [guided code tour](docs/WALKTHROUGH.md), which follows one run
 through the code with file and line references. Then read the
 [architecture](docs/DESIGN.md), [recovery and validation guide](docs/RECOVERY.md),
 [research and adoption decisions](docs/RESEARCH.md),
-and [engineering evidence log](docs/PROGRESS.md) for implementation details,
-tested guarantees and remaining work.
+and [engineering evidence log](docs/PROGRESS.md).
+
+## Author
+
+Prince Baah-Mensah. AutoRTL is a personal FPGA and verification project.

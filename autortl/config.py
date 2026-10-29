@@ -2,6 +2,7 @@
 from dataclasses import dataclass, field, asdict, fields
 import json
 import math
+import re
 from pathlib import Path
 from .state import atomic_write_text
 
@@ -33,6 +34,7 @@ class RunConfig:
     max_wall_minutes: float = 240.0
     generate_golden: bool = False             # build: also generate/qualify a unit oracle with --tb
     proposal_feedback: bool = False           # experimental prior-proposal context; journal always retained
+    model: str | None = None                  # model alias for every role; None = the backend's own default
 
     def validate(self) -> None:
         if self.mode not in ("build", "optimize"):
@@ -62,6 +64,9 @@ class RunConfig:
             raise ValueError("parallel_candidates must be boolean")
         if self.parallel_candidates:
             raise ValueError("parallel_candidates=True is unsupported; candidates execute sequentially")
+        if self.model is not None and (not isinstance(self.model, str)
+                                       or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:-]{0,79}", self.model)):
+            raise ValueError("model must be a plain model alias (letters, digits, . _ : -)")
         if self.work_dir is None:
             raise ValueError("work_dir is required")
         for name in ("target_part", "vivado_bin", "xvlog_bin", "xelab_bin", "xsim_bin"):
@@ -87,6 +92,8 @@ class RunConfig:
         # and disabled by default. Other required fields remain mandatory.
         data.setdefault("generate_golden", False)
         data.setdefault("proposal_feedback", False)
+        # Runs saved before model pinning used the backend default model.
+        data.setdefault("model", None)
         allowed = {item.name for item in fields(cls)}
         if set(data) - allowed:
             raise ValueError("unknown run config fields: " + ", ".join(sorted(set(data) - allowed)))

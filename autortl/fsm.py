@@ -25,7 +25,7 @@ from .spec import DesignSpec, ModuleSpec, Port, ResetSpec
 from .linter import lint_spec, write_stub_project, top_verilog
 from .static_checks import check as static_check
 from .state import RunState, atomic_write_text
-from .roles import Planner, Generator, Evaluator, TimingDoctor, Evaluation
+from .roles import Planner, Generator, Evaluator, TimingDoctor, Evaluation, default_timescale
 from .budget import Budget
 from .cache import MetricsCache, code_hash
 from .triage import FailureKind, classify
@@ -162,6 +162,8 @@ class Orchestrator:
         self.generator = Generator()
         self.evaluator = Evaluator()
         self.doctor = TimingDoctor()
+        for role in (self.planner, self.generator, self.evaluator, self.doctor):
+            role.model = cfg.model
 
     # ------------------------------------------------------------------ resume
     def _snapshot(self, **kw) -> None:
@@ -497,15 +499,29 @@ class Orchestrator:
         intent = Path(self.cfg.spec_path).read_text(encoding="utf-8")
         try:
             DesignSpec.from_json(intent)
-            raw = intent
+            raw, generated = intent, False
         except (ValueError, KeyError, TypeError):
-            raw = self._model("planner", "make_spec", intent, self.cfg, self.budget)
-        raw = raw[raw.find("{"): raw.rfind("}") + 1]
-        self.state.spec_path.write_text(raw, encoding="utf-8")
-        spec = DesignSpec.load(self.state.spec_path)
-
+            raw, generated = self._model("planner", "make_spec", intent, self.cfg, self.budget), True
         # PHASE: LINT + STUB ELABORATION (Pothole 1)
-        errs = lint_spec(spec)
+        # A supplied JSON spec is law and fails at once. A planner-written spec gets
+        # the lint errors back for a bounded repair (spec_lint_failure_skips_planner_repair).
+        attempt = 0
+        while True:
+            raw = raw[raw.find("{"): raw.rfind("}") + 1]
+            self.state.spec_path.write_text(raw, encoding="utf-8")
+            try:
+                spec = DesignSpec.load(self.state.spec_path)
+                errs = lint_spec(spec)
+            except (ValueError, KeyError, TypeError) as exc:
+                if not generated:
+                    raise
+                errs = [f"spec JSON does not load: {type(exc).__name__}: {str(exc)[:300]}"]
+            if not errs or not generated or attempt >= self.cfg.max_fix_attempts:
+                break
+            attempt += 1
+            print(f"[lint] planner spec repair {attempt}: " + "; ".join(errs)[:300])
+            raw = self._model("planner", "make_spec", intent, self.cfg, self.budget,
+                              feedback=f"Repair attempt {attempt}.\n" + "\n".join(errs))
         if errs:
             self._snapshot(phase="PLANNING", lint_errors=errs)
             print("[lint] spec failed structural lint:")
@@ -697,7 +713,10 @@ class Orchestrator:
         # ---- iteration 0: baseline ----
         idir = state.iter_dir(0)
         base_v = idir / f"{cfg.top_module}.v"
-        base_v.write_text(original, encoding="utf-8")
+        # The verified copy of a seed without a timescale gets the same default as
+        # generated RTL, mechanically; the generation seed stays the original text
+        # (seed_without_timescale_costs_model_repair).
+        base_v.write_text(default_timescale(original), encoding="utf-8")
         tb_path = Path(cfg.testbench_path) if cfg.testbench_path else None
         baseline = self._full_flow([base_v] + extra_sources, tb_path,
                                    cfg.top_module, idir)

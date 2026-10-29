@@ -61,7 +61,7 @@ def identities(root=ROOT):
     return dict(sorted(result.items()))
 
 
-def bench_command(python, out, tier=0):
+def bench_command(python, out, tier=0, model=None):
     budgets = TIER_BUDGETS[tier]
     args = [python, "run.py", "bench", "--tier", str(tier)]
     if budgets["iterations"] is not None:
@@ -72,6 +72,8 @@ def bench_command(python, out, tier=0):
              "--target-freq-mhz", "100", "--output-dir", str(out)]
     for name in ("vivado", "xvlog", "xelab", "xsim"):
         args += ["--" + name, VIVADO + name + ".bat"]
+    if model:
+        args += ["--model", model]
     return args
 
 
@@ -80,6 +82,8 @@ def main(argv=None):
     parser.add_argument("--name", required=True)
     parser.add_argument("--python", default=sys.executable)
     parser.add_argument("--tier", type=int, choices=sorted(TIER_BUDGETS), default=0)
+    parser.add_argument("--model", default=None,
+                        help="model alias pinned for every role (recorded in the cohort); default: the CLI default")
     args = parser.parse_args(argv)
     logs = ROOT / "logs"
     run, freeze_path = logs / args.name, logs / f"{args.name}-source-freeze.json"
@@ -112,7 +116,7 @@ def main(argv=None):
     history_path, stats = ROOT / "curriculum/results.jsonl", ROOT / "llm/router_stats.jsonl"
     history_before = history_path.read_bytes() if history_path.exists() else b""
     stats_before = stats.read_bytes() if stats.exists() else b""
-    command = bench_command(args.python, run, args.tier)
+    command = bench_command(args.python, run, args.tier, args.model)
     budgets = TIER_BUDGETS[args.tier]
     plan = {"git_commit": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
             "runtime_source": source, "source_freeze_sha256": sha(freeze_path),
@@ -121,7 +125,7 @@ def main(argv=None):
             "python_executable_sha256": sha(Path(args.python)), "helper_sha256": sha(Path(__file__)),
             "router_stats_offset": len(stats_before), "router_stats_prefix_sha256": hashlib.sha256(stats_before).hexdigest(),
             "history_offset": len(history_before), "history_prefix_sha256": hashlib.sha256(history_before).hexdigest(),
-            "tier": args.tier, "budgets_per_entry": budgets, "no_higher_held_tier": True,
+            "tier": args.tier, "model": args.model, "budgets_per_entry": budgets, "no_higher_held_tier": True,
             "scope": (f"Fresh full tier0 runtime merge gate on {len(source)} source identities after harness changes; "
                       "campaign14's budgets and arguments. Ideal zero min/max I/O, no higher held tier.") if args.tier == 0
             else (f"Fresh full tier{args.tier} runtime gate on {len(source)} source identities; per-tier budgets, "

@@ -75,6 +75,27 @@ harness_failures:
   golden_budget_long_period_examples:
     meaning: "A specification example longer than a few thousand cycles exhausted the golden worker's instruction budget, so a long-period serial design could not express full-frame anchors"
     repair: "Keep examples under the budget, about 2,000 cycles for a per-cycle UART model; check full frames at real timing with an independent qualified --tb"
+  fence_tag_drops_generated_modules:
+    meaning: "A model fenced its Verilog with a tag other than lowercase verilog/systemverilog/sv (Verilog, v, SystemVerilog), so extraction fell back to the first module...endmodule span and silently dropped every later module of a multi-module answer"
+    repair: "Match fence tags case-insensitively and accept v; then accept any fenced block that starts a module before falling back to raw spans; never return a partial multi-module answer as if complete"
+  golden_fence_tag_keeps_prose:
+    meaning: "A golden-model answer fenced as py, Python or python3 was not recognized, so the whole response, prose included, was validated as Python and failed, costing a repair call"
+    repair: "Accept py/python/python3 fence tags case-insensitively, then any fenced block defining init and step, before using the raw response"
+  evaluator_verdict_format_rejects_verified_gain:
+    meaning: "An evaluator wrote its verdict as 'Recommendation: ACCEPT', '**Recommendation:** ACCEPT' or '**ACCEPT**' instead of the heading-newline form; the parser read REJECT, so a deterministically verified improvement was discarded"
+    repair: "Read the first verdict token after a Recommendation heading or label, ignoring emphasis and punctuation; keep the count-consistency and unresolved-criterion vetoes unchanged"
+  spec_lint_failure_skips_planner_repair:
+    meaning: "In build mode from a prose request, the planner named the top after its only module, which the prompt never forbade; structural lint rejected the spec and the run ended at once with spec_lint_failed, with no feedback round (tier1-campaign-01 debouncer_build)"
+    repair: "State the structural rules (top_name differs from every module name, binding rules) in the spec prompt; give a planner-written spec its lint or load errors back for at most max_fix_attempts repairs; a supplied JSON spec stays law and fails at once"
+  unpinned_model_identity:
+    meaning: "Runs called the Codex CLI default model without naming it, and the CLI does not report the model, so a change of the desktop default would silently change the model inside one cohort"
+    repair: "Let a run name its model (RunConfig.model, run.py --model); route every role through it, save it in config.json, and record it as the requested model identity in the bench cohort"
+  seed_without_timescale_costs_model_repair:
+    meaning: "An optimize-mode seed without a timescale, verified with a testbench that declares one, failed elaboration with XSIM 43-4099; the harness spent a generator repair call and relied on the model to change nothing but the directive (tier1-campaign-01 pwm)"
+    repair: "Give the verified baseline copy the same default 1ns/1ps timescale generated RTL receives, mechanically, when it has none; never spend a model call or let a model edit the frozen baseline for it"
+  concurrent_bench_drops_history:
+    meaning: "run_tier reads the curriculum history when a campaign starts and rewrites the whole file when it ends, so a second bench finishing in between had its record silently overwritten (found by reading the runner while planning parallel work)"
+    repair: "Keep the history bytes read at the start; under a short exclusive lock, rewrite only if they are unchanged; otherwise fail closed as infrastructure (exit 3) with the record kept in the campaign's summary.json"
   completed_child_dependency_omission:
     meaning: "DONE retained a verification manifest but omitted child RTL referenced by its recorded input hashes"
     repair: "Validate retained verification dependencies against their recorded hashes before publishing DONE; retain source and testbench identities and reject missing or changed dependencies"

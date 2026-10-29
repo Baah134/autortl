@@ -44,6 +44,8 @@ def main(argv=None):
                         default=None,
                         help="enable experimental prior-proposal context for a new run (default: off; "
                              "bounded proposal journal audit is always retained)")
+    common.add_argument("--model", help="model alias for every role (default: the backend's own default); "
+                        "saved in config.json and part of the bench cohort")
     common.add_argument("--route", help="unsupported: routing is Codex-only")
 
     p_opt = sub.add_parser("optimize", parents=[common])
@@ -83,7 +85,7 @@ def main(argv=None):
                  "xelab": "xelab_bin", "xsim": "xsim_bin", "max_llm_calls": "max_llm_calls",
                  "max_vivado_minutes": "max_vivado_minutes", "max_wall_minutes": "max_wall_minutes",
                  "max_infra_retries": "max_infra_retries",
-                 "proposal_feedback": "proposal_feedback"}
+                 "proposal_feedback": "proposal_feedback", "model": "model"}
         kw = {dest: getattr(a, source) for source, dest in names.items()
               if hasattr(a, source) and getattr(a, source) is not None}
         for key in ("max_iterations", "best_of_n", "target_freq_mhz"):
