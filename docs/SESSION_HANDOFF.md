@@ -22,13 +22,21 @@ harness. Claude holds the lease.
 - **Harness fix 2 (e062271), checkpoint_replace_denied.** A locked
   checkpoint raises CheckpointLockedError, and run.py reports
   `infra_blocked` with exit code 3.
-- Pytest passes, 1,461 tests, and CI is green. **The merge gate is due.**
-  campaign14 cannot launch, because it asserts the old 230-file freeze. Use
-  `python tools/tier0_gate.py --name contract-campaign-15` (campaign14's
-  budgets on a fresh 232-file freeze). It is not run yet.
-- In progress: the Fmax sweep (hardware/basys3/fmax). A v2 UART spec with a
-  shortened stop bit, so a line-rate stream keeps up, is qualified in
-  hardware/basys3/harness_built/uart_tx_v2 but not yet run.
+- **The merge gate passed, and main is integrated.** campaign15
+  (`tools/tier0_gate.py`: campaign14's budgets on the fresh 232-file
+  freeze) passed 2/2, with 1,461 tests and every prefix unchanged
+  (evidence/2026-10-29/contract-campaign-15). main was fast-forwarded to
+  30d16a4, the same commit as codex/contract-context, and CI is green on both.
+  campaign14 is superseded and must not be launched: its freeze is stale.
+- **The v2 UART spec (shortened stop bit) streamed 1,000,000 of 1,000,000
+  bytes** at line rate on the board, with a 24-LUT harness winner
+  (evidence/2026-10-29/harness-uart-tx-v2-01).
+- The Fmax study of all six winners is archived
+  (evidence/2026-10-29/fmax-characterization-01).
+- Next options: pin tests/test_module_latency_gates.py's line endings,
+  since every freeze needs a reconstruct rule for it. Decide the
+  io_dominated_timing_metric question in docs/TASKS.md. Run two more
+  qualifying tier0 runs on this identity to hold tier0.
 - Never `tail -F` a live run file on Windows; it crashed run 02.
 
 ## October 28, session 3 (Claude Code): repository-wide evidence audit
