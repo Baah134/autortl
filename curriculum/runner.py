@@ -14,7 +14,7 @@ from autortl.config import RunConfig
 from autortl.fsm import Orchestrator
 from autortl.metrics_gate import validate, MetricsGateError
 from autortl.report_parser import VivadoMetrics
-from autortl.state import atomic_write_text
+from autortl.state import CheckpointLockedError, atomic_write_text
 
 ROOT = Path(__file__).resolve().parent
 RESULTS = ROOT / "results.jsonl"
@@ -28,6 +28,10 @@ def _run_entry(cfg, run_dir):
     """Run one entry; an exception becomes an "exception" summary, as before."""
     try:
         return Orchestrator(cfg, run_dir=run_dir).run()
+    except CheckpointLockedError as exc:
+        # Infrastructure: the run resumes from its last checkpoint (infra_outcomes_missing_failure_kind).
+        return {"status": "infra_blocked", "failure_kind": "infra", "error": str(exc)[:500],
+                "run_dir": str(run_dir)}
     except Exception as exc:
         return {"status": "exception", "error": type(exc).__name__ + ": " + str(exc)[:500],
                 "run_dir": str(run_dir)}
@@ -141,7 +145,8 @@ def _commit_history(expected: bytes, history, record) -> None:
     try:
         os.close(os.open(lock, os.O_CREAT | os.O_EXCL | os.O_WRONLY))
     except FileExistsError as exc:
-        raise HistoryConflictError(f"{lock} exists: another bench is writing the history") from exc
+        raise HistoryConflictError(f"{lock} exists: another bench is writing the history "
+                                   "(if no bench is running, a crashed one left it; delete it)") from exc
     try:
         if _history_bytes() != expected:
             raise HistoryConflictError("curriculum history changed during this campaign; "
@@ -258,7 +263,10 @@ def run_tier(tier: int, **overrides) -> int:
                        for entry, _, _, cfg, _ in prepared}
             summaries = {}
             for future in as_completed(futures):
-                summaries[futures[future]] = future.result()
+                try:
+                    summaries[futures[future]] = future.result()
+                except BaseException as exc:  # a dead worker process still yields a record
+                    summaries[futures[future]] = {"status": "exception", "error": type(exc).__name__ + ": " + str(exc)[:500]}
                 print(f"[bench] {futures[future]}: finished ({len(summaries)}/{len(prepared)})", flush=True)
     for entry, meta, hashes, cfg, snapshot in prepared:
         run_dir = campaign / entry.name
@@ -270,7 +278,9 @@ def run_tier(tier: int, **overrides) -> int:
                 ok, reason = _accepted(summary, meta.get("pass_criteria", {}))
             except Exception as exc:
                 ok, reason = False, type(exc).__name__ + ": " + str(exc)[:500]
-        winner = run_dir / f"{cfg.top_module}_best.v"
+        # Build mode rewrites top_module inside the run, which a worker process keeps to
+        # itself, so take it from the summary (parallel_build_winner_digest_lost).
+        winner = run_dir / f"{summary.get('top_module') or cfg.top_module}_best.v"
         record = {"entry": entry.name, "ok": ok, "reason": reason,
                   "source_sha256": hashes, "config": snapshot, "summary": summary,
                   "runtime_identity": _runtime_identity(run_dir),

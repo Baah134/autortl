@@ -73,3 +73,14 @@ def test_spec_prompt_states_the_naming_rule():
     assert "differs from every module name" in prompts.SPEC_PROMPT
     assert '"foo_top"' in prompts.SPEC_PROMPT.format(intent="x", target_part="p", target_freq_mhz=1,
                                                      objective="minimize_luts")
+
+
+def test_a_spec_that_crashes_the_loader_is_repaired_and_the_planner_sees_it(tmp_path, monkeypatch):
+    o, _ = create(tmp_path, monkeypatch)
+    prose(tmp_path, o)
+    broken = '{"top_name": "counter8", "modules": ["a"]}'  # spec.py calls .pop on a str: AttributeError
+    planner = Mock(side_effect=[broken, GOOD])
+    monkeypatch.setattr(o.planner, "make_spec", planner)
+    assert o.run()["status"] == "done"
+    feedback = planner.call_args_list[1].kwargs["feedback"]
+    assert "spec JSON does not load" in feedback and broken in feedback

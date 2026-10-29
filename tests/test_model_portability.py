@@ -162,3 +162,25 @@ def test_bench_records_a_requested_model_and_separates_cohorts(curriculum):  # n
     assert default["cohort"] != pinned["cohort"]
     assert pinned["consecutive_qualifying_runs"] == 1
     assert orch.call_args.args[0].model == "gpt-5.6-luna"
+
+
+def test_a_later_contradicting_verdict_rejects():
+    # evaluator_verdict_conflict_or_blank_line (independent review)
+    assert Evaluation.parse(VALID + "Recommendation: ACCEPT\n## Recommendation\nREJECT").recommendation == "REJECT"
+    assert Evaluation.parse(VALID + "Recommendation: ACCEPT\n**Recommendation:** ACCEPT").recommendation == "ACCEPT"
+
+
+def test_blank_lines_after_the_heading_are_allowed():
+    assert Evaluation.parse(VALID + "## Recommendation\n\nACCEPT").recommendation == "ACCEPT"
+    assert Evaluation.parse(VALID + "## Recommendation\r\n\r\n**ACCEPT**").recommendation == "ACCEPT"
+
+
+def test_modules_in_separate_fences_are_joined_when_names_are_distinct():
+    a, b = TWO.split("\n\n")
+    assert extract_verilog(f"Top:\n```verilog\n{a}\n```\nChild:\n```Verilog\n{b}\n```") == TWO
+
+
+def test_repeated_module_names_across_fences_keep_the_first_block():
+    a = TWO.split("\n\n")[0]
+    later = a.replace("b u(", "b v(")
+    assert extract_verilog(f"Before:\n```verilog\n{a}\n```\nAfter:\n```verilog\n{later}\n```") == a

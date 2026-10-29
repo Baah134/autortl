@@ -60,8 +60,10 @@ def ask(role: str, prompt: str, system: str = "",
     retries = cfg.get("defaults", {}).get("max_retries_per_backend", 2)
     timeout = cfg.get("defaults", {}).get("timeout_s", 180)
 
-    last_error = None
+    last_error, succeeded = None, None
     for entry in chain:
+        if succeeded:
+            break
         backend_name, _, alias = entry.partition(".")
         backend = _BACKENDS.get(backend_name)
         if backend is None:
@@ -80,9 +82,8 @@ def ask(role: str, prompt: str, system: str = "",
                                          timeout_s=call_timeout, max_turns=max_turns)
                 if text and text.strip():
                     _record(role, entry, True, time.time() - t0, meta)
-                    if budget is not None and hasattr(budget, "charge_tokens"):
-                        budget.charge_tokens((meta or {}).get("usage"))
-                    return text
+                    succeeded = (text, meta)
+                    break
                 raise codex_cli.CodexError("CODEX_PROTOCOL", "empty response", meta)
             except Exception as e:
                 last_error = e
@@ -98,6 +99,13 @@ def ask(role: str, prompt: str, system: str = "",
                         delay = min(delay, max(0,
                             (budget.max_wall_minutes - budget.wall_minutes) * 60))
                     time.sleep(delay)
+    if succeeded:
+        text, meta = succeeded
+        # Outside the retry handling: a checkpoint lock here propagates unchanged
+        # instead of discarding a charged response (token_save_lock_misattributed).
+        if budget is not None and hasattr(budget, "charge_tokens"):
+            budget.charge_tokens((meta or {}).get("usage"))
+        return text
     raise ModelCallError(role, getattr(last_error, "code", "CODEX_UNAVAILABLE"),
                          getattr(last_error, "metadata", None),
                          str(last_error) if last_error else "no backend attempts configured") from last_error
@@ -111,6 +119,13 @@ def extract_verilog(response_text: str) -> str:
     fenced = re.findall(r"```[ \t]*([\w+-]*)[ \t]*\r?\n(.*?)```", text, re.DOTALL)
     hdl = [b for tag, b in fenced if tag.lower() in ("", "verilog", "systemverilog", "sv", "v")]
     blocks = hdl + [b for tag, b in fenced if tag.lower() not in ("", "verilog", "systemverilog", "sv", "v")]
+    # One module per fence: join them when every module name is distinct, so a
+    # multi-module answer is never returned partially. Repeated names (a "before"
+    # and an "after" version) keep the first block, as before.
+    designs = [b.strip() for b in hdl if re.search(r"^\s*module\s+\w+", b, re.MULTILINE)]
+    names = [n for b in designs for n in re.findall(r"(?m)^\s*module\s+(\w+)", b)]
+    if len(designs) > 1 and len(names) == len(set(names)):
+        return "\n\n".join(designs)
     for b in blocks:
         s = b.strip()
         if re.search(r"^\s*module\s+\w+", s, re.MULTILINE):

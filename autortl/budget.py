@@ -41,6 +41,8 @@ class Budget:
                     raise ValueError("invalid saved budget time")
             self.start = time.time() - elapsed
             saved = d.get("tokens", {})  # absent in budgets saved before token accounting
+            if not isinstance(saved, dict):
+                raise ValueError("invalid saved token counts")
             for key in TOKEN_KEYS:
                 value = saved.get(key, 0)
                 if type(value) is not int or value < 0:

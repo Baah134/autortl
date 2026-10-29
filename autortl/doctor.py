@@ -32,8 +32,9 @@ class Check:
 
 def _probe(cmd, timeout=60):
     try:
-        out = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", errors="replace",
-                             timeout=timeout, shell=False)
+        with tempfile.TemporaryDirectory(prefix="autortl-doctor-") as scratch:  # xvlog writes logs to its cwd
+            out = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", errors="replace",
+                                 timeout=timeout, shell=False, cwd=scratch)
         return out.returncode, (out.stdout + out.stderr).strip()
     except (OSError, subprocess.TimeoutExpired) as exc:
         return None, str(exc)
@@ -94,7 +95,7 @@ def model_check():
                     "" if rc == 0 else "Check AUTORTL_CODEX_BIN points at a working Codex CLI")]
     if rc == 0:
         rc, status = _probe([executable, "login", "status"], timeout=30)
-        logged = rc == 0 and "logged in" in status.lower()
+        logged = rc == 0 and "logged in" in status.lower() and "not logged in" not in status.lower()
         checks.append(Check("codex login", "OK" if logged else "MISSING", status.splitlines()[0] if status else "no status",
                             "" if logged else "Run `codex login` (model-driven runs need it; tests and the audit do not)"))
     return checks

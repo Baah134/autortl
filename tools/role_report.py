@@ -62,7 +62,7 @@ def role_calls(events):
         if len(parts) < 3 or parts[1] != "model":
             continue
         key = (event["stage"], event.get("attempt", 1))
-        attempts[parts[2]][key] = attempts[parts[2]].get(key) == "COMPLETE" or event.get("outcome") == "COMPLETE"
+        attempts[parts[2]][key] = attempts[parts[2]].get(key) is True or event.get("outcome") == "COMPLETE"
     calls = {}
     for method, seen in sorted(attempts.items()):
         calls[method] = {"completed": sum(seen.values()), "unfinished": sum(not ok for ok in seen.values()),
