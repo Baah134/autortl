@@ -54,7 +54,7 @@ def test_bench_command_takes_the_vivado_folder_from_the_environment(tmp_path, mo
 
 def test_the_vivado_bin_option_overrides_the_environment(tmp_path, monkeypatch):
     monkeypatch.setenv("AUTORTL_VIVADO_BIN", "D:/ignored")
-    command = gate.bench_command("PY", tmp_path / "run", "E:/Vivado/bin/")
+    command = gate.bench_command("PY", tmp_path / "run", vivado="E:/Vivado/bin/")
     assert command[-8:] == ["--vivado", "E:/Vivado/bin/vivado.bat", "--xvlog", "E:/Vivado/bin/xvlog.bat",
                             "--xelab", "E:/Vivado/bin/xelab.bat", "--xsim", "E:/Vivado/bin/xsim.bat"]
 
@@ -62,7 +62,7 @@ def test_the_vivado_bin_option_overrides_the_environment(tmp_path, monkeypatch):
 def test_main_passes_the_vivado_bin_option_to_the_bench(tmp_path, monkeypatch):
     # Stop main right after it builds the command, before any process starts.
     seen = []
-    def stop(python, out, vivado=None):
+    def stop(python, out, tier=0, model=None, jobs=1, vivado=None):
         seen.append(vivado)
         raise SystemExit("stopped")
     monkeypatch.setattr(gate, "ROOT", tmp_path)
