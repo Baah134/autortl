@@ -21,11 +21,21 @@ _WINDOWS = os.name == "nt"
 _REPLACE_RETRY_DELAYS = (.01, .02, .04, .08, .16, .32)
 
 
+class CheckpointLockedError(PermissionError):
+    """Another process held a checkpoint open for the whole bounded retry.
+
+    Infrastructure, not a design outcome (taxonomy: checkpoint_replace_denied).
+    The previous checkpoint is intact, so `run.py resume` continues once the
+    other process lets go. A PermissionError, so existing handlers still apply.
+    """
+
+
 def _replace_checkpoint(temporary: str, path: Path) -> None:
     """Retry only known Windows sharing/access contention, for at most 0.63s.
 
     Reuse the flushed sibling file throughout. Never remove the old target to
     work around a lock: replacement must remain atomic, including on failure.
+    Contention that outlasts the retry is raised as CheckpointLockedError.
     """
     first_error = None
     for attempt in range(len(_REPLACE_RETRY_DELAYS) + 1):
@@ -38,7 +48,13 @@ def _replace_checkpoint(temporary: str, path: Path) -> None:
             if first_error is None:
                 first_error = exc
             if attempt == len(_REPLACE_RETRY_DELAYS):
-                raise first_error
+                locked = CheckpointLockedError(
+                    first_error.errno, f"checkpoint {path} stayed locked by another process for "
+                    f"{sum(_REPLACE_RETRY_DELAYS):.2f}s (WinError {first_error.winerror}); the previous checkpoint "
+                    "is intact. Close whatever holds it open (for example a `tail -F` of a run file) and run "
+                    "`run.py resume`", str(path))
+                locked.winerror = first_error.winerror
+                raise locked from first_error
             time.sleep(_REPLACE_RETRY_DELAYS[attempt])
 
 

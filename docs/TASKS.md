@@ -740,6 +740,13 @@ None is fixed yet. Harness source is unchanged.
    _replace_checkpoint retried, then raised, and the run crashed
    (run-02). `resume` recovered. Proposed: classify it as infrastructure,
    with bounded backoff, instead of a traceback.
+   **Fixed.** The existing 0.63 s retry is kept: a reader that never lets
+   go cannot be outwaited, and non-atomic replacement stays forbidden.
+   Contention that outlasts it now raises CheckpointLockedError, a
+   PermissionError that keeps the original as its cause and its winerror.
+   run.py reports that as `infra_blocked` with exit code 3 and the resume
+   advice, not as a traceback. A real-handle Windows test holds a reader
+   open for the whole retry window.
 3. **golden_budget_long_period** (curriculum). The golden worker's 200,000
    trace-event budget cannot run one UART frame at DIV=868 (8,680 cycles),
    so spec examples must stay under about 2,000 cycles. Long-period serial

@@ -15,6 +15,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from autortl.config import RunConfig
 from autortl.fsm import Orchestrator
+from autortl.state import CheckpointLockedError
 
 
 def main(argv=None):
@@ -109,7 +110,13 @@ def main(argv=None):
                         top_module=a.top, generate_golden=a.generate_golden, **kw)
         orch = Orchestrator(cfg, run_dir=a.output_dir.resolve() if hasattr(a, "output_dir") else None)
 
-    summary = orch.run()
+    try:
+        summary = orch.run()
+    except CheckpointLockedError as exc:
+        # Infrastructure: the last checkpoint is intact and the run resumes.
+        print(json.dumps({"status": "infra_blocked", "error": str(exc),
+                          "run_dir": str(orch.state.run_dir)}, indent=2))
+        return 3
     print(json.dumps({k: v for k, v in summary.items()
                       if k in ("status", "best_iteration", "timing_closed", "improvement_kind", "run_dir")}, indent=2))
     return 0 if summary.get("status") == "done" else 1
