@@ -512,7 +512,7 @@ class Orchestrator:
             try:
                 spec = DesignSpec.load(self.state.spec_path)
                 errs = lint_spec(spec)
-            except (ValueError, KeyError, TypeError) as exc:
+            except (ValueError, KeyError, TypeError, AttributeError) as exc:
                 if not generated:
                     raise
                 errs = [f"spec JSON does not load: {type(exc).__name__}: {str(exc)[:300]}"]
@@ -521,7 +521,8 @@ class Orchestrator:
             attempt += 1
             print(f"[lint] planner spec repair {attempt}: " + "; ".join(errs)[:300])
             raw = self._model("planner", "make_spec", intent, self.cfg, self.budget,
-                              feedback=f"Repair attempt {attempt}.\n" + "\n".join(errs))
+                              feedback=f"Repair attempt {attempt}.\n" + "\n".join(errs)
+                              + "\nYour previous design_spec was:\n" + raw[:6000])
         if errs:
             self._snapshot(phase="PLANNING", lint_errors=errs)
             print("[lint] spec failed structural lint:")
@@ -532,7 +533,8 @@ class Orchestrator:
         stub_files = write_stub_project(spec, stub_dir)
         ok, err, kind = self._tool("xvlog_check", stub_files, self.cfg, stub_dir)
         if not ok:
-            return {"status": "stub_elaboration_failed" if kind == FailureKind.DESIGN else "build_blocked", "error": err}
+            return {"status": "stub_elaboration_failed" if kind == FailureKind.DESIGN else "build_blocked",
+                    "failure_kind": kind.value, "error": err}
 
         # PHASE: PER-MODULE GENERATE + VERIFY (journal-backed evidence)
         module_files: dict[str, Path] = {}
@@ -561,7 +563,7 @@ class Orchestrator:
         ok, err, kind = self._tool("xvlog_check", all_files, self.cfg,
                                            self.state.run_dir / "modules")
         if not ok:
-            return {"status": "integration_failed", "error": err}
+            return {"status": "integration_failed", "failure_kind": kind.value, "error": err}
         print("[build] integrated design compiles; entering optimize loop as baseline")
 
         # hand off to optimize with the integrated design

@@ -14,9 +14,9 @@ try:
 except ImportError:
     yaml = None
 
-from .backends import codex_cli
+from .backends import codex_cli, openai_http
 
-_BACKENDS = {"codex": codex_cli}
+_BACKENDS = {"codex": codex_cli, "openai": openai_http}
 _ROUTING_PATH = Path(__file__).parent / "routing.yaml"
 _STATS_PATH = Path(__file__).parent / "router_stats.jsonl"
 
@@ -47,12 +47,34 @@ def _record(role: str, entry: str, ok: bool, seconds: float,
                             "metadata": metadata or {}, "error_type": error_type}) + "\n")
 
 
+def _backend(role, name):
+    """A built-in backend, or a user endpoint from llm/endpoints.local.yaml."""
+    if name in _BACKENDS:
+        return _BACKENDS[name]
+    from . import endpoints
+    try:
+        return endpoints.backend(name)
+    except endpoints.EndpointError as exc:
+        raise ModelCallError(role, "CODEX_UNAVAILABLE", message=str(exc)) from exc
+
+
+def _is_backend(name):
+    from . import endpoints
+    try:
+        return name in _BACKENDS or name in endpoints.load()
+    except endpoints.EndpointError:
+        return False
+
+
 def ask(role: str, prompt: str, system: str = "",
         budget=None, route_override: str | None = None,
         max_turns: int = 1, model: str | None = None) -> str:
     cfg = _load_routing()
     chain = cfg["roles"].get(role, {}).get("chain", ["codex.default"])
-    if model:
+    if model and _is_backend(model.partition(".")[0]):
+        # A backend-qualified model (openai.gpt-4o-mini) pins backend and alias.
+        chain = [model]
+    elif model:
         # A run-pinned model keeps each entry's backend and replaces its alias.
         chain = list(dict.fromkeys(entry.partition(".")[0] + "." + model for entry in chain))
     if route_override:
@@ -60,10 +82,12 @@ def ask(role: str, prompt: str, system: str = "",
     retries = cfg.get("defaults", {}).get("max_retries_per_backend", 2)
     timeout = cfg.get("defaults", {}).get("timeout_s", 180)
 
-    last_error = None
+    last_error, succeeded = None, None
     for entry in chain:
+        if succeeded:
+            break
         backend_name, _, alias = entry.partition(".")
-        backend = _BACKENDS.get(backend_name)
+        backend = _backend(role, backend_name)
         if backend is None:
             raise ModelCallError(role, "CODEX_UNAVAILABLE", message=f"unsupported backend '{backend_name}'")
         for attempt in range(1, retries + 1):
@@ -80,9 +104,8 @@ def ask(role: str, prompt: str, system: str = "",
                                          timeout_s=call_timeout, max_turns=max_turns)
                 if text and text.strip():
                     _record(role, entry, True, time.time() - t0, meta)
-                    if budget is not None and hasattr(budget, "charge_tokens"):
-                        budget.charge_tokens((meta or {}).get("usage"))
-                    return text
+                    succeeded = (text, meta)
+                    break
                 raise codex_cli.CodexError("CODEX_PROTOCOL", "empty response", meta)
             except Exception as e:
                 last_error = e
@@ -98,6 +121,13 @@ def ask(role: str, prompt: str, system: str = "",
                         delay = min(delay, max(0,
                             (budget.max_wall_minutes - budget.wall_minutes) * 60))
                     time.sleep(delay)
+    if succeeded:
+        text, meta = succeeded
+        # Outside the retry handling: a checkpoint lock here propagates unchanged
+        # instead of discarding a charged response (token_save_lock_misattributed).
+        if budget is not None and hasattr(budget, "charge_tokens"):
+            budget.charge_tokens((meta or {}).get("usage"))
+        return text
     raise ModelCallError(role, getattr(last_error, "code", "CODEX_UNAVAILABLE"),
                          getattr(last_error, "metadata", None),
                          str(last_error) if last_error else "no backend attempts configured") from last_error
@@ -111,6 +141,13 @@ def extract_verilog(response_text: str) -> str:
     fenced = re.findall(r"```[ \t]*([\w+-]*)[ \t]*\r?\n(.*?)```", text, re.DOTALL)
     hdl = [b for tag, b in fenced if tag.lower() in ("", "verilog", "systemverilog", "sv", "v")]
     blocks = hdl + [b for tag, b in fenced if tag.lower() not in ("", "verilog", "systemverilog", "sv", "v")]
+    # One module per fence: join them when every module name is distinct, so a
+    # multi-module answer is never returned partially. Repeated names (a "before"
+    # and an "after" version) keep the first block, as before.
+    designs = [b.strip() for b in hdl if re.search(r"^\s*module\s+\w+", b, re.MULTILINE)]
+    names = [n for b in designs for n in re.findall(r"(?m)^\s*module\s+(\w+)", b)]
+    if len(designs) > 1 and len(names) == len(set(names)):
+        return "\n\n".join(designs)
     for b in blocks:
         s = b.strip()
         if re.search(r"^\s*module\s+\w+", s, re.MULTILINE):

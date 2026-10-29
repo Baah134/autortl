@@ -18,7 +18,7 @@ autortl_v4/
 |  |- DESIGN.md                architecture spec (single source of truth)
 |  |- DOCUMENTATION.md         this file
 |- autortl/                    the harness (23 modules)
-|- llm/                        model routing + 3 backends
+|- llm/                        model routing + 2 backends
 |- data/taxonomy.yaml          Vivado message-ID dictionary
 |- .claude/skills/             8 SKILL.md guidebooks + verified snippets
 |- curriculum/                 tiered benchmark designs + runner
@@ -246,21 +246,13 @@ Per-role chains: planner/doctor `claude opus -> sonnet -> openrouter ultra -> nv
 - **Design choice: retryable vs non-retryable split.** A 429 retries with backoff on the same backend; an auth error moves to the next chain entry immediately | retrying a bad key 3 times wastes 15 s per call.
 - **Design choice: extractor prefers the block that *starts* with `module`**, then any block containing module...endmodule, then a raw-text module scan, and warns loudly as last resort. Every tier of that ladder corresponds to a real v3 failure.
 
-### 4.3 backends/claude_code.py
-`claude -p <prompt> --output-format json --model <m> --max-turns <n> [--append-system-prompt ...]` via subprocess; returns text + cost/duration/session metadata.
+### 4.3 backends/codex_cli.py
+`codex exec --sandbox read-only --ephemeral --json` with the prompt on stdin, using the existing Codex login. Returns the final message plus model, usage and session metadata; failures raise typed `CodexError` codes (`CODEX_AUTH`, `CODEX_QUOTA`, `CODEX_NETWORK`, `CODEX_TIMEOUT`, `CODEX_PROTOCOL`, `CODEX_UNAVAILABLE`) that the client keys its retries on.
 
-- **Design choice: subprocess, not SDK.** The harness treats Claude exactly like Vivado: a program it runs. No SDK version churn, and the JSON output's cost field feeds the budget for free.
-- **Design choice: `--max-turns 1` default.** Claude Code *wants* to be agentic; for generator/evaluator that would collapse the role separation (a generator that runs xvlog itself starts self-verifying). De-agenting is a feature.
+### 4.4 backends/openai_http.py
+Standard-library client for any OpenAI-compatible `POST <base>/chat/completions` endpoint, routed as `openai.<model>` (or `--model openai.<model>`). Configuration is environment-only: `AUTORTL_OPENAI_API_KEY` (required), `AUTORTL_OPENAI_BASE_URL` (default `https://api.openai.com/v1`; local Ollama or vLLM servers work), `AUTORTL_OPENAI_MODEL` (used for `openai.default`). HTTP failures map onto the same `CodexError` codes (401/403 auth, 429 quota, 5xx and connection network, timeout, malformed body protocol). The key, prompt and system text are redacted from every error, redirects are refused so the key never reaches another host, and token usage is reported in the same `input_tokens` / `cached_input_tokens` / `output_tokens` shape.
 
-### 4.4 backends/nvidia_nim.py
-OpenAI-compatible stdlib client for `integrate.api.nvidia.com`; the two verified top Nemotron IDs; per-model thinking configs (`chat_template_kwargs: enable_thinking` + `reasoning_budget: 8192`).
-
-- **Design choice: only the top two Nemotrons.** The v1-v3 nine-model chain is gone; fallbacks exist for resilience, not variety, and every extra model is another thinking-config special case to maintain.
-
-### 4.5 backends/openrouter.py
-Free-tier Nemotrons (`:free` suffix) with OpenRouter's **`models` array** so fallback between Ultra and Super happens inside one request.
-
-- **Design choice: OpenRouter is tier three by policy**, never primary: free models throttle hard at peak and rotate without warning. Its 429s classify as INFRA (triage.py), so a throttled evening never mutates a design. Documented operational note: $10 one-time credit unlocks 1,000 req/day.
+The earlier `claude_code`, `nvidia_nim` and `openrouter` adapters were removed; OpenAI-compatible providers are reached through `AUTORTL_OPENAI_BASE_URL`.
 
 ---
 

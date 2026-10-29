@@ -17,6 +17,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import urllib.parse
 
 TOOLS = ("vivado", "xvlog", "xelab", "xsim")
 
@@ -32,8 +33,9 @@ class Check:
 
 def _probe(cmd, timeout=60):
     try:
-        out = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", errors="replace",
-                             timeout=timeout, shell=False)
+        with tempfile.TemporaryDirectory(prefix="autortl-doctor-") as scratch:  # xvlog writes logs to its cwd
+            out = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", errors="replace",
+                                 timeout=timeout, shell=False, cwd=scratch)
         return out.returncode, (out.stdout + out.stderr).strip()
     except (OSError, subprocess.TimeoutExpired) as exc:
         return None, str(exc)
@@ -94,10 +96,28 @@ def model_check():
                     "" if rc == 0 else "Check AUTORTL_CODEX_BIN points at a working Codex CLI")]
     if rc == 0:
         rc, status = _probe([executable, "login", "status"], timeout=30)
-        logged = rc == 0 and "logged in" in status.lower()
+        logged = rc == 0 and "logged in" in status.lower() and "not logged in" not in status.lower()
         checks.append(Check("codex login", "OK" if logged else "MISSING", status.splitlines()[0] if status else "no status",
                             "" if logged else "Run `codex login` (model-driven runs need it; tests and the audit do not)"))
     return checks
+
+
+def openai_check():
+    """Optional alternative backend; reports presence of the key, never its value."""
+    if not (os.environ.get("AUTORTL_OPENAI_API_KEY") or "").strip():
+        return Check("openai", "WARN", "AUTORTL_OPENAI_API_KEY not set (optional alternative to Codex)",
+                     "To use an OpenAI-compatible API, set AUTORTL_OPENAI_API_KEY and optionally "
+                     "AUTORTL_OPENAI_BASE_URL / AUTORTL_OPENAI_MODEL, then run with --model openai.<model>",
+                     required=False)
+    base = (os.environ.get("AUTORTL_OPENAI_BASE_URL") or "").strip()
+    try:
+        host = urllib.parse.urlsplit(base).hostname if base else "api.openai.com (default)"
+    except ValueError:
+        host = None
+    model = (os.environ.get("AUTORTL_OPENAI_MODEL") or "").strip()
+    return Check("openai", "OK", f"AUTORTL_OPENAI_API_KEY is set; endpoint host {host or 'invalid URL'}; "
+                 + (f"default model {model}" if model else "no AUTORTL_OPENAI_MODEL (name the model as openai.<model>)"),
+                 required=False)
 
 
 def workspace_check(root):
@@ -109,8 +129,33 @@ def workspace_check(root):
         return Check("workspace", "MISSING", f"{root}: {exc}", "Run from a writable checkout")
 
 
+def endpoint_checks():
+    """User endpoints from llm/endpoints.local.yaml (or AUTORTL_ENDPOINTS); all optional."""
+    from llm import endpoints
+    try:
+        defined = endpoints.load()
+    except endpoints.EndpointError as exc:
+        return [Check("endpoints", "WARN", str(exc)[:200], "Fix the file; see llm/endpoints.example.yaml", False)]
+    checks = []
+    for name, d in sorted(defined.items()):
+        label = f"endpoint {name}"
+        if d["kind"] == "command":
+            found = shutil.which(d["argv"][0])
+            checks.append(Check(label, "OK" if found else "WARN", f"command {found or d['argv'][0]}",
+                                "" if found else f"Install {d['argv'][0]} or fix argv", False))
+        else:
+            host = d["base_url"].split("//", 1)[1].split("/", 1)[0].rsplit("@", 1)[-1]
+            env = d.get("api_key_env")
+            ready = not env or bool(os.environ.get(env))
+            checks.append(Check(label, "OK" if ready else "WARN",
+                                f"openai-compatible at {host}" + (f", key in {env}" if env else ", no key"),
+                                "" if ready else f"Set {env}", False))
+    return checks
+
+
 def run_checks(paths, root):
-    return [python_check(), *package_checks(), *tool_checks(paths), *model_check(), workspace_check(root)]
+    return [python_check(), *package_checks(), *tool_checks(paths), *model_check(), openai_check(),
+            *endpoint_checks(), workspace_check(root)]
 
 
 def render(checks):

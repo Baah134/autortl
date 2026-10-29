@@ -262,6 +262,14 @@ authenticated Codex CLI for model-driven runs. Roles are routed through
 python -m pip install -r requirements.txt
 ```
 
+To see one run's pipeline without Vivado or a model login, run the simulated
+walkthrough. It optimizes `mux4` once with fixed stand-ins, measures nothing,
+and prints where the run's journal, events and summary are:
+
+```powershell
+python scripts/demo.py
+```
+
 Set the Vivado installation path. The following examples use PowerShell:
 
 ```powershell
@@ -316,6 +324,42 @@ The role parsers accept the fence tags and verdict layouts different models
 write (`Verilog`, `v`, `py`, `Recommendation: ACCEPT`), and a planner-written
 spec that fails the structural check gets its errors back for a bounded repair.
 
+To run the roles on any OpenAI-compatible chat-completions API instead of the
+Codex CLI, set `AUTORTL_OPENAI_API_KEY` in the environment and pass
+`--model openai.<model>` (for example `--model openai.gpt-4o-mini`). The
+endpoint defaults to `https://api.openai.com/v1`; set
+`AUTORTL_OPENAI_BASE_URL` to use another provider or a local server such as
+Ollama (`http://localhost:11434/v1`) or vLLM (`http://localhost:8000/v1`).
+Local servers that ignore the key still need a placeholder value. The key is
+read only from the environment and is never written to run files or logs.
+`python run.py doctor` reports whether the key is set.
+
+**Bring your own model.** To plug in any AI, name it in
+`llm/endpoints.local.yaml` (Git ignores it; copy
+[`llm/endpoints.example.yaml`](llm/endpoints.example.yaml)) and pass
+`--model <endpoint>.<model>`. An endpoint is either an OpenAI-compatible URL,
+with an optional `api_key_env` naming the variable that holds its key, or a
+command line that reads the prompt on stdin and prints the answer, such as
+another vendor's CLI or your own script:
+
+```yaml
+endpoints:
+  ollama:
+    kind: openai
+    base_url: http://localhost:11434/v1
+  mine:
+    kind: command
+    argv: [python, my_model.py]
+    model_flag: --model
+```
+
+`--model ollama.llama3.1` or `--model mine.small` then routes every role to
+it. Several endpoints can be defined side by side, `doctor` checks each one,
+and an endpoint's definition is part of the bench cohort, so editing it starts
+a new cohort. Commands run without a shell from an empty temporary folder and
+only ever receive the prompt on stdin; AutoRTL does not sandbox them, so give
+them no tools they do not need.
+
 Resume an interrupted experiment using its saved configuration:
 
 ```powershell
@@ -324,6 +368,25 @@ python run.py resume --run runs/mux-trial
 
 Use a fresh output directory for each new experiment. Resume checks the saved
 inputs and execution environment; see [recovery behavior](docs/RECOVERY.md).
+
+The same steps in bash (Linux or Git Bash). On Linux the tools have no
+`.bat` suffix; in Git Bash, add it as in the PowerShell example:
+
+```bash
+vivado_bin=/path/to/Vivado/bin
+vivado_args=(--vivado "$vivado_bin/vivado" --xvlog "$vivado_bin/xvlog"
+             --xelab "$vivado_bin/xelab" --xsim "$vivado_bin/xsim")
+
+python run.py doctor "${vivado_args[@]}"
+
+python scripts/check_counter_cli.py --bin-dir "$vivado_bin" --output runs/counter-check
+
+python run.py optimize --design curriculum/tier0/mux4/mux4.v \
+  --tb curriculum/tier0/mux4/mux4_tb.v --top mux4 \
+  --iterations 1 --best-of-n 1 --max-llm-calls 16 \
+  --max-vivado-minutes 20 --max-wall-minutes 30 \
+  --output-dir runs/mux-trial "${vivado_args[@]}"
+```
 
 ## Repository map
 

@@ -184,19 +184,21 @@ class Evaluation:
 
     @staticmethod
     def parse(raw: str) -> "Evaluation":
-        # Heading or label form, with or without emphasis: "## Recommendation\nACCEPT",
-        # "Recommendation: ACCEPT", "**Recommendation:** **ACCEPT**". The verdict line
-        # must name exactly one verdict; a copied "ACCEPT | REJECT" template is not one.
-        rec = re.search(r"(?im)^[ \t>#*_]*Recommendation[ \t*_]*:?[ \t*_]*(?:\r?\n[ \t>*_-]*)?"
-                        r"((?:ACCEPT|REJECT|RESTART)\b[^\n]*)", raw)
-        if rec and len(re.findall(r"(?i)\b(?:ACCEPT|REJECT|RESTART)\b", rec.group(1))) != 1:
-            rec = None
+        # Heading or label form, with or without emphasis and blank lines: "## Recommendation\nACCEPT",
+        # "Recommendation: ACCEPT", "**Recommendation:** **ACCEPT**". Every verdict line
+        # counts, and together they must name exactly one verdict: a copied
+        # "ACCEPT | REJECT" template, or a label later contradicted, is not one.
+        lines = re.findall(r"(?im)^[ \t>#*_]*Recommendation[ \t*_]*:?[ \t*_]*(?:\r?\n[ \t>*_-]*)*"
+                           r"((?:ACCEPT|REJECT|RESTART)\b[^\n]*)", raw)
+        named = {v.upper() for line in lines for v in re.findall(r"(?i)\b(?:ACCEPT|REJECT|RESTART)\b", line)}
+        each_single = all(len(re.findall(r"(?i)\b(?:ACCEPT|REJECT|RESTART)\b", line)) == 1 for line in lines)
+        rec = named.pop() if lines and len(named) == 1 and each_single else None
         p = re.search(r"Passed:\s*(\d+)\s+of\s+(\d+)", raw, re.IGNORECASE)
         f = re.search(r"Failed:\s*(\d+)", raw, re.IGNORECASE)
         passed, failed = int(p.group(1)) if p else 0, int(f.group(1)) if f else 1
         consistent = p and f and passed > 0 and passed + failed == int(p.group(2))
         unresolved = re.search(r"(?m)^\s*-\s+.*?:\s*(?:FAIL|INVESTIGATE)\b", raw, re.IGNORECASE)
-        recommendation = re.match(r"\w+", rec.group(1)).group(0).upper() if rec else "REJECT"
+        recommendation = rec or "REJECT"
         if not consistent or unresolved or (recommendation == "ACCEPT" and failed):
             recommendation = "REJECT"
             failed = max(failed, 1)

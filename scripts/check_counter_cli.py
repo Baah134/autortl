@@ -1,11 +1,14 @@
 """Bounded, model-free counter verification through the installed Vivado CLI.
 
-Example: python scripts/check_counter_cli.py --bin-dir C:/AMDDesignTools/2025.2/Vivado/bin
+Example: python scripts/check_counter_cli.py --bin-dir C:/AMDDesignTools/2025.2/Vivado/bin --output runs/counter-check
+--bin-dir defaults to $AUTORTL_VIVADO_BIN. Each tool is <name>.bat when that
+file exists (Windows), else <name> (Linux).
 Uses a fresh output directory and retains inputs, hashes, logs and reports.
 """
 import argparse
 import hashlib
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -17,9 +20,16 @@ from autortl.vivado import xsim_run, run_synthesis, full_metrics
 from autortl.metrics_gate import validate
 
 
+def tool_path(bin_dir, name):
+    bat = bin_dir.resolve() / (name + ".bat")
+    bare = bin_dir.resolve() / name
+    return str(bare if bare.exists() and not bat.exists() else bat)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--bin-dir", required=True, type=Path)
+    env_bin = os.environ.get("AUTORTL_VIVADO_BIN")
+    parser.add_argument("--bin-dir", type=Path, required=not env_bin, default=Path(env_bin) if env_bin else None)
     parser.add_argument("--output", required=True, type=Path)
     args = parser.parse_args()
     out = args.output.resolve()
@@ -33,7 +43,7 @@ def main():
         files.append(path)
         hashes[name] = hashlib.sha256(path.read_bytes()).hexdigest()
     cfg = RunConfig(mode="optimize", **{
-        name + "_bin": str(args.bin_dir.resolve() / (name + ".bat"))
+        name + "_bin": tool_path(args.bin_dir, name)
         for name in ("vivado", "xvlog", "xelab", "xsim")})
     result = {"source_sha256": hashes, "part": cfg.target_part,
               "period_ns": cfg.target_period_ns, "passed": False}

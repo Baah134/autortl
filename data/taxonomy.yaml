@@ -107,6 +107,18 @@ harness_failures:
   io_dominated_timing_metric:
     meaning: "With I/O buffers and zero external delay, every harness-flow critical path of the six winners ends at an OBUF (101-107.5 MHz) while their logic closes at 181.8-425.5 MHz out of context, so candidate timing comparisons mostly measured pad delay (fmax-characterization-01; the 31-LUT counter: WNS +0.126 ns, worst register-to-register path +1.460 ns)"
     repair: "Keep acceptance on the full I/O-constrained WNS/WHS; also report register-to-register setup slack from the same routed design (guarded, since report_timing errors with no registers, Vivado 12-4739) as an advisory metric shown to the planner and evaluator"
+  evaluator_verdict_conflict_or_blank_line:
+    meaning: "The tolerant verdict parser took the first Recommendation line even when a later one disagreed (ACCEPT then REJECT read as ACCEPT), and no longer allowed a blank line between the heading and the verdict (read as REJECT) (independent review, Oct 29)"
+    repair: "Collect every Recommendation verdict line, allowing blank lines after a heading; ACCEPT only when exactly one verdict is named across all of them; deterministic vetoes unchanged"
+  parallel_build_winner_digest_lost:
+    meaning: "With bench --jobs > 1 each entry runs in its own process, so the Orchestrator's build-mode rewrite of cfg.top_module never reached the parent and the winner digest was looked up under the wrong top name (None for debouncer_build) (independent review, Oct 29)"
+    repair: "Resolve the winner from the run summary's top_module, falling back to the configured top"
+  token_save_lock_misattributed:
+    meaning: "Charging a call's tokens saved budget.json inside the model call's retry block, so a checkpoint lock after a successful, charged response discarded it and surfaced as model_blocked instead of a resumable checkpoint lock (independent review, Oct 29)"
+    repair: "Charge tokens after the backend call has succeeded, outside the retry handling, so CheckpointLockedError propagates unchanged"
+  infra_outcomes_missing_failure_kind:
+    meaning: "Stub elaboration blocked by infrastructure, an integration compile that failed for infrastructure, and a checkpoint lock escaping a run carried no failure_kind infra, so they still entered the curriculum history as failed entries (independent review, Oct 29)"
+    repair: "Tag build_blocked and integration failures with their failure kind, and map an escaped CheckpointLockedError to failure_kind infra in the bench"
   generator_instantiates_unsimulated_primitive:
     meaning: "An optimization candidate hand-instantiated a Xilinx CARRY4 primitive; the harness simulates behavioral RTL without the UNISIM library, so elaboration failed (VRFC 10-2063) with no taxonomy hint and a repair call was spent (tier1-campaign-02 pwm, iteration 5)"
     repair: "Tell the generator and timing doctor to infer device primitives from behavioral RTL rather than instantiate them, and give VRFC 10-2063 and its XSIM 43-3322 wrapper taxonomy entries so a repair names the cause"

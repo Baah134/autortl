@@ -1,0 +1,26 @@
+# Bring your own model. Copy this file to llm/endpoints.local.yaml (ignored by
+# Git) or point AUTORTL_ENDPOINTS at your own copy, then run with
+#   python run.py optimize ... --model <endpoint>.<model>
+# Every harness role (planner, generator, evaluator, timing doctor) then uses it.
+# Never write a key here: name the environment variable that holds it.
+
+endpoints:
+  # Any OpenAI-compatible chat-completions server.
+  ollama:
+    kind: openai
+    base_url: http://localhost:11434/v1     # local Ollama; no key needed
+  together:
+    kind: openai
+    base_url: https://api.together.xyz/v1
+    api_key_env: TOGETHER_API_KEY           # the variable that holds the key
+
+  # Any program that reads the prompt on stdin and prints the answer on stdout.
+  # It runs as an argument list (no shell) from an empty temporary folder.
+  # AutoRTL does not sandbox it: give it no tools or permissions it does not need.
+  claude:
+    kind: command
+    argv: [claude, -p, --tools, ""]
+    model_flag: --model                     # --model claude.sonnet passes "--model sonnet"
+  ollama-cli:
+    kind: command
+    argv: [ollama, run, llama3.1]           # use as --model ollama-cli.default

@@ -67,6 +67,8 @@ class RunConfig:
         if self.model is not None and (not isinstance(self.model, str)
                                        or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:-]{0,79}", self.model)):
             raise ValueError("model must be a plain model alias (letters, digits, . _ : -)")
+        if self.model == "default":
+            raise ValueError("model 'default' would be the unpinned CLI default; omit --model instead")
         if self.work_dir is None:
             raise ValueError("work_dir is required")
         for name in ("target_part", "vivado_bin", "xvlog_bin", "xelab_bin", "xsim_bin"):

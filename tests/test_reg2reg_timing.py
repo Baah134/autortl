@@ -50,5 +50,5 @@ def test_flow_reports_reg2reg_only_when_registers_exist():
                                   top="m", extra_synth="", phys_opt="")
     line = next(l for l in tcl.splitlines() if "timing_reg2reg.rpt" in l)
     # Unguarded, report_timing -from [all_registers] errors (Vivado 12-4739) and aborts the flow.
-    assert line.startswith("if {[llength [all_registers]] > 0} {")
+    assert line.startswith("catch { if {[llength [all_registers]] > 0} {")  # advisory: never stops the flow
     assert tcl.index("timing_routed.rpt") < tcl.index("timing_reg2reg.rpt") < tcl.index("SYNTH_COMPLETE")
