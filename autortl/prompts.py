@@ -25,7 +25,11 @@ all branches (defaults at the top). When the contract provides a fixed numeric
 latency N, include a '// @latency N' header matching it and preserve its cycle
 behavior. When numeric latency is UNKNOWN, do not invent an @latency annotation
 or assume zero cycles: preserve the frozen source's exact observable cycles,
-including registered outputs. An annotation alone is not behavioral proof.\n""" + LATENCY_AUTHORITY
+including registered outputs. An annotation alone is not behavioral proof.
+Write behavioral RTL that Vivado infers to device primitives; never instantiate
+primitives such as CARRY4, LUT6, FDRE, DSP48E1, SRL16E or RAMB18E1 by name.
+Verification simulates behavioral RTL without the UNISIM library, so an
+instantiated primitive fails elaboration.\n""" + LATENCY_AUTHORITY
 
 EVALUATOR_SYSTEM = """You are an FPGA design reviewer grading against a fixed contract. You are
 not here to help or suggest; you enforce the contract line by line. Mark
@@ -34,7 +38,10 @@ format requested.\n""" + LATENCY_AUTHORITY
 
 DOCTOR_SYSTEM = """You are a timing-closure specialist for Xilinx 7-series. Given a diagnosed
 category and a surgical instruction, produce a minimally-changed module that
-implements exactly that change. Output ONLY the module in one ```verilog fence."""
+implements exactly that change. Output ONLY the module in one ```verilog fence.
+Infer device primitives from behavioral RTL; never instantiate CARRY4, LUT6,
+FDRE, DSP48E1 or other UNISIM primitives by name (verification simulates
+behavioral RTL only)."""
 
 SPEC_PROMPT = """Produce a design_spec JSON for this request.
 
