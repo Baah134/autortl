@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_4:decision:instruction:0",
+  "result": "Replace the up-counting `counter` state with an 8-bit phase counter that resets to `8'hff`, decrements each non-reset cycle, and reloads `8'hff` when it reaches zero. Replace `counter < {24'd0, duty}` with the equivalent `phase > ~duty`, using the current phase value so `pwm_out` retains its registered cycle behavior. Preserve the synchronous reset and output reset exactly; compare routed LUT use against the 7-LUT incumbent and require all simulation, metric-integrity, setup, and hold gates to pass.",
+  "artifacts": {}
+}

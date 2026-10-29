@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_1:model:generator.generate:0",
+  "result": "`timescale 1ns/1ps\n// @latency 1\nmodule priority_encoder8 (\n    input wire clk,\n    input wire rst,\n    input wire [7:0] request,\n    output wire [2:0] index,\n    output wire valid\n);\n    wire [2:0] index_next;\n    wire valid_next;\n\n    assign index_next[2] = |request[7:4];\n    assign index_next[1] = request[7] | request[6] |\n                           ((~|request[7:4]) & (request[3] | request[2]));\n    assign index_next[0] = request[7] |\n                           ((~|request[7:6]) & request[5]) |\n                           ((~|request[7:4]) & request[3]) |\n                           ((~|request[7:2]) & request[1]);\n    assign valid_next = (request != 8'd0);\n\n    reg [2:0] index_reg;\n    reg valid_reg;\n\n    assign index = index_reg;\n    assign valid = valid_reg;\n\n    always @(posedge clk) begin\n        if (rst) begin\n            index_reg <= 3'd0;\n            valid_reg <= 1'b0;\n        end else begin\n            index_reg <= index_next;\n            valid_reg <= valid_next;\n        end\n    end\nendmodule",
+  "artifacts": {}
+}

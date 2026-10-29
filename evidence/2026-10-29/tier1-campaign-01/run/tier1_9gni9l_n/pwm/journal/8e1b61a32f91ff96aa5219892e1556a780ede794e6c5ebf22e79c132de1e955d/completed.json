@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_3:model:planner.plan:0",
+  "result": "# PLAN \u2014 iteration 3\n## Current state assessment\nThe timing-feasible incumbent uses 7 LUTs, while both prior 8-bit counter proposals used 10 and were rejected for failing the strict LUT objective. The supplied 32-bit counter source already synthesizes to 7 LUTs; current-top numeric latency is unknown, so no numeric latency annotation is required.\n\n## Hypothesis\nFactoring the 8-bit PWM comparison into high- and low-nibble comparisons may let Vivado share comparison logic and reduce LUT use below 7 without changing the counter or registered output behavior.\n\n## Instruction for generator\nKeep the 32-bit `counter`, its explicit comparison with 255, its increment, and the reset logic unchanged. Replace only `counter < {24'd0, duty}` with an unsigned nibble comparison: compare bits `[7:4]` first, then compare `[3:0]` only when the high nibbles are equal. Preserve the existing clocked assignment to `pwm_out`; the candidate must pass all fixed gates and use fewer than 7 routed LUTs to improve the objective.",
+  "artifacts": {}
+}

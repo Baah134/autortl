@@ -1,0 +1,9 @@
+# PLAN — iteration 1
+## Current state assessment
+The incumbent uses 6 LUTs and 4 FFs, with WNS 0.528 ns and WHS 0.009 ns, and the frozen simulation passes. The editable top is a wrapper around a registered priority encoder; the objective is strictly fewer LUTs while preserving its known one-cycle latency, synchronous active-high reset, registered outputs, and interface. No prior proposal outcomes are provided.
+
+## Hypothesis
+Inlining a factored Boolean priority encoder may let Vivado map the three index bits and valid flag into fewer than 6 LUTs while retaining the four output registers.
+
+## Instruction for generator
+Replace the child instance in `priority_encoder8` with an `always @(posedge clk)` block that registers the same outputs and reset values. Factor the priority logic into Boolean expressions for the index bits using higher-bit suppression, and derive `valid` from `request != 0`; preserve the `// @latency 1` annotation. The falsifiable target is fewer than 6 routed LUTs, with simulation, setup and hold gates still passing.

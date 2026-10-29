@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_3:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 3,
+    "instruction": "Keep the 32-bit `counter`, its explicit comparison with 255, its increment, and the reset logic unchanged. Replace only `counter < {24'd0, duty}` with an unsigned nibble comparison: compare bits `[7:4]` first, then compare `[3:0]` only when the high nibbles are equal. Preserve the existing clocked assignment to `pwm_out`; the candidate must pass all fixed gates and use fewer than 7 routed LUTs to improve the objective.",
+    "candidates": [
+      {
+        "iteration": 3,
+        "mutation": "standard",
+        "instruction": "Keep the 32-bit `counter`, its explicit comparison with 255, its increment, and the reset logic unchanged. Replace only `counter < {24'd0, duty}` with an unsigned nibble comparison: compare bits `[7:4]` first, then compare `[3:0]` only when the high nibbles are equal. Preserve the existing clocked assignment to `pwm_out`; the candidate must pass all fixed gates and use fewer than 7 routed LUTs to improve the objective.",
+        "generated_source_sha256": "ce293de86aa2e81dc1ce8699e2501d990df93c7d8635f5cc5162baa777bc765c",
+        "final_source_sha256": "ce293de86aa2e81dc1ce8699e2501d990df93c7d8635f5cc5162baa777bc765c",
+        "generated_code_hash": "52d8124ab2f5e216",
+        "final_code_hash": "52d8124ab2f5e216",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.594,
+          "whs_ns": 0.289,
+          "lut_used": 8,
+          "ff_used": 9,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.011,
+          "total_power_w": 0.081
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-01\\tier1_9gni9l_n\\pwm\\iter_003\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-01\\tier1_9gni9l_n\\pwm\\iter_003\\cand_standard\\synth.tcl",
+          "sha256": "22f11f786c61668b45d72de880d8c342dd30c7fd9164257c968665f184b55acc"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-01\\tier1_9gni9l_n\\pwm\\iter_003\\cand_standard\\pwm.v",
+          "sha256": "8e9245599afb20b67a91ef17308701197d0d20551c8770e387de11655f8d62f5"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": "ce293de86aa2e81dc1ce8699e2501d990df93c7d8635f5cc5162baa777bc765c"
+  },
+  "artifacts": {}
+}

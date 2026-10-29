@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_5:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 5,
+    "instruction": "Replace the counter increment pattern with a low-nibble increment each non-reset cycle and a high-nibble increment only when the old low nibble is `4'hf`; reset both nibbles to zero so the count wraps naturally from 255 to 0. Keep `pwm_out <= (counter < {24'd0, duty})` and the synchronous reset behavior unchanged. Preserve the exact output sequence and duty sampling cycle, including counter wrap and changing duty values, and require fewer than 7 routed LUTs plus all fixed verification and timing gates for promotion.",
+    "candidates": [
+      {
+        "iteration": 5,
+        "mutation": "standard",
+        "instruction": "Replace the counter increment pattern with a low-nibble increment each non-reset cycle and a high-nibble increment only when the old low nibble is `4'hf`; reset both nibbles to zero so the count wraps naturally from 255 to 0. Keep `pwm_out <= (counter < {24'd0, duty})` and the synchronous reset behavior unchanged. Preserve the exact output sequence and duty sampling cycle, including counter wrap and changing duty values, and require fewer than 7 routed LUTs plus all fixed verification and timing gates for promotion.",
+        "generated_source_sha256": "889b887a3872c7efcb0b7e756880c476513b2f2d57219b1e3421f1f9c1478738",
+        "final_source_sha256": "889b887a3872c7efcb0b7e756880c476513b2f2d57219b1e3421f1f9c1478738",
+        "generated_code_hash": "e8796dc181ce34ff",
+        "final_code_hash": "e8796dc181ce34ff",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.46,
+          "whs_ns": 0.166,
+          "lut_used": 9,
+          "ff_used": 9,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.01,
+          "total_power_w": 0.081
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-01\\tier1_9gni9l_n\\pwm\\iter_005\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-01\\tier1_9gni9l_n\\pwm\\iter_005\\cand_standard\\synth.tcl",
+          "sha256": "fe07df470ad27dd0a1dbeb525caaf7fb24b1e3c3a7dc9c00bdd8add350f2ee60"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-01\\tier1_9gni9l_n\\pwm\\iter_005\\cand_standard\\pwm.v",
+          "sha256": "af81d3dfd77baff221fcabbcb57897454aaf46d3719d446f0828c4b2731200a0"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": "889b887a3872c7efcb0b7e756880c476513b2f2d57219b1e3421f1f9c1478738"
+  },
+  "artifacts": {}
+}

@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_1:model:planner.plan:0",
+  "result": "# PLAN \u2014 iteration 1\n## Current state assessment\nThe seed is a PWM with a 32-bit counter that resets at 255, an 8-bit duty comparison, and a registered output. The incumbent is timing-feasible at WNS 0.553 ns and WHS 0.135 ns, with 7 LUTs and 9 FFs; the goal is a strict LUT reduction. Top numeric latency is unknown, so no numeric latency annotation is required.\n\n## Hypothesis\nChanging the counter to 8 bits and relying on natural modulo-256 overflow may remove terminal-count comparison and wrap-selection logic, reducing LUT use while preserving behavior after reset.\n\n## Instruction for generator\nReplace the 32-bit `counter` with an 8-bit counter and increment it unconditionally in the non-reset branch, allowing it to wrap naturally. Keep the synchronous active-high reset, reset values, registered `pwm_out`, and comparison against the current counter value and `duty` unchanged in cycle behavior. The counter\u2019s reset-reachable sequence must remain 0 through 255, then 0; do not add a latency annotation.",
+  "artifacts": {}
+}

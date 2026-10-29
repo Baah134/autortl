@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_3:model:generator.generate:0",
+  "result": "`timescale 1ns/1ps\n// Deliberately loose PWM: full 32-bit counter for an 8-bit duty task.\nmodule pwm (\n    input  wire       clk,\n    input  wire       rst,\n    input  wire [7:0] duty,\n    output reg        pwm_out\n);\n    reg [31:0] counter;\n    always @(posedge clk) begin\n        if (rst) begin\n            counter <= 32'd0;\n            pwm_out <= 1'b0;\n        end else begin\n            if (counter == 32'd255) counter <= 32'd0;\n            else counter <= counter + 32'd1;\n            pwm_out <= (counter[31:8] == 24'd0) &&\n                       ((counter[7:4] < duty[7:4]) ||\n                        ((counter[7:4] == duty[7:4]) &&\n                         (counter[3:0] < duty[3:0])));\n        end\n    end\nendmodule",
+  "artifacts": {}
+}

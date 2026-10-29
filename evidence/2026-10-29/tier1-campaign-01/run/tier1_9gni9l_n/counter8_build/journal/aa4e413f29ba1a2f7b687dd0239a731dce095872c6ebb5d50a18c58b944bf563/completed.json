@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_1:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 1,
+    "instruction": "Replace the child instance with an 8-bit registered counter in `counter8`, using a synchronous `if (rst) count_reg <= 8'd0; else count_reg <= count_reg + enable;` update and continuously drive `count` from that register. Retain the existing ports and `// @latency 1` annotation. The change is only a LUT-reduction candidate: promote it only if the frozen simulation and all deterministic checks pass, routed WNS and WHS remain nonnegative, metrics are valid, and LUT use is strictly below 6.",
+    "candidates": [
+      {
+        "iteration": 1,
+        "mutation": "standard",
+        "instruction": "Replace the child instance with an 8-bit registered counter in `counter8`, using a synchronous `if (rst) count_reg <= 8'd0; else count_reg <= count_reg + enable;` update and continuously drive `count` from that register. Retain the existing ports and `// @latency 1` annotation. The change is only a LUT-reduction candidate: promote it only if the frozen simulation and all deterministic checks pass, routed WNS and WHS remain nonnegative, metrics are valid, and LUT use is strictly below 6.",
+        "generated_source_sha256": "e4a494814439ee6f78d43e794fdb3079db39adf0809be31fb4a9f61dc763bd50",
+        "final_source_sha256": "e4a494814439ee6f78d43e794fdb3079db39adf0809be31fb4a9f61dc763bd50",
+        "generated_code_hash": "353b9183cc9ec285",
+        "final_code_hash": "353b9183cc9ec285",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.555,
+          "whs_ns": 0.051,
+          "lut_used": 6,
+          "ff_used": 8,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.005,
+          "total_power_w": 0.075
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-01\\tier1_9gni9l_n\\counter8_build\\iter_001\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-01\\tier1_9gni9l_n\\counter8_build\\iter_001\\cand_standard\\synth.tcl",
+          "sha256": "ebb0a60ea1e37bd099888dc019c7421a6ebba26e305f238618167b5d424fc795"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-01\\tier1_9gni9l_n\\counter8_build\\iter_001\\cand_standard\\counter8.v",
+          "sha256": "59973ff4733f2b3a0b68f42d7cf5ef2e496c4547022cc5466d5063328bbdd4e8"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": "e4a494814439ee6f78d43e794fdb3079db39adf0809be31fb4a9f61dc763bd50"
+  },
+  "artifacts": {}
+}

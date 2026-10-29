@@ -1,0 +1,45 @@
+{
+  "candidates": [
+    {
+      "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-01\\tier1_9gni9l_n\\pwm\\iter_004\\cand_standard",
+      "cache_hit": false,
+      "final_code_hash": "a119810d68b36dd7",
+      "final_source_sha256": "004dfad223158abf08ad05b971084417de06aaaa46ef602c2dbe33bf1612c851",
+      "flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-01\\tier1_9gni9l_n\\pwm\\iter_004\\cand_standard\\synth.tcl",
+        "sha256": "8a1997633b342f53cc530e807261979aac8ebdb7bacceb91fb8e9249c503a316"
+      },
+      "generated_code_hash": "a119810d68b36dd7",
+      "generated_source_sha256": "004dfad223158abf08ad05b971084417de06aaaa46ef602c2dbe33bf1612c851",
+      "instruction": "Replace the up-counting `counter` state with an 8-bit phase counter that resets to `8'hff`, decrements each non-reset cycle, and reloads `8'hff` when it reaches zero. Replace `counter < {24'd0, duty}` with the equivalent `phase > ~duty`, using the current phase value so `pwm_out` retains its registered cycle behavior. Preserve the synchronous reset and output reset exactly; compare routed LUT use against the 7-LUT incumbent and require all simulation, metric-integrity, setup, and hold gates to pass.",
+      "iteration": 4,
+      "metrics": {
+        "bram_used": 0.0,
+        "dsp_used": 0,
+        "dynamic_power_w": 0.01,
+        "ff_used": 9,
+        "lut_used": 10,
+        "sim_passed": true,
+        "timing_met": true,
+        "total_power_w": 0.081,
+        "whs_ns": 0.227,
+        "wns_ns": 0.463
+      },
+      "mutation": "standard",
+      "reason": "",
+      "rungs": 5,
+      "source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-01\\tier1_9gni9l_n\\pwm\\iter_004\\cand_standard\\pwm.v",
+        "sha256": "55bd6f94e471af7a8f0d8787b1f5418bf5f63882ed8383eb1fd79b19ff91f6be"
+      },
+      "status": "measured"
+    }
+  ],
+  "doctor": null,
+  "instruction": "Replace the up-counting `counter` state with an 8-bit phase counter that resets to `8'hff`, decrements each non-reset cycle, and reloads `8'hff` when it reaches zero. Replace `counter < {24'd0, duty}` with the equivalent `phase > ~duty`, using the current phase value so `pwm_out` retains its registered cycle behavior. Preserve the synchronous reset and output reset exactly; compare routed LUT use against the 7-LUT incumbent and require all simulation, metric-integrity, setup, and hold gates to pass.",
+  "is_best": false,
+  "iteration": 4,
+  "recommendation": "REJECT",
+  "schema_version": 1,
+  "selected_source_sha256": "004dfad223158abf08ad05b971084417de06aaaa46ef602c2dbe33bf1612c851"
+}

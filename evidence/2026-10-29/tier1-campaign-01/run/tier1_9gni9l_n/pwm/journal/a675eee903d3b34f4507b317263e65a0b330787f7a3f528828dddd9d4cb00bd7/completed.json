@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_4:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 4\n## Contract check\n- Interface, reset, and cycle behavior: PASS \u2014 the 8-bit phase sequence and comparison preserve the source\u2019s 0\u2013255 cycle and registered output behavior.\n- Top latency annotation: PASS \u2014 authoritative latency is unknown, so no numeric annotation is required.\n- Compilation and simulation: PASS \u2014 required tool exits succeeded and the fixed testbench reported `TEST PASSED`.\n- Routed metric integrity: PASS \u2014 retained routed reports and synthesis completion evidence are present.\n- Timing feasibility: PASS \u2014 timing is met, with WNS 0.463 ns and WHS 0.227 ns.\n- LUT objective: FAIL \u2014 candidate uses 10 LUTs versus 7 for the timing-feasible previous best; strict improvement is required.\n- Improvement classification: PASS \u2014 no improvement is claimed, consistent with `measured_improvement=false` and `improvement_kind=null`.\n## Summary\n- Passed: 6 of 7\n- Failed: 1 of 7\n- Improved over previous best: NO\n## Recommendation\nRESTART\n## Reason\nThe candidate preserves the defined behavior and passes the deterministic verification and timing gates, but it increases LUT use from 7 to 10 while the previous best is already timing-feasible, so it does not meet the minimize-LUT objective. The stall count is 3, meeting the restart threshold.",
+      "recommendation": "REJECT",
+      "passed": 6,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

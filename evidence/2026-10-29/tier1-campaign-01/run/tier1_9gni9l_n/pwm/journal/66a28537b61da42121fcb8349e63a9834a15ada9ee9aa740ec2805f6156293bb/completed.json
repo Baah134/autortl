@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_4:model:generator.generate:0",
+  "result": "`timescale 1ns/1ps\nmodule pwm (\n    input  wire       clk,\n    input  wire       rst,\n    input  wire [7:0] duty,\n    output wire       pwm_out\n);\n    reg [7:0] phase;\n    reg       pwm_out_reg;\n\n    assign pwm_out = pwm_out_reg;\n\n    always @(posedge clk) begin\n        if (rst) begin\n            phase       <= 8'hff;\n            pwm_out_reg <= 1'b0;\n        end else begin\n            if (phase == 8'h00)\n                phase <= 8'hff;\n            else\n                phase <= phase - 8'd1;\n            pwm_out_reg <= (phase > ~duty);\n        end\n    end\nendmodule",
+  "artifacts": {}
+}

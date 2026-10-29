@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_5:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 5\n## Contract check\n- Ports and observable cycle behavior: PASS \u2014 candidate preserves the 8-bit counter\u2019s wrap, registered output, and synchronous reset behavior.\n- Top latency annotation: PASS \u2014 authoritative `known=false`; no numeric annotation is required.\n- Compile, elaboration, simulation, and synthesis: PASS \u2014 required tool exits succeeded, simulation reported `TEST PASSED`, and synthesis reported `SYNTH_COMPLETE`.\n- Retained routed reports and metric integrity: PASS \u2014 required reports are present and identified by hashes.\n- Timing feasibility: PASS \u2014 timing is met with WNS 0.46 ns and WHS 0.166 ns.\n- LUT objective: FAIL \u2014 both candidate and previous best are timing-feasible, but LUTs increased from 7 to 9; strict improvement is required.\n## Summary\n- Passed: 5 of 6\n- Failed: 1 of 6\n- Improved over previous best: NO\n## Recommendation\nRESTART\n## Reason\nThe candidate preserves the defined behavior and passes verification and timing gates, but it does not improve the LUT objective over the timing-feasible previous best. The stall count is 4, meeting the threshold for RESTART.",
+      "recommendation": "REJECT",
+      "passed": 5,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

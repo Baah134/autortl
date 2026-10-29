@@ -1,0 +1,34 @@
+﻿{"source_files": 232, "freeze": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-01-source-freeze.json"}
+{"exit_code": 0, "seconds": 323.18800000008196, "summary": "1461 passed in 322.44s (0:05:22)", "source_unchanged": true, "source_files": 232, "source_freeze_sha256": "a611829cc71c1ae3355b3ada3bb08dcddd7ef926a6f767d49c29a1348d821dd0"}
+{"prelaunch": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-01-prelaunch.json", "budgets_per_entry": {"iterations": null, "best_of_n": 1, "model_calls": 30, "tool_minutes": 40, "wall_minutes": 60, "infra_retries": 1}}
+[module counter8_core] golden model + testbench...
+[build] integrated design compiles; entering optimize loop as baseline
+[iter 0] baseline LUTs=6 FFs=8 WNS=0.424
+[iter 1] REJECT LUTs=6 (best iter 0, stall 1)
+
+DONE — best from iter 0: LUTs=6 FFs=8 WNS=0.424
+[bench] counter8_build: PASS (mandatory gates passed)
+[lint] spec failed structural lint:
+   - top module must differ from child module names
+[bench] debouncer_build: FAIL (run did not complete successfully)
+[module priority_encoder8_core] golden model + testbench...
+[build] integrated design compiles; entering optimize loop as baseline
+[iter 0] baseline LUTs=6 FFs=4 WNS=0.528
+[iter 1] *** NEW BEST *** LUTs=5 FFs=4 WNS=0.452
+
+DONE — best from iter 1: LUTs=5 FFs=4 WNS=0.452
+[bench] encoder8_build: PASS (mandatory gates passed)
+[iter 0] baseline failed verification
+[iter 0] baseline LUTs=7 FFs=9 WNS=0.553
+[iter 1] REJECT LUTs=10 (best iter 0, stall 1)
+[iter 2] REJECT LUTs=10 (best iter 0, stall 2)
+[iter 3] REJECT LUTs=8 (best iter 0, stall 3)
+[watchdog] STAGNATION: 3 consecutive iterations without improvement
+[iter 4] REJECT LUTs=10 (best iter 0, stall 4)
+[watchdog] STAGNATION: 3 consecutive iterations without improvement
+[iter 5] REJECT LUTs=9 (best iter 0, stall 5)
+
+DONE — best from iter 0: LUTs=7 FFs=9 WNS=0.553
+[bench] pwm: PASS (mandatory gates passed)
+[bench] tier 1: 3/4; held=False; streak=0
+{"exit_code": 1, "wall_seconds": 1471.265999999945, "source_unchanged": true, "router_stats_prefix_unchanged": true, "history_prefix_unchanged": true, "ended_utc": "2026-10-29T12:05:23.237706+00:00"}
