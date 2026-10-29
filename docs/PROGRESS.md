@@ -1484,3 +1484,8 @@ corrected as an explicit doc-only delta after the frozen experiments.
   to v7 (1361062) to clear the Node.js 20 deprecation warning.
 - Removed the stray 0-byte root xelab.pb (committed in 387fe0e; unreferenced,
   outside the frozen sets) and ignored root Vivado by-products.
+- Added docs/WALKTHROUGH.md (73c8767): a guided code tour following one
+  optimize run, the invariants and where each is enforced, build mode, the
+  stage journal, the sandboxed model call and the board suite, with
+  interview questions answered from the code. 66 file:line references were
+  checked automatically. CI green on 73c8767.

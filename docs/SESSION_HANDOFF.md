@@ -77,6 +77,16 @@ Completed and verified this session:
 - Removed the stray 0-byte root `xelab.pb` (from 387fe0e; nothing referenced
   it, and it is outside the frozen sets). Root `/*.pb` and `/xsim.dir/` are
   now ignored.
+- `docs/WALKTHROUGH.md`: a guided code tour for the user, with 66 file:line
+  references checked against the code. Re-check those references after any
+  change to `fsm.py`, `bestofn.py`, `tbgen.py` or `vivado.py`, since line
+  numbers will shift.
+
+State at Claude's handoff: development `codex/contract-context` at the
+commit that adds this line. CI is green; the working tree is clean. No
+Vivado or board job is running. The board holds the sync_fifo shell
+bitstream (volatile). `main` is unchanged at 185dadc. Codex's next action
+is still campaign14 (mailbox #3); read messages #1-#6 first.
 
 Deliberately untouched: every file in the frozen 230- and 201-file identity
 sets (autortl/, llm/, tests/, curriculum/, scripts/, data/, .claude/, run.py),
