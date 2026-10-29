@@ -274,7 +274,15 @@ $vivadoArgs = @(
 )
 ```
 
-First, run the repeatable counter tool check without model calls:
+Check the machine first. `doctor` finds Python and its packages, the four
+Vivado tools and the Codex CLI login, and prints the exact fix for anything
+missing. It runs no design and sends nothing to a model:
+
+```powershell
+python run.py doctor @vivadoArgs
+```
+
+Then run the repeatable counter tool check without model calls:
 
 ```powershell
 python scripts/check_counter_cli.py --bin-dir $vivadoBin --output runs/counter-check
@@ -346,6 +354,11 @@ python run.py bench --tier 0 --iterations 1 --best-of-n 1 `
   --max-llm-calls 16 --max-vivado-minutes 20 --max-wall-minutes 30 `
   --output-dir runs/tier0 @vivadoArgs
 ```
+
+Add `--jobs 4` to run up to four entries at once as separate processes; the
+cohort and promotion rules do not change. Each run's `budget.json` records the
+model tokens it used, and `python tools/role_report.py <campaign>` summarizes
+every role's calls, tokens, verdicts and repairs.
 
 Curriculum promotion requires three consecutive qualifying full runs with the
 same experiment cohort. Subset runs cannot promote a tier, and regressions in
