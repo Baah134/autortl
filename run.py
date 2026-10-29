@@ -68,9 +68,17 @@ def main(argv=None):
     p_bch.add_argument("--tier", type=int, required=True)
     p_bch.add_argument("--entries", nargs="+", help="run only named entries; never holds the full tier")
 
+    p_doc = sub.add_parser("doctor", help="check Python, Vivado and the model CLI; runs no design")
+    for name in ("vivado", "xvlog", "xelab", "xsim"):
+        p_doc.add_argument("--" + name, default=None)
+
     a = ap.parse_args(argv)
     if hasattr(a, "route"):
         ap.error("--route is unsupported; all roles use the configured Codex route")
+
+    if a.cmd == "doctor":
+        from autortl import doctor
+        return doctor.main({name: getattr(a, name) for name in doctor.TOOLS}, Path(__file__).resolve().parent)
 
     if a.cmd == "resume":
         try:
