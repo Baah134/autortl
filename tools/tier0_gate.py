@@ -15,7 +15,9 @@ harness on purpose. This runner:
    arguments, and requires the source, router statistics and curriculum
    history prefixes to be unchanged afterwards.
 
-    python tools/tier0_gate.py --name contract-campaign-15 [--python PY]
+    python tools/tier0_gate.py --name contract-campaign-15 [--python PY] [--tier 1]
+
+--tier 1 runs the same discipline on curriculum tier 1 with TIER_BUDGETS[1].
 
 Outputs go to logs/<name>* (ignored) and are archived under evidence/
 afterwards. It refuses to overwrite an earlier attempt.
@@ -36,6 +38,12 @@ SUFFIXES = (".py", ".v", ".sv", ".json", ".yaml", ".md")
 VIVADO = "C:/AMDDesignTools/2025.2/Vivado/bin/"
 BUDGETS = {"iterations": 1, "best_of_n": 1, "model_calls": 16, "tool_minutes": 20, "wall_minutes": 30,
            "infra_retries": 1}
+# Per-tier budgets. Tier 0 keeps campaign14's exactly. Tier 1 leaves iterations
+# to each entry's meta.yaml (None omits --iterations) and allows for build mode's
+# planner, oracle and testbench calls.
+TIER_BUDGETS = {0: BUDGETS,
+                1: {"iterations": None, "best_of_n": 1, "model_calls": 30, "tool_minutes": 40, "wall_minutes": 60,
+                    "infra_retries": 1}}
 
 
 def sha(path):
@@ -53,12 +61,15 @@ def identities(root=ROOT):
     return dict(sorted(result.items()))
 
 
-def bench_command(python, out):
-    args = [python, "run.py", "bench", "--tier", "0", "--iterations", str(BUDGETS["iterations"]),
-            "--best-of-n", str(BUDGETS["best_of_n"]), "--max-llm-calls", str(BUDGETS["model_calls"]),
-            "--max-vivado-minutes", str(BUDGETS["tool_minutes"]), "--max-wall-minutes", str(BUDGETS["wall_minutes"]),
-            "--max-infra-retries", str(BUDGETS["infra_retries"]), "--target-part", "xc7a35tcpg236-1",
-            "--target-freq-mhz", "100", "--output-dir", str(out)]
+def bench_command(python, out, tier=0):
+    budgets = TIER_BUDGETS[tier]
+    args = [python, "run.py", "bench", "--tier", str(tier)]
+    if budgets["iterations"] is not None:
+        args += ["--iterations", str(budgets["iterations"])]
+    args += ["--best-of-n", str(budgets["best_of_n"]), "--max-llm-calls", str(budgets["model_calls"]),
+             "--max-vivado-minutes", str(budgets["tool_minutes"]), "--max-wall-minutes", str(budgets["wall_minutes"]),
+             "--max-infra-retries", str(budgets["infra_retries"]), "--target-part", "xc7a35tcpg236-1",
+             "--target-freq-mhz", "100", "--output-dir", str(out)]
     for name in ("vivado", "xvlog", "xelab", "xsim"):
         args += ["--" + name, VIVADO + name + ".bat"]
     return args
@@ -68,6 +79,7 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--name", required=True)
     parser.add_argument("--python", default=sys.executable)
+    parser.add_argument("--tier", type=int, choices=sorted(TIER_BUDGETS), default=0)
     args = parser.parse_args(argv)
     logs = ROOT / "logs"
     run, freeze_path = logs / args.name, logs / f"{args.name}-source-freeze.json"
@@ -78,7 +90,7 @@ def main(argv=None):
             raise SystemExit(f"{path} exists: an earlier attempt is never overwritten")
     sys.path.insert(0, str(ROOT))
     from curriculum.runner import _history
-    if any(record["tier"] > 0 and record["held"] for record in _history()):
+    if any(record["tier"] > args.tier and record["held"] for record in _history()):
         raise SystemExit("a higher held tier requires its own gate")
 
     source = identities()
@@ -100,7 +112,8 @@ def main(argv=None):
     history_path, stats = ROOT / "curriculum/results.jsonl", ROOT / "llm/router_stats.jsonl"
     history_before = history_path.read_bytes() if history_path.exists() else b""
     stats_before = stats.read_bytes() if stats.exists() else b""
-    command = bench_command(args.python, run)
+    command = bench_command(args.python, run, args.tier)
+    budgets = TIER_BUDGETS[args.tier]
     plan = {"git_commit": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
             "runtime_source": source, "source_freeze_sha256": sha(freeze_path),
             "full_test_receipt_sha256": sha(tests_path), "command": command,
@@ -108,11 +121,13 @@ def main(argv=None):
             "python_executable_sha256": sha(Path(args.python)), "helper_sha256": sha(Path(__file__)),
             "router_stats_offset": len(stats_before), "router_stats_prefix_sha256": hashlib.sha256(stats_before).hexdigest(),
             "history_offset": len(history_before), "history_prefix_sha256": hashlib.sha256(history_before).hexdigest(),
-            "budgets_per_entry": BUDGETS, "no_higher_held_tier": True,
-            "scope": f"Fresh full tier0 runtime merge gate on {len(source)} source identities after harness changes; "
-                     "campaign14's budgets and arguments. Ideal zero min/max I/O, no higher held tier."}
+            "tier": args.tier, "budgets_per_entry": budgets, "no_higher_held_tier": True,
+            "scope": (f"Fresh full tier0 runtime merge gate on {len(source)} source identities after harness changes; "
+                      "campaign14's budgets and arguments. Ideal zero min/max I/O, no higher held tier.") if args.tier == 0
+            else (f"Fresh full tier{args.tier} runtime gate on {len(source)} source identities; per-tier budgets, "
+                  "iterations from each entry's meta.yaml. Ideal zero min/max I/O, no higher held tier.")}
     pre.write_text(json.dumps(plan, indent=2) + "\n", encoding="utf-8")
-    print(json.dumps({"prelaunch": str(pre), "budgets_per_entry": BUDGETS}), flush=True)
+    print(json.dumps({"prelaunch": str(pre), "budgets_per_entry": budgets}), flush=True)
     tick, code = time.monotonic(), None
     try:
         code = subprocess.call(command, cwd=ROOT)

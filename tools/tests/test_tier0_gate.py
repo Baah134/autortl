@@ -50,3 +50,27 @@ def test_an_earlier_attempt_is_never_overwritten(tmp_path, monkeypatch):
     (tmp_path / "logs" / "gate-01-prelaunch.json").write_text("{}")
     with pytest.raises(SystemExit, match="never overwritten"):
         gate.main(["--name", "gate-01"])
+
+
+def test_tier1_command_leaves_iterations_to_each_entry(tmp_path):
+    out = tmp_path / "run"
+    command = gate.bench_command("PY", out, tier=1)
+    assert command[:5] == ["PY", "run.py", "bench", "--tier", "1"]
+    assert "--iterations" not in command
+    flags = dict(zip(command[5:21:2], command[6:22:2]))
+    assert flags == {"--best-of-n": "1", "--max-llm-calls": "30", "--max-vivado-minutes": "40",
+                     "--max-wall-minutes": "60", "--max-infra-retries": "1", "--target-part": "xc7a35tcpg236-1",
+                     "--target-freq-mhz": "100", "--output-dir": str(out)}
+
+
+def test_tier0_command_is_unchanged_by_the_tier_option(tmp_path):
+    assert gate.bench_command("PY", tmp_path, tier=0) == gate.bench_command("PY", tmp_path)
+
+
+def test_a_held_higher_tier_blocks_the_gate(tmp_path, monkeypatch):
+    import curriculum.runner as runner
+    monkeypatch.setattr(gate, "ROOT", tmp_path)
+    (tmp_path / "logs").mkdir()
+    monkeypatch.setattr(runner, "_history", lambda: [{"tier": 2, "held": True}])
+    with pytest.raises(SystemExit, match="higher held tier"):
+        gate.main(["--name", "gate-02", "--tier", "1"])
