@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Interface, parameter, reset, and observable cycle behavior: PASS \u2014 ports and parameter defaults are preserved; the candidate retains synchronous reset, load priority, overflow hold behavior, and registered flags. The removed `prev_count` is unused.\n- Top latency annotation: PASS \u2014 authoritative latency is unknown, so no numeric annotation is required.\n- Compile, elaboration, and simulation: PASS \u2014 required tool exits succeeded, and the unchanged testbench reported `TEST PASSED`.\n- Synthesis, reports, and metric integrity: PASS \u2014 synthesis completed with the required marker, and retained routed reports and tool receipts are present.\n- Timing feasibility: PASS \u2014 `timing_met=true`, WNS is 0.494 ns, and WHS is 0.113 ns.\n- Optimization objective: FAIL \u2014 both candidate and previous best are timing-feasible, but LUT usage is unchanged at 55; strict LUT reduction is required.\n- Deterministic ladder: PASS \u2014 standard ladder remained ALIVE through 5 rungs.\n## Summary\n- Passed: 6 of 7\n- Failed: 1 of 7\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate preserves the defined behavior and passes the verification and timing gates, but it does not improve the chosen objective: LUT usage remains 55 versus 55 for the timing-feasible previous best. The contract requires strictly fewer LUTs when both designs meet timing.",
+      "recommendation": "REJECT",
+      "passed": 6,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

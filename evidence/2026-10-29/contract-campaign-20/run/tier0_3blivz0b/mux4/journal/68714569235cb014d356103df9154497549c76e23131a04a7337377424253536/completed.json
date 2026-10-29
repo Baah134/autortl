@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Interface and cycle behavior: PASS \u2014 candidate preserves the top\u2019s ports, synchronous reset behavior, registered output, and mux behavior.\n- Top latency annotation: PASS \u2014 authoritative `declared_latency.known=false`; no numeric annotation is required.\n- Deterministic verification: PASS \u2014 ladder is ALIVE; xvlog, xelab, and xsim exited successfully, and simulation reported `TEST PASSED`.\n- Synthesis and routed metric integrity: PASS \u2014 Vivado exited successfully with `SYNTH_COMPLETE`; retained routed reports are present.\n- Timing feasibility: PASS \u2014 `timing_met=true`, WNS is 0.579 ns, and WHS is 0.052 ns.\n- Objective improvement: FAIL \u2014 both candidate and previous best use 8 LUTs and are timing-feasible; `minimize_luts` requires a strict LUT reduction.\n\n## Summary\n- Passed: 5 of 6\n- Failed: 1 of 6\n- Improved over previous best: NO\n\n## Recommendation\nREJECT\n\n## Reason\nThe candidate passes the behavioral, verification, metric integrity, and timing gates, and its missing top latency annotation is acceptable because authoritative latency is unknown. However, LUT use is unchanged from the timing-feasible previous best, so the required strict objective improvement is not established.",
+      "recommendation": "REJECT",
+      "passed": 5,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

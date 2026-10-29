@@ -1,0 +1,13 @@
+# PLAN — iteration 1
+
+## Current state assessment
+
+The 32-bit default counter baseline passes the frozen simulation and has routed setup slack of 0.494 ns and hold slack of 0.113 ns, with 55 LUTs and 37 FFs. The objective is strictly fewer LUTs while retaining timing feasibility. The current top’s numeric latency is unknown, so no numeric `@latency` annotation is required; the registered threshold flags must still report the pre-edge count, including during disabled and load cycles.
+
+## Hypothesis
+
+Removing the dead `prev_count` state and redundant `count_next` temporary while sharing the increment and wrap condition should reduce mapped LUT logic without adding registers or changing cycle behavior.
+
+## Instruction for generator
+
+Delete the unused `prev_count` register and its assignments, and replace the blocking `count_next` temporary with a direct `count + 1'b1` assignment in the enabled, non-wrap branch. Keep the all-ones wrap test, synchronous reset priority, load-over-enable behavior, overflow hold while disabled, and the separate registered threshold comparisons exactly cycle-aligned to the pre-edge `count`. Do not change ports, parameters, widths, or add a numeric latency annotation; preserve all behaviors for supported parameter values.
