@@ -83,6 +83,9 @@ harness_failures:
   golden_budget_long_period_examples:
     meaning: "A specification example longer than a few thousand cycles exhausted the golden worker's instruction budget, so a long-period serial design could not express full-frame anchors"
     repair: "Keep examples under the budget, about 2,000 cycles for a per-cycle UART model; check full frames at real timing with an independent qualified --tb"
+  spec_prompt_omits_example_budget:
+    meaning: "The planner's spec prompt never stated the golden sandbox's per-example budget, so a prose request for a long-period design (tier3 uart_fifo_build: UART at DIV=868, a 8,680-cycle frame) invites full-frame examples the oracle cannot run (predicted by an offline pre-flight of tier2/tier3, not yet observed)"
+    repair: "State the limit in the spec prompt (after_cycles at or below 2000) and tell the planner to check an early part of long-period behavior in examples, leaving full frames to the generated and independent testbenches"
   fence_tag_drops_generated_modules:
     meaning: "A model fenced its Verilog with a tag other than lowercase verilog/systemverilog/sv (Verilog, v, SystemVerilog), so extraction fell back to the first module...endmodule span and silently dropped every later module of a multi-module answer"
     repair: "Match fence tags case-insensitively and accept v; then accept any fenced block that starts a module before falling back to raw spans; never return a partial multi-module answer as if complete"
