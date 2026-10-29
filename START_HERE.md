@@ -23,8 +23,11 @@ completed original FIR milestone until the changed runtime gates pass. Read SESS
 for actual jobs and exact next commands before editing or launching tools.
 
 The prior elastic dot product and multi-module/FIFO/divider results remain in
-their separate archives. Target is Artix-7 at100MHz with ideal I/O, not a verified
-board deployment; see docs/TARGETS.md. No model-strength comparison is claimed.
+their separate archives. The harness targets Artix-7 at 100 MHz with ideal I/O.
+Separately, every archived winner has been run on a physical Basys 3 through a
+hand-written shell (hardware/basys3/harness_winners); see docs/TARGETS.md for
+exactly what that does and does not establish. No model-strength comparison is
+claimed.
 
 Keep source-bound planning and exact candidate dedupe. Additional prior-proposal
 prompt context is experimental/opt-in after its study did not establish a benefit.

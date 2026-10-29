@@ -8,13 +8,36 @@
 | Reference clock | 100 MHz, 10 ns period, single `clk` |
 | Tools used for recorded results | Vivado 2025.2 |
 | External timing assumptions | Explicit ideal zero input/output minimum and maximum delays |
-| Board integration | No board-specific pin or external-interface profile selected |
-| Current physical evidence | Synthesis, placement/routing and timing under the recorded constraints |
+| Board integration in the harness | No board-specific pin or external-interface profile selected |
+| Current physical evidence | Synthesis, placement/routing and timing under the recorded constraints, plus the post-hoc Basys 3 hardware validation below |
 
 The part matches the FPGA on the [Digilent Basys 3](https://digilent.com/shop/basys-3-amd-artix-7-fpga-trainer-board-recommended-for-introductory-users/).
-That is a device correspondence, not a completed Basys 3 deployment. Wide
-arithmetic/streaming ports are IP interfaces; physical deployment also needs an
-appropriate board wrapper, communication interface and I/O assignments.
+Wide arithmetic/streaming ports are IP interfaces; physical deployment also
+needs an appropriate board wrapper, communication interface and I/O assignments.
+
+## Basys 3 hardware validation (outside the harness)
+
+Since October 28, 2026, each archived harness winner has also been run on a
+physical Basys 3. This is done by `hardware/basys3/harness_winners`, a
+hand-written UART shell with real Digilent pin assignments. Every design was
+built, programmed and checked on 50,000 transactions against an independent
+model; see `evidence/2026-10-28/basys3-harness-winners-01`.
+
+What this establishes, and what it does not:
+
+- It shows that the winners, unedited, operate correctly on hardware through
+  their valid/ready interfaces, under randomized backpressure.
+- The harness still optimizes against the ideal-I/O benchmark profile above.
+  The board shell is a downstream replay of its outputs, not a board profile
+  that the harness targets.
+- The shell's UART and LED I/O are slow and false-path constrained (inputs
+  are synchronized), so its timing reports cover internal paths only. No
+  external-interface timing is validated.
+- One board revision, one session and room temperature; no soak or
+  environmental testing.
+
+Harness-generated board integration remains the future work described in the
+requirements section below.
 
 Part and frequency are already configurable on new runs through `--target-part`
 and `--target-freq-mhz`. Users need the selected device installed/supported by
