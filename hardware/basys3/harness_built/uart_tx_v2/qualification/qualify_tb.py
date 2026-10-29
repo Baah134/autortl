@@ -15,6 +15,7 @@ pass, and named in the results.
 import argparse
 import hashlib
 import json
+import os
 from pathlib import Path
 import shutil
 import subprocess
@@ -44,7 +45,7 @@ def simulate(sources, work, vivado, tbs=(TB,), top="uart_tx_tb"):
 def main(argv=None):
     parser = argparse.ArgumentParser()
     parser.add_argument("out", type=Path)
-    parser.add_argument("--vivado", type=Path, default=Path("C:/AMDDesignTools/2025.2/Vivado/bin"))
+    parser.add_argument("--vivado", type=Path, default=Path(os.environ.get("AUTORTL_VIVADO_BIN", "C:/AMDDesignTools/2025.2/Vivado/bin")))
     parser.add_argument("--tb", type=Path, action="append")
     parser.add_argument("--top", default="uart_tx_tb")
     parser.add_argument("--exempt", action="append", default=[])
