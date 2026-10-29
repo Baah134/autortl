@@ -261,6 +261,35 @@ def test_program_and_hw_use_an_archived_bitstream_with_bit(tmp_path, monkeypatch
     # The tested payload of the archived file is the one the board evidence recorded.
     summary = json.loads((REPO / "evidence" / "2026-10-28" / "basys3-harness-winners-01" / "summary.json").read_text())
     assert report["bitstream_payload_sha256"] == summary["sync_fifo"]["bitstream_payload_sha256"]
+    # hw reports what program loaded: it refuses a different --bit or design.
+    other = archived.with_name("fir4.bit")
+    assert cli_main(["hw", "--design", "sync_fifo", "--bit", str(other), "--count", "1"]) == 1
+    assert cli_main(["hw", "--design", "fir4", "--count", "1"]) == 1
+    assert cli_main(["hw", "--design", "sync_fifo", "--count", "1"]) == 0      # no --bit: the record decides
+    # A failed programming attempt clears the record: the board's image is unknown.
+    monkeypatch.setattr(cli, "_run", lambda cmd, cwd, log: (log.write_text("ERROR\n"), 1)[1])
+    assert cli_main(["program", "--design", "sync_fifo", "--bit", str(archived)]) == 1
+    assert not (tmp_path / "suite" / "build" / "programmed.json").exists()
+
+
+def test_bit_is_only_for_program_and_hw(tmp_path):
+    with pytest.raises(SystemExit):
+        cli_main(["all", "--bit", str(tmp_path / "x.bit")])
+
+
+def test_archived_bitstreams_match_the_board_evidence():
+    # Ties summary.json's recorded digests to the archived files, so CI
+    # catches a bitstream that drifts from the evidence that cites it.
+    import hashlib
+    from hwsuite import reports
+    ev = REPO / "evidence" / "2026-10-28"
+    summary = json.loads((ev / "basys3-harness-winners-01" / "summary.json").read_text())
+    manifest = json.loads((ev / "basys3-bitstreams-01" / "manifest.json").read_text())
+    for name, entry in summary.items():
+        bit = ev / "basys3-bitstreams-01" / "harness_winners" / f"{name}.bit"
+        assert hashlib.sha256(bit.read_bytes()).hexdigest() == entry["bitstream_sha256"]
+        assert reports.bitstream_payload_sha256(bit) == entry["bitstream_payload_sha256"]
+        assert manifest["files"][f"harness_winners/{name}.bit"] == entry["bitstream_sha256"]
 
 
 def test_cli_rejects_unknown_design(capsys):

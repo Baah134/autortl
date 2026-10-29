@@ -180,23 +180,52 @@ def cmd_program(args, table):
         out.mkdir(parents=True, exist_ok=True)
         cmd = [_tool(args.vivado, "vivado"), "-mode", "batch", "-nojournal", "-log", "program.log",
                "-source", (SUITE / "scripts" / "program.tcl").as_posix(), "-tclargs", bit.as_posix()]
+        _programmed().unlink(missing_ok=True)       # the board's old image is gone either way
         code = _run(cmd, out, out / "program_console.txt")
         ok = "RESULT: programmed" in (out / "program_console.txt").read_text(errors="replace")
         print(f"{design.name:18} program exit {code}: {'programmed' if ok else 'FAILED'}")
         if code or not ok:
             raise SuiteError(f"{design.name}: programming failed")
+        from . import reports
+        _programmed().parent.mkdir(parents=True, exist_ok=True)
+        _programmed().write_text(json.dumps({"design": design.name, "bitstream": bit.resolve().as_posix(),
+                                          "payload_sha256": reports.bitstream_payload_sha256(bit)}, indent=2),
+                              encoding="utf-8")
+
+
+def _programmed() -> Path:
+    """What `program` last loaded. The board holds one image, so this is suite-wide."""
+    return SUITE / "build" / "programmed.json"
+
+
+def _on_board(args, design) -> str:
+    """Payload digest of the image on the board, from the last `program` record.
+
+    Without a record (the board was programmed some other way) it falls back
+    to the bitstream `hw` was pointed at, as before.
+    """
+    from . import reports
+    bit = _bitstream(args, design)
+    if not _programmed().is_file():
+        if not bit.is_file():
+            raise SuiteError(f"{design.name}: build and program first, or pass --bit ({bit} missing)")
+        return reports.bitstream_payload_sha256(bit)
+    record = json.loads(_programmed().read_text(encoding="utf-8"))
+    if record["design"] != design.name:
+        raise SuiteError(f"{design.name}: the board was last programmed with {record['design']}")
+    if getattr(args, "bit", None) and reports.bitstream_payload_sha256(bit) != record["payload_sha256"]:
+        raise SuiteError(f"{design.name}: --bit {bit} is not the image last programmed ({record['bitstream']})")
+    return record["payload_sha256"]
 
 
 def cmd_hw(args, table):
-    from . import hw, reports
+    from . import hw
     for design in _selected(args, table, require_one=True):
-        bit = _bitstream(args, design)
-        if not bit.is_file():
-            raise SuiteError(f"{design.name}: build and program first, or pass --bit ({bit} missing)")
+        payload = _on_board(args, design)
         report = hw.run(design, port=args.port, count=args.count, chunk=args.chunk,
                         restart_every=args.restart_every, wrong_model=args.wrong_model, seed=args.seed)
         # Identify what was on the board: the payload of the bitstream last programmed.
-        report["bitstream_payload_sha256"] = reports.bitstream_payload_sha256(bit)
+        report["bitstream_payload_sha256"] = payload
         print(hw.format_report(report))
         out = SUITE / "build" / design.name / "hw"
         out.mkdir(parents=True, exist_ok=True)
@@ -410,6 +439,8 @@ def main(argv=None):
     parser.add_argument("--seed", type=int, default=28)
     parser.add_argument("--wrong-model", action="store_true")
     args = parser.parse_args(argv)
+    if args.bit and args.command not in ("program", "hw"):
+        parser.error("--bit applies only to program and hw")
     table = design_table.load()
     try:
         {"verify": cmd_verify, "sim": cmd_sim, "build": cmd_build, "program": cmd_program,

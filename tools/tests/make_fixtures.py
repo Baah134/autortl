@@ -65,6 +65,11 @@ def main():
         "case": "original", "top": "counter_tb", "expected_pass": True,
         "source_sha256": put("counter-ref/original/counter.v", b"module counter; endmodule\n"),
         "tb_sha256": sha(b"no such testbench\n")}], indent=2)
+    # A source freeze taken before a test run: repository paths, no "manifest" in the name.
+    put_json("freeze/proposal-fixes-source-freeze-01.json", {"src/old.v": sha(V1), "src/core.v": sha(V1)}, indent=2)
+    # A manifest with digests the parser cannot attribute to any file.
+    put_json("mixed/manifest.json", {"files": {"a.txt": put("mixed/a.txt", b"a\n")},
+                                     "build_id": sha(b"build"), "seen": [sha(b"seen")]}, indent=2)
     # No digests at all, and a manifest that is not valid JSON.
     put_json("plain/manifest.json", [{"case": "latency0", "expected_pass": True}])
     put("broken/archive-manifest.json", b'{"a.txt": "unterminated\n')

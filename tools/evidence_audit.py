@@ -44,12 +44,18 @@ ROOT = Path(__file__).resolve().parents[1]
 EXCEPTIONS_PATH = "tools/evidence_exceptions.json"
 EXCEPTIONS = ROOT / EXCEPTIONS_PATH
 HEX = re.compile(r"[0-9a-fA-F]{64}")
+HEX_WORD = re.compile(rb"(?<![0-9a-fA-F])[0-9a-fA-F]{64}(?![0-9a-fA-F])")
 PATH_KEYS = ("path", "file", "relative_path")
 DIGEST_KEYS = ("sha256", "sha", "hash", "digest")
-# Manifests whose entries are repository paths at test time, not archive files.
-BINDING_NAMES = re.compile(r"tested-source-manifest(-\d+)?\.json|relocation-manifest\.json|source-identity\.json")
+# Claim files whose entries are repository paths at test time, not archive
+# files: tested-source manifests, source freezes taken before a test run, and
+# the relocation record.
+BINDING_NAMES = re.compile(r"tested-source-manifest(-\d+)?\.json|relocation-manifest\.json|source-identity\.json"
+                           r"|([\w-]+-)?source-freeze(-\d+)?\.json|original-source\d+\.json"
+                           r"|tested-source-identities\.json")
 BINDING_CONTAINERS = {"sources"}
 UNPATHED_KEY = re.compile(r"\w+_sha256")
+EMPTY_SHA256 = hashlib.sha256(b"").hexdigest()
 PASS = {"ok", "ok_current", "ok_historical", "ok_digest_found", "ok_digest_elsewhere",
         "excepted", "accepted_loss"}
 
@@ -145,10 +151,16 @@ def checkout_digests(data):
 
 
 class History:
-    """SHA-256 of every version a path has held in any commit (all refs)."""
+    """SHA-256 of every version a path has held in the history of one revision.
 
-    def __init__(self, root):
+    Only commits reachable from the audited revision count, so the result does
+    not depend on local branches, stashes or refs that may later disappear,
+    and re-auditing an old revision reproduces its result.
+    """
+
+    def __init__(self, root, rev="HEAD"):
         self.root = Path(root)
+        self.rev = rev
         self._blob_ids = None
         self._digests = {}
         self._reader = None
@@ -157,7 +169,7 @@ class History:
         if _git(self.root, "rev-parse", "--is-shallow-repository").strip() == b"true":
             raise AuditError("source bindings need the full history; this clone is shallow "
                              "(git fetch --unshallow, or actions/checkout with fetch-depth: 0)")
-        raw = _git(self.root, "log", "--all", "--root", "-m", "--no-renames", "--format=",
+        raw = _git(self.root, "log", self.rev, "--root", "-m", "--no-renames", "--format=",
                    "--raw", "--no-abbrev", "-z").decode("utf-8")
         ids = {}
         tokens = raw.split("\0")
@@ -207,13 +219,47 @@ class Claim:
 
 
 def is_manifest(path):
+    """A claim file: an evidence manifest or a source-identity record.
+
+    Other JSON under evidence/ also holds digests (journals, run state,
+    results, metric caches, verification reports). Those record values the
+    harness itself computed and checks on resume; `outside_scope` counts them
+    so the report says exactly what was not audited.
+    """
     name = PurePosixPath(path).name
-    return path.startswith("evidence/") and name.endswith(".json") and (
-        "manifest" in name or name == "source-identity.json") and name != "missing-manifest-blobs.json"
+    return path.startswith("evidence/") and name.endswith(".json") and name != "missing-manifest-blobs.json" and (
+        "manifest" in name or BINDING_NAMES.fullmatch(name) is not None)
 
 
 def _is_digest(value):
     return isinstance(value, str) and HEX.fullmatch(value) is not None
+
+
+def all_digests(node, trail=()):
+    """Yield (container, key, digest) for every 64-hex string in parsed JSON."""
+    if isinstance(node, dict):
+        items = node.items()
+    elif isinstance(node, list):
+        items = (("[]", value) for value in node)
+    else:
+        return
+    for key, value in items:
+        if _is_digest(value):
+            yield "/".join(trail), key, value.lower()
+        elif isinstance(value, (dict, list)):
+            yield from all_digests(value, trail + (key,))
+
+
+def unparsed_digests(data, found):
+    """Keys of digests in a claim file that no claim accounts for."""
+    claimed = Counter((c.container, c.sha256) for c in found)
+    left = Counter()
+    for container, key, digest in all_digests(data):
+        if claimed[(container, digest)]:
+            claimed[(container, digest)] -= 1
+        else:
+            left[f"{container}/{key}" if container else str(key)] += 1
+    return dict(sorted(left.items()))
 
 
 def claims(manifest, data):
@@ -291,24 +337,61 @@ def load_exceptions(path=EXCEPTIONS, snapshot=None):
     else:
         raw = Path(path).read_bytes() if Path(path).is_file() else None
     if raw is None:
-        return []
+        return policy({})
     try:
         data = json.loads(raw.decode("utf-8"))
     except (UnicodeDecodeError, ValueError) as error:
         raise AuditError(f"{path}: not valid JSON: {error}") from error
-    if data.get("schema") != 1 or not isinstance(data.get("exceptions"), list):
-        raise AuditError(f"{path}: expected schema 1 with an exceptions list")
-    for entry in data["exceptions"]:
-        missing = {"manifest", "paths", "kind", "reason", "predecessor"} - set(entry)
+    if not isinstance(data, dict) or data.get("schema") != 2:
+        # Schema 1 (1d39729 and 0957371) matched exceptions by path alone; audit
+        # those revisions with the tool version committed alongside them.
+        raise AuditError(f"{path}: expected an object with schema 2")
+    return policy(data, path)
+
+
+def policy(data, source="exceptions"):
+    """Validate and index an exceptions document (schema 2).
+
+    exceptions: each names a kind, a reason, a proof (predecessor archive,
+      or reconstruct from a committed blob) or predecessor null for a
+      recorded loss, and the exact failing claims it covers, each pinned by
+      container, path, digest and the failure status it must still have.
+    manifests_without_claims: claim files that legitimately hold no digests.
+    recorded_values: digests in a claim file that are measured values, not
+      claims about a file, pinned by key and count.
+    """
+    if isinstance(data, list):  # a bare list of exceptions, as tests build them
+        data = {"exceptions": data}
+    claims_index = {}
+    for entry in data.get("exceptions", []):
+        missing = {"manifest", "claims", "kind", "reason", "predecessor"} - set(entry)
         if missing:
-            raise AuditError(f"{path}: exception for {entry.get('manifest')} lacks {sorted(missing)}")
-        if entry["paths"] == ["*"] and not isinstance(entry.get("expected_count"), int):
-            raise AuditError(f"{path}: a '*' exception for {entry['manifest']} needs expected_count")
+            raise AuditError(f"{source}: exception for {entry.get('manifest')} lacks {sorted(missing)}")
         rebuild = entry.get("reconstruct")
         if rebuild is not None and (not isinstance(rebuild.get("blob"), str) or not rebuild.get("crlf_lines")
                                     and not rebuild.get("lf_lines")):
-            raise AuditError(f"{path}: reconstruct for {entry['manifest']} needs blob and crlf_lines or lf_lines")
-    return data["exceptions"]
+            raise AuditError(f"{source}: reconstruct for {entry['manifest']} needs blob and crlf_lines or lf_lines")
+        if not entry["claims"]:
+            raise AuditError(f"{source}: exception for {entry['manifest']} lists no claims")
+        for claim in entry["claims"]:
+            if set(claim) != {"container", "path", "sha256", "status"} or claim["status"] in PASS:
+                raise AuditError(f"{source}: {entry['manifest']}: each claim needs container, path, sha256 "
+                                 f"and the failing status it has, got {claim}")
+            key = (entry["manifest"], claim["container"], claim["path"], claim["sha256"])
+            if key in claims_index:
+                raise AuditError(f"{source}: claim listed twice: {key}")
+            claims_index[key] = (entry, claim["status"])
+    empty = {}
+    for entry in data.get("manifests_without_claims", []):
+        if set(entry) != {"manifest", "reason"} or entry["manifest"] in empty:
+            raise AuditError(f"{source}: manifests_without_claims entries need a unique manifest and a reason")
+        empty[entry["manifest"]] = entry["reason"]
+    values = {}
+    for entry in data.get("recorded_values", []):
+        if set(entry) != {"manifest", "keys", "reason"} or entry["manifest"] in values:
+            raise AuditError(f"{source}: recorded_values entries need a unique manifest, keys and a reason")
+        values[entry["manifest"]] = entry
+    return {"claims": claims_index, "empty": empty, "values": values}
 
 
 def reconstruct(data, crlf_lines=(), lf_lines=()):
@@ -326,8 +409,13 @@ def reconstruct(data, crlf_lines=(), lf_lines=()):
     return b"".join(line + (flip if n in chosen else default) for n, line in enumerate(body, 1)) + last
 
 
-def audit(snapshot, history, exceptions=()):
-    """Check every claim; return a report dict (see `summarize`)."""
+def audit(snapshot, history, exceptions=None):
+    """Check every claim; return a report dict (see `summarize`).
+
+    exceptions is a `policy` result, an exceptions document, or a bare list
+    of exception entries.
+    """
+    rules = exceptions if isinstance(exceptions, dict) and "empty" in exceptions else policy(exceptions or {})
     present = set(snapshot.paths)
     cache = {}
     everywhere = {}
@@ -341,18 +429,15 @@ def audit(snapshot, history, exceptions=()):
     def digest_of(path):
         return variants_of(path).get("raw")
 
-    def anywhere(digest):
+    def in_evidence(digest):
         if not everywhere:
             for path in snapshot.paths:
-                everywhere.setdefault(digest_of(path), path)
+                if path.startswith("evidence/"):
+                    everywhere.setdefault(digest_of(path), path)
         return everywhere.get(digest)
 
     folders = {posixpath.dirname(p) for p in present}
-    excepted = {}
-    for entry in exceptions:
-        for rel in entry["paths"]:
-            excepted[(entry["manifest"], rel)] = entry
-    used = {}
+    used = set()
     results = []
     manifests = sorted(p for p in present if is_manifest(p))
     for manifest in manifests:
@@ -365,19 +450,33 @@ def audit(snapshot, history, exceptions=()):
             continue
         found = list(claims(manifest, data))
         if not found:
-            results.append({"manifest": manifest, "status": "no_claims"})
+            # An emptied, truncated or reformatted claim file must not pass silently.
+            status = "no_claims_recorded" if manifest in rules["empty"] else "no_claims"
+            results.append({"manifest": manifest, "status": status})
             continue
+        left = unparsed_digests(data, found)
+        if left:
+            recorded = rules["values"].get(manifest)
+            row = {"manifest": manifest, "detail": left,
+                   "status": "recorded_values" if recorded and recorded["keys"] == left else "unparsed_digests"}
+            if recorded and recorded["keys"] != left:
+                row["recorded"] = recorded["keys"]
+            results.append(row)
         folder = [p for p in present if p.startswith(base + "/")]
         for claim in found:
             row = {"manifest": manifest, "container": claim.container, "kind": claim.kind,
                    "path": claim.path, "sha256": claim.sha256}
             if claim.kind == "unpathed":
-                hit = next((p for p in folder if digest_of(p) == claim.sha256), None)
-                status = "ok_digest_found"
-                if hit is None:
-                    hit = anywhere(claim.sha256)
-                    status = "ok_digest_elsewhere" if hit else "digest_not_found"
-                row.update(status=status, matched=hit)
+                if claim.sha256 == EMPTY_SHA256:
+                    # Every empty file has this digest, so finding one proves nothing.
+                    row["status"] = "vacuous_digest"
+                else:
+                    hit = next((p for p in folder if digest_of(p) == claim.sha256), None)
+                    status = "ok_digest_found"
+                    if hit is None:
+                        hit = in_evidence(claim.sha256)
+                        status = "ok_digest_elsewhere" if hit else "digest_not_found"
+                    row.update(status=status, matched=hit)
             elif claim.kind == "binding":
                 target = _resolve("", claim.path)
                 current = {} if target is None else {d: e for e, d in variants_of(target).items()}
@@ -394,18 +493,19 @@ def audit(snapshot, history, exceptions=()):
                 actual = None if target is None else digest_of(target)
                 row["status"] = ("unsafe_path" if target is None else "missing" if actual is None
                                  else "ok" if actual == claim.sha256 else "mismatch")
-            key = (manifest, claim.path)
-            if key not in excepted and (manifest, "*") in excepted:
-                key = (manifest, "*")
-            entry = excepted.get(key)
-            if entry and row["status"] not in PASS:
-                used[key] = used.get(key, 0) + 1
+            key = (manifest, claim.container, claim.path, claim.sha256)
+            if key in rules["claims"] and row["status"] not in PASS:
+                entry, expected = rules["claims"][key]
+                used.add(key)
                 row.update(exception=entry["kind"], reason=entry["reason"])
                 rebuild = entry.get("reconstruct")
-                if rebuild:
-                    data = history.blob(rebuild["blob"])
-                    rebuilt = None if data is None else reconstruct(
-                        data, rebuild.get("crlf_lines", ()), rebuild.get("lf_lines", ()))
+                if row["status"] != expected:
+                    # The failure changed (missing became mismatch, say): look at it again.
+                    row.update(status="exception_status_changed", detail=f"recorded {expected}, now {row['status']}")
+                elif rebuild:
+                    blob = history.blob(rebuild["blob"])
+                    rebuilt = None if blob is None else reconstruct(
+                        blob, rebuild.get("crlf_lines", ()), rebuild.get("lf_lines", ()))
                     ok = rebuilt is not None and hashlib.sha256(rebuilt).hexdigest() == claim.sha256
                     row.update(status="excepted" if ok else "exception_unproven",
                                proven_by=f"blob {rebuild['blob']} with line endings restored")
@@ -418,29 +518,47 @@ def audit(snapshot, history, exceptions=()):
                     else:
                         row["status"] = "exception_unproven"
             results.append(row)
-    for key, entry in sorted(excepted.items()):
-        if key not in used:
-            # A working copy's line endings depend on the checkout, so a mixed-
-            # ending file can pass there as stored; only committed bytes are fixed.
-            status = "stale_exception" if snapshot.rev else "unused_exception"
-            results.append({"manifest": key[0], "path": key[1], "status": status})
-        elif key[1] == "*" and used[key] != entry["expected_count"]:
-            results.append({"manifest": key[0], "path": "*", "status": "exception_count_changed",
-                            "detail": f"expected {entry['expected_count']} failing claims, found {used[key]}"})
-    return summarize(snapshot, manifests, results)
+    # A working copy's line endings depend on the checkout, so a mixed-ending
+    # file can pass there as stored; only committed bytes make an exception stale.
+    for key in sorted(set(rules["claims"]) - used):
+        results.append({"manifest": key[0], "container": key[1], "path": key[2], "sha256": key[3],
+                        "status": "stale_exception" if snapshot.rev else "unused_exception"})
+    noted = {r["manifest"] for r in results if r["status"] in ("no_claims_recorded", "recorded_values")
+             or r["status"] == "unparsed_digests" and "recorded" in r}
+    for manifest in sorted((set(rules["empty"]) | set(rules["values"])) - noted):
+        results.append({"manifest": manifest, "status": "stale_exception"})
+    return summarize(snapshot, manifests, results, outside_scope(snapshot, present))
 
 
-def summarize(snapshot, manifests, results):
-    counts = Counter(r["status"] for r in results if r["status"] not in ("no_claims",))
+def outside_scope(snapshot, present):
+    """Count the digests in evidence JSON that is not a claim file, by file name."""
+    files, digests = Counter(), Counter()
+    for path in sorted(present):
+        if path.startswith("evidence/") and path.endswith((".json", ".jsonl")) and not is_manifest(path):
+            found = len(HEX_WORD.findall(snapshot.read(path) or b""))
+            if found:
+                name = re.sub(r"\d+", "N", PurePosixPath(path).name)
+                files[name] += 1
+                digests[name] += found
+    return {"files": sum(files.values()), "digests": sum(digests.values()),
+            "by_name": {name: {"files": files[name], "digests": digests[name]}
+                        for name, _ in digests.most_common()}}
+
+
+def summarize(snapshot, manifests, results, scope=None):
+    counts = Counter(r["status"] for r in results)
     kinds = Counter(r["kind"] for r in results if "kind" in r)
-    failures = [r for r in results if r["status"] not in PASS | {"no_claims", "unused_exception"}]
-    return {"schema": 1, "revision": snapshot.rev, "manifests": len(manifests),
+    informational = {"no_claims_recorded", "recorded_values", "unused_exception"}
+    failures = [r for r in results if r["status"] not in PASS | informational]
+    return {"schema": 2, "revision": snapshot.rev, "manifests": len(manifests),
             "claims": sum(kinds.values()), "claims_by_kind": dict(sorted(kinds.items())),
             "status": dict(sorted(counts.items())),
             "bindings_by_line_ending": dict(sorted(Counter(
                 f"{r['status']}/{r['eol']}" for r in results if "eol" in r).items())),
-            "manifests_without_claims": sorted(r["manifest"] for r in results if r["status"] == "no_claims"),
+            "manifests_without_claims": sorted(r["manifest"] for r in results
+                                               if r["status"] in ("no_claims", "no_claims_recorded")),
             "exceptions": [r for r in results if r["status"] in ("excepted", "accepted_loss")],
+            "outside_scope": scope or {},
             "failures": failures, "passed": not failures}
 
 
@@ -448,11 +566,15 @@ def render(report, limit=40):
     lines = [f"revision: {report['revision'] or 'working tree'}",
              f"manifests: {report['manifests']}  claims: {report['claims']}  {report['claims_by_kind']}",
              f"status: {report['status']}"]
+    scope = report.get("outside_scope") or {}
+    if scope:
+        lines.append(f"not audited: {scope['digests']} digests in {scope['files']} run records "
+                     "(journals, state, results, caches, verification reports)")
     for row in report["exceptions"]:
         how = f"proven by {row['proven_by']}" if row["status"] == "excepted" else "bytes not recoverable"
         lines.append(f"{row['status']} ({row['exception']}): {row['manifest']} :: {row['path']}, {how}")
     for row in report["failures"][:limit]:
-        lines.append(f"FAIL {row['status']}: {row['manifest']} :: {row.get('path', row.get('detail', ''))}")
+        lines.append(f"FAIL {row['status']}: {row['manifest']} :: {row.get('path') or row.get('detail', '')}")
     if len(report["failures"]) > limit:
         lines.append(f"... {len(report['failures']) - limit} more failures")
     lines.append("PASS" if report["passed"] else f"FAILED: {len(report['failures'])} claims")
@@ -471,7 +593,7 @@ def main(argv=None):
     args = parser.parse_args(argv)
     try:
         snapshot = TreeSnapshot(args.root) if args.worktree else CommitSnapshot(args.root, args.rev)
-        history = History(args.root)
+        history = History(args.root, snapshot.rev or "HEAD")
         try:
             exceptions = (load_exceptions(args.exceptions) if args.exceptions
                           else load_exceptions(snapshot=snapshot))
