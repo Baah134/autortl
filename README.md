@@ -316,6 +316,16 @@ The role parsers accept the fence tags and verdict layouts different models
 write (`Verilog`, `v`, `py`, `Recommendation: ACCEPT`), and a planner-written
 spec that fails the structural check gets its errors back for a bounded repair.
 
+To run the roles on any OpenAI-compatible chat-completions API instead of the
+Codex CLI, set `AUTORTL_OPENAI_API_KEY` in the environment and pass
+`--model openai.<model>` (for example `--model openai.gpt-4o-mini`). The
+endpoint defaults to `https://api.openai.com/v1`; set
+`AUTORTL_OPENAI_BASE_URL` to use another provider or a local server such as
+Ollama (`http://localhost:11434/v1`) or vLLM (`http://localhost:8000/v1`).
+Local servers that ignore the key still need a placeholder value. The key is
+read only from the environment and is never written to run files or logs.
+`python run.py doctor` reports whether the key is set.
+
 Resume an interrupted experiment using its saved configuration:
 
 ```powershell
