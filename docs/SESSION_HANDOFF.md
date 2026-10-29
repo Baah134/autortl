@@ -50,6 +50,25 @@ Completed and verified this session:
   Build: 0 warnings, WNS +2.718 ns. Evidence: evidence/2026-10-28/basys3-fir4-01.
   No harness source was touched; it is a board-level replay of an existing result.
 - Campaign14 is left for Codex (user decision); see mailbox #3.
+- **Every harness winner on hardware** (`hardware/basys3/harness_winners`,
+  evidence/2026-10-28/basys3-harness-winners-01). One generic tested shell with
+  thin adapters runs all six archived winners, unedited and hash-checked
+  against run state: FIR, elastic dot4, pipelined dot4, divider, packet FIFO
+  and sync FIFO.
+  - Each design: sim of 1,200 transactions with a restart and coverage gates,
+    an injected fault that must fail, 0 build warnings, positive timing,
+    50,000 hardware transactions with 0 mismatches and 10 restarts, and a
+    wrong-model control that fails.
+  - Independent Python models are written from the frozen specs.
+  - Board builds reproduce the harness's resource measurements. The divider's
+    8-FF gap is standalone `opt_design` replicas
+    (evidence/2026-10-28/divider-ff-replica-analysis-01).
+  - Run: `python -m hwsuite all` from that folder. It needs the system Python,
+    which has pyserial; tests need pytest.
+- **CI** (`.github/workflows/tests.yml`): the full harness suite on Windows,
+  plus the mailbox and board-suite tests on Windows and Ubuntu. A clean
+  fresh-clone run of the harness suite passed 1,450 tests in 320 s with no
+  Vivado and no ignored directories.
 
 Deliberately untouched: every file in the frozen 230- and 201-file identity
 sets (autortl/, llm/, tests/, curriculum/, scripts/, data/, .claude/, run.py),

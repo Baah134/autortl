@@ -1,5 +1,7 @@
 # AutoRTL
 
+[![tests](https://github.com/Baah134/autortl/actions/workflows/tests.yml/badge.svg?branch=codex%2Fcontract-context)](https://github.com/Baah134/autortl/actions/workflows/tests.yml)
+
 **An agentic FPGA design loop where the model only proposes and verification decides.**
 
 AutoRTL writes and optimizes Verilog with LLM agents, driving AMD Vivado
@@ -19,9 +21,12 @@ acceptance gates.
   faults into the FIR. The generated testbenches caught only 18. Better
   stimulus raised that to 22 with no extra model calls, and the independent
   checker catches all 27.
-- **Runs on real hardware.** The harness-optimized FIR, unedited, runs on a
-  Digilent Basys 3. 100,000 outputs matched an independent Python model
-  exactly, and a deliberately wrong model was rejected.
+- **Every winner runs on real hardware.** All six designs the harness
+  produced run unedited on a Digilent Basys 3: the FIR, both dot products,
+  the divider and both FIFOs. Each passed 50,000 transactions against an
+  independent model with 0 mismatches, under randomized backpressure, and a
+  deliberately wrong model was rejected every time. The board builds reproduce
+  the harness's own resource measurements.
 - **Engineering discipline.** A 1,450-test regression suite, crash-safe
   resumable runs, fixed model-call and tool-time budgets, and an error
   taxonomy keyed to Vivado message IDs.
@@ -118,6 +123,30 @@ Evidence: [signed FIR](evidence/2026-10-26/generated-signed-fir4-attempt-01/READ
 
 ## Hardware validation on a Basys 3
 
+[`hardware/basys3/harness_winners`](hardware/basys3/harness_winners/README.md)
+runs every harness winner on the board through one generic, tested shell:
+
+| Design | On board vs model | Winner LUT / FF / DSP on board | Harness-measured |
+|---|---|---:|---:|
+| Signed FIR | 50,000/50,000 | 51 / 67 / 0 | 52 / 67 / 0 |
+| Elastic dot product | 50,000/50,000 | 20 / 20 / 4 | 20 / 20 / 4 |
+| Pipelined dot product | 50,000/50,000 | 17 / 18 / 4 | 17 / 18 / 4 |
+| Iterative divider | 50,000/50,000 | 26 / 30 / 0 | 26 / 38 / 0 |
+| Packet FIFO | 50,000/50,000 | 22 / 29 / 0 | 23 / 31 / 0 |
+| Sync FIFO | 50,000/50,000 | 21 / 13 / 0 | 22 / 13 / 0 |
+
+- **Independent models.** Each is checked against a Python model written from
+  the frozen specification, not from the harness's own oracle.
+- **Real backpressure.** An LFSR traffic shaper creates the valid/ready stress
+  that UART traffic alone never would. Coverage counters prove it happened,
+  and each design's injected fault must make its simulation fail.
+- **Explained differences.** The divider's 8-FF difference turned out to be
+  `opt_design` replicas that exist only when it is built standalone
+  ([analysis](evidence/2026-10-28/divider-ff-replica-analysis-01/README.md)).
+- **Traceable.** The board's bitstream payloads are tied by hash to the hardware
+  runs ([evidence](evidence/2026-10-28/basys3-harness-winners-01/README.md)).
+
+The FIR was first run on its own, with its own shell:
 [`hardware/basys3/fir4_on_board`](hardware/basys3/fir4_on_board/README.md)
 runs the harness's FIR winner, byte-identical to the verified file, behind a
 hand-written UART shell. The PC streams signed samples, starting with the
@@ -228,8 +257,14 @@ inputs and execution environment; see [recovery behavior](docs/RECOVERY.md).
 
 ## Development and evaluation
 
+Continuous integration
+([`.github/workflows/tests.yml`](.github/workflows/tests.yml)) runs the full
+harness suite on Windows. It also runs the mailbox and board-suite tests on
+Windows and Ubuntu. None of these need Vivado, a model login or a board.
+
 ```powershell
 python -m pytest tests/ -q
+python -m pytest coordination hardware/basys3/harness_winners/tests -q
 python run.py bench --tier 0 --iterations 1 --best-of-n 1 `
   --max-llm-calls 16 --max-vivado-minutes 20 --max-wall-minutes 30 `
   --output-dir runs/tier0 @vivadoArgs

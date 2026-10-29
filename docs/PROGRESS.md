@@ -1435,3 +1435,44 @@ corrected as an explicit doc-only delta after the frozen experiments.
   restarts passed. Evidence: evidence/2026-10-28/basys3-fir4-01.
 - README highlights now lead with the hardware result. No harness source,
   frozen identity or campaign file changed.
+
+## October28 - Claude Code: every harness winner verified on the Basys 3; CI
+
+- Built hardware/basys3/harness_winners, a generic tested board suite: a UART
+  stream shell, thin per-design adapters, independent Python models written
+  from the frozen specs (tested against every spec I/O example), a vector
+  generator, a generic self-checking testbench and a CLI
+  (verify/sim/build/program/hw/all/evidence). 63 Vivado-free tests, with
+  real Vivado report and log fixtures for every parser.
+- All six archived winners are read in place and hash-checked against run
+  state: FIR, elastic dot4, pipelined dot4 (credit/skid adapter), divider,
+  packet FIFO and sync FIFO.
+- Per design: 1,200-transaction sim with a restart passed, with backpressure
+  and overlap coverage gates (overlap is waived only for the divider, whose
+  contract forbids it); the injected fault failed; Vivado had 0 warnings and
+  setup slack from +0.965 to +4.909 ns; the board returned 50,000/50,000 with 0
+  mismatches and 10 restarts; the wrong-model control failed.
+- Problems the suite caught in itself, each fixed properly:
+  - A correlated LFSR shaper hid a sync-FIFO read-slot fault. The shaper now
+    draws from separated bits with longer stall phases, and coverage counters
+    were added.
+  - A zero-warning gate caught an unused one-byte assembler register and the
+    packet adapter's unused marker bits.
+  - A locked .Xil directory got a classified single infra retry, with the
+    real log kept as a fixture.
+  - Vivado's hierarchical table omitted kept instances, so the build now uses
+    report_utilization -cells on u_dut/u_winner.
+  - The evidence command is now atomic.
+- Board vs harness resources: both dot4s are exact; the FIR and FIFOs are
+  within 1-2 cells; the divider has 30 vs 38 FFs. A standalone rebuild with
+  the harness flow reproduced 38: 30 logical plus 8 quotient
+  `_lopt_replica` cells from opt_design Sweep, present only because the
+  standalone top drives output ports
+  (evidence/2026-10-28/divider-ff-replica-analysis-01).
+- Bitstream traceability: a rebuild that added the winner report produced
+  identical configuration payloads for all six (only the header time
+  differs). hw reports now record the payload SHA-256, and evidence requires
+  the archived payload to equal the tested one.
+- Added .github/workflows/tests.yml. A fresh-clone harness suite run passed
+  1,450 in 320 s without Vivado or ignored directories.
+- No frozen harness source changed; campaign14 is still Codex's.
