@@ -1,0 +1,104 @@
+{
+  "fir4": {
+    "title": "Signed stateful FIR filter",
+    "overlap": true,
+    "module": "signed_fir4",
+    "winner": "evidence/2026-10-26/generated-signed-fir4-attempt-01/run/signed_fir4_best.v",
+    "sha256": "55e3c7d068fe65961dbbda2f7b5e40deb4b28692b1f1d45ef5689e2437b4ba62",
+    "state": "evidence/2026-10-26/generated-signed-fir4-attempt-01/run/state.json",
+    "adapter": "adapters/fir4.v",
+    "in_bytes": 1,
+    "out_bytes": 2,
+    "fault": {
+      "name": "tap2_coefficient_7_to_6",
+      "find": "wire signed [15:0] history2_times7 = (history2_wide <<< 3) - history2_wide;",
+      "replace": "wire signed [15:0] history2_times7 = (history2_wide <<< 2) + (history2_wide <<< 1);",
+      "occurrence": 1
+    }
+  },
+  "elastic_dot4": {
+    "title": "Elastic unsigned dot product",
+    "overlap": true,
+    "module": "elastic_dot4",
+    "winner": "evidence/2026-10-25/generated-elastic-dot4-attempt-02/run/elastic_dot4_best.v",
+    "sha256": "e4ba09b4ef6906eeef0887e71d3d52fc22a6fbe8627feb03ee2b81f80ca48695",
+    "state": "evidence/2026-10-25/generated-elastic-dot4-attempt-02/run/state.json",
+    "adapter": "adapters/elastic_dot4.v",
+    "in_bytes": 8,
+    "out_bytes": 3,
+    "fault": {
+      "name": "pair23_uses_prod2_twice",
+      "find": "wire [16:0] sum23 = {1'b0, prod2} + {1'b0, prod3};",
+      "replace": "wire [16:0] sum23 = {1'b0, prod2} + {1'b0, prod2};",
+      "occurrence": 1
+    }
+  },
+  "dot4_pipeline": {
+    "title": "Pipelined unsigned dot product (fixed latency)",
+    "overlap": true,
+    "module": "dot4_pipeline",
+    "winner": "evidence/2026-10-24/generated-dot4-attempt-01/build-dot4-01/dot4_pipeline_best.v",
+    "sha256": "36c93985c165eeb439cb5b347de97a0423e9328b245e0831d6f2ebfec666c2a0",
+    "state": "evidence/2026-10-24/generated-dot4-attempt-01/build-dot4-01/state.json",
+    "adapter": "adapters/dot4_pipeline.v",
+    "in_bytes": 8,
+    "out_bytes": 3,
+    "fault": {
+      "name": "pair23_uses_product2_twice",
+      "find": "wire [16:0] sum23 = {1'b0, product2} + {1'b0, product3};",
+      "replace": "wire [16:0] sum23 = {1'b0, product2} + {1'b0, product2};",
+      "occurrence": 1
+    }
+  },
+  "iterative_divider": {
+    "title": "Iterative unsigned divider",
+    "overlap": false,
+    "module": "iterative_divider",
+    "winner": "evidence/2026-10-23/generated-divider-attempt-01/build-golden-divider-01/iterative_divider_best.v",
+    "sha256": "e7a27c9172263d3fa4a8cec5594732f1516d193473feee183766215fdfdf26e8",
+    "state": "evidence/2026-10-23/generated-divider-attempt-01/build-golden-divider-01/state.json",
+    "adapter": "adapters/iterative_divider.v",
+    "in_bytes": 2,
+    "out_bytes": 2,
+    "fault": {
+      "name": "quotient_bit_inverted",
+      "find": "~subtract_result[9]",
+      "replace": "subtract_result[9]",
+      "occurrence": 1
+    }
+  },
+  "packet_fifo": {
+    "title": "Packet-tagged FIFO",
+    "overlap": true,
+    "module": "packet_fifo",
+    "winner": "evidence/2026-10-22/generated-packet-attempt-01/build-golden-packet-01/packet_fifo_best.v",
+    "sha256": "71494bdf78de3debe68e810430d3caf5dfbc6e7b6bdcf6ba975299071e1be4ba",
+    "state": "evidence/2026-10-22/generated-packet-attempt-01/build-golden-packet-01/state.json",
+    "adapter": "adapters/packet_fifo.v",
+    "in_bytes": 2,
+    "out_bytes": 2,
+    "fault": {
+      "name": "last_flag_from_data_bit0",
+      "find": "assign out_last = entry0[8];",
+      "replace": "assign out_last = entry0[0];",
+      "occurrence": 1
+    }
+  },
+  "sync_fifo": {
+    "title": "Synchronous FIFO (timing-recovered)",
+    "overlap": true,
+    "module": "sync_fifo",
+    "winner": "evidence/2026-10-22/generated-fifo-attempt-05/build-golden-fifo-05/sync_fifo_best.v",
+    "sha256": "f067fa0214ab598c923fcb2bf9fd43b60540c743844ca629e52abb559b64c9c6",
+    "state": "evidence/2026-10-22/generated-fifo-attempt-05/build-golden-fifo-05/state.json",
+    "adapter": "adapters/sync_fifo.v",
+    "in_bytes": 1,
+    "out_bytes": 1,
+    "fault": {
+      "name": "simultaneous_push_pop_reads_write_slot",
+      "find": "head <= tail_mem[tail_rd_ptr];",
+      "replace": "head <= tail_mem[tail_wr_ptr];",
+      "occurrence": 2
+    }
+  }
+}

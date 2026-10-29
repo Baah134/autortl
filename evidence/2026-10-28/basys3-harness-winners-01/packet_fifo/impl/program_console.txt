@@ -1,0 +1,60 @@
+
+****** Vivado v2025.2 (64-bit)
+  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025
+  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025
+  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025
+  **** Start of session at: Wed Oct 28 19:43:17 2026
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+
+source C:/Users/prince.baah/Downloads/autortl-work/hardware/basys3/harness_winners/scripts/program.tcl
+# if {[llength $argv] != 1} {
+#     error "usage: program.tcl <bitstream.bit>"
+# }
+# set bit [file normalize [lindex $argv 0]]
+# if {![file isfile $bit]} {
+#     error "bitstream not found: $bit"
+# }
+# open_hw_manager
+open_hw_manager: Time (s): cpu = 00:00:10 ; elapsed = 00:00:07 . Memory (MB): peak = 529.488 ; gain = 223.590
+# connect_hw_server
+INFO: [Labtools 27-2285] Connecting to hw_server url TCP:localhost:3121
+INFO: [Labtools 27-2222] Launching hw_server...
+INFO: [Labtools 27-2221] Launch Output:
+
+****** Xilinx hw_server v2025.2
+  **** Build date : Oct 28 2025 at 10:03:13
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+
+
+INFO: [Labtools 27-3415] Connecting to cs_server url TCP:localhost:0
+INFO: [Labtools 27-3417] Launching cs_server...
+INFO: [Labtools 27-2221] Launch Output:
+
+
+******** Xilinx cs_server v2025.2.0
+  ****** Build date   : Nov 13 2025-18:16:52
+    **** Build number : 2025.2.1763075812
+      ** Copyright 2017-2022 Xilinx, Inc. All Rights Reserved.
+      ** Copyright 2022-2026 Advanced Micro Devices, Inc. All Rights Reserved.
+
+
+
+connect_hw_server: Time (s): cpu = 00:00:00 ; elapsed = 00:00:07 . Memory (MB): peak = 534.453 ; gain = 4.965
+# open_hw_target
+INFO: [Labtoolstcl 44-466] Opening hw_target localhost:3121/xilinx_tcf/Digilent/210183B31D15A
+# set dev [lindex [get_hw_devices xc7a35t*] 0]
+# if {$dev eq ""} {
+#     error "No xc7a35t device found. Is the board connected and powered on?"
+# }
+# current_hw_device $dev
+# set_property PROGRAM.FILE $bit $dev
+# program_hw_devices $dev
+INFO: [Labtools 27-3164] End of startup status: HIGH
+# puts "RESULT: programmed $dev with $bit"
+RESULT: programmed xc7a35t_0 with C:/Users/prince.baah/Downloads/autortl-work/hardware/basys3/harness_winners/build/packet_fifo/impl/stream_shell.bit
+# close_hw_target
+INFO: [Labtoolstcl 44-464] Closing hw_target localhost:3121/xilinx_tcf/Digilent/210183B31D15A
+# disconnect_hw_server
+# close_hw_manager
+INFO: [Common 17-206] Exiting Vivado at Wed Oct 28 19:43:35 2026...
