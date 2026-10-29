@@ -34,12 +34,20 @@ board. Every number links to an archived run.
   An audit injected 27 faults into the FIR: generated testbenches first caught
   18, improved stimulus raised that to 22, and the independent checker caught
   all 27.
-- **Reproducible by construction.** 1,516 regression tests, crash-safe
-  resumable runs, fixed model-call and tool-time budgets, and a CI audit that
-  checks over 34,000 recorded SHA-256 claims against the committed bytes.
-  Curriculum tier 0 is held: three consecutive fresh runs on the same frozen
-  harness passed every gate
+- **Bring your own model.** Every role can run on the Codex CLI, any
+  OpenAI-compatible API (OpenAI, Ollama, vLLM and others), or any AI command
+  line you name in a local config file. The same tier0 bench passed on four
+  different models; the comparison also exposed a verdict-format bug that had
+  silently discarded verified gains from two of them, now fixed
+  ([model matrix](evidence/2026-10-29/model-matrix-01/README.md)).
+- **Reproducible by construction.** 1,689 regression tests, crash-safe
+  resumable runs, fixed model-call and tool-time budgets, per-run token
+  accounting, and a CI audit that checks over 34,000 recorded SHA-256 claims
+  against the committed bytes. Curriculum tier 0 is held: three consecutive
+  fresh runs on the same frozen harness passed every gate
   ([campaign 17](evidence/2026-10-29/contract-campaign-17/README.md)).
+  `python run.py doctor` checks a new machine, and `python scripts/demo.py`
+  walks through a full run in seconds with no model or Vivado.
 
 ## How it works
 
@@ -249,13 +257,15 @@ Every new failure mode gets an entry in the error taxonomy
 These are bounded experiments on small designs. They are not formal
 equivalence proofs or board-level timing sign-off, and they do not show that
 the harness beats a skilled engineer or Vivado's own optimizations. Only
-tier 0 (two small designs) of the curriculum is held. Model calls go through
-the Codex CLI.
+tier 0 (two small designs) of the curriculum is held. The archived results
+used the Codex CLI; the other backends are tested against local fakes, and
+only Codex-served models have been benched so far.
 
 ## Quick start
 
-Requirements: Python 3.12, Vivado with the target device installed, and an
-authenticated Codex CLI for model-driven runs. Roles are routed through
+Requirements: Python 3.12, Vivado with the target device installed, and, for
+model-driven runs, an authenticated Codex CLI or any other model endpoint
+(see Bring your own model below). Roles are routed through
 [`llm/routing.yaml`](llm/routing.yaml).
 
 ```powershell
