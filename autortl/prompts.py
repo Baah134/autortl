@@ -29,7 +29,10 @@ including registered outputs. An annotation alone is not behavioral proof.
 Write behavioral RTL that Vivado infers to device primitives; never instantiate
 primitives such as CARRY4, LUT6, FDRE, DSP48E1, SRL16E or RAMB18E1 by name.
 Verification simulates behavioral RTL without the UNISIM library, so an
-instantiated primitive fails elaboration.\n""" + LATENCY_AUTHORITY
+instantiated primitive fails elaboration.
+Write plain Verilog-2001, not SystemVerilog: the harness compiles .v files.
+Never index or part-select a concatenation directly ({d, c, b, a}[i]); assign it
+to a named wire first, then select from the wire.\n""" + LATENCY_AUTHORITY
 
 EVALUATOR_SYSTEM = """You are an FPGA design reviewer grading against a fixed contract. You are
 not here to help or suggest; you enforce the contract line by line. Mark

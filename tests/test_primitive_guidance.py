@@ -20,3 +20,11 @@ def test_missing_module_message_names_the_primitive_cause():
     hint = taxonomy.repair_instruction("VRFC 10-2063")
     assert "primitive" in hint and "UNISIM" in hint
     assert "VRFC" in taxonomy.repair_instruction("XSIM 43-3322")
+
+
+def test_generator_is_told_the_language_and_the_concatenation_rule():
+    # generator_selects_from_concatenation (contract-campaign-20 mux4)
+    assert "Verilog-2001" in prompts.GENERATOR_SYSTEM and "concatenation" in prompts.GENERATOR_SYSTEM
+    taxonomy = Taxonomy(ROOT / "data" / "taxonomy.yaml")
+    assert "concatenation" in taxonomy.repair_instruction("VRFC 10-4982")
+    assert "earlier" in taxonomy.repair_instruction("VRFC 10-8530")
