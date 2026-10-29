@@ -18,6 +18,14 @@ messages:
     meaning: "A generated module omitted a timescale while another simulation module declared one"
     repair: "Give generated RTL a default 1ns/1ps timescale before verification; preserve explicit declarations"
     severity_override: null
+  "VRFC 10-2063":
+    meaning: "Elaboration found an instance of a module that is not defined in the compiled sources"
+    repair: "If the missing module is a Xilinx primitive (CARRY4, LUT6, FDRE, DSP48E1, SRL16E, RAMB18E1 and the like), replace the instance with behavioral RTL that Vivado infers to that primitive; the verification flow simulates behavioral RTL without the UNISIM library. Otherwise define the module or fix the instance name"
+    severity_override: null
+  "XSIM 43-3322":
+    meaning: "Static elaboration of the top design failed; the true cause is the preceding VRFC message"
+    repair: "Repair the VRFC message reported before this one; this ID is only a wrapper"
+    severity_override: null
   "Common 17-53":
     meaning: "Harness queried design objects before opening a design during constraint-file generation"
     repair: "For No open design errors, fix Tcl execution order; preserve get_ports literally when writing XDC and do not mutate RTL"
@@ -99,6 +107,9 @@ harness_failures:
   io_dominated_timing_metric:
     meaning: "With I/O buffers and zero external delay, every harness-flow critical path of the six winners ends at an OBUF (101-107.5 MHz) while their logic closes at 181.8-425.5 MHz out of context, so candidate timing comparisons mostly measured pad delay (fmax-characterization-01; the 31-LUT counter: WNS +0.126 ns, worst register-to-register path +1.460 ns)"
     repair: "Keep acceptance on the full I/O-constrained WNS/WHS; also report register-to-register setup slack from the same routed design (guarded, since report_timing errors with no registers, Vivado 12-4739) as an advisory metric shown to the planner and evaluator"
+  generator_instantiates_unsimulated_primitive:
+    meaning: "An optimization candidate hand-instantiated a Xilinx CARRY4 primitive; the harness simulates behavioral RTL without the UNISIM library, so elaboration failed (VRFC 10-2063) with no taxonomy hint and a repair call was spent (tier1-campaign-02 pwm, iteration 5)"
+    repair: "Tell the generator and timing doctor to infer device primitives from behavioral RTL rather than instantiate them, and give VRFC 10-2063 and its XSIM 43-3322 wrapper taxonomy entries so a repair names the cause"
   infra_blocked_entry_enters_history:
     meaning: "A bench entry that ended infrastructure-blocked (failure_kind infra) was recorded as a failed entry, so a host problem entered the curriculum history, lowered the pass rate and reset the streak (tier1-campaign-02 debouncer_build: the laptop entered Modern Standby, Reason Lid, 11:26-14:21, and the integration xelab/xvlog timed out)"
     repair: "A campaign with any infrastructure-blocked entry gets no verdict: keep its record in the campaign summary.json, write nothing to the history, exit 3; resume or rerun it on a host that stays awake"
