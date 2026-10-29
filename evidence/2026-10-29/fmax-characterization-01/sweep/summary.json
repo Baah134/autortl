@@ -1,0 +1,175 @@
+{
+  "dot4_pipeline": {
+    "harness": {
+      "fmax_mhz": 107.5,
+      "best_period_ns": 9.3,
+      "wns_at_100mhz_ns": 0.354,
+      "attempts": 4,
+      "critical_path_at_fmax": {
+        "source": "dot_result_reg_reg[17]/C",
+        "destination": "dot_result[17]",
+        "logic_levels": 1,
+        "cells": "OBUF=1",
+        "through_pad": true,
+        "path_type": "register_to_output"
+      }
+    },
+    "ooc": {
+      "fmax_mhz": 392.2,
+      "best_period_ns": 2.55,
+      "wns_at_100mhz_ns": 7.267,
+      "attempts": 4,
+      "critical_path_at_fmax": {
+        "source": "pair01_sum_reg_reg/CLK",
+        "destination": "dot_result_reg_reg[16]/D",
+        "logic_levels": 6,
+        "cells": "CARRY4=5 LUT2=1",
+        "through_pad": false,
+        "path_type": "register_to_register"
+      }
+    }
+  },
+  "elastic_dot4": {
+    "harness": {
+      "fmax_mhz": 101.5,
+      "best_period_ns": 9.85,
+      "wns_at_100mhz_ns": 0.155,
+      "attempts": 3,
+      "critical_path_at_fmax": {
+        "source": "v2_reg/C",
+        "destination": "in_ready",
+        "logic_levels": 2,
+        "cells": "LUT3=1 OBUF=1",
+        "through_pad": true,
+        "path_type": "register_to_output"
+      }
+    },
+    "ooc": {
+      "fmax_mhz": 384.6,
+      "best_period_ns": 2.6,
+      "wns_at_100mhz_ns": 7.12,
+      "attempts": 4,
+      "critical_path_at_fmax": {
+        "source": "p01_reg/CLK",
+        "destination": "result_reg[16]/D",
+        "logic_levels": 6,
+        "cells": "CARRY4=5 LUT2=1",
+        "through_pad": false,
+        "path_type": "register_to_register"
+      }
+    }
+  },
+  "fir4": {
+    "harness": {
+      "fmax_mhz": 103.1,
+      "best_period_ns": 9.7,
+      "wns_at_100mhz_ns": 0.169,
+      "attempts": 5,
+      "critical_path_at_fmax": {
+        "source": "full_reg/C",
+        "destination": "in_ready",
+        "logic_levels": 2,
+        "cells": "LUT2=1 OBUF=1",
+        "through_pad": true,
+        "path_type": "register_to_output"
+      }
+    },
+    "ooc": {
+      "fmax_mhz": 181.8,
+      "best_period_ns": 5.5,
+      "wns_at_100mhz_ns": 3.764,
+      "attempts": 7,
+      "critical_path_at_fmax": {
+        "source": "history3_reg[4]/C",
+        "destination": "data1_reg[12]/D",
+        "logic_levels": 6,
+        "cells": "CARRY4=4 LUT3=1 LUT4=1",
+        "through_pad": false,
+        "path_type": "register_to_register"
+      }
+    }
+  },
+  "iterative_divider": {
+    "harness": {
+      "fmax_mhz": 103.1,
+      "best_period_ns": 9.7,
+      "wns_at_100mhz_ns": 0.315,
+      "attempts": 3,
+      "critical_path_at_fmax": {
+        "source": "busy_reg/C",
+        "destination": "in_ready",
+        "logic_levels": 2,
+        "cells": "LUT2=1 OBUF=1",
+        "through_pad": true,
+        "path_type": "register_to_output"
+      }
+    },
+    "ooc": {
+      "fmax_mhz": 322.6,
+      "best_period_ns": 3.1,
+      "wns_at_100mhz_ns": 6.073,
+      "attempts": 6,
+      "critical_path_at_fmax": {
+        "source": "quotient_work_reg[7]/C",
+        "destination": "remainder_work_reg[2]/D",
+        "logic_levels": 5,
+        "cells": "CARRY4=3 LUT2=1 LUT3=1",
+        "through_pad": false,
+        "path_type": "register_to_register"
+      }
+    }
+  },
+  "packet_fifo": {
+    "harness": {
+      "fmax_mhz": null,
+      "best_period_ns": null,
+      "wns_at_100mhz_ns": -0.172,
+      "attempts": 1,
+      "critical_path_at_fmax": null
+    },
+    "ooc": {
+      "fmax_mhz": 425.5,
+      "best_period_ns": 2.35,
+      "wns_at_100mhz_ns": 7.005,
+      "attempts": 5,
+      "critical_path_at_fmax": {
+        "source": "occupancy_reg[0]/C",
+        "destination": "entry0_reg[1]/CE",
+        "logic_levels": 1,
+        "cells": "LUT5=1",
+        "through_pad": false,
+        "path_type": "register_to_register"
+      }
+    }
+  },
+  "sync_fifo": {
+    "harness": {
+      "fmax_mhz": 101.0,
+      "best_period_ns": 9.9,
+      "wns_at_100mhz_ns": 0.108,
+      "attempts": 3,
+      "critical_path_at_fmax": {
+        "source": "occupancy_reg[1]/C",
+        "destination": "in_ready",
+        "logic_levels": 2,
+        "cells": "LUT3=1 OBUF=1",
+        "through_pad": true,
+        "path_type": "register_to_output"
+      }
+    },
+    "ooc": {
+      "fmax_mhz": 384.6,
+      "best_period_ns": 2.6,
+      "wns_at_100mhz_ns": 6.989,
+      "attempts": 6,
+      "critical_path_at_fmax": {
+        "source": "tail_rd_ptr_reg/C",
+        "destination": "head_reg[6]/D",
+        "logic_levels": 2,
+        "cells": "LUT6=1 RAMD32=1",
+        "through_pad": false,
+        "path_type": "register_to_register"
+      }
+    }
+  }
+}

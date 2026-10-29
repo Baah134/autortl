@@ -759,3 +759,8 @@ None is fixed yet. Harness source is unchanged.
    context (hardware/basys3/fmax). Timing comparisons between candidates
    therefore mostly measure pad and clock-tree delay. Decide whether that
    is the intended objective.
+   Measured for all six winners (evidence/2026-10-29/fmax-characterization-01).
+   Every harness-flow critical path ends at an OBUF, at 101–107.5 MHz.
+   Out of context they reach 181.8–425.5 MHz. Options: give the flow
+   realistic I/O delays, or report out-of-context register-to-register
+   timing alongside it.

@@ -1,0 +1,63 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025
+| Date         : Thu Oct 29 02:40:28 2026
+| Host         : Baah running 64-bit major release  (build 9200)
+| Command      : report_timing -max_paths 1 -nworst 1 -path_type full -file C:/Users/prince.baah/AppData/Local/Temp/claude/C--Users-prince-baah-Downloads-autortl-work/55d6b518-5dad-43c2-b889-516d22ebd733/scratchpad/fmax_run/dot4_pipeline/harness/p9.250/critical_path.rpt
+| Design       : dot4_pipeline
+| Device       : 7a35t-cpg236
+| Speed File   : -1  PRODUCTION 1.23 2018-06-13
+| Design State : Routed
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Timing Report
+
+Slack (VIOLATED) :        -0.038ns  (required time - arrival time)
+  Source:                 dot_result_reg_reg[17]/C
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@4.625ns period=9.250ns})
+  Destination:            dot_result[17]
+                            (output port clocked by clk  {rise@0.000ns fall@4.625ns period=9.250ns})
+  Path Group:             clk
+  Path Type:              Max at Slow Process Corner
+  Requirement:            9.250ns  (clk rise@9.250ns - clk rise@0.000ns)
+  Data Path Delay:        4.608ns  (logic 3.079ns (66.809%)  route 1.530ns (33.191%))
+  Logic Levels:           1  (OBUF=1)
+  Output Delay:           0.000ns
+  Clock Path Skew:        -4.644ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    0.000ns = ( 9.250 - 9.250 ) 
+    Source Clock Delay      (SCD):    4.644ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                         propagated clock network latency
+                                                      4.644     4.644    
+    SLICE_X1Y43          FDRE                         0.000     4.644 r  dot_result_reg_reg[17]/C
+    SLICE_X1Y43          FDRE (Prop_fdre_C_Q)         0.456     5.100 r  dot_result_reg_reg[17]/Q
+                         net (fo=1, routed)           1.530     6.629    dot_result_OBUF[17]
+    E19                  OBUF (Prop_obuf_I_O)         2.623     9.252 r  dot_result_OBUF[17]_inst/O
+                         net (fo=0)                   0.000     9.252    dot_result[17]
+    E19                                                               r  dot_result[17] (OUT)
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        9.250     9.250 r  
+                         propagated clock network latency
+                                                      0.000     9.250    
+                         clock pessimism              0.000     9.250    
+                         clock uncertainty           -0.035     9.215    
+                         output delay                -0.000     9.215    
+  -------------------------------------------------------------------
+                         required time                          9.215    
+                         arrival time                          -9.252    
+  -------------------------------------------------------------------
+                         slack                                 -0.038    
+
+
+
+

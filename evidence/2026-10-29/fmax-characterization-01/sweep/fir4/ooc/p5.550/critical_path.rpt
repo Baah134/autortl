@@ -1,0 +1,80 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025
+| Date         : Thu Oct 29 01:15:55 2026
+| Host         : Baah running 64-bit major release  (build 9200)
+| Command      : report_timing -max_paths 1 -nworst 1 -path_type full -file C:/Users/prince.baah/AppData/Local/Temp/claude/C--Users-prince-baah-Downloads-autortl-work/55d6b518-5dad-43c2-b889-516d22ebd733/scratchpad/fmax_run/fir4/ooc/p5.550/critical_path.rpt
+| Design       : signed_fir4
+| Device       : 7a35t-cpg236
+| Speed File   : -1  PRODUCTION 1.23 2018-06-13
+| Design State : Routed
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Timing Report
+
+Slack (MET) :             0.020ns  (required time - arrival time)
+  Source:                 history2_reg[1]/C
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.775ns period=5.550ns})
+  Destination:            data1_reg[12]/D
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@2.775ns period=5.550ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            5.550ns  (clk rise@5.550ns - clk rise@0.000ns)
+  Data Path Delay:        5.518ns  (logic 2.978ns (53.969%)  route 2.540ns (46.031%))
+  Logic Levels:           8  (CARRY4=4 LUT2=1 LUT3=1 LUT4=1 LUT6=1)
+  Clock Path Skew:        -0.039ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    1.493ns = ( 7.043 - 5.550 ) 
+    Source Clock Delay      (SCD):    1.612ns
+    Clock Pessimism Removal (CPR):    0.080ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                         propagated clock network latency
+                                                      1.612     1.612    
+    SLICE_X7Y67          FDRE                         0.000     1.612 r  history2_reg[1]/C
+    SLICE_X7Y67          FDRE (Prop_fdre_C_Q)         0.456     2.068 r  history2_reg[1]/Q
+                         net (fo=6, routed)           0.814     2.882    history2[1]
+    SLICE_X4Y67          LUT3 (Prop_lut3_I1_O)        0.152     3.034 r  data1[11]_i_23/O
+                         net (fo=2, routed)           0.484     3.517    data1[11]_i_23_n_0
+    SLICE_X4Y67          LUT4 (Prop_lut4_I3_O)        0.326     3.843 r  data1[11]_i_27/O
+                         net (fo=1, routed)           0.000     3.843    data1[11]_i_27_n_0
+    SLICE_X4Y67          CARRY4 (Prop_carry4_S[1]_O[3])
+                                                      0.640     4.483 r  data1_reg[11]_i_11/O[3]
+                         net (fo=6, routed)           0.830     5.313    data1_reg[11]_i_11_n_4
+    SLICE_X3Y69          LUT2 (Prop_lut2_I0_O)        0.334     5.647 r  data1[7]_i_12/O
+                         net (fo=1, routed)           0.413     6.060    data1[7]_i_12_n_0
+    SLICE_X0Y69          LUT6 (Prop_lut6_I0_O)        0.332     6.392 r  data1[7]_i_6/O
+                         net (fo=1, routed)           0.000     6.392    data1[7]_i_6_n_0
+    SLICE_X0Y69          CARRY4 (Prop_carry4_S[3]_CO[3])
+                                                      0.401     6.793 r  data1_reg[7]_i_1/CO[3]
+                         net (fo=1, routed)           0.000     6.793    data1_reg[7]_i_1_n_0
+    SLICE_X0Y70          CARRY4 (Prop_carry4_CI_CO[3])
+                                                      0.114     6.907 r  data1_reg[11]_i_1/CO[3]
+                         net (fo=1, routed)           0.000     6.907    data1_reg[11]_i_1_n_0
+    SLICE_X0Y71          CARRY4 (Prop_carry4_CI_O[0])
+                                                      0.223     7.130 r  data1_reg[12]_i_2/O[0]
+                         net (fo=1, routed)           0.000     7.130    fir_value[12]
+    SLICE_X0Y71          FDRE                                         r  data1_reg[12]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        5.550     5.550 r  
+                         propagated clock network latency
+                                                      1.493     7.043    
+                         clock pessimism              0.080     7.123    
+                         clock uncertainty           -0.035     7.088    
+    SLICE_X0Y71          FDRE (Setup_fdre_C_D)        0.062     7.150    data1_reg[12]
+  -------------------------------------------------------------------
+                         required time                          7.150    
+                         arrival time                          -7.130    
+  -------------------------------------------------------------------
+                         slack                                  0.020    
+
+
+
+

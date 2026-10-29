@@ -36,8 +36,20 @@ python hardware/basys3/fmax/fmax.py summarize <dir>
 python -m pytest hardware/basys3/fmax/tests -q        # no Vivado needed
 ```
 
-The full sweep of all six winners is in progress. So far, the signed FIR's
-logic closes at **181.8 MHz out of context**, while its harness-flow slack
-at 100 MHz is only +0.169 ns, set by an output pad. Results and every
-attempt's reports will be archived in
-`evidence/2026-10-29/fmax-characterization-01` when the sweep finishes.
+## Results
+
+| Design | Harness flow | Out of context |
+|---|---:|---:|
+| Pipelined dot product | 107.5 MHz | 392.2 MHz |
+| Elastic dot product | 101.5 MHz | 384.6 MHz |
+| Signed FIR | 103.1 MHz | 181.8 MHz |
+| Iterative divider | 103.1 MHz | 322.6 MHz |
+| Packet FIFO | misses 100 MHz by 0.172 ns without the timing doctor's options | 425.5 MHz |
+| Sync FIFO | 101.0 MHz | 384.6 MHz |
+
+In the harness flow, every critical path ends at an output pad, so all six
+top out near 100 MHz, while their logic runs 1.8 to 3.8 times faster. The
+reproduction matches the harness's recorded slack exactly for five
+winners. It matches for the packet FIFO too, once the timing doctor's
+`-retiming` and `phys_opt_design` are applied.
+[Full results and every attempt](../../../evidence/2026-10-29/fmax-characterization-01/README.md).

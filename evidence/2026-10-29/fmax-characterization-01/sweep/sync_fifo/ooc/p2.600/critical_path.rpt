@@ -1,0 +1,65 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025
+| Date         : Thu Oct 29 03:07:44 2026
+| Host         : Baah running 64-bit major release  (build 9200)
+| Command      : report_timing -max_paths 1 -nworst 1 -path_type full -file C:/Users/prince.baah/AppData/Local/Temp/claude/C--Users-prince-baah-Downloads-autortl-work/55d6b518-5dad-43c2-b889-516d22ebd733/scratchpad/fmax_run/sync_fifo/ooc/p2.600/critical_path.rpt
+| Design       : sync_fifo
+| Device       : 7a35t-cpg236
+| Speed File   : -1  PRODUCTION 1.23 2018-06-13
+| Design State : Routed
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Timing Report
+
+Slack (MET) :             0.089ns  (required time - arrival time)
+  Source:                 tail_rd_ptr_reg/C
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@1.300ns period=2.600ns})
+  Destination:            head_reg[6]/D
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@1.300ns period=2.600ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            2.600ns  (clk rise@2.600ns - clk rise@0.000ns)
+  Data Path Delay:        2.481ns  (logic 0.704ns (28.372%)  route 1.777ns (71.628%))
+  Logic Levels:           2  (LUT6=1 RAMD32=1)
+  Clock Path Skew:        -0.025ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    1.511ns = ( 4.111 - 2.600 ) 
+    Source Clock Delay      (SCD):    1.629ns
+    Clock Pessimism Removal (CPR):    0.093ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                         propagated clock network latency
+                                                      1.629     1.629    
+    SLICE_X1Y18          FDRE                         0.000     1.629 r  tail_rd_ptr_reg/C
+    SLICE_X1Y18          FDRE (Prop_fdre_C_Q)         0.456     2.085 r  tail_rd_ptr_reg/Q
+                         net (fo=9, routed)           1.121     3.206    tail_mem_reg_0_1_6_7/DPRA0
+    SLICE_X2Y20          RAMD32 (Prop_ramd32_RADR0_O)
+                                                      0.124     3.330 r  tail_mem_reg_0_1_6_7/DP/O
+                         net (fo=1, routed)           0.656     3.986    head0[6]
+    SLICE_X3Y20          LUT6 (Prop_lut6_I5_O)        0.124     4.110 r  head[6]_i_1/O
+                         net (fo=1, routed)           0.000     4.110    head[6]_i_1_n_0
+    SLICE_X3Y20          FDRE                                         r  head_reg[6]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        2.600     2.600 r  
+                         propagated clock network latency
+                                                      1.511     4.111    
+                         clock pessimism              0.093     4.204    
+                         clock uncertainty           -0.035     4.169    
+    SLICE_X3Y20          FDRE (Setup_fdre_C_D)        0.031     4.200    head_reg[6]
+  -------------------------------------------------------------------
+                         required time                          4.200    
+                         arrival time                          -4.110    
+  -------------------------------------------------------------------
+                         slack                                  0.089    
+
+
+
+
