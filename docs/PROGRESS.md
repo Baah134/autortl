@@ -1539,7 +1539,8 @@ corrected as an explicit doc-only delta after the frozen experiments.
   It has not been run.
 - The Fmax sweep is in progress. Out of context: FIR 181.8, elastic dot4
   384.6, pipelined dot4 392.2, divider 322.6 MHz. The harness flow tops out
-  at 101.5-107.5 MHz: the I/O pads dominate.- v2 UART: the spec changed to a stop bit of DIV - DIV/16. The harness
+  at 101.5-107.5 MHz: the I/O pads dominate.
+- v2 UART: the spec changed to a stop bit of DIV - DIV/16. The harness
   winner went from 40 to 24 LUTs and streamed 1,000,000 of 1,000,000 bytes at
   line rate on the board.
 - The Fmax study is archived. The harness-flow reproduction matches the
@@ -1548,3 +1549,8 @@ corrected as an explicit doc-only delta after the frozen experiments.
 - campaign15 tier0 merge gate passed 2/2 (counter 55 -> 53, mux4 8; 1,461
   tests; prefixes unchanged). main was fast-forwarded to 30d16a4; CI is
   green on main and the branch.
+- Tier0 held: campaign16 (counter 55 -> 31, mux4 8; streak 2) and campaign17
+  (counter 55 -> 53, mux4 8; streak 3, held true) ran the same gate on
+  campaign15's 232-file freeze, each with 1,461 tests and unchanged prefixes.
+  It is the first held tier. Evidence: evidence/2026-10-29/contract-campaign-16
+  and contract-campaign-17. The golden budget is documented in DESIGN.

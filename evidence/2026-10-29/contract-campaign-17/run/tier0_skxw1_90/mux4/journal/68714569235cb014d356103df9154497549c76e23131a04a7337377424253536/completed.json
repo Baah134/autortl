@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Interface, reset and cycle behavior: PASS \u2014 deterministic ladder is ALIVE; candidate preserves the top interface and registered reset behavior.\n- Top latency annotation: PASS \u2014 authoritative latency is unknown, so no numeric annotation is required.\n- Compilation and simulation: PASS \u2014 required tool exits succeeded and simulation reports `TEST PASSED`.\n- Routed reports and metric integrity: PASS \u2014 retained routed reports are present and synthesis completed successfully.\n- Timing feasibility: PASS \u2014 timing is met with WNS 0.579 ns and WHS 0.092 ns.\n- Objective improvement: FAIL \u2014 both designs are timing-feasible, but LUT use is unchanged at 8; strict LUT reduction is required.\n\n## Summary\n- Passed: 5 of 6\n- Failed: 1 of 6\n- Improved over previous best: NO\n\n## Recommendation\nREJECT\n\n## Reason\nThe candidate passes the behavioral, verification, report-integrity, and timing gates, and its missing top latency annotation is permitted because authoritative latency is unknown. Since the previous best is already timing-feasible and the candidate uses the same 8 LUTs, it does not meet the required strict improvement for `minimize_luts`.",
+      "recommendation": "REJECT",
+      "passed": 5,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

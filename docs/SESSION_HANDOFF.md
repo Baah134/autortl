@@ -4,10 +4,26 @@ Updated October 29, 2026 (America/New_York). Verify files, Git, ownership and
 actual jobs before acting. Canonical checkout: Downloads/autortl-work. Preserve
 the separate Downloads/autortl copy. User choice: command-line Vivado.
 
-## Latest - October 29 (Claude Code): harness-built design on the board; two harness fixes
+## Latest - October 29 (Claude Code): tier0 held on the changed harness
+
+- **Tier0 is held**, for the first time in the project's history.
+  campaign15, 16 and 17 all ran `tools/tier0_gate.py` on the same 232-file
+  freeze (`a611829c…`, cohort `78b298ad…`) and each passed 2/2 with 1,461
+  tests and every prefix unchanged. The streak reached 3, and the last
+  curriculum record has `held: true` (evidence/2026-10-29/contract-campaign-16
+  and -17). Counter: 53, 31 and 53 LUTs from a 55-LUT baseline; mux4 stayed
+  at 8. campaign16's 31-LUT winner takes overflow from the increment's
+  carry-out.
+- A held cohort now protects its passing entries: a later run on this
+  identity that fails counter or mux4 is a held regression and does not
+  qualify. Any frozen-source change starts a new cohort.
+- The golden worker's fixed budget is documented in docs/DESIGN.md (item 3),
+  with measured UART limits (2,500 to 3,000 cycles per example).
+
+## October 29 (Claude Code): harness-built design on the board; two harness fixes
 
 The user gave Claude full authority over the repo, including running the
-harness. Claude holds the lease.
+harness.
 
 - **Harness-built UART TX on the Basys 3.** `run.py build` on
   hardware/basys3/harness_built/uart_tx/design_spec.json produced a UART TX
@@ -35,8 +51,8 @@ harness. Claude holds the lease.
   (evidence/2026-10-29/fmax-characterization-01).
 - Next options: pin tests/test_module_latency_gates.py's line endings,
   since every freeze needs a reconstruct rule for it. Decide the
-  io_dominated_timing_metric question in docs/TASKS.md. Run two more
-  qualifying tier0 runs on this identity to hold tier0.
+  io_dominated_timing_metric question in docs/TASKS.md. (Holding tier0 is
+  done: campaign16 and 17.)
 - Never `tail -F` a live run file on Windows; it crashed run 02.
 
 ## October 28, session 3 (Claude Code): repository-wide evidence audit

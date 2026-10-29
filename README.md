@@ -27,9 +27,11 @@ acceptance gates.
   independent model with 0 mismatches, under randomized backpressure, and a
   deliberately wrong model was rejected every time. The board builds reproduce
   the harness's own resource measurements.
-- **Engineering discipline.** A 1,450-test regression suite, crash-safe
+- **Engineering discipline.** A 1,461-test regression suite, crash-safe
   resumable runs, fixed model-call and tool-time budgets, and an error
-  taxonomy keyed to Vivado message IDs.
+  taxonomy keyed to Vivado message IDs. Curriculum tier 0 is held: three
+  consecutive fresh runs on the same frozen harness source passed every gate
+  ([campaign 17](evidence/2026-10-29/contract-campaign-17/README.md)).
 
 ## How it works
 
@@ -103,7 +105,8 @@ and [winner](evidence/2026-10-26/generated-signed-fir4-attempt-01/run/signed_fir
 | FIFO timing recovery | **Setup −0.931 → +0.108 ns · hold +0.076 ns · 22 LUTs / 13 FFs** |
 | Packet-tagged FIFO | **23 LUTs / 31 FFs · setup +0.078 ns / hold +0.106 ns · saved winner independently passed** |
 | Fault-qualified independent verification | **27 signed FIR faults, 18 elastic arithmetic faults and 20 divider faults detected; correct controls passed** |
-| Harness regression | **1,450 tests passed** |
+| Harness regression | **1,461 tests passed** |
+| Curriculum tier 0 (counter, mux4) | **Held: 3 consecutive qualifying fresh runs · best counter 55 → 31 LUTs** |
 
 These use Vivado 2025.2 on `xc7a35tcpg236-1` (the Basys 3's FPGA) at
 100 MHz with ideal zero I/O delays. The dot-product savings trade fabric
@@ -234,9 +237,9 @@ the stale-child verification gap the UART build exposed.
 
 These are bounded experiments on small designs. They are not formal
 equivalence proofs or board-level timing sign-off, and they do not show that
-the harness beats a skilled engineer or Vivado's own optimizations. No
-curriculum tier is held yet: that needs three consecutive qualifying full
-runs. Each run uses Codex CLI for its model calls.
+the harness beats a skilled engineer or Vivado's own optimizations. Only
+tier 0 (two small designs) is held; no higher curriculum tier is. Each run
+uses Codex CLI for its model calls.
 
 ## Quick start
 
