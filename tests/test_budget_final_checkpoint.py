@@ -12,6 +12,8 @@ from autortl.config import RunConfig
 from llm.client import ModelCallError
 from tests.test_fsm_resume import configuration, install_models, install_tools
 
+NO_TOKENS = {'input_tokens': 0, 'cached_input_tokens': 0, 'output_tokens': 0}
+
 
 @pytest.fixture
 def clock(monkeypatch):
@@ -34,7 +36,7 @@ def test_public_checkpoint_persists_wall_without_charges(tmp_path, clock):
     clock.advance(12)
     budget.checkpoint()
     assert json.loads(path.read_text()) == {
-        'llm_calls': 2, 'vivado_seconds': 1.25, 'elapsed': 12}
+        'llm_calls': 2, 'vivado_seconds': 1.25, 'elapsed': 12, 'tokens': NO_TOKENS}
 
 
 @pytest.mark.parametrize('outcome', ['module_failed', 'model_blocked', 'budget_exhausted',
@@ -69,14 +71,14 @@ def test_active_exits_checkpoint_last_model_wall(tmp_path, monkeypatch, clock, o
     else:
         assert orchestrator.run()['status'] == outcome
     assert saved_budget(orchestrator) == {
-        'llm_calls': 2, 'vivado_seconds': 1.25, 'elapsed': 18}
+        'llm_calls': 2, 'vivado_seconds': 1.25, 'elapsed': 18, 'tokens': NO_TOKENS}
     clock.advance(3600)  # Time between invocations must not consume active budget.
     resumed = Budget(16, 25, 35, orchestrator.state.run_dir/'budget.json')
     assert resumed.wall_minutes * 60 == pytest.approx(18)
     clock.advance(3)
     resumed.checkpoint()
     assert json.loads(resumed.state_path.read_text()) == {
-        'llm_calls': 2, 'vivado_seconds': 1.25, 'elapsed': 21}
+        'llm_calls': 2, 'vivado_seconds': 1.25, 'elapsed': 21, 'tokens': NO_TOKENS}
 
 
 def test_new_done_checkpoints_and_reuse_or_tamper_preserves_budget(tmp_path, monkeypatch, clock):

@@ -43,7 +43,7 @@ def test_unfinished_and_retried_attempts_are_counted():
 def test_markdown_and_json_outputs(capsys):
     assert role_report.main([str(CAMPAIGN)]) == 0
     text = capsys.readouterr().out
-    assert "| pwm | done | 16 | 7 | 7 | REJECT 5 | generator repairs 1 |" in text
+    assert "| pwm | done | 16 | — | 7 | 7 | REJECT 5 | generator repairs 1 |" in text
     assert role_report.main([str(CAMPAIGN), "--json"]) == 0
     assert [r["run"] for r in json.loads(capsys.readouterr().out)] == ["debouncer_build", "pwm"]
 
@@ -57,4 +57,13 @@ def test_output_is_utf8_even_on_a_legacy_code_page(tmp_path):
     out = subprocess.run([sys.executable, str(HERE.parent / "role_report.py"), str(CAMPAIGN)],
                          capture_output=True, env={**__import__("os").environ, "PYTHONIOENCODING": "cp1252"})
     assert out.returncode == 0
-    assert "| debouncer_build | spec_lint_failed | 1 | — |" in out.stdout.decode("utf-8")
+    assert "| debouncer_build | spec_lint_failed | 1 | — | — |" in out.stdout.decode("utf-8")
+
+
+def test_token_totals_from_the_run_budget(tmp_path):
+    run = tmp_path / "r"
+    run.mkdir()
+    (run / "run_summary.json").write_text('{"status": "done"}')
+    (run / "budget.json").write_text('{"llm_calls": 3, "vivado_seconds": 1.0, "elapsed": 2.0,'
+                                     ' "tokens": {"input_tokens": 12345, "cached_input_tokens": 10000, "output_tokens": 678}}')
+    assert "| r | done | 3 | 12,345 / 678 |" in role_report.render([role_report.summarize(run)])
