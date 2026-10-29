@@ -125,6 +125,9 @@ def main(argv=None):
         print("no runs found", file=sys.stderr)
         return 1
     reports = [summarize(run) for run in found]
+    # The report is UTF-8 (it uses em dashes), whatever the console's code page.
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8")
     sys.stdout.write(json.dumps(reports, indent=2) + "\n" if args.json else render(reports))
     return 0
 

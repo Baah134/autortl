@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Behavioral and interface contract: PASS \u2014 deterministic ladder reports ALIVE.\n- Top latency annotation: PASS \u2014 authoritative latency is unknown, so no numeric annotation is required.\n- Compile, elaboration, simulation, and synthesis gates: PASS \u2014 required tool exits succeeded, simulation reports `TEST PASSED`, and synthesis has `SYNTH_COMPLETE`.\n- Routed metrics and timing feasibility: PASS \u2014 retained routed reports are present; timing is met, WNS is 0.579 ns, and WHS is 0.057 ns.\n- Strict LUT objective improvement: FAIL \u2014 candidate and previous best both use 8 LUTs; both are timing-feasible, so equal LUT use does not improve the objective.\n## Summary\n- Passed: 4 of 5\n- Failed: 1 of 5\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes the behavioral and verification gates and meets setup and hold timing, but it does not strictly reduce LUT use from the timing-feasible previous best. The mandatory minimize_luts objective is therefore unmet.",
+      "recommendation": "REJECT",
+      "passed": 4,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

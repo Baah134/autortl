@@ -50,3 +50,11 @@ def test_markdown_and_json_outputs(capsys):
 
 def test_empty_path_fails(tmp_path, capsys):
     assert role_report.main([str(tmp_path)]) == 1
+
+
+def test_output_is_utf8_even_on_a_legacy_code_page(tmp_path):
+    import subprocess
+    out = subprocess.run([sys.executable, str(HERE.parent / "role_report.py"), str(CAMPAIGN)],
+                         capture_output=True, env={**__import__("os").environ, "PYTHONIOENCODING": "cp1252"})
+    assert out.returncode == 0
+    assert "| debouncer_build | spec_lint_failed | 1 | — |" in out.stdout.decode("utf-8")
