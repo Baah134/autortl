@@ -1,0 +1,113 @@
+#-----------------------------------------------------------
+# Vivado v2025.2 (64-bit)
+# SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025
+# IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025
+# SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025
+# Start of session at: Wed Oct 28 19:15:10 2026
+# Process ID         : 19500
+# Current directory  : C:/Users/prince.baah/Downloads/autortl-work/hardware/basys3/harness_winners/build/dot4_pipeline/impl
+# Command line       : vivado.exe -mode batch -nojournal -log vivado_build.log -source C:/Users/prince.baah/Downloads/autortl-work/hardware/basys3/harness_winners/scripts/build.tcl -tclargs C:/Users/prince.baah/Downloads/autortl-work/hardware/basys3/harness_winners/build/dot4_pipeline/impl/sources.txt C:/Users/prince.baah/Downloads/autortl-work/hardware/basys3/harness_winners/build/dot4_pipeline/impl 8 3
+# Log file           : C:/Users/prince.baah/Downloads/autortl-work/hardware/basys3/harness_winners/build/dot4_pipeline/impl/vivado_build.log
+# Journal file       : 
+# Running On         : Baah
+# Platform           : Windows Server 2016 or Windows 10
+# Operating System   : 26200
+# Processor Detail   : 13th Gen Intel(R) Core(TM) i7-1355U
+# CPU Frequency      : 2611 MHz
+# CPU Physical cores : 10
+# CPU Logical cores  : 12
+# Host memory        : 16837 MB
+# Swap memory        : 3932 MB
+# Total Virtual      : 20769 MB
+# Available Virtual  : 3463 MB
+#-----------------------------------------------------------
+source C:/Users/prince.baah/Downloads/autortl-work/hardware/basys3/harness_winners/scripts/build.tcl
+# if {[llength $argv] != 4} {
+#     error "usage: build.tcl <sources.txt> <out_dir> <in_bytes> <out_bytes>"
+# }
+# lassign $argv source_list out in_bytes out_bytes
+# foreach value [list $in_bytes $out_bytes] {
+#     if {![string is integer -strict $value] || $value < 1 || $value > 8} {
+#         error "byte widths must be integers 1..8"
+#     }
+# }
+# set root [file normalize [file join [file dirname [info script]] ..]]
+# file mkdir $out
+# set handle [open $source_list r]
+# set sources [split [string trim [read $handle]] "\n"]
+# close $handle
+# read_verilog $sources
+read_verilog: Time (s): cpu = 00:00:10 ; elapsed = 00:00:07 . Memory (MB): peak = 529.059 ; gain = 221.988
+# read_xdc $root/constraints/stream_shell.xdc
+# synth_design -top stream_shell -part xc7a35tcpg236-1 \
+#     -generic IN_BYTES=$in_bytes -generic OUT_BYTES=$out_bytes
+Command: synth_design -top stream_shell -part xc7a35tcpg236-1 -generic IN_BYTES=8 -generic OUT_BYTES=3
+Starting synth_design
+Attempting to get a license for feature 'Synthesis' and/or device 'xc7a35t'
+INFO: [Common 17-349] Got license for feature 'Synthesis' and/or device 'xc7a35t'
+INFO: [Device 21-403] Loading part xc7a35tcpg236-1
+INFO: [Synth 8-7079] Multithreading enabled for synth_design using a maximum of 2 processes.
+INFO: [Synth 8-7078] Launching helper process for spawning children vivado processes
+INFO: [Synth 8-7075] Helper process launched with PID 13264
+---------------------------------------------------------------------------------
+Starting RTL Elaboration : Time (s): cpu = 00:00:05 ; elapsed = 00:00:05 . Memory (MB): peak = 1254.555 ; gain = 540.238
+---------------------------------------------------------------------------------
+INFO: [Synth 8-6157] synthesizing module 'stream_shell' [C:/Users/prince.baah/Downloads/autortl-work/hardware/basys3/harness_winners/rtl/stream_shell.v:24]
+	Parameter IN_BYTES bound to: 8 - type: integer 
+	Parameter OUT_BYTES bound to: 3 - type: integer 
+INFO: [Synth 8-6157] synthesizing module 'uart_rx' [C:/Users/prince.baah/Downloads/autortl-work/hardware/basys3/uart_echo/rtl/uart_rx.v:7]
+	Parameter CLKS_PER_BIT bound to: 868 - type: integer 
+INFO: [Synth 8-6155] done synthesizing module 'uart_rx' (0#1) [C:/Users/prince.baah/Downloads/autortl-work/hardware/basys3/uart_echo/rtl/uart_rx.v:7]
+INFO: [Synth 8-6157] synthesizing module 'shell_fifo' [C:/Users/prince.baah/Downloads/autortl-work/hardware/basys3/harness_winners/rtl/shell_fifo.v:5]
+	Parameter WIDTH bound to: 64 - type: integer 
+	Parameter DEPTH_LOG2 bound to: 5 - type: integer 
+INFO: [Synth 8-6155] done synthesizing module 'shell_fifo' (0#1) [C:/Users/prince.baah/Downloads/autortl-work/hardware/basys3/harness_winners/rtl/shell_fifo.v:5]
+INFO: [Synth 8-6157] synthesizing module 'stream_dut' [C:/Users/prince.baah/Downloads/autortl-work/hardware/basys3/harness_winners/adapters/dot4_pipeline.v:11]
+INFO: [Synth 8-6157] synthesizing module 'dot4_pipeline' [C:/Users/prince.baah/Downloads/autortl-work/evidence/2026-10-24/generated-dot4-attempt-01/build-dot4-01/dot4_pipeline_best.v:2]
+INFO: [Synth 8-6155] done synthesizing module 'dot4_pipeline' (0#1) [C:/Users/prince.baah/Downloads/autortl-work/evidence/2026-10-24/generated-dot4-attempt-01/build-dot4-01/dot4_pipeline_best.v:2]
+INFO: [Synth 8-6157] synthesizing module 'shell_fifo__parameterized0' [C:/Users/prince.baah/Downloads/autortl-work/hardware/basys3/harness_winners/rtl/shell_fifo.v:5]
+	Parameter WIDTH bound to: 24 - type: integer 
+	Parameter DEPTH_LOG2 bound to: 2 - type: integer 
+INFO: [Synth 8-6155] done synthesizing module 'shell_fifo__parameterized0' (0#1) [C:/Users/prince.baah/Downloads/autortl-work/hardware/basys3/harness_winners/rtl/shell_fifo.v:5]
+INFO: [Synth 8-6155] done synthesizing module 'stream_dut' (0#1) [C:/Users/prince.baah/Downloads/autortl-work/hardware/basys3/harness_winners/adapters/dot4_pipeline.v:11]
+INFO: [Synth 8-6157] synthesizing module 'shell_fifo__parameterized1' [C:/Users/prince.baah/Downloads/autortl-work/hardware/basys3/harness_winners/rtl/shell_fifo.v:5]
+	Parameter WIDTH bound to: 24 - type: integer 
+	Parameter DEPTH_LOG2 bound to: 5 - type: integer 
+INFO: [Synth 8-6155] done synthesizing module 'shell_fifo__parameterized1' (0#1) [C:/Users/prince.baah/Downloads/autortl-work/hardware/basys3/harness_winners/rtl/shell_fifo.v:5]
+INFO: [Synth 8-6157] synthesizing module 'uart_tx' [C:/Users/prince.baah/Downloads/autortl-work/hardware/basys3/uart_echo/rtl/uart_tx.v:7]
+	Parameter CLKS_PER_BIT bound to: 868 - type: integer 
+INFO: [Synth 8-6155] done synthesizing module 'uart_tx' (0#1) [C:/Users/prince.baah/Downloads/autortl-work/hardware/basys3/uart_echo/rtl/uart_tx.v:7]
+INFO: [Synth 8-6155] done synthesizing module 'stream_shell' (0#1) [C:/Users/prince.baah/Downloads/autortl-work/hardware/basys3/harness_winners/rtl/stream_shell.v:24]
+---------------------------------------------------------------------------------
+Finished RTL Elaboration : Time (s): cpu = 00:00:06 ; elapsed = 00:00:07 . Memory (MB): peak = 1376.645 ; gain = 662.328
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Handling Custom Attributes
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Handling Custom Attributes : Time (s): cpu = 00:00:07 ; elapsed = 00:00:07 . Memory (MB): peak = 1376.645 ; gain = 662.328
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished RTL Optimization Phase 1 : Time (s): cpu = 00:00:07 ; elapsed = 00:00:07 . Memory (MB): peak = 1376.645 ; gain = 662.328
+---------------------------------------------------------------------------------
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.008 . Memory (MB): peak = 1376.645 ; gain = 0.000
+INFO: [Project 1-570] Preparing netlist for logic optimization
+
+Processing XDC Constraints
+Initializing timing engine
+Parsing XDC File [C:/Users/prince.baah/Downloads/autortl-work/hardware/basys3/harness_winners/constraints/stream_shell.xdc]
+Finished Parsing XDC File [C:/Users/prince.baah/Downloads/autortl-work/hardware/basys3/harness_winners/constraints/stream_shell.xdc]
+INFO: [Project 1-236] Implementation specific constraints were found while reading constraint file [C:/Users/prince.baah/Downloads/autortl-work/hardware/basys3/harness_winners/constraints/stream_shell.xdc]. These constraints will be ignored for synthesis but will be used in implementation. Impacted constraints are listed in the file [.Xil/stream_shell_propImpl.xdc].
+Resolution: To avoid this warning, move constraints listed in [.Xil/stream_shell_propImpl.xdc] to another XDC file and exclude this new file from synthesis with the used_in_synthesis property (File Properties dialog in GUI) and re-run elaboration/synthesis.
+Completed Processing XDC Constraints
+
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 1460.461 ; gain = 0.000
+INFO: [Project 1-111] Unisim Transformation Summary:
+No Unisim elements were transformed.
+
+INFO: [Common 17-83] Releasing license: Synthesis
+25 Infos, 0 Warnings, 0 Critical Warnings and 1 Errors encountered.
+synth_design failed
+synth_design: Time (s): cpu = 00:00:10 ; elapsed = 00:00:13 . Memory (MB): peak = 1460.461 ; gain = 931.402
+ERROR: [Designutils 20-411] The directory 'C:/Users/prince.baah/Downloads/autortl-work/hardware/basys3/harness_winners/build/dot4_pipeline/impl/.Xil/Vivado-19500-Baah/realtime' could not be deleted and may be locked. This directory may need to be manually deleted to continue.
+INFO: [Common 17-206] Exiting Vivado at Wed Oct 28 19:15:33 2026...
