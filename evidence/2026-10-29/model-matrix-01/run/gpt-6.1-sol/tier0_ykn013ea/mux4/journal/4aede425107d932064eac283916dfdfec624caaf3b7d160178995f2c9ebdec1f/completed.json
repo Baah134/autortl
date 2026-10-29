@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_1:decision:instruction:0",
+  "result": "Replace the four data assignments inside the clocked case with a combinational mux tree: select between a/b and c/d, then between those results, using three DSP48E1 ALUs with every internal pipeline register bypassed. Implement each selector by configuring its ALU operand multiplexers to add either zero-extended A:B data or zero-extended C data to zero, avoiding external per-bit masking; retain the original output register and its synchronous, active-high, highest-priority reset on clk. Derive deterministic selector controls through an ordinary case preserving the original default-to-d behavior for unknown selector bits, preserve all eight data bits and every observable cycle, and add no numeric latency annotation. Use only the frozen compilation environment; reject the experiment if primitive resolution, behavioral checks, routed LUT reduction, setup or hold fails, without changing libraries, constraints or the testbench.",
+  "artifacts": {}
+}

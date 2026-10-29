@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n\n## Contract check\n\n- Interface and parameters: PASS \u2014 Module, ports, widths, signedness and parameter defaults are unchanged.\n- Reset and control priority: PASS \u2014 Synchronous active-high reset, reset > load > enable priority, and disabled count/overflow holds are preserved.\n- Arithmetic and parameter behavior: PASS \u2014 WIDTH-bit increment naturally wraps at the maximum value; removing the temporary and explicit zero assignment preserves overflow and high-bit semantics. Threshold expressions are unchanged.\n- Registered outputs and cycle behavior: PASS \u2014 Flags still reflect pre-edge count, including load and disabled cycles. No pipeline stages or throughput changes.\n- Numeric latency annotation: PASS \u2014 Authoritative declared_latency.known=false; no numeric top annotation is required.\n- RTL coding rules: PASS \u2014 Single drivers, nonblocking sequential assignments and required resets are preserved; no synthesis initial blocks.\n- Deterministic verification: PASS \u2014 Authoritative ladder is ALIVE through five rungs; required tools exited successfully, simulation reports standalone TEST PASSED, and synthesis reports SYNTH_COMPLETE.\n- Fixed verification environment: PASS \u2014 Frozen testbench, device, clk, 10 ns period, I/O constraints and severity promotions are preserved.\n- Routed metrics and timing: PASS \u2014 Retained report hashes and structured metrics support timing_met=true, WNS=0.456 ns and WHS=0.282 ns.\n- Objective improvement: PASS \u2014 LUT usage strictly decreases from 55 to 53 with both designs timing-feasible, consistent with improvement_kind=objective.\n\n## Summary\n\n- Passed: 10 of 10\n- Failed: 0 of 10\n- Improved over previous best: YES\n\n## Recommendation\n\nACCEPT\n\n## Reason\n\nThe candidate preserves observable counter behavior and satisfies the authoritative verification and timing gates while reducing LUT usage by 2 (3.64%). Source inspection supports the arithmetic simplification across supported widths without relying on default-only simulation as formal equivalence. The smaller setup margin remains nonnegative and does not violate the contract. Unknown numeric top latency imposes no annotation requirement.",
+      "recommendation": "REJECT",
+      "passed": 10,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}

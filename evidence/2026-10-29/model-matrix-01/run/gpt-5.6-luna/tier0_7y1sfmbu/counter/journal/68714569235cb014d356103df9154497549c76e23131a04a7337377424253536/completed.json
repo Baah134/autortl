@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Interface and parameter preservation: PASS \u2014 Top module, ports, widths, directions and parameter defaults are preserved.\n- Reset, cycle behavior and registered outputs: PASS \u2014 Deterministic testbench passed; synchronous reset, priority and registered behavior are preserved.\n- Latency annotation: PASS \u2014 `declared_latency.known=false`; no numeric top annotation is required.\n- Static/interface and compilation checks: PASS \u2014 `xvlog` completed successfully with zero exit status.\n- Elaboration: PASS \u2014 `xelab` completed successfully.\n- Simulation: PASS \u2014 Exact `TEST PASSED` verdict recorded.\n- Synthesis completion and process exits: PASS \u2014 Vivado completed successfully and emitted `SYNTH_COMPLETE`; required tools exited with zero status.\n- Routed metric integrity: PASS \u2014 Retained routed utilization, timing and power reports are present and consistent.\n- Timing feasibility: PASS \u2014 `timing_met=true`, WNS is 0.494 ns and WHS is 0.113 ns.\n- Objective improvement: FAIL \u2014 LUT usage is unchanged at 55 versus the timing-feasible previous best; `measured_improvement=false` and `improvement_kind=null`.\n\n## Summary\n- Passed: 9 of 10\n- Failed: 1 of 10\n- Improved over previous best: NO\n\n## Recommendation\nREJECT\n\n## Reason\nThe candidate passes all behavioral, verification, synthesis, routed-report, and timing gates, but the previous best is already timing-feasible and the candidate provides no strict LUT reduction, so it does not satisfy the minimize_luts promotion requirement.",
+      "recommendation": "REJECT",
+      "passed": 9,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

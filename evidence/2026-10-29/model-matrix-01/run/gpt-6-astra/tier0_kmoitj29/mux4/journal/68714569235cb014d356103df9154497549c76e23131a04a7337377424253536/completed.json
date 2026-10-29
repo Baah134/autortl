@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n\n## Contract check\n\n- Interface preservation: PASS \u2014 Module and port names, directions, widths and signedness are unchanged; no parameters or additional clocks were introduced.\n- Behavioral preservation: PASS \u2014 Selection logic, full 8-bit data, synchronous active-high reset priority and registered output updates on `posedge clk` are preserved without additional cycles.\n- Coding rules: PASS \u2014 Single drivers, combinational defaults and nonblocking sequential assignments are present; no latches or synthesis initialization were introduced.\n- Latency annotation: PASS \u2014 Authoritative `declared_latency.known=false`; no numeric top annotation is required.\n- Deterministic verification: PASS \u2014 Authoritative ladder is ALIVE through five rungs. Required tools exited successfully with verified logs; simulation reports exact `TEST PASSED`, and synthesis reports `SYNTH_COMPLETE`.\n- Fixed execution context: PASS \u2014 Testbench, device, clock, constraints and severity promotions remain unchanged.\n- Routed metric integrity: PASS \u2014 Retained routed reports and hashes support the authoritative structured metrics; process exit gate passed.\n- Timing feasibility: PASS \u2014 `timing_met=true`, setup WNS = 0.579 ns and hold WHS = 0.052 ns. Missing register-to-register slack is advisory.\n- Objective improvement: FAIL \u2014 Both designs are timing-feasible, but LUT usage remains 8 versus 8. `measured_improvement=false` and `improvement_kind=null`; no timing recovery applies.\n\n## Summary\n\n- Passed: 8 of 9\n- Failed: 1 of 9\n- Improved over previous best: NO\n\n## Recommendation\n\nREJECT\n\n## Reason\n\nThe candidate preserves the reviewed behavior and passes the authoritative verification and timing gates, but fails the mandatory strict LUT improvement requirement. Both candidate and incumbent are already timing-feasible, so unchanged LUT usage cannot qualify for promotion or timing recovery. The absent latency annotation is valid under the authoritative unknown declaration. Stall count is 0, so RESTART is not permitted.",
+      "recommendation": "REJECT",
+      "passed": 8,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

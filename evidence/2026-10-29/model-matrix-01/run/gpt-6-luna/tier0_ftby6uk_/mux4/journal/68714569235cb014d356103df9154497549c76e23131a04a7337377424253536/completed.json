@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Interface and behavior: PASS \u2014 ports and widths are preserved; the candidate retains the synchronous reset and registered mux behavior.\n- Top latency annotation: PASS \u2014 authoritative latency is unknown, so no numeric annotation is required.\n- Verification: PASS \u2014 ladder is ALIVE; compile, elaboration, simulation, and synthesis gates pass, including the required `TEST PASSED` verdict and `SYNTH_COMPLETE` marker.\n- Routed metrics and timing: PASS \u2014 retained metrics show 8 LUTs, WNS 0.579 ns, WHS 0.057 ns, and `timing_met=true`.\n- Objective improvement: FAIL \u2014 LUT use is unchanged from the timing-feasible previous best (8 to 8), so the required strict reduction is absent.\n## Summary\n- Passed: 4 of 5\n- Failed: 1 of 5\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate preserves the defined behavior and passes the verification and timing gates, but both candidate and previous best are timing-feasible, so promotion requires strictly fewer LUTs. The candidate uses 8 LUTs, equal to the previous best; no timing recovery or objective improvement is established.",
+      "recommendation": "REJECT",
+      "passed": 4,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Interface preservation: PASS \u2014 Module, ports, directions, widths and signedness are preserved; no parameters exist.\n- Behavioral preservation: PASS \u2014 Registered selection, synchronous active-high reset priority, full-width data and default selection behavior are preserved.\n- Latency annotation: PASS \u2014 Authoritative top latency is unknown; no numeric annotation is required.\n- RTL coding rules: PASS \u2014 Single drivers, combinational defaults and nonblocking sequential assignments are present; no synthesis initialization exists.\n- Fixed execution context: PASS \u2014 Testbench, tools, device, clock and constraints remain unchanged; required severity promotions remain enabled.\n- Deterministic verification: PASS \u2014 Authoritative ladder survives all five rungs; required tools exit successfully, simulation reports TEST PASSED and synthesis reports SYNTH_COMPLETE.\n- Routed metrics and timing: PASS \u2014 Retained report provenance supports timing_met=true, WNS=0.579 ns and WHS=0.057 ns.\n- Objective improvement: FAIL \u2014 Both designs are timing-feasible and use 8 LUTs; strict LUT reduction is absent, consistent with measured_improvement=false and improvement_kind=null.\n\n## Summary\n- Passed: 7 of 8\n- Failed: 1 of 8\n- Improved over previous best: NO\n\n## Recommendation\nREJECT\n\n## Reason\nThe candidate preserves behavior and passes verification and timing gates, but fails the mandatory optimization objective. LUT usage remains 8 against the timing-feasible previous best. The hold-slack increase from 0.052 ns to 0.057 ns establishes neither LUT savings nor timing recovery.",
+      "recommendation": "REJECT",
+      "passed": 7,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

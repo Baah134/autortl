@@ -1,0 +1,10 @@
+# PLAN — iteration 1
+
+## Current state assessment
+The frozen `mux4` source and generation seed have the same SHA-256. The routed baseline is timing-feasible at 8 LUTs and 8 FFs, with WNS 0.579 ns and WHS 0.052 ns; minimizing LUTs therefore requires a strict reduction below 8 while retaining timing feasibility. The output is registered with synchronous active-high reset, and top numeric latency is unknown, so preserve the exact cycle behavior without adding a latency annotation requirement.
+
+## Hypothesis
+Replacing the LUT-based 4:1 data mux with 7-series MUXF7/MUXF8 cascade primitives may reduce LUT use below 8, while keeping the existing output registers and reset behavior unchanged; routed timing and resource reports will determine whether the tradeoff passes.
+
+## Instruction for generator
+Replace the `case (sel)` data selection with, for each output bit, two MUXF7 cells selecting the input pairs and one MUXF8 cell selecting between those results; keep the existing `posedge clk` output register and synchronous `rst` clear. Preserve the four data mappings for every `sel` value, the 8-bit registered `y`, and its reset cycle behavior exactly. Check primitive legality and LUT, MUXF7/MUXF8, setup WNS, and hold WHS in the retained routed reports; promote only if all deterministic gates pass and LUT use is strictly below 8.
