@@ -1,0 +1,13 @@
+# PLAN — iteration 1
+
+## Current state assessment
+
+The incumbent is timing-feasible at 8 LUTs and 8 FFs, with WNS 0.579 ns and WHS 0.052 ns; the objective therefore requires a strict LUT reduction while preserving timing and every cycle of behavior. The registered 8-bit, 4:1 mux already uses one LUT per output bit, so meaningful LUT savings are unlikely. Top numeric latency is unknown, so no numeric `@latency` annotation is required.
+
+## Hypothesis
+
+Writing the selection as a balanced two-level mux tree may expose 7-series MUXF7 inference and reduce LUT use, though Vivado may map it back to the incumbent’s 8-LUT implementation.
+
+## Instruction for generator
+
+Replace the `case (sel)` assignment with a balanced mux expression: select between `a`/`b` using `sel[0]`, select between `c`/`d` using `sel[0]`, then select between those results using `sel[1]`. Keep the existing clocked output register and synchronous active-high reset exactly as they are; preserve all eight data bits and add no latency annotation. Retain the candidate only if it passes every required gate, has nonnegative routed setup and hold slack, and uses fewer than 8 LUTs.
