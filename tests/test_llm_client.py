@@ -93,7 +93,7 @@ def test_empty_response_is_failed_attempt(router):
 
 def test_external_override_never_falls_back(router):
     with pytest.raises(RuntimeError, match="unsupported backend"):
-        client.ask("generator", "request", route_override="claude_code.sonnet")
+        client.ask("generator", "request", route_override="nonexistent.sonnet")
     router.ask.assert_not_called()
 
 

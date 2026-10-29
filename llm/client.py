@@ -14,9 +14,9 @@ try:
 except ImportError:
     yaml = None
 
-from .backends import codex_cli
+from .backends import codex_cli, openai_http
 
-_BACKENDS = {"codex": codex_cli}
+_BACKENDS = {"codex": codex_cli, "openai": openai_http}
 _ROUTING_PATH = Path(__file__).parent / "routing.yaml"
 _STATS_PATH = Path(__file__).parent / "router_stats.jsonl"
 
@@ -52,7 +52,10 @@ def ask(role: str, prompt: str, system: str = "",
         max_turns: int = 1, model: str | None = None) -> str:
     cfg = _load_routing()
     chain = cfg["roles"].get(role, {}).get("chain", ["codex.default"])
-    if model:
+    if model and model.partition(".")[0] in _BACKENDS:
+        # A backend-qualified model (openai.gpt-4o-mini) pins backend and alias.
+        chain = [model]
+    elif model:
         # A run-pinned model keeps each entry's backend and replaces its alias.
         chain = list(dict.fromkeys(entry.partition(".")[0] + "." + model for entry in chain))
     if route_override:

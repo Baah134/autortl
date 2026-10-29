@@ -44,7 +44,8 @@ def main(argv=None):
                         default=None,
                         help="enable experimental prior-proposal context for a new run (default: off; "
                              "bounded proposal journal audit is always retained)")
-    common.add_argument("--model", help="model alias for every role (default: the backend's own default); "
+    common.add_argument("--model", help="model alias for every role (default: the backend's own default), "
+                        "or backend.model such as openai.gpt-4o-mini to pick the backend too; "
                         "saved in config.json and part of the bench cohort")
     common.add_argument("--route", help="unsupported: routing is Codex-only")
 

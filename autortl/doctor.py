@@ -17,6 +17,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import urllib.parse
 
 TOOLS = ("vivado", "xvlog", "xelab", "xsim")
 
@@ -101,6 +102,24 @@ def model_check():
     return checks
 
 
+def openai_check():
+    """Optional alternative backend; reports presence of the key, never its value."""
+    if not (os.environ.get("AUTORTL_OPENAI_API_KEY") or "").strip():
+        return Check("openai", "WARN", "AUTORTL_OPENAI_API_KEY not set (optional alternative to Codex)",
+                     "To use an OpenAI-compatible API, set AUTORTL_OPENAI_API_KEY and optionally "
+                     "AUTORTL_OPENAI_BASE_URL / AUTORTL_OPENAI_MODEL, then run with --model openai.<model>",
+                     required=False)
+    base = (os.environ.get("AUTORTL_OPENAI_BASE_URL") or "").strip()
+    try:
+        host = urllib.parse.urlsplit(base).hostname if base else "api.openai.com (default)"
+    except ValueError:
+        host = None
+    model = (os.environ.get("AUTORTL_OPENAI_MODEL") or "").strip()
+    return Check("openai", "OK", f"AUTORTL_OPENAI_API_KEY is set; endpoint host {host or 'invalid URL'}; "
+                 + (f"default model {model}" if model else "no AUTORTL_OPENAI_MODEL (name the model as openai.<model>)"),
+                 required=False)
+
+
 def workspace_check(root):
     try:
         with tempfile.NamedTemporaryFile(dir=root, prefix=".doctor-", delete=True):
@@ -111,7 +130,7 @@ def workspace_check(root):
 
 
 def run_checks(paths, root):
-    return [python_check(), *package_checks(), *tool_checks(paths), *model_check(), workspace_check(root)]
+    return [python_check(), *package_checks(), *tool_checks(paths), *model_check(), openai_check(), workspace_check(root)]
 
 
 def render(checks):
