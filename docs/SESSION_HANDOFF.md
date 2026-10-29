@@ -69,6 +69,14 @@ Completed and verified this session:
   plus the mailbox and board-suite tests on Windows and Ubuntu. A clean
   fresh-clone run of the harness suite passed 1,450 tests in 320 s with no
   Vivado and no ignored directories.
+  - On the first GitHub run the harness job passed, but the tooling jobs
+    failed: `*.log` in .gitignore had kept three board-suite fixtures out of
+    the commit. Fixed in 96b250a.
+  - All jobs have been green since 2d8ee81. Actions are at checkout@v7 and
+    setup-python@v7 (no Node.js 20 warning).
+- Removed the stray 0-byte root `xelab.pb` (from 387fe0e; nothing referenced
+  it, and it is outside the frozen sets). Root `/*.pb` and `/xsim.dir/` are
+  now ignored.
 
 Deliberately untouched: every file in the frozen 230- and 201-file identity
 sets (autortl/, llm/, tests/, curriculum/, scripts/, data/, .claude/, run.py),

@@ -1476,3 +1476,11 @@ corrected as an explicit doc-only delta after the frozen experiments.
 - Added .github/workflows/tests.yml. A fresh-clone harness suite run passed
   1,450 in 320 s without Vivado or ignored directories.
 - No frozen harness source changed; campaign14 is still Codex's.
+- CI first run (c26ae5d): the harness regression passed on a clean GitHub
+  Windows runner. The tooling jobs failed on both OSes because `*.log` in
+  .gitignore had excluded three board-suite fixtures from 785855e. Fixed
+  (96b250a, a .gitignore exception) and confirmed first in a fresh local clone
+  without pyserial (84 passed). Green on all jobs since 2d8ee81; actions moved
+  to v7 (1361062) to clear the Node.js 20 deprecation warning.
+- Removed the stray 0-byte root xelab.pb (committed in 387fe0e; unreferenced,
+  outside the frozen sets) and ignored root Vivado by-products.
