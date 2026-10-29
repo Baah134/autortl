@@ -1,0 +1,112 @@
+{
+  "schema": 1,
+  "exceptions": [
+    {
+      "manifest": "evidence/2026-10-24/seed-binding-live-recovery-01/run/validation-manifest.json",
+      "paths": ["*"],
+      "expected_count": 83,
+      "kind": "superseded_state_manifest",
+      "reason": "This run folder carries the validation manifest of the quota-blocked run it resumed, unchanged (it is byte-identical to the one in seed-binding-quota-block-01). The resume legitimately advanced six state files and did not archive the 77 simulator by-products the manifest lists. The predecessor archive holds every recorded byte.",
+      "predecessor": "evidence/2026-10-24/seed-binding-quota-block-01/run"
+    },
+    {
+      "manifest": "evidence/2026-10-28/basys3-uart-echo-01/manifest.json",
+      "paths": ["bitstream_sha256"],
+      "kind": "unarchived_tested_binary",
+      "reason": "The superseded v01 UART echo bitstream was overwritten by the v02 build in the same ignored build folder before bitstreams were archived. Its exact source is retained in basys3-uart-echo-01/source-snapshot, but a rebuild cannot reproduce the recorded file digest because the bitstream header records the build time. Bitstreams for v02 and every later board result are archived in basys3-bitstreams-01.",
+      "predecessor": null
+    },
+    {
+      "manifest": "evidence/2026-10-19/relocation-manifest.json",
+      "paths": ["tests\\test_tbqual.py"],
+      "kind": "mixed_eol_tested_source",
+      "reason": "The working copy at relocation used CRLF endings except on one LF line; Git stores the file normalized.",
+      "predecessor": null,
+      "reconstruct": {"blob": "6a8aa61c706a0ba10148cd427839c5ed41a12c08", "lf_lines": [53]}
+    },
+    {
+      "manifest": "evidence/2026-10-19/relocation-manifest.json",
+      "paths": ["*"],
+      "expected_count": 167,
+      "kind": "working_directory_move_record",
+      "reason": "This manifest records the whole folder, including .git internals, .pytest_cache and __pycache__ files, router statistics and uncommitted edits, at the 2026-10-19 move from Documents to Downloads. Its README states that it describes the files at move time and that later changes are expected to differ. These entries were never committed and cannot be checked from Git; the 149 tracked entries that can be are checked.",
+      "predecessor": null
+    },
+    {
+      "manifest": "evidence/2026-10-22/divider-admission-attempt-01/tested-source-manifest.json",
+      "paths": ["tests/test_module_latency_gates.py"],
+      "kind": "mixed_eol_tested_source",
+      "reason": "The tested working copy ended its last line with CRLF in an otherwise LF file; Git stores it normalized.",
+      "predecessor": null,
+      "reconstruct": {"blob": "b526b6eaa20b87d47df7e8ef27dc6d48692434c4", "crlf_lines": [89]}
+    },
+    {
+      "manifest": "evidence/2026-10-22/latency-contract-tests/tested-source-manifest.json",
+      "paths": ["tests/test_module_latency_gates.py"],
+      "kind": "mixed_eol_tested_source",
+      "reason": "The tested working copy ended its last line with CRLF in an otherwise LF file; Git stores it normalized.",
+      "predecessor": null,
+      "reconstruct": {"blob": "b526b6eaa20b87d47df7e8ef27dc6d48692434c4", "crlf_lines": [89]}
+    },
+    {
+      "manifest": "evidence/2026-10-22/latency-contract-tests/tested-source-manifest-02.json",
+      "paths": ["tests/test_module_latency_gates.py"],
+      "kind": "mixed_eol_tested_source",
+      "reason": "The tested working copy ended its last line with CRLF in an otherwise LF file; Git stores it normalized.",
+      "predecessor": null,
+      "reconstruct": {"blob": "f4ae1474b3ed18e7939b619bb69ab3e204105557", "crlf_lines": [90]}
+    },
+    {
+      "manifest": "evidence/2026-10-22/packet-fifo-admission/tested-source-manifest.json",
+      "paths": ["tests/test_module_latency_gates.py"],
+      "kind": "mixed_eol_tested_source",
+      "reason": "The tested working copy ended its last line with CRLF in an otherwise LF file; Git stores it normalized.",
+      "predecessor": null,
+      "reconstruct": {"blob": "b526b6eaa20b87d47df7e8ef27dc6d48692434c4", "crlf_lines": [89]}
+    },
+    {
+      "manifest": "evidence/2026-10-23/divider-admission-attempt-02/tested-source-manifest.json",
+      "paths": ["tests/test_module_latency_gates.py"],
+      "kind": "mixed_eol_tested_source",
+      "reason": "The tested working copy ended its last line with CRLF in an otherwise LF file; Git stores it normalized.",
+      "predecessor": null,
+      "reconstruct": {"blob": "b526b6eaa20b87d47df7e8ef27dc6d48692434c4", "crlf_lines": [89]}
+    },
+    {
+      "manifest": "evidence/2026-10-28/agent-coexistence/source-identity.json",
+      "paths": ["tests/test_module_latency_gates.py"],
+      "kind": "mixed_eol_tested_source",
+      "reason": "Both the before and after identities hashed a working copy whose last line ended with CRLF in an otherwise LF file; Git stores it normalized.",
+      "predecessor": null,
+      "reconstruct": {"blob": "b526b6eaa20b87d47df7e8ef27dc6d48692434c4", "crlf_lines": [89]}
+    },
+    {
+      "manifest": "evidence/2026-10-22/divider-admission-attempt-01/tested-source-manifest.json",
+      "paths": ["curriculum/tier3/iterative_divider_build/iterative_divider_tb.v"],
+      "kind": "uncommitted_tested_source",
+      "reason": "The tested testbench was edited before its first commit. An exact copy survived in a Codex pytest staging folder and is archived in evidence-integrity-01/recovered.",
+      "predecessor": "evidence/2026-10-28/evidence-integrity-01/recovered/divider-admission-attempt-01"
+    },
+    {
+      "manifest": "evidence/2026-10-22/divider-admission-attempt-01/tested-source-manifest.json",
+      "paths": ["curriculum/tier3/iterative_divider_build/README.md", "tests/test_iterative_divider_fixture.py"],
+      "kind": "uncommitted_tested_source",
+      "reason": "These tested versions were edited before their first commit. No commit, run folder or staging folder holds the recorded bytes, and no line-ending or trailing-newline variant of the committed version reproduces them.",
+      "predecessor": null
+    },
+    {
+      "manifest": "evidence/2026-10-22/packet-fifo-admission/tested-source-manifest.json",
+      "paths": ["curriculum/tier2/packet_fifo_build/README.md"],
+      "kind": "uncommitted_tested_source",
+      "reason": "This tested version was edited before its first commit. No commit, run folder or staging folder holds the recorded bytes, and no line-ending or trailing-newline variant of the committed version reproduces them.",
+      "predecessor": null
+    },
+    {
+      "manifest": "evidence/2026-10-23/divider-admission-attempt-02/tested-source-manifest.json",
+      "paths": ["curriculum/tier3/iterative_divider_build/README.md"],
+      "kind": "uncommitted_tested_source",
+      "reason": "This tested version was edited before its first commit. No commit, run folder or staging folder holds the recorded bytes, and no line-ending or trailing-newline variant of the committed version reproduces them.",
+      "predecessor": null
+    }
+  ]
+}

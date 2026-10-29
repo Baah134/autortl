@@ -3,8 +3,8 @@
     python -m hwsuite verify                       # winner hashes vs evidence and run state
     python -m hwsuite sim [--design NAME]          # winner must PASS, its fault must FAIL
     python -m hwsuite build --design NAME          # Vivado batch implementation + bitstream
-    python -m hwsuite program --design NAME        # load the bitstream over JTAG
-    python -m hwsuite hw --design NAME [--count N] [--wrong-model]
+    python -m hwsuite program --design NAME [--bit FILE]   # load the bitstream over JTAG
+    python -m hwsuite hw --design NAME [--bit FILE] [--count N] [--wrong-model]
     python -m hwsuite all [--design NAME]          # verify, sim, then per design build, program, hw
     python -m hwsuite evidence --out DIR           # archive outputs + summary.json + SHA-256 manifest
 
@@ -161,12 +161,23 @@ def cmd_build(args, table):
             raise SuiteError(f"{design.name}: build failed or warned: " + "; ".join(warnings[:3]))
 
 
+def _bitstream(args, design) -> Path:
+    """The bitstream to program or identify: --bit if given, else this design's build.
+
+    --bit lets a fresh clone program an archived bitstream (evidence/2026-10-28/
+    basys3-bitstreams-01) and rerun the board check without synthesis. A
+    bitstream for the wrong design fails the hardware check against the model.
+    """
+    return Path(args.bit) if getattr(args, "bit", None) else SUITE / "build" / design.name / "impl" / "stream_shell.bit"
+
+
 def cmd_program(args, table):
     for design in _selected(args, table, require_one=True):
         out = SUITE / "build" / design.name / "impl"
-        bit = out / "stream_shell.bit"
+        bit = _bitstream(args, design)
         if not bit.is_file():
-            raise SuiteError(f"{design.name}: build first ({bit} missing)")
+            raise SuiteError(f"{design.name}: build first or pass --bit ({bit} missing)")
+        out.mkdir(parents=True, exist_ok=True)
         cmd = [_tool(args.vivado, "vivado"), "-mode", "batch", "-nojournal", "-log", "program.log",
                "-source", (SUITE / "scripts" / "program.tcl").as_posix(), "-tclargs", bit.as_posix()]
         code = _run(cmd, out, out / "program_console.txt")
@@ -179,9 +190,9 @@ def cmd_program(args, table):
 def cmd_hw(args, table):
     from . import hw, reports
     for design in _selected(args, table, require_one=True):
-        bit = SUITE / "build" / design.name / "impl" / "stream_shell.bit"
+        bit = _bitstream(args, design)
         if not bit.is_file():
-            raise SuiteError(f"{design.name}: build and program first ({bit} missing)")
+            raise SuiteError(f"{design.name}: build and program first, or pass --bit ({bit} missing)")
         report = hw.run(design, port=args.port, count=args.count, chunk=args.chunk,
                         restart_every=args.restart_every, wrong_model=args.wrong_model, seed=args.seed)
         # Identify what was on the board: the payload of the bitstream last programmed.
@@ -390,6 +401,7 @@ def main(argv=None):
     parser.add_argument("command", choices=("verify", "sim", "build", "program", "hw", "all", "evidence"))
     parser.add_argument("--out", help="evidence: destination folder (must be new or empty)")
     parser.add_argument("--design")
+    parser.add_argument("--bit", type=Path, help="program/hw: use this bitstream instead of build/<design>")
     parser.add_argument("--vivado", type=Path, default=DEFAULT_VIVADO)
     parser.add_argument("--port")
     parser.add_argument("--count", type=int, default=20000)

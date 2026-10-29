@@ -1,0 +1,42 @@
+# Basys 3 bitstreams that were tested on the board
+
+These are the exact bitstreams behind the board results of 2026-10-28, copied
+unchanged from the build folders that produced them. With a Basys 3 you can
+program one and rerun its board test without Vivado synthesis.
+
+| File | Board result | Recorded in |
+|---|---|---|
+| `basys3_uart_echo_v02.bit` | UART echo, 1,000,000 bytes with 0 lost | `basys3-uart-echo-02/manifest.json` |
+| `basys3_fir4_shell.bit` | FIR01 winner behind its UART shell, 100,000/100,000 | `basys3-fir4-01/manifest.json` |
+| `harness_winners/<design>.bit` | Each of the six harness winners, 50,000/50,000 | `basys3-harness-winners-01/summary.json` |
+
+`make_manifest.py` wrote `manifest.json` and refuses to write it unless every
+file's SHA-256 equals the digest its board evidence recorded. For the six
+harness winners it also checks the configuration payload: the bitstream with
+its build-time header removed. That payload is what the board actually
+loads, and it must equal the payload that was programmed and tested. The
+header differs between builds because it records the build time. These
+harness-winner files come from the rebuild with `keep_hierarchy`, whose
+payloads are identical to the tested ones (see
+`basys3-harness-winners-01/README.md`).
+
+The superseded v01 UART echo bitstream is not here. The v02 build
+overwrote it in the same build folder before bitstreams were archived, and
+`tools/evidence_exceptions.json` records that loss. Its source is
+kept in `basys3-uart-echo-01/source-snapshot`.
+
+## Reprogramming the board
+
+```
+vivado -mode batch -source hardware/basys3/harness_winners/scripts/program.tcl -tclargs <path to .bit>
+```
+
+Then run the matching test. For a harness winner:
+
+```
+python -m hwsuite hw --design <name>
+```
+
+Run it from `hardware/basys3/harness_winners/`. The suite's README lists the
+serial port and options. `tools/evidence_audit.py` checks in CI that every
+recorded bitstream digest has its file in the repository.

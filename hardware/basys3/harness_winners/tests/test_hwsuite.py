@@ -236,6 +236,33 @@ def test_evidence_readme_renders_every_design_from_the_summary():
     assert "51 / 67 / 0 | 52 / 67 / 0 |" in row
 
 
+def test_program_and_hw_use_an_archived_bitstream_with_bit(tmp_path, monkeypatch):
+    # A fresh clone has no build/ folder; --bit programs and identifies an
+    # archived bitstream instead.
+    from hwsuite import cli, hw
+    archived = REPO / "evidence" / "2026-10-28" / "basys3-bitstreams-01" / "harness_winners" / "sync_fifo.bit"
+    monkeypatch.setattr(cli, "SUITE", tmp_path / "suite")
+    calls = []
+
+    def fake_run(cmd, cwd, log):
+        calls.append(cmd)
+        log.write_text("RESULT: programmed\n")
+        return 0
+
+    monkeypatch.setattr(cli, "_run", fake_run)
+    monkeypatch.setattr(cli, "_tool", lambda vivado, name: name)
+    monkeypatch.setattr(hw, "run", lambda design, **kw: {"passed": True, "checked": 1})
+    monkeypatch.setattr(hw, "format_report", lambda report: "ok")
+    assert cli_main(["program", "--design", "sync_fifo"]) == 1          # nothing built, no --bit
+    assert cli_main(["program", "--design", "sync_fifo", "--bit", str(archived)]) == 0
+    assert calls[-1][-1] == archived.as_posix()
+    assert cli_main(["hw", "--design", "sync_fifo", "--bit", str(archived), "--count", "1"]) == 0
+    report = json.loads((tmp_path / "suite" / "build" / "sync_fifo" / "hw" / "model_1.json").read_text())
+    # The tested payload of the archived file is the one the board evidence recorded.
+    summary = json.loads((REPO / "evidence" / "2026-10-28" / "basys3-harness-winners-01" / "summary.json").read_text())
+    assert report["bitstream_payload_sha256"] == summary["sync_fifo"]["bitstream_payload_sha256"]
+
+
 def test_cli_rejects_unknown_design(capsys):
     assert cli_main(["verify", "--design", "nope"]) == 1
     assert "unknown design" in capsys.readouterr().err

@@ -1,7 +1,7 @@
 # Runs every test that needs no Vivado, model login or board. Vivado,
 # Codex and hardware behavior is mocked or replayed from recorded fixtures
 # in these suites; live tool runs and board checks are archived under
-# evidence/ instead.
+# evidence/ instead, and the evidence job checks every digest recorded there.
 name: tests
 
 on:
@@ -34,8 +34,24 @@ jobs:
       - name: Harness tests
         run: python -m pytest tests/ -q -p no:cacheprovider
 
+  evidence:
+    name: Evidence audit (committed blobs)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      # Source bindings are checked against every committed version, so the
+      # audit needs the full history, not the default single-commit clone.
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - name: Every SHA-256 claim under evidence/
+        run: python tools/evidence_audit.py --rev HEAD
+
   tooling:
-    name: Mailbox and board-suite tests (${{ matrix.os }})
+    name: Mailbox, board-suite and audit tests (${{ matrix.os }})
     strategy:
       fail-fast: false
       matrix:
@@ -54,5 +70,5 @@ jobs:
       - run: python -m pip install -r requirements.txt
       # Name the suite folder: the board scripts (echo_test.py, fir_test.py)
       # match pytest's *_test.py pattern but are hardware programs, not tests.
-      - name: Mailbox and board-suite tests
-        run: python -m pytest coordination hardware/basys3/harness_winners/tests -q -p no:cacheprovider
+      - name: Mailbox, board-suite and audit tests
+        run: python -m pytest coordination hardware/basys3/harness_winners/tests tools/tests -q -p no:cacheprovider
