@@ -27,9 +27,11 @@ Vivado 2025.2, xc7a35tcpg236-1, 100 MHz, ideal zero I/O delay.
 - Both entries passed every mandatory gate. mux4's proposal did not improve
   on its baseline, which tier0 permits.
 
-The Vivado times are about three times campaign17's because other Vivado
-runs and a full test suite shared the machine during this gate; budgets
-were never approached and results are unaffected. `role-report.md` shows
+The Vivado times are about three times campaign17's. The bench ran from
+10:46 to 11:04 EDT, and the Windows System log shows the laptop entering
+Modern Standby (Reason: Idle Timeout) at 10:46:28, which throttles desktop
+processes; other work also shared the machine. Budgets were never
+approached and results are unaffected (taxonomy `host_standby_stalls_tools`). `role-report.md` shows
 each role's calls and verdicts (tools/role_report.py).
 
 This identity was superseded by the advisory register-to-register timing
