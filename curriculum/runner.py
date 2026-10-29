@@ -301,6 +301,12 @@ def run_tier(tier: int, **overrides) -> int:
     if len(requested) == 1 and None not in requested:
         # The model the run named for every role; the CLI does not report one back.
         identity.update(model_identity=requested.pop(), model_identity_status="requested")
+        from llm import endpoints
+        endpoint = endpoints.load().get(identity["model_identity"].partition(".")[0])
+        if endpoint is not None:
+            # A user endpoint is configuration outside the frozen source; its
+            # definition is part of the cohort, so editing it starts a new one.
+            identity["model_endpoint_sha256"] = endpoints.digest(endpoint)
     if not known:
         identity["reason"] = ("governance implementation changed during campaign" if not governance_unchanged
                               else "runtime provenance missing, invalid or inconsistent across entries")

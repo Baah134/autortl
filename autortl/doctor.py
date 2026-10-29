@@ -129,8 +129,33 @@ def workspace_check(root):
         return Check("workspace", "MISSING", f"{root}: {exc}", "Run from a writable checkout")
 
 
+def endpoint_checks():
+    """User endpoints from llm/endpoints.local.yaml (or AUTORTL_ENDPOINTS); all optional."""
+    from llm import endpoints
+    try:
+        defined = endpoints.load()
+    except endpoints.EndpointError as exc:
+        return [Check("endpoints", "WARN", str(exc)[:200], "Fix the file; see llm/endpoints.example.yaml", False)]
+    checks = []
+    for name, d in sorted(defined.items()):
+        label = f"endpoint {name}"
+        if d["kind"] == "command":
+            found = shutil.which(d["argv"][0])
+            checks.append(Check(label, "OK" if found else "WARN", f"command {found or d['argv'][0]}",
+                                "" if found else f"Install {d['argv'][0]} or fix argv", False))
+        else:
+            host = d["base_url"].split("//", 1)[1].split("/", 1)[0].rsplit("@", 1)[-1]
+            env = d.get("api_key_env")
+            ready = not env or bool(os.environ.get(env))
+            checks.append(Check(label, "OK" if ready else "WARN",
+                                f"openai-compatible at {host}" + (f", key in {env}" if env else ", no key"),
+                                "" if ready else f"Set {env}", False))
+    return checks
+
+
 def run_checks(paths, root):
-    return [python_check(), *package_checks(), *tool_checks(paths), *model_check(), openai_check(), workspace_check(root)]
+    return [python_check(), *package_checks(), *tool_checks(paths), *model_check(), openai_check(),
+            *endpoint_checks(), workspace_check(root)]
 
 
 def render(checks):

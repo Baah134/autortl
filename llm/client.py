@@ -47,12 +47,31 @@ def _record(role: str, entry: str, ok: bool, seconds: float,
                             "metadata": metadata or {}, "error_type": error_type}) + "\n")
 
 
+def _backend(role, name):
+    """A built-in backend, or a user endpoint from llm/endpoints.local.yaml."""
+    if name in _BACKENDS:
+        return _BACKENDS[name]
+    from . import endpoints
+    try:
+        return endpoints.backend(name)
+    except endpoints.EndpointError as exc:
+        raise ModelCallError(role, "CODEX_UNAVAILABLE", message=str(exc)) from exc
+
+
+def _is_backend(name):
+    from . import endpoints
+    try:
+        return name in _BACKENDS or name in endpoints.load()
+    except endpoints.EndpointError:
+        return False
+
+
 def ask(role: str, prompt: str, system: str = "",
         budget=None, route_override: str | None = None,
         max_turns: int = 1, model: str | None = None) -> str:
     cfg = _load_routing()
     chain = cfg["roles"].get(role, {}).get("chain", ["codex.default"])
-    if model and model.partition(".")[0] in _BACKENDS:
+    if model and _is_backend(model.partition(".")[0]):
         # A backend-qualified model (openai.gpt-4o-mini) pins backend and alias.
         chain = [model]
     elif model:
@@ -68,7 +87,7 @@ def ask(role: str, prompt: str, system: str = "",
         if succeeded:
             break
         backend_name, _, alias = entry.partition(".")
-        backend = _BACKENDS.get(backend_name)
+        backend = _backend(role, backend_name)
         if backend is None:
             raise ModelCallError(role, "CODEX_UNAVAILABLE", message=f"unsupported backend '{backend_name}'")
         for attempt in range(1, retries + 1):

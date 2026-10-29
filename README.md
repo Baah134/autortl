@@ -334,6 +334,32 @@ Local servers that ignore the key still need a placeholder value. The key is
 read only from the environment and is never written to run files or logs.
 `python run.py doctor` reports whether the key is set.
 
+**Bring your own model.** To plug in any AI, name it in
+`llm/endpoints.local.yaml` (Git ignores it; copy
+[`llm/endpoints.example.yaml`](llm/endpoints.example.yaml)) and pass
+`--model <endpoint>.<model>`. An endpoint is either an OpenAI-compatible URL,
+with an optional `api_key_env` naming the variable that holds its key, or a
+command line that reads the prompt on stdin and prints the answer, such as
+another vendor's CLI or your own script:
+
+```yaml
+endpoints:
+  ollama:
+    kind: openai
+    base_url: http://localhost:11434/v1
+  mine:
+    kind: command
+    argv: [python, my_model.py]
+    model_flag: --model
+```
+
+`--model ollama.llama3.1` or `--model mine.small` then routes every role to
+it. Several endpoints can be defined side by side, `doctor` checks each one,
+and an endpoint's definition is part of the bench cohort, so editing it starts
+a new cohort. Commands run without a shell from an empty temporary folder and
+only ever receive the prompt on stdin; AutoRTL does not sandbox them, so give
+them no tools they do not need.
+
 Resume an interrupted experiment using its saved configuration:
 
 ```powershell

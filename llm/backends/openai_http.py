@@ -47,8 +47,8 @@ def _scrub(text, key, secrets=()):
     return redact(text, secrets)
 
 
-def _endpoint():
-    base = (os.environ.get("AUTORTL_OPENAI_BASE_URL") or DEFAULT_BASE_URL).strip().rstrip("/")
+def _endpoint(base_url=None):
+    base = (base_url or os.environ.get("AUTORTL_OPENAI_BASE_URL") or DEFAULT_BASE_URL).strip().rstrip("/")
     try:
         parts = urllib.parse.urlsplit(base)
         port = parts.port
@@ -132,19 +132,31 @@ def _content(message):
 
 
 def ask(model_alias: str, prompt: str, system: str = "",
-        timeout_s: int = 180, max_turns: int = 1) -> tuple[str, dict]:
+        timeout_s: int = 180, max_turns: int = 1, *, base_url=None, api_key_env=None,
+        label="openai") -> tuple[str, dict]:
+    """base_url/api_key_env come from a user endpoint (llm/endpoints.py); without
+    them this is the built-in backend configured by AUTORTL_OPENAI_*."""
     if timeout_s <= 0:
         raise ValueError("timeout_s must be positive")
-    key = (os.environ.get("AUTORTL_OPENAI_API_KEY") or "").strip()
-    if not key:
-        raise CodexError("CODEX_UNAVAILABLE",
-                         "set AUTORTL_OPENAI_API_KEY to use the openai backend")
-    model = model_alias if model_alias and model_alias != "default" else \
-        (os.environ.get("AUTORTL_OPENAI_MODEL") or "").strip()
-    if not model:
-        raise CodexError("CODEX_UNAVAILABLE",
-                         "openai.default needs AUTORTL_OPENAI_MODEL, or name the model (openai.<model>)")
-    url, host, origin = _endpoint()
+    if base_url is None:
+        key = (os.environ.get("AUTORTL_OPENAI_API_KEY") or "").strip()
+        if not key:
+            raise CodexError("CODEX_UNAVAILABLE",
+                             "set AUTORTL_OPENAI_API_KEY to use the openai backend")
+        model = model_alias if model_alias and model_alias != "default" else \
+            (os.environ.get("AUTORTL_OPENAI_MODEL") or "").strip()
+        if not model:
+            raise CodexError("CODEX_UNAVAILABLE",
+                             "openai.default needs AUTORTL_OPENAI_MODEL, or name the model (openai.<model>)")
+    else:
+        # A user endpoint sends a key only when it names the variable holding one.
+        key = (os.environ.get(api_key_env) or "").strip() if api_key_env else ""
+        if api_key_env and not key:
+            raise CodexError("CODEX_UNAVAILABLE", f"endpoint {label}: set {api_key_env} (it holds the API key)")
+        model = model_alias if model_alias and model_alias != "default" else ""
+        if not model:
+            raise CodexError("CODEX_UNAVAILABLE", f"endpoint {label} needs a model name: use {label}.<model>")
+    url, host, origin = _endpoint(base_url)
     secrets = (prompt, system)
     meta = {"model": None, "usage": None, "cost_usd": None, "session_id": None,
             "requested_model": None if model_alias == "default" else model_alias,
@@ -154,7 +166,7 @@ def ask(model_alias: str, prompt: str, system: str = "",
     request = urllib.request.Request(
         url, data=json.dumps({"model": model, "messages": messages}).encode("utf-8"),
         headers={"Content-Type": "application/json", "Accept": "application/json",
-                 "Authorization": f"Bearer {key}"},
+                 **({"Authorization": f"Bearer {key}"} if key else {})},
         method="POST")
     deadline = time.monotonic() + timeout_s
     try:
