@@ -74,3 +74,9 @@ def test_a_held_higher_tier_blocks_the_gate(tmp_path, monkeypatch):
     monkeypatch.setattr(runner, "_history", lambda: [{"tier": 2, "held": True}])
     with pytest.raises(SystemExit, match="higher held tier"):
         gate.main(["--name", "gate-02", "--tier", "1"])
+
+
+def test_a_pinned_model_is_passed_to_the_bench(tmp_path):
+    command = gate.bench_command("PY", tmp_path, tier=0, model="gpt-6-luna")
+    assert command[-2:] == ["--model", "gpt-6-luna"]
+    assert command[:-2] == gate.bench_command("PY", tmp_path)
