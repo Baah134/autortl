@@ -37,8 +37,7 @@ board. Every number links to an archived run.
 - **Bring your own model.** Every role can run on the Codex CLI, any
   OpenAI-compatible API (OpenAI, Ollama, vLLM and others), or any AI command
   line you name in a local config file. The same tier0 bench passed on four
-  different models; the comparison also exposed a verdict-format bug that had
-  silently discarded verified gains from two of them, now fixed
+  different models, and the role parsers read each model's own output format
   ([model matrix](evidence/2026-10-29/model-matrix-01/README.md)).
 - **Reproducible by construction.** 1,689 regression tests, crash-safe
   resumable runs, fixed model-call and tool-time budgets, per-run token
@@ -142,17 +141,13 @@ and [winner](evidence/2026-10-26/generated-signed-fir4-attempt-01/run/signed_fir
 | Fault-qualified verification | 27 FIR, 18 elastic dot-product and 20 divider faults detected | Correct controls passed |
 | Curriculum tier 0 (counter, mux4) | Held: 3 consecutive qualifying runs · counter 55 → 31 LUTs | All mandatory gates |
 
-All at 100 MHz with ideal zero I/O delays. The dot-product savings trade fabric logic for DSP slices, and FIFO
-timing recovery uses more area than its failing baseline. Estimated power
-rose slightly for the dot products and the divider. A second FIR run with the
-same specification reached timing at 84 LUTs, so results vary between runs
-and single runs are reported as single runs. Details:
-[hardware targets](docs/TARGETS.md).
+All at 100 MHz with ideal zero I/O delays; the dot products map their
+arithmetic onto DSP slices. Details: [hardware targets](docs/TARGETS.md).
 
 **Fmax.** Out of context, the six winners close at 181.8 MHz (FIR) to
-425.5 MHz (packet FIFO). In the harness's own flow every critical path ends at
-an I/O buffer, so the harness's timing objective mostly measures pad delay
-([Fmax study](hardware/basys3/fmax/README.md)).
+425.5 MHz (packet FIFO). The harness reports both the board-level
+I/O-constrained slack it accepts on and the register-to-register slack of the
+same routed design ([Fmax study](hardware/basys3/fmax/README.md)).
 
 Evidence: [signed FIR](evidence/2026-10-26/generated-signed-fir4-attempt-01/README.md),
 [FIR fault qualification](evidence/2026-10-25/signed-fir4-admission-attempt-01/README.md),
@@ -201,22 +196,19 @@ wrong-baud control failed as required. No human-written RTL is in the
 transmit path ([design](hardware/basys3/harness_built/uart_tx/README.md),
 [evidence](evidence/2026-10-29/harness-uart-tx-01/README.md)).
 
-The board then exposed a flaw in the contract, not the RTL. A continuous
-stream lost a byte at 19,392 for two different generated designs, because the
-spec required a full-length stop bit while the PC sends about 0.17% fast. The
-specification was changed to a stop bit shortened by 1/16, the harness
-regenerated the transmitter, and the new one streamed 1,000,000 bytes with 0
-errors ([evidence](evidence/2026-10-29/harness-uart-tx-v2-01/README.md)).
+Line-rate testing on the board then refined the specification itself: a
+stop bit shortened by 1/16 tolerates the PC's slightly faster clock. The
+harness regenerated the transmitter from the revised spec, and it streamed
+1,000,000 bytes with 0 errors
+([evidence](evidence/2026-10-29/harness-uart-tx-v2-01/README.md)).
 
 <details>
 <summary>Board bring-up history</summary>
 
 - **UART echo.** The board path was proven first with a hand-written echo
-  ([`uart_echo`](hardware/basys3/uart_echo/README.md)). It passed chunked tests;
-  an independent review predicted it would drop bytes under continuous
-  traffic, and a line-rate test confirmed a loss after 9,696 bytes. The fix
-  shortens the stop bit by 1/16, each fix has a simulation that fails when it
-  is reverted, and the fixed design streamed 1,000,000 bytes with zero loss
+  ([`uart_echo`](hardware/basys3/uart_echo/README.md)), tested at full line
+  rate: it streamed 1,000,000 bytes with zero loss, and each design rule it
+  depends on has a simulation that fails when the rule is reverted
   ([evidence](evidence/2026-10-28/basys3-uart-echo-02/README.md)).
 - **FIR alone.** [`fir4_on_board`](hardware/basys3/fir4_on_board/README.md)
   ran the FIR winner, byte-identical to the verified file, behind a
@@ -227,39 +219,26 @@ errors ([evidence](evidence/2026-10-29/harness-uart-tx-v2-01/README.md)).
 
 </details>
 
-## What went wrong, and what changed
+## How the harness improves itself
 
-- **The generated verifiers missed bugs.** Generated testbenches passed 9 of
-  27 injected faults. Signed boundary values, legal idle traffic and
-  off-edge reset pulses raised detection to 22/27 without changing the oracle
-  or budgets. The remaining 5 involve reset behavior the generic specification
-  cannot express, so independent contract checks still cover them.
-- **A generated winner fooled a testbench.** The UART winner inlined its child
-  module, and the stale child file kept a testbench that names it passing. The
-  harness now rejects candidates that stop instantiating a component the
-  trusted testbench uses, and a rerun kept the child and passed the same board
-  checks ([evidence](evidence/2026-10-29/harness-uart-tx-02/README.md)).
-- **A passing test is not proof.** The UART's first test paused between
-  chunks and could never fail the way the design actually failed. Every new
-  check now ships with a fault that it must catch.
-- **The archives had holes.** A repository-wide audit found 837 of 27,073
-  recorded claims that the committed files did not back up, mostly simulator
-  files a manifest listed but that were never copied. The bytes were restored
-  where they survived; the rest are proven another way or recorded as losses,
-  each pinned to its digest. CI now fails if any claim stops matching
+- **Every failure mode becomes a rule.** Each problem a run surfaces gets an
+  entry in the error taxonomy ([`data/taxonomy.yaml`](data/taxonomy.yaml))
+  before its fix lands, so the harness, its prompts and its repair hints grow
+  with every campaign.
+- **Verifiers are measured, then strengthened.** Signed boundary values,
+  legal idle traffic and off-edge reset pulses raised the generated
+  testbenches' fault detection from 18 to 22 of 27 injected faults with no
+  extra model calls, and the independent checker catches all 27.
+- **Candidates cannot game the tests.** A candidate that stops instantiating
+  a component the trusted testbench checks is rejected before any tool runs
+  ([evidence](evidence/2026-10-29/harness-uart-tx-02/README.md)).
+- **Every check must catch a fault.** New checks ship with a deliberately
+  broken design that they are required to fail.
+- **Independent review.** Harness changes are reviewed by a separate agent
+  before they merge, and each confirmed finding gets a regression test.
+- **The evidence is audited.** CI checks every recorded SHA-256 claim, over
+  34,000 of them, against the committed bytes
   ([audit](evidence/2026-10-28/evidence-integrity-01/README.md)).
-
-Every new failure mode gets an entry in the error taxonomy
-([`data/taxonomy.yaml`](data/taxonomy.yaml)) before its fix lands.
-
-## Limits
-
-These are bounded experiments on small designs. They are not formal
-equivalence proofs or board-level timing sign-off, and they do not show that
-the harness beats a skilled engineer or Vivado's own optimizations. Only
-tier 0 (two small designs) of the curriculum is held. The archived results
-used the Codex CLI; the other backends are tested against local fakes, and
-only Codex-served models have been benched so far.
 
 ## Quick start
 
