@@ -4,7 +4,30 @@ Updated October 29, 2026 (America/New_York). Verify files, Git, ownership and
 actual jobs before acting. Canonical checkout: Downloads/autortl-work. Preserve
 the separate Downloads/autortl copy. User choice: command-line Vivado.
 
-## Latest - October 29 (Claude Code): tier0 held on the changed harness
+## Latest - October 29 (Claude Code): tier1 started; model-portability branch
+
+The user's direction: the harness's roles do the design work; Claude
+supervises, reads the roles' logs and improves the harness and roles so any
+LLM can work in it. The user overrode CLAUDE.md's Codex-only rule. The
+working plan is docs/PLAN_24H.md (on claude/model-portability until merged).
+
+- **tier1-campaign-01** (old 232-file identity): 3/4, not qualifying
+  (evidence/2026-10-29/tier1-campaign-01). counter8 and encoder8 (6 -> 5
+  LUT) passed; pwm passed with no gain; debouncer ended at spec lint.
+- **Branch claude/model-portability** (worktree Downloads/autortl-portability):
+  six taxonomy entries, each committed before its fix: fence tags other
+  models write, golden fence tags, evaluator verdict forms, a run-pinned
+  model (`--model`, recorded in the cohort), planner spec repair with the
+  structural rules in the prompt, and a mechanical default timescale for the
+  verified seed copy. Also tools/role_report.py (per-role calls, verdicts,
+  repairs) and a reworked README. Not merged yet.
+- Codex CLI accepts other models on this login (gpt-5.6-luna, gpt-6.1-sol
+  tested). Gemini CLI is refused (free tier unsupported); the Claude CLI is
+  not logged in for headless use.
+- Run benches one at a time: run_tier rewrites the whole history, so a
+  concurrent bench drops a record (append-safe fix in progress).
+
+## October 29 (Claude Code): tier0 held on the changed harness
 
 - **Tier0 is held**, for the first time in the project's history.
   campaign15, 16 and 17 all ran `tools/tier0_gate.py` on the same 232-file
