@@ -31,7 +31,8 @@ def test_this_runner_is_outside_the_identity():
     assert "tools" not in gate.SELECTION
 
 
-def test_bench_command_matches_campaign14(tmp_path):
+def test_bench_command_matches_campaign14(tmp_path, monkeypatch):
+    monkeypatch.delenv("AUTORTL_VIVADO_BIN", raising=False)
     out = tmp_path / "run"
     command = gate.bench_command("PY", out)
     assert command == ["PY", "run.py", "bench", "--tier", "0", "--iterations", "1", "--best-of-n", "1",
@@ -42,6 +43,39 @@ def test_bench_command_matches_campaign14(tmp_path):
                        "--xvlog", "C:/AMDDesignTools/2025.2/Vivado/bin/xvlog.bat",
                        "--xelab", "C:/AMDDesignTools/2025.2/Vivado/bin/xelab.bat",
                        "--xsim", "C:/AMDDesignTools/2025.2/Vivado/bin/xsim.bat"]
+
+
+def test_bench_command_takes_the_vivado_folder_from_the_environment(tmp_path, monkeypatch):
+    monkeypatch.setenv("AUTORTL_VIVADO_BIN", r"D:\Xilinx\Vivado\bin")
+    command = gate.bench_command("PY", tmp_path / "run")
+    assert command[-8:] == ["--vivado", "D:/Xilinx/Vivado/bin/vivado.bat", "--xvlog", "D:/Xilinx/Vivado/bin/xvlog.bat",
+                            "--xelab", "D:/Xilinx/Vivado/bin/xelab.bat", "--xsim", "D:/Xilinx/Vivado/bin/xsim.bat"]
+
+
+def test_the_vivado_bin_option_overrides_the_environment(tmp_path, monkeypatch):
+    monkeypatch.setenv("AUTORTL_VIVADO_BIN", "D:/ignored")
+    command = gate.bench_command("PY", tmp_path / "run", "E:/Vivado/bin/")
+    assert command[-8:] == ["--vivado", "E:/Vivado/bin/vivado.bat", "--xvlog", "E:/Vivado/bin/xvlog.bat",
+                            "--xelab", "E:/Vivado/bin/xelab.bat", "--xsim", "E:/Vivado/bin/xsim.bat"]
+
+
+def test_main_passes_the_vivado_bin_option_to_the_bench(tmp_path, monkeypatch):
+    # Stop main right after it builds the command, before any process starts.
+    seen = []
+    def stop(python, out, vivado=None):
+        seen.append(vivado)
+        raise SystemExit("stopped")
+    monkeypatch.setattr(gate, "ROOT", tmp_path)
+    monkeypatch.setattr(gate, "identities", lambda root=None: {})
+    monkeypatch.setattr(gate, "bench_command", stop)
+    monkeypatch.setattr(gate.subprocess, "run", lambda *a, **k: type("R", (), {"returncode": 0, "stdout": "1 passed"})())
+    monkeypatch.syspath_prepend(str(gate.Path(gate.__file__).resolve().parents[1]))
+    import curriculum.runner
+    monkeypatch.setattr(curriculum.runner, "_history", lambda: [])
+    (tmp_path / "logs").mkdir()
+    with pytest.raises(SystemExit, match="stopped"):
+        gate.main(["--name", "gate-02", "--vivado-bin", "E:/Vivado/bin"])
+    assert seen == ["E:/Vivado/bin"]
 
 
 def test_an_earlier_attempt_is_never_overwritten(tmp_path, monkeypatch):

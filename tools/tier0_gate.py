@@ -15,7 +15,10 @@ harness on purpose. This runner:
    arguments, and requires the source, router statistics and curriculum
    history prefixes to be unchanged afterwards.
 
-    python tools/tier0_gate.py --name contract-campaign-15 [--python PY]
+    python tools/tier0_gate.py --name contract-campaign-15 [--python PY] [--vivado-bin DIR]
+
+The Vivado bin folder is --vivado-bin, else $AUTORTL_VIVADO_BIN, else
+C:/AMDDesignTools/2025.2/Vivado/bin/.
 
 Outputs go to logs/<name>* (ignored) and are archived under evidence/
 afterwards. It refuses to overwrite an earlier attempt.
@@ -24,6 +27,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
@@ -53,14 +57,21 @@ def identities(root=ROOT):
     return dict(sorted(result.items()))
 
 
-def bench_command(python, out):
+def vivado_bin(option=None):
+    """--vivado-bin, else $AUTORTL_VIVADO_BIN, else the default; always ends in "/"."""
+    folder = option or os.environ.get("AUTORTL_VIVADO_BIN") or VIVADO
+    folder = folder.replace("\\", "/")
+    return folder if folder.endswith("/") else folder + "/"
+
+
+def bench_command(python, out, vivado=None):
     args = [python, "run.py", "bench", "--tier", "0", "--iterations", str(BUDGETS["iterations"]),
             "--best-of-n", str(BUDGETS["best_of_n"]), "--max-llm-calls", str(BUDGETS["model_calls"]),
             "--max-vivado-minutes", str(BUDGETS["tool_minutes"]), "--max-wall-minutes", str(BUDGETS["wall_minutes"]),
             "--max-infra-retries", str(BUDGETS["infra_retries"]), "--target-part", "xc7a35tcpg236-1",
             "--target-freq-mhz", "100", "--output-dir", str(out)]
     for name in ("vivado", "xvlog", "xelab", "xsim"):
-        args += ["--" + name, VIVADO + name + ".bat"]
+        args += ["--" + name, vivado_bin(vivado) + name + ".bat"]
     return args
 
 
@@ -68,6 +79,7 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--name", required=True)
     parser.add_argument("--python", default=sys.executable)
+    parser.add_argument("--vivado-bin", help="Vivado bin folder (default: $AUTORTL_VIVADO_BIN, else %s)" % VIVADO)
     args = parser.parse_args(argv)
     logs = ROOT / "logs"
     run, freeze_path = logs / args.name, logs / f"{args.name}-source-freeze.json"
@@ -100,7 +112,7 @@ def main(argv=None):
     history_path, stats = ROOT / "curriculum/results.jsonl", ROOT / "llm/router_stats.jsonl"
     history_before = history_path.read_bytes() if history_path.exists() else b""
     stats_before = stats.read_bytes() if stats.exists() else b""
-    command = bench_command(args.python, run)
+    command = bench_command(args.python, run, args.vivado_bin)
     plan = {"git_commit": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
             "runtime_source": source, "source_freeze_sha256": sha(freeze_path),
             "full_test_receipt_sha256": sha(tests_path), "command": command,
