@@ -4,6 +4,7 @@ from dataclasses import asdict
 from datetime import datetime, timezone
 import hashlib
 import json
+import os
 import re
 from pathlib import Path
 import tempfile
@@ -109,6 +110,36 @@ def _metadata(entry):
     return meta
 
 
+class HistoryConflictError(RuntimeError):
+    """Another bench changed the curriculum history during this campaign."""
+
+
+def _history_bytes() -> bytes:
+    return RESULTS.read_bytes() if RESULTS.exists() else b""
+
+
+def _commit_history(expected: bytes, history, record) -> None:
+    """Write history + record only if nobody changed the history meanwhile.
+
+    Benches read the history when they start and rewrite it when they end, so
+    two at once would drop one record (concurrent_bench_drops_history). A short
+    exclusive lock covers the compare and the write; a conflict fails closed and
+    leaves this campaign's record in its own summary.json.
+    """
+    lock = RESULTS.with_name(RESULTS.name + ".lock")
+    try:
+        os.close(os.open(lock, os.O_CREAT | os.O_EXCL | os.O_WRONLY))
+    except FileExistsError as exc:
+        raise HistoryConflictError(f"{lock} exists: another bench is writing the history") from exc
+    try:
+        if _history_bytes() != expected:
+            raise HistoryConflictError("curriculum history changed during this campaign; "
+                                       "run benches one at a time")
+        atomic_write_text(RESULTS, "".join(json.dumps(r, default=str) + "\n" for r in history + [record]))
+    finally:
+        lock.unlink(missing_ok=True)
+
+
 def _history():
     records = []
     if not RESULTS.exists():
@@ -179,6 +210,7 @@ def run_tier(tier: int, **overrides) -> int:
     if not entries:
         print(f"[bench] tier {tier}: no entries")
         return 1
+    history_bytes = _history_bytes()
     history = _history()
     governance_sha256 = _hash(Path(__file__).resolve())
     records, cohort_inputs, prepared = [], [], []
@@ -244,6 +276,11 @@ def run_tier(tier: int, **overrides) -> int:
            "passed": sum(r["ok"] for r in records), "total": len(records),
            "results": records, "evidence_dir": str(campaign), **governance}
     atomic_write_text(campaign / "summary.json", json.dumps(rec, indent=2, default=str))
-    atomic_write_text(RESULTS, "".join(json.dumps(r, default=str) + "\n" for r in history + [rec]))
+    try:
+        _commit_history(history_bytes, history, rec)
+    except HistoryConflictError as exc:
+        # Infrastructure: nothing enters the history; the record stays in summary.json.
+        print(f"[bench] history not updated: {exc}; record kept in {campaign / 'summary.json'}")
+        return 3
     print(f"[bench] tier {tier}: {rec['passed']}/{rec['total']}; held={rec['held']}; streak={rec['consecutive_qualifying_runs']}")
     return 0 if rec["qualified"] else 1
