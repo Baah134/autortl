@@ -58,7 +58,7 @@ flowchart LR
   never lowered.
 - **Traceable evidence.** Every result is archived with source hashes,
   constraints, tool version and raw reports. On every push, CI checks every
-  SHA-256 claim in the evidence manifests and source freezes (over 23,000)
+  SHA-256 claim in the evidence manifests and source freezes (over 27,000)
   against the committed bytes
   ([audit](evidence/2026-10-28/evidence-integrity-01/README.md)).
 
@@ -197,7 +197,7 @@ constraints and this hardware check as an acceptance gate.
 - **Run-to-run variance is real.** Two FIR runs with the same specification
   and budget ended at 52 and 84 LUTs, so single runs are reported as single
   runs.
-- **The archives had holes.** A repository-wide audit found 817 of 23,194
+- **The archives had holes.** A repository-wide audit found 837 of 27,073
   recorded claims that the committed files did not back up. Most were
   simulator files that a manifest listed but that were never copied into the
   archive. The exact bytes were restored from the original run folders where
