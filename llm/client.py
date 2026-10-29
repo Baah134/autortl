@@ -80,6 +80,8 @@ def ask(role: str, prompt: str, system: str = "",
                                          timeout_s=call_timeout, max_turns=max_turns)
                 if text and text.strip():
                     _record(role, entry, True, time.time() - t0, meta)
+                    if budget is not None and hasattr(budget, "charge_tokens"):
+                        budget.charge_tokens((meta or {}).get("usage"))
                     return text
                 raise codex_cli.CodexError("CODEX_PROTOCOL", "empty response", meta)
             except Exception as e:

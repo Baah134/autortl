@@ -61,7 +61,7 @@ def identities(root=ROOT):
     return dict(sorted(result.items()))
 
 
-def bench_command(python, out, tier=0, model=None):
+def bench_command(python, out, tier=0, model=None, jobs=1):
     budgets = TIER_BUDGETS[tier]
     args = [python, "run.py", "bench", "--tier", str(tier)]
     if budgets["iterations"] is not None:
@@ -74,6 +74,8 @@ def bench_command(python, out, tier=0, model=None):
         args += ["--" + name, VIVADO + name + ".bat"]
     if model:
         args += ["--model", model]
+    if jobs > 1:
+        args += ["--jobs", str(jobs)]
     return args
 
 
@@ -82,6 +84,7 @@ def main(argv=None):
     parser.add_argument("--name", required=True)
     parser.add_argument("--python", default=sys.executable)
     parser.add_argument("--tier", type=int, choices=sorted(TIER_BUDGETS), default=0)
+    parser.add_argument("--jobs", type=int, default=1, help="bench entries run at once (not part of the cohort)")
     parser.add_argument("--model", default=None,
                         help="model alias pinned for every role (recorded in the cohort); default: the CLI default")
     args = parser.parse_args(argv)
@@ -116,7 +119,7 @@ def main(argv=None):
     history_path, stats = ROOT / "curriculum/results.jsonl", ROOT / "llm/router_stats.jsonl"
     history_before = history_path.read_bytes() if history_path.exists() else b""
     stats_before = stats.read_bytes() if stats.exists() else b""
-    command = bench_command(args.python, run, args.tier, args.model)
+    command = bench_command(args.python, run, args.tier, args.model, args.jobs)
     budgets = TIER_BUDGETS[args.tier]
     plan = {"git_commit": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
             "runtime_source": source, "source_freeze_sha256": sha(freeze_path),

@@ -1,5 +1,6 @@
 """Measured curriculum runs and promotion of matching, consecutive cohorts."""
 from __future__ import annotations
+from concurrent.futures import ProcessPoolExecutor, as_completed
 from dataclasses import asdict
 from datetime import datetime, timezone
 import hashlib
@@ -20,6 +21,16 @@ RESULTS = ROOT / "results.jsonl"
 OVERRIDES = {"proposal_feedback", "vivado_bin", "xvlog_bin", "xelab_bin", "xsim_bin", "target_part",
              "target_freq_mhz", "objective", "max_iterations", "best_of_n",
              "max_llm_calls", "max_vivado_minutes", "max_wall_minutes", "max_infra_retries", "model"}
+EXECUTOR = ProcessPoolExecutor  # for --jobs > 1; separate processes keep per-tool timing apart
+
+
+def _run_entry(cfg, run_dir):
+    """Run one entry; an exception becomes an "exception" summary, as before."""
+    try:
+        return Orchestrator(cfg, run_dir=run_dir).run()
+    except Exception as exc:
+        return {"status": "exception", "error": type(exc).__name__ + ": " + str(exc)[:500],
+                "run_dir": str(run_dir)}
 
 
 def _hash(path):
@@ -193,6 +204,9 @@ def run_tier(tier: int, **overrides) -> int:
         raise ValueError("tier must be a nonnegative integer")
     output_root = Path(overrides.pop("output_root", ROOT.parent / "logs" / "curriculum")).resolve()
     selection = overrides.pop("entries", None)
+    jobs = overrides.pop("jobs", 1)
+    if type(jobs) is not int or jobs < 1:
+        raise ValueError("jobs must be a positive integer")
     unknown = set(overrides) - OVERRIDES
     if unknown:
         raise ValueError("Unsupported curriculum overrides: " + ", ".join(sorted(unknown)))
@@ -236,14 +250,26 @@ def run_tier(tier: int, **overrides) -> int:
         prepared.append((entry, meta, hashes, cfg, snapshot))
     output_root.mkdir(parents=True, exist_ok=True)
     campaign = Path(tempfile.mkdtemp(prefix=f"tier{tier}_", dir=output_root))
+    if jobs > 1:
+        # Entries are independent runs (own run_dir, budget and journal), so they
+        # can run as separate processes; records are still assembled in entry order.
+        with EXECUTOR(max_workers=jobs) as pool:
+            futures = {pool.submit(_run_entry, cfg, campaign / entry.name): entry.name
+                       for entry, _, _, cfg, _ in prepared}
+            summaries = {}
+            for future in as_completed(futures):
+                summaries[futures[future]] = future.result()
+                print(f"[bench] {futures[future]}: finished ({len(summaries)}/{len(prepared)})", flush=True)
     for entry, meta, hashes, cfg, snapshot in prepared:
         run_dir = campaign / entry.name
-        try:
-            summary = Orchestrator(cfg, run_dir=run_dir).run()
-            ok, reason = _accepted(summary, meta.get("pass_criteria", {}))
-        except Exception as exc:
-            ok, reason = False, type(exc).__name__ + ": " + str(exc)[:500]
-            summary = {"status": "exception", "error": reason, "run_dir": str(run_dir)}
+        summary = summaries[entry.name] if jobs > 1 else _run_entry(cfg, run_dir)
+        if summary.get("status") == "exception":
+            ok, reason = False, summary["error"]
+        else:
+            try:
+                ok, reason = _accepted(summary, meta.get("pass_criteria", {}))
+            except Exception as exc:
+                ok, reason = False, type(exc).__name__ + ": " + str(exc)[:500]
         winner = run_dir / f"{cfg.top_module}_best.v"
         record = {"entry": entry.name, "ok": ok, "reason": reason,
                   "source_sha256": hashes, "config": snapshot, "summary": summary,

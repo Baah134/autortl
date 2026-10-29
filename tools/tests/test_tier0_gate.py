@@ -80,3 +80,8 @@ def test_a_pinned_model_is_passed_to_the_bench(tmp_path):
     command = gate.bench_command("PY", tmp_path, tier=0, model="gpt-6-luna")
     assert command[-2:] == ["--model", "gpt-6-luna"]
     assert command[:-2] == gate.bench_command("PY", tmp_path)
+
+
+def test_jobs_are_passed_only_when_parallel(tmp_path):
+    assert "--jobs" not in gate.bench_command("PY", tmp_path, tier=1)
+    assert gate.bench_command("PY", tmp_path, tier=1, jobs=4)[-2:] == ["--jobs", "4"]

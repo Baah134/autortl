@@ -10,6 +10,8 @@ import math
 from pathlib import Path
 from .state import atomic_write_text
 
+TOKEN_KEYS = ("input_tokens", "cached_input_tokens", "output_tokens")
+
 
 class Budget:
     def __init__(self, max_llm_calls: int, max_vivado_minutes: float,
@@ -24,6 +26,7 @@ class Budget:
                 raise ValueError("time budgets must be finite and nonnegative")
         self.llm_calls = 0
         self.vivado_seconds = 0.0
+        self.tokens = dict.fromkeys(TOKEN_KEYS, 0)  # reported by the model CLI; accounting only
         self.start = time.time()
         self.state_path = Path(state_path) if state_path else None
         if self.state_path and self.state_path.exists():
@@ -37,11 +40,27 @@ class Budget:
                 if type(value) not in (int, float) or not math.isfinite(value) or value < 0:
                     raise ValueError("invalid saved budget time")
             self.start = time.time() - elapsed
+            saved = d.get("tokens", {})  # absent in budgets saved before token accounting
+            for key in TOKEN_KEYS:
+                value = saved.get(key, 0)
+                if type(value) is not int or value < 0:
+                    raise ValueError("invalid saved token count")
+                self.tokens[key] = value
 
     def charge_llm(self, n: int = 1) -> None:
         if type(n) is not int or n < 0:
             raise ValueError("cannot refund model calls")
         self.llm_calls += n
+        self._save()
+
+    def charge_tokens(self, usage) -> None:
+        """Add one call's reported usage; malformed or missing usage adds nothing."""
+        if not isinstance(usage, dict):
+            return
+        for key in TOKEN_KEYS:
+            value = usage.get(key)
+            if type(value) is int and value > 0:
+                self.tokens[key] += value
         self._save()
 
     def charge_vivado(self, seconds: float) -> None:
@@ -90,4 +109,5 @@ class Budget:
                 "llm_calls": self.llm_calls,
                 "vivado_seconds": self.vivado_seconds,
                 "elapsed": self.wall_minutes * 60,
+                "tokens": dict(self.tokens),
             }))
