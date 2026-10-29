@@ -85,3 +85,11 @@ def test_a_pinned_model_is_passed_to_the_bench(tmp_path):
 def test_jobs_are_passed_only_when_parallel(tmp_path):
     assert "--jobs" not in gate.bench_command("PY", tmp_path, tier=1)
     assert gate.bench_command("PY", tmp_path, tier=1, jobs=4)[-2:] == ["--jobs", "4"]
+
+
+def test_agent_worktrees_are_not_part_of_the_identity(tmp_path):
+    for rel in ("run.py", ".claude/skills/s/SKILL.md", ".claude/worktrees/agent-1/autortl/fsm.py"):
+        path = tmp_path / rel
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(rel)
+    assert sorted(gate.identities(tmp_path)) == [".claude/skills/s/SKILL.md", "run.py"]

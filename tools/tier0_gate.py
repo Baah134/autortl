@@ -55,6 +55,10 @@ def identities(root=ROOT):
     result = {}
     for name in SELECTION:
         for path in (root / name).rglob("*"):
+            rel = path.relative_to(root).parts
+            # Agent worktrees (.claude/worktrees/*) are other checkouts, not this source.
+            if rel[:2] == (".claude", "worktrees"):
+                continue
             if path.is_file() and path.suffix in SUFFIXES and "__pycache__" not in path.parts:
                 result[path.relative_to(root).as_posix()] = sha(path)
     result["run.py"] = sha(root / "run.py")
