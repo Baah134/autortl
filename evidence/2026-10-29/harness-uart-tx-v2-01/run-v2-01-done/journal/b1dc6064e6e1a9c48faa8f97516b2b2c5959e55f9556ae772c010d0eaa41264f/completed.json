@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_3:decision:instruction:0",
+  "result": "In `uart_tx`, replace `in_ready_reg` with a continuous `assign in_ready = ~busy`, remove its sequential assignments, and use the existing `busy` state for acceptance and completion control. Keep the indexed `data_reg[bit_index]` serializer; iteration 2\u2019s shift-based serialization did not improve LUT use. Preserve the counter schedule, reset priority, registered `tx`, exact frame timing, and `// @latency 1`; promotion still requires all fixed simulation, tool, metric-integrity, and setup/hold gates plus strictly fewer than 26 routed LUTs.",
+  "artifacts": {}
+}

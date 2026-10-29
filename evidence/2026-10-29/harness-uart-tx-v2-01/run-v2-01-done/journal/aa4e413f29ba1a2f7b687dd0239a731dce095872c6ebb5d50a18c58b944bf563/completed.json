@@ -1,0 +1,83 @@
+{
+  "stage": "iteration_1:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 1,
+    "instruction": "Replace the top\u2019s child instantiation with equivalent UART logic inside `uart_tx`, preserving the fixed interface, cycle timing, registered outputs, and synchronous reset behavior. Keep reset priority for all externally observable state, but leave the internal data register unreset; it is loaded on every accepted byte before its contents can affect `tx`. Preserve `// @latency 1`; retain the candidate only if simulation, all other deterministic gates, and routed timing pass, and routed LUT use is strictly below 40.",
+    "candidates": [
+      {
+        "iteration": 1,
+        "mutation": "standard",
+        "instruction": "Replace the top\u2019s child instantiation with equivalent UART logic inside `uart_tx`, preserving the fixed interface, cycle timing, registered outputs, and synchronous reset behavior. Keep reset priority for all externally observable state, but leave the internal data register unreset; it is loaded on every accepted byte before its contents can affect `tx`. Preserve `// @latency 1`; retain the candidate only if simulation, all other deterministic gates, and routed timing pass, and routed LUT use is strictly below 40.",
+        "generated_source_sha256": "12dafe5a1da971089f74808e355f33732bc6f90079b1d2d487b6a7cfadbcf133",
+        "final_source_sha256": "12dafe5a1da971089f74808e355f33732bc6f90079b1d2d487b6a7cfadbcf133",
+        "generated_code_hash": "78ff63140fe57ccb",
+        "final_code_hash": "78ff63140fe57ccb",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.534,
+          "whs_ns": 0.146,
+          "lut_used": 40,
+          "ff_used": 28,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.012,
+          "total_power_w": 0.082
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\harness-uart-tx-v2-01\\iter_001\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\harness-uart-tx-v2-01\\iter_001\\cand_standard\\synth.tcl",
+          "sha256": "6a54c5a005f41e5859d83d455af77b2b0ad02645b8a1e94c753c1cf8032708f9"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\harness-uart-tx-v2-01\\iter_001\\cand_standard\\uart_tx.v",
+          "sha256": "8852dd6085c67a016694b1a1b1f7308bc33df8884a29d7c610254a72864e120a"
+        }
+      },
+      {
+        "iteration": 1,
+        "mutation": "narrow",
+        "instruction": "Replace the top\u2019s child instantiation with equivalent UART logic inside `uart_tx`, preserving the fixed interface, cycle timing, registered outputs, and synchronous reset behavior. Keep reset priority for all externally observable state, but leave the internal data register unreset; it is loaded on every accepted byte before its contents can affect `tx`. Preserve `// @latency 1`; retain the candidate only if simulation, all other deterministic gates, and routed timing pass, and routed LUT use is strictly below 40.",
+        "generated_source_sha256": "4b5f44d6390b9761ce62e4217b76bf7ce4a6080700cf4f8000234b02671be190",
+        "final_source_sha256": "4b5f44d6390b9761ce62e4217b76bf7ce4a6080700cf4f8000234b02671be190",
+        "generated_code_hash": "0873651c43fa2efd",
+        "final_code_hash": "0873651c43fa2efd",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.702,
+          "whs_ns": 0.069,
+          "lut_used": 26,
+          "ff_used": 25,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.012,
+          "total_power_w": 0.082
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\harness-uart-tx-v2-01\\iter_001\\cand_narrow",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\harness-uart-tx-v2-01\\iter_001\\cand_narrow\\synth.tcl",
+          "sha256": "ca9896cf61f700ecd896ea46672a5967d592d0c9673f4dc30dedb58041d26c4b"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\harness-uart-tx-v2-01\\iter_001\\cand_narrow\\uart_tx.v",
+          "sha256": "ede47ea63847598c3638bdfe60ddada33368a18e5ff03ebd5f65895b2a94e205"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "ACCEPT",
+    "is_best": true,
+    "selected_source_sha256": "4b5f44d6390b9761ce62e4217b76bf7ce4a6080700cf4f8000234b02671be190"
+  },
+  "artifacts": {}
+}

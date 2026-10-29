@@ -1,0 +1,107 @@
+{
+  "testbench": {
+    "uart_tx_tb.v": "27a404f6295b1e6feea17ce2ea969c9ed2f9fd60713b3c8ec0f1d9b38bd69090"
+  },
+  "top": "uart_tx_tb",
+  "exempt": [],
+  "reference_sha256": "d5627df7c2493ad82c58152612472ee87ecec6df27e6d537e0e4ba845d27abe2",
+  "runs": [
+    {
+      "case": "reference",
+      "why": "control",
+      "expect_pass": true,
+      "verdict": "TEST PASSED",
+      "as_required": true,
+      "source_sha256": "d5627df7c2493ad82c58152612472ee87ecec6df27e6d537e0e4ba845d27abe2"
+    },
+    {
+      "case": "full_length_stop",
+      "why": "the v1 behavior: stop bit lasts DIV cycles, so line-rate input overflows",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 2184930 errors",
+      "as_required": true,
+      "source_sha256": "a5569e4b2c9833103faf089e672db482909aa6e0d8597202d8ae8c06dad2b6d0"
+    },
+    {
+      "case": "stop_one_cycle_short",
+      "why": "stop bit lasts STOP-1 cycles",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 1295913 errors",
+      "as_required": true,
+      "source_sha256": "7eb351887d8b52b092bf301b194fecf13ab7de61af68bc9c2248d8c954070981"
+    },
+    {
+      "case": "short_data_bits",
+      "why": "every bit, not only the stop bit, is shortened",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 2212178 errors",
+      "as_required": true,
+      "source_sha256": "889965cfa6ca4454908239b87c93e4af0c2fde64f7af53a05c7871de4f98ad75"
+    },
+    {
+      "case": "msb_first",
+      "why": "data bits sent most significant first",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 1784028 errors",
+      "as_required": true,
+      "source_sha256": "11874c8eea2a7abff05389b3bfa00a03bf9dd46d7f539b0e8896eee2879fd950"
+    },
+    {
+      "case": "no_stop_bit",
+      "why": "returns to idle after the last data bit",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 2233550 errors",
+      "as_required": true,
+      "source_sha256": "bfe9e9f12ef650b0d119c0c0a727be7553d6fee6eba4522d71ac6e1eed27bc18"
+    },
+    {
+      "case": "inverted_start",
+      "why": "start bit sent as 1",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 448854 errors",
+      "as_required": true,
+      "source_sha256": "5d9cdc69ad640c585ca5ed455b0d4270a6a4928e32f6743533ab0f7e5e69304e"
+    },
+    {
+      "case": "live_data",
+      "why": "uses in_data at each bit instead of the captured byte",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 1768404 errors",
+      "as_required": true,
+      "source_sha256": "95e7f76d19e8d926c43d0901117c9e476453e0113754f59c25be3357d982126d"
+    },
+    {
+      "case": "reset_ignored_while_busy",
+      "why": "rst only works when idle",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 4450374 errors",
+      "as_required": true,
+      "source_sha256": "62265f8922823f99f5d891f06ce50d84eb7764973be4f641d535baf21435dbb1"
+    },
+    {
+      "case": "accept_ignores_valid",
+      "why": "starts a frame without in_valid",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 1752188 errors",
+      "as_required": true,
+      "source_sha256": "2e6d69a78798fb71f99363b1841d94bbc383e3fe01e86ff1cd8bfe8b546bbba7"
+    },
+    {
+      "case": "ready_stuck_high",
+      "why": "in_ready reported high while busy",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 4450302 errors",
+      "as_required": true,
+      "source_sha256": "a2a15b3c4f7b5d6c4bbaeeab4499d58042a04dcf952655ef66e0fd4b292207b2"
+    },
+    {
+      "case": "reset_line_low",
+      "why": "tx idles low after reset",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 14 errors",
+      "as_required": true,
+      "source_sha256": "6a268c968eabd22d26e0c1f3f2e8146c746ee22a36e42f641328393fcbb5d523"
+    }
+  ],
+  "qualified": true
+}

@@ -1,0 +1,79 @@
+{
+  "candidates": [
+    {
+      "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\harness-uart-tx-v2-01\\iter_003\\cand_standard",
+      "cache_hit": false,
+      "final_code_hash": "f921aff0ad46ee8f",
+      "final_source_sha256": "2a31b018203f7366a0becb2baa5293f838e25582b192230bead3da6ef485e597",
+      "flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\harness-uart-tx-v2-01\\iter_003\\cand_standard\\synth.tcl",
+        "sha256": "1c3e56312b3e6a416360959c6ba354c4b582cbd92e3dfab38ad2ff5369be723e"
+      },
+      "generated_code_hash": "f921aff0ad46ee8f",
+      "generated_source_sha256": "2a31b018203f7366a0becb2baa5293f838e25582b192230bead3da6ef485e597",
+      "instruction": "In `uart_tx`, replace `in_ready_reg` with a continuous `assign in_ready = ~busy`, remove its sequential assignments, and use the existing `busy` state for acceptance and completion control. Keep the indexed `data_reg[bit_index]` serializer; iteration 2\u2019s shift-based serialization did not improve LUT use. Preserve the counter schedule, reset priority, registered `tx`, exact frame timing, and `// @latency 1`; promotion still requires all fixed simulation, tool, metric-integrity, and setup/hold gates plus strictly fewer than 26 routed LUTs.",
+      "iteration": 3,
+      "metrics": {
+        "bram_used": 0.0,
+        "dsp_used": 0,
+        "dynamic_power_w": 0.011,
+        "ff_used": 24,
+        "lut_used": 24,
+        "sim_passed": true,
+        "timing_met": true,
+        "total_power_w": 0.081,
+        "whs_ns": 0.057,
+        "wns_ns": 0.271
+      },
+      "mutation": "standard",
+      "reason": "",
+      "rungs": 5,
+      "source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\harness-uart-tx-v2-01\\iter_003\\cand_standard\\uart_tx.v",
+        "sha256": "906a4a9a5097b099cb4680c741e6a13130645336787d752bc08e068983015079"
+      },
+      "status": "measured"
+    },
+    {
+      "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\harness-uart-tx-v2-01\\iter_003\\cand_narrow",
+      "cache_hit": false,
+      "final_code_hash": "8003da838e7e01ac",
+      "final_source_sha256": "9b67f9253b8ada71a94a5e293cc55d1900123da389f0a81dfee9dd7d456b24bd",
+      "flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\harness-uart-tx-v2-01\\iter_003\\cand_narrow\\synth.tcl",
+        "sha256": "ca7eeb575ff882c5a93fcaec68540abd85a934bb49d6200d3b276e1607fda59b"
+      },
+      "generated_code_hash": "8003da838e7e01ac",
+      "generated_source_sha256": "9b67f9253b8ada71a94a5e293cc55d1900123da389f0a81dfee9dd7d456b24bd",
+      "instruction": "In `uart_tx`, replace `in_ready_reg` with a continuous `assign in_ready = ~busy`, remove its sequential assignments, and use the existing `busy` state for acceptance and completion control. Keep the indexed `data_reg[bit_index]` serializer; iteration 2\u2019s shift-based serialization did not improve LUT use. Preserve the counter schedule, reset priority, registered `tx`, exact frame timing, and `// @latency 1`; promotion still requires all fixed simulation, tool, metric-integrity, and setup/hold gates plus strictly fewer than 26 routed LUTs.",
+      "iteration": 3,
+      "metrics": {
+        "bram_used": 0.0,
+        "dsp_used": 0,
+        "dynamic_power_w": 0.011,
+        "ff_used": 24,
+        "lut_used": 24,
+        "sim_passed": true,
+        "timing_met": true,
+        "total_power_w": 0.081,
+        "whs_ns": 0.057,
+        "wns_ns": 0.271
+      },
+      "mutation": "narrow",
+      "reason": "",
+      "rungs": 5,
+      "source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\harness-uart-tx-v2-01\\iter_003\\cand_narrow\\uart_tx.v",
+        "sha256": "b7f1870e654c4e721bf39ef08f9357989e5b86db0529e97d39fbd3cf99eea7ad"
+      },
+      "status": "measured"
+    }
+  ],
+  "doctor": null,
+  "instruction": "In `uart_tx`, replace `in_ready_reg` with a continuous `assign in_ready = ~busy`, remove its sequential assignments, and use the existing `busy` state for acceptance and completion control. Keep the indexed `data_reg[bit_index]` serializer; iteration 2\u2019s shift-based serialization did not improve LUT use. Preserve the counter schedule, reset priority, registered `tx`, exact frame timing, and `// @latency 1`; promotion still requires all fixed simulation, tool, metric-integrity, and setup/hold gates plus strictly fewer than 26 routed LUTs.",
+  "is_best": true,
+  "iteration": 3,
+  "recommendation": "ACCEPT",
+  "schema_version": 1,
+  "selected_source_sha256": "9b67f9253b8ada71a94a5e293cc55d1900123da389f0a81dfee9dd7d456b24bd"
+}

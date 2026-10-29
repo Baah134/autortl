@@ -132,6 +132,14 @@ drives the Basys 3's USB-UART TX pin. It echoed 100,000 of 100,000 bytes
 from the PC with 0 errors, and a wrong-baud control failed as required. No
 human-written RTL is in the transmit path.
 
+The board then exposed a flaw in the contract. A continuous stream lost its
+first byte at 19,392, the same byte for two different generated designs,
+because the spec required a full-length stop bit while the PC sends about
+0.17% fast. The fix went into the specification, not the RTL: a stop bit
+shortened by 1/16. The harness regenerated the transmitter (40 to 24 LUTs),
+and the new one **streamed 1,000,000 of 1,000,000 bytes at full line rate
+with 0 errors** ([evidence](evidence/2026-10-29/harness-uart-tx-v2-01/README.md)).
+
 The run also exposed a harness verification gap. The winner flattened away
 its child module, and the stale child file let a testbench that names it
 keep passing. A winner-only check was added, and the winner passed it
