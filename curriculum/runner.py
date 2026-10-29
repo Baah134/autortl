@@ -275,6 +275,15 @@ def run_tier(tier: int, **overrides) -> int:
            "runtime_identity": identity,
            "passed": sum(r["ok"] for r in records), "total": len(records),
            "results": records, "evidence_dir": str(campaign), **governance}
+    blocked = sorted(r["entry"] for r in records if r["summary"].get("failure_kind") == "infra")
+    if blocked:
+        # Infrastructure never enters the history (infra_blocked_entry_enters_history):
+        # the campaign gets no verdict and its record stays in summary.json.
+        rec["infra_blocked_entries"] = blocked
+        atomic_write_text(campaign / "summary.json", json.dumps(rec, indent=2, default=str))
+        print(f"[bench] tier {tier}: no verdict; infrastructure-blocked: {', '.join(blocked)}; "
+              f"record kept in {campaign / 'summary.json'}")
+        return 3
     atomic_write_text(campaign / "summary.json", json.dumps(rec, indent=2, default=str))
     try:
         _commit_history(history_bytes, history, rec)

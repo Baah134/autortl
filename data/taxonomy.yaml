@@ -99,6 +99,12 @@ harness_failures:
   io_dominated_timing_metric:
     meaning: "With I/O buffers and zero external delay, every harness-flow critical path of the six winners ends at an OBUF (101-107.5 MHz) while their logic closes at 181.8-425.5 MHz out of context, so candidate timing comparisons mostly measured pad delay (fmax-characterization-01; the 31-LUT counter: WNS +0.126 ns, worst register-to-register path +1.460 ns)"
     repair: "Keep acceptance on the full I/O-constrained WNS/WHS; also report register-to-register setup slack from the same routed design (guarded, since report_timing errors with no registers, Vivado 12-4739) as an advisory metric shown to the planner and evaluator"
+  infra_blocked_entry_enters_history:
+    meaning: "A bench entry that ended infrastructure-blocked (failure_kind infra) was recorded as a failed entry, so a host problem entered the curriculum history, lowered the pass rate and reset the streak (tier1-campaign-02 debouncer_build: the laptop entered Modern Standby, Reason Lid, 11:26-14:21, and the integration xelab/xvlog timed out)"
+    repair: "A campaign with any infrastructure-blocked entry gets no verdict: keep its record in the campaign summary.json, write nothing to the history, exit 3; resume or rerun it on a host that stays awake"
+  host_standby_stalls_tools:
+    meaning: "Windows Modern Standby (lid close or idle timeout) throttles or freezes running Vivado and simulator processes; their wall time keeps counting, so tools time out and cleanup (taskkill) can itself time out"
+    repair: "Operational: keep the host awake and plugged in for gates; treat the resulting timeouts as infrastructure, which the harness already does; check the System log (Kernel-Power 506/507) before suspecting the design or the harness"
   completed_child_dependency_omission:
     meaning: "DONE retained a verification manifest but omitted child RTL referenced by its recorded input hashes"
     repair: "Validate retained verification dependencies against their recorded hashes before publishing DONE; retain source and testbench identities and reject missing or changed dependencies"
