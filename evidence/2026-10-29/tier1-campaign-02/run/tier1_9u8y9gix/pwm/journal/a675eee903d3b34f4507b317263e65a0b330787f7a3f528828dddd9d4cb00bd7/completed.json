@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_4:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 4\n## Contract check\n- Interface and reset behavior: PASS \u2014 ports and synchronous reset behavior are preserved.\n- Observable PWM behavior: PASS \u2014 the 8-bit descending phase and complemented duty comparison preserve the 256-cycle PWM sequence.\n- Top latency annotation: PASS \u2014 authoritative latency is unknown, so no numeric annotation is required.\n- Verification gates: PASS \u2014 ladder is ALIVE; compile, elaboration, simulation, and synthesis completed successfully, with the exact TEST PASSED verdict and SYNTH_COMPLETE marker.\n- Routed metrics and timing feasibility: PASS \u2014 retained routed metrics report 10 LUTs, WNS 0.404 ns, WHS 0.196 ns, and timing_met=true.\n- Minimize LUTs objective: FAIL \u2014 candidate uses 10 LUTs versus 7 for the timing-feasible previous best; strict improvement is required.\n## Summary\n- Passed: 5 of 6\n- Failed: 1 of 6\n- Improved over previous best: NO\n## Recommendation\nRESTART\n## Reason\nThe candidate preserves the specified behavior and passes the verification and timing gates, but it increases LUT use from 7 to 10 while the previous best is already timing-feasible. It therefore fails the required objective improvement. The stall count is 3, meeting the stated condition for RESTART.",
+      "recommendation": "REJECT",
+      "passed": 5,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

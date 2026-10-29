@@ -1,0 +1,45 @@
+{
+  "candidates": [
+    {
+      "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-02\\tier1_9u8y9gix\\pwm\\iter_005\\cand_standard\\repair_001",
+      "cache_hit": false,
+      "final_code_hash": "a5b8aa91cdaa49b9",
+      "final_source_sha256": "44b7e0e369fcec10995831beaeaf632c898c775c613f231e4e789cfa2aafaeb8",
+      "flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-02\\tier1_9u8y9gix\\pwm\\iter_005\\cand_standard\\repair_001\\synth.tcl",
+        "sha256": "332512bf46456f89f287e64fefe2330fcee53034fda71bf2c657bf41dff44b3b"
+      },
+      "generated_code_hash": "3e170248a727c19d",
+      "generated_source_sha256": "16fc80c1b943176ccd5abf74b38599335d9426ddc7f36a11c73bf1b144fc1c13",
+      "instruction": "Replace the behavioral counter increment and `counter < {24'd0, duty}` comparison with explicit CARRY4 carry-chain logic, keeping the counter\u2019s existing 32-bit declaration and terminal-at-255 wrap behavior. Keep the synchronous reset and registered `pwm_out`; compute its comparison from the current counter and duty on the same clock edge as before. Preserve the exact 0\u2013255 phase sequence and test duty values 0 and 255, including reset behavior; retain the candidate only if all gates pass and routed LUT use is strictly below 7.",
+      "iteration": 5,
+      "metrics": {
+        "bram_used": 0.0,
+        "dsp_used": 0,
+        "dynamic_power_w": 0.01,
+        "ff_used": 9,
+        "lut_used": 10,
+        "sim_passed": true,
+        "timing_met": true,
+        "total_power_w": 0.081,
+        "whs_ns": 0.227,
+        "wns_ns": 0.463
+      },
+      "mutation": "standard",
+      "reason": "",
+      "rungs": 5,
+      "source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-02\\tier1_9u8y9gix\\pwm\\iter_005\\cand_standard\\repair_001\\pwm.v",
+        "sha256": "19cd12408fa468ed78761f20b1efaaf74c532e6903f6619c2ff484de536b184e"
+      },
+      "status": "measured"
+    }
+  ],
+  "doctor": null,
+  "instruction": "Replace the behavioral counter increment and `counter < {24'd0, duty}` comparison with explicit CARRY4 carry-chain logic, keeping the counter\u2019s existing 32-bit declaration and terminal-at-255 wrap behavior. Keep the synchronous reset and registered `pwm_out`; compute its comparison from the current counter and duty on the same clock edge as before. Preserve the exact 0\u2013255 phase sequence and test duty values 0 and 255, including reset behavior; retain the candidate only if all gates pass and routed LUT use is strictly below 7.",
+  "is_best": false,
+  "iteration": 5,
+  "recommendation": "REJECT",
+  "schema_version": 1,
+  "selected_source_sha256": "44b7e0e369fcec10995831beaeaf632c898c775c613f231e4e789cfa2aafaeb8"
+}

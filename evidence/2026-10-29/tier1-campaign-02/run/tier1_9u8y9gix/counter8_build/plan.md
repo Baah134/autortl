@@ -1,0 +1,13 @@
+# PLAN — iteration 1
+
+## Current state assessment
+
+The incumbent is timing-feasible at 6 LUTs and 8 FFs, with routed WNS 0.424 ns and WHS 0.226 ns. The objective is strictly fewer LUTs under the same device and constraints; no prior trial outcomes are available. The top has a required `// @latency 1` annotation, and its registered output, synchronous active-high reset priority, enable hold behavior, and modulo-256 count must remain unchanged.
+
+## Hypothesis
+
+Inlining the counter and feeding `enable` into the increment operation may fold the hold/increment selection into the 7-series carry chain and reduce LUT use below 6 without changing cycle behavior.
+
+## Instruction for generator
+
+Replace the `counter8_core` instance inside `counter8` with an 8-bit registered counter and continuous assignment of that register to `count`; retain the top interface and `// @latency 1` annotation. On each rising edge, synchronously clear the register when `rst` is high; otherwise assign `count_reg + {7'b0, enable}`, so `enable=0` holds the value and `enable=1` increments modulo 256. Preserve reset priority and registered output behavior; do not add registers or alter the frozen companion module.

@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_5:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 5\n## Contract check\n- Interface and cycle behavior: PASS \u2014 deterministic ladder is ALIVE; the candidate preserves the interface, reset behavior, and registered PWM output.\n- Top latency annotation: PASS \u2014 authoritative latency is unknown, so no numeric annotation is required.\n- xvlog compilation: PASS \u2014 successful exit recorded.\n- xelab elaboration: PASS \u2014 successful exit recorded.\n- xsim simulation: PASS \u2014 successful exit and exact `TEST PASSED` verdict recorded.\n- Synthesis and metric integrity: PASS \u2014 successful synthesis marker and retained routed reports are recorded.\n- Timing feasibility: PASS \u2014 `timing_met=true`, WNS is 0.463 ns, and WHS is 0.227 ns.\n- LUT objective: FAIL \u2014 candidate uses 10 LUTs versus 7 for the timing-feasible previous best; strict improvement is required.\n## Summary\n- Passed: 7 of 8\n- Failed: 1 of 8\n- Improved over previous best: NO\n## Recommendation\nRESTART\n## Reason\nThe candidate passes the correctness and promotion gates, but it increases LUT use from 7 to 10 while the previous best was already timing-feasible, so it does not meet the `minimize_luts` objective. The stall count is 4, meeting the threshold for RESTART.",
+      "recommendation": "REJECT",
+      "passed": 7,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

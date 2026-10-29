@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_2:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 2\n## Contract check\n- Interface and cycle behavior: PASS \u2014 ports, reset behavior, counter update, and registered PWM output are preserved.\n- Top latency annotation: PASS \u2014 authoritative latency is unknown, so no numeric annotation is required.\n- Verification gates: PASS \u2014 ladder is ALIVE; compile, elaboration, simulation verdict, and tool exits pass.\n- Routed metrics and integrity: PASS \u2014 retained routed reports and metric evidence are provided.\n- Timing feasibility: PASS \u2014 timing_met=true, WNS=0.594 ns, and WHS=0.289 ns.\n- Objective improvement: FAIL \u2014 LUT use increased from 7 to 8 while both candidate and previous best are timing-feasible.\n## Summary\n- Passed: 5 of 6\n- Failed: 1 of 6\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate preserves the defined behavior and passes the verification and timing gates, but it does not improve the chosen LUT objective: the previous best uses 7 LUTs and the candidate uses 8. The previous best is already timing-feasible, so timing recovery does not apply.",
+      "recommendation": "REJECT",
+      "passed": 5,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

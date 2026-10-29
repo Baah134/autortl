@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_2:decision:instruction:0",
+  "result": "Keep the 32-bit counter, its explicit comparison against 255, and its reset behavior unchanged. Replace only `counter < {24'd0, duty}` with an equivalent unsigned expression that checks `counter[31:8] == 0` and compares the low byte lexicographically by high nibble, then low nibble on equality. Preserve the registered `pwm_out` update and its cycle relationship to `counter`; retain the result only if all fixed gates pass and routed LUT usage is strictly below 7.",
+  "artifacts": {}
+}

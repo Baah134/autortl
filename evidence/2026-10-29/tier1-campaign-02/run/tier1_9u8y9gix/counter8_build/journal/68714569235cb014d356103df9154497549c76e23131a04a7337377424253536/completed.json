@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Interface and defined counter behavior: PASS \u2014 ports are preserved; synchronous reset priority, enabled increment, hold, modulo-256 wraparound, and registered output behavior match the contract.\n- Top latency annotation: PASS \u2014 `// @latency 1` matches authoritative latency.\n- Deterministic verification: PASS \u2014 ladder is ALIVE; compile, elaboration, simulation, and synthesis tool exits pass, with the exact `TEST PASSED` verdict and `SYNTH_COMPLETE` marker.\n- Routed metrics and timing feasibility: PASS \u2014 retained routed metrics show `timing_met=true`, WNS 0.555 ns, and WHS 0.051 ns.\n- Objective improvement: FAIL \u2014 LUT use remains 6, equal to the timing-feasible previous best; `minimize_luts` requires a strict reduction.\n\n## Summary\n- Passed: 4 of 5\n- Failed: 1 of 5\n- Improved over previous best: NO\n\n## Recommendation\nREJECT\n\n## Reason\nThe candidate passes the behavioral and promotion gates, but the previous best was already timing-feasible and the candidate does not reduce LUT use, so it does not meet the required objective improvement.",
+      "recommendation": "REJECT",
+      "passed": 4,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

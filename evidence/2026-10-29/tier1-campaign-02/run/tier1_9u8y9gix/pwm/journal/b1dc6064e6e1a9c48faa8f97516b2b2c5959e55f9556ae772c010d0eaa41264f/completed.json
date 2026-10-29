@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_3:decision:instruction:0",
+  "result": "Keep the module interface, 32-bit `counter` declaration, reset branch, and registered `pwm_out` comparison unchanged. Replace only the non-reset counter update with per-bit toggle equations for `counter[7:0]`: bit 0 toggles every cycle, and bit *i* toggles when all lower bits are one; assign `counter[31:8]` to zero on each non-reset cycle. This removes the explicit `counter == 255` branch, but may map worse than Vivado\u2019s current incrementer, so retain the candidate only if all gates pass and routed LUT use is strictly below 7.",
+  "artifacts": {}
+}

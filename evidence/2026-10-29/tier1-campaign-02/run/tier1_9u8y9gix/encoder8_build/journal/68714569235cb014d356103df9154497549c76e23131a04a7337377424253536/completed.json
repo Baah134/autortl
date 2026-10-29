@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Top interface and defined cycle behavior: PASS \u2014 ports and widths match; the candidate preserves registered outputs, synchronous active-high reset, priority encoding, and valid behavior.\n- Top latency annotation: PASS \u2014 `// @latency 1` matches authoritative latency of 1 cycle.\n- Deterministic ladder: PASS \u2014 standard ladder reports 5 rungs ALIVE.\n- Compile and elaboration: PASS \u2014 xvlog and xelab exited successfully.\n- Simulation: PASS \u2014 xsim exited successfully and reported the exact `TEST PASSED` verdict.\n- Routed metrics and timing feasibility: PASS \u2014 retained routed evidence is provided; timing_met is true, WNS is 0.55 ns, and WHS is 0.17 ns.\n- Objective improvement: PASS \u2014 LUT usage decreased from 6 to 4 under the same objective and constraints.\n## Summary\n- Passed: 7 of 7\n- Failed: 0 of 7\n- Improved over previous best: YES\n## Recommendation\nACCEPT\n## Reason\nThe candidate passes the deterministic correctness and tool gates, preserves the specified one-cycle registered behavior and reset semantics, and meets setup and hold timing requirements. It strictly improves the selected LUT objective over the timing-feasible previous best, so promotion is justified.",
+      "recommendation": "ACCEPT",
+      "passed": 7,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}

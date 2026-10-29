@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_3:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 3,
+    "instruction": "Keep the module interface, 32-bit `counter` declaration, reset branch, and registered `pwm_out` comparison unchanged. Replace only the non-reset counter update with per-bit toggle equations for `counter[7:0]`: bit 0 toggles every cycle, and bit *i* toggles when all lower bits are one; assign `counter[31:8]` to zero on each non-reset cycle. This removes the explicit `counter == 255` branch, but may map worse than Vivado\u2019s current incrementer, so retain the candidate only if all gates pass and routed LUT use is strictly below 7.",
+    "candidates": [
+      {
+        "iteration": 3,
+        "mutation": "standard",
+        "instruction": "Keep the module interface, 32-bit `counter` declaration, reset branch, and registered `pwm_out` comparison unchanged. Replace only the non-reset counter update with per-bit toggle equations for `counter[7:0]`: bit 0 toggles every cycle, and bit *i* toggles when all lower bits are one; assign `counter[31:8]` to zero on each non-reset cycle. This removes the explicit `counter == 255` branch, but may map worse than Vivado\u2019s current incrementer, so retain the candidate only if all gates pass and routed LUT use is strictly below 7.",
+        "generated_source_sha256": "3d671561e08ee304e8879e58d097caa11d89a75e389a21b373bb602837fdc282",
+        "final_source_sha256": "3d671561e08ee304e8879e58d097caa11d89a75e389a21b373bb602837fdc282",
+        "generated_code_hash": "7035934a13ef1943",
+        "final_code_hash": "7035934a13ef1943",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.404,
+          "whs_ns": 0.186,
+          "lut_used": 11,
+          "ff_used": 9,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.01,
+          "total_power_w": 0.081
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-02\\tier1_9u8y9gix\\pwm\\iter_003\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-02\\tier1_9u8y9gix\\pwm\\iter_003\\cand_standard\\synth.tcl",
+          "sha256": "f97978758a5d087fd1ec9a4bb981d71b6a7bbccd97fe50ed5ac3211753095dcb"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-02\\tier1_9u8y9gix\\pwm\\iter_003\\cand_standard\\pwm.v",
+          "sha256": "a943e806603fa7d577107b0332f79166e55eb7a90b9989b5e279eb6e07737326"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": "3d671561e08ee304e8879e58d097caa11d89a75e389a21b373bb602837fdc282"
+  },
+  "artifacts": {}
+}

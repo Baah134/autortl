@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_2:model:planner.plan:0",
+  "result": "# PLAN \u2014 iteration 2\n\n## Current state assessment\n\nThe 7-LUT incumbent is timing-feasible, so this iteration must strictly reduce LUT usage to improve the objective. Iteration 1 passed verification and timing but used 10 LUTs; narrowing the counter and relying on natural wrap did not improve the incumbent.\n\n## Hypothesis\n\nKeeping the original counter and wrap logic while expressing the unsigned PWM comparison as high-bit-zero detection plus a two-nibble comparison may map the comparator to fewer LUTs without changing its behavior.\n\n## Instruction for generator\n\nKeep the 32-bit counter, its explicit comparison against 255, and its reset behavior unchanged. Replace only `counter < {24'd0, duty}` with an equivalent unsigned expression that checks `counter[31:8] == 0` and compares the low byte lexicographically by high nibble, then low nibble on equality. Preserve the registered `pwm_out` update and its cycle relationship to `counter`; retain the result only if all fixed gates pass and routed LUT usage is strictly below 7.",
+  "artifacts": {}
+}

@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Interface and observable behavior: PASS \u2014 ports and reset behavior are preserved; the 8-bit counter wraps every 256 cycles, matching the original counter\u2019s explicit wrap.\n- Top latency annotation: PASS \u2014 authoritative `known=false`; no numeric annotation is required.\n- Compile, elaboration, and simulation: PASS \u2014 xvlog, xelab, and xsim exited successfully; the testbench reported `TEST PASSED`.\n- Synthesis completion: PASS \u2014 Vivado exited successfully and recorded `SYNTH_COMPLETE`.\n- Routed metric integrity: PASS \u2014 retained routed timing and utilization reports provide the reported metrics.\n- Timing feasibility: PASS \u2014 `timing_met=true`, WNS is 0.412 ns, and WHS is 0.196 ns.\n- Strict objective improvement: FAIL \u2014 both candidate and previous best are timing-feasible, but LUT usage increased from 7 to 10; no improvement is recorded.\n## Summary\n- Passed: 6 of 7\n- Failed: 1 of 7\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes the verification and timing gates, but the objective is to minimize LUTs and the candidate uses more LUTs than the timing-feasible previous best. No strict objective improvement is established.",
+      "recommendation": "REJECT",
+      "passed": 6,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

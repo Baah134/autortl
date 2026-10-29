@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_3:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 3\n## Contract check\n- Interface and behavioral contract: PASS \u2014 ladder result is ALIVE; candidate preserves the top interface and reset behavior.\n- Top latency annotation: PASS \u2014 authoritative latency is unknown, so no numeric annotation is required.\n- Compile and synthesis gates: PASS \u2014 xvlog, xelab, and Vivado exited successfully; synthesis reported `SYNTH_COMPLETE`.\n- Simulation gate: PASS \u2014 xsim exited successfully with the exact `TEST PASSED` verdict.\n- Routed metrics and integrity: PASS \u2014 retained routed reports and structured metrics are provided.\n- Timing feasibility: PASS \u2014 timing_met=true, WNS=0.404 ns, and WHS=0.186 ns.\n- Objective improvement: FAIL \u2014 both candidate and previous best are timing-feasible; LUT use increased from 7 to 11, so the minimize_luts objective did not improve.\n## Summary\n- Passed: 6 of 7\n- Failed: 1 of 7\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes the behavioral, verification, metric-integrity, and timing gates, and its missing top latency annotation is permitted because declared latency is unknown. Since the previous best was already timing-feasible, promotion requires fewer LUTs; the candidate uses 11 versus 7, and the recorded improvement_kind is null with measured_improvement=false. The stall count is 2, below the threshold for RESTART.",
+      "recommendation": "REJECT",
+      "passed": 6,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

@@ -1,0 +1,12 @@
+# PLAN — iteration 1
+## Current state assessment
+
+The incumbent is timing-feasible at 6 LUTs and 4 FFs, with WNS 0.528 ns and WHS 0.009 ns; the objective is strictly fewer LUTs under the same device and constraints. The editable top is a transparent wrapper around a frozen registered encoder, and synthesis already flattens hierarchy. Preserve the known one-cycle behavior, synchronous active-high reset, registered outputs, and `// @latency 1`; no prior trial outcome is available.
+
+## Hypothesis
+
+Inlining a factored priority-encode network in the editable top may expose Boolean sharing to Vivado and reduce LUT use below 6 while preserving timing feasibility.
+
+## Instruction for generator
+
+Replace the `priority_encoder8_core` instance with inline combinational equations for `valid` and the three highest-set-bit index bits, using shared prefix/group terms so Vivado can map the encoder into 6-input LUTs efficiently. Register the resulting outputs on `posedge clk` with synchronous active-high reset to zero, preserving the existing one-cycle observable behavior and `// @latency 1` annotation. Check all 256 request values and reset behavior through the unchanged verification gates; retain the candidate only if routed LUT count is strictly below 6 and setup and hold slack are both nonnegative.

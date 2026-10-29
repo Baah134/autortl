@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_1:model:generator.generate:0",
+  "result": "`timescale 1ns/1ps\n// @latency 1\nmodule counter8 (\n    input wire clk,\n    input wire rst,\n    input wire enable,\n    output wire [7:0] count\n);\n    reg [7:0] count_reg;\n\n    assign count = count_reg;\n\n    always @(posedge clk) begin\n        if (rst)\n            count_reg <= 8'd0;\n        else\n            count_reg <= count_reg + {7'b0, enable};\n    end\nendmodule",
+  "artifacts": {}
+}
