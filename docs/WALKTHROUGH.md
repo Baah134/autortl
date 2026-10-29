@@ -26,7 +26,7 @@ rejected, not negotiated with.
 
 | Area | File | Responsibility |
 |---|---|---|
-| CLI | `run.py` | `optimize`, `build`, `resume`, `bench` subcommands (`run.py:51`, `:56`, `:64`, `:67`) |
+| CLI | `run.py` | `optimize`, `build`, `resume`, `bench` subcommands (`run.py:52`, `:57`, `:65`, `:68`) |
 | Orchestrator | `autortl/fsm.py` | The run loop, stage journal and verification ladder (`class Orchestrator`, `fsm.py:143`) |
 | Contract | `autortl/contract_context.py` | Renders the fixed, hash-bound optimization contract (`:267`) |
 | Candidates | `autortl/bestofn.py` | Mutation portfolio, exact-source dedupe, deterministic selection |
@@ -56,13 +56,13 @@ On resume, a changed harness file or input aborts the run, so a result can
 never be silently regraded by different code (`fsm.py:243`, `fsm.py:262`).
 
 **2. Verify the baseline.** Optimization is refused without a testbench
-(`fsm.py:706`). The original design goes through the full flow: compile,
-simulate, synthesize, place and route (`fsm.py:721`). Then two gates check the
+(`fsm.py:708`). The original design goes through the full flow: compile,
+simulate, synthesize, place and route (`fsm.py:723`). Then two gates check the
 result:
 
-- The metrics gate (`fsm.py:736`) rejects impossible numbers. A LUT total of
+- The metrics gate (`fsm.py:738`) rejects impossible numbers. A LUT total of
   zero or a missing WNS raises `MetricsGateError` (`metrics_gate.py:15`).
-- Tool exit receipts must also pass (`fsm.py:739`).
+- Tool exit receipts must also pass (`fsm.py:741`).
 
 **3. Freeze the contract.** The harness collects facts it measured itself:
 
@@ -71,15 +71,15 @@ result:
 - baseline metrics and declared latency
 - constraints and report hashes
 
-It renders them into a contract (`fsm.py:748-763`,
+It renders them into a contract (`fsm.py:750-765`,
 `contract_context.py:265`). The model sees this contract but cannot edit it.
 If the contract on disk ever differs from the re-rendered one, the run stops
-(`fsm.py:758`).
+(`fsm.py:760`).
 
 **4. Plan.** When needed, the planner role writes a plan
-(`fsm.py:816-827`). It is bound to the hash of the exact design it was
+(`fsm.py:818-829`). It is bound to the hash of the exact design it was
 written for, and a plan for a different seed stops the iteration
-(`fsm.py:828`).
+(`fsm.py:830`).
 
 **5. Generate best-of-N candidates.** Each candidate comes from a different
 mutation prompt for the objective (`bestofn.py:46`). `dedupe` drops
@@ -87,24 +87,24 @@ byte-identical sources (`bestofn.py:51`), so the same design is never paid for
 twice.
 
 **6. Climb the verification ladder** (`_verify_optimization_candidate`,
-`fsm.py:1166`). Each rung is cheaper than the next, so most bad candidates die
+`fsm.py:1168`). Each rung is cheaper than the next, so most bad candidates die
 in milliseconds:
 
-1. Static check of ports, widths and signedness (`fsm.py:1182`). Then *spec is
+1. Static check of ports, widths and signedness (`fsm.py:1184`). Then *spec is
    law*: a declared `@latency` that differs from the contract is a failure,
-   not a negotiation (`fsm.py:1188-1191`).
-2. `xvlog` compile (`fsm.py:1198`).
-3. Simulation against the qualified testbench (`fsm.py:1204`).
+   not a negotiation (`fsm.py:1190-1193`).
+2. `xvlog` compile (`fsm.py:1200`).
+3. Simulation against the qualified testbench (`fsm.py:1206`).
 
 A design failure gets a bounded number of repair attempts. Each repair prompt
 carries the taxonomy's hint for the Vivado message IDs found
-(`fsm.py:1217`). Every repaired answer re-enters the ladder from rung 1. An
+(`fsm.py:1219`). Every repaired answer re-enters the ladder from rung 1. An
 infrastructure failure leaves the candidate *unverified*: it never triggers a
-repair and never changes the RTL (`fsm.py:1209`).
+repair and never changes the RTL (`fsm.py:1211`).
 
-**7. Synthesize survivors** (`fsm.py:852-893`). A cached result is reused only
+**7. Synthesize survivors** (`fsm.py:854-895`). A cached result is reused only
 if it is still for the same source, testbench and tool context, and if it
-passes the metrics gate again (`fsm.py:855-871`).
+passes the metrics gate again (`fsm.py:857-873`).
 
 **8. Select deterministically** (`bestofn.py:64`). Candidates are sorted by:
 
@@ -117,21 +117,21 @@ So a design that meets timing always beats a smaller one that doesn't.
 
 **9. Repeat** until the iteration count or the budget runs out. As the budget
 shrinks, best-of-N degrades from N to 2 to 1, and replanning stops below 30%
-remaining (`budget.py:70-80`). The budget can only be charged, never refunded
-(`budget.py:41-51`).
+remaining (`budget.py:91-101`). The budget can only be charged, never refunded
+(`budget.py:52-72`).
 
 ## The invariants, and where each is enforced
 
 | Invariant | Where |
 |---|---|
-| Spec is law (interface, latency) | `fsm.py:1182-1191`; contract re-render check `fsm.py:758` |
+| Spec is law (interface, latency) | `fsm.py:1184-1193`; contract re-render check `fsm.py:760` |
 | Model text never reaches TCL or a shell | Paths are sanitized for TCL (`vivado.py:24`); TCL comes only from templates (`vivado.py:1-5`); the model runs in a read-only sandbox (`codex_cli.py:187`) |
 | Severities are promoted, never demoted | `promotion_tcl` emits only `-new_severity ERROR` (`vivado.py:163-170`) |
-| Infrastructure failures never mutate the design or count as attempts | Classifier `triage.py:39`; ladder `fsm.py:1209`; journal keeps infrastructure outcomes uncommitted so a resume retries them (`fsm.py:348-350`) |
+| Infrastructure failures never mutate the design or count as attempts | Classifier `triage.py:39`; ladder `fsm.py:1211`; journal keeps infrastructure outcomes uncommitted so a resume retries them (`fsm.py:348-350`) |
 | A testbench must catch bugs before it grades | `tbqual.py:53` builds an operator mutant plus stuck-at-0 and stuck-at-1 stubs; `_qualify_source` (`fsm.py:436`) requires a retained assertion failure |
 | Metrics must be plausible | `metrics_gate.py:15` |
 | Results cannot be silently regraded | Runtime and input freezing, `fsm.py:231-277` |
-| A testbench never grades a stale child | A candidate that stops instantiating a companion the trusted testbench tests directly is rejected before any tool runs (`fsm.py:1193`, `companions.py:77`) |
+| A testbench never grades a stale child | A candidate that stops instantiating a companion the trusted testbench tests directly is rejected before any tool runs (`fsm.py:1195`, `companions.py:77`) |
 | A locked checkpoint is infrastructure, not a crash | `CheckpointLockedError` (`state.py:24`) keeps the old checkpoint intact; `run.py` reports `infra_blocked` and the run resumes |
 
 ## How the testbenches work
@@ -161,13 +161,13 @@ initialization as the RTL driver (`tbgen.py:128`).
 
 1. Lint the spec (`fsm.py:514`). A spec the planner wrote from a prose
    request gets its lint or load errors back for a bounded repair; a supplied
-   JSON spec is law and fails at once (`fsm.py:519-524`).
+   JSON spec is law and fails at once (`fsm.py:519-525`).
 2. Elaborate stub modules, so a broken blueprint fails before any generation
-   (`fsm.py:531-535`).
+   (`fsm.py:533-537`).
 3. Generate and verify each module in turn against its own qualified
-   testbench (`fsm.py:537`).
+   testbench (`fsm.py:539`).
 4. Write the top level mechanically, with no model involved
-   (`linter.top_verilog`, `fsm.py:556`).
+   (`linter.top_verilog`, `fsm.py:558`).
 
 The result then becomes the baseline for optimize mode.
 
@@ -255,7 +255,7 @@ checker catches all 27.
 
 **What stops a Vivado license hiccup from looking like a bad design?**
 `triage.classify` checks infrastructure signatures first (`triage.py:17-28`).
-Infrastructure outcomes never trigger repair (`fsm.py:1209`) and are never
+Infrastructure outcomes never trigger repair (`fsm.py:1211`) and are never
 committed to the journal (`fsm.py:348`).
 
 **Could a smaller design that fails timing win?** No. Timing feasibility ranks
