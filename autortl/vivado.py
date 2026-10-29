@@ -253,6 +253,7 @@ place_design
 route_design
 report_utilization -file "{workdir}/utilization_routed.rpt"
 report_timing_summary -file "{workdir}/timing_routed.rpt"
+if {{[llength [all_registers]] > 0}} {{ report_timing -from [all_registers] -to [all_registers] -max_paths 1 -file "{workdir}/timing_reg2reg.rpt" }}
 report_design_analysis -logic_level_distribution -file "{workdir}/design_analysis.rpt"
 report_power -file "{workdir}/power.rpt"
 catch {{ report_methodology -file "{workdir}/methodology.rpt" }}

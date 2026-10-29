@@ -23,6 +23,10 @@ class VivadoMetrics:
     total_power_w: float = 0.0
     dynamic_power_w: float = 0.0
     synth_error: str = ""
+    # Advisory only: worst register-to-register setup slack of the same routed
+    # design, free of pad delay. None when no such path exists or was reported.
+    # Acceptance stays on wns_ns/whs_ns (io_dominated_timing_metric).
+    reg2reg_wns_ns: float | None = None
 
     @property
     def lut_pct(self) -> float:
@@ -114,6 +118,16 @@ def parse_timing_text(text: str, m: VivadoMetrics) -> None:
     m.timing_met = m.wns_ns >= 0.0 and m.whs_ns >= 0.0
 
 
+def parse_reg2reg(rpt_path: Path, m: VivadoMetrics) -> None:
+    """Slack of the first path in a report_timing -from/-to [all_registers] report."""
+    if not rpt_path.exists():
+        return
+    text = rpt_path.read_bytes().decode("utf-8", errors="replace")
+    mm = re.search(r"(?m)^Slack \((?:MET|VIOLATED)\)\s*:\s*(-?\d+(?:\.\d+)?)ns", text)
+    if mm:
+        m.reg2reg_wns_ns = float(mm.group(1))
+
+
 def parse_power(rpt_path: Path, m: VivadoMetrics) -> None:
     if not rpt_path.exists():
         return
@@ -137,6 +151,7 @@ def parse_all(work_dir: Path) -> VivadoMetrics:
     if not timing.exists():
         timing = work_dir / "timing.rpt"
     parse_timing(timing, m)
+    parse_reg2reg(work_dir / "timing_reg2reg.rpt", m)
     parse_power(work_dir / "power.rpt", m)
     return m
 

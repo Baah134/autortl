@@ -716,10 +716,9 @@ or requiredcampaign13; complete currentruntimepublication gates first.
 
 Evidence: evidence/2026-10-29/harness-uart-tx-01. These are observed failures.
 Each needs a taxonomy or curriculum entry before any harness fix lands.
-Items 1 to 3 have taxonomy entries. Items 1 and 2 are fixed in the harness
-and item 3 is documented. Item 4 is an open decision about the objective;
-it gets its entry when that decision changes the harness, since data/ is
-part of the frozen source identity.
+All four have taxonomy entries. Items 1 and 2 are fixed in the harness,
+item 3 is documented, and item 4 is decided: an advisory
+register-to-register metric beside the unchanged acceptance timing.
 
 1. **stale_child_masks_flattened_winner** (verification gap). In build mode,
    the optimize loop may replace a child module with flattened logic. Run 03's
@@ -770,3 +769,9 @@ part of the frozen source identity.
    Out of context they reach 181.8–425.5 MHz. Options: give the flow
    realistic I/O delays, or report out-of-context register-to-register
    timing alongside it.
+   **Decided (taxonomy `io_dominated_timing_metric`).** Acceptance stays on
+   the full I/O-constrained WNS/WHS. The flow now also reports the worst
+   register-to-register setup slack of the same routed design
+   (`reg2reg_wns_ns`, guarded because report_timing errors with no
+   registers), shown to the planner and evaluator as advisory. For the
+   31-LUT counter: WNS +0.126 ns, register-to-register +1.460 ns.

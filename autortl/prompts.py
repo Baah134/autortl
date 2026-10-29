@@ -136,6 +136,7 @@ PLAN = """Plan iteration {iteration} of an FPGA optimisation loop.
 {evaluations}
 # Verified incumbent measurements (may describe a different source from the generation seed)
 LUTs={lut_used} FFs={ff_used} WNS={wns_ns}ns DSP={dsp_used} BRAM={bram_used}
+Register-to-register WNS (advisory; excludes I/O pad delay): {reg2reg}
 # Actual generation seed (write instructions for this source)
 ```verilog
 {generation_seed}
@@ -249,6 +250,7 @@ ACCEPT requires zero failed mandatory criteria; otherwise REJECT.
 {ladder}
 # Metrics
 sim={sim_status} LUTs={lut_used} FFs={ff_used} WNS={wns_ns}ns timing_met={timing_met}
+Register-to-register WNS (advisory; excludes I/O pad delay, not a gate): {reg2reg}
 DSP={dsp_used} BRAM={bram_used}
 # Vivado notes
 {vivado_notes}
