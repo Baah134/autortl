@@ -266,6 +266,7 @@ def test_program_and_hw_use_an_archived_bitstream_with_bit(tmp_path, monkeypatch
     assert cli_main(["hw", "--design", "sync_fifo", "--bit", str(other), "--count", "1"]) == 1
     assert cli_main(["hw", "--design", "fir4", "--count", "1"]) == 1
     assert cli_main(["hw", "--design", "sync_fifo", "--count", "1"]) == 0      # no --bit: the record decides
+    assert cli_main(["hw", "--design", "sync_fifo", "--bit", str(tmp_path / "absent.bit"), "--count", "1"]) == 1
     # A failed programming attempt clears the record: the board's image is unknown.
     monkeypatch.setattr(cli, "_run", lambda cmd, cwd, log: (log.write_text("ERROR\n"), 1)[1])
     assert cli_main(["program", "--design", "sync_fifo", "--bit", str(archived)]) == 1

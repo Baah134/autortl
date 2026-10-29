@@ -43,9 +43,30 @@ LOST = {
 }
 
 
+def snapshot_for(row):
+    """The experiment's own archived source snapshot, if it holds the exact bytes."""
+    parts = row["manifest"].split("/")
+    snap = "/".join(parts[:3] + ["source-snapshot"])     # evidence/<date>/<experiment>/source-snapshot
+    target = ROOT / snap / row["path"].replace("\\", "/")
+    if row["status"] == "unbound" and target.is_file() and sha256(target.read_bytes()) == row["sha256"]:
+        return snap
+    return None
+
+
+def sha256(data):
+    import hashlib
+    return hashlib.sha256(data).hexdigest()
+
+
 def classify(row):
     """Return (group key, entry fields) for one failing claim, or stop."""
     m, path, digest = row["manifest"], row["path"], row["sha256"]
+    snap = snapshot_for(row)
+    if snap:
+        return (m, "snapshot"), {
+            "kind": "uncommitted_tested_source", "predecessor": snap,
+            "reason": "These tested versions differ from every commit, but the experiment archived its own source "
+                      "snapshot, which holds the exact bytes."}
     if m == LIVE:
         return (m, "superseded"), {
             "kind": "superseded_state_manifest", "predecessor": "evidence/2026-10-24/seed-binding-quota-block-01/run",
@@ -105,6 +126,11 @@ def main(raw_path):
             empty.append({"manifest": row["manifest"], "reason": "A list of generated-testbench cases (name, top, "
                           "expected verdict); it records no digests. The case files carry their own hashes in sim logs."})
             continue
+        if row["status"] == "no_claims" and row["manifest"] == "evidence/2026-10-26/fir4-driver-comparison-01/comparison/prelaunch-plan.json":
+            empty.append({"manifest": row["manifest"], "reason": "This launch plan records staged_source and "
+                          "canonical_source maps instead of a runtime_source freeze. Their meaning is specific to this "
+                          "comparison, so their digests are counted outside scope rather than audited as bindings."})
+            continue
         if row["status"] == "unparsed_digests" and row["manifest"] == "evidence/2026-10-28/basys3-bitstreams-01/manifest.json":
             values.append({"manifest": row["manifest"], "keys": row["detail"],
                            "reason": "configuration_payload_digest is the SHA-256 of each bitstream's configuration "
@@ -124,7 +150,8 @@ def main(raw_path):
         if entry["kind"] == "working_directory_move_record":
             entry["reason"] = relocation_reason([c["path"] for c in groups[key]])
         exceptions.append({"manifest": key[0], **entry, "claims": sorted(groups[key], key=lambda c: (c["container"], c["path"]))})
-    doc = {"schema": 2, "exceptions": exceptions, "manifests_without_claims": empty, "recorded_values": values}
+    doc = {"schema": 2, "exceptions": exceptions, "manifests_without_claims": empty, "recorded_values": values,
+           "removed_claim_files": []}
     OUT.write_text(json.dumps(doc, indent=2) + "\n", encoding="utf-8", newline="\n")
     print(f"{len(exceptions)} exceptions covering {sum(len(e['claims']) for e in exceptions)} claims; "
           f"{len(empty)} manifests without claims; {len(values)} recorded-value entries")

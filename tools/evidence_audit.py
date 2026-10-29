@@ -52,8 +52,14 @@ DIGEST_KEYS = ("sha256", "sha", "hash", "digest")
 # the relocation record.
 BINDING_NAMES = re.compile(r"tested-source-manifest(-\d+)?\.json|relocation-manifest\.json|source-identity\.json"
                            r"|([\w-]+-)?source-freeze(-\d+)?\.json|original-source\d+\.json"
-                           r"|tested-source-identities\.json")
-BINDING_CONTAINERS = {"sources"}
+                           r"|tested-source-identities\.json|([\w-]+-)?launch-source-\d+\.json"
+                           r"|harness_identity\.json|latency-runtime-source\.json")
+BINDING_CONTAINERS = {"sources", "runtime_source"}
+# Launch plans hold a `runtime_source` freeze beside other maps whose meaning
+# varies by experiment. Only that freeze is audited; their other digests are
+# counted as outside scope.
+PARTIAL_NAMES = re.compile(r"([\w-]+-)?prelaunch(-plan)?\.json")
+PARTIAL_CONTAINER = "runtime_source"
 UNPATHED_KEY = re.compile(r"\w+_sha256")
 EMPTY_SHA256 = hashlib.sha256(b"").hexdigest()
 PASS = {"ok", "ok_current", "ok_historical", "ok_digest_found", "ok_digest_elsewhere",
@@ -199,6 +205,12 @@ class History:
             self._digests[path] = found
         return self._digests[path]
 
+    def claim_files_ever(self):
+        """Every claim file path that any commit in this history added."""
+        raw = _git(self.root, "log", self.rev, "-m", "--no-renames", "--diff-filter=A", "--format=",
+                   "--name-only", "-z").decode("utf-8")
+        return {p.strip("\n") for p in raw.split("\0") if is_manifest(p.strip("\n"))}
+
     def blob(self, oid):
         if self._reader is None:
             self._reader = _BlobReader(self.root)
@@ -228,7 +240,11 @@ def is_manifest(path):
     """
     name = PurePosixPath(path).name
     return path.startswith("evidence/") and name.endswith(".json") and name != "missing-manifest-blobs.json" and (
-        "manifest" in name or BINDING_NAMES.fullmatch(name) is not None)
+        "manifest" in name or BINDING_NAMES.fullmatch(name) is not None or is_partial(path))
+
+
+def is_partial(path):
+    return PARTIAL_NAMES.fullmatch(PurePosixPath(path).name) is not None
 
 
 def _is_digest(value):
@@ -251,15 +267,15 @@ def all_digests(node, trail=()):
 
 
 def unparsed_digests(data, found):
-    """Keys of digests in a claim file that no claim accounts for."""
+    """Digests in a claim file that no claim accounts for, by key."""
     claimed = Counter((c.container, c.sha256) for c in found)
-    left = Counter()
+    left = {}
     for container, key, digest in all_digests(data):
         if claimed[(container, digest)]:
             claimed[(container, digest)] -= 1
         else:
-            left[f"{container}/{key}" if container else str(key)] += 1
-    return dict(sorted(left.items()))
+            left.setdefault(f"{container}/{key}" if container else str(key), []).append(digest)
+    return {key: sorted(values) for key, values in sorted(left.items())}
 
 
 def claims(manifest, data):
@@ -358,7 +374,8 @@ def policy(data, source="exceptions"):
       container, path, digest and the failure status it must still have.
     manifests_without_claims: claim files that legitimately hold no digests.
     recorded_values: digests in a claim file that are measured values, not
-      claims about a file, pinned by key and count.
+      claims about a file, pinned by key and exact digest.
+    removed_claim_files: claim files deliberately deleted, with the reason.
     """
     if isinstance(data, list):  # a bare list of exceptions, as tests build them
         data = {"exceptions": data}
@@ -390,8 +407,15 @@ def policy(data, source="exceptions"):
     for entry in data.get("recorded_values", []):
         if set(entry) != {"manifest", "keys", "reason"} or entry["manifest"] in values:
             raise AuditError(f"{source}: recorded_values entries need a unique manifest, keys and a reason")
+        if not all(isinstance(v, list) for v in entry["keys"].values()):
+            raise AuditError(f"{source}: recorded_values keys map each key to its exact digests")
         values[entry["manifest"]] = entry
-    return {"claims": claims_index, "empty": empty, "values": values}
+    removed = {}
+    for entry in data.get("removed_claim_files", []):
+        if set(entry) != {"manifest", "reason"} or entry["manifest"] in removed:
+            raise AuditError(f"{source}: removed_claim_files entries need a unique manifest and a reason")
+        removed[entry["manifest"]] = entry["reason"]
+    return {"claims": claims_index, "empty": empty, "values": values, "removed": removed}
 
 
 def reconstruct(data, crlf_lines=(), lf_lines=()):
@@ -439,7 +463,15 @@ def audit(snapshot, history, exceptions=None):
     folders = {posixpath.dirname(p) for p in present}
     used = set()
     results = []
+    partial_rest = {}
     manifests = sorted(p for p in present if is_manifest(p))
+    # A claim file that ever existed in this revision's history must still
+    # exist: deleting or renaming one would otherwise drop its claims unseen.
+    for manifest in sorted(history.claim_files_ever() - set(manifests)):
+        status = "claim_file_removed_recorded" if manifest in rules["removed"] else "claim_file_removed"
+        results.append({"manifest": manifest, "status": status})
+    for manifest in sorted(set(rules["removed"]) & set(manifests)):
+        results.append({"manifest": manifest, "status": "stale_exception", "detail": "listed as removed but present"})
     for manifest in manifests:
         base = posixpath.dirname(manifest)
         try:
@@ -449,12 +481,17 @@ def audit(snapshot, history, exceptions=None):
             results.append({"manifest": manifest, "status": "unreadable_manifest", "detail": str(error)})
             continue
         found = list(claims(manifest, data))
+        partial = is_partial(manifest)
+        if partial:
+            total = sum(1 for _ in all_digests(data))
+            found = [c for c in found if c.container.split("/")[-1] == PARTIAL_CONTAINER]
+            partial_rest[manifest] = total - len(found)
         if not found:
             # An emptied, truncated or reformatted claim file must not pass silently.
             status = "no_claims_recorded" if manifest in rules["empty"] else "no_claims"
             results.append({"manifest": manifest, "status": status})
             continue
-        left = unparsed_digests(data, found)
+        left = {} if partial else unparsed_digests(data, found)
         if left:
             recorded = rules["values"].get(manifest)
             row = {"manifest": manifest, "detail": left,
@@ -527,7 +564,9 @@ def audit(snapshot, history, exceptions=None):
              or r["status"] == "unparsed_digests" and "recorded" in r}
     for manifest in sorted((set(rules["empty"]) | set(rules["values"])) - noted):
         results.append({"manifest": manifest, "status": "stale_exception"})
-    return summarize(snapshot, manifests, results, outside_scope(snapshot, present))
+    scope = outside_scope(snapshot, present)
+    scope["launch_plans_outside_runtime_source"] = {"files": len(partial_rest), "digests": sum(partial_rest.values())}
+    return summarize(snapshot, manifests, results, scope)
 
 
 def outside_scope(snapshot, present):
@@ -548,7 +587,7 @@ def outside_scope(snapshot, present):
 def summarize(snapshot, manifests, results, scope=None):
     counts = Counter(r["status"] for r in results)
     kinds = Counter(r["kind"] for r in results if "kind" in r)
-    informational = {"no_claims_recorded", "recorded_values", "unused_exception"}
+    informational = {"no_claims_recorded", "recorded_values", "unused_exception", "claim_file_removed_recorded"}
     failures = [r for r in results if r["status"] not in PASS | informational]
     return {"schema": 2, "revision": snapshot.rev, "manifests": len(manifests),
             "claims": sum(kinds.values()), "claims_by_kind": dict(sorted(kinds.items())),

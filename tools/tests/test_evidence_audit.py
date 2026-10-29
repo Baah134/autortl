@@ -136,7 +136,7 @@ def test_every_layout_gets_the_pinned_status(repo):
                                 "unparsed_digests": 1, "unreadable_manifest": 1, "unsafe_path": 1}
     assert report["claims_by_kind"] == {"archive": 9, "binding": 7, "unpathed": 3}
     mixed = next(r for r in report["failures"] if r["status"] == "unparsed_digests")
-    assert mixed["detail"] == {"build_id": 1, "seen/[]": 1}
+    assert mixed["detail"] == {"build_id": [sha(b"build")], "seen/[]": [sha(b"seen")]}
     assert not report["passed"]
 
 
@@ -145,6 +145,10 @@ def test_source_freezes_are_claim_files(repo):
     assert audit.is_manifest("evidence/x/source-freeze.json")
     assert audit.is_manifest("evidence/x/original-source227.json")
     assert audit.is_manifest("evidence/x/tested-source-identities.json")
+    assert audit.is_manifest("evidence/x/packet-launch-source-01.json")
+    assert audit.is_manifest("evidence/x/harness_identity.json")
+    assert audit.is_manifest("evidence/x/latency-runtime-source.json")
+    assert audit.is_manifest("evidence/x/prelaunch-plan.json") and audit.is_partial("evidence/x/prelaunch-plan.json")
     assert not audit.is_manifest("evidence/x/source-verification.json")
     assert not audit.is_manifest("evidence/x/summary.json")
     data = json.loads((FIXTURES / "freeze" / "proposal-fixes-source-freeze-01.json").read_text())
@@ -306,19 +310,55 @@ def test_policy_rejects_loose_or_duplicate_entries():
 
 
 def test_claim_files_without_claims_and_recorded_values(repo):
+    values = {"build_id": [sha(b"build")], "seen/[]": [sha(b"seen")]}
     rules = {"manifests_without_claims": [{"manifest": "evidence/plain/manifest.json", "reason": "case list"}],
-             "recorded_values": [{"manifest": "evidence/mixed/manifest.json",
-                                  "keys": {"build_id": 1, "seen/[]": 1}, "reason": "ids"}]}
+             "recorded_values": [{"manifest": "evidence/mixed/manifest.json", "keys": values, "reason": "ids"}]}
     found = statuses(run(repo, rules))
     assert ("plain/manifest.json", None) not in found and ("mixed/manifest.json", None) not in found
-    # The recorded keys must match exactly, or the manifest fails again.
-    rules["recorded_values"][0]["keys"] = {"build_id": 1}
+    # The recorded keys and digests must match exactly, or the manifest fails again.
+    rules["recorded_values"][0]["keys"] = {"build_id": [sha(b"build")]}
     assert statuses(run(repo, rules))[("mixed/manifest.json", None)] == "unparsed_digests"
-    # An allowance for a manifest that no longer needs one is stale.
+    rules["recorded_values"][0]["keys"] = {"build_id": [sha(b"another build")], "seen/[]": [sha(b"seen")]}
+    assert statuses(run(repo, rules))[("mixed/manifest.json", None)] == "unparsed_digests"
+    with pytest.raises(audit.AuditError, match="exact digests"):
+        audit.policy({"recorded_values": [{"manifest": "m", "keys": {"build_id": 1}, "reason": "r"}]})
+    # A manifest removed from history fails unless its removal is recorded,
+    # and an allowance for one that no longer needs it is stale.
     (repo / "evidence" / "plain" / "manifest.json").unlink()
     commit(repo, "drop plain")
-    rules["recorded_values"][0]["keys"] = {"build_id": 1, "seen/[]": 1}
+    rules["recorded_values"][0]["keys"] = values
     assert statuses(run(repo, rules))[("plain/manifest.json", None)] == "stale_exception"
+    assert statuses(run(repo))[("plain/manifest.json", None)] == "claim_file_removed"
+
+
+def test_deleted_or_renamed_claim_files_fail(repo):
+    shutil.move(repo / "evidence" / "board-01" / "manifest.json", repo / "evidence" / "board-01" / "notes.json")
+    commit(repo, "rename a manifest out of discovery")
+    assert statuses(run(repo))[("board-01/manifest.json", None)] == "claim_file_removed"
+    recorded = {"removed_claim_files": [{"manifest": "evidence/board-01/manifest.json", "reason": "superseded"}]}
+    assert ("board-01/manifest.json", None) not in statuses(run(repo, recorded))
+    with pytest.raises(audit.AuditError, match="removed_claim_files"):
+        audit.policy({"removed_claim_files": [{"manifest": "m"}]})
+    # Listing a removal for a file that is present is stale.
+    present = {"removed_claim_files": [{"manifest": "evidence/archive-a/archive-manifest.json", "reason": "r"}]}
+    assert statuses(run(repo, present))[("archive-a/archive-manifest.json", None)] == "stale_exception"
+
+
+def test_launch_plans_audit_only_their_runtime_source(repo):
+    plan = repo / "evidence" / "launch" / "build-core-01-prelaunch.json"
+    plan.parent.mkdir()
+    plan.write_text(json.dumps({"runtime_source": {"src/core.v": sha(V2), "src/old.v": sha(b"never")},
+                                "fixture_hashes": {"x.v": "a" * 64}, "cohort": "b" * 64}))
+    commit(repo, "a launch plan")
+    report = run(repo)
+    found = statuses(report)
+    assert found[("launch/build-core-01-prelaunch.json", "src/old.v")] == "unbound"
+    assert ("launch/build-core-01-prelaunch.json", "x.v") not in found          # not a freeze: outside scope
+    assert ("launch/build-core-01-prelaunch.json", None) not in found           # and not "unparsed"
+    assert report["outside_scope"]["launch_plans_outside_runtime_source"] == {"files": 1, "digests": 2}
+    plan.write_text(json.dumps({"staged_source": {"src/core.v": sha(V2)}}))
+    commit(repo, "a plan without a runtime_source freeze")
+    assert statuses(run(repo))[("launch/build-core-01-prelaunch.json", None)] == "no_claims"
 
 
 def test_reconstruct_proves_a_mixed_ending_working_copy(repo):
@@ -382,7 +422,7 @@ def test_claims_lowercase_and_classify():
     assert {(c.kind, c.path, c.sha256[0]) for c in found} == {
         ("binding", "src/a.v", "a"), ("archive", "r.txt", "b"), ("archive", "x", "c"),
         ("unpathed", "winner_sha256", "d")}
-    assert audit.unparsed_digests(data, found) == {"note": 1}
+    assert audit.unparsed_digests(data, found) == {"note": ["e" * 64]}
     binding = list(audit.claims("evidence/x/tested-source-manifest-02.json", {"autortl/fsm.py": "f" * 64}))
     assert [c.kind for c in binding] == ["binding"]
 
@@ -412,7 +452,7 @@ def test_load_exceptions(tmp_path):
     path.write_text("{not json")
     with pytest.raises(audit.AuditError, match="not valid JSON"):
         audit.load_exceptions(path)
-    assert audit.load_exceptions(tmp_path / "absent.json") == {"claims": {}, "empty": {}, "values": {}}
+    assert audit.load_exceptions(tmp_path / "absent.json") == {"claims": {}, "empty": {}, "values": {}, "removed": {}}
 
 
 def test_each_revision_is_audited_with_its_own_exceptions(repo, tmp_path, capsys):
@@ -456,8 +496,15 @@ def test_cli_exit_codes_and_report(repo, tmp_path, capsys):
     assert audit.main(["--root", str(repo), "--report", str(out)]) == 1
     assert json.loads(out.read_text())["passed"] is False
     assert f"FAILED: {len(EXPECTED_FAILURES)} claims" in capsys.readouterr().out
-    for manifest in ("archive-a", "cases-run-01", "board-01", "move", "counter-ref", "broken", "mixed", "plain"):
-        shutil.rmtree(repo / "evidence" / manifest)
+    dropped = [str(p.relative_to(repo).as_posix()) for p in (repo / "evidence").rglob("*.json")
+               if audit.is_manifest(p.relative_to(repo).as_posix()) and "freeze" not in p.as_posix()]
+    for folder in ("archive-a", "cases-run-01", "board-01", "move", "counter-ref", "broken", "mixed", "plain"):
+        shutil.rmtree(repo / "evidence" / folder)
     commit(repo, "drop failing fixtures")
+    assert audit.main(["--root", str(repo)]) == 1                # removals are failures until recorded
+    (repo / "tools").mkdir()
+    (repo / "tools" / "evidence_exceptions.json").write_text(json.dumps(
+        {"schema": 2, "removed_claim_files": [{"manifest": m, "reason": "test cleanup"} for m in dropped]}))
+    commit(repo, "record the removals")
     assert audit.main(["--root", str(repo)]) == 0
     assert audit.main(["--root", str(repo), "--rev", "no-such-rev"]) == 2

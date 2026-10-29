@@ -132,6 +132,13 @@ python -m hwsuite program --design sync_fifo --bit ../../../evidence/2026-10-28/
 python -m hwsuite hw --design sync_fifo --bit ../../../evidence/2026-10-28/basys3-bitstreams-01/harness_winners/sync_fifo.bit --count 50000
 ```
 
-`hw` records the payload digest of the `--bit` file; it equals the one in
-`basys3-harness-winners-01/summary.json`. A bitstream for the wrong design
-fails the check against that design's model.
+`program` writes `build/programmed.json` with the design and payload digest
+it loaded. `hw` reports that payload, which equals the one in
+`basys3-harness-winners-01/summary.json`, and it refuses to run if the record
+names another design or `--bit` names a different image. `--bit` is
+accepted only by `program` and `hw`. The record cannot see a board
+reprogrammed outside this suite, so delete it after using Vivado's hardware
+manager or the UART echo or FIR scripts. A bitstream for the wrong design
+also fails the check against that design's model.
+[basys3-bitstream-replay-01](../../../evidence/2026-10-28/basys3-bitstream-replay-01/README.md)
+replays all six this way.

@@ -202,10 +202,14 @@ def _on_board(args, design) -> str:
     """Payload digest of the image on the board, from the last `program` record.
 
     Without a record (the board was programmed some other way) it falls back
-    to the bitstream `hw` was pointed at, as before.
+    to the bitstream `hw` was pointed at, as before. The record cannot see a
+    board reprogrammed outside this suite (Vivado's hardware manager, or the
+    UART echo and FIR scripts), so delete build/programmed.json after doing that.
     """
     from . import reports
     bit = _bitstream(args, design)
+    if getattr(args, "bit", None) and not bit.is_file():
+        raise SuiteError(f"{design.name}: --bit {bit} does not exist")
     if not _programmed().is_file():
         if not bit.is_file():
             raise SuiteError(f"{design.name}: build and program first, or pass --bit ({bit} missing)")
