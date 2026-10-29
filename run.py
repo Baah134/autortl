@@ -67,6 +67,8 @@ def main(argv=None):
     p_bch = sub.add_parser("bench", parents=[common])
     p_bch.add_argument("--tier", type=int, required=True)
     p_bch.add_argument("--entries", nargs="+", help="run only named entries; never holds the full tier")
+    p_bch.add_argument("--jobs", type=int, default=1,
+                       help="run up to this many entries at once, as separate processes (default 1); not part of the cohort")
 
     p_doc = sub.add_parser("doctor", help="check Python, Vivado and the model CLI; runs no design")
     for name in ("vivado", "xvlog", "xelab", "xsim"):
@@ -109,6 +111,8 @@ def main(argv=None):
             kw["output_root"] = a.output_dir.resolve()
         if a.entries:
             kw["entries"] = a.entries
+        if a.jobs != 1:
+            kw["jobs"] = a.jobs
         return run_tier(a.tier, **kw)
 
     if a.cmd == "optimize":
