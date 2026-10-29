@@ -1,10 +1,37 @@
 # Current AutoRTL checkpoint
 
-Updated October 28, 2026 (America/New_York). Verify files, Git, ownership and
+Updated October 29, 2026 (America/New_York). Verify files, Git, ownership and
 actual jobs before acting. Canonical checkout: Downloads/autortl-work. Preserve
 the separate Downloads/autortl copy. User choice: command-line Vivado.
 
-## Latest - October 28, session 3 (Claude Code): repository-wide evidence audit
+## Latest - October 29 (Claude Code): harness-built design on the board; two harness fixes
+
+The user gave Claude full authority over the repo, including running the
+harness. Claude holds the lease.
+
+- **Harness-built UART TX on the Basys 3.** `run.py build` on
+  hardware/basys3/harness_built/uart_tx/design_spec.json produced a UART TX
+  (run 03: 34 to 22 LUTs, 14 calls, 9.4 min). The unedited winner drives the
+  board's TX pin and echoed 100,000 of 100,000 bytes. Evidence:
+  evidence/2026-10-29/harness-uart-tx-01, including the two failed runs.
+- **Harness fix 1 (bc959cc), stale_companion_masks_inlined_candidate.** A
+  candidate that stops instantiating a companion the trusted testbench
+  instantiates is now rejected (autortl/companions.py). Run 04 on the fixed
+  harness kept the child and its parameter: 39/28, the same board results
+  (evidence/2026-10-29/harness-uart-tx-02).
+- **Harness fix 2 (e062271), checkpoint_replace_denied.** A locked
+  checkpoint raises CheckpointLockedError, and run.py reports
+  `infra_blocked` with exit code 3.
+- Pytest passes, 1,461 tests, and CI is green. **The merge gate is due.**
+  campaign14 cannot launch, because it asserts the old 230-file freeze. Use
+  `python tools/tier0_gate.py --name contract-campaign-15` (campaign14's
+  budgets on a fresh 232-file freeze). It is not run yet.
+- In progress: the Fmax sweep (hardware/basys3/fmax). A v2 UART spec with a
+  shortened stop bit, so a line-rate stream keeps up, is qualified in
+  hardware/basys3/harness_built/uart_tx_v2 but not yet run.
+- Never `tail -F` a live run file on Windows; it crashed run 02.
+
+## October 28, session 3 (Claude Code): repository-wide evidence audit
 
 - **`tools/evidence_audit.py`** checks every SHA-256 claim in every claim
   file under evidence/ against committed blobs (PUBLICATION.md step 5, which

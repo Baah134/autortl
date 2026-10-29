@@ -1517,3 +1517,26 @@ corrected as an explicit doc-only delta after the frozen experiments.
   run. hwsuite program/hw gained --bit and a programmed-image record.
 - eebedce audit: PASS (27,117 claims). No frozen source changed. Campaign14 remains Codex's
   gate before main.
+
+## October29 - Claude Code: harness-built UART TX on the Basys 3; two harness fixes
+
+- The harness built a UART 8N1 TX from a typed board spec
+  (hardware/basys3/harness_built/uart_tx). Run 03 went from 34 to 22 LUTs,
+  timing met, in 14 calls and 9.4 min. The unedited winner on the board
+  echoed 100,000 of 100,000 bytes, and the 100000-baud control failed.
+  Runs 01 (tools not on PATH) and 02 (tail -F crash, then the golden budget)
+  are archived with it.
+- The independent testbench was qualified on a reference and 12 mutants.
+  The winner flattened the child; a winner-only check (all 256 values,
+  2.24M cycles) passed.
+- bc959cc: rejects candidates that inline a companion the trusted testbench
+  tests. The taxonomy entry was recorded first, with 9 tests. Run 04 kept
+  the child (39/28) and passed the same board checks; the stream lost its
+  first byte at 19,392 in both runs, which is set by the contract.
+- e062271: CheckpointLockedError, so run.py reports infra_blocked instead of
+  a traceback, with a real-handle Windows test. Pytest: 1,461 tests pass.
+- tools/tier0_gate.py is the merge gate for the changed 232-file source.
+  It has not been run.
+- The Fmax sweep is in progress. Out of context: FIR 181.8, elastic dot4
+  384.6, pipelined dot4 392.2, divider 322.6 MHz. The harness flow tops out
+  at 101.5-107.5 MHz: the I/O pads dominate.
