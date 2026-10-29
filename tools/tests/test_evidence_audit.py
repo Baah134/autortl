@@ -30,9 +30,14 @@ def git(root, *args):
     return subprocess.run(["git", *args], cwd=root, check=True, capture_output=True).stdout
 
 
+def git_as_author(root, *args):
+    # CI runners have no Git identity; commits and merges must bring their own.
+    return git(root, "-c", "user.name=t", "-c", "user.email=t@example.com", *args)
+
+
 def commit(root, message):
     git(root, "add", "-A")
-    git(root, "-c", "user.name=t", "-c", "user.email=t@example.com", "commit", "-q", "-m", message)
+    git_as_author(root, "commit", "-q", "-m", message)
 
 
 @pytest.fixture
@@ -172,7 +177,7 @@ def test_history_is_the_audited_revisions_own(repo):
     (freeze / "source-freeze.json").write_text(json.dumps({"src/core.v": sha(b"side only\n")}))
     commit(repo, "freeze naming a side-branch version")
     assert statuses(run(repo))[("freeze2/source-freeze.json", "src/core.v")] == "unbound"
-    git(repo, "merge", "-q", "--no-ff", "-m", "merge side", "side")
+    git_as_author(repo, "merge", "-q", "--no-ff", "-m", "merge side", "side")
     assert ("freeze2/source-freeze.json", "src/core.v") not in statuses(run(repo))
     # Deleted files keep their history.
     (repo / "src" / "old.v").unlink()
