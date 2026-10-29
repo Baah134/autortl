@@ -66,6 +66,15 @@ messages:
 # Methodology violations (report_methodology, UG1292 IDs). ADVISORY ONLY:
 # these never kill candidates; they are digested into the planner's context.
 harness_failures:
+  stale_companion_masks_inlined_candidate:
+    meaning: "An optimized top inlined a frozen companion it no longer instantiates, while the trusted testbench still instantiated that companion directly, so the stale companion file kept that part of the testbench passing without testing the candidate"
+    repair: "Before compiling, require every frozen companion the trusted testbench instantiates to stay reachable from the candidate top; otherwise reject it as a design failure with that reason inside the bounded repair loop, and name those companions in the candidate context"
+  checkpoint_replace_denied:
+    meaning: "On Windows, another process holding a checkpoint file open made the atomic replace fail with WinError 5, and the run crashed with a traceback"
+    repair: "Treat it as infrastructure: retry the replace with bounded backoff, never mutate design state, and never watch live run files with tools that hold them open; resume recovers from the journal"
+  golden_budget_long_period_examples:
+    meaning: "A specification example longer than a few thousand cycles exhausted the golden worker's instruction budget, so a long-period serial design could not express full-frame anchors"
+    repair: "Keep examples under the budget, about 2,000 cycles for a per-cycle UART model; check full frames at real timing with an independent qualified --tb"
   completed_child_dependency_omission:
     meaning: "DONE retained a verification manifest but omitted child RTL referenced by its recorded input hashes"
     repair: "Validate retained verification dependencies against their recorded hashes before publishing DONE; retain source and testbench identities and reject missing or changed dependencies"

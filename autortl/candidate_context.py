@@ -46,8 +46,13 @@ def _inventory(text):
     return result
 
 
-def candidate_scope(top_module, extra_sources):
-    """Return bounded model guidance; never silently omit frozen input metadata."""
+def candidate_scope(top_module, extra_sources, testbench_companions=()):
+    """Return bounded model guidance; never silently omit frozen input metadata.
+
+    testbench_companions names frozen companions the trusted testbench
+    instantiates directly. The top must keep instantiating those; the field
+    appears only when nonempty, so other runs' prompts are unchanged.
+    """
     if not valid_identifier(top_module):
         raise ValueError("candidate scope requires a valid editable top identifier")
     paths = list(dict.fromkeys(Path(path).resolve() for path in extra_sources))
@@ -60,6 +65,12 @@ def candidate_scope(top_module, extra_sources):
         files.append({"path":fact["path"],"sha256":fact["sha256"],"modules":modules,
                       "source_preview":"","preview_truncated":fact["truncated"]})
     scope = {"editable_top":top_module,"frozen_companions":files}
+    if testbench_companions:
+        scope["must_keep_instantiating"] = {
+            "modules": sorted(testbench_companions),
+            "why": "The trusted testbench instantiates these companions directly. Inlining them would leave those "
+                   "checks testing the frozen companion instead of your top, so a candidate that stops "
+                   "instantiating them is rejected."}
     render = lambda: _HEADER + json.dumps(scope,sort_keys=True,indent=2)
     if len(render()) > MAX_SCOPE_CHARS:
         raise ValueError("frozen companion metadata exceeds candidate context budget; partition the compilation unit")

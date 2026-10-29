@@ -38,6 +38,7 @@ from .candidate_context import candidate_scope
 from .proposal_feedback import record_candidate, render_feedback, source_identity, doctor_summary
 from .timing_doctor import diagnose, TimingCategory
 from . import vivado
+from . import companions
 from .vivado import advisor_digest
 from .report_parser import VivadoMetrics, extract_message_ids
 from .golden import GoldenModel, qualify_against_examples, validate_examples
@@ -729,7 +730,8 @@ class Orchestrator:
                              idir, self._cache_context(tb_path, extra_sources),
                              **({"build_spec_path": state.spec_path} if cfg.mode == "build" else {}))
         context = save_evidence(state.run_dir / "harness_facts.json", facts)
-        role_context = context + "\n\n" + candidate_scope(cfg.top_module, extra_sources)
+        role_context = context + "\n\n" + candidate_scope(
+            cfg.top_module, extra_sources, companions.required_by_testbench(tb_path, extra_sources))
         for role in (self.planner, self.generator, self.evaluator, self.doctor):
             role.run_context = role_context
         contract_md = render_fixed_optimize_contract(facts)
@@ -1169,7 +1171,12 @@ class Orchestrator:
                 candidate.fail_reason = f"declared @latency {latency} != contract {contract.latency} (spec is law)"
                 return
             candidate.ladder_rungs_passed = 1
-            ok, error, kind = self._tool("xvlog_check", [source] + extra, self.cfg, work)
+            stale = companions.violation(candidate.verilog, self.cfg.top_module, extra, tb)
+            if stale:
+                # The testbench would grade a stale companion, not this candidate.
+                ok, error, kind = False, stale, FailureKind.DESIGN
+            else:
+                ok, error, kind = self._tool("xvlog_check", [source] + extra, self.cfg, work)
             if ok:
                 candidate.ladder_rungs_passed = 2
                 if tb is None:
