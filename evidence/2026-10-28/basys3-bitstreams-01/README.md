@@ -37,5 +37,10 @@ python -m hwsuite hw --design <name> --bit ../../../evidence/2026-10-28/basys3-b
 The other two load with the same `program.tcl`
 (`vivado -mode batch -source hardware/basys3/harness_winners/scripts/program.tcl -tclargs <file>`)
 and are tested with `echo_test.py` and `fir_test.py` in their own folders.
-`tools/evidence_audit.py` checks in CI that every recorded bitstream digest
-has its file in the repository.
+`../basys3-bitstream-replay-01` did exactly this for all six harness winners.
+
+In CI, `tools/evidence_audit.py` checks every file here against
+`manifest.json`, and checks that the bitstream digests in the UART echo and
+FIR board manifests resolve to these files. A board-suite test,
+`test_archived_bitstreams_match_the_board_evidence`, checks the six harness
+winners' file and payload digests against `basys3-harness-winners-01/summary.json`.
