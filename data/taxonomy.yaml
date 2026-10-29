@@ -90,6 +90,9 @@ harness_failures:
   unpinned_model_identity:
     meaning: "Runs called the Codex CLI default model without naming it, and the CLI does not report the model, so a change of the desktop default would silently change the model inside one cohort"
     repair: "Let a run name its model (RunConfig.model, run.py --model); route every role through it, save it in config.json, and record it as the requested model identity in the bench cohort"
+  seed_without_timescale_costs_model_repair:
+    meaning: "An optimize-mode seed without a timescale, verified with a testbench that declares one, failed elaboration with XSIM 43-4099; the harness spent a generator repair call and relied on the model to change nothing but the directive (tier1-campaign-01 pwm)"
+    repair: "Give the verified baseline copy the same default 1ns/1ps timescale generated RTL receives, mechanically, when it has none; never spend a model call or let a model edit the frozen baseline for it"
   completed_child_dependency_omission:
     meaning: "DONE retained a verification manifest but omitted child RTL referenced by its recorded input hashes"
     repair: "Validate retained verification dependencies against their recorded hashes before publishing DONE; retain source and testbench identities and reject missing or changed dependencies"
