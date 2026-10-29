@@ -1,0 +1,118 @@
+{
+  "testbench": {
+    "verify_winner_tb.v": "9d7d2db2be0d3c602103b182725e870da448de5f209eb9bc604507fd909e53c7",
+    "uart_tx_tb.v": "689e21d15536834331fb0fb2affb30de6cb351b4f42a9b2084b3e7f52134a54d"
+  },
+  "top": "verify_winner_tb",
+  "exempt": [
+    "parameter_ignored"
+  ],
+  "reference_sha256": "da034714c462e72574cbacce530a10cfaaa2c96df2be3e16b4201a9d743ccf3b",
+  "runs": [
+    {
+      "case": "reference",
+      "why": "control",
+      "expect_pass": true,
+      "verdict": "TEST PASSED",
+      "as_required": true,
+      "source_sha256": "da034714c462e72574cbacce530a10cfaaa2c96df2be3e16b4201a9d743ccf3b"
+    },
+    {
+      "case": "msb_first",
+      "why": "data bits sent most significant first",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 1790746 errors",
+      "as_required": true,
+      "source_sha256": "839b199decbaccc5f3a7cfd5a7a94640c4a7a3fc72aae966afceb730ee83e4c8"
+    },
+    {
+      "case": "bit_one_cycle_long",
+      "why": "each bit lasts DIV+1 cycles",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 2229996 errors",
+      "as_required": true,
+      "source_sha256": "238b073b68b433b963ff13a7ff5b6ac0f6162c625630fc8900578566526b1cc5"
+    },
+    {
+      "case": "bit_one_cycle_short",
+      "why": "each bit lasts DIV-1 cycles",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 1411725 errors",
+      "as_required": true,
+      "source_sha256": "c1e414dcf3fa1e4dbe81e68514cbd6351f33bc911b82b634f5da4bafaa50bc29"
+    },
+    {
+      "case": "no_stop_bit",
+      "why": "returns to idle after the last data bit",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 2195420 errors",
+      "as_required": true,
+      "source_sha256": "57e6619e3728a23f78bd30f417db171ef14fa273cee7e7b585418768bb84650d"
+    },
+    {
+      "case": "inverted_start",
+      "why": "start bit sent as 1",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 449624 errors",
+      "as_required": true,
+      "source_sha256": "a06e5cfb3d63e61532c4e6754dbde8e2df5a2804f5c5ebc7f71ac8f370882117"
+    },
+    {
+      "case": "live_data",
+      "why": "uses in_data at each bit instead of the captured byte",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 1738530 errors",
+      "as_required": true,
+      "source_sha256": "5a474e10187907f8ad7f77158045ec53626e9fd87023773c802fce673f8b35bb"
+    },
+    {
+      "case": "reset_ignored_while_busy",
+      "why": "rst only works when idle",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 4462059 errors",
+      "as_required": true,
+      "source_sha256": "80546f6de2b491521790d881f526a6601e11e39ddc5a667e15f7ab0f396f0e81"
+    },
+    {
+      "case": "accept_ignores_valid",
+      "why": "starts a frame without in_valid",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 1713593 errors",
+      "as_required": true,
+      "source_sha256": "7c719459b934bfdb4cdc5fbccabc48396be881c3d25182ea0af418d03bf45698"
+    },
+    {
+      "case": "parameter_ignored",
+      "why": "hard-codes 868 cycles per bit",
+      "expect_pass": true,
+      "verdict": "TEST PASSED",
+      "as_required": true,
+      "source_sha256": "0ac155125db2602c3f03a752a232f74ceaeb721e3e804ccb4af2248676a5bcd7"
+    },
+    {
+      "case": "ready_stuck_high",
+      "why": "in_ready reported high while busy",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 4462019 errors",
+      "as_required": true,
+      "source_sha256": "c4c06e45005a06a83212ee61ce90d481e7d9f697bad59e46428f6b471b87d23d"
+    },
+    {
+      "case": "reset_line_low",
+      "why": "tx idles low after reset",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 332 errors",
+      "as_required": true,
+      "source_sha256": "1322caa2521b9e05d3bf8798bfbf89011b4dceb90e358dcea5c76a435df96cbf"
+    },
+    {
+      "case": "frame_one_bit_short",
+      "why": "jumps from data bit 7 straight to the end, dropping the stop bit",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 2195420 errors",
+      "as_required": true,
+      "source_sha256": "a8b7e1396a2db6fd88818fdf069f934e5a8870f1cbdc611e3a21c1578c20f0e7"
+    }
+  ],
+  "qualified": true
+}

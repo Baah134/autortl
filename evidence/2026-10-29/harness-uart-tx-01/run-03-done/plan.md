@@ -1,0 +1,9 @@
+# PLAN — iteration 3
+## Current state assessment
+Iteration 1 is the verified best at 22 LUTs, with timing met; iteration 2 passed behavior and timing but used 24 LUTs, so it did not improve the LUT objective. The current seed retains a 10-bit bit countdown and 4-bit bit index. Since the prior shift-register proposal increased LUT use, this iteration will keep the existing data and bit-index logic and target the countdown’s terminal test.
+
+## Hypothesis
+For the fixed top-level DIV=868, loading 867 and testing for zero at each busy edge should preserve every bit boundary while potentially reducing LUT logic compared with the current greater-than-one test.
+
+## Instruction for generator
+Keep the current bit-index and variable-index data-read behavior unchanged. Change `bit_count` so acceptance loads `10'd867`, each busy edge decrements it while nonzero, and a zero count triggers the existing bit-boundary actions and reloads `10'd867`; this places each boundary exactly 868 edges after the prior one. Preserve reset behavior, registered outputs, the `// @latency 1` annotation, and the fixed interface. Verify the unchanged testbench and all promotion gates, then compare routed LUTs against the 22-LUT incumbent under the same constraints.

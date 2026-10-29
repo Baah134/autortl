@@ -1,0 +1,52 @@
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/prince.baah/AppData/Local/Temp/claude/C--Users-prince-baah-Downloads-autortl-work/55d6b518-5dad-43c2-b889-516d22ebd733/scratchpad/uart_qual_winner/ready_stuck_high/src/uart_tx.v" into library work
+INFO: [VRFC 10-311] analyzing module uart_tx_core
+INFO: [VRFC 10-311] analyzing module uart_tx
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/prince.baah/Downloads/autortl-work/hardware/basys3/harness_built/uart_tx/verify_winner_tb.v" into library work
+INFO: [VRFC 10-311] analyzing module verify_winner_tb
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/prince.baah/Downloads/autortl-work/hardware/basys3/harness_built/uart_tx/uart_tx_tb.v" into library work
+INFO: [VRFC 10-311] analyzing module uart_tx_tb
+INFO: [VRFC 10-311] analyzing module uart_tx_ref_check
+Vivado Simulator v2025.2
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+Running: C:/AMDDesignTools/2025.2/Vivado/bin/unwrapped/win64.o/xelab.exe verify_winner_tb -s tb_snap --debug off 
+Multi-threading is on. Using 10 slave threads.
+Starting static elaboration
+Pass Through NonSizing Optimizer
+Completed static elaboration
+Starting simulation data flow analysis
+Completed simulation data flow analysis
+Time Resolution for simulation is 1ps
+Compiling module work.uart_tx_core_default
+Compiling module work.uart_tx
+Compiling module work.uart_tx_ref_check
+Compiling module work.verify_winner_tb
+Built simulation snapshot tb_snap
+
+****** xsim v2025.2 (64-bit)
+  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025
+  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025
+  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025
+  **** Start of session at: Thu Oct 29 01:41:35 2026
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+
+source xsim.dir/tb_snap/xsim_script.tcl
+# xsim {tb_snap} -autoloadwcfg -runall
+Time resolution is 1 ps
+run -all
+FAIL DIV=868 t=46000: expected tx=0 in_ready=0, got tx=0 in_ready=1 (elapsed 0)
+FAIL DIV=868 t=50000: output changed between edges (tx=0 in_ready=1)
+FAIL DIV=868 t=56000: expected tx=0 in_ready=0, got tx=0 in_ready=1 (elapsed 1)
+FAIL DIV=868 t=60000: output changed between edges (tx=0 in_ready=1)
+FAIL DIV=868 t=66000: expected tx=0 in_ready=0, got tx=0 in_ready=1 (elapsed 2)
+FAIL DIV=868 t=70000: output changed between edges (tx=0 in_ready=1)
+FAIL DIV=868 t=76000: expected tx=0 in_ready=0, got tx=0 in_ready=1 (elapsed 3)
+FAIL DIV=868 t=80000: output changed between edges (tx=0 in_ready=1)
+FAIL DIV=868 t=86000: expected tx=0 in_ready=0, got tx=0 in_ready=1 (elapsed 4)
+FAIL DIV=868 t=90000: output changed between edges (tx=0 in_ready=1)
+winner at DIV=868: 256 frames completed, 259 accepted, 255 back-to-back, 3 aborted by reset, 2222324 cycles
+TEST FAILED: 4462019 errors
+$finish called at time : 22310170 ns : File "C:/Users/prince.baah/Downloads/autortl-work/hardware/basys3/harness_built/uart_tx/verify_winner_tb.v" Line 77
+exit
+INFO: [Common 17-206] Exiting xsim at Thu Oct 29 01:41:38 2026...

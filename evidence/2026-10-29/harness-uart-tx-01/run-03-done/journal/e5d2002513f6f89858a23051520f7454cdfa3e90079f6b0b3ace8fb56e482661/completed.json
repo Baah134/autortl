@@ -1,0 +1,63 @@
+{
+  "stage": "iteration_3:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 3,
+    "instruction": "Keep the current bit-index and variable-index data-read behavior unchanged. Change `bit_count` so acceptance loads `10'd867`, each busy edge decrements it while nonzero, and a zero count triggers the existing bit-boundary actions and reloads `10'd867`; this places each boundary exactly 868 edges after the prior one. Preserve reset behavior, registered outputs, the `// @latency 1` annotation, and the fixed interface. Verify the unchanged testbench and all promotion gates, then compare routed LUTs against the 22-LUT incumbent under the same constraints.",
+    "candidates": [
+      {
+        "iteration": 3,
+        "mutation": "standard",
+        "instruction": "Keep the current bit-index and variable-index data-read behavior unchanged. Change `bit_count` so acceptance loads `10'd867`, each busy edge decrements it while nonzero, and a zero count triggers the existing bit-boundary actions and reloads `10'd867`; this places each boundary exactly 868 edges after the prior one. Preserve reset behavior, registered outputs, the `// @latency 1` annotation, and the fixed interface. Verify the unchanged testbench and all promotion gates, then compare routed LUTs against the 22-LUT incumbent under the same constraints.",
+        "generated_source_sha256": "b4f6cfb5d215c034e3db3984bcdec914b4621994e8ce6ac7698eb5af847eb209",
+        "final_source_sha256": "b4f6cfb5d215c034e3db3984bcdec914b4621994e8ce6ac7698eb5af847eb209",
+        "generated_code_hash": "f31faa9fe47f2028",
+        "final_code_hash": "f31faa9fe47f2028",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.69,
+          "whs_ns": 0.028,
+          "lut_used": 23,
+          "ff_used": 24,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.011,
+          "total_power_w": 0.081
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\harness-uart-tx-03\\iter_003\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\harness-uart-tx-03\\iter_003\\cand_standard\\synth.tcl",
+          "sha256": "f48f61c67a02cb15d621090a893d6b542132068be334ce5680abad0d408a47da"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\harness-uart-tx-03\\iter_003\\cand_standard\\uart_tx.v",
+          "sha256": "6904289b044ee44f21c76fcd7b781dee01ff3a5e58f30118c8056373638982d4"
+        }
+      },
+      {
+        "iteration": 3,
+        "mutation": "narrow",
+        "instruction": "Keep the current bit-index and variable-index data-read behavior unchanged. Change `bit_count` so acceptance loads `10'd867`, each busy edge decrements it while nonzero, and a zero count triggers the existing bit-boundary actions and reloads `10'd867`; this places each boundary exactly 868 edges after the prior one. Preserve reset behavior, registered outputs, the `// @latency 1` annotation, and the fixed interface. Verify the unchanged testbench and all promotion gates, then compare routed LUTs against the 22-LUT incumbent under the same constraints.",
+        "generated_source_sha256": "b4f6cfb5d215c034e3db3984bcdec914b4621994e8ce6ac7698eb5af847eb209",
+        "final_source_sha256": "b4f6cfb5d215c034e3db3984bcdec914b4621994e8ce6ac7698eb5af847eb209",
+        "generated_code_hash": "f31faa9fe47f2028",
+        "final_code_hash": "f31faa9fe47f2028",
+        "rungs": 0,
+        "status": "duplicate_skipped",
+        "reason": "duplicate of 'standard' candidate",
+        "metrics": {},
+        "cache_hit": false
+      }
+    ],
+    "doctor": null,
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": "b4f6cfb5d215c034e3db3984bcdec914b4621994e8ce6ac7698eb5af847eb209"
+  },
+  "artifacts": {}
+}

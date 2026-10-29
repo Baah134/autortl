@@ -125,6 +125,20 @@ Evidence: [signed FIR](evidence/2026-10-26/generated-signed-fir4-attempt-01/READ
 
 ## Hardware validation on a Basys 3
 
+**Harness-built logic on the board's serial pin.** From a typed specification
+written for the board, the harness generated a UART transmitter and optimized
+it from 34 to 22 LUTs, in 14 model calls and 9.4 minutes. That exact file
+drives the Basys 3's USB-UART TX pin. It echoed 100,000 of 100,000 bytes
+from the PC with 0 errors, and a wrong-baud control failed as required. No
+human-written RTL is in the transmit path.
+
+The run also exposed a harness verification gap. The winner flattened away
+its child module, and the stale child file let a testbench that names it
+keep passing. A winner-only check was added and the winner passed it; the
+gap is recorded for a fix
+([evidence](evidence/2026-10-29/harness-uart-tx-01/README.md),
+[design](hardware/basys3/harness_built/uart_tx/README.md)).
+
 [`hardware/basys3/harness_winners`](hardware/basys3/harness_winners/README.md)
 runs every harness winner on the board through one generic, tested shell:
 
@@ -180,8 +194,8 @@ stop bit by 1/16 bit and handles line breaks. Each fix has a simulation that
 fails when it is reverted, and the fixed design streamed 1,000,000 bytes with
 zero loss ([evidence](evidence/2026-10-28/basys3-uart-echo-02/README.md)).
 
-Next: let the harness build designs for the board directly, with real pin
-constraints and this hardware check as an acceptance gate.
+Next: make the hardware check an acceptance gate inside the harness, and fix
+the stale-child verification gap the UART build exposed.
 
 ## What went wrong, and what changed
 

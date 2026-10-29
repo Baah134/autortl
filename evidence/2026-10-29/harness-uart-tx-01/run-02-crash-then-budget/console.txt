@@ -1,0 +1,48 @@
+﻿[module uart_tx_core] golden model + testbench...
+python.exe : Traceback (most recent call last):
+At line:1 char:743
++ ... t/uart_tx"; & $py run.py build --spec "$d/design_spec.json" --tb "$d/ ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Traceback (most recent call last)::String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  File "C:\Users\prince.baah\Downloads\autortl-work\autortl\state.py", line 33, in _replace_checkpoint
+    os.replace(temporary, path)
+PermissionError: [WinError 5] Access is denied: 
+'C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\harness-uart-tx-02\\.events.jsonl.p2e1pvte.tmp' -> 
+'C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\harness-uart-tx-02\\events.jsonl'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\prince.baah\Downloads\autortl-work\run.py", line 119, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "C:\Users\prince.baah\Downloads\autortl-work\run.py", line 112, in main
+    summary = orch.run()
+              ^^^^^^^^^^
+  File "C:\Users\prince.baah\Downloads\autortl-work\autortl\fsm.py", line 196, in run
+    result = self._run_build(saved)
+             ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\prince.baah\Downloads\autortl-work\autortl\fsm.py", line 529, in _run_build
+    result = self._build_module(m, mdir)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\prince.baah\Downloads\autortl-work\autortl\fsm.py", line 599, in _build_module
+    golden_src = self._model("generator", "golden_model", m, self.budget)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\prince.baah\Downloads\autortl-work\autortl\fsm.py", line 363, in _model
+    return self._stage("model", role + "." + name,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\prince.baah\Downloads\autortl-work\autortl\fsm.py", line 334, in _stage
+    self.state.append_event({"stage": identity, "attempt": count,
+  File "C:\Users\prince.baah\Downloads\autortl-work\autortl\state.py", line 156, in append_event
+    atomic_write_text(self.events_path,
+  File "C:\Users\prince.baah\Downloads\autortl-work\autortl\state.py", line 61, in atomic_write_text
+    _replace_checkpoint(temporary, path)
+  File "C:\Users\prince.baah\Downloads\autortl-work\autortl\state.py", line 41, in _replace_checkpoint
+    raise first_error
+  File "C:\Users\prince.baah\Downloads\autortl-work\autortl\state.py", line 33, in _replace_checkpoint
+    os.replace(temporary, path)
+PermissionError: [WinError 5] Access is denied: 
+'C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\harness-uart-tx-02\\.events.jsonl.p2e1pvte.tmp' -> 
+'C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\harness-uart-tx-02\\events.jsonl'

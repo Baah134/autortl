@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_2:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 2\n## Contract check\n- Interface and latency annotation: PASS \u2014 top ports match the contract and `// @latency 1` matches the authoritative latency.\n- Defined behavior and cycle semantics: PASS \u2014 the authoritative ladder is ALIVE and simulation passed the frozen cycle-exact testbench.\n- xvlog compilation: PASS \u2014 successful exit recorded.\n- xelab elaboration: PASS \u2014 successful exit recorded.\n- xsim simulation: PASS \u2014 exact `TEST PASSED` verdict recorded.\n- Routed reports and metric integrity: PASS \u2014 retained routed reports and candidate metrics are provided.\n- Timing feasibility: PASS \u2014 timing is met, WNS is 0.69 ns, and WHS is 0.105 ns.\n- Objective improvement: FAIL \u2014 LUT usage is 24 versus 22 for the timing-feasible previous best; strict LUT reduction is required. `improvement_kind` is null and `measured_improvement` is false.\n## Summary\n- Passed: 7 of 8\n- Failed: 1 of 8\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes the behavioral and verification gates and meets setup and hold timing, but it uses 24 LUTs compared with the previous best\u2019s 22 LUTs. Since both designs are timing-feasible and the objective is to minimize LUTs, the candidate does not establish the required strict improvement.",
+      "recommendation": "REJECT",
+      "passed": 7,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

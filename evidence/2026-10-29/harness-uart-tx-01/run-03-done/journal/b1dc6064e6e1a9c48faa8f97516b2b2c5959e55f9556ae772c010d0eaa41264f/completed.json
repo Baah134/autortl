@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_3:decision:instruction:0",
+  "result": "Keep the current bit-index and variable-index data-read behavior unchanged. Change `bit_count` so acceptance loads `10'd867`, each busy edge decrements it while nonzero, and a zero count triggers the existing bit-boundary actions and reloads `10'd867`; this places each boundary exactly 868 edges after the prior one. Preserve reset behavior, registered outputs, the `// @latency 1` annotation, and the fixed interface. Verify the unchanged testbench and all promotion gates, then compare routed LUTs against the 22-LUT incumbent under the same constraints.",
+  "artifacts": {}
+}

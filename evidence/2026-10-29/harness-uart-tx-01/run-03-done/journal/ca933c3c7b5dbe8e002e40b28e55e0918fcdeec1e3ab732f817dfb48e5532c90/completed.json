@@ -1,0 +1,63 @@
+{
+  "stage": "iteration_2:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 2,
+    "instruction": "In the busy bit-boundary logic, replace the variable-index read `data_reg[bit_index]` with `data_reg[0]`, and shift the captured byte toward bit 0 on each data-bit boundary so bits are still transmitted least-significant first. Keep the existing `bit_index` and `bit_count` frame timing, and ensure shifting occurs only after the old bit 0 is used; preserve the stop bit, completion edge, reset values, and all registered output behavior. Retain the top interface and matching latency annotation, then compare routed LUTs against the 22-LUT verified best under the same constraints.",
+    "candidates": [
+      {
+        "iteration": 2,
+        "mutation": "standard",
+        "instruction": "In the busy bit-boundary logic, replace the variable-index read `data_reg[bit_index]` with `data_reg[0]`, and shift the captured byte toward bit 0 on each data-bit boundary so bits are still transmitted least-significant first. Keep the existing `bit_index` and `bit_count` frame timing, and ensure shifting occurs only after the old bit 0 is used; preserve the stop bit, completion edge, reset values, and all registered output behavior. Retain the top interface and matching latency annotation, then compare routed LUTs against the 22-LUT verified best under the same constraints.",
+        "generated_source_sha256": "89018979cecc22a14d370302604a1a7fe807e5f95ea74ef2c0d9fa552565507e",
+        "final_source_sha256": "89018979cecc22a14d370302604a1a7fe807e5f95ea74ef2c0d9fa552565507e",
+        "generated_code_hash": "12a1dc4d154a7d9c",
+        "final_code_hash": "12a1dc4d154a7d9c",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.69,
+          "whs_ns": 0.105,
+          "lut_used": 24,
+          "ff_used": 24,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.011,
+          "total_power_w": 0.081
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\harness-uart-tx-03\\iter_002\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\harness-uart-tx-03\\iter_002\\cand_standard\\synth.tcl",
+          "sha256": "b9917c955d39a2101ee5ac376fff7caf07f3d3684a38c8496b8cbcc50ad8c098"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\harness-uart-tx-03\\iter_002\\cand_standard\\uart_tx.v",
+          "sha256": "46dd7787a6dd47a8bd21b86ddf68aa72364eb80cd37d3c5d033b9cfc249e8f2d"
+        }
+      },
+      {
+        "iteration": 2,
+        "mutation": "narrow",
+        "instruction": "In the busy bit-boundary logic, replace the variable-index read `data_reg[bit_index]` with `data_reg[0]`, and shift the captured byte toward bit 0 on each data-bit boundary so bits are still transmitted least-significant first. Keep the existing `bit_index` and `bit_count` frame timing, and ensure shifting occurs only after the old bit 0 is used; preserve the stop bit, completion edge, reset values, and all registered output behavior. Retain the top interface and matching latency annotation, then compare routed LUTs against the 22-LUT verified best under the same constraints.",
+        "generated_source_sha256": "89018979cecc22a14d370302604a1a7fe807e5f95ea74ef2c0d9fa552565507e",
+        "final_source_sha256": "89018979cecc22a14d370302604a1a7fe807e5f95ea74ef2c0d9fa552565507e",
+        "generated_code_hash": "12a1dc4d154a7d9c",
+        "final_code_hash": "12a1dc4d154a7d9c",
+        "rungs": 0,
+        "status": "duplicate_skipped",
+        "reason": "duplicate of 'standard' candidate",
+        "metrics": {},
+        "cache_hit": false
+      }
+    ],
+    "doctor": null,
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": "89018979cecc22a14d370302604a1a7fe807e5f95ea74ef2c0d9fa552565507e"
+  },
+  "artifacts": {}
+}

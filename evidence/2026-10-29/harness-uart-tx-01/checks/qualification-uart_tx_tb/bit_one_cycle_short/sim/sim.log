@@ -1,0 +1,62 @@
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/prince.baah/AppData/Local/Temp/claude/C--Users-prince-baah-Downloads-autortl-work/55d6b518-5dad-43c2-b889-516d22ebd733/scratchpad/uart_qual2/bit_one_cycle_short/src/uart_tx.v" into library work
+INFO: [VRFC 10-311] analyzing module uart_tx_core
+INFO: [VRFC 10-311] analyzing module uart_tx
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/prince.baah/Downloads/autortl-work/hardware/basys3/harness_built/uart_tx/uart_tx_tb.v" into library work
+INFO: [VRFC 10-311] analyzing module uart_tx_tb
+INFO: [VRFC 10-311] analyzing module uart_tx_ref_check
+Vivado Simulator v2025.2
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+Running: C:/AMDDesignTools/2025.2/Vivado/bin/unwrapped/win64.o/xelab.exe uart_tx_tb -s tb_snap --debug off 
+Multi-threading is on. Using 10 slave threads.
+Starting static elaboration
+Pass Through NonSizing Optimizer
+Completed static elaboration
+Starting simulation data flow analysis
+Completed simulation data flow analysis
+Time Resolution for simulation is 1ps
+Compiling module work.uart_tx_core_default
+Compiling module work.uart_tx
+Compiling module work.uart_tx_ref_check
+Compiling module work.uart_tx_core(DIV=3)
+Compiling module work.uart_tx_ref_check(DIV=3)
+Compiling module work.uart_tx_tb
+Built simulation snapshot tb_snap
+
+****** xsim v2025.2 (64-bit)
+  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025
+  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025
+  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025
+  **** Start of session at: Thu Oct 29 01:24:00 2026
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+
+source xsim.dir/tb_snap/xsim_script.tcl
+# xsim {tb_snap} -autoloadwcfg -runall
+Time resolution is 1 ps
+run -all
+FAIL DIV=3 t=66000: expected tx=0 in_ready=0, got tx=1 in_ready=0 (elapsed 2)
+FAIL DIV=3 t=70000: output changed between edges (tx=1 in_ready=0)
+FAIL DIV=3 t=106000: expected tx=1 in_ready=0, got tx=0 in_ready=0 (elapsed 6)
+FAIL DIV=3 t=110000: output changed between edges (tx=0 in_ready=0)
+FAIL DIV=3 t=116000: expected tx=1 in_ready=0, got tx=0 in_ready=0 (elapsed 7)
+FAIL DIV=3 t=120000: output changed between edges (tx=0 in_ready=0)
+FAIL DIV=3 t=126000: expected tx=1 in_ready=0, got tx=0 in_ready=0 (elapsed 8)
+FAIL DIV=3 t=130000: output changed between edges (tx=0 in_ready=0)
+FAIL DIV=3 t=186000: expected tx=0 in_ready=0, got tx=1 in_ready=0 (elapsed 14)
+FAIL DIV=3 t=190000: output changed between edges (tx=1 in_ready=0)
+FAIL DIV=868 t=8786000: expected tx=0 in_ready=0, got tx=1 in_ready=0 (elapsed 867)
+FAIL DIV=868 t=8790000: output changed between edges (tx=1 in_ready=0)
+FAIL DIV=868 t=17456000: expected tx=1 in_ready=0, got tx=0 in_ready=0 (elapsed 1734)
+FAIL DIV=868 t=17460000: output changed between edges (tx=0 in_ready=0)
+FAIL DIV=868 t=17466000: expected tx=1 in_ready=0, got tx=0 in_ready=0 (elapsed 1735)
+FAIL DIV=868 t=17470000: output changed between edges (tx=0 in_ready=0)
+FAIL DIV=868 t=26126000: expected tx=0 in_ready=0, got tx=1 in_ready=0 (elapsed 2601)
+FAIL DIV=868 t=26130000: output changed between edges (tx=1 in_ready=0)
+FAIL DIV=868 t=26136000: expected tx=0 in_ready=0, got tx=1 in_ready=0 (elapsed 2602)
+FAIL DIV=868 t=26140000: output changed between edges (tx=1 in_ready=0)
+frames: DIV=868 8 (back-to-back 6, aborted 1); DIV=3 2512 (back-to-back 1891, aborted 73)
+TEST FAILED: 129688 errors
+$finish called at time : 800 us : File "C:/Users/prince.baah/Downloads/autortl-work/hardware/basys3/harness_built/uart_tx/uart_tx_tb.v" Line 69
+exit
+INFO: [Common 17-206] Exiting xsim at Thu Oct 29 01:24:02 2026...

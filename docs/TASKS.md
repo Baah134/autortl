@@ -711,3 +711,37 @@ reset and async internalreset. Pure operand swapping in multiplication is
 commutative and must NOT be counted as a behavioral mutant. Qualify all planned
 faults before any newgeneration. Do not start this fixture during frozenFIR02
 or requiredcampaign13; complete currentruntimepublication gates first.
+
+## October29 (Claude Code): harness gaps found by the UART TX board build
+
+Evidence: evidence/2026-10-29/harness-uart-tx-01. These are observed failures.
+Each needs a taxonomy or curriculum entry before any harness fix lands.
+None is fixed yet. Harness source is unchanged.
+
+1. **stale_child_masks_flattened_winner** (verification gap). In build mode,
+   the optimize loop may replace a child module with flattened logic. Run 03's
+   winner dropped uart_tx_core and its DIV parameter. Every candidate was
+   still compiled beside the baseline child file (modules/<child>/<child>.v).
+   So an integration testbench that instantiates the child silently tests
+   the baseline child, not the winner. Child-module requirements, such as
+   parameter ranges, are not carried into the top's optimize contract.
+   Proposed: compile candidates without stale children when the candidate
+   defines no such module, or fail the rung. Also record in the contract
+   which child requirements the optimized top must still meet.
+2. **checkpoint_replace_denied** (infrastructure). On Windows, an external
+   reader holding events.jsonl open makes os.replace fail with WinError 5.
+   _replace_checkpoint retried, then raised, and the run crashed
+   (run-02). `resume` recovered. Proposed: classify it as infrastructure,
+   with bounded backoff, instead of a traceback.
+3. **golden_budget_long_period** (curriculum). The golden worker's 200,000
+   trace-event budget cannot run one UART frame at DIV=868 (8,680 cycles),
+   so spec examples must stay under about 2,000 cycles. Long-period serial
+   designs depend on an independent --tb for full-frame checks. Document it
+   in DESIGN, or make the budget a reviewed per-module setting.
+4. **io_dominated_timing_metric** (measurement). In SYNTH_TCL, ports get I/O
+   buffers with zero external delay. At 100 MHz the worst path is usually
+   pad-limited: the FIR winner's worst path is register to LUT to OBUF to
+   in_ready, at +0.169 ns. Its logic alone closes at 181.8 MHz out of
+   context (hardware/basys3/fmax). Timing comparisons between candidates
+   therefore mostly measure pad and clock-tree delay. Decide whether that
+   is the intended objective.
