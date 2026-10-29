@@ -81,4 +81,13 @@ Status is tracked at the end of this file.
 
 | Step | State | Evidence |
 |---|---|---|
-| 1 | running | logs/tier1-campaign-01 |
+| 1 | done: 3/4, two harness gaps found | evidence/2026-10-29/tier1-campaign-01 |
+| 2 | done: merged f7d19e0 (1,516 tests), audit PASS, pushed | |
+| 3 | campaign18 (gpt-6-luna) running on the merged identity | logs/contract-campaign-18 |
+| 8 | done: tools/role_report.py | |
+| 9 | done: d2ea74c | |
+| 14 | implemented on claude/reg2reg-timing (advisory reg-to-reg slack) | |
+
+Reordered to save gate runs: merge reg2reg after campaign18, run tier1-02
+next (fixes are likeliest there), then hold tier0 and tier1 on the final
+identity.

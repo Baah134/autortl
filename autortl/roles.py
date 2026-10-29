@@ -40,6 +40,11 @@ def golden_source(response: str) -> str:
     return response.strip()
 
 
+def reg2reg_text(m) -> str:
+    value = getattr(m, "reg2reg_wns_ns", None)
+    return f"{value}ns" if value is not None else "not reported (no register-to-register path)"
+
+
 def _ask(role, name, prompt, **kwargs):
     """Every role call uses the run's model when one is named (RunConfig.model)."""
     return ask(name, prompt, model=getattr(role, "model", None), **kwargs)
@@ -104,7 +109,7 @@ class Planner:
             advisor=advisor or "(no advisor output available)",
             evaluations="\n---\n".join(evaluations) or "(none)",
             lut_used=best.lut_used, ff_used=best.ff_used, wns_ns=best.wns_ns,
-            dsp_used=best.dsp_used, bram_used=best.bram_used,
+            dsp_used=best.dsp_used, bram_used=best.bram_used, reg2reg=reg2reg_text(best),
             signals="\n".join(f"- {s.kind}: {s.detail}" for s in signals) or "(none)")
         return _ask(self, "planner", evidence_prompt(self, p, include_proposals=True), system=role_system(prompts.PLANNER_SYSTEM), budget=budget)
 
@@ -209,7 +214,7 @@ class Evaluator:
             iteration=iteration, contract=contract, ladder=ladder_summary,
             sim_status="PASSED" if m.sim_passed else "FAILED",
             lut_used=m.lut_used, ff_used=m.ff_used, wns_ns=m.wns_ns,
-            timing_met=m.timing_met, dsp_used=m.dsp_used, bram_used=m.bram_used,
+            timing_met=m.timing_met, dsp_used=m.dsp_used, bram_used=m.bram_used, reg2reg=reg2reg_text(m),
             vivado_notes=vivado_notes or "(none)", stall_count=stall_count,
             restart_threshold=restart_threshold)
         return Evaluation.parse(_ask(self, "evaluator", evidence_prompt(self, p, include_candidate=True), system=role_system(prompts.EVALUATOR_SYSTEM),
