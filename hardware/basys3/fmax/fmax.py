@@ -3,6 +3,9 @@
     python hardware/basys3/fmax/fmax.py run --out DIR [--design NAME] [--mode harness|ooc]
     python hardware/basys3/fmax/fmax.py summarize DIR
 
+--vivado names the Vivado bin folder; it defaults to $AUTORTL_VIVADO_BIN,
+else C:/AMDDesignTools/2025.2/Vivado/bin.
+
 harness mode repeats the harness's own measurement (autortl/vivado.py,
 SYNTH_TCL): the core is the top level, so its ports get I/O buffers, with
 zero external input and output delay. Its slack therefore includes pad and
@@ -27,6 +30,7 @@ import argparse
 import hashlib
 import json
 import math
+import os
 from pathlib import Path
 import re
 import shutil
@@ -37,7 +41,7 @@ HERE = Path(__file__).resolve().parent
 REPO = HERE.parents[2]
 SUITE = REPO / "hardware" / "basys3" / "harness_winners"
 PART = "xc7a35tcpg236-1"
-VIVADO = Path("C:/AMDDesignTools/2025.2/Vivado/bin")
+VIVADO = Path(os.environ.get("AUTORTL_VIVADO_BIN", "C:/AMDDesignTools/2025.2/Vivado/bin"))
 RESOLUTION_NS = 0.05
 SLOWEST_NS, FASTEST_NS = 10.0, 2.0          # 100 MHz (the harness target) .. 500 MHz
 INFRA = ("[Designutils 20-411]", "[Common 17-345]", "[Common 17-301]")

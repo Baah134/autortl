@@ -35,3 +35,41 @@ def test_counter_cli_evidence_and_fail_closed(tmp_path, monkeypatch, stage):
     if stage == "success":
         assert result["metrics"]["sim_passed"]
         assert result["metrics"]["sim_error"] == ""
+
+
+def _load_cli():
+    path = Path(__file__).resolve().parents[1] / "scripts/check_counter_cli.py"
+    spec = importlib.util.spec_from_file_location("counter_cli", path)
+    cli = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(cli)
+    return cli, path
+
+
+def test_counter_cli_prefers_bat_and_falls_back_to_bare_tool_names(tmp_path):
+    cli, _ = _load_cli()
+    assert cli.tool_path(tmp_path, "xsim") == str(tmp_path.resolve() / "xsim.bat")
+    (tmp_path / "xsim").write_text("")
+    assert cli.tool_path(tmp_path, "xsim") == str(tmp_path.resolve() / "xsim")
+    (tmp_path / "xsim.bat").write_text("")
+    assert cli.tool_path(tmp_path, "xsim") == str(tmp_path.resolve() / "xsim.bat")
+
+
+def test_counter_cli_bin_dir_defaults_to_the_environment(tmp_path, monkeypatch):
+    cli, path = _load_cli()
+    monkeypatch.setenv("AUTORTL_VIVADO_BIN", str(tmp_path))
+    monkeypatch.setattr("sys.argv", [str(path), "--output", str(tmp_path / "evidence")])
+    seen = []
+    def stop(files, tb, top, cfg, work, **kwargs):
+        seen.append(cfg.xsim_bin)
+        return False, "stopped", FailureKind.DESIGN
+    monkeypatch.setattr(cli, "xsim_run", stop)
+    assert cli.main() == 1
+    assert seen == [str(tmp_path.resolve() / "xsim.bat")]
+
+
+def test_counter_cli_requires_a_bin_dir_without_the_environment(tmp_path, monkeypatch):
+    cli, path = _load_cli()
+    monkeypatch.delenv("AUTORTL_VIVADO_BIN", raising=False)
+    monkeypatch.setattr("sys.argv", [str(path), "--output", str(tmp_path / "evidence")])
+    with pytest.raises(SystemExit):
+        cli.main()

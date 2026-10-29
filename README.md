@@ -262,6 +262,14 @@ authenticated Codex CLI for model-driven runs. Roles are routed through
 python -m pip install -r requirements.txt
 ```
 
+To see one run's pipeline without Vivado or a model login, run the simulated
+walkthrough. It optimizes `mux4` once with fixed stand-ins, measures nothing,
+and prints where the run's journal, events and summary are:
+
+```powershell
+python scripts/demo.py
+```
+
 Set the Vivado installation path. The following examples use PowerShell:
 
 ```powershell
@@ -334,6 +342,25 @@ python run.py resume --run runs/mux-trial
 
 Use a fresh output directory for each new experiment. Resume checks the saved
 inputs and execution environment; see [recovery behavior](docs/RECOVERY.md).
+
+The same steps in bash (Linux or Git Bash). On Linux the tools have no
+`.bat` suffix; in Git Bash, add it as in the PowerShell example:
+
+```bash
+vivado_bin=/path/to/Vivado/bin
+vivado_args=(--vivado "$vivado_bin/vivado" --xvlog "$vivado_bin/xvlog"
+             --xelab "$vivado_bin/xelab" --xsim "$vivado_bin/xsim")
+
+python run.py doctor "${vivado_args[@]}"
+
+python scripts/check_counter_cli.py --bin-dir "$vivado_bin" --output runs/counter-check
+
+python run.py optimize --design curriculum/tier0/mux4/mux4.v \
+  --tb curriculum/tier0/mux4/mux4_tb.v --top mux4 \
+  --iterations 1 --best-of-n 1 --max-llm-calls 16 \
+  --max-vivado-minutes 20 --max-wall-minutes 30 \
+  --output-dir runs/mux-trial "${vivado_args[@]}"
+```
 
 ## Repository map
 

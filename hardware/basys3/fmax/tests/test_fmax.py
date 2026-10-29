@@ -161,3 +161,18 @@ def test_harness_flow_constraints_match_the_harness():
     for line in fmax.IO_DELAYS.strip().splitlines():
         assert line.replace("{", "{{").replace("}", "}}") in harness or line in harness
     assert "synth_design -top {top} -flatten_hierarchy rebuilt" in harness
+
+
+def _fresh_fmax():
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("fmax_env_probe", HERE.parent / "fmax.py")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def test_vivado_folder_defaults_to_the_environment_then_the_install_path(monkeypatch):
+    monkeypatch.delenv("AUTORTL_VIVADO_BIN", raising=False)
+    assert _fresh_fmax().VIVADO == Path("C:/AMDDesignTools/2025.2/Vivado/bin")
+    monkeypatch.setenv("AUTORTL_VIVADO_BIN", "/opt/Xilinx/Vivado/2025.2/bin")
+    assert _fresh_fmax().VIVADO == Path("/opt/Xilinx/Vivado/2025.2/bin")
