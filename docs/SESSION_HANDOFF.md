@@ -4,7 +4,36 @@ Updated October 29, 2026 (America/New_York). Verify files, Git, ownership and
 actual jobs before acting. Canonical checkout: Downloads/autortl-work. Preserve
 the separate Downloads/autortl copy. User choice: command-line Vivado.
 
-## Latest - October 29 (Claude Code): tier1 started; model-portability branch
+## Latest - October 29 evening (Claude Code): final identity, any-model harness
+
+- **Merged into codex/contract-context (7c592d6, pushed, audit PASS, 1,689
+  tests):** model-portable parsers and `--model`; planner spec repair; seed
+  timescale; append-safe history; advisory register-to-register slack;
+  infrastructure never enters history; `run.py doctor`; `bench --jobs N`;
+  per-run token accounting; primitive guidance; an OpenAI-compatible backend
+  (`--model openai.<model>`); user-defined endpoints in
+  `llm/endpoints.local.yaml` (any OpenAI-compatible URL or any AI command
+  line); `scripts/demo.py` (offline walkthrough); configurable Vivado folder
+  (`--vivado-bin` / `AUTORTL_VIVADO_BIN`). Every failure mode has a taxonomy
+  entry committed before its fix.
+- **Independent review** (a Claude subagent) found 4 confirmed bugs, all
+  fixed with regression tests; none let a contract-breaking design through.
+- **Model matrix 01** (evidence/2026-10-29/model-matrix-01): tier0 2/2 on
+  gpt-6-luna, gpt-5.6-luna, gpt-6.1-sol and gpt-6-astra. sol and astra's
+  verified 53-LUT counters were lost to the blank-line verdict bug the review
+  had found; the fixed parser reads all eight verdicts as written.
+- **No valid verdicts** from tier1-campaign-02 (host standby, mid-run merge)
+  or campaign19 (aborted: subagent worktrees under .claude/worktrees, now
+  excluded from the gate identity). Both archived.
+- **Now:** the final-identity series on the 249-file identity:
+  contract-campaign-20..22 (tier0, `--model gpt-6-luna --jobs 2`) then
+  tier1-campaign-03..05 (`--jobs 4`). Never edit frozen files in this
+  checkout while a gate runs; keep the laptop awake (Modern Standby stalls
+  Vivado; check the System log, Kernel-Power 506/507).
+- All 12 stale "blocked" coordination tasks were verified against the repo
+  and closed with evidence pointers.
+
+## October 29 (Claude Code): tier1 started; model-portability branch
 
 The user's direction: the harness's roles do the design work; Claude
 supervises, reads the roles' logs and improves the harness and roles so any
