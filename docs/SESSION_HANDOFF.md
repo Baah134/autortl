@@ -72,7 +72,7 @@ harness.
   (evidence/2026-10-29/harness-uart-tx-v2-01).
 - The Fmax study of all six winners is archived
   (evidence/2026-10-29/fmax-characterization-01).
-- Next options: pin tests/test_module_latency_gates.py's line endings,
+- Next options: (done Oct 29: tests/test_module_latency_gates.py now matches its blob, LF only),
   since every freeze needs a reconstruct rule for it. Decide the
   io_dominated_timing_metric question in docs/TASKS.md. (Holding tier0 is
   done: campaign16 and 17.)

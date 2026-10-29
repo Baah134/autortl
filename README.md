@@ -34,9 +34,9 @@ board. Every number links to an archived run.
   An audit injected 27 faults into the FIR: generated testbenches first caught
   18, improved stimulus raised that to 22, and the independent checker caught
   all 27.
-- **Reproducible by construction.** 1,461 regression tests, crash-safe
+- **Reproducible by construction.** 1,516 regression tests, crash-safe
   resumable runs, fixed model-call and tool-time budgets, and a CI audit that
-  checks over 31,000 recorded SHA-256 claims against the committed bytes.
+  checks over 34,000 recorded SHA-256 claims against the committed bytes.
   Curriculum tier 0 is held: three consecutive fresh runs on the same frozen
   harness passed every gate
   ([campaign 17](evidence/2026-10-29/contract-campaign-17/README.md)).
