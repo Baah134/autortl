@@ -705,9 +705,7 @@ class Orchestrator:
         # Verification is mandatory before defining an optimization contract.
         if not cfg.testbench_path or not Path(cfg.testbench_path).is_file():
             return self._baseline_stop("baseline_blocked", "A baseline testbench is required")
-        # A seed without a timescale gets the same default as generated RTL,
-        # mechanically (seed_without_timescale_costs_model_repair).
-        original = default_timescale(Path(cfg.design_path).read_text(encoding="utf-8"))
+        original = Path(cfg.design_path).read_text(encoding="utf-8")
         # module contract for static checks in optimize mode (interface only)
         contract = self._infer_contract(original, cfg.top_module)
 
@@ -715,7 +713,10 @@ class Orchestrator:
         # ---- iteration 0: baseline ----
         idir = state.iter_dir(0)
         base_v = idir / f"{cfg.top_module}.v"
-        base_v.write_text(original, encoding="utf-8")
+        # The verified copy of a seed without a timescale gets the same default as
+        # generated RTL, mechanically; the generation seed stays the original text
+        # (seed_without_timescale_costs_model_repair).
+        base_v.write_text(default_timescale(original), encoding="utf-8")
         tb_path = Path(cfg.testbench_path) if cfg.testbench_path else None
         baseline = self._full_flow([base_v] + extra_sources, tb_path,
                                    cfg.top_module, idir)
