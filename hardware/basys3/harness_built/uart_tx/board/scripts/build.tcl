@@ -1,17 +1,16 @@
 # Basys 3 build of the echo whose transmitter the harness generated.
-#   vivado -mode batch -source build.tcl -tclargs <harness winner .v> <out dir>
-# The winner file is read unchanged; the board logic around it is hand-written.
-if {[llength $argv] != 2} { error "usage: -tclargs <harness winner .v> <out dir>" }
-lassign $argv winner out
+#   vivado -mode batch -source build.tcl -tclargs <out dir> <harness .v> [<harness .v> ...]
+# The harness files (its winning top, plus any frozen child it instantiates)
+# are read unchanged; the board logic around them is hand-written.
+if {[llength $argv] < 2} { error "usage: -tclargs <out dir> <harness .v> \[<harness .v> ...\]" }
+set out [lindex $argv 0]
+set harness [lrange $argv 1 end]
 set board [file normalize [file join [file dirname [info script]] ..]]
 set hw    [file normalize [file join $board .. .. ..]]
 file mkdir $out
 
-read_verilog [list \
-    $hw/uart_echo/rtl/uart_rx.v \
-    $hw/harness_winners/rtl/shell_fifo.v \
-    $winner \
-    $board/rtl/basys3_harness_uart_tx.v]
+read_verilog [concat [list $hw/uart_echo/rtl/uart_rx.v $hw/harness_winners/rtl/shell_fifo.v] \
+                     $harness [list $board/rtl/basys3_harness_uart_tx.v]]
 read_xdc $board/constraints/basys3_harness_uart_tx.xdc
 
 synth_design -top basys3_harness_uart_tx -part xc7a35tcpg236-1

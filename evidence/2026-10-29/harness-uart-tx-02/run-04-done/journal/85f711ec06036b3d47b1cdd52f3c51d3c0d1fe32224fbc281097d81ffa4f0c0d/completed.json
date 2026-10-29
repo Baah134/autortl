@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_2:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 2\n## Contract check\n- Behavioral correctness: PASS \u2014 authoritative ladder reports ALIVE; simulation passed the frozen UART checks.\n- Interface, companion, and latency annotation: PASS \u2014 top ports are preserved, `uart_tx_core` is instantiated, and `// @latency 1` matches authoritative latency.\n- Required tool stages: PASS \u2014 xvlog, xelab, xsim, and Vivado exited successfully; synthesis has `SYNTH_COMPLETE`.\n- Routed metrics and integrity: PASS \u2014 retained routed reports and structured metrics are provided.\n- Timing feasibility: PASS \u2014 timing_met=true, WNS=0.558 ns, and WHS=0.251 ns.\n- Objective improvement: FAIL \u2014 LUT use remains 39, equal to the timing-feasible previous best; strict LUT reduction is required.\n## Summary\n- Passed: 5 of 6\n- Failed: 1 of 6\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes behavioral, verification, metric, and timing gates, but the incumbent is already timing-feasible and the candidate does not strictly reduce LUT use. The recorded improvement_kind is null, so this is not an established improvement.",
+      "recommendation": "REJECT",
+      "passed": 5,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

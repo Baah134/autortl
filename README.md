@@ -134,10 +134,13 @@ human-written RTL is in the transmit path.
 
 The run also exposed a harness verification gap. The winner flattened away
 its child module, and the stale child file let a testbench that names it
-keep passing. A winner-only check was added and the winner passed it; the
-gap is recorded for a fix
+keep passing. A winner-only check was added, and the winner passed it
 ([evidence](evidence/2026-10-29/harness-uart-tx-01/README.md),
-[design](hardware/basys3/harness_built/uart_tx/README.md)).
+[design](hardware/basys3/harness_built/uart_tx/README.md)). The harness
+now rejects such candidates, with the taxonomy entry recorded first and 9
+new tests. A rerun on the fixed harness kept the child and its parameter,
+and passed the same board checks
+([evidence](evidence/2026-10-29/harness-uart-tx-02/README.md)).
 
 [`hardware/basys3/harness_winners`](hardware/basys3/harness_winners/README.md)
 runs every harness winner on the board through one generic, tested shell:

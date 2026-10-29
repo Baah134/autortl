@@ -728,6 +728,13 @@ None is fixed yet. Harness source is unchanged.
    Proposed: compile candidates without stale children when the candidate
    defines no such module, or fail the rung. Also record in the contract
    which child requirements the optimized top must still meet.
+   **Fixed in bc959cc.** The taxonomy entry was recorded first. The harness
+   now rejects candidates that stop instantiating a companion the trusted
+   testbench instantiates, and names those companions in the candidate
+   context. Pytest passes (1,459 tests), and run 04 confirmed it live
+   (evidence/2026-10-29/harness-uart-tx-02). This is a frozen-source
+   change, so the tier0 bench gate (campaign14) must run on the new
+   identity before main.
 2. **checkpoint_replace_denied** (infrastructure). On Windows, an external
    reader holding events.jsonl open makes os.replace fail with WinError 5.
    _replace_checkpoint retried, then raised, and the run crashed

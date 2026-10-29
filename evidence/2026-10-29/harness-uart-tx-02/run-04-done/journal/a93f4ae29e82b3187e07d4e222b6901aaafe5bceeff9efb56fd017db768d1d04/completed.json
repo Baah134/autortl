@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_3:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 3\n## Contract check\n- Interface, frozen companion, and latency annotation: PASS \u2014 top ports are preserved, `uart_tx_core` remains instantiated, and `// @latency 1` matches authoritative top latency.\n- Behavioral verification: PASS \u2014 standard and narrow ladder results are ALIVE; simulation passed.\n- Tool gates: PASS \u2014 xvlog, xelab, xsim, and Vivado exited successfully; synthesis has the required `SYNTH_COMPLETE` marker.\n- Routed metrics and integrity: PASS \u2014 retained routed reports and structured metrics are present and consistent.\n- Timing feasibility: PASS \u2014 timing_met=true, WNS=0.558 ns, and WHS=0.251 ns.\n- Objective improvement: FAIL \u2014 candidate and previous best both use 39 LUTs; both are timing-feasible, so strict LUT reduction is required.\n## Summary\n- Passed: 5 of 6\n- Failed: 1 of 6\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes behavioral, tool, report, and timing gates, but it does not improve the selected LUT objective over the timing-feasible previous best. The stall count is 2, below the threshold for RESTART.",
+      "recommendation": "REJECT",
+      "passed": 5,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "status": "qualified",
+  "qualified": true,
+  "testbench_sha256": "1c9e7ea06ee2ce59e7488b268f00a6943c83276151c7dfd35ee35eefd4ecc6a9",
+  "attempts": [
+    {
+      "label": "control",
+      "description": "unmodified control",
+      "passed": true,
+      "failure_kind": "design",
+      "error": "",
+      "assertion_detected": false,
+      "proof_reason": "simulation passed",
+      "source_sha256": "4b5881897e41f637e7043babc2426282e5a92012de7a0f172962cb0bd49f1ad2",
+      "raw_log_sha256": "ead329a1e401fcfc207480c5845399f424901e6b2b8babae120ba9411e309c55"
+    },
+    {
+      "label": "mutant",
+      "description": "flip == to !=",
+      "passed": true,
+      "failure_kind": "design",
+      "error": "",
+      "assertion_detected": false,
+      "proof_reason": "simulation passed",
+      "source_sha256": "0dd1e54d60fec6ebe32e17c1dc0868d99dc0e5d17024e20fe484ee09002d4ea9",
+      "raw_log_sha256": "ab3712a989f6db69dd20093456858cb8584cfddc5922e818b5651df415ac1bb6"
+    },
+    {
+      "label": "stuck_zero",
+      "description": "stuck-zero outputs",
+      "passed": false,
+      "failure_kind": "design",
+      "error": "Testbench failures:\nFAIL index=0 signal=in_ready\nFAIL index=0 signal=tx",
+      "assertion_detected": true,
+      "proof_reason": "raw assertion detail and failure verdict retained",
+      "source_sha256": "cc30a2a1a43f1768152f91492d034de82e80ace24b083cbe572b1a338a68419d",
+      "raw_log_sha256": "488cab6477514714e795b109a5a0e9fe0e76eb393413000f4c60faa94381ff4d"
+    }
+  ],
+  "missed": [
+    {
+      "label": "mutant",
+      "description": "flip == to !=",
+      "reason": "simulation passed"
+    }
+  ],
+  "scope": "Minimum assertion sensitivity; missed faults remain coverage limits."
+}

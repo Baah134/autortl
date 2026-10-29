@@ -76,8 +76,19 @@ python run.py build --spec hardware/basys3/harness_built/uart_tx/design_spec.jso
     --max-vivado-minutes 90 --max-wall-minutes 180 --output-dir logs/<new run>
 python hardware/basys3/harness_built/uart_tx/qualification/qualify_tb.py <out>    # testbench qualification
 vivado -mode batch -source hardware/basys3/harness_built/uart_tx/board/scripts/build.tcl \
-    -tclargs <winner .v> <out dir>
+    -tclargs <out dir> <winner .v> [<frozen child .v> ...]
 python hardware/basys3/uart_echo/scripts/echo_test.py --mode chunked --chunk 32 --bytes 100000
 ```
 
 Model output varies between runs, so a rerun can produce a different winner.
+
+## After the harness fix
+
+The flattening exposed a harness gap. The trusted testbench instantiated
+`uart_tx_core`, but the winner no longer did, and the stale child file kept
+those checks passing. Commit bc959cc fixes it: the harness now rejects such
+candidates. Run 04 repeats the build on the fixed harness. Its winner keeps
+`uart_tx_core #(.DIV(868))`, so the parameter is genuinely verified. It gave
+up the area gain, since only pure wiring was left to edit (39 LUT / 28 FF).
+It passes every check above, and echoed 100,000 of 100,000 bytes on the board
+([evidence/2026-10-29/harness-uart-tx-02](../../../../evidence/2026-10-29/harness-uart-tx-02/README.md)).

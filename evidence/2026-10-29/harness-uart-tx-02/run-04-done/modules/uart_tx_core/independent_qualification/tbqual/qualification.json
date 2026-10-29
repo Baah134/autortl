@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "status": "qualified",
+  "qualified": true,
+  "testbench_sha256": "273330c9a0105a89362e3ae8c33c45755df601e013e89580d1fcb16e82446c34",
+  "attempts": [
+    {
+      "label": "control",
+      "description": "unmodified control",
+      "passed": true,
+      "failure_kind": "design",
+      "error": "",
+      "assertion_detected": false,
+      "proof_reason": "simulation passed",
+      "source_sha256": "4b5881897e41f637e7043babc2426282e5a92012de7a0f172962cb0bd49f1ad2",
+      "raw_log_sha256": "3c2395ad09bf72fa8957a315768f4efbe5a58f53e267bbf33ef535037e75c488"
+    },
+    {
+      "label": "mutant",
+      "description": "flip == to !=",
+      "passed": false,
+      "failure_kind": "design",
+      "error": "Testbench failures:\nFAIL DIV=3 t=76000: expected tx=1 in_ready=0, got tx=1 in_ready=1 (elapsed 3)\nFAIL DIV=3 t=80000: output changed between edges (tx=1 in_ready=1)\nFAIL DIV=3 t=86000: expected tx=1 in_ready=0, got tx=0 in_ready=0 (elapsed 4)\nFAIL DIV=3 t=90000: output changed between edges (tx=0 in_ready=0)\nFAIL DIV=3 t=96000: expected tx=1 in_ready=0, got tx=0 in_ready=0 (elapsed 5)\nFAIL DIV=3 t=100000: output changed between edges (tx=0 in_ready=0)\nFAIL DIV=3 t=106000: expected tx=1 in_ready=0, got tx=0 in_ready=0 (elapsed 6)\nFAIL DIV=3 t=110000: output changed between edges (tx=0 in_ready=0)\nFAIL DIV=3 t=116000: expected tx=1 in_ready=0, got tx=1 in_ready=1 (elapsed 7)\nFAIL DIV=3 t=120000: output changed between edges (tx=1 in_ready=1)\nFAIL DIV=868 t=8796000: expected tx=1 in_ready=0, got tx=1 in_ready=1 (elapsed 868)\nFAIL DIV=868 t=8800000: output changed between edges (tx=1 in_ready=1)\nFAIL DIV=868 t=8806000: expected tx=1 in_ready=0, got tx=0 in_ready=0 (elapsed 869)\nFAIL DIV=868 t=8810000: output changed between edges (tx=0 in_ready=0)\nFAIL DIV=868 t=8816000: expected tx=1 in_ready=0, got tx=0 in_ready=0 (elapsed 870)",
+      "assertion_detected": true,
+      "proof_reason": "raw assertion detail and failure verdict retained",
+      "source_sha256": "0dd1e54d60fec6ebe32e17c1dc0868d99dc0e5d17024e20fe484ee09002d4ea9",
+      "raw_log_sha256": "f60156dd59d03aad9afe36ebcd725aa661fc72bafd21beedc3a04a37d2cd950d"
+    }
+  ],
+  "missed": [],
+  "scope": "Minimum assertion sensitivity; missed faults remain coverage limits."
+}

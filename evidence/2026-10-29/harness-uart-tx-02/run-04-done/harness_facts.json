@@ -1,0 +1,538 @@
+{
+  "allowed_flow_variations": "The harness may enable retiming or physical optimization. The candidate's retained synthesis script is authoritative for its actual settings.",
+  "authority": "Harness evidence is fixed. Proposed architectural goals cannot redefine it.",
+  "baseline_metrics": {
+    "bram_total": 50.0,
+    "bram_used": 0.0,
+    "dsp_total": 90,
+    "dsp_used": 0,
+    "dynamic_power_w": 0.011,
+    "ff_pct": 0.0673076923076923,
+    "ff_total": 41600,
+    "ff_used": 28,
+    "lut_pct": 0.1875,
+    "lut_total": 20800,
+    "lut_used": 39,
+    "sim_error": "",
+    "sim_passed": true,
+    "synth_error": "",
+    "timing_met": true,
+    "total_power_w": 0.082,
+    "whs_ns": 0.251,
+    "wns_ns": 0.558
+  },
+  "build_spec": {
+    "authority": "Complete resolved typed build contract. Defined behavior is mandatory; explicitly unspecified cases remain unspecified. Frozen implementation identities do not turn incidental values in unspecified cases into requirements.",
+    "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\harness-uart-tx-04\\design_spec.json",
+    "resolved_spec": {
+      "connections": [],
+      "external_ports": [
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "clk",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "rst",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "in_data",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 8
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "in_valid",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "output",
+          "name": "in_ready",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "output",
+          "name": "tx",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 1
+        }
+      ],
+      "modules": [
+        {
+          "behavior": "UART 8N1 transmitter with a valid/ready byte input, public parameter DIV=868 (clock cycles per bit; 868 gives 115200 baud from a 100 MHz clock). Supported experiment domain: integer DIV 2..4096. Preserve the parameter and its effect on timing, not only the default. Ports: in_data[7:0], in_valid, in_ready (output), tx (output, the serial line). Idle: tx=1 and in_ready=1. A byte is accepted at rising edge k when in_valid && in_ready && !rst; in_data is captured at that edge and later input changes are ignored until the frame ends. The frame is 10 bits, each exactly DIV cycles long, least significant data bit first: bit 0 is the start bit (0), bits 1..8 are in_data[0]..in_data[7], bit 9 is the stop bit (1). Bit i is visible on tx after the NBA update of edge k+i*DIV and stays until the NBA update of edge k+(i+1)*DIV. in_ready is 0 after edge k and becomes 1 again after the NBA update of edge k+10*DIV, when the transmitter is idle again with tx=1; the earliest next accept is edge k+10*DIV+1, so back-to-back frames are separated by a stop level of DIV+1 cycles. in_valid while busy is ignored, not queued. tx and in_ready are registered outputs: they change only at rising edges, never combinationally from inputs or from rst. Synchronous active-high rst at a rising edge aborts any frame and returns to idle (tx=1, in_ready=1) and overrides an accept at the same edge; it has no effect between edges. For the Python golden model, each non-reset step is one clock edge with that step's inputs, returning tx and in_ready after the edge.",
+          "clock_domains": [
+            "clk"
+          ],
+          "compare_mode": "fixed_latency",
+          "examples": [
+            {
+              "after_cycles": 1,
+              "expected": {
+                "in_ready": 1,
+                "tx": 1
+              },
+              "inputs": {
+                "in_data": 85,
+                "in_valid": 1,
+                "rst": 1
+              }
+            },
+            {
+              "after_cycles": 1,
+              "expected": {
+                "in_ready": 1,
+                "tx": 1
+              },
+              "inputs": {
+                "in_data": 85,
+                "in_valid": 0,
+                "rst": 0
+              }
+            },
+            {
+              "after_cycles": 1,
+              "expected": {
+                "in_ready": 0,
+                "tx": 0
+              },
+              "inputs": {
+                "in_data": 85,
+                "in_valid": 1,
+                "rst": 0
+              }
+            },
+            {
+              "after_cycles": 869,
+              "expected": {
+                "in_ready": 0,
+                "tx": 1
+              },
+              "inputs": {
+                "in_data": 85,
+                "in_valid": 1,
+                "rst": 0
+              }
+            },
+            {
+              "after_cycles": 1737,
+              "expected": {
+                "in_ready": 0,
+                "tx": 0
+              },
+              "inputs": {
+                "in_data": 85,
+                "in_valid": 1,
+                "rst": 0
+              }
+            }
+          ],
+          "golden_model": "",
+          "interface_signature": null,
+          "latency": 1,
+          "latency_known": true,
+          "name": "uart_tx_core",
+          "parameters": {
+            "DIV": 868
+          },
+          "ports": [
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "clk",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "rst",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "in_data",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 8
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "in_valid",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "in_ready",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "tx",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            }
+          ],
+          "reset": {
+            "active_high": true,
+            "duration_cycles": 3,
+            "kind": "sync",
+            "signal": "rst"
+          }
+        }
+      ],
+      "top_name": "uart_tx"
+    },
+    "sha256": "95039575f2732f6dea7dd19aa2623358fb6d1755758508f6ac0dad4d0eda2264",
+    "truncated": false
+  },
+  "clock_period_ns": 10.0,
+  "declared_latency": {
+    "cycles": 1,
+    "known": true,
+    "meaning": "A source annotation declares numeric latency only when present. This known/cycles pair is authoritative for the current top module's annotation requirement. Only known=true requires a matching numeric top annotation. Child typed-module latency does not invent a top annotation for arbitrary aggregate wrappers. When known=false, absence of a top annotation is not a failed or unverifiable criterion. Unannotated numeric latency is UNKNOWN, not zero. Preserve the source's exact observable cycles and registered behavior. Annotation presence or absence alone is not independent proof of behavioral correctness; use the fixed source contract, all defined typed latency/minimum transfer age and deterministic verification, without inventing a numeric requirement.",
+    "source_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\harness-uart-tx-04\\iter_000\\uart_tx.v",
+    "source_sha256": "ae30ae0468875361d182db18533f202b731d577619b8ceb8de945a39fc9a91a1"
+  },
+  "execution_context": {
+    "dependencies": [
+      {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\harness-uart-tx-04\\modules\\uart_tx_core\\uart_tx_core.v",
+        "sha256": "4b5881897e41f637e7043babc2426282e5a92012de7a0f172962cb0bd49f1ad2"
+      }
+    ],
+    "part": "xc7a35tcpg236-1",
+    "period_ns": 10.0,
+    "promotions": {
+      "Designutils 20-1307": "ERROR",
+      "Synth 8-327": "ERROR",
+      "Synth 8-3352": "ERROR",
+      "Synth 8-9873": "ERROR",
+      "VRFC 10-3609": "ERROR"
+    },
+    "synthesis_template": "c9d0bf78e20ec5b5854a3e48a12cb9d6ce15be79e660b27b3bf703670a77197a",
+    "tb": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\harness-uart-tx-04\\inputs\\testbench_path.v",
+      "sha256": "689e21d15536834331fb0fb2affb30de6cb351b4f42a9b2084b3e7f52134a54d"
+    },
+    "tools": {
+      "vivado_bin": {
+        "path": "C:\\AMDDesignTools\\2025.2\\Vivado\\bin\\vivado.bat",
+        "sha256": "4f9c05aea82a71c7086a9e5edf01ba16ea70255f69cf3420c58b805ec113e994"
+      },
+      "xelab_bin": {
+        "path": "C:\\AMDDesignTools\\2025.2\\Vivado\\bin\\xelab.bat",
+        "sha256": "512a29ace988992d7fab14ca84f20f0b4515bb69ef1d5fef0a57c5f28b72c9b1"
+      },
+      "xsim_bin": {
+        "path": "C:\\AMDDesignTools\\2025.2\\Vivado\\bin\\xsim.bat",
+        "sha256": "8819fbb54fdf9cbcaaf24c2bf72801b403d5c93e0990ba32408b56c666761d21"
+      },
+      "xvlog_bin": {
+        "path": "C:\\AMDDesignTools\\2025.2\\Vivado\\bin\\xvlog.bat",
+        "sha256": "512a29ace988992d7fab14ca84f20f0b4515bb69ef1d5fef0a57c5f28b72c9b1"
+      }
+    },
+    "top": "uart_tx"
+  },
+  "first_violated_path_excerpt": null,
+  "flow_and_constraints": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\harness-uart-tx-04\\iter_000\\synth.tcl",
+      "sha256": "06689e7e7c1b6807bda2feb8e86c16c046fffedb4747cda22a0556e80ec67903",
+      "text": "set_msg_config -id {VRFC 10-3609} -new_severity ERROR\r\nset_msg_config -id {Synth 8-9873} -new_severity ERROR\r\nset_msg_config -id {Designutils 20-1307} -new_severity ERROR\r\nset_msg_config -id {Synth 8-327} -new_severity ERROR\r\nset_msg_config -id {Synth 8-3352} -new_severity ERROR\r\nset_part xc7a35tcpg236-1\r\nread_verilog \"C:/Users/prince.baah/Downloads/autortl-work/logs/harness-uart-tx-04/iter_000/uart_tx.v\" \"C:/Users/prince.baah/Downloads/autortl-work/logs/harness-uart-tx-04/modules/uart_tx_core/uart_tx_core.v\"\r\nset fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/harness-uart-tx-04/iter_000/timing.xdc\" w]\r\nputs $fp {create_clock -period 10.000 -name clk [get_ports clk]}\r\nclose $fp\r\nread_xdc \"C:/Users/prince.baah/Downloads/autortl-work/logs/harness-uart-tx-04/iter_000/timing.xdc\"\r\nsynth_design -top uart_tx -flatten_hierarchy rebuilt \r\nset fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/harness-uart-tx-04/iter_000/timing_io.tcl\" w]\r\nputs $fp {set data_inputs [get_ports -filter {DIRECTION == IN && NAME != clk}]}\r\nputs $fp {if {[llength $data_inputs] > 0} {set_input_delay -clock clk -max 0.000 $data_inputs; set_input_delay -clock clk -min 0.000 $data_inputs}}\r\nputs $fp {if {[llength [all_outputs]] > 0} {set_output_delay -clock clk -max 0.000 [all_outputs]; set_output_delay -clock clk -min 0.000 [all_outputs]}}\r\nclose $fp\r\nsource \"C:/Users/prince.baah/Downloads/autortl-work/logs/harness-uart-tx-04/iter_000/timing_io.tcl\"\r\nreport_utilization -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/harness-uart-tx-04/iter_000/utilization.rpt\"\r\nreport_timing_summary -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/harness-uart-tx-04/iter_000/timing.rpt\"\r\nopt_design\r\nplace_design\r\n\r\nroute_design\r\nreport_utilization -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/harness-uart-tx-04/iter_000/utilization_routed.rpt\"\r\nreport_timing_summary -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/harness-uart-tx-04/iter_000/timing_routed.rpt\"\r\nreport_design_analysis -logic_level_distribution -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/harness-uart-tx-04/iter_000/design_analysis.rpt\"\r\nreport_power -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/harness-uart-tx-04/iter_000/power.rpt\"\r\ncatch { report_methodology -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/harness-uart-tx-04/iter_000/methodology.rpt\" }\r\ncatch { report_qor_suggestions -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/harness-uart-tx-04/iter_000/qor_suggestions.rpt\" }\r\nputs \"SYNTH_COMPLETE\"\r\n",
+      "truncated": false
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\harness-uart-tx-04\\iter_000\\timing.xdc",
+      "sha256": "fa142c09f0fadb5e303ca9fea08c02bc353451533e44aeee9cd9a0231cc8bede",
+      "text": "create_clock -period 10.000 -name clk [get_ports clk]\r\n",
+      "truncated": false
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\harness-uart-tx-04\\iter_000\\timing_io.tcl",
+      "sha256": "6b38098841a48bbb3ab15de49d2bf2baf7e4384f599259ff5f3afa2c2b1daf00",
+      "text": "set data_inputs [get_ports -filter {DIRECTION == IN && NAME != clk}]\r\nif {[llength $data_inputs] > 0} {set_input_delay -clock clk -max 0.000 $data_inputs; set_input_delay -clock clk -min 0.000 $data_inputs}\r\nif {[llength [all_outputs]] > 0} {set_output_delay -clock clk -max 0.000 [all_outputs]; set_output_delay -clock clk -min 0.000 [all_outputs]}\r\n",
+      "truncated": false
+    }
+  ],
+  "hard_gates": [
+    "Preserve typed build spec defined behavior, ports, parameter defaults, reset and observable cycles; explicitly unspecified cases remain unspecified.",
+    "Use the fixed provided testbench, tools, device and constraints without modification.",
+    "Static/interface checks, compile, simulation and real routed metric integrity must pass.",
+    "Timing closure requires setup slack >= 0 and hold slack >= 0.",
+    "Unknown or absent evidence cannot count as success."
+  ],
+  "metric_provenance": "Structured metrics are parsed from retained reports; routed utilization/timing reports take precedence when present. The manifest identifies complete files by hash. Header excerpts are bounded previews, not complete reports or an independent metric source.",
+  "objective": "minimize_luts",
+  "objective_policy": "First establish timing feasibility. A verified timing-feasible candidate may replace a known timing-infeasible previous best even with higher area or power; classify this as timing_recovery, not objective savings. Once both are timing-feasible, require strict improvement of the chosen objective. Unknown or contradictory incumbent timing evidence cannot establish recovery. A completed experiment may find no improvement. Do not invent mandatory savings, slack margins, tool versions, timing corners, new tests, thresholds, code-style quotas or external environment requirements.",
+  "part": "xc7a35tcpg236-1",
+  "report_headers": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\harness-uart-tx-04\\iter_000\\power.rpt",
+      "sha256": "5b53f5d11d072db2abc2c7ff6e071df27c83d933fd28495d5de0eb651d606080",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n-------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version     : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date             : Thu Oct 29 02:13:30 2026\r\n| Host             : Baah running 64-bit major release  (build 9200)\r\n| Command          : report_power -file C:/Users/prince.baah/Downloads/autortl-work/logs/harness-uart-tx-04/iter_000/power.rpt\r\n| Design           : uart_tx\r\n| Device           : xc7a35tcpg236-1\r\n| Design State     : routed\r\n| Grade            : commercial\r\n| Process          : typical\r\n| Characterization : Production\r\n-------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nPower Report\r\n\r\nTable of Contents\r\n-----------------\r\n1. Summary\r\n1.1 On-Chip Components\r\n1.2 Power Supply Summary\r\n1.3 Confidence Level\r\n2. Settings\r\n2.1 Environment\r\n2.2 Clock Constraints\r\n3. Detailed Reports\r\n3.1 By Hierarchy\r\n\r\n1. Summary\r\n----------\r\n\r\n+--------------------------+--------------+\r\n| Total On-Chip Power (W)  | 0.082        |\r\n| Design Power Budget (W)  | Unspecified* |\r\n| Power Budget Margin (W)  | NA           |\r\n| Dynamic (W)              | 0.011        |\r\n| Device Static (W)        | 0.070        |\r\n| Effective TJA (C/W)      | 5.0          |\r\n| Max Ambient (C)          | 84.6         |\r\n| Junction Temperature (C) | 25.4         |\r\n| Confidence Level         | Low          |\r\n| Setting File             | ---          |\r\n| Simulation Activity File | ---          |\r\n| Design Nets Matched      | NA           |\r\n+--------",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\harness-uart-tx-04\\iter_000\\timing.rpt",
+      "sha256": "2ccbe42359233b11921c9e29a756b9538ead0e31196f8ebf6f10279e5a8d1be4",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n---------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date         : Thu Oct 29 02:13:07 2026\r\n| Host         : Baah running 64-bit major release  (build 9200)\r\n| Command      : report_timing_summary -file C:/Users/prince.baah/Downloads/autortl-work/logs/harness-uart-tx-04/iter_000/timing.rpt\r\n| Design       : uart_tx\r\n| Device       : 7a35t-cpg236\r\n| Speed File   : -1  PRODUCTION 1.23 2018-06-13\r\n| Design State : Synthesized\r\n---------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nTiming Summary Report\r\n\r\n------------------------------------------------------------------------------------------------\r\n| Timer Settings\r\n| --------------\r\n------------------------------------------------------------------------------------------------\r\n\r\n  Enable Multi Corner Analysis               :  Yes\r\n  Enable Pessimism Removal                   :  Yes\r\n  Pessimism Removal Resolution               :  Nearest Common Node\r\n  Enable Input Delay Default Clock           :  No\r\n  Enable Preset / Clear Arcs                 :  No\r\n  Disable Flight Delays                      :  No\r\n  Ignore I/O Paths                           :  No\r\n  Timing Early Launch at Borrowing Latches   :  No\r\n  Borrow Time for Max Delay Exceptions       :  Yes\r\n  Merge Timing Exceptions                    :  Yes\r\n  Inter-SLR Compensation                     :  Conservative\r\n\r\n  Corner  Analyze    Analyze    \r\n  Name    Max Paths  Min ",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\harness-uart-tx-04\\iter_000\\timing_routed.rpt",
+      "sha256": "3413e7cbfcea64739b3b8891307cf6074cc288742a2dca5f77736bb1d8fbfaad",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n---------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date         : Thu Oct 29 02:13:30 2026\r\n| Host         : Baah running 64-bit major release  (build 9200)\r\n| Command      : report_timing_summary -file C:/Users/prince.baah/Downloads/autortl-work/logs/harness-uart-tx-04/iter_000/timing_routed.rpt\r\n| Design       : uart_tx\r\n| Device       : 7a35t-cpg236\r\n| Speed File   : -1  PRODUCTION 1.23 2018-06-13\r\n| Design State : Routed\r\n---------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nTiming Summary Report\r\n\r\n------------------------------------------------------------------------------------------------\r\n| Timer Settings\r\n| --------------\r\n------------------------------------------------------------------------------------------------\r\n\r\n  Enable Multi Corner Analysis               :  Yes\r\n  Enable Pessimism Removal                   :  Yes\r\n  Pessimism Removal Resolution               :  Nearest Common Node\r\n  Enable Input Delay Default Clock           :  No\r\n  Enable Preset / Clear Arcs                 :  No\r\n  Disable Flight Delays                      :  No\r\n  Ignore I/O Paths                           :  No\r\n  Timing Early Launch at Borrowing Latches   :  No\r\n  Borrow Time for Max Delay Exceptions       :  Yes\r\n  Merge Timing Exceptions                    :  Yes\r\n  Inter-SLR Compensation                     :  Conservative\r\n\r\n  Corner  Analyze    Analyze    \r\n  Name    Max Paths  Mi",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\harness-uart-tx-04\\iter_000\\utilization.rpt",
+      "sha256": "9f84eeeebcfb9199bacceb79e540b378afd5a723eaec84b9840d7b7eda3528aa",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\n---------------------------------------------------------------------------------------------------------------------------------------------\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\n| Date         : Thu Oct 29 02:13:07 2026\n| Host         : Baah running 64-bit major release  (build 9200)\n| Command      : report_utilization -file C:/Users/prince.baah/Downloads/autortl-work/logs/harness-uart-tx-04/iter_000/utilization.rpt\n| Design       : uart_tx\n| Device       : xc7a35tcpg236-1\n| Speed File   : -1\n| Design State : Synthesized\n---------------------------------------------------------------------------------------------------------------------------------------------\n\nUtilization Design Information\n\nTable of Contents\n-----------------\n1. Slice Logic\n1.1 Summary of Registers by Type\n2. Memory\n3. DSP\n4. IO and GT Specific\n5. Clocking\n6. Specific Feature\n7. Primitives\n8. Black Boxes\n9. Instantiated Netlists\n\n1. Slice Logic\n--------------\n\n+-------------------------+------+-------+------------+-----------+-------+\n|        Site Type        | Used | Fixed | Prohibited | Available | Util% |\n+-------------------------+------+-------+------------+-----------+-------+\n| Slice LUTs*             |   41 |     0 |          0 |     20800 |  0.20 |\n|   LUT as Logic          |   41 |     0 |          0 |     20800 |  0.20 |\n|   LUT as Memory         |    0 |     0 |          0 |      9600 |  0.00 |\n| Slice Registers         |   28 |     0 |          0 |     41600 |  0.07 |\n|   Register as Flip Flop |   28 |     0 |          0 |     41600 |  0.07 |\n|   Register as Latch     |    0 |     0 |          0 |     41600 |  0.00 |\n|",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\harness-uart-tx-04\\iter_000\\utilization_routed.rpt",
+      "sha256": "b797a44adcd78638122c02de11da38a31f03fb750cd3b860ab0d7a4e85e6b36b",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\n----------------------------------------------------------------------------------------------------------------------------------------------\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\n| Date         : Thu Oct 29 02:13:30 2026\n| Host         : Baah running 64-bit major release  (build 9200)\n| Command      : report_utilization -file C:/Users/prince.baah/Downloads/autortl-work/logs/harness-uart-tx-04/iter_000/utilization_routed.rpt\n| Design       : uart_tx\n| Device       : xc7a35tcpg236-1\n| Speed File   : -1\n| Design State : Routed\n----------------------------------------------------------------------------------------------------------------------------------------------\n\nUtilization Design Information\n\nTable of Contents\n-----------------\n1. Slice Logic\n1.1 Summary of Registers by Type\n2. Slice Logic Distribution\n3. Memory\n4. DSP\n5. IO and GT Specific\n6. Clocking\n7. Specific Feature\n8. Primitives\n9. Black Boxes\n10. Instantiated Netlists\n\n1. Slice Logic\n--------------\n\n+-------------------------+------+-------+------------+-----------+-------+\n|        Site Type        | Used | Fixed | Prohibited | Available | Util% |\n+-------------------------+------+-------+------------+-----------+-------+\n| Slice LUTs              |   39 |     0 |          0 |     20800 |  0.19 |\n|   LUT as Logic          |   39 |     0 |          0 |     20800 |  0.19 |\n|   LUT as Memory         |    0 |     0 |          0 |      9600 |  0.00 |\n| Slice Registers         |   28 |     0 |          0 |     41600 |  0.07 |\n|   Register as Flip Flop |   28 |     0 |          0 |     41600 |  0.07 |\n|   Register as Latch     |    0 |     0 |  ",
+      "truncated": true
+    }
+  ],
+  "report_manifest": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\harness-uart-tx-04\\iter_000\\power.rpt",
+      "sha256": "5b53f5d11d072db2abc2c7ff6e071df27c83d933fd28495d5de0eb651d606080"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\harness-uart-tx-04\\iter_000\\timing.rpt",
+      "sha256": "2ccbe42359233b11921c9e29a756b9538ead0e31196f8ebf6f10279e5a8d1be4"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\harness-uart-tx-04\\iter_000\\timing_routed.rpt",
+      "sha256": "3413e7cbfcea64739b3b8891307cf6074cc288742a2dca5f77736bb1d8fbfaad"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\harness-uart-tx-04\\iter_000\\utilization.rpt",
+      "sha256": "9f84eeeebcfb9199bacceb79e540b378afd5a723eaec84b9840d7b7eda3528aa"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\harness-uart-tx-04\\iter_000\\utilization_routed.rpt",
+      "sha256": "b797a44adcd78638122c02de11da38a31f03fb750cd3b860ab0d7a4e85e6b36b"
+    }
+  ],
+  "schema_version": 1,
+  "simulation": {
+    "failure_verdict": "TEST FAILED",
+    "required_verdict": "TEST PASSED",
+    "scope": "Provided testbench checks; not a formal equivalence proof.",
+    "tools": [
+      "xvlog",
+      "xelab",
+      "xsim -runall"
+    ]
+  },
+  "sources": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\harness-uart-tx-04\\iter_000\\uart_tx.v",
+      "sha256": "ae30ae0468875361d182db18533f202b731d577619b8ceb8de945a39fc9a91a1",
+      "text": "`timescale 1ns/1ps\r\n// @latency 1\r\n// Inherited fixed logical latency from transparent typed child wiring; not measured timing.\r\nmodule uart_tx (\r\n    input wire clk,\r\n    input wire rst,\r\n    input wire [7:0] in_data,\r\n    input wire in_valid,\r\n    output wire in_ready,\r\n    output wire tx\r\n);\r\n    uart_tx_core #( .DIV(868) ) u_uart_tx_core (\r\n        .clk(clk),\r\n        .rst(rst),\r\n        .in_data(in_data),\r\n        .in_valid(in_valid),\r\n        .in_ready(in_ready),\r\n        .tx(tx)\r\n    );\r\nendmodule\r\n",
+      "truncated": false
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\harness-uart-tx-04\\modules\\uart_tx_core\\uart_tx_core.v",
+      "sha256": "4b5881897e41f637e7043babc2426282e5a92012de7a0f172962cb0bd49f1ad2",
+      "text": "`timescale 1ns/1ps\r\n// @latency 1\r\nmodule uart_tx_core #(\r\n    parameter integer DIV = 868\r\n) (\r\n    input  wire       clk,\r\n    input  wire       rst,\r\n    input  wire [7:0] in_data,\r\n    input  wire       in_valid,\r\n    output wire       in_ready,\r\n    output wire       tx\r\n);\r\n\r\n    reg       ready_reg;\r\n    reg       tx_reg;\r\n    reg       busy;\r\n    reg [7:0] shift_reg;\r\n    reg [3:0] bit_index;\r\n    reg [12:0] bit_count;\r\n\r\n    assign in_ready = ready_reg;\r\n    assign tx       = tx_reg;\r\n\r\n    always @(posedge clk) begin\r\n        if (rst) begin\r\n            ready_reg <= 1'b1;\r\n            tx_reg    <= 1'b1;\r\n            busy      <= 1'b0;\r\n            shift_reg <= 8'b0;\r\n            bit_index <= 4'b0;\r\n            bit_count <= 13'b0;\r\n        end else if (!busy) begin\r\n            if (in_valid && ready_reg) begin\r\n                ready_reg <= 1'b0;\r\n                tx_reg    <= 1'b0;\r\n                busy      <= 1'b1;\r\n                shift_reg <= in_data;\r\n                bit_index <= 4'd0;\r\n                bit_count <= DIV;\r\n            end\r\n        end else if (bit_count > 13'd1) begin\r\n            bit_count <= bit_count - 13'd1;\r\n        end else if (bit_index == 4'd9) begin\r\n            ready_reg <= 1'b1;\r\n            tx_reg    <= 1'b1;\r\n            busy      <= 1'b0;\r\n            bit_count <= 13'b0;\r\n        end else if (bit_index == 4'd8) begin\r\n            tx_reg    <= 1'b1;\r\n            bit_index <= bit_index + 4'd1;\r\n            bit_count <= DIV;\r\n        end else begin\r\n            tx_reg    <= shift_reg[0];\r\n            shift_reg <= {1'b0, shift_reg[7:1]};\r\n            bit_index <= bit_index + 4'd1;\r\n            bit_count <= DIV;\r\n        end\r\n    end\r\n\r\nendmodule",
+      "truncated": false
+    }
+  ],
+  "testbench": {
+    "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\harness-uart-tx-04\\inputs\\testbench_path.v",
+    "sha256": "689e21d15536834331fb0fb2affb30de6cb351b4f42a9b2084b3e7f52134a54d",
+    "text": "`timescale 1ns/1ps\n// Independent integration testbench for the harness-built UART transmitter,\n// written from design_spec.json without seeing any generated RTL.\n//\n// Two copies run side by side from one clock: the top `uart_tx` at its\n// default DIV=868 (the exact board timing, 115200 baud from 100 MHz), and\n// `uart_tx_core` at DIV=3 so thousands of random frames finish quickly and\n// the DIV parameter is shown to work, not only its default. A cycle-exact\n// reference (uart_tx_ref_check) predicts tx and in_ready after every rising\n// edge from the same inputs; any difference is an error. Coverage gates fail\n// the test if it never saw back-to-back frames, mid-frame resets, input\n// noise while busy, or every data bit at both levels.\nmodule uart_tx_tb;\n    reg clk = 0;\n    always #5 clk = ~clk;\n\n    // DIV=868 instance: the shipped top level.\n    reg        rst_a = 1, valid_a = 0;\n    reg  [7:0] data_a = 0;\n    wire       ready_a, tx_a;\n    uart_tx dut_a(.clk(clk), .rst(rst_a), .in_data(data_a), .in_valid(valid_a),\n                  .in_ready(ready_a), .tx(tx_a));\n    uart_tx_ref_check #(.DIV(868)) ref_a(.clk(clk), .rst(rst_a), .in_valid(valid_a), .in_data(data_a),\n                                        .dut_ready(ready_a), .dut_tx(tx_a));\n\n    // DIV=3 instance: the core with an overridden parameter.\n    reg        rst_b = 1, valid_b = 0;\n    reg  [7:0] data_b = 0;\n    wire       ready_b, tx_b;\n    uart_tx_core #(.DIV(3)) dut_b(.clk(clk), .rst(rst_b), .in_data(data_b), .in_valid(valid_b),\n                                  .in_ready(ready_b), .tx(tx_b));\n    uart_tx_ref_check #(.DIV(3)) ref_b(.clk(clk), .rst(rst_b), .in_valid(valid_b), .in_data(data_b),\n                                      .dut_ready(ready_b), .dut_tx(tx_b));\n\n    integer cycle, seed, errors;\n    localparam CYCLES = 80000;\n\n    // Stimulus changes at the falling edge, away from the sampling edge.\n    initial begin\n        seed = 20261029;\n        for (cycle = 0; cycle < CYCLES; cycle = cycle + 1) begin\n            @(negedge clk);\n            // DIV=3: random traffic, random bytes, noise while busy, rare resets.\n            rst_b   = (cycle < 3) || ($random(seed) % 997 == 0);\n            valid_b = ($random(seed) % 4) != 0;\n            data_b  = $random(seed);\n            // DIV=868: an initial reset, back-to-back bytes with valid held\n            // high, a gap, a reset in the middle of a frame, and data noise.\n            rst_a   = (cycle < 3) || (cycle == 40000);\n            valid_a = (cycle >= 10 && cycle < 35000) || (cycle >= 36000 && cycle < 60000) ||\n                      (cycle >= 67000 && cycle < 67010);   // a short pulse while idle\n\n            if (!ready_a || cycle % 5 == 0) data_a = $random(seed);   // ignored while busy\n            if (cycle == 10) data_a = 8'h55;\n        end\n        errors = ref_a.errors + ref_b.errors;\n        if (ref_a.frames < 8)          begin errors = errors + 1; $display(\"FAIL coverage: DIV=868 frames %0d < 8\", ref_a.frames); end\n        if (ref_a.back_to_back < 3)    begin errors = errors + 1; $display(\"FAIL coverage: DIV=868 back-to-back %0d < 3\", ref_a.back_to_back); end\n        if (ref_a.aborted < 1)         begin errors = errors + 1; $display(\"FAIL coverage: DIV=868 never reset mid-frame\"); end\n        if (ref_b.frames < 1500)       begin errors = errors + 1; $display(\"FAIL coverage: DIV=3 frames %0d < 1500\", ref_b.frames); end\n        if (ref_b.back_to_back < 500)  begin errors = errors + 1; $display(\"FAIL coverage: DIV=3 back-to-back %0d < 500\", ref_b.back_to_back); end\n        if (ref_b.aborted < 10)        begin errors = errors + 1; $display(\"FAIL coverage: DIV=3 mid-frame resets %0d < 10\", ref_b.aborted); end\n        if (ref_b.busy_noise < 1000)   begin errors = errors + 1; $display(\"FAIL coverage: DIV=3 busy-time valid %0d < 1000\", ref_b.busy_noise); end\n        if (ref_b.bit_levels != 16'hffff) begin errors = errors + 1; $display(\"FAIL coverage: DIV=3 data bit levels %h\", ref_b.bit_levels); end\n        $display(\"frames: DIV=868 %0d (back-to-back %0d, aborted %0d); DIV=3 %0d (back-to-back %0d, aborted %0d)\",\n                 ref_a.frames, ref_a.back_to_back, ref_a.aborted, ref_b.frames, ref_b.back_to_back, ref_b.aborted);\n        if (errors == 0) $display(\"TEST PASSED\");\n        else $display(\"TEST FAILED: %0d errors\", errors);\n        $finish;\n    end\n\n    initial begin\n        #(10 * (CYCLES + 1000));\n        $display(\"TEST FAILED: watchdog\");\n        $finish;\n    end\nendmodule\n\n// Cycle-exact reference for the spec: after accept edge k, bit i of\n// {stop, data[7:0], start} is on tx after edge k+i*DIV; idle (tx=1,\n// in_ready=1) again after edge k+10*DIV. Checks both outputs one time unit\n// after every rising edge, and just before it to catch combinational outputs.\nmodule uart_tx_ref_check #(parameter DIV = 868) (\n    input wire clk, input wire rst, input wire in_valid, input wire [7:0] in_data,\n    input wire dut_ready, input wire dut_tx\n);\n    reg        busy = 0, exp_tx = 1, exp_ready = 1;\n    reg  [9:0] frame = 10'h3ff;\n    integer    elapsed = 0;\n    integer    errors = 0, frames = 0, back_to_back = 0, aborted = 0, busy_noise = 0;\n    integer    i;\n    reg        just_finished = 0;            // the previous edge ended a frame\n    reg        started = 0;                  // a rising edge has happened\n    reg [15:0] bit_levels = 0;               // bit 2*i+level seen for data bit i\n\n    always @(posedge clk) begin\n        started = 1;\n        if (rst) begin\n            if (busy) aborted = aborted + 1;\n            busy = 0; exp_tx = 1; exp_ready = 1; just_finished = 0;\n        end else if (!busy) begin\n            if (in_valid) begin\n                // Accepted at the first edge after the previous frame ended.\n                if (just_finished) back_to_back = back_to_back + 1;\n                frame = {1'b1, in_data, 1'b0};\n                for (i = 0; i < 8; i = i + 1) bit_levels[2 * i + in_data[i]] = 1'b1;\n                busy = 1; elapsed = 0; exp_tx = 1'b0; exp_ready = 0;\n            end\n            just_finished = 0;\n        end else begin\n            if (in_valid) busy_noise = busy_noise + 1;\n            elapsed = elapsed + 1;\n            if (elapsed == 10 * DIV) begin\n                busy = 0; exp_tx = 1; exp_ready = 1; frames = frames + 1; just_finished = 1;\n            end else begin\n                exp_tx = frame[elapsed / DIV];\n            end\n        end\n        #1;\n        if (dut_tx !== exp_tx || dut_ready !== exp_ready) begin\n            errors = errors + 1;\n            if (errors <= 10)\n                $display(\"FAIL DIV=%0d t=%0t: expected tx=%b in_ready=%b, got tx=%b in_ready=%b (elapsed %0d)\",\n                         DIV, $time, exp_tx, exp_ready, dut_tx, dut_ready, elapsed);\n        end\n    end\n\n    // Outputs are registered: they must not move between rising edges.\n    always @(negedge clk) begin\n        if (started && (dut_tx !== exp_tx || dut_ready !== exp_ready)) begin\n            errors = errors + 1;\n            if (errors <= 10)\n                $display(\"FAIL DIV=%0d t=%0t: output changed between edges (tx=%b in_ready=%b)\",\n                         DIV, $time, dut_tx, dut_ready);\n        end\n    end\nendmodule\n",
+    "truncated": false
+  },
+  "testbench_top": "uart_tx_tb",
+  "tool_exit_evidence": {
+    "history_count": 4,
+    "latest_by_tool": {
+      "vivado": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\harness-uart-tx-04\\iter_000\\vivado_synth_output.log",
+        "output_log_sha256": "254ab4131ecdf1e621348277b9dd2b05c30712c7b14c486a8cd38a8291cad66e",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xelab": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\harness-uart-tx-04\\iter_000\\xelab.log",
+        "output_log_sha256": "37949ea24df5eccac7a7d4c622aa1a8aa3edfe80a980d1191730b7d2f7e8932a",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xsim": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\harness-uart-tx-04\\iter_000\\xsim.log",
+        "output_log_sha256": "b0c74d77f76a10a81e27fbb2fb7f8e1085f53c099c3f6f301a1d1959535f7d83",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xvlog": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\harness-uart-tx-04\\iter_000\\xvlog.log",
+        "output_log_sha256": "207e7d2d4ece0fa44239035796d02384ed86aef529240e008c459b1beaa88c85",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      }
+    },
+    "missing_required_tools": [],
+    "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\harness-uart-tx-04\\iter_000\\tool_exit_records.log",
+    "records": [
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\harness-uart-tx-04\\iter_000",
+        "driver_returncode": 0,
+        "elapsed_seconds": 0.8279999999795109,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xvlog.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\harness-uart-tx-04\\iter_000\\xvlog.log",
+        "output_log_sha256": "207e7d2d4ece0fa44239035796d02384ed86aef529240e008c459b1beaa88c85",
+        "pid": 30956,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xvlog"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\harness-uart-tx-04\\iter_000",
+        "driver_returncode": 0,
+        "elapsed_seconds": 1.359000000054948,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xelab.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\harness-uart-tx-04\\iter_000\\xelab.log",
+        "output_log_sha256": "37949ea24df5eccac7a7d4c622aa1a8aa3edfe80a980d1191730b7d2f7e8932a",
+        "pid": 35156,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xelab"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\harness-uart-tx-04\\iter_000",
+        "driver_returncode": 0,
+        "elapsed_seconds": 2.906000000075437,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xsim.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\harness-uart-tx-04\\iter_000\\xsim.log",
+        "output_log_sha256": "b0c74d77f76a10a81e27fbb2fb7f8e1085f53c099c3f6f301a1d1959535f7d83",
+        "pid": 21764,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xsim"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\harness-uart-tx-04\\iter_000",
+        "driver_returncode": 0,
+        "elapsed_seconds": 73.90600000007544,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/vivado.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\harness-uart-tx-04\\iter_000\\vivado_synth_output.log",
+        "output_log_sha256": "254ab4131ecdf1e621348277b9dd2b05c30712c7b14c486a8cd38a8291cad66e",
+        "pid": 18728,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "vivado"
+      }
+    ],
+    "schema_valid": true,
+    "sha256": "fbe596cac29a626cf3df1bf91b4f028590a30ee2a9e364c723c229b927188477",
+    "status": "recorded",
+    "truncated": false
+  },
+  "top_module": "uart_tx",
+  "verification_logs": [
+    {
+      "head": "INFO: [VRFC 10-2263] Analyzing Verilog file \"C:/Users/prince.baah/Downloads/autortl-work/logs/harness-uart-tx-04/iter_000/uart_tx.v\" into library work\r\nINFO: [VRFC 10-311] analyzing module uart_tx\r\nINFO: [VRFC 10-2263] Analyzing Verilog file \"C:/Users/prince.baah/Downloads/autortl-work/logs/harness-uart-tx-04/modules/uart_tx_core/uart_tx_core.v\" into library work\r\nINFO: [VRFC 10-311] analyzing module uart_tx_core\r\nINFO: [VRFC 10-2263] Analyzing Verilog file \"C:/Users/prince.baah/Downloads/autortl-work/logs/harness-uart-tx-04/inputs/testbench_path.v\" into library work\r\nINFO: [VRFC 10-311] analyzing module uart_tx_tb\r\nINFO: [VRFC 10-311] analyzing module uart_tx_ref_check\r\n\r\n",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\harness-uart-tx-04\\iter_000\\xvlog.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "207e7d2d4ece0fa44239035796d02384ed86aef529240e008c459b1beaa88c85",
+      "tail": "",
+      "truncated": false
+    },
+    {
+      "head": "Vivado Simulator v2025.2\r\nCopyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\nCopyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\nRunning: C:/AMDDesignTools/2025.2/Vivado/bin/unwrapped/win64.o/xelab.exe uart_tx_tb -s uart_tx_tb_snap --debug off \r\nMulti-threading is on. Using 10 slave threads.\r\nStarting static elaboration\r\nPass Through NonSizing Optimizer\r\nCompleted static elaboration\r\nStarting simulation data flow analysis\r\nCompleted simulation data flow analysis\r\nTime Resolution for simulation is 1ps\r\nCompiling module work.uart_tx_core\r\nCompiling module work.uart_tx\r\nCompiling module work.uart_tx_ref_check\r\nCompiling module work.uart_tx_ref_check(DIV=3)\r\nCompiling module work.uart_tx_tb\r\nBuilt simulation snapshot uart_tx_tb_snap\r\n\r\n",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\harness-uart-tx-04\\iter_000\\xelab.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "37949ea24df5eccac7a7d4c622aa1a8aa3edfe80a980d1191730b7d2f7e8932a",
+      "tail": "",
+      "truncated": false
+    },
+    {
+      "head": "\r\n****** xsim v2025.2 (64-bit)\r\n  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025\r\n  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025\r\n  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025\r\n  **** Start of session at: Thu Oct 29 02:12:15 2026\r\n    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\n    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n\r\nsource xsim.dir/uart_tx_tb_snap/xsim_script.tcl\r\n# xsim {uart_tx_tb_snap} -autoloadwcfg -runall\r\nTime resolution is 1 ps\r\nrun -all\r\nframes: DIV=868 8 (back-to-back 6, aborted 1); DIV=3 2513 (back-to-back 1890, aborted 71)\r\nTEST PASSED\r\n$finish called at time : 800 us : File \"C:/Users/prince.baah/Downloads/autortl-work/logs/harness-uart-tx-04/inputs/testbench_path.v\" Line 69\r\nexit\r\nINFO: [Common 17-206] Exiting xsim at Thu Oct 29 02:12:17 2026...\r\n\r\n",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\harness-uart-tx-04\\iter_000\\sim_log.txt",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "b0c74d77f76a10a81e27fbb2fb7f8e1085f53c099c3f6f301a1d1959535f7d83",
+      "tail": "",
+      "truncated": false
+    },
+    {
+      "head": "\r\n****** Vivado v2025.2 (64-bit)\r\n  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025\r\n  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025\r\n  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025\r\n  **** Start of session at: Thu Oct 29 02:12:19 2026\r\n    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\n    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n\r\nsource C:/Users/prince.baah/Downloads/autortl-work/logs/harness-uart-tx-04/iter_000/synth.tcl\r\n# set_msg_config -id {VRFC 10-3609} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-9873} -new_severity ERROR\r\n# set_msg_config -id {Designutils 20-1307} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-327} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-3352} -new_severity ERROR\r\n# set_part xc7a35tcpg236-1\r\nINFO: [Coretcl 2-1500] The part has been set to 'xc7a35tcpg236-1' for the current project only. Run set_part -help for more details. To evaluate different speed grades in the current design, use the set_speed_grade command, or use the open_checkpoint -part command to change the part used by an existing checkpoint design.\r\nset_part: Time (s): cpu = 00:00:11 ; elapsed = 00:00:08 . Memory (MB): peak = 530.785 ; gain = 223.863\r\n# read_verilog \"C:/Users/prince.baah/Downloads/autortl-work/logs/harness-uart-tx-04/iter_000/uart_tx.v\" \"C:/Users/prince.baah/Downloads/autortl-work/logs/harness-uart-tx-04/modules/uart_tx_core/uart_tx_core.v\"\r\n# set fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/harness-uart-tx-04/iter_000/timing.xdc\" w]\r\n# puts $fp {create_clock -period 10.000 -name clk [get_ports clk]}\r\n# close $fp\r\n# read_xdc \"C:/Users/prince.baah/Downloads/autortl-work/logs/harness-uart-tx-04/iter_000/timing.xdc\"\r\n# synth_design -top uart_tx -flatten_hierarchy",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\harness-uart-tx-04\\iter_000\\vivado_synth_output.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "254ab4131ecdf1e621348277b9dd2b05c30712c7b14c486a8cd38a8291cad66e",
+      "tail": "s/prince.baah/Downloads/autortl-work/logs/harness-uart-tx-04/iter_000/power.rpt\"\r\nCommand: report_power -file C:/Users/prince.baah/Downloads/autortl-work/logs/harness-uart-tx-04/iter_000/power.rpt\r\nRunning Vector-less Activity Propagation...\r\n\r\nFinished Running Vector-less Activity Propagation\r\n0 Infos, 0 Warnings, 0 Critical Warnings and 0 Errors encountered.\r\nreport_power completed successfully\r\n# catch { report_methodology -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/harness-uart-tx-04/iter_000/methodology.rpt\" }\r\nCommand: report_methodology -file C:/Users/prince.baah/Downloads/autortl-work/logs/harness-uart-tx-04/iter_000/methodology.rpt\r\nINFO: [Timing 38-35] Done setting XDC timing constraints.\r\nINFO: [DRC 23-133] Running Methodology with 2 threads\r\nINFO: [Vivado_Tcl 2-1520] The results of Report Methodology are in file C:/Users/prince.baah/Downloads/autortl-work/logs/harness-uart-tx-04/iter_000/methodology.rpt.\r\nreport_methodology completed successfully\r\n# catch { report_qor_suggestions -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/harness-uart-tx-04/iter_000/qor_suggestions.rpt\" }\r\nCommand: report_qor_suggestions -file C:/Users/prince.baah/Downloads/autortl-work/logs/harness-uart-tx-04/iter_000/qor_suggestions.rpt\r\nCongestion Prediction Time (s): cpu = 00:00:01 ; elapsed = 00:00:00.006 . Memory (MB): peak = 1977.570 ; gain = 0.000\r\nINFO: [Implflow 47-1309] PredResultString: 1:44.31:55.69\r\nfeatureProvider Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.031 . Memory (MB): peak = 1977.570 ; gain = 0.000\r\nINFO: [Implflow 47-1274] ML strategy prediction is not supported for 7-series devices.\r\nreport_qor_suggestions completed successfully\r\n# puts \"SYNTH_COMPLETE\"\r\nSYNTH_COMPLETE\r\nINFO: [Common 17-206] Exiting Vivado at Thu Oct 29 02:13:31 2026...\r\n\r\n",
+      "truncated": true
+    }
+  ]
+}
