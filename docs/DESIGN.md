@@ -46,6 +46,20 @@ supported schema and limits.
    Scoreboard traffic includes legal invalid bubbles/noise while preserving blocked
    producer offers. Sync-only reset pulses end before sampling edges, preserving
    oracle/queue state; occupied reset policy remains independently specified.
+   The oracle runs in a restricted worker (golden_worker.py) with fixed
+   budgets per invocation: 200,000 Python trace events (calls, lines and
+   returns across one whole stimulus sequence), 100,000 allocation units, and
+   1 MB of request and result JSON. The budget is not configurable per module.
+   It bounds what one spec example can express. Both archived harness-built
+   UART golden models (harness-uart-tx-02, harness-uart-tx-v2-01) run out
+   between 2,500 and 3,000 cycles, about 70 to 80 events per cycle, so one
+   frame at 868 clocks per bit (8,680 cycles) cannot be an example; a
+   7,813-cycle example exhausted it. Long-period serial designs therefore
+   keep spec examples short, about 2,000 cycles (the UART examples are frame
+   prefixes of 869 and 1,737 cycles), and check full frames at real timing
+   with an independent, mutation-qualified `--tb`
+   (taxonomy `golden_budget_long_period_examples`;
+   hardware/basys3/harness_built/uart_tx).
 4. **Best-of-N (N=4)** with objective-weighted mutation prompts (bestofn.py),
    hash dedupe, deterministic selection: (rungs, timing feasibility, objective
    metric, brevity). A verified timing recovery can use more resources; it is

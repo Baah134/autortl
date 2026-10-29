@@ -716,7 +716,10 @@ or requiredcampaign13; complete currentruntimepublication gates first.
 
 Evidence: evidence/2026-10-29/harness-uart-tx-01. These are observed failures.
 Each needs a taxonomy or curriculum entry before any harness fix lands.
-None is fixed yet. Harness source is unchanged.
+Items 1 to 3 have taxonomy entries. Items 1 and 2 are fixed in the harness
+and item 3 is documented. Item 4 is an open decision about the objective;
+it gets its entry when that decision changes the harness, since data/ is
+part of the frozen source identity.
 
 1. **stale_child_masks_flattened_winner** (verification gap). In build mode,
    the optimize loop may replace a child module with flattened logic. Run 03's
@@ -752,6 +755,9 @@ None is fixed yet. Harness source is unchanged.
    so spec examples must stay under about 2,000 cycles. Long-period serial
    designs depend on an independent --tb for full-frame checks. Document it
    in DESIGN, or make the budget a reviewed per-module setting.
+   **Documented** in docs/DESIGN.md (item 3, verification). The budget stays
+   fixed: raising it widens the untrusted-oracle sandbox, which needs its
+   own review.
 4. **io_dominated_timing_metric** (measurement). In SYNTH_TCL, ports get I/O
    buffers with zero external delay. At 100 MHz the worst path is usually
    pad-limited: the FIR winner's worst path is register to LUT to OBUF to

@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Interface and parameter contract: PASS \u2014 top module and ports match the frozen source; no parameters are changed.\n- Cycle and reset behavior: PASS \u2014 synchronous active-high reset and registered output behavior are preserved; the selected byte matches each `sel` value.\n- Latency annotation: PASS \u2014 top latency is unknown, so no numeric annotation is required.\n- Deterministic verification: PASS \u2014 ladder is ALIVE; compile, elaboration, and simulation succeeded with the required `TEST PASSED` verdict.\n- Routed metrics and timing: PASS \u2014 retained routed reports and successful tool exits support the metrics; timing is feasible with WNS 0.579 ns and WHS 0.052 ns.\n- Objective improvement: FAIL \u2014 LUT use is unchanged at 8 versus the previous best; `minimize_luts` requires a strict reduction.\n## Summary\n- Passed: 5 of 6\n- Failed: 1 of 6\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate preserves the interface, registered mux behavior, and reset, and passes the deterministic verification and timing gates. Since both candidate and previous best are timing-feasible, promotion requires strictly fewer LUTs; the candidate remains at 8 LUTs, so it does not improve the chosen objective.",
+      "recommendation": "REJECT",
+      "passed": 5,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}
