@@ -4,7 +4,31 @@ Updated October 28, 2026 (America/New_York). Verify files, Git, ownership and
 actual jobs before acting. Canonical checkout: Downloads/autortl-work. Preserve
 the separate Downloads/autortl copy. User choice: command-line Vivado.
 
-## Current state - October 28 (Claude Code): Basys 3 hardware and agent mailbox
+## Latest - October 28, session 3 (Claude Code): repository-wide evidence audit
+
+- **`tools/evidence_audit.py`** checks every SHA-256 claim in every manifest
+  under evidence/ against committed blobs (PUBLICATION.md step 5, which had
+  been applied to seven archives only). CI's new `evidence` job runs it with
+  full history on every push; 35 tests in `tools/tests` with fixtures of each
+  real manifest layout. Run `--worktree` before committing a new archive.
+- At fef63d4 it found **798 failing claims** of 20,026. 532 never-copied
+  archive files (XSIM .pb/.jou, xsim.dir logs, reports) were restored
+  byte-exact from logs/. The 8 tested bitstreams are archived in
+  evidence/2026-10-28/basys3-bitstreams-01. Everything else is a named,
+  proven or recorded exception in `tools/evidence_exceptions.json`. Full
+  account: evidence/2026-10-28/evidence-integrity-01. Five new
+  publication taxonomy entries are in docs/PUBLICATION.md.
+- **For Codex:** a source-identity manifest of a Windows working copy is
+  checked as a CRLF checkout of a committed blob. Files with mixed line
+  endings (e.g. tests/test_module_latency_gates.py has one CRLF line in the
+  working copy) need a `reconstruct` exception; committing the working copy
+  avoids that. Losing an archive file now fails CI.
+- Board suite: `python -m hwsuite program|hw --design NAME --bit FILE` tests
+  an archived bitstream from a fresh clone, no synthesis needed.
+- No frozen source, runtime or run result changed. Campaign14 is still the
+  next gate and still Codex's.
+
+## October 28, session 2 (Claude Code): Basys 3 hardware and agent mailbox
 
 Claude Code claimed the released lease normally (no takeover) and checkpoints
 there; query `python scripts/session.py status` for the live owner. Read your

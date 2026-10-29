@@ -27,16 +27,15 @@ kept in `basys3-uart-echo-01/source-snapshot`.
 
 ## Reprogramming the board
 
-```
-vivado -mode batch -source hardware/basys3/harness_winners/scripts/program.tcl -tclargs <path to .bit>
-```
-
-Then run the matching test. For a harness winner:
+For a harness winner, from `hardware/basys3/harness_winners/`:
 
 ```
-python -m hwsuite hw --design <name>
+python -m hwsuite program --design <name> --bit ../../../evidence/2026-10-28/basys3-bitstreams-01/harness_winners/<name>.bit
+python -m hwsuite hw --design <name> --bit ../../../evidence/2026-10-28/basys3-bitstreams-01/harness_winners/<name>.bit --count 50000
 ```
 
-Run it from `hardware/basys3/harness_winners/`. The suite's README lists the
-serial port and options. `tools/evidence_audit.py` checks in CI that every
-recorded bitstream digest has its file in the repository.
+The other two load with the same `program.tcl`
+(`vivado -mode batch -source hardware/basys3/harness_winners/scripts/program.tcl -tclargs <file>`)
+and are tested with `echo_test.py` and `fir_test.py` in their own folders.
+`tools/evidence_audit.py` checks in CI that every recorded bitstream digest
+has its file in the repository.

@@ -270,6 +270,29 @@ def test_load_exceptions_rejects_incomplete_entries(tmp_path):
     assert audit.load_exceptions(tmp_path / "absent.json") == []
 
 
+def test_each_revision_is_audited_with_its_own_exceptions(repo, tmp_path, capsys):
+    before = git(repo, "rev-parse", "HEAD").decode().strip()
+    listed = {"schema": 1, "exceptions": [exception("archive-a/archive-manifest.json", ["gone/xsim.jou"])]}
+    (repo / "tools").mkdir()
+    (repo / "tools" / "evidence_exceptions.json").write_text(json.dumps(listed))
+    commit(repo, "record a loss")
+    out = tmp_path / "now.json"
+    audit.main(["--root", str(repo), "--report", str(out)])
+    assert [r["path"] for r in json.loads(out.read_text())["exceptions"]] == ["gone/xsim.jou"]
+    # The earlier commit had no list, so auditing it reproduces its failures.
+    audit.main(["--root", str(repo), "--rev", before, "--report", str(out)])
+    assert json.loads(out.read_text())["exceptions"] == []
+    # An explicit file overrides the snapshot's list.
+    empty = tmp_path / "empty.json"
+    empty.write_text(json.dumps({"schema": 1, "exceptions": []}))
+    audit.main(["--root", str(repo), "--exceptions", str(empty), "--report", str(out)])
+    assert json.loads(out.read_text())["exceptions"] == []
+    (repo / "tools" / "evidence_exceptions.json").write_text("{not json")
+    commit(repo, "break the list")
+    assert audit.main(["--root", str(repo)]) == 2
+    assert "not valid JSON" in capsys.readouterr().err
+
+
 def test_shallow_clone_is_refused(repo, tmp_path):
     shallow = tmp_path / "shallow"
     git(tmp_path, "clone", "-q", "--depth", "1", repo.as_uri(), str(shallow))

@@ -41,7 +41,8 @@ import subprocess
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
-EXCEPTIONS = ROOT / "tools" / "evidence_exceptions.json"
+EXCEPTIONS_PATH = "tools/evidence_exceptions.json"
+EXCEPTIONS = ROOT / EXCEPTIONS_PATH
 HEX = re.compile(r"[0-9a-fA-F]{64}")
 PATH_KEYS = ("path", "file", "relative_path")
 DIGEST_KEYS = ("sha256", "sha", "hash", "digest")
@@ -277,10 +278,24 @@ def _resolve(base, path, files=frozenset(), folders=frozenset()):
     return joined
 
 
-def load_exceptions(path=EXCEPTIONS):
-    if not Path(path).is_file():
+def load_exceptions(path=EXCEPTIONS, snapshot=None):
+    """Read the exceptions list from a file, or from the audited snapshot.
+
+    With a snapshot the list comes from that revision's own
+    tools/evidence_exceptions.json, so auditing an old commit reproduces
+    exactly what that commit claimed. A missing list means no exceptions.
+    """
+    if snapshot is not None:
+        raw = snapshot.read(EXCEPTIONS_PATH) if EXCEPTIONS_PATH in snapshot.paths else None
+        path = f"{snapshot.rev or 'working tree'}:{EXCEPTIONS_PATH}"
+    else:
+        raw = Path(path).read_bytes() if Path(path).is_file() else None
+    if raw is None:
         return []
-    data = json.loads(Path(path).read_text(encoding="utf-8"))
+    try:
+        data = json.loads(raw.decode("utf-8"))
+    except (UnicodeDecodeError, ValueError) as error:
+        raise AuditError(f"{path}: not valid JSON: {error}") from error
     if data.get("schema") != 1 or not isinstance(data.get("exceptions"), list):
         raise AuditError(f"{path}: expected schema 1 with an exceptions list")
     for entry in data["exceptions"]:
@@ -450,15 +465,17 @@ def main(argv=None):
     where.add_argument("--rev", default="HEAD", help="audit the committed blobs of this revision (default HEAD)")
     where.add_argument("--worktree", action="store_true", help="audit the working copy instead")
     parser.add_argument("--root", type=Path, default=ROOT)
-    parser.add_argument("--exceptions", type=Path, default=None)
+    parser.add_argument("--exceptions", type=Path, default=None,
+                        help="use this exceptions file instead of the audited snapshot's own")
     parser.add_argument("--report", type=Path, help="also write the full JSON report here")
     args = parser.parse_args(argv)
-    exceptions_path = args.exceptions or args.root / "tools" / "evidence_exceptions.json"
     try:
         snapshot = TreeSnapshot(args.root) if args.worktree else CommitSnapshot(args.root, args.rev)
         history = History(args.root)
         try:
-            report = audit(snapshot, history, load_exceptions(exceptions_path))
+            exceptions = (load_exceptions(args.exceptions) if args.exceptions
+                          else load_exceptions(snapshot=snapshot))
+            report = audit(snapshot, history, exceptions)
         finally:
             snapshot.close()
             history.close()

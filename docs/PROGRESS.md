@@ -1489,3 +1489,21 @@ corrected as an explicit doc-only delta after the frozen experiments.
   stage journal, the sandboxed model call and the board suite, with
   interview questions answered from the code. 66 file:line references were
   checked automatically. CI green on 73c8767.
+
+## October28 - Claude Code: repository-wide evidence audit
+
+- Added tools/evidence_audit.py (35 tests, real-layout fixtures). It checks all
+  135 manifests and 20,026 SHA-256 claims against committed blobs, binds
+  source identities to the full history, including Windows CRLF checkouts,
+  and proves each exception from readable bytes. CI evidence job, fetch-depth 0.
+- fef63d4: 798 failures. Restored 532 never-copied archive files byte-exact
+  from logs/ (all matched by path and digest; no manifest edited). Archived 8
+  tested Basys 3 bitstreams. 92 claims are proven exceptions: 83 from the
+  predecessor archive, 8 rebuilt from blobs with mixed line endings, 1
+  recovered staging copy. 172 are recorded losses: 167 relocation-record .git
+  and cache files, 4 tested versions edited before commit, and the v01 echo
+  bitstream.
+- 1d39729 audit: PASS. Taxonomy first, in PUBLICATION.md: uncopied_manifest_artifact,
+  superseded_state_manifest, unarchived_tested_binary, mixed_eol_tested_source,
+  uncommitted_tested_source. hwsuite program/hw gain --bit.
+- No frozen source changed; campaign14 remains Codex's gate before main.

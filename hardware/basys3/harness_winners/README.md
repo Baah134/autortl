@@ -121,3 +121,17 @@ python -m hwsuite evidence --out ../../../evidence/<date>/<new-folder>
 `--design NAME` limits any command to one design. Set `AUTORTL_VIVADO_BIN`
 or pass `--vivado` if Vivado is not at `C:/AMDDesignTools/2025.2/Vivado/bin`.
 Vivado use follows the single-queue rule in `docs/AGENT_HANDOFF.md`.
+
+To rerun a board check without synthesis, program the tested bitstream
+archived in
+[basys3-bitstreams-01](../../../evidence/2026-10-28/basys3-bitstreams-01/README.md)
+and test it. Only Vivado's hardware manager is needed:
+
+```powershell
+python -m hwsuite program --design sync_fifo --bit ../../../evidence/2026-10-28/basys3-bitstreams-01/harness_winners/sync_fifo.bit
+python -m hwsuite hw --design sync_fifo --bit ../../../evidence/2026-10-28/basys3-bitstreams-01/harness_winners/sync_fifo.bit --count 50000
+```
+
+`hw` records the payload digest of the `--bit` file; it equals the one in
+`basys3-harness-winners-01/summary.json`. A bitstream for the wrong design
+fails the check against that design's model.

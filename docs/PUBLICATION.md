@@ -40,7 +40,9 @@ archive. The original audit failure and affected paths must remain recorded.
 5. Read every manifest path from the selected commit with git cat-file --batch
    and compare SHA256 of the raw blob with its recorded digest. Missing blobs,
    malformed entries and any mismatch fail publication. Do not delete or
-   regenerate a manifest to hide an omission.
+   regenerate a manifest to hide an omission. `python tools/evidence_audit.py
+   --worktree` checks a new archive before it is committed, and
+   `python tools/evidence_audit.py --rev <commit>` checks the commit.
 6. Correct packaging omissions and rerun the complete committed-blob check;
    record the verified commit in the handoff. Documentation/package-only changes
    do not regrade completed FPGA runs or change their frozen runtime identities.

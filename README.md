@@ -57,8 +57,9 @@ flowchart LR
   design or count as a failed attempt. Message severities can be raised,
   never lowered.
 - **Traceable evidence.** Every result is archived with source hashes,
-  constraints, tool version and raw reports, so it can be checked byte for
-  byte.
+  constraints, tool version and raw reports. On every push, CI checks every
+  recorded SHA-256 digest (over 20,000) against the committed bytes
+  ([audit](evidence/2026-10-28/evidence-integrity-01/README.md)).
 
 ## What the agent actually changed
 
@@ -145,6 +146,9 @@ runs every harness winner on the board through one generic, tested shell:
   ([analysis](evidence/2026-10-28/divider-ff-replica-analysis-01/README.md)).
 - **Traceable.** The board's bitstream payloads are tied by hash to the hardware
   runs ([evidence](evidence/2026-10-28/basys3-harness-winners-01/README.md)).
+  The tested bitstreams are archived, so a board and a fresh clone can rerun
+  every check without synthesis
+  ([bitstreams](evidence/2026-10-28/basys3-bitstreams-01/README.md)).
 
 The FIR was first run on its own, with its own shell:
 [`hardware/basys3/fir4_on_board`](hardware/basys3/fir4_on_board/README.md)
@@ -190,6 +194,13 @@ constraints and this hardware check as an acceptance gate.
 - **Run-to-run variance is real.** Two FIR runs with the same specification
   and budget ended at 52 and 84 LUTs, so single runs are reported as single
   runs.
+- **The archives had holes.** A repository-wide audit of the evidence found
+  798 of 20,026 recorded digests that the committed files did not back up.
+  Most were simulator files that were listed in a manifest but never copied
+  into the archive. The exact bytes were restored from the original run
+  folders where they survived, and the rest are proven another way or
+  recorded as losses, one by one. CI now fails if any digest stops matching
+  ([audit](evidence/2026-10-28/evidence-integrity-01/README.md)).
 
 ## Limits
 
