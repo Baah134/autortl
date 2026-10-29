@@ -26,6 +26,14 @@ messages:
     meaning: "Static elaboration of the top design failed; the true cause is the preceding VRFC message"
     repair: "Repair the VRFC message reported before this one; this ID is only a wrapper"
     severity_override: null
+  "VRFC 10-4982":
+    meaning: "Verilog syntax error at the reported line"
+    repair: "Fix the construct at that line in plain Verilog-2001 (the harness compiles .v files); a common cause is indexing or part-selecting a concatenation such as {d, c, b, a}[sel*8 +: 8], which needs a named wire first; SystemVerilog-only syntax is another"
+    severity_override: null
+  "VRFC 10-8530":
+    meaning: "A module was ignored because of earlier compile errors in it"
+    repair: "Repair the earlier VRFC error in that module; this ID only reports the consequence"
+    severity_override: null
   "Common 17-53":
     meaning: "Harness queried design objects before opening a design during constraint-file generation"
     repair: "For No open design errors, fix Tcl execution order; preserve get_ports literally when writing XDC and do not mutate RTL"
@@ -83,6 +91,9 @@ harness_failures:
   golden_budget_long_period_examples:
     meaning: "A specification example longer than a few thousand cycles exhausted the golden worker's instruction budget, so a long-period serial design could not express full-frame anchors"
     repair: "Keep examples under the budget, about 2,000 cycles for a per-cycle UART model; check full frames at real timing with an independent qualified --tb"
+  generator_selects_from_concatenation:
+    meaning: "An optimization candidate part-selected a concatenation directly ({d, c, b, a}[sel * 8 +: 8]), which Verilog-2001 does not allow; xvlog failed (VRFC 10-4982) with no taxonomy hint and a repair call was spent (contract-campaign-20 mux4)"
+    repair: "Tell the generator the harness compiles plain Verilog-2001 and to name a concatenation in a wire before selecting from it; give VRFC 10-4982 and 10-8530 repair hints"
   spec_prompt_omits_example_budget:
     meaning: "The planner's spec prompt never stated the golden sandbox's per-example budget, so a prose request for a long-period design (tier3 uart_fifo_build: UART at DIV=868, a 8,680-cycle frame) invites full-frame examples the oracle cannot run (predicted by an offline pre-flight of tier2/tier3, not yet observed)"
     repair: "State the limit in the spec prompt (after_cycles at or below 2000) and tell the planner to check an early part of long-period behavior in examples, leaving full frames to the generated and independent testbenches"
