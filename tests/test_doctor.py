@@ -60,3 +60,23 @@ def test_cli_dispatches_without_building_an_orchestrator(monkeypatch, tmp_path):
     monkeypatch.setattr(run, "Orchestrator", lambda *a, **k: (_ for _ in ()).throw(AssertionError("no run")))
     assert run.main(["doctor", "--xvlog", "X"]) == 0
     assert seen["paths"]["xvlog"] == "X"
+
+
+def test_openai_backend_is_an_optional_warning_when_unset(monkeypatch, tmp_path, capsys):
+    fake_env(monkeypatch)
+    monkeypatch.delenv("AUTORTL_OPENAI_API_KEY", raising=False)
+    check = by_name(doctor.run_checks({}, tmp_path))["openai"]
+    assert check.status == "WARN" and not check.required and "AUTORTL_OPENAI_API_KEY" in check.fix
+    assert doctor.main({}, tmp_path) == 0
+
+
+def test_openai_key_presence_is_reported_without_its_value(monkeypatch, tmp_path, capsys):
+    fake_env(monkeypatch)
+    monkeypatch.setenv("AUTORTL_OPENAI_API_KEY", "sk-doctor-secret-value")
+    monkeypatch.setenv("AUTORTL_OPENAI_BASE_URL", "http://user:hunter2pass@127.0.0.1:11434/v1?k=q")
+    monkeypatch.setenv("AUTORTL_OPENAI_MODEL", "llama3.1")
+    check = by_name(doctor.run_checks({}, tmp_path))["openai"]
+    assert check.status == "OK" and "is set" in check.detail and "127.0.0.1" in check.detail
+    assert doctor.main({}, tmp_path) == 0
+    out = capsys.readouterr().out
+    assert "sk-doctor-secret-value" not in out and "hunter2pass" not in out
