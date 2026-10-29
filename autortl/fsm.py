@@ -25,7 +25,7 @@ from .spec import DesignSpec, ModuleSpec, Port, ResetSpec
 from .linter import lint_spec, write_stub_project, top_verilog
 from .static_checks import check as static_check
 from .state import RunState, atomic_write_text
-from .roles import Planner, Generator, Evaluator, TimingDoctor, Evaluation
+from .roles import Planner, Generator, Evaluator, TimingDoctor, Evaluation, default_timescale
 from .budget import Budget
 from .cache import MetricsCache, code_hash
 from .triage import FailureKind, classify
@@ -705,7 +705,9 @@ class Orchestrator:
         # Verification is mandatory before defining an optimization contract.
         if not cfg.testbench_path or not Path(cfg.testbench_path).is_file():
             return self._baseline_stop("baseline_blocked", "A baseline testbench is required")
-        original = Path(cfg.design_path).read_text(encoding="utf-8")
+        # A seed without a timescale gets the same default as generated RTL,
+        # mechanically (seed_without_timescale_costs_model_repair).
+        original = default_timescale(Path(cfg.design_path).read_text(encoding="utf-8"))
         # module contract for static checks in optimize mode (interface only)
         contract = self._infer_contract(original, cfg.top_module)
 

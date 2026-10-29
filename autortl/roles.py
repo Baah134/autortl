@@ -15,13 +15,17 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from llm.client import ask, extract_verilog
 
 
-def generated_rtl(response: str) -> str:
-    """Generated sources use the harness simulation unit unless explicit."""
-    source = extract_verilog(response)
+def default_timescale(source: str) -> str:
+    """The harness simulation unit for sources that declare none (XSIM 43-4099)."""
     uncommented = re.sub(r"/\*.*?\*/|//[^\n]*", "", source, flags=re.DOTALL)
     if not re.search(r"(?m)^\s*`timescale\b", uncommented):
         source = "`timescale 1ns/1ps\n" + source
     return source
+
+
+def generated_rtl(response: str) -> str:
+    """Generated sources use the harness simulation unit unless explicit."""
+    return default_timescale(extract_verilog(response))
 
 
 def golden_source(response: str) -> str:
