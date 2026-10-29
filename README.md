@@ -274,7 +274,9 @@ Curriculum promotion requires three consecutive qualifying full runs with the
 same experiment cohort. Subset runs cannot promote a tier, and regressions in
 previously passing entries of a held cohort block qualification.
 
-Read the [architecture](docs/DESIGN.md), [recovery and validation guide](docs/RECOVERY.md),
+Start with the [guided code tour](docs/WALKTHROUGH.md), which follows one run
+through the code with file and line references. Then read the
+[architecture](docs/DESIGN.md), [recovery and validation guide](docs/RECOVERY.md),
 [research and adoption decisions](docs/RESEARCH.md),
 and [engineering evidence log](docs/PROGRESS.md) for implementation details,
 tested guarantees and remaining work.
