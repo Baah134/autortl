@@ -74,6 +74,12 @@ must be true. An absent annotation in an existing optimization source is a
 separate case and must never be interpreted as zero cycles.
 Every module MUST include 2-3 concrete examples. Keep modules under ~60 lines
 of eventual Verilog each; split anything bigger.
+Each example runs the Python reference for after_cycles steps inside a fixed
+sandbox budget, so keep every after_cycles at or below 2000. For long-period
+designs (for example a UART bit lasting hundreds of cycles), make each example
+check an early part of the behavior, such as the start bit and the first data
+bits, rather than a whole frame; full-length behavior is checked by the
+generated testbench and any independent testbench.
 Structural rules the harness checks before any generation:
 - top_name names the top wrapper the harness generates mechanically. It must be
   a valid identifier that differs from every module name: a request for a single
