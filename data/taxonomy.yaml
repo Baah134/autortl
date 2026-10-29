@@ -93,6 +93,9 @@ harness_failures:
   seed_without_timescale_costs_model_repair:
     meaning: "An optimize-mode seed without a timescale, verified with a testbench that declares one, failed elaboration with XSIM 43-4099; the harness spent a generator repair call and relied on the model to change nothing but the directive (tier1-campaign-01 pwm)"
     repair: "Give the verified baseline copy the same default 1ns/1ps timescale generated RTL receives, mechanically, when it has none; never spend a model call or let a model edit the frozen baseline for it"
+  concurrent_bench_drops_history:
+    meaning: "run_tier reads the curriculum history when a campaign starts and rewrites the whole file when it ends, so a second bench finishing in between had its record silently overwritten (found by reading the runner while planning parallel work)"
+    repair: "Keep the history bytes read at the start; under a short exclusive lock, rewrite only if they are unchanged; otherwise fail closed as infrastructure (exit 3) with the record kept in the campaign's summary.json"
   completed_child_dependency_omission:
     meaning: "DONE retained a verification manifest but omitted child RTL referenced by its recorded input hashes"
     repair: "Validate retained verification dependencies against their recorded hashes before publishing DONE; retain source and testbench identities and reject missing or changed dependencies"
