@@ -412,6 +412,14 @@ cohort and promotion rules do not change. Each run's `budget.json` records the
 model tokens it used, and `python tools/role_report.py <campaign>` summarizes
 every role's calls, tokens, verdicts and repairs.
 
+`python tools/run_view.py <run-or-campaign> [--out FILE]` writes the same
+records as one static HTML page (default `<dir>/run-view.html`): a summary
+table across entries, then per run the role calls, the stage timeline from
+`events.jsonl`, each iteration's metrics against the baseline with the
+evaluator's report, the repairs, and the winning RTL as a diff against the
+baseline. It uses only the standard library, loads no external resources and
+escapes all text read from run files.
+
 Curriculum promotion requires three consecutive qualifying full runs with the
 same experiment cohort. Subset runs cannot promote a tier, and regressions in
 previously passing entries of a held cohort block qualification.
