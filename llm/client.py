@@ -48,7 +48,7 @@ def _record(role: str, entry: str, ok: bool, seconds: float,
 
 
 def _backend(role, name):
-    """A built-in backend, or a user endpoint from llm/endpoints.local.yaml."""
+    """A built-in backend, or a user endpoint from endpoints.local.yaml at the repository root."""
     if name in _BACKENDS:
         return _BACKENDS[name]
     from . import endpoints
@@ -66,11 +66,54 @@ def _is_backend(name):
         return False
 
 
+def _edits(a: str, b: str) -> int:
+    """Optimal string alignment distance: insertions, deletions, substitutions, swaps."""
+    d = [[i + j if i * j == 0 else 0 for j in range(len(b) + 1)] for i in range(len(a) + 1)]
+    for i in range(1, len(a) + 1):
+        for j in range(1, len(b) + 1):
+            d[i][j] = min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] != b[j - 1]))
+            if i > 1 and j > 1 and a[i - 1] == b[j - 2] and a[i - 2] == b[j - 1]:
+                d[i][j] = min(d[i][j], d[i - 2][j - 2] + 1)
+    return d[len(a)][len(b)]
+
+
+def check_model(model: str | None) -> None:
+    """Raise ValueError when a pinned model would not route where it plainly means to.
+
+    A dotted model whose prefix names no backend is a plain alias sent to each
+    routing entry's backend (Codex). That silently misroutes a misspelled backend
+    (olama.x for ollama.x), so a prefix within one edit of a backend or endpoint
+    name (two edits for names of six or more letters), ignoring case, is refused,
+    and so is any dotted model while the endpoints file is unreadable, because the
+    prefix cannot then be resolved (mistyped_endpoint_routes_to_codex).
+    """
+    if not model or "." not in model:
+        return
+    from . import endpoints
+    prefix, _, rest = model.partition(".")
+    try:
+        defined = endpoints.load()
+    except endpoints.EndpointError as exc:
+        raise ValueError(f"cannot route model {model!r}: the endpoints file is unreadable "
+                         f"({str(exc)[:200]}); fix it before naming a dotted model") from None
+    names = set(_BACKENDS) | set(defined)
+    if prefix in names:
+        return
+    for name in sorted(names):
+        if _edits(prefix.lower(), name) <= (2 if len(name) >= 6 else 1):
+            raise ValueError(f"model {model!r}: {prefix!r} is not a backend or defined endpoint; "
+                             f"did you mean {name}.{rest}? (a plain alias would be sent to Codex)")
+
+
 def ask(role: str, prompt: str, system: str = "",
         budget=None, route_override: str | None = None,
         max_turns: int = 1, model: str | None = None) -> str:
     cfg = _load_routing()
     chain = cfg["roles"].get(role, {}).get("chain", ["codex.default"])
+    try:
+        check_model(model)
+    except ValueError as exc:  # never fall through to Codex (mistyped_endpoint_routes_to_codex)
+        raise ModelCallError(role, "CODEX_UNAVAILABLE", message=str(exc)) from None
     if model and _is_backend(model.partition(".")[0]):
         # A backend-qualified model (openai.gpt-4o-mini) pins backend and alias.
         chain = [model]

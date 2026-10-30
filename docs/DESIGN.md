@@ -138,8 +138,9 @@ failures to network, a malformed body to protocol, and any other refusal to
 unavailable.
 
 **User endpoints** (`llm/endpoints.py`). Endpoints live in
-`llm/endpoints.local.yaml` (ignored by Git) or the file named by
-AUTORTL_ENDPOINTS; `llm/endpoints.example.yaml` shows the format. Each endpoint
+`endpoints.local.yaml` at the repository root (ignored by Git, outside the
+hashed harness folders, so editing it never makes resume refuse) or the file
+named by AUTORTL_ENDPOINTS; `llm/endpoints.example.yaml` shows the format. Each endpoint
 has a name and a kind. Names are lowercase letters, digits, `_` or `-`, start
 with a letter, have at most 32 characters, and cannot be `codex` or `openai`.
 Unknown fields are rejected. The file never holds a key, only the name of the
@@ -168,21 +169,32 @@ uses it. A plain alias (`--model <alias>`) keeps each routing entry's
 backend and replaces its alias. A value whose prefix before the first `.` names
 a built-in backend or a defined user endpoint, such as `openai.gpt-4o-mini` or
 `ollama.llama3.1`, replaces the whole chain with that one entry. Any other
-value, including a prefix that names no backend, is treated as a plain alias.
-The value must match `[A-Za-z0-9][A-Za-z0-9._:-]{0,79}`; `default` alone is
-rejected because it would be the unpinned default. The model is saved in
-config.json, and resume reads it from there.
+value is treated as a plain alias, except that a prefix within one edit of a
+backend or endpoint name (two edits for names of six or more letters, ignoring
+case), such as `olama.x`, is refused as a likely misspelling, and any dotted
+value is refused while the endpoints file is unreadable. `run.py` checks this
+before a run or resume starts and the client checks it on every call, so such a
+value is never sent to Codex (`llm.client.check_model`,
+mistyped_endpoint_routes_to_codex). The value must match
+`[A-Za-z0-9][A-Za-z0-9._:/-]{0,119}`, so hosted IDs such as
+`together.meta-llama/Llama-3.1-8B-Instruct` work (it stays one argument, never
+a path); `default` alone is rejected because it would be the unpinned default.
+The model is saved in config.json, and resume reads it from there.
 
 **Model identity in the cohort.** The bench does not read back the model name a
 backend reports (that goes only to router_stats.jsonl), so it records the
 requested model, not an observed one. Without `--model`,
 the campaign identity has `model_identity` null and status
 `unobserved_cli_default`. When every entry names the same model, it records
-that value with status `requested`. When the value's prefix names a user
-endpoint, it also records `model_endpoint_sha256`, the SHA-256 of that
-endpoint's definition, so editing the endpoint starts a new cohort. The model
-is also part of each entry's configuration in the cohort. The AUTORTL_OPENAI_*
-variables and the Codex CLI version are not part of the cohort.
+that value with status `requested`, in the campaign identity and in every
+entry's runtime_identity (entry_identity_omits_requested_model). When the
+value's prefix names a user endpoint, it also records `model_endpoint_sha256`,
+the SHA-256 of that endpoint's definition, so editing the endpoint starts a new
+cohort. For the built-in `openai` backend the digest covers
+AUTORTL_OPENAI_BASE_URL and AUTORTL_OPENAI_MODEL (never the key). An unreadable
+endpoints file at the end of a campaign is recorded, not raised. The model is
+also part of each entry's configuration in the cohort. The Codex CLI version is
+not part of the cohort.
 
 These are independent role invocations. The development-session coordinator
 and its helper agents supervise integration; persistent runtime dialogue and
@@ -237,7 +249,8 @@ the run as spec_lint_failed, and a load error is raised. A prose request is
 turned into a spec by the planner. That planner-written spec gets its lint or
 load errors back for at most `max_fix_attempts` repairs (default 3). Each repair
 prompt carries the errors and the previous spec. The planner receives at most
-1,800 characters of that feedback, so a long previous spec is cut. Each repair is a journaled
+8,000 characters of that feedback (the errors plus up to 6,000 characters of the
+previous spec), so the previous spec is not cut short (backend_configuration_rough_edges). Each repair is a journaled
 planner call charged to the budget. If errors remain, the run ends as
 spec_lint_failed with the errors in the checkpoint. The spec prompt also states
 the structural rules, such as a top_name that differs from every module name
@@ -398,7 +411,9 @@ Required checks: Python 3.12 or newer; pyyaml; vivado, xvlog, xelab and xsim
 reporting logged in; and a writable checkout. `xvlog --version` that does not
 name the Vivado Simulator is a warning. Optional checks only warn: pytest, the
 AUTORTL_OPENAI_* backend (whether the key is set, never its value) and each user
-endpoint (a command on PATH, or its key variable set). The exit code is 0 when
+endpoint (a command on PATH, or its key variable set). When one of those other
+backends is ready, the Codex checks become optional warnings
+(backend_configuration_rough_edges). The exit code is 0 when
 every required check passes and 1 otherwise.
 
 `scripts/demo.py` is a simulated walkthrough of one optimize run. It runs the

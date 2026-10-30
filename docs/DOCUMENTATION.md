@@ -238,7 +238,7 @@ Explicit resumable state machine. **Build mode:** spec (planner) -> lint -> stub
 - **Design choice: surgery output re-enters the ladder.** Nothing the Doctor writes is trusted; it is a candidate like any other.
 - **Design choice: restart preserves the best.** The working design resets to baseline; `best_v/best_m` survive | restarts are free options, never gambles.
 - **Design choice: `_infer_contract`** regexes an interface-only ModuleSpec from an existing design so optimize mode gets static interface checks without demanding a spec file from the user.
-- **Planner spec repair (`_run_build`).** A spec file that loads as a `DesignSpec` is law: a lint error returns `spec_lint_failed` and a load error is raised. Otherwise the planner writes the spec from the prose request. The outermost `{...}` of each answer is written to `design_spec.json`, loaded and linted. On lint or load errors the planner is asked again (`make_spec` with feedback: the errors plus up to 6,000 characters of the previous spec, which `make_spec` then cuts to 1,800 characters in total) up to `max_fix_attempts` times (default 3). Each attempt is a journaled planner call charged to the budget. Remaining errors end the run as `spec_lint_failed` with `lint_errors` in the checkpoint (`spec_lint_failure_skips_planner_repair`).
+- **Planner spec repair (`_run_build`).** A spec file that loads as a `DesignSpec` is law: a lint error returns `spec_lint_failed` and a load error is raised. Otherwise the planner writes the spec from the prose request. The outermost `{...}` of each answer is written to `design_spec.json`, loaded and linted. On lint or load errors the planner is asked again (`make_spec` with feedback: the errors plus up to 6,000 characters of the previous spec, which `make_spec` caps at 8,000 characters in total) up to `max_fix_attempts` times (default 3). Each attempt is a journaled planner call charged to the budget. Remaining errors end the run as `spec_lint_failed` with `lint_errors` in the checkpoint (`spec_lint_failure_skips_planner_repair`).
 - **Model pinning.** `__init__` sets `role.model = cfg.model` on the planner, generator, evaluator and timing doctor.
 - **Outcomes.** A `ModelCallError` (auth, quota or exhausted retries) ends the run as `model_blocked` with `failure_kind: infra`; changed verification evidence ends it as `infra_blocked`; exhausted call or tool budgets end it as `budget_exhausted`. None of these is a design failure.
 
@@ -264,7 +264,7 @@ Every role (planner, generator, evaluator, timing_doctor) has the chain `[codex.
 ### 4.2 client.py | one public function
 `ask(role, prompt, system, budget, route_override, max_turns, model)`: build the chain, walk it, retry, charge the budget, **record every attempt** (ts, role, entry, ok, seconds, metadata, error type) to `llm/router_stats.jsonl`, and raise `ModelCallError(role, code)` when the chain fails. Plus `extract_verilog` and `declared_latency` (reads only the selected module's real `// @latency N` annotation; ambiguous files stay unknown).
 
-- **Chain with `model`.** If the part of `model` before the first `.` is `codex`, `openai` or a defined user endpoint, the chain is exactly `[model]` (`openai.gpt-4o-mini`, `ollama.llama3.1`). Otherwise `model` replaces the alias of every routing entry and keeps its backend (`codex.<model>`). A prefix that names no backend, including a mistyped endpoint name or one in an unreadable endpoints file, is therefore passed to Codex as part of the alias. `route_override` (not reachable from the CLI) replaces the chain last.
+- **Chain with `model`.** If the part of `model` before the first `.` is `codex`, `openai` or a defined user endpoint, the chain is exactly `[model]` (`openai.gpt-4o-mini`, `ollama.llama3.1`). Otherwise `model` replaces the alias of every routing entry and keeps its backend (`codex.<model>`). Before that, `check_model(model)` refuses (as `CODEX_UNAVAILABLE`, nothing sent) a prefix within one edit of a backend or endpoint name (two for names of six or more letters, ignoring case), such as `olama.x`, and any dotted model while the endpoints file is unreadable; `run.py` runs the same check before a run or resume starts and exits 2 (`mistyped_endpoint_routes_to_codex`). `route_override` (not reachable from the CLI) replaces the chain last.
 - **Budget per attempt.** Before every attempt the client refuses when the budget is exhausted or `llm_calls >= max_llm_calls` (`RuntimeError("LLM_BUDGET: ...")`), charges one call, and caps the call timeout at the wall time left. Backoff sleeps are capped the same way.
 - **Retry split.** `CODEX_TIMEOUT` and `CODEX_NETWORK` retry on the same entry with backoff `2 ** attempt` seconds. `CODEX_AUTH` and `CODEX_QUOTA` raise `ModelCallError` at once (the run becomes `model_blocked`). Any other error moves to the next chain entry. An empty or whitespace-only answer is `CODEX_PROTOCOL`.
 - **Tokens after success.** The successful call's `meta["usage"]` is charged with `budget.charge_tokens` outside the retry handling, so a `CheckpointLockedError` from saving `budget.json` propagates unchanged (`token_save_lock_misattributed`).
@@ -285,7 +285,7 @@ Further detail: HTTP 408 maps to `CODEX_TIMEOUT` and any other non-success statu
 Any program that reads the prompt on stdin and prints the answer on stdout, used through a `kind: command` endpoint. `argv[0]` is resolved on PATH and run as an argument list (`shell=False`) from an empty temporary folder with the harness timeout. An alias other than `default` is passed as `<model_flag> <alias>`; without `model_flag` that is `CODEX_UNAVAILABLE` ("use `<name>.default`"). Model output never reaches the arguments. A timeout kills the process tree. A nonzero exit is classified from the redacted stderr tail; empty stdout is `CODEX_PROTOCOL`. It reports no token usage, so each call is counted in `calls_without_token_usage`. AutoRTL does not sandbox the command.
 
 ### 4.6 endpoints.py + endpoints.example.yaml | user endpoints
-`load()` reads `llm/endpoints.local.yaml` (ignored by Git) or the file in `AUTORTL_ENDPOINTS` (a missing file named there is an error), as YAML (or JSON without pyyaml), under a top-level `endpoints:` mapping. `_validate` enforces:
+`load()` reads `endpoints.local.yaml` at the repository root (ignored by Git, outside the harness identity) or the file in `AUTORTL_ENDPOINTS` (a missing file named there is an error), as YAML (or JSON without pyyaml), under a top-level `endpoints:` mapping. `_validate` enforces:
 
 | Field | Kind | Rule |
 |---|---|---|
@@ -419,7 +419,7 @@ One test file per harness module, plus `conftest.py` (path bootstrap) and `fixtu
 | `--max-wall-minutes` | `max_wall_minutes` | 240 | |
 | `--max-infra-retries` | `max_infra_retries` | 2 | |
 | `--proposal-feedback` / `--no-proposal-feedback` | `proposal_feedback` | off | experimental prior-proposal context |
-| `--model` | `model` | none (each backend's default) | alias for every role, or `backend.model` (`openai.<model>`, `<endpoint>.<model>`); `[A-Za-z0-9][A-Za-z0-9._:-]{0,79}`, not `default`; saved in config.json; part of the bench cohort |
+| `--model` | `model` | none (each backend's default) | alias for every role, or `backend.model` (`openai.<model>`, `<endpoint>.<model>`); `[A-Za-z0-9][A-Za-z0-9._:/-]{0,119}`, not `default`, no misspelled backend prefix; saved in config.json; part of the bench cohort |
 | `--route` | | | rejected |
 
 Budget ceilings and `--max-infra-retries` may be 0 but not negative; iterations, best-of-N and frequency must be positive.
@@ -454,7 +454,7 @@ Budget ceilings and `--max-infra-retries` may be 0 but not negative; iterations,
 | `AUTORTL_OPENAI_API_KEY` | `llm/backends/openai_http.py`, `doctor` | Required for the built-in `openai.*` backend; sent as a Bearer token, never stored or printed |
 | `AUTORTL_OPENAI_BASE_URL` | `openai_http.py`, `doctor` | Base URL of an OpenAI-compatible server; default `https://api.openai.com/v1` |
 | `AUTORTL_OPENAI_MODEL` | `openai_http.py`, `doctor` | Model used for `openai.default` |
-| `AUTORTL_ENDPOINTS` | `llm/endpoints.py` | Path of the user endpoints file instead of `llm/endpoints.local.yaml`; a missing file named here is an error |
+| `AUTORTL_ENDPOINTS` | `llm/endpoints.py` | Path of the user endpoints file instead of `endpoints.local.yaml` at the repository root; a missing file named here is an error |
 | `AUTORTL_VIVADO_BIN` | `tools/tier0_gate.py`, `scripts/check_counter_cli.py`, `hardware/basys3` tools | Vivado `bin` folder for those helpers. `run.py` and the harness do not read it; pass `--vivado/--xvlog/--xelab/--xsim` instead |
 | the variable named by an endpoint's `api_key_env` | `openai_http.py`, `doctor` | Key for that user endpoint |
 
