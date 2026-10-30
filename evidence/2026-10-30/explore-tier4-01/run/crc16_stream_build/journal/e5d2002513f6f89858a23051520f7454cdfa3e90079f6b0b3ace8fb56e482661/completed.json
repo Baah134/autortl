@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_3:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 3,
+    "instruction": "In the editable top, replace the separate `frame_crc` and `out_crc_reg` state with one 16-bit CRC register, using it for both the registered output payload and the running CRC; derive the next update\u2019s base as `16'hFFFF` after a last byte and otherwise the stored CRC. Initialize the CRC register to `16'hFFFF` and the last flag to `1` on synchronous reset so the first accepted byte starts from the required initial value; keep the one-slot ready equation, valid/ready replacement behavior, output stability while stalled, reset priority, and `// @latency 1`. The CRC and last payload are unspecifie",
+    "candidates": [
+      {
+        "iteration": 3,
+        "mutation": "standard",
+        "instruction": "In the editable top, replace the separate `frame_crc` and `out_crc_reg` state with one 16-bit CRC register, using it for both the registered output payload and the running CRC; derive the next update\u2019s base as `16'hFFFF` after a last byte and otherwise the stored CRC. Initialize the CRC register to `16'hFFFF` and the last flag to `1` on synchronous reset so the first accepted byte starts from the required initial value; keep the one-slot ready equation, valid/ready replacement behavior, output stability while stalled, reset priority, and `// @latency 1`. The CRC and last payload are unspecifie",
+        "generated_source_sha256": "aa84277565ccca236c7a5639df19d98189603b0cc0973329e43f29eddb8f0011",
+        "final_source_sha256": "aa84277565ccca236c7a5639df19d98189603b0cc0973329e43f29eddb8f0011",
+        "generated_code_hash": "fe9434fbc28a00e6",
+        "final_code_hash": "fe9434fbc28a00e6",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.449,
+          "whs_ns": 0.083,
+          "lut_used": 16,
+          "ff_used": 18,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.017,
+          "total_power_w": 0.087
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-portability\\logs\\explore-tier4-01\\crc16_stream_build\\iter_003\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-portability\\logs\\explore-tier4-01\\crc16_stream_build\\iter_003\\cand_standard\\synth.tcl",
+          "sha256": "e1843e8861dfc9161eb677e2cf364612c7f88196dd7327952f51d2ea2ac5bc45"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-portability\\logs\\explore-tier4-01\\crc16_stream_build\\iter_003\\cand_standard\\crc16_stream.v",
+          "sha256": "35a099c13c5f17c917d9aba3f4d38d75753baedd81c05736a870324764010808"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": "aa84277565ccca236c7a5639df19d98189603b0cc0973329e43f29eddb8f0011"
+  },
+  "artifacts": {}
+}

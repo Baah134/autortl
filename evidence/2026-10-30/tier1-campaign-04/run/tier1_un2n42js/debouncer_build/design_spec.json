@@ -1,0 +1,130 @@
+{
+  "top_name": "debouncer_top",
+  "modules": [
+    {
+      "name": "debouncer",
+      "behavior": "On each rising edge outside reset, track how many consecutive cycles noisy has held a value different from clean. Update clean to noisy on the eighth consecutive sample; until then clean holds its previous value. If noisy equals clean, clear the consecutive-sample count. A synchronous active-high reset asserted for five cycles sets clean to 0 and clears the count. Level-based behavior; fixed_latency 0.",
+      "ports": [
+        {
+          "name": "clk",
+          "direction": "input",
+          "width": 1,
+          "signed": false,
+          "packed_dimensions": null,
+          "clock_domain": "clk",
+          "protocol": "none"
+        },
+        {
+          "name": "rst",
+          "direction": "input",
+          "width": 1,
+          "signed": false,
+          "packed_dimensions": null,
+          "clock_domain": "clk",
+          "protocol": "none"
+        },
+        {
+          "name": "noisy",
+          "direction": "input",
+          "width": 1,
+          "signed": false,
+          "packed_dimensions": null,
+          "clock_domain": "clk",
+          "protocol": "none"
+        },
+        {
+          "name": "clean",
+          "direction": "output",
+          "width": 1,
+          "signed": false,
+          "packed_dimensions": null,
+          "clock_domain": "clk",
+          "protocol": "none"
+        }
+      ],
+      "latency": 0,
+      "compare_mode": "fixed_latency",
+      "reset": {
+        "signal": "rst",
+        "kind": "sync",
+        "active_high": true,
+        "duration_cycles": 5
+      },
+      "clock_domains": [
+        "clk"
+      ],
+      "parameters": {},
+      "examples": [
+        {
+          "inputs": {
+            "rst": [1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0],
+            "noisy": [0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1]
+          },
+          "expected": {
+            "clean": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          },
+          "after_cycles": 12
+        },
+        {
+          "inputs": {
+            "rst": [1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+            "noisy": [0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1]
+          },
+          "expected": {
+            "clean": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]
+          },
+          "after_cycles": 13
+        },
+        {
+          "inputs": {
+            "rst": [1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "noisy": [0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1]
+          },
+          "expected": {
+            "clean": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]
+          },
+          "after_cycles": 18
+        }
+      ]
+    }
+  ],
+  "connections": [],
+  "external_ports": [
+    {
+      "name": "clk",
+      "direction": "input",
+      "width": 1,
+      "signed": false,
+      "packed_dimensions": null,
+      "clock_domain": "clk",
+      "protocol": "none"
+    },
+    {
+      "name": "rst",
+      "direction": "input",
+      "width": 1,
+      "signed": false,
+      "packed_dimensions": null,
+      "clock_domain": "clk",
+      "protocol": "none"
+    },
+    {
+      "name": "noisy",
+      "direction": "input",
+      "width": 1,
+      "signed": false,
+      "packed_dimensions": null,
+      "clock_domain": "clk",
+      "protocol": "none"
+    },
+    {
+      "name": "clean",
+      "direction": "output",
+      "width": 1,
+      "signed": false,
+      "packed_dimensions": null,
+      "clock_domain": "clk",
+      "protocol": "none"
+    }
+  ]
+}

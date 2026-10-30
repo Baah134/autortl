@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_5:decision:instruction:0",
+  "result": "Keep the 32-bit `counter`, its reset, and the `counter == 32'd255` wrap branch unchanged. Replace only `pwm_out <= (counter < {24'd0, duty});` with an equivalent unsigned comparison expressed through a 9-bit subtraction or add-with-complement carry result, taking care that the result is true exactly when the current counter value is less than zero-extended `duty`. Preserve the existing `pwm_out` register and synchronous reset behavior; promotion still requires all deterministic gates and fewer than 7 routed LUTs.",
+  "artifacts": {}
+}

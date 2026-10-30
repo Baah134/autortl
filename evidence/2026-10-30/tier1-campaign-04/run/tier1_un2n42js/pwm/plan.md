@@ -1,0 +1,12 @@
+# PLAN — iteration 5
+## Current state assessment
+
+The incumbent is timing-feasible at 7 LUTs, so promotion requires a strict LUT reduction. Iteration 2 preserved behavior but stayed at 7 LUTs; iterations 3 and 4 used more. Iteration 1 tried narrowing the counter and removing its explicit wrap, so this plan keeps the counter and wrap logic intact. The top’s numeric latency is unknown, and no numeric annotation is required.
+
+## Hypothesis
+
+Expressing the unsigned duty comparison as a carry-out operation may map it to the 7-series carry chain with fewer LUTs, while preserving the registered output cycle.
+
+## Instruction for generator
+
+Keep the 32-bit `counter`, its reset, and the `counter == 32'd255` wrap branch unchanged. Replace only `pwm_out <= (counter < {24'd0, duty});` with an equivalent unsigned comparison expressed through a 9-bit subtraction or add-with-complement carry result, taking care that the result is true exactly when the current counter value is less than zero-extended `duty`. Preserve the existing `pwm_out` register and synchronous reset behavior; promotion still requires all deterministic gates and fewer than 7 routed LUTs.

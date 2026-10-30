@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "status": "qualified",
+  "qualified": true,
+  "testbench_sha256": "f88a3020cf714b9498249765ff016f5cb3fcf181f895276faffc842ddbe46a50",
+  "attempts": [
+    {
+      "label": "control",
+      "description": "unmodified control",
+      "passed": true,
+      "failure_kind": "design",
+      "error": "",
+      "assertion_detected": false,
+      "proof_reason": "simulation passed",
+      "source_sha256": "c0583e25a19a5aa1e373c12849e30402c47e8573cee92d6673a37caaeaeb00da",
+      "raw_log_sha256": "ecc134f8a205a0ae55a649fd4d1535d3a597f667a3d1d6f025c82dd43a027190"
+    },
+    {
+      "label": "mutant",
+      "description": "change increment",
+      "passed": false,
+      "failure_kind": "design",
+      "error": "Testbench failures:\nFAIL cycle=3 expected=1 got=2\nFAIL cycle=4 count changed before rising clock edge\nFAIL cycle=4 expected=2 got=4\nFAIL cycle=5 count changed before rising clock edge\nFAIL cycle=5 expected=3 got=6\nFAIL cycle=6 count changed before rising clock edge\nFAIL cycle=6 expected=4 got=8\nFAIL cycle=7 count changed before rising clock edge",
+      "assertion_detected": true,
+      "proof_reason": "raw assertion detail and failure verdict retained",
+      "source_sha256": "3559883477f7754a72c847279f622f4fd92b290d45c73d39cc7db2afec02736d",
+      "raw_log_sha256": "6dca057470dd1c83a8aecbbf328b68dabcb441334d82e244849c78bdb71830cb"
+    }
+  ],
+  "missed": [],
+  "scope": "Minimum assertion sensitivity; missed faults remain coverage limits."
+}

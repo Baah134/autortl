@@ -1,0 +1,298 @@
+{
+  "candidate_metrics": {
+    "bram_total": 50.0,
+    "bram_used": 0.0,
+    "dsp_total": 90,
+    "dsp_used": 0,
+    "dynamic_power_w": 0.017,
+    "ff_pct": 0.08173076923076923,
+    "ff_total": 41600,
+    "ff_used": 34,
+    "lut_pct": 0.07692307692307693,
+    "lut_total": 20800,
+    "lut_used": 16,
+    "reg2reg_wns_ns": 4.58,
+    "sim_error": "",
+    "sim_passed": true,
+    "synth_error": "",
+    "timing_met": true,
+    "total_power_w": 0.088,
+    "whs_ns": 0.163,
+    "wns_ns": 0.445
+  },
+  "candidate_source": {
+    "path": "C:\\Users\\prince.baah\\Downloads\\autortl-portability\\logs\\explore-tier4-01\\crc16_stream_build\\iter_002\\cand_standard\\crc16_stream.v",
+    "sha256": "4fa6dda3adc2872cec63f6370969de517c94c4ee888721a01168bf076e8c1394",
+    "text": "`timescale 1ns/1ps\r\n// @latency 1\r\nmodule crc16_stream (\r\n    input wire clk,\r\n    input wire rst,\r\n    input wire [7:0] in_data,\r\n    input wire in_last,\r\n    input wire in_valid,\r\n    output wire in_ready,\r\n    output wire [15:0] out_crc,\r\n    output wire out_last,\r\n    output wire out_valid,\r\n    input wire out_ready\r\n);\r\n    reg [15:0] frame_crc;\r\n    reg [15:0] out_crc_reg;\r\n    reg out_last_reg;\r\n    reg out_valid_reg;\r\n\r\n    wire [15:0] next_crc;\r\n\r\n    assign in_ready = !out_valid_reg || out_ready;\r\n    assign out_crc = out_crc_reg;\r\n    assign out_last = out_last_reg;\r\n    assign out_valid = out_valid_reg;\r\n\r\n    function [15:0] crc16_update;\r\n        input [15:0] state_in;\r\n        input [7:0] data_in;\r\n        reg [15:0] crc;\r\n        reg feedback;\r\n        integer i;\r\n        begin\r\n            crc = state_in ^ {data_in, 8'b0};\r\n            for (i = 0; i < 8; i = i + 1) begin\r\n                feedback = crc[15];\r\n                crc = {crc[14:0], 1'b0};\r\n                if (feedback)\r\n                    crc = crc ^ 16'h1021;\r\n            end\r\n            crc16_update = crc;\r\n        end\r\n    endfunction\r\n\r\n    assign next_crc = crc16_update(frame_crc, in_data);\r\n\r\n    always @(posedge clk) begin\r\n        if (rst) begin\r\n            frame_crc <= 16'hFFFF;\r\n            out_valid_reg <= 1'b0;\r\n        end else if (in_valid && in_ready) begin\r\n            out_crc_reg <= next_crc;\r\n            out_last_reg <= in_last;\r\n            out_valid_reg <= 1'b1;\r\n            if (in_last)\r\n                frame_crc <= 16'hFFFF;\r\n            else\r\n                frame_crc <= next_crc;\r\n        end else if (out_valid_reg && out_ready) begin\r\n            out_valid_reg <= 1'b0;\r\n        end\r\n    end\r\nendmodule",
+    "truncated": false
+  },
+  "candidate_timing_feasible": true,
+  "first_violated_path_excerpt": null,
+  "flow_and_constraints": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-portability\\logs\\explore-tier4-01\\crc16_stream_build\\iter_002\\cand_standard\\synth.tcl",
+      "sha256": "17ac35dd877e3424a3c7e136ebcdea2a111d8e52707ccaf519ca231065f0ca5e",
+      "text": "set_msg_config -id {VRFC 10-3609} -new_severity ERROR\r\nset_msg_config -id {Synth 8-9873} -new_severity ERROR\r\nset_msg_config -id {Designutils 20-1307} -new_severity ERROR\r\nset_msg_config -id {Synth 8-327} -new_severity ERROR\r\nset_msg_config -id {Synth 8-3352} -new_severity ERROR\r\nset_part xc7a35tcpg236-1\r\nread_verilog \"C:/Users/prince.baah/Downloads/autortl-portability/logs/explore-tier4-01/crc16_stream_build/iter_002/cand_standard/crc16_stream.v\" \"C:/Users/prince.baah/Downloads/autortl-portability/logs/explore-tier4-01/crc16_stream_build/modules/crc16_stream_core/crc16_stream_core.v\"\r\nset fp [open \"C:/Users/prince.baah/Downloads/autortl-portability/logs/explore-tier4-01/crc16_stream_build/iter_002/cand_standard/timing.xdc\" w]\r\nputs $fp {create_clock -period 10.000 -name clk [get_ports clk]}\r\nclose $fp\r\nread_xdc \"C:/Users/prince.baah/Downloads/autortl-portability/logs/explore-tier4-01/crc16_stream_build/iter_002/cand_standard/timing.xdc\"\r\nsynth_design -top crc16_stream -flatten_hierarchy rebuilt \r\nset fp [open \"C:/Users/prince.baah/Downloads/autortl-portability/logs/explore-tier4-01/crc16_stream_build/iter_002/cand_standard/timing_io.tcl\" w]\r\nputs $fp {set data_inputs [get_ports -filter {DIRECTION == IN && NAME != clk}]}\r\nputs $fp {if {[llength $data_inputs] > 0} {set_input_delay -clock clk -max 0.000 $data_inputs; set_input_delay -clock clk -min 0.000 $data_inputs}}\r\nputs $fp {if {[llength [all_outputs]] > 0} {set_output_delay -clock clk -max 0.000 [all_outputs]; set_output_delay -clock clk -min 0.000 [all_outputs]}}\r\nclose $fp\r\nsource \"C:/Users/prince.baah/Downloads/autortl-portability/logs/explore-tier4-01/crc16_stream_build/iter_002/cand_standard/timing_io.tcl\"\r\nreport_utilization -file \"C:/Users/prince.baah/Downloads/autortl-portability/logs/explore-tier4-01/crc16_stream_build/iter_002/cand_standard/utilization.rpt\"\r\nreport_timing_summary -file \"C:/Users/prince.baah/Downloads/autortl-portability/logs/explore-tier4-01/crc16_stream_build/iter_002/cand_standard/timing.rpt\"\r\nopt_design\r\nplace_design\r\n\r\nroute_design\r\nreport_utilization -file \"C:/Users/prince.baah/Downloads/autortl-portability/logs/explore-tier4-01/crc16_stream_build/iter_002/cand_standard/utilization_routed.rpt\"\r\nreport_timing_summary -file \"C:/Users/prince.baah/Downloads/autortl-portability/logs/explore-tier4-01/crc16_stream_build/iter_002/cand_standard/timing_routed.rpt\"\r\ncatch { if {[llength [all_registers]] > 0} { report_timing -from [all_registers] -to [all_registers] -max_paths 1 -file \"C:/Users/prince.baah/Downloads/autortl-portability/logs/explore-tier4-01/crc16_stream_build/iter_002/cand_standard/timing_reg2reg.rpt\" } }\r\nreport_design_analysis -logic_level_distribution -file \"C:/Users/prince.baah/Downloads/autortl-portability/logs/explore-tier4-01/crc16_stream_build/iter_002/cand_standard/design_analysis.rpt\"\r\nreport_power -file \"C:/Users/prince.baah/Downloads/autortl-portability/logs/explore-tier4-01/crc16_stream_build/iter_002/cand_standard/power.rpt\"\r\ncatch { report_methodology -file \"C:/Users/prince.baah/Downloads/autortl-portability/logs/explore-tier4-01/crc16_stream_build/iter_002/cand_standard/methodology.rpt\" }\r\ncatch { report_qor_suggestions -file \"C:/Users/prince.baah/Downloads/autortl-portability/logs/explore-tier4-01/crc16_stream_build/iter_002/cand_standard/qor_suggestions.rpt\" }\r\nputs \"SYNTH_COMPLETE\"\r\n",
+      "truncated": false
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-portability\\logs\\explore-tier4-01\\crc16_stream_build\\iter_002\\cand_standard\\timing.xdc",
+      "sha256": "fa142c09f0fadb5e303ca9fea08c02bc353451533e44aeee9cd9a0231cc8bede",
+      "text": "create_clock -period 10.000 -name clk [get_ports clk]\r\n",
+      "truncated": false
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-portability\\logs\\explore-tier4-01\\crc16_stream_build\\iter_002\\cand_standard\\timing_io.tcl",
+      "sha256": "6b38098841a48bbb3ab15de49d2bf2baf7e4384f599259ff5f3afa2c2b1daf00",
+      "text": "set data_inputs [get_ports -filter {DIRECTION == IN && NAME != clk}]\r\nif {[llength $data_inputs] > 0} {set_input_delay -clock clk -max 0.000 $data_inputs; set_input_delay -clock clk -min 0.000 $data_inputs}\r\nif {[llength [all_outputs]] > 0} {set_output_delay -clock clk -max 0.000 [all_outputs]; set_output_delay -clock clk -min 0.000 [all_outputs]}\r\n",
+      "truncated": false
+    }
+  ],
+  "improvement_kind": null,
+  "measured_improvement": false,
+  "metric_provenance": "Structured metrics are parsed from retained reports; routed utilization/timing reports take precedence when present. The manifest identifies complete files by hash. Header excerpts are bounded previews, not complete reports or an independent metric source.",
+  "objective": "minimize_luts",
+  "previous_best_metrics": {
+    "bram_total": 50.0,
+    "bram_used": 0.0,
+    "dsp_total": 90,
+    "dsp_used": 0,
+    "dynamic_power_w": 0.017,
+    "ff_pct": 0.08173076923076923,
+    "ff_total": 41600,
+    "ff_used": 34,
+    "lut_pct": 0.07692307692307693,
+    "lut_total": 20800,
+    "lut_used": 16,
+    "reg2reg_wns_ns": 4.907,
+    "sim_error": "",
+    "sim_passed": true,
+    "synth_error": "",
+    "timing_met": true,
+    "total_power_w": 0.088,
+    "whs_ns": 0.208,
+    "wns_ns": 0.445
+  },
+  "previous_best_timing_feasible": true,
+  "process_exit_gate": {
+    "passed": true,
+    "policy": "Every required tool's latest actual process exit must be zero with retained matching output; physical-only Doctor may reuse source-bound prior compile/simulation.",
+    "reasons": []
+  },
+  "report_headers": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-portability\\logs\\explore-tier4-01\\crc16_stream_build\\iter_002\\cand_standard\\power.rpt",
+      "sha256": "bbb899694c2442a94fc17b82968974e5b272b5007b4456711b08b7904746200b",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version     : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date             : Fri Oct 30 12:19:52 2026\r\n| Host             : Baah running 64-bit major release  (build 9200)\r\n| Command          : report_power -file C:/Users/prince.baah/Downloads/autortl-portability/logs/explore-tier4-01/crc16_stream_build/iter_002/cand_standard/power.rpt\r\n| Design           : crc16_stream\r\n| Device           : xc7a35tcpg236-1\r\n| Design State     : routed\r\n| Grade            : commercial\r\n| Process          : typical\r\n| Characterization : Production\r\n-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nPower Report\r\n\r\nTable of Contents\r\n-----------------\r\n1. Summary\r\n1.1 On-Chip Components\r\n1.2 Power Supply Summary\r\n1.3 Confidence Level\r\n2. Settings\r\n2.1 Environment\r\n2.2 Clock Constraints\r\n3. Detailed Reports\r\n3.1 By Hierarchy\r\n\r\n1. Summary\r\n----------\r\n\r\n+--------------------------+--------------+\r\n| Total On-Chip Power (W)  | 0.088        |\r\n| Design Power Budget (W)  | Unspecified* |\r\n| Power Budget Margin (W)  | NA           |\r\n| Dynamic (W)              | 0.017        |\r\n| Device Static (W)        | 0.070        |\r\n| Effective TJA (C/W)      | 5.0          |\r\n| Max Ambient (C)          | 84.6         |\r\n| Junction Temperature (C) | 25.4         |\r\n| Confidence Level         | Low          |\r\n| Setting File             | ---          |\r\n",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-portability\\logs\\explore-tier4-01\\crc16_stream_build\\iter_002\\cand_standard\\timing.rpt",
+      "sha256": "7e3080dddf39ef01994d504732b4525e588d46322f8c3cabaf14f9b2f788c055",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n---------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date         : Fri Oct 30 12:18:56 2026\r\n| Host         : Baah running 64-bit major release  (build 9200)\r\n| Command      : report_timing_summary -file C:/Users/prince.baah/Downloads/autortl-portability/logs/explore-tier4-01/crc16_stream_build/iter_002/cand_standard/timing.rpt\r\n| Design       : crc16_stream\r\n| Device       : 7a35t-cpg236\r\n| Speed File   : -1  PRODUCTION 1.23 2018-06-13\r\n| Design State : Synthesized\r\n---------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nTiming Summary Report\r\n\r\n------------------------------------------------------------------------------------------------\r\n| Timer Settings\r\n| --------------\r\n------------------------------------------------------------------------------------------------\r\n\r\n  Enable Multi Corner Analysis               :  Yes\r\n  Enable Pessimism Removal                   :  Yes\r\n  Pessimism Removal Resolution               :  Nearest Common Node\r\n  Enable Input Delay Default Clock           :  No\r\n  Enable Preset / Clear Arcs                 :  No\r\n  Disable Flight Delays                      :  No\r\n  Ignore I/O Paths                           :  No\r\n  Timing Early Launch at Borrowing Latches   :  No\r\n  Borrow Time for Max Delay Exceptions       :  Yes\r\n  Merge Timing Exceptions                    :  Yes\r\n  Inter-SLR Compensa",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-portability\\logs\\explore-tier4-01\\crc16_stream_build\\iter_002\\cand_standard\\timing_reg2reg.rpt",
+      "sha256": "94ec55ce396f2486308cf1b35fa22c38f24d02d737868cc9328bc539fb505e4c",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date         : Fri Oct 30 12:19:52 2026\r\n| Host         : Baah running 64-bit major release  (build 9200)\r\n| Command      : report_timing -from [all_registers] -to [all_registers] -max_paths 1 -file C:/Users/prince.baah/Downloads/autortl-portability/logs/explore-tier4-01/crc16_stream_build/iter_002/cand_standard/timing_reg2reg.rpt\r\n| Design       : crc16_stream\r\n| Device       : 7a35t-cpg236\r\n| Speed File   : -1  PRODUCTION 1.23 2018-06-13\r\n| Design State : Routed\r\n----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nTiming Report\r\n\r\nSlack (MET) :             4.580ns  (required time - arrival time)\r\n  Source:                 frame_crc_reg[8]/C\r\n                            (rising edge-triggered cell FDSE clocked by clk  {rise@0.000ns fall@5.000ns period=10.000ns})\r\n  Destination:            out_crc_reg_reg[12]/D\r\n                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@5.000ns period=10.000ns})\r\n  Path Group:             clk\r\n  Path Type:              Setup (Max at Slow Process Corner)\r\n  Requirement:            10.000ns  (clk rise@10.000ns - clk rise@0.000ns)\r\n  Data Path Delay:        5.269ns  (logic 1.069ns (20.289%)  route",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-portability\\logs\\explore-tier4-01\\crc16_stream_build\\iter_002\\cand_standard\\timing_routed.rpt",
+      "sha256": "1ba4e80097dbe4d14fd2b14565b014307b20f9ab13dafb609bcc0cd9deb08281",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date         : Fri Oct 30 12:19:52 2026\r\n| Host         : Baah running 64-bit major release  (build 9200)\r\n| Command      : report_timing_summary -file C:/Users/prince.baah/Downloads/autortl-portability/logs/explore-tier4-01/crc16_stream_build/iter_002/cand_standard/timing_routed.rpt\r\n| Design       : crc16_stream\r\n| Device       : 7a35t-cpg236\r\n| Speed File   : -1  PRODUCTION 1.23 2018-06-13\r\n| Design State : Routed\r\n----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nTiming Summary Report\r\n\r\n------------------------------------------------------------------------------------------------\r\n| Timer Settings\r\n| --------------\r\n------------------------------------------------------------------------------------------------\r\n\r\n  Enable Multi Corner Analysis               :  Yes\r\n  Enable Pessimism Removal                   :  Yes\r\n  Pessimism Removal Resolution               :  Nearest Common Node\r\n  Enable Input Delay Default Clock           :  No\r\n  Enable Preset / Clear Arcs                 :  No\r\n  Disable Flight Delays                      :  No\r\n  Ignore I/O Paths                           :  No\r\n  Timing Early Launch at Borrowing Latches   :  No\r\n  Borrow Time for Max Delay Exceptions       :  Yes\r\n  Merge Timing Exceptions                    :  Yes\r\n  In",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-portability\\logs\\explore-tier4-01\\crc16_stream_build\\iter_002\\cand_standard\\utilization.rpt",
+      "sha256": "bd6d4ff1e6321475fe9b393fb03a1628b0b604a3387c376ed620fa30cca788f7",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\n-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\n| Date         : Fri Oct 30 12:18:56 2026\n| Host         : Baah running 64-bit major release  (build 9200)\n| Command      : report_utilization -file C:/Users/prince.baah/Downloads/autortl-portability/logs/explore-tier4-01/crc16_stream_build/iter_002/cand_standard/utilization.rpt\n| Design       : crc16_stream\n| Device       : xc7a35tcpg236-1\n| Speed File   : -1\n| Design State : Synthesized\n-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n\nUtilization Design Information\n\nTable of Contents\n-----------------\n1. Slice Logic\n1.1 Summary of Registers by Type\n2. Memory\n3. DSP\n4. IO and GT Specific\n5. Clocking\n6. Specific Feature\n7. Primitives\n8. Black Boxes\n9. Instantiated Netlists\n\n1. Slice Logic\n--------------\n\n+-------------------------+------+-------+------------+-----------+-------+\n|        Site Type        | Used | Fixed | Prohibited | Available | Util% |\n+-------------------------+------+-------+------------+-----------+-------+\n| Slice LUTs*             |   16 |     0 |          0 |     20800 |  0.08 |\n|   LUT as Logic          |   16 |     0 |          0 |     20800 |  0.08 |\n|   LUT as Memory         |    0 |     0 |          0 |      9600 |  0.00 |\n| Slice Registers         |   34 |     0 |          0 |     41600 |  0.08 |\n|   Register as Flip Flop |   34 |     0 |    ",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-portability\\logs\\explore-tier4-01\\crc16_stream_build\\iter_002\\cand_standard\\utilization_routed.rpt",
+      "sha256": "9822d6cf84f2f367722e43ae5775c96acc994f98a6c2535fb3bbac050326be33",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\n------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\n| Date         : Fri Oct 30 12:19:52 2026\n| Host         : Baah running 64-bit major release  (build 9200)\n| Command      : report_utilization -file C:/Users/prince.baah/Downloads/autortl-portability/logs/explore-tier4-01/crc16_stream_build/iter_002/cand_standard/utilization_routed.rpt\n| Design       : crc16_stream\n| Device       : xc7a35tcpg236-1\n| Speed File   : -1\n| Design State : Routed\n------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n\nUtilization Design Information\n\nTable of Contents\n-----------------\n1. Slice Logic\n1.1 Summary of Registers by Type\n2. Slice Logic Distribution\n3. Memory\n4. DSP\n5. IO and GT Specific\n6. Clocking\n7. Specific Feature\n8. Primitives\n9. Black Boxes\n10. Instantiated Netlists\n\n1. Slice Logic\n--------------\n\n+-------------------------+------+-------+------------+-----------+-------+\n|        Site Type        | Used | Fixed | Prohibited | Available | Util% |\n+-------------------------+------+-------+------------+-----------+-------+\n| Slice LUTs              |   16 |     0 |          0 |     20800 |  0.08 |\n|   LUT as Logic          |   16 |     0 |          0 |     20800 |  0.08 |\n|   LUT as Memory         |    0 |     0 |          0 |      9600 |  0.00 |\n| Slice Registers         |   34 |     0 |          0 |     41600 |  0.08 |\n|",
+      "truncated": true
+    }
+  ],
+  "report_manifest": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-portability\\logs\\explore-tier4-01\\crc16_stream_build\\iter_002\\cand_standard\\power.rpt",
+      "sha256": "bbb899694c2442a94fc17b82968974e5b272b5007b4456711b08b7904746200b"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-portability\\logs\\explore-tier4-01\\crc16_stream_build\\iter_002\\cand_standard\\timing.rpt",
+      "sha256": "7e3080dddf39ef01994d504732b4525e588d46322f8c3cabaf14f9b2f788c055"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-portability\\logs\\explore-tier4-01\\crc16_stream_build\\iter_002\\cand_standard\\timing_reg2reg.rpt",
+      "sha256": "94ec55ce396f2486308cf1b35fa22c38f24d02d737868cc9328bc539fb505e4c"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-portability\\logs\\explore-tier4-01\\crc16_stream_build\\iter_002\\cand_standard\\timing_routed.rpt",
+      "sha256": "1ba4e80097dbe4d14fd2b14565b014307b20f9ab13dafb609bcc0cd9deb08281"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-portability\\logs\\explore-tier4-01\\crc16_stream_build\\iter_002\\cand_standard\\utilization.rpt",
+      "sha256": "bd6d4ff1e6321475fe9b393fb03a1628b0b604a3387c376ed620fa30cca788f7"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-portability\\logs\\explore-tier4-01\\crc16_stream_build\\iter_002\\cand_standard\\utilization_routed.rpt",
+      "sha256": "9822d6cf84f2f367722e43ae5775c96acc994f98a6c2535fb3bbac050326be33"
+    }
+  ],
+  "tool_exit_evidence": {
+    "history_count": 5,
+    "latest_by_tool": {
+      "vivado": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-portability\\logs\\explore-tier4-01\\crc16_stream_build\\iter_002\\cand_standard\\vivado_synth_output.log",
+        "output_log_sha256": "b4b83de1c2925e195d11d18cb3f5500f35d535240c0da771a3c29970957b402d",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xelab": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-portability\\logs\\explore-tier4-01\\crc16_stream_build\\iter_002\\cand_standard\\xelab.log",
+        "output_log_sha256": "a78dd50e01644e70c4efdb5840166d2d258430f96055191b7649e632fcbb4130",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xsim": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-portability\\logs\\explore-tier4-01\\crc16_stream_build\\iter_002\\cand_standard\\xsim.log",
+        "output_log_sha256": "1365952510038f8eb6901b0a61dd6edb23c5909b1632325aa4bac8d6ddf22b6f",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xvlog": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-portability\\logs\\explore-tier4-01\\crc16_stream_build\\iter_002\\cand_standard\\xvlog.log",
+        "output_log_sha256": "de71f950a08997816337a0d141d0361ac6b6daf676d49b5eb8d76502aac0d848",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      }
+    },
+    "missing_required_tools": [],
+    "path": "C:\\Users\\prince.baah\\Downloads\\autortl-portability\\logs\\explore-tier4-01\\crc16_stream_build\\iter_002\\cand_standard\\tool_exit_records.log",
+    "records": [
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-portability\\logs\\explore-tier4-01\\crc16_stream_build\\iter_002\\cand_standard",
+        "driver_returncode": 0,
+        "elapsed_seconds": 2.4369999999180436,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xvlog.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-portability\\logs\\explore-tier4-01\\crc16_stream_build\\iter_002\\cand_standard\\xvlog.log",
+        "output_log_sha256": "33f32c9b3052c90591bdaf28aab76d6770fc3c1ad7eed24236125233e870b708",
+        "pid": 24176,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xvlog"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-portability\\logs\\explore-tier4-01\\crc16_stream_build\\iter_002\\cand_standard",
+        "driver_returncode": 0,
+        "elapsed_seconds": 2.702999999979511,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xvlog.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-portability\\logs\\explore-tier4-01\\crc16_stream_build\\iter_002\\cand_standard\\xvlog.log",
+        "output_log_sha256": "de71f950a08997816337a0d141d0361ac6b6daf676d49b5eb8d76502aac0d848",
+        "pid": 29268,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xvlog"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-portability\\logs\\explore-tier4-01\\crc16_stream_build\\iter_002\\cand_standard",
+        "driver_returncode": 0,
+        "elapsed_seconds": 3.75,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xelab.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-portability\\logs\\explore-tier4-01\\crc16_stream_build\\iter_002\\cand_standard\\xelab.log",
+        "output_log_sha256": "a78dd50e01644e70c4efdb5840166d2d258430f96055191b7649e632fcbb4130",
+        "pid": 14144,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xelab"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-portability\\logs\\explore-tier4-01\\crc16_stream_build\\iter_002\\cand_standard",
+        "driver_returncode": 0,
+        "elapsed_seconds": 4.905999999959022,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xsim.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-portability\\logs\\explore-tier4-01\\crc16_stream_build\\iter_002\\cand_standard\\xsim.log",
+        "output_log_sha256": "1365952510038f8eb6901b0a61dd6edb23c5909b1632325aa4bac8d6ddf22b6f",
+        "pid": 9468,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xsim"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-portability\\logs\\explore-tier4-01\\crc16_stream_build\\iter_002\\cand_standard",
+        "driver_returncode": 0,
+        "elapsed_seconds": 163.85900000005495,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/vivado.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-portability\\logs\\explore-tier4-01\\crc16_stream_build\\iter_002\\cand_standard\\vivado_synth_output.log",
+        "output_log_sha256": "b4b83de1c2925e195d11d18cb3f5500f35d535240c0da771a3c29970957b402d",
+        "pid": 20968,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "vivado"
+      }
+    ],
+    "schema_valid": true,
+    "sha256": "2aff115b53ceb6c644ef085716243a8b7b2a930b119c956ae37c906432758baf",
+    "status": "recorded",
+    "truncated": false
+  },
+  "verification_logs": [
+    {
+      "head": "INFO: [VRFC 10-2263] Analyzing Verilog file \"C:/Users/prince.baah/Downloads/autortl-portability/logs/explore-tier4-01/crc16_stream_build/iter_002/cand_standard/crc16_stream.v\" into library work\r\nINFO: [VRFC 10-311] analyzing module crc16_stream\r\nINFO: [VRFC 10-2263] Analyzing Verilog file \"C:/Users/prince.baah/Downloads/autortl-portability/logs/explore-tier4-01/crc16_stream_build/modules/crc16_stream_core/crc16_stream_core.v\" into library work\r\nINFO: [VRFC 10-311] analyzing module crc16_stream_core\r\nINFO: [VRFC 10-2263] Analyzing Verilog file \"C:/Users/prince.baah/Downloads/autortl-portability/logs/explore-tier4-01/crc16_stream_build/inputs/testbench_path.v\" into library work\r\nINFO: [VRFC 10-311] analyzing module crc16_stream_tb\r\n\r\n",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-portability\\logs\\explore-tier4-01\\crc16_stream_build\\iter_002\\cand_standard\\xvlog.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "de71f950a08997816337a0d141d0361ac6b6daf676d49b5eb8d76502aac0d848",
+      "tail": "",
+      "truncated": false
+    },
+    {
+      "head": "Vivado Simulator v2025.2\r\nCopyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\nCopyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\nRunning: C:/AMDDesignTools/2025.2/Vivado/bin/unwrapped/win64.o/xelab.exe crc16_stream_tb -s crc16_stream_tb_snap --debug off \r\nMulti-threading is on. Using 10 slave threads.\r\nStarting static elaboration\r\nPass Through NonSizing Optimizer\r\nCompleted static elaboration\r\nStarting simulation data flow analysis\r\nCompleted simulation data flow analysis\r\nTime Resolution for simulation is 1ps\r\nCompiling module work.crc16_stream\r\nCompiling module work.crc16_stream_tb\r\nBuilt simulation snapshot crc16_stream_tb_snap\r\n\r\n",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-portability\\logs\\explore-tier4-01\\crc16_stream_build\\iter_002\\cand_standard\\xelab.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "a78dd50e01644e70c4efdb5840166d2d258430f96055191b7649e632fcbb4130",
+      "tail": "",
+      "truncated": false
+    },
+    {
+      "head": "\r\n****** xsim v2025.2 (64-bit)\r\n  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025\r\n  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025\r\n  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025\r\n  **** Start of session at: Fri Oct 30 12:17:08 2026\r\n    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\n    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n\r\nsource xsim.dir/crc16_stream_tb_snap/xsim_script.tcl\r\n# xsim {crc16_stream_tb_snap} -autoloadwcfg -runall\r\nTime resolution is 1 ps\r\nrun -all\r\nCOVERAGE cycles=1733 accepted=1053 retired=1051 aborted=2 frames=144 single=25 long=12 stalls=376 replaces=836 noise=370 blocked=305 mid_frame_resets=3 occupied_resets=2 pulses=4\r\nTEST PASSED\r\n$finish called at time : 17336 ns : File \"C:/Users/prince.baah/Downloads/autortl-portability/logs/explore-tier4-01/crc16_stream_build/inputs/testbench_path.v\" Line 242\r\nexit\r\nINFO: [Common 17-206] Exiting xsim at Fri Oct 30 12:17:11 2026...\r\n\r\n",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-portability\\logs\\explore-tier4-01\\crc16_stream_build\\iter_002\\cand_standard\\sim_log.txt",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "1365952510038f8eb6901b0a61dd6edb23c5909b1632325aa4bac8d6ddf22b6f",
+      "tail": "",
+      "truncated": false
+    },
+    {
+      "head": "\r\n****** Vivado v2025.2 (64-bit)\r\n  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025\r\n  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025\r\n  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025\r\n  **** Start of session at: Fri Oct 30 12:17:14 2026\r\n    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\n    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n\r\nsource C:/Users/prince.baah/Downloads/autortl-portability/logs/explore-tier4-01/crc16_stream_build/iter_002/cand_standard/synth.tcl\r\n# set_msg_config -id {VRFC 10-3609} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-9873} -new_severity ERROR\r\n# set_msg_config -id {Designutils 20-1307} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-327} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-3352} -new_severity ERROR\r\n# set_part xc7a35tcpg236-1\r\nINFO: [Coretcl 2-1500] The part has been set to 'xc7a35tcpg236-1' for the current project only. Run set_part -help for more details. To evaluate different speed grades in the current design, use the set_speed_grade command, or use the open_checkpoint -part command to change the part used by an existing checkpoint design.\r\nset_part: Time (s): cpu = 00:00:21 ; elapsed = 00:00:16 . Memory (MB): peak = 531.539 ; gain = 225.520\r\n# read_verilog \"C:/Users/prince.baah/Downloads/autortl-portability/logs/explore-tier4-01/crc16_stream_build/iter_002/cand_standard/crc16_stream.v\" \"C:/Users/prince.baah/Downloads/autortl-portability/logs/explore-tier4-01/crc16_stream_build/modules/crc16_stream_core/crc16_stream_core.v\"\r\n# set fp [open \"C:/Users/prince.baah/Downloads/autortl-portability/logs/explore-tier4-01/crc16_stream_build/iter_002/cand_standard/timing.xdc\" w]\r\n# puts $fp {create_clock -period 10.000 -name clk [get_ports clk]}\r\n# close ",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-portability\\logs\\explore-tier4-01\\crc16_stream_build\\iter_002\\cand_standard\\vivado_synth_output.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "b4b83de1c2925e195d11d18cb3f5500f35d535240c0da771a3c29970957b402d",
+      "tail": "er.rpt\r\nRunning Vector-less Activity Propagation...\r\n\r\nFinished Running Vector-less Activity Propagation\r\n0 Infos, 0 Warnings, 0 Critical Warnings and 0 Errors encountered.\r\nreport_power completed successfully\r\n# catch { report_methodology -file \"C:/Users/prince.baah/Downloads/autortl-portability/logs/explore-tier4-01/crc16_stream_build/iter_002/cand_standard/methodology.rpt\" }\r\nCommand: report_methodology -file C:/Users/prince.baah/Downloads/autortl-portability/logs/explore-tier4-01/crc16_stream_build/iter_002/cand_standard/methodology.rpt\r\nINFO: [Timing 38-35] Done setting XDC timing constraints.\r\nINFO: [DRC 23-133] Running Methodology with 2 threads\r\nINFO: [Vivado_Tcl 2-1520] The results of Report Methodology are in file C:/Users/prince.baah/Downloads/autortl-portability/logs/explore-tier4-01/crc16_stream_build/iter_002/cand_standard/methodology.rpt.\r\nreport_methodology completed successfully\r\n# catch { report_qor_suggestions -file \"C:/Users/prince.baah/Downloads/autortl-portability/logs/explore-tier4-01/crc16_stream_build/iter_002/cand_standard/qor_suggestions.rpt\" }\r\nCommand: report_qor_suggestions -file C:/Users/prince.baah/Downloads/autortl-portability/logs/explore-tier4-01/crc16_stream_build/iter_002/cand_standard/qor_suggestions.rpt\r\nCongestion Prediction Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.011 . Memory (MB): peak = 2002.629 ; gain = 0.000\r\nINFO: [Implflow 47-1309] PredResultString: 1:44.94:55.06\r\nfeatureProvider Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.042 . Memory (MB): peak = 2002.629 ; gain = 0.000\r\nINFO: [Implflow 47-1274] ML strategy prediction is not supported for 7-series devices.\r\nreport_qor_suggestions completed successfully\r\n# puts \"SYNTH_COMPLETE\"\r\nSYNTH_COMPLETE\r\nINFO: [Common 17-206] Exiting Vivado at Fri Oct 30 12:19:54 2026...\r\n\r\n",
+      "truncated": true
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_3:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 3\n## Contract check\n- Top interface and latency annotation: PASS \u2014 ports are preserved, and `// @latency 33` matches the known top latency.\n- Companion instantiation boundary: PASS \u2014 `spi_master_core` is instantiated unconditionally and drives the top outputs.\n- Deterministic verification: PASS \u2014 ladder reports ALIVE at all 5 rungs; simulation passed.\n- Build, timing, and metric gates: PASS \u2014 required tools exited successfully; routed metrics show timing met, WNS 0.343 ns and WHS 0.14 ns.\n- Objective improvement: FAIL \u2014 candidate and previous best both use 25 LUTs; with both timing-feasible, strict LUT reduction is required.\n## Summary\n- Passed: 4 of 5\n- Failed: 1 of 5\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate satisfies the interface, latency, verification, and timing gates, but it does not improve the chosen objective: LUT use remains equal to the timing-feasible previous best, and no strict reduction is recorded.",
+      "recommendation": "REJECT",
+      "passed": 4,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}
