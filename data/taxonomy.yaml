@@ -482,6 +482,21 @@ harness_failures:
   missing_sync_reset_pulse_stimulus:
     meaning: "Startup-only reset stimulus missed asynchronous history and validity changes under a synchronous-reset contract"
     repair: "Pulse reset wholly between sampling edges for synchronous contracts only; retain oracle and queue state and compare normal transfers after deassertion"
+  mistyped_endpoint_routes_to_codex:
+    meaning: "A model whose backend prefix was misspelled (olama.x for ollama.x), or any dotted model while the endpoints file was unreadable, was silently treated as a plain alias and sent to Codex as codex.olama.x (docs review, Oct 29)"
+    repair: "Resolve the model before the run starts and again on every call: a dotted model with an unreadable endpoints file, or a prefix within one edit (two for names of six or more letters) of a built-in backend or defined endpoint, is a configuration error naming the near match; nothing is sent to Codex"
+  command_endpoint_tokens_reported_as_zero:
+    meaning: "Command endpoints return no usage, so budget.json and the run reports showed zero tokens for runs that spent real tokens, indistinguishable from a run that used none (docs review, Oct 29)"
+    repair: "Count successful calls whose backend reported no usable usage as calls_without_token_usage in budget.json and show the token totals as incomplete when it is nonzero; never invent an estimate"
+  maximize_freq_ranks_on_pad_delay:
+    meaning: "maximize_freq compared timing-feasible candidates on the full I/O-constrained WNS, which mostly measures OBUF pad delay, so a candidate with much better logic timing could lose or tie on a pad path it cannot change (docs review, Oct 29; follows io_dominated_timing_metric)"
+    repair: "Keep acceptance, feasibility, infeasible ranking and timing_progress on the full wns_ns/whs_ns; only the maximize_freq objective comparison between two timing-feasible verified designs uses reg2reg_wns_ns when both have a finite value, otherwise wns_ns for both (never mixed), in improvement_kind, best-of-N selection and the fixed contract wording"
+  dead_bench_lock_blocks_until_stale:
+    meaning: "A bench killed inside the history commit left results.jsonl.lock, and every bench in the next ten minutes still exited 3 although the lock's owner was gone (docs review, Oct 29; follows stale_history_lock_blocks_benches)"
+    repair: "Write the owning process ID into the lock; a lock whose recorded owner is no longer running (checked without signalling it, OpenProcess on Windows) is stale at once; a lock with no readable owner keeps the ten-minute rule"
+  gate_jobs_zero_silently_serial:
+    meaning: "tools/tier0_gate.py accepted --jobs 0 or a negative value and quietly ran the bench one entry at a time instead of rejecting the argument (docs review, Oct 29; follows backend_configuration_rough_edges)"
+    repair: "Validate --jobs as a positive integer in argparse for every tool that takes it, so 0 is a usage error before anything runs"
 
 methodology:
   "TIMING-6":
