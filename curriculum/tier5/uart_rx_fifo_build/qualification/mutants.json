@@ -1,0 +1,22 @@
+[
+  {"name": "single_flop_sync", "why": "the synchronizer has one flop, so every decision happens one cycle early",
+   "find": "sync2 <= sync1; // second_flop", "replace": "sync2 <= rx; // second_flop"},
+  {"name": "center_sample_only", "why": "each bit is the centre sample alone; one corrupted centre vote flips the bit",
+   "find": "wire majority = (vote_a & vote_b) | (vote_a & sync2) | (vote_b & sync2);", "replace": "wire majority = vote_b;"},
+  {"name": "msb_first", "why": "data bits are assembled MSB first, so every byte arrives bit-reversed",
+   "find": "shift <= {majority, shift[7:1]}; // lsb_first", "replace": "shift <= {shift[6:0], majority}; // lsb_first"},
+  {"name": "stop_bit_ignored", "why": "a low stop bit still delivers the byte and never reports a framing error",
+   "find": "if (majority) begin // stop_ok", "replace": "if (1'b1) begin // stop_ok"},
+  {"name": "no_false_start_reject", "why": "a short low glitch starts a frame that delivers a spurious 0xFF byte",
+   "find": "if (majority) busy <= 1'b0; // false_start", "replace": "if (1'b0) busy <= 1'b0; // false_start"},
+  {"name": "samples_one_tick_late", "why": "the three votes sit one oversample tick late (8D, 9D, 10D)",
+   "find": "localparam CENTER = 8 * TICK;", "replace": "localparam CENTER = 9 * TICK;"},
+  {"name": "divider_ignored", "why": "hard-codes the default of 2 clk cycles per oversample tick",
+   "find": "localparam TICK = OVERSAMPLE_DIV;", "replace": "localparam TICK = 2;"},
+  {"name": "fifo_full_rejects_simultaneous_pop", "why": "a full FIFO drops a byte written at the same edge as a pop and reports overflow",
+   "find": "wire push = wr_en && ((count != DEPTH) || pop);", "replace": "wire push = wr_en && (count != DEPTH);"},
+  {"name": "frame_error_counter_wraps", "why": "the framing-error counter wraps from 15 to 0 instead of saturating",
+   "find": "if (ferr_in && ferr_count != 4'd15)", "replace": "if (ferr_in)"},
+  {"name": "top_overflow_counter_miswired", "why": "the integration counts framing errors as overflows",
+   "find": ".ovf_in(w_rx_fifo_overflow)", "replace": ".ovf_in(w_uart_rx_core_frame_err)"}
+]
