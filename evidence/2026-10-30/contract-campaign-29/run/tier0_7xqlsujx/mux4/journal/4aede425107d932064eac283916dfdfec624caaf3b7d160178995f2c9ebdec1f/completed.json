@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_1:decision:instruction:0",
+  "result": "Replace the `case (sel)` data selection with an explicit balanced 2:1 mux tree, first selecting between `a`/`b` and `c`/`d` using `sel[0]`, then selecting between those results using `sel[1]`. Keep the existing synchronous active-high reset to zero and the single clocked assignment to `y`; preserve all ports and cycle behavior. The proposed benefit is fewer than 8 routed LUTs; retain the candidate only if it passes every deterministic gate, has WNS and WHS at least zero, and strictly improves LUT count.",
+  "artifacts": {}
+}
