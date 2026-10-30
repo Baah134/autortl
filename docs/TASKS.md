@@ -798,6 +798,33 @@ whole-harness review fixes on claude/tier2-prep, taxonomy entries first:
 10. A crashed bench leaves results.jsonl.lock (exit 3 until deleted by hand).
 11. `--jobs 0` raises a traceback instead of an argparse error.
 
+**Status (October30, Claude Code, branch harness-open-items).** Checked in the
+code, not the list. Already done before this batch (backend_configuration_rough_edges,
+entry_identity_omits_requested_model, stale_history_lock_blocks_benches); this
+batch only corrected DESIGN/DOCUMENTATION where they still described the old
+behavior:
+1. Done earlier: the model regex allows "/" (up to 120 characters).
+2. Runner half done earlier (guarded load). **Done now:** `llm.client.check_model`
+   refuses a near-miss backend prefix and any dotted model with an unreadable
+   endpoints file, in run.py (exit 2) and on every call (mistyped_endpoint_routes_to_codex).
+3. Done earlier: the openai base URL and default model are digested into the cohort.
+4. Done earlier: every entry's runtime_identity carries the requested model.
+5. Done earlier: the default endpoints file is `endpoints.local.yaml` at the repository root.
+6. Done earlier: make_spec caps feedback at 8,000 characters.
+7. **Done now:** budget.json counts `calls_without_token_usage` (no invented
+   estimate); role_report and run_view mark the totals incomplete
+   (command_endpoint_tokens_reported_as_zero).
+8. Done earlier: Codex checks become optional when another backend is ready.
+9. **Done now:** maximize_freq compares reg2reg_wns_ns between feasible designs
+   when both report it, else wns_ns for both (`objectives.objective_field`, used
+   by improvement_kind, best-of-N select and the contract); feasibility and
+   infeasible ranking stay on wns_ns (maximize_freq_ranks_on_pad_delay).
+10. Age rule existed (ten minutes). **Done now:** the lock records its PID and a
+    lock whose owner is no longer running is replaced at once
+    (dead_bench_lock_blocks_until_stale).
+11. run.py and explore.py were done earlier. **Done now:** tier0_gate.py validates
+    `--jobs` as a positive integer in argparse (gate_jobs_zero_silently_serial).
+
 ## October30 (Claude Code): companion boundary decision (from Codex's review)
 
 Codex's resume-fsm-stage proposes that when a trusted testbench instantiates

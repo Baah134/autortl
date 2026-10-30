@@ -113,6 +113,51 @@ def test_a_stale_lock_is_replaced_but_a_fresh_one_still_blocks(curriculum):  # n
     assert len(records()) == 1 and not lock.exists()
 
 
+def _finished_process_id():
+    import subprocess, sys
+    child = subprocess.Popen([sys.executable, "-c", "pass"])
+    child.wait()
+    return child.pid
+
+
+def test_a_fresh_lock_whose_owner_died_is_replaced_at_once(curriculum):  # noqa: F811
+    # dead_bench_lock_blocks_until_stale: no ten-minute wait after a crashed bench.
+    _, _, output = curriculum
+    lock = runner.RESULTS.with_name(runner.RESULTS.name + ".lock")
+    lock.parent.mkdir(parents=True, exist_ok=True)
+    lock.write_text(str(_finished_process_id()))
+    assert runner.run_tier(0, output_root=output) == 0
+    assert len(records()) == 1 and not lock.exists()
+
+
+def test_a_fresh_lock_whose_owner_runs_still_blocks(curriculum):  # noqa: F811
+    import subprocess, sys
+    _, _, output = curriculum
+    lock = runner.RESULTS.with_name(runner.RESULTS.name + ".lock")
+    lock.parent.mkdir(parents=True, exist_ok=True)
+    owner = subprocess.Popen([sys.executable, "-c", "import time; time.sleep(60)"])
+    try:
+        lock.write_text(str(owner.pid))
+        assert runner.run_tier(0, output_root=output) == 3
+        assert not runner.RESULTS.exists() and lock.read_text() == str(owner.pid)
+        assert owner.poll() is None  # the check never signals or ends the owner
+    finally:
+        owner.kill()
+        owner.wait()
+
+
+def test_process_liveness_and_lock_owner_parsing(tmp_path):
+    import os
+    assert runner._process_running(os.getpid())
+    assert not runner._process_running(_finished_process_id())
+    lock = tmp_path / "x.lock"
+    runner._take_lock(lock)
+    assert runner._lock_owner(lock) == os.getpid()
+    for text in ("", "abc", "0", "-5", "99999999999", "12 34"):
+        lock.write_text(text)
+        assert runner._lock_owner(lock) is None  # unreadable owner: the age rule decides
+
+
 def test_every_entry_records_the_requested_model(curriculum):  # noqa: F811
     _, _, output = curriculum
     assert runner.run_tier(0, output_root=output, model="gpt-6-luna") == 0

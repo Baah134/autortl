@@ -248,7 +248,9 @@ def run_evidence(cfg, baseline, sources, tb, directory, execution_context, *, bu
                             "timing-infeasible, a verified still-infeasible candidate with strictly better setup WNS "
                             "and hold not worse beyond a small tolerance may replace it as timing_progress, which is "
                             "not closure; a feasible candidate always outranks it. Once both are timing-feasible, "
-                            "require strict improvement of the chosen objective. Unknown or contradictory incumbent "
+                            "require strict improvement of the chosen objective; for maximize_freq that is "
+                            "register-to-register setup slack (reg2reg_wns_ns) when both designs report it, otherwise "
+                            "full setup WNS for both, while feasibility stays on full WNS and WHS. Unknown or contradictory incumbent "
                             "timing evidence cannot establish recovery. A completed experiment may find no improvement. "
                             "Do not invent mandatory savings, slack margins, tool versions, timing corners, "
                             "new tests, thresholds, code-style quotas or external environment requirements.",
@@ -275,7 +277,10 @@ def render_fixed_optimize_contract(evidence: dict) -> str:
     objectives = {
         "minimize_luts": ("lut_used", "strictly lower"),
         "minimize_ffs": ("ff_used", "strictly lower"),
-        "maximize_freq": ("wns_ns", "strictly higher at the same clock period"),
+        # maximize_freq_ranks_on_pad_delay: compare logic timing, not pad delay, when both report it.
+        "maximize_freq": ("reg2reg_wns_ns (register-to-register setup slack) when both designs report "
+                          "a finite value, otherwise wns_ns for both, never mixed",
+                          "strictly higher at the same clock period"),
         "minimize_power": ("dynamic_power_w", "strictly lower"),
     }
     field, direction = objectives[evidence["objective"]]

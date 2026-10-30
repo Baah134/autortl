@@ -27,6 +27,9 @@ class Budget:
         self.llm_calls = 0
         self.vivado_seconds = 0.0
         self.tokens = dict.fromkeys(TOKEN_KEYS, 0)  # reported by the model CLI; accounting only
+        # Successful calls whose backend reported no usage (command endpoints never do), so
+        # zero tokens is not read as zero use (command_endpoint_tokens_reported_as_zero).
+        self.calls_without_token_usage = 0
         self.start = time.time()
         self.state_path = Path(state_path) if state_path else None
         if self.state_path and self.state_path.exists():
@@ -48,6 +51,10 @@ class Budget:
                 if type(value) is not int or value < 0:
                     raise ValueError("invalid saved token count")
                 self.tokens[key] = value
+            unreported = d.get("calls_without_token_usage", 0)  # absent in older budgets
+            if type(unreported) is not int or unreported < 0:
+                raise ValueError("invalid saved count of calls without token usage")
+            self.calls_without_token_usage = unreported
 
     def charge_llm(self, n: int = 1) -> None:
         if type(n) is not int or n < 0:
@@ -56,14 +63,26 @@ class Budget:
         self._save()
 
     def charge_tokens(self, usage) -> None:
-        """Add one call's reported usage; malformed or missing usage adds nothing."""
-        if not isinstance(usage, dict):
-            return
-        for key in TOKEN_KEYS:
-            value = usage.get(key)
-            if type(value) is int and value > 0:
-                self.tokens[key] += value
+        """Add one successful call's reported usage.
+
+        Malformed or missing usage adds no tokens and is counted in
+        calls_without_token_usage instead, so the totals say they are incomplete.
+        """
+        reported = False
+        if isinstance(usage, dict):
+            for key in TOKEN_KEYS:
+                value = usage.get(key)
+                if type(value) is int and value >= 0:
+                    reported = True
+                    self.tokens[key] += value
+        if not reported:
+            self.calls_without_token_usage += 1
         self._save()
+
+    @property
+    def tokens_complete(self) -> bool:
+        """True when every successful call reported its usage."""
+        return self.calls_without_token_usage == 0
 
     def charge_vivado(self, seconds: float) -> None:
         if type(seconds) not in (int, float) or not math.isfinite(seconds) or seconds < 0:
@@ -112,4 +131,5 @@ class Budget:
                 "vivado_seconds": self.vivado_seconds,
                 "elapsed": self.wall_minutes * 60,
                 "tokens": dict(self.tokens),
+                "calls_without_token_usage": self.calls_without_token_usage,
             }))

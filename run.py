@@ -111,6 +111,13 @@ def main(argv=None):
             if key in kw and (not math.isfinite(kw[key]) or kw[key] < 0):
                 ap.error(f"{key} cannot be negative")
 
+    # Resolve the model before anything runs (mistyped_endpoint_routes_to_codex).
+    from llm.client import check_model
+    try:
+        check_model(cfg.model if a.cmd == "resume" else kw.get("model"))
+    except ValueError as exc:
+        ap.error(str(exc))
+
     if a.cmd == "bench":
         from curriculum.runner import run_tier
         if hasattr(a, "output_dir"):

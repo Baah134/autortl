@@ -93,12 +93,24 @@ def bench_command(python, out, tier=0, model=None, jobs=1, vivado=None):
     return args
 
 
+def positive_int(text):
+    """argparse type: 0 or a negative count is a usage error (gate_jobs_zero_silently_serial)."""
+    try:
+        value = int(text)
+    except ValueError:
+        raise argparse.ArgumentTypeError(f"invalid int value: {text!r}") from None
+    if value < 1:
+        raise argparse.ArgumentTypeError("must be at least 1")
+    return value
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--name", required=True)
     parser.add_argument("--python", default=sys.executable)
     parser.add_argument("--tier", type=int, choices=sorted(TIER_BUDGETS), default=0)
-    parser.add_argument("--jobs", type=int, default=1, help="bench entries run at once (not part of the cohort)")
+    parser.add_argument("--jobs", type=positive_int, default=1,
+                        help="bench entries run at once (not part of the cohort)")
     parser.add_argument("--model", default=None,
                         help="model alias pinned for every role (recorded in the cohort); default: the CLI default")
     parser.add_argument("--vivado-bin", help="Vivado bin folder (default: $AUTORTL_VIVADO_BIN, else %s)" % VIVADO)

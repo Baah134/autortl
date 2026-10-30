@@ -7,7 +7,7 @@ weighted table per objective: mostly objective-aligned, one wildcard always.
 from __future__ import annotations
 from dataclasses import dataclass, field
 import hashlib
-from .objectives import timing_feasible, timing_infeasible
+from .objectives import objective_field, timing_feasible, timing_infeasible
 import math
 
 MUTATIONS = {
@@ -67,6 +67,7 @@ def select(cands: list[Candidate], objective: str) -> Candidate | None:
     Known timing-infeasible candidates rank among themselves by setup WNS (the
     measure timing_progress promotion uses), never above a feasible one;
     candidates with unknown timing rank last by the objective as before.
+    For maximize_freq, feasible candidates rank by objective_field.
     """
     alive = [c for c in cands if c.alive]
     if not alive:
@@ -84,10 +85,16 @@ def select(cands: list[Candidate], objective: str) -> Candidate | None:
             return value if type(value) in (int, float) and math.isfinite(value) else float("inf")
         except (TypeError, ValueError, OverflowError):
             return float("inf")
+    feasible_metric = key_metric
+    if objective == "maximize_freq":
+        # Feasible designs compare on reg2reg slack only when all of them report it,
+        # otherwise all on wns_ns (maximize_freq_ranks_on_pad_delay).
+        field = objective_field(objective, *(c.metrics for c in alive if timing_feasible(c.metrics)))
+        feasible_metric = lambda m: -m.get(field, -10**9)
     def rank(c):
         feasible = timing_feasible(c.metrics)
         if feasible:
-            return (-c.ladder_rungs_passed, 0, score(c.metrics, key_metric), len(c.verilog))
+            return (-c.ladder_rungs_passed, 0, score(c.metrics, feasible_metric), len(c.verilog))
         if timing_infeasible(c.metrics):  # known failing timing: closest to closure first
             return (-c.ladder_rungs_passed, 1, score(c.metrics, setup_metric), len(c.verilog))
         return (-c.ladder_rungs_passed, 2, score(c.metrics, key_metric), len(c.verilog))

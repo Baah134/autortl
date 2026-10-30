@@ -72,10 +72,29 @@ def timing_progress(new, best) -> bool:
             and new_hold >= best_hold - HOLD_PROGRESS_TOLERANCE_NS)
 
 
+REG2REG_FIELD = "reg2reg_wns_ns"
+
+
+def objective_field(objective: str, *designs) -> str:
+    """The metric the objective compares among timing-feasible verified designs.
+
+    Full I/O-constrained WNS mostly measures pad delay (io_dominated_timing_metric),
+    so maximize_freq compares register-to-register setup slack, but only when
+    every compared design reports a finite value; otherwise it uses wns_ns for
+    all of them, never a mix (maximize_freq_ranks_on_pad_delay). Feasibility,
+    acceptance and infeasible ranking always stay on wns_ns/whs_ns.
+    """
+    field = _OBJECTIVES[objective][0]
+    if objective == "maximize_freq" and designs and all(_finite(_get(d, REG2REG_FIELD)) for d in designs):
+        return REG2REG_FIELD
+    return field
+
+
 def improvement_kind(new, best, objective: str, *, progress: bool = False) -> str | None:
     """Return timing_recovery, objective, timing_progress, or None; unknown evidence never wins.
 
     Timing recovery is a feasibility improvement, not a resource/power saving.
+    The objective comparison between two feasible designs uses objective_field.
     With progress=True, a verified but still-infeasible candidate that improves
     on an infeasible incumbent (see timing_progress) returns timing_progress.
     The caller still enforces source, testbench, report and process-exit integrity.
@@ -95,6 +114,10 @@ def improvement_kind(new, best, objective: str, *, progress: bool = False) -> st
         return None
     if previous_timing is False:
         return "timing_recovery"
+    field = objective_field(objective, new, best)
+    new_value = _get(new,field)
+    if not _finite(new_value) or new_value < 0:
+        return None
     previous_value = _get(best,field)
     if not _finite(previous_value) or previous_value < 0:
         return None

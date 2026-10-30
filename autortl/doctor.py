@@ -130,7 +130,7 @@ def workspace_check(root):
 
 
 def endpoint_checks():
-    """User endpoints from llm/endpoints.local.yaml (or AUTORTL_ENDPOINTS); all optional."""
+    """User endpoints from endpoints.local.yaml at the repository root (or AUTORTL_ENDPOINTS); all optional."""
     from llm import endpoints
     try:
         defined = endpoints.load()
