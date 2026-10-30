@@ -181,6 +181,9 @@ harness_failures:
   infeasible_incumbent_blocks_recovery:
     meaning: "A smaller timing-invalid incumbent or candidate outranks a timing-closed design"
     repair: "Require verified timing feasibility before objective comparison; record timing recovery separately from area or power gain"
+  infeasible_progress_discarded:
+    meaning: "With a timing-infeasible incumbent (fir8 seed WNS -9.918 ns at 100 MHz), verified candidates that were still infeasible but much closer (WNS -3.797, -2.766) were all rejected because none met timing, so every iteration restarted from the seed and the run exhausted its budget without retaining any progress"
+    repair: "While the incumbent is timing-infeasible, promote a verified, still-infeasible candidate with strictly better setup WNS and hold not worse beyond a small tolerance as timing_progress so the next iteration builds on it; a timing-feasible candidate always outranks an infeasible one, a feasible incumbent is never replaced by an infeasible candidate, and final timing_closed and curriculum acceptance still require closure"
   missing_editable_hierarchy_boundary:
     meaning: "An optimizer redeclared frozen companion RTL because generation and repair omitted dependency evidence"
     repair: "Provide the editable top and immutable companion identities to generation, repair and timing surgery; keep duplicate-module rejection"
