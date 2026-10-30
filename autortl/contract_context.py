@@ -258,7 +258,10 @@ def run_evidence(cfg, baseline, sources, tb, directory, execution_context, *, bu
                             "not closure; a feasible candidate always outranks it. Once both are timing-feasible, "
                             "require strict improvement of the chosen objective; for maximize_freq that is "
                             "register-to-register setup slack (reg2reg_wns_ns) when both designs report it, otherwise "
-                            "full setup WNS for both, while feasibility stays on full WNS and WHS. Unknown or contradictory incumbent "
+                            "full setup WNS for both, while feasibility stays on full WNS and WHS. minimize_luts compares "
+                            "(lut_used, ff_used) and minimize_ffs compares (ff_used, lut_used) lexicographically: an equal "
+                            "primary metric with a strictly lower secondary is an objective improvement, a higher primary "
+                            "never is, and a secondary missing from either design gives no tie-break. Unknown or contradictory incumbent "
                             "timing evidence cannot establish recovery. A completed experiment may find no improvement. "
                             "Do not invent mandatory savings, slack margins, tool versions, timing corners, "
                             "new tests, thresholds, code-style quotas or external environment requirements.",
@@ -282,16 +285,22 @@ def render_fixed_optimize_contract(evidence: dict) -> str:
     hashes and actual constraints identify the measurement environment. This is
     deliberately a fixed policy, not a model-authored set of acceptance goals.
     """
+    # equal_lut_ff_saving_discarded: the resource objectives compare lexicographically.
+    lexicographic = lambda primary, secondary: (
+        f"({primary}, {secondary}) compared lexicographically",
+        f"strictly lower {primary}, or equal {primary} with strictly lower {secondary},",
+        f"Higher {primary} is never an objective improvement. When either design lacks a "
+        f"finite {secondary}, only strictly lower {primary} counts. ")
     objectives = {
-        "minimize_luts": ("lut_used", "strictly lower"),
-        "minimize_ffs": ("ff_used", "strictly lower"),
+        "minimize_luts": lexicographic("lut_used", "ff_used"),
+        "minimize_ffs": lexicographic("ff_used", "lut_used"),
         # maximize_freq_ranks_on_pad_delay: compare logic timing, not pad delay, when both report it.
         "maximize_freq": ("reg2reg_wns_ns (register-to-register setup slack) when both designs report "
                           "a finite value, otherwise wns_ns for both, never mixed",
-                          "strictly higher at the same clock period"),
-        "minimize_power": ("dynamic_power_w", "strictly lower"),
+                          "strictly higher at the same clock period", ""),
+        "minimize_power": ("dynamic_power_w", "strictly lower", ""),
     }
-    field, direction = objectives[evidence["objective"]]
+    field, direction, objective_note = objectives[evidence["objective"]]
     identity = lambda item: {"path": item["path"], "sha256": item["sha256"]}
     fixed = {
         "top_module": evidence["top_module"], "part": evidence["part"],
@@ -398,7 +407,7 @@ def render_fixed_optimize_contract(evidence: dict) -> str:
         "still infeasible has not closed timing. Once both designs are timing-feasible, "
         f"objective {evidence['objective']} maps to {field}: require {direction} "
         "than the previous verified best, under the same device, clock and "
-        "constraints. No minimum percentage gain or extra slack margin is imposed. "
+        "constraints. " + objective_note + "No minimum percentage gain or extra slack margin is imposed. "
         "Final evaluator ACCEPT with zero failed criteria and all deterministic "
         "promotion gates are required. DONE describes a completed experiment; "
         "best_iteration 0 retains the baseline and claims no accepted improvement. "

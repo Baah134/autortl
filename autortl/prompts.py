@@ -159,6 +159,7 @@ PLAN = """Plan iteration {iteration} of an FPGA optimisation loop.
 # Verified incumbent measurements (may describe a different source from the generation seed)
 LUTs={lut_used} FFs={ff_used} WNS={wns_ns}ns DSP={dsp_used} BRAM={bram_used}
 Register-to-register WNS (excludes I/O pad delay; not a timing gate; maximize_freq compares it between timing-feasible designs that both report it): {reg2reg}
+Between timing-feasible designs, minimize_luts compares (LUTs, FFs) and minimize_ffs compares (FFs, LUTs) lexicographically: at an equal primary count, strictly fewer of the secondary is an improvement; a higher primary count never is.
 # Actual generation seed (write instructions for this source)
 ```verilog
 {generation_seed}
@@ -265,7 +266,11 @@ recorded improvement_kind is timing_progress (verified, still infeasible, strict
 better setup WNS, hold not worse beyond a small tolerance), the unmet timing is
 not a failed criterion for this comparison; it is progress, not closure. Once both
 incumbent and candidate are timing-feasible, require strict improvement of the
-chosen objective. Never reject a valid timing recovery solely for higher area
+chosen objective. minimize_luts compares (LUTs, FFs) and minimize_ffs compares
+(FFs, LUTs) lexicographically: an equal primary count with strictly fewer of the
+secondary is an objective improvement (recorded improvement_kind objective), so
+never reject it for an unchanged primary count; a higher primary count is never
+an improvement. Never reject a valid timing recovery solely for higher area
 or power, and never reject valid timing progress solely for higher area, power
 or still-negative slack. Extra savings or slack margins are advisory goals, not mandatory gates. Do not invent missing
 measurements or change the provided testbench, latency, constraints or tools.
