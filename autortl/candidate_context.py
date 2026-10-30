@@ -18,6 +18,9 @@ Only the editable top module named below may be replaced. Return its RTL only.
 Companion files/modules are frozen and already compiled alongside your output:
 do not redeclare, replace, rename or modify them. You may instantiate them, or
 inline equivalent logic INSIDE the editable top while preserving its contract.
+Inlining by itself saves nothing: synthesis flattens the hierarchy, so a
+verbatim copy of a child routes to the same design. Inline only to make a
+logic change across the boundary, such as sharing or removing state.
 Preserve observable cycles, reset behavior, parameter/interface semantics and
 clock usage. Do not add clocks or change latency to obtain timing closure.
 The module inventory is advisory context, not a semantic acceptance result.

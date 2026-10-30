@@ -142,6 +142,12 @@ harness_failures:
   spec_lint_failure_skips_planner_repair:
     meaning: "In build mode from a prose request, the planner named the top after its only module, which the prompt never forbade; structural lint rejected the spec and the run ended at once with spec_lint_failed, with no feedback round (tier1-campaign-01 debouncer_build)"
     repair: "State the structural rules (top_name differs from every module name, binding rules) in the spec prompt; give a planner-written spec its lint or load errors back for at most max_fix_attempts repairs; a supplied JSON spec stays law and fails at once"
+  spec_example_values_skip_planner_repair:
+    meaning: "The planner wrote spec examples as per-cycle lists instead of held integer values; structural lint did not check example values, so the run ended at golden qualification with invalid_spec_examples and no repair round (tier1-campaign-04 debouncer_build)"
+    repair: "Check a planner-written spec's examples with the oracle's own validate_examples inside the spec-repair loop and return the errors to the planner; state in the spec prompt that every example value is a single integer held constant for after_cycles steps from the reset state"
+  hierarchy_inlining_as_optimization:
+    meaning: "With frozen children, the planner proposed copying a child's logic into the editable top unchanged; Vivado flattens hierarchy during synthesis, so the routed design and its metrics were identical and the iteration was spent for nothing (explore-tier4-01: 2 of 5 rr_regfile and crc16_stream proposals)"
+    repair: "Tell the planner and the candidate boundary that inlining by itself changes nothing after synthesis; inline only to make a stated logic change across the boundary, such as sharing or removing state or simplifying a cross-module path"
   unpinned_model_identity:
     meaning: "Runs called the Codex CLI default model without naming it, and the CLI does not report the model, so a change of the desktop default would silently change the model inside one cohort"
     repair: "Let a run name its model (RunConfig.model, run.py --model); route every role through it, save it in config.json, and record it as the requested model identity in the bench cohort"

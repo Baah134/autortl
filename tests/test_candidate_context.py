@@ -107,3 +107,10 @@ def test_actual_rtl_role_calls_append_immutable_context_without_signature_change
     assert call.call_args.kwargs["budget"] is None
     if method=="surgery":
         assert call.call_args.kwargs["max_turns"]==3
+
+
+def test_boundary_and_planner_say_inlining_alone_saves_nothing():
+    # hierarchy_inlining_as_optimization (explore-tier4-01)
+    from autortl import prompts
+    assert "Inlining by itself saves nothing" in candidate_context._HEADER
+    assert "synthesis flattens the hierarchy" in prompts.PLAN

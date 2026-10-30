@@ -77,6 +77,9 @@ must be true. An absent annotation in an existing optimization source is a
 separate case and must never be interpreted as zero cycles.
 Every module MUST include 2-3 concrete examples. Keep modules under ~60 lines
 of eventual Verilog each; split anything bigger.
+Each example holds its inputs constant for after_cycles clock steps, starting
+from the reset state, then checks the expected outputs; every inputs and
+expected value is a single integer, never a per-cycle list.
 Each example runs the Python reference for after_cycles steps inside a fixed
 sandbox budget, so keep every after_cycles at or below 2000. For long-period
 designs (for example a UART bit lasting hundreds of cycles), make each example
@@ -179,7 +182,10 @@ extra behavioral requirements. Use retained trial evidence to avoid repeating an
 unchanged failed experiment. Prior proposal outcomes are advisory observations,
 not new contract requirements. Name a concrete change from an already tried
 proposal when appropriate; identical RTL remains valid for different physical
-settings, and a new source hash alone does not establish an improvement."""
+settings, and a new source hash alone does not establish an improvement.
+Moving a frozen child's logic into the editable top unchanged is not an
+optimization: synthesis flattens the hierarchy and routes the same design.
+Inline only together with a named logic change across the boundary."""
 
 RESTART_PLAN = """The loop has stalled ({stall_count} iterations without improvement).
 # Contract

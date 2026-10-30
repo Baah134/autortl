@@ -512,6 +512,9 @@ class Orchestrator:
             try:
                 spec = DesignSpec.load(self.state.spec_path)
                 errs = lint_spec(spec)
+                if generated:  # spec_example_values_skip_planner_repair
+                    errs += [f"module {m.name}: {e}" for m in spec.modules
+                             for e in validate_examples(m, require_anchors=True)]
             except (ValueError, KeyError, TypeError, AttributeError) as exc:
                 if not generated:
                     raise
