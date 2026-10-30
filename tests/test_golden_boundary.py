@@ -53,15 +53,15 @@ def test_child_receives_only_minimal_environment(tmp_path, monkeypatch):
     assert kw["timeout"] <= 30
 
 
-def test_timeout_is_reported_as_error(tmp_path, monkeypatch):
+def test_timeout_is_reported_as_infrastructure_error(tmp_path, monkeypatch):
     monkeypatch.setattr(golden.subprocess, "run", Mock(side_effect=subprocess.TimeoutExpired("oracle", 1)))
-    with pytest.raises(ValueError, match="timed out"):
+    with pytest.raises(golden.GoldenTimeoutError, match="timed out"):
         model(tmp_path).run([{"x": 1}])
 
 
 def test_infinite_loop_exhausts_instruction_budget_in_child(tmp_path):
     source = 'def init():\n    while True:\n        pass\ndef step(state, inputs):\n    return state, {"y": 0}'
-    with pytest.raises(ValueError, match="budget|timed out"):
+    with pytest.raises((ValueError, golden.GoldenTimeoutError), match="budget|timed out"):
         model(tmp_path, source).run([{}])
 
 
