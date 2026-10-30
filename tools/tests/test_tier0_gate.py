@@ -121,6 +121,16 @@ def test_jobs_are_passed_only_when_parallel(tmp_path):
     assert gate.bench_command("PY", tmp_path, tier=1, jobs=4)[-2:] == ["--jobs", "4"]
 
 
+@pytest.mark.parametrize("jobs", ["0", "-2", "two"])
+def test_jobs_below_one_is_a_usage_error_before_anything_runs(tmp_path, monkeypatch, capsys, jobs):
+    # gate_jobs_zero_silently_serial: previously --jobs 0 quietly ran one entry at a time.
+    monkeypatch.setattr(gate, "ROOT", tmp_path)
+    with pytest.raises(SystemExit) as exit_info:
+        gate.main(["--name", "gate-03", "--jobs", jobs])
+    assert exit_info.value.code == 2 and "--jobs" in capsys.readouterr().err
+    assert not (tmp_path / "logs").exists()
+
+
 def test_agent_worktrees_are_not_part_of_the_identity(tmp_path):
     for rel in ("run.py", ".claude/skills/s/SKILL.md", ".claude/worktrees/agent-1/autortl/fsm.py"):
         path = tmp_path / rel

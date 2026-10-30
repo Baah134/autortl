@@ -34,3 +34,13 @@ def test_an_existing_exploration_is_never_overwritten(tmp_path, monkeypatch):
     (tmp_path / "logs" / "x").mkdir(parents=True)
     with pytest.raises(SystemExit, match="never overwritten"):
         explore.main(["--tier", "2", "--name", "x"])
+
+
+def test_jobs_zero_is_a_usage_error(tmp_path, monkeypatch, capsys):
+    # backend_configuration_rough_edges, gate_jobs_zero_silently_serial
+    import pytest
+    monkeypatch.setattr(explore, "ROOT", tmp_path)
+    with pytest.raises(SystemExit) as exit_info:
+        explore.main(["--tier", "2", "--name", "y", "--jobs", "0"])
+    assert exit_info.value.code == 2 and "--jobs" in capsys.readouterr().err
+    assert not (tmp_path / "logs").exists()
