@@ -139,6 +139,9 @@ harness_failures:
   evaluator_verdict_format_rejects_verified_gain:
     meaning: "An evaluator wrote its verdict as 'Recommendation: ACCEPT', '**Recommendation:** ACCEPT' or '**ACCEPT**' instead of the heading-newline form; the parser read REJECT, so a deterministically verified improvement was discarded"
     repair: "Read the first verdict token after a Recommendation heading or label, ignoring emphasis and punctuation; keep the count-consistency and unresolved-criterion vetoes unchanged"
+  payload_ports_tagged_valid_ready:
+    meaning: "The planner tagged a scoreboard FIFO's payload ports (in_data, out_data) protocol valid_ready, so no protocol none output was left for examples to check; the error said only 'all data output ports' and three repairs repeated the mistake (explore-tier3-02 uart_fifo_build)"
+    repair: "Name the required protocol none outputs in the example error and state in the spec prompt that only handshake ports are valid_ready and payload ports are none"
   spec_lint_failure_skips_planner_repair:
     meaning: "In build mode from a prose request, the planner named the top after its only module, which the prompt never forbade; structural lint rejected the spec and the run ended at once with spec_lint_failed, with no feedback round (tier1-campaign-01 debouncer_build)"
     repair: "State the structural rules (top_name differs from every module name, binding rules) in the spec prompt; give a planner-written spec its lint or load errors back for at most max_fix_attempts repairs; a supplied JSON spec stays law and fails at once"

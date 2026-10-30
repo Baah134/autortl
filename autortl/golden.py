@@ -96,7 +96,10 @@ def validate_examples(spec: ModuleSpec, *, require_anchors=False) -> list[str]:
         if not isinstance(given, dict) or not set(given).issubset(inputs):
             errors.append(label + ": inputs must contain only declared non-clock input ports")
         if not isinstance(expected, dict) or not expected or set(expected) != set(outputs):
-            errors.append(label + ": expected must cover exactly all data output ports and be nonempty")
+            # payload_ports_tagged_valid_ready: name the ports so a planner can repair.
+            errors.append(label + ": expected must cover exactly all data output ports and be nonempty"
+                          f" (data outputs are the protocol none outputs: {sorted(outputs) or 'none declared'};"
+                          " tag only valid/ready handshake ports valid_ready, payload ports none)")
         for mapping, ports, kind in ((given,inputs,"input"),(expected,outputs,"expected")):
             if isinstance(mapping, dict):
                 for name, value in mapping.items():

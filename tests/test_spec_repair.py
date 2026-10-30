@@ -107,3 +107,16 @@ def test_per_cycle_example_lists_go_back_to_the_planner(tmp_path, monkeypatch):
 
 def test_spec_prompt_states_example_values_are_held_integers():
     assert "never a per-cycle list" in prompts.SPEC_PROMPT
+
+
+def test_example_error_names_the_data_outputs_and_the_prompt_states_the_tagging_rule():
+    # payload_ports_tagged_valid_ready (explore-tier3-02 uart_fifo_build)
+    from autortl.golden import validate_examples
+    from autortl.spec import DesignSpec
+    spec = DesignSpec.from_json(GOOD)
+    module = spec.modules[0]
+    module.examples[0].expected = {}
+    names = sorted(p.name for p in module.ports if p.direction == "output" and p.protocol == "none")
+    errors = validate_examples(module)
+    assert any(str(names) in e and "payload ports none" in e for e in errors)
+    assert "payload ports such as in_data and out_data are protocol none" in prompts.SPEC_PROMPT

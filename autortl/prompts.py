@@ -66,6 +66,9 @@ Output ONLY JSON matching this schema (no commentary):
                     "dst_module": str, "dst_port": str}}],
   "external_ports": [ports of the top level] }}
 
+Protocol valid_ready marks only handshake ports (in_valid, in_ready, out_valid,
+out_ready); payload ports such as in_data and out_data are protocol none.
+Example expected values list exactly the protocol none outputs.
 Port signed is an optional boolean (default false). packed_dimensions is optional
 null (legacy descending [width-1:0], scalar for width 1) or a list of [left,right]
 integer bound pairs, for example [[0,7]] or [[1,0],[3,0]]. Preserve direction and
