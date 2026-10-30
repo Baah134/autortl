@@ -63,7 +63,12 @@ supported schema and limits.
 4. **Best-of-N (N=4)** with objective-weighted mutation prompts (bestofn.py),
    hash dedupe, deterministic selection: (rungs, timing feasibility, objective
    metric, brevity). A verified timing recovery can use more resources; it is
-   recorded separately from objective savings.
+   recorded separately from objective savings. While the incumbent is still
+   timing-infeasible, a verified infeasible candidate with strictly better setup
+   WNS (hold no worse than 0.05 ns) replaces it as `timing_progress`, and
+   infeasible candidates rank by setup WNS; a feasible design always outranks an
+   infeasible one, and progress is never closure (`timing_closed` stays false and
+   curriculum acceptance still fails; taxonomy `infeasible_progress_discarded`).
 5. **Error taxonomy** keyed on official Vivado message IDs
    (data/taxonomy.yaml). Unknown IDs: query Vivado's own help, log for
    curation. Severity promotion only — never demote.

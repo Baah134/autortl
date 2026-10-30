@@ -961,12 +961,15 @@ class Orchestrator:
                 candidate_path = idir / f"cand_{winner.mutation}" / f"{cfg.top_module}.v"
             if candidate_path.read_text(encoding="utf-8") != winner.verilog:
                 raise ValueError("Candidate source does not match evaluation evidence")
+            # timing_progress: an infeasible incumbent may yield to a verified,
+            # still-infeasible candidate with better setup WNS (never to a feasible incumbent).
+            comparison_kind = improvement_kind(wm, best_m, cfg.objective, progress=True)
             candidate_facts = {
                 "candidate_source": file_evidence(candidate_path),
                 **flow_evidence(wdir),
                 "candidate_metrics": wm.to_dict(), "previous_best_metrics": best_m.to_dict(),
-                "objective": cfg.objective, "measured_improvement": self._is_better(wm, best_m),
-                "improvement_kind": improvement_kind(wm, best_m, cfg.objective),
+                "objective": cfg.objective, "measured_improvement": comparison_kind is not None,
+                "improvement_kind": comparison_kind,
                 "candidate_timing_feasible": timing_feasible(wm),
                 "previous_best_timing_feasible": timing_feasible(best_m),
             }
@@ -1005,10 +1008,11 @@ class Orchestrator:
             if fresh:
                 last_advisor = fresh
 
-            comparison_kind = improvement_kind(wm, best_m, cfg.objective)
             improved = comparison_kind is not None
+            timing_ok = comparison_kind == "timing_progress" or (
+                wm.timing_met is True and wm.wns_ns >= 0 and wm.whs_ns >= 0)
             is_best = (receipt_gate["passed"] and ev.recommendation == "ACCEPT" and ev.failed == 0 and improved
-                       and wm.timing_met is True and wm.wns_ns >= 0 and wm.whs_ns >= 0)
+                       and timing_ok)
             if is_best:
                 best_v, best_m, best_iter = winner.verilog, wm, it
                 best_artifact_dir = wdir
@@ -1071,7 +1075,9 @@ class Orchestrator:
         best_path = state.run_dir / f"{cfg.top_module}_best.v"
         summary = {"status": "done", "best_iteration": best_iter,
                    "timing_closed": timing_feasible(best_m),
-                   "improvement_kind": improvement_kind(best_m, baseline, cfg.objective) if best_iter > 0 else None,
+                   # An infeasible later best can only come from timing_progress; it is not closure.
+                   "improvement_kind": (None if best_iter == 0 else "timing_progress" if not timing_feasible(best_m)
+                                        else improvement_kind(best_m, baseline, cfg.objective)),
                    "top_module": cfg.top_module,
                    "best_metrics": best_m.to_dict(),
                    "baseline_metrics": baseline.to_dict(),

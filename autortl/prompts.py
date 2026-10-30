@@ -250,10 +250,15 @@ and immutable run facts. Judge improvement from those metrics and the recorded
 improvement_kind. A verified candidate with timing_met=true, nonnegative setup
 and hold may replace a known timing-infeasible previous best even if area/power
 is equal or higher: timing_recovery is feasibility recovery, not resource savings.
-Unknown or contradictory timing evidence cannot establish recovery. Once both
+Unknown or contradictory timing evidence cannot establish recovery. While the
+previous best is still timing-infeasible, timing progress counts: when the
+recorded improvement_kind is timing_progress (verified, still infeasible, strictly
+better setup WNS, hold not worse beyond a small tolerance), the unmet timing is
+not a failed criterion for this comparison; it is progress, not closure. Once both
 incumbent and candidate are timing-feasible, require strict improvement of the
 chosen objective. Never reject a valid timing recovery solely for higher area
-or power. Extra savings or slack margins are advisory goals, not mandatory gates. Do not invent missing
+or power, and never reject valid timing progress solely for higher area, power
+or still-negative slack. Extra savings or slack margins are advisory goals, not mandatory gates. Do not invent missing
 measurements or change the provided testbench, latency, constraints or tools.
 Use authoritative declared_latency for the current top's annotation requirement.
 If known=false, do not reject or demand investigation solely because the top has

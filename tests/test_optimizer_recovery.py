@@ -122,6 +122,74 @@ def test_full_loop_promotes_higher_area_timing_recovery_and_done_replays(tmp_pat
     assert resumed.run() == result
 
 
+# taxonomy: infeasible_progress_discarded. fir8 seed -9.918 ns; verified candidates -3.797/-2.766 ns were discarded.
+PROGRESS_2 = WINNER.replace("y=1", "y=rst")
+PROGRESS_3 = WINNER.replace("y=1", "y=~rst")
+
+
+def progress_loop(tmp_path, monkeypatch, iterations, slack):
+    """slack: iteration -> (wns, whs, timing_met); iteration 0 is the baseline."""
+    cfg = configuration(tmp_path); cfg.max_iterations = iterations
+    o = fsm.Orchestrator(cfg, tmp_path / "run")
+    install_models(o); install_tools(monkeypatch)
+    generate = Mock(side_effect=[WINNER, PROGRESS_2, PROGRESS_3][:iterations])
+    monkeypatch.setattr(o.generator, "generate", generate)
+    def metrics(work):
+        it = next(int(p[5:]) for p in work.parts if p.startswith("iter_"))
+        wns, whs, met = slack[it]
+        return VivadoMetrics(sim_passed=True, lut_used=13 + it, lut_total=100, ff_used=6, ff_total=200,
+                             wns_ns=wns, whs_ns=whs, timing_met=met)
+    monkeypatch.setattr(fsm.vivado, "full_metrics", metrics)
+    return o, generate
+
+
+def test_infeasible_progress_is_retained_but_never_counts_as_closure(tmp_path, monkeypatch):
+    from curriculum.runner import _accepted
+    o, generate = progress_loop(tmp_path, monkeypatch, 2,
+        {0: (-9.918, .05, False), 1: (-3.797, .05, False), 2: (-5.0, .05, False)})
+    result = o.run()
+    designs = o.state.read_designs()
+    assert [(d["iteration"], d["is_best"], d.get("improvement_kind")) for d in designs] == [
+        (0, True, None), (1, True, "timing_progress"), (2, False, None)]
+    # The next iteration builds on the progress candidate, not the seed.
+    assert generate.call_args_list[1].args[1] == WINNER
+    facts = json.loads((o.state.run_dir / "iter_001/evaluation_facts.json").read_text())
+    assert facts["improvement_kind"] == "timing_progress" and facts["measured_improvement"] is True
+    assert not facts["candidate_timing_feasible"] and not facts["previous_best_timing_feasible"]
+    worse = json.loads((o.state.run_dir / "iter_002/evaluation_facts.json").read_text())
+    assert worse["improvement_kind"] is None and worse["measured_improvement"] is False
+    assert result["status"] == "done" and result["best_iteration"] == 1
+    assert result["timing_closed"] is False and result["improvement_kind"] == "timing_progress"
+    assert result["best_metrics"]["wns_ns"] == -3.797
+    assert (o.state.run_dir / "m_best.v").read_text() == WINNER
+    assert _accepted(result, {}) == (False, "timing closure failed")
+    resumed = fsm.Orchestrator(RunConfig.load(o.state.run_dir / "config.json"), o.state.run_dir)
+    install_models(resumed, forbidden=True)
+    assert resumed.run() == result
+
+
+def test_feasible_candidate_after_progress_is_timing_recovery(tmp_path, monkeypatch):
+    from curriculum.runner import _accepted
+    o, generate = progress_loop(tmp_path, monkeypatch, 3,
+        {0: (-9.918, .05, False), 1: (-3.797, .05, False), 2: (-2.766, .04, False), 3: (.1, .05, True)})
+    result = o.run()
+    assert [d.get("improvement_kind") for d in o.state.read_designs()] == [
+        None, "timing_progress", "timing_progress", "timing_recovery"]
+    assert [call.args[1] for call in generate.call_args_list] == [SOURCE, WINNER, PROGRESS_2]
+    assert result["best_iteration"] == 3 and result["timing_closed"] is True
+    assert result["improvement_kind"] == "timing_recovery"
+    assert _accepted(result, {}) == (True, "mandatory gates passed")
+
+
+def test_infeasible_candidate_never_replaces_feasible_incumbent_in_loop(tmp_path, monkeypatch):
+    o, generate = progress_loop(tmp_path, monkeypatch, 2,
+        {0: (-9.918, .05, False), 1: (.1, .05, True), 2: (-.01, .5, False)})
+    result = o.run()
+    assert [(d["is_best"], d.get("improvement_kind")) for d in o.state.read_designs()] == [
+        (True, None), (True, "timing_recovery"), (False, None)]
+    assert result["best_iteration"] == 1 and result["timing_closed"] is True
+
+
 def test_compile_repair_journal_replay_does_not_repeat_model_fix(tmp_path, monkeypatch):
     cfg = configuration(tmp_path); cfg.max_fix_attempts = 1
     o = fsm.Orchestrator(cfg, tmp_path / "run")

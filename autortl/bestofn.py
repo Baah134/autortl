@@ -7,7 +7,7 @@ weighted table per objective: mostly objective-aligned, one wildcard always.
 from __future__ import annotations
 from dataclasses import dataclass, field
 import hashlib
-from .objectives import timing_feasible
+from .objectives import timing_feasible, timing_infeasible
 import math
 
 MUTATIONS = {
@@ -62,24 +62,34 @@ def dedupe(cands: list[Candidate]) -> list[Candidate]:
 
 
 def select(cands: list[Candidate], objective: str) -> Candidate | None:
-    """Rank by completed rungs, timing feasibility, objective, then code length."""
+    """Rank by completed rungs, timing feasibility, objective, then code length.
+
+    Known timing-infeasible candidates rank among themselves by setup WNS (the
+    measure timing_progress promotion uses), never above a feasible one;
+    candidates with unknown timing rank last by the objective as before.
+    """
     alive = [c for c in cands if c.alive]
     if not alive:
         return None
+    setup_metric = lambda m: -m.get("wns_ns", -10**9)
     key_metric = {
         "minimize_luts":  lambda m: m.get("lut_used", 10**9),
         "minimize_ffs":   lambda m: m.get("ff_used", 10**9),
-        "maximize_freq":  lambda m: -m.get("wns_ns", -10**9),
+        "maximize_freq":  setup_metric,
         "minimize_power": lambda m: m.get("dynamic_power_w", 10**9),
     }.get(objective, lambda m: m.get("lut_used", 10**9))
-    def objective_score(metrics):
+    def score(metrics, metric):
         try:
-            value = key_metric(metrics)
+            value = metric(metrics)
             return value if type(value) in (int, float) and math.isfinite(value) else float("inf")
         except (TypeError, ValueError, OverflowError):
             return float("inf")
-    alive.sort(key=lambda c: (-c.ladder_rungs_passed,
-                              not timing_feasible(c.metrics),
-                              objective_score(c.metrics),
-                              len(c.verilog)))
+    def rank(c):
+        feasible = timing_feasible(c.metrics)
+        if feasible:
+            return (-c.ladder_rungs_passed, 0, score(c.metrics, key_metric), len(c.verilog))
+        if timing_infeasible(c.metrics):  # known failing timing: closest to closure first
+            return (-c.ladder_rungs_passed, 1, score(c.metrics, setup_metric), len(c.verilog))
+        return (-c.ladder_rungs_passed, 2, score(c.metrics, key_metric), len(c.verilog))
+    alive.sort(key=rank)
     return alive[0]
