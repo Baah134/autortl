@@ -797,3 +797,21 @@ whole-harness review fixes on claude/tier2-prep, taxonomy entries first:
 9. maximize_freq still ranks on the I/O-dominated WNS.
 10. A crashed bench leaves results.jsonl.lock (exit 3 until deleted by hand).
 11. `--jobs 0` raises a traceback instead of an argparse error.
+
+## October30 (Claude Code): companion boundary decision (from Codex's review)
+
+Codex's resume-fsm-stage proposes that when a trusted testbench instantiates
+a child module directly, a candidate top is acceptable only if it is a pure
+pass-through wrapper of that child (taxonomy
+`companion_instance_does_not_prove_top_behavior`): a textual or dead instance
+does not prove the candidate implements the child's tested behavior.
+
+Trade-off: sound, but it rejects every other optimization for the five
+entries whose testbenches instantiate a child (tier2 packet_fifo_build and
+sync_fifo_build, tier3 dot4_pipeline_build and iterative_divider_build, tier4
+spi_master_build), even when the same testbench also checks the top. The
+baseline-repair companion gate from the same stage is merged; this rule is
+not. Options: adopt it as written; require the companion instance to be live
+(connected to top outputs) and keep the top-level checks; or split such
+testbenches into a top-only bench plus a separate child qualification.
+Decide before tier2 to tier4 campaigns.
