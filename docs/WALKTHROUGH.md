@@ -274,7 +274,7 @@ audit was introduced it found real holes. Those were fixed by restoring the
 exact bytes or proving them another way, not by editing manifests.
 
 **What does it not do?** There is no formal equivalence; verification is
-simulation-based. There is no held curriculum tier yet, and the designs are
-small. Board validation is a downstream replay of the winners; the harness
+simulation-based. Curriculum tier 0 is held (three consecutive qualifying
+campaigns on one frozen harness); the higher tiers are being held next. Board validation is a downstream replay of the winners; the harness
 does not yet target board pins itself (see [TARGETS.md](TARGETS.md)). Results
 vary between runs: the FIR reached 52 LUTs in one run and 84 in another.
