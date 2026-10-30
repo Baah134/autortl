@@ -7,7 +7,7 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 from .spec import ModuleSpec
-from .verilog_interface import infer_module, strip_comments
+from .verilog_interface import infer_module, strip_comments, comment_spans
 
 
 @dataclass
@@ -30,7 +30,7 @@ def rtl_safety_violations(verilog: str) -> list[str]:
     escaped identifiers (a decoy module header).
     """
     errs = []
-    comments = re.findall(r"//[^\n]*|/\*.*?\*/", verilog, flags=re.DOTALL)
+    comments = [token[0] for token in comment_spans(verilog)]
     if any(re.match(r"\s*(?:synthesis|pragma|synopsys)\b", c[2:].lstrip("*"), re.IGNORECASE) for c in comments):
         errs.append("synthesis/pragma comment directives (translate_off and the like) are not allowed")
     code = re.sub(r'"(?:\\.|[^"\\])*"', '""', strip_comments(verilog))
