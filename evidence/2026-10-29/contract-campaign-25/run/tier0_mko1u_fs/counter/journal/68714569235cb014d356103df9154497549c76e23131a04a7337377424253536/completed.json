@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Ports, parameters and defaults: PASS \u2014 candidate preserves the top interface and parameter declarations.\n- Observable cycle and reset behavior: PASS \u2014 reset/load/enable priority, counter wrap, overflow hold and registered threshold flags are preserved; the fixed simulation passes.\n- Top latency annotation: PASS \u2014 authoritative `declared_latency.known=false`, so no numeric top annotation is required.\n- Static checks, compilation and elaboration: PASS \u2014 ladder is ALIVE; required tool exits are successful.\n- Simulation: PASS \u2014 fixed testbench reports `TEST PASSED`.\n- Synthesis and receipt gates: PASS \u2014 synthesis exits successfully, reports `SYNTH_COMPLETE`, and process exit gate passes.\n- Routed metrics and timing feasibility: PASS \u2014 retained routed metrics show 53 LUTs, WNS 0.456 ns, WHS 0.282 ns, and `timing_met=true`.\n- Objective improvement: PASS \u2014 LUT use falls from 55 to 53 with both candidate and previous best timing-feasible; recorded `improvement_kind` is `objective`.\n\n## Summary\n- Passed: 8 of 8\n- Failed: 0 of 8\n- Improved over previous best: YES\n\n## Recommendation\nACCEPT\n\n## Reason\nThe candidate passes the required verification and timing gates, preserves the defined counter behavior, and strictly reduces LUT use versus the timing-feasible previous best. No mandatory criterion failed.",
+      "recommendation": "ACCEPT",
+      "passed": 8,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}

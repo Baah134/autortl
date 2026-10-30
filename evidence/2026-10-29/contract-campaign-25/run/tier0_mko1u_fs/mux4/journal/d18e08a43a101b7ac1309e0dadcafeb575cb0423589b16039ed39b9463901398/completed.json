@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_1:model:generator.generate:0",
+  "result": "`timescale 1ns/1ps\nmodule mux4 (\n    input  wire       clk,\n    input  wire       rst,\n    input  wire [7:0] a,\n    input  wire [7:0] b,\n    input  wire [7:0] c,\n    input  wire [7:0] d,\n    input  wire [1:0] sel,\n    output wire [7:0] y\n);\n    wire [31:0] packed_inputs;\n    wire [7:0] selected_byte;\n    reg  [7:0] y_reg;\n\n    assign packed_inputs = {d, c, b, a};\n    assign selected_byte = packed_inputs[sel * 8 +: 8];\n    assign y = y_reg;\n\n    always @(posedge clk) begin\n        if (rst)\n            y_reg <= 8'd0;\n        else\n            y_reg <= selected_byte;\n    end\nendmodule",
+  "artifacts": {}
+}

@@ -1,0 +1,12 @@
+# PLAN — iteration 1
+## Current state assessment
+
+The 32-bit counter passes the supplied simulation and has routed setup WNS 0.494 ns and hold WHS 0.113 ns, so it is timing-feasible; the objective is strictly fewer than 55 LUTs under the same device, clock, and constraints. The seed has no prior failed proposal to avoid. Top numeric latency is unknown, so no numeric latency annotation is required; its observable cycle behavior remains fixed.
+
+## Hypothesis
+
+Use the counter’s natural fixed-width wrap on increment and derive overflow from the pre-increment all-ones condition; removing the separate wrap-to-zero selection may reduce LUT use while preserving count and overflow behavior.
+
+## Instruction for generator
+
+Replace the increment branch’s explicit `count == {WIDTH{1'b1}}` test and reset-versus-`count_next` selection with a single truncated `count + 1'b1` assignment, and set `overflow` from the all-ones condition on the old `count`. Preserve the load priority and overflow clear on load, overflow hold when disabled, synchronous reset, and threshold flags’ registered pre-edge values. Keep the existing ports, parameters, and cycle behavior unchanged, and do not add a numeric latency annotation.
