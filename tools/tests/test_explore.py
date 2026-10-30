@@ -34,3 +34,20 @@ def test_an_existing_exploration_is_never_overwritten(tmp_path, monkeypatch):
     (tmp_path / "logs" / "x").mkdir(parents=True)
     with pytest.raises(SystemExit, match="never overwritten"):
         explore.main(["--tier", "2", "--name", "x"])
+
+
+def test_a_failing_doctor_stops_the_exploration_before_any_entry(tmp_path, monkeypatch):
+    import subprocess
+    import pytest
+    calls = []
+    def fake_run(cmd, **kwargs):
+        calls.append(cmd)
+        return subprocess.CompletedProcess(cmd, 1, stdout="codex: missing", stderr="")
+    monkeypatch.setattr(explore.subprocess, "run", fake_run)
+    monkeypatch.setattr(explore, "ROOT", tmp_path)
+    (tmp_path / "curriculum" / "tier9" / "e1").mkdir(parents=True)
+    (tmp_path / "curriculum" / "tier9" / "e1" / "meta.yaml").write_text("mode: build\n", encoding="utf-8")
+    with pytest.raises(SystemExit, match="exploration was not started"):
+        explore.main(["--tier", "9", "--name", "x", "--python", "PY"])
+    assert len(calls) == 1 and calls[0][1:3] == ["run.py", "doctor"]
+    assert not (tmp_path / "logs" / "x").exists()

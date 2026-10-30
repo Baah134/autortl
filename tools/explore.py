@@ -97,6 +97,15 @@ def main(argv=None):
                      if (p / "meta.yaml").is_file() and (not args.entries or p.name in args.entries))
     if not entries:
         raise SystemExit("no entries")
+    # Same fail-fast as the gate: a moved Codex binary otherwise blocks every entry.
+    folder = tier0_gate.vivado_bin(args.vivado_bin)
+    doctor = subprocess.run([args.python, "run.py", "doctor"]
+                            + [a for name in ("vivado", "xvlog", "xelab", "xsim")
+                               for a in ("--" + name, folder + name + ".bat")],
+                            cwd=ROOT, capture_output=True, text=True, encoding="utf-8", errors="replace")
+    if doctor.returncode != 0:
+        print(doctor.stdout, flush=True)
+        raise SystemExit("environment not ready (run.py doctor); the exploration was not started")
     base.mkdir(parents=True)
     with ThreadPoolExecutor(max_workers=args.jobs) as pool:  # each entry is its own process
         results = list(pool.map(lambda e: run_entry(args.python, e, base / e.name, args.model, args.vivado_bin),
