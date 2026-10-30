@@ -4,7 +4,26 @@ Updated October 29, 2026 (America/New_York). Verify files, Git, ownership and
 actual jobs before acting. Canonical checkout: Downloads/autortl-work. Preserve
 the separate Downloads/autortl copy. User choice: command-line Vivado.
 
-## Current — Codex resumed October29 after explicit user takeover
+## Latest - October 30 morning (Claude Code): taking over Codex's review
+
+- Correction to the October 29 late note below: the golden-sandbox hardening
+  (branch `golden-hardening`, d71c49c) was NOT in 0cf7413. The agent had
+  committed it on a branch it created; Claude merged the agent's stale
+  worktree branch instead, and its ancestry check passed against that same
+  stale branch. Codex's review caught it.
+- Taken over on claude/next-batch: golden-hardening merged for real (latency
+  and Doctor guards verified intact), Codex's RTL/triage stage applied
+  unchanged (string-aware comment tokenizing; host failures outrank tool-ID
+  errors), the baseline-repair companion gate, Codex's board-proof stage
+  applied unchanged, plus the stale-lock and per-entry model-identity fixes.
+  Codex's stricter transparent-boundary companion rule is deferred as a
+  decision in docs/TASKS.md.
+- contract-campaign-26 (Codex usage limit) and -27 (stopped: its freeze
+  included Codex's uncommitted taxonomy edit) gave no verdict. Tier0 on
+  0cf7413 reached streak 2 (campaigns 24, 25); the series restarts on the
+  merged identity.
+
+## Codex resumed October29 after explicit user takeover
 
 User: follow off from where Claude usage stopped. Root claimed an8h lease with
 a recorded reason; no vendor/model jobs active, Claude GUI processes untouched.
