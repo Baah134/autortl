@@ -1,0 +1,80 @@
+{
+  "stage": "iteration_2:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 2,
+    "instruction": "Keep the valid pipeline, ready logic, accepted-sample history, reset behavior, and `// @latency 3` unchanged. Replace the 26-bit `term0` through `term3` multiplications and `fir_sum` addition with signed 13-bit shift-and-add expressions: sign-extend each 8-bit sample before shifting, implement coefficients 3, -5, 7, and -2, and form the sum at 13 bits. The specified full result range fits signed 13 bits, so preserve the complete result without saturation; verify routed LUTs improve strictly over 80 while setup and hold slack remain nonnegative.",
+    "candidates": [
+      {
+        "iteration": 2,
+        "mutation": "standard",
+        "instruction": "Keep the valid pipeline, ready logic, accepted-sample history, reset behavior, and `// @latency 3` unchanged. Replace the 26-bit `term0` through `term3` multiplications and `fir_sum` addition with signed 13-bit shift-and-add expressions: sign-extend each 8-bit sample before shifting, implement coefficients 3, -5, 7, and -2, and form the sum at 13 bits. The specified full result range fits signed 13 bits, so preserve the complete result without saturation; verify routed LUTs improve strictly over 80 while setup and hold slack remain nonnegative.",
+        "generated_source_sha256": "c090f4fdf9419b31308bc6d0711961d85dddf7a664d9a0630469932b538dee5f",
+        "final_source_sha256": "c090f4fdf9419b31308bc6d0711961d85dddf7a664d9a0630469932b538dee5f",
+        "generated_code_hash": "ef2536cf35107232",
+        "final_code_hash": "ef2536cf35107232",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": false,
+          "wns_ns": -0.024,
+          "whs_ns": 0.104,
+          "lut_used": 51,
+          "ff_used": 66,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.018,
+          "total_power_w": 0.088
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-portability\\logs\\explore-tier3-02\\signed_fir4_build\\iter_002\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-portability\\logs\\explore-tier3-02\\signed_fir4_build\\iter_002\\cand_standard\\synth.tcl",
+          "sha256": "4e702be6997c3c12211d95864363d97c592a7c2613b17dc4653802cd966d8d7c"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-portability\\logs\\explore-tier3-02\\signed_fir4_build\\iter_002\\cand_standard\\signed_fir4.v",
+          "sha256": "2f6b34607122262b3340c5ad82af1f7e0ee09673008c5a22969a4e6bbb9281c7"
+        }
+      }
+    ],
+    "doctor": {
+      "status": "NOT_ADOPTED",
+      "action": "tool_knobs",
+      "reason": "timing_not_closed",
+      "tools_ran": true,
+      "measured_metrics": {
+        "sim_passed": true,
+        "timing_met": false,
+        "wns_ns": -0.024,
+        "whs_ns": 0.104,
+        "lut_used": 51,
+        "ff_used": 66,
+        "dsp_used": 0,
+        "bram_used": 0.0,
+        "dynamic_power_w": 0.018,
+        "total_power_w": 0.088
+      },
+      "adopted": false,
+      "input_source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-portability\\logs\\explore-tier3-02\\signed_fir4_build\\iter_002\\cand_standard\\signed_fir4.v",
+        "sha256": "2f6b34607122262b3340c5ad82af1f7e0ee09673008c5a22969a4e6bbb9281c7"
+      },
+      "trial_source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-portability\\logs\\explore-tier3-02\\signed_fir4_build\\iter_002\\doctor_tool_knobs_trial\\signed_fir4.v",
+        "sha256": "2f6b34607122262b3340c5ad82af1f7e0ee09673008c5a22969a4e6bbb9281c7"
+      },
+      "trial_flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-portability\\logs\\explore-tier3-02\\signed_fir4_build\\iter_002\\doctor_tool_knobs_trial\\synth.tcl",
+        "sha256": "33801fade91b7de291ed41e16fa93c820b89bf546179994ad35f81ca285e217e"
+      },
+      "identity_count": 3
+    },
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": "c090f4fdf9419b31308bc6d0711961d85dddf7a664d9a0630469932b538dee5f"
+  },
+  "artifacts": {}
+}

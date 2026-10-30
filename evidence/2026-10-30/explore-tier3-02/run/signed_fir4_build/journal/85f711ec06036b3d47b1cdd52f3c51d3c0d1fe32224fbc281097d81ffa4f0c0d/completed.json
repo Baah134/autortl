@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_2:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 2\n## Contract check\n- Top interface and defined behavior: PASS \u2014 ports and widths are preserved; the candidate retains the three-slot handshake, accepted-sample history, reset behavior, and FIR result.\n- Top latency annotation: PASS \u2014 `// @latency 3` matches the authoritative top latency.\n- Deterministic verification and tool gates: PASS \u2014 the ladder is ALIVE; compilation, elaboration, simulation, and synthesis have successful recorded exits, with `TEST PASSED` and `SYNTH_COMPLETE`.\n- Routed metric integrity: PASS \u2014 retained routed reports and structured metrics are present and consistent.\n- Timing closure: FAIL \u2014 setup WNS is -0.024 ns, so the candidate is timing-infeasible despite nonnegative hold slack.\n- Promotion versus previous best: FAIL \u2014 the previous best is timing-feasible; this infeasible candidate cannot replace it, even with lower LUT usage.\n- Improvement over previous best: FAIL \u2014 the LUT reduction from 80 to 51 does not qualify as an improvement while the candidate fails timing against a feasible incumbent.\n## Summary\n- Passed: 4 of 7\n- Failed: 3 of 7\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate preserves the specified behavior and passes the deterministic verification gates, and it reduces LUT usage. However, its setup WNS is negative while the previous best meets timing, so it cannot be promoted under the contract. Stall count is 0, so RESTART does not apply.",
+      "recommendation": "REJECT",
+      "passed": 4,
+      "failed": 3
+    }
+  },
+  "artifacts": {}
+}

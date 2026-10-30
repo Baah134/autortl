@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_5:model:planner.plan:0",
+  "result": "# PLAN \u2014 iteration 5\n\n## Current state assessment\nIteration 2 is the verified best, with setup WNS -2.766 ns and hold WHS 0.168 ns, so timing remains infeasible. A later trial\u2019s violated path ran from an output register through an OBUF to `y_out`; splitting the output across replica registers did not close timing. Iterations 3 and 4 were rejected, with no details here to identify their attempted changes.\n\n## Hypothesis\nPacking the existing `y_out` register into the I/O block may shorten the register-to-output path and improve setup WNS without changing cycle behavior.\n\n## Instruction for generator\nKeep the single 32-bit `y_out` register and its existing synchronous reset and assignment; add the Xilinx `IOB = \"TRUE\"` attribute to that register so Vivado can place it in the output I/O block. Preserve `// @latency 1`, the arithmetic and all pipeline registers. Check routed WNS and WHS under the fixed flow; if I/O-register packing is unavailable or timing does not improve, do not claim timing recovery or progress without qualifying retained metrics.",
+  "artifacts": {}
+}

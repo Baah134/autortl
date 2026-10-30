@@ -1,0 +1,88 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025
+| Date         : Fri Oct 30 18:13:15 2026
+| Host         : Baah running 64-bit major release  (build 9200)
+| Command      : report_timing -from [all_registers] -to [all_registers] -max_paths 1 -file C:/Users/prince.baah/Downloads/autortl-portability/logs/explore-tier3-02/dot4_pipeline_build/iter_001/cand_standard/timing_reg2reg.rpt
+| Design       : dot4_pipeline
+| Device       : 7a35t-cpg236
+| Speed File   : -1  PRODUCTION 1.23 2018-06-13
+| Design State : Routed
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Timing Report
+
+Slack (MET) :             6.631ns  (required time - arrival time)
+  Source:                 sum01_reg_reg/CLK
+                            (rising edge-triggered cell DSP48E1 clocked by clk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            u_dot4_merge/dot_result_reg_reg[16]/D
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            10.000ns  (clk rise@10.000ns - clk rise@0.000ns)
+  Data Path Delay:        3.346ns  (logic 1.524ns (45.547%)  route 1.822ns (54.453%))
+  Logic Levels:           6  (CARRY4=5 LUT2=1)
+  Clock Path Skew:        -0.050ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    4.279ns = ( 14.279 - 10.000 ) 
+    Source Clock Delay      (SCD):    4.650ns
+    Clock Pessimism Removal (CPR):    0.322ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+    M18                                               0.000     0.000 r  clk (IN)
+                         net (fo=0)                   0.000     0.000    clk
+    M18                  IBUF (Prop_ibuf_I_O)         0.938     0.938 r  clk_IBUF_inst/O
+                         net (fo=1, routed)           1.972     2.910    clk_IBUF
+    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.096     3.006 r  clk_IBUF_BUFG_inst/O
+                         net (fo=20, routed)          1.645     4.650    clk_IBUF_BUFG
+    DSP48_X0Y11          DSP48E1                                      r  sum01_reg_reg/CLK
+  -------------------------------------------------------------------    -------------------
+    DSP48_X0Y11          DSP48E1 (Prop_dsp48e1_CLK_P[3])
+                                                      0.434     5.084 r  sum01_reg_reg/P[3]
+                         net (fo=2, routed)           1.822     6.906    u_dot4_merge/p_1_in[3]
+    SLICE_X0Y33          LUT2 (Prop_lut2_I0_O)        0.124     7.030 r  u_dot4_merge/dot_result_reg[3]_i_2/O
+                         net (fo=1, routed)           0.000     7.030    u_dot4_merge/dot_result_reg[3]_i_2_n_0
+    SLICE_X0Y33          CARRY4 (Prop_carry4_S[3]_CO[3])
+                                                      0.401     7.431 r  u_dot4_merge/dot_result_reg_reg[3]_i_1/CO[3]
+                         net (fo=1, routed)           0.000     7.431    u_dot4_merge/dot_result_reg_reg[3]_i_1_n_0
+    SLICE_X0Y34          CARRY4 (Prop_carry4_CI_CO[3])
+                                                      0.114     7.545 r  u_dot4_merge/dot_result_reg_reg[7]_i_1/CO[3]
+                         net (fo=1, routed)           0.000     7.545    u_dot4_merge/dot_result_reg_reg[7]_i_1_n_0
+    SLICE_X0Y35          CARRY4 (Prop_carry4_CI_CO[3])
+                                                      0.114     7.659 r  u_dot4_merge/dot_result_reg_reg[11]_i_1/CO[3]
+                         net (fo=1, routed)           0.000     7.659    u_dot4_merge/dot_result_reg_reg[11]_i_1_n_0
+    SLICE_X0Y36          CARRY4 (Prop_carry4_CI_CO[3])
+                                                      0.114     7.773 r  u_dot4_merge/dot_result_reg_reg[15]_i_1/CO[3]
+                         net (fo=1, routed)           0.000     7.773    u_dot4_merge/dot_result_reg_reg[15]_i_1_n_0
+    SLICE_X0Y37          CARRY4 (Prop_carry4_CI_O[0])
+                                                      0.223     7.996 r  u_dot4_merge/dot_result_reg_reg[17]_i_1/O[0]
+                         net (fo=1, routed)           0.000     7.996    u_dot4_merge/p_0_in[16]
+    SLICE_X0Y37          FDRE                                         r  u_dot4_merge/dot_result_reg_reg[16]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)       10.000    10.000 r  
+    M18                                               0.000    10.000 r  clk (IN)
+                         net (fo=0)                   0.000    10.000    clk
+    M18                  IBUF (Prop_ibuf_I_O)         0.805    10.805 r  clk_IBUF_inst/O
+                         net (fo=1, routed)           1.868    12.673    clk_IBUF
+    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.091    12.764 r  clk_IBUF_BUFG_inst/O
+                         net (fo=20, routed)          1.515    14.279    u_dot4_merge/clk
+    SLICE_X0Y37          FDRE                                         r  u_dot4_merge/dot_result_reg_reg[16]/C
+                         clock pessimism              0.322    14.601    
+                         clock uncertainty           -0.035    14.566    
+    SLICE_X0Y37          FDRE (Setup_fdre_C_D)        0.062    14.628    u_dot4_merge/dot_result_reg_reg[16]
+  -------------------------------------------------------------------
+                         required time                         14.628    
+                         arrival time                          -7.996    
+  -------------------------------------------------------------------
+                         slack                                  6.631    
+
+
+
+

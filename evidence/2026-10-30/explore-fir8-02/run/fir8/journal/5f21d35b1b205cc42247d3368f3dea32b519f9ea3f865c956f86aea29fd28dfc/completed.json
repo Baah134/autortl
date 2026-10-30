@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_6:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 6\n## Contract check\n- Interface and latency annotation: PASS \u2014 Candidate preserves the declared `// @latency 1` annotation and module interface.\n- Deterministic verification: PASS \u2014 Ladder reports 5 rungs ALIVE; simulation passed.\n- Tool exits and retained metrics: PASS \u2014 Required tool exits succeeded and routed metrics are present.\n- Timing feasibility: FAIL \u2014 Timing is not met; setup WNS is -2.766 ns, below zero.\n- Improvement over previous best: FAIL \u2014 Setup WNS is unchanged at -2.766 ns, hold worsened from 0.168 ns to 0.049 ns, and no valid timing progress is recorded.\n## Summary\n- Passed: 3 of 5\n- Failed: 2 of 5\n- Improved over previous best: NO\n## Recommendation\nRESTART\n## Reason\nThe candidate passes the deterministic checks, but it neither closes timing nor improves setup slack over the infeasible previous best; its hold slack also regresses. With stall count 3, the recommendation is RESTART.",
+      "recommendation": "REJECT",
+      "passed": 3,
+      "failed": 2
+    }
+  },
+  "artifacts": {}
+}

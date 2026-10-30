@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Top interface and required child instance: PASS \u2014 top ports are preserved, and the required `iterative_divider_core` instance drives the outputs.\n- Declared latency: PASS \u2014 top annotation matches authoritative latency 9.\n- Deterministic behavior: PASS \u2014 ladder is ALIVE and simulation reports `TEST PASSED`.\n- Tool gates: PASS \u2014 compile, elaboration, simulation, synthesis completion, and required process exits succeeded.\n- Routed metric integrity: PASS \u2014 retained routed reports and metric evidence are present.\n- Timing closure: PASS \u2014 timing is met, with setup WNS 0.313 ns and hold WHS 0.066 ns.\n- LUT objective: FAIL \u2014 LUT use is unchanged at 57, so there is no strict improvement over the timing-feasible previous best.\n## Summary\n- Passed: 6 of 7\n- Failed: 1 of 7\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes the behavioral, tool, metric, annotation, and timing gates, but the previous best is already timing-feasible and the `minimize_luts` objective requires strictly fewer LUTs; this candidate retains 57 LUTs, equal to the previous best.",
+      "recommendation": "REJECT",
+      "passed": 6,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}
