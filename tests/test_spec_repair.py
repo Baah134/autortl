@@ -120,3 +120,30 @@ def test_example_error_names_the_data_outputs_and_the_prompt_states_the_tagging_
     errors = validate_examples(module)
     assert any(str(names) in e and "payload ports none" in e for e in errors)
     assert "payload ports such as in_data and out_data are protocol none" in prompts.SPEC_PROMPT
+
+
+def test_generated_oracle_shape_errors_go_back_to_the_planner(tmp_path, monkeypatch):
+    # fixed_latency_handshake_found_at_oracle: checked only when an oracle will be generated
+    from autortl import fsm
+    o, _ = create(tmp_path, monkeypatch)
+    prose(tmp_path, o)
+    o.cfg.generate_golden = True
+    shapes = Mock(side_effect=[["fixed latency does not accept handshake ports"], []])
+    monkeypatch.setattr(fsm, "tb_shape_errors", shapes)
+    planner = Mock(side_effect=[GOOD, GOOD])
+    monkeypatch.setattr(o.planner, "make_spec", planner)
+    o.run()
+    assert planner.call_count == 2
+    assert "fixed latency does not accept handshake ports" in \
+        planner.call_args_list[1].kwargs["feedback"]
+
+
+def test_trusted_testbench_single_module_skips_oracle_shape_rules(tmp_path, monkeypatch):
+    from autortl import fsm
+    o, _ = create(tmp_path, monkeypatch)
+    prose(tmp_path, o)
+    shapes = Mock(return_value=["should not be consulted"])
+    monkeypatch.setattr(fsm, "tb_shape_errors", shapes)
+    monkeypatch.setattr(o.planner, "make_spec", Mock(return_value=GOOD))
+    assert o.run()["status"] == "done"
+    shapes.assert_not_called()

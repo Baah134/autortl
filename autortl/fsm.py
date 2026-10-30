@@ -42,7 +42,7 @@ from . import companions
 from .vivado import advisor_digest
 from .report_parser import VivadoMetrics, extract_message_ids
 from .golden import GoldenModel, GoldenTimeoutError, qualify_against_examples, validate_examples
-from .tbgen import generate as generate_tb
+from .tbgen import generate as generate_tb, shape_errors as tb_shape_errors
 from .tbqual import qualify as qualify_tb, assertion_failure_proof, qualification_mutations
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
@@ -517,6 +517,10 @@ class Orchestrator:
                 if generated:  # spec_example_values_skip_planner_repair
                     errs += [f"module {m.name}: {e}" for m in spec.modules
                              for e in validate_examples(m, require_anchors=True)]
+                    # fixed_latency_handshake_found_at_oracle: modules that get a generated
+                    # oracle and testbench must have a shape tbgen supports.
+                    if not (len(spec.modules) == 1 and self.cfg.testbench_path and not self.cfg.generate_golden):
+                        errs += [f"module {m.name}: {e}" for m in spec.modules for e in tb_shape_errors(m)]
             except (ValueError, KeyError, TypeError, AttributeError) as exc:
                 if not generated:
                     raise

@@ -260,3 +260,21 @@ def test_windows_job_object_caps_worker_memory(tmp_path):
 def test_job_object_limit_is_a_silent_no_op_off_windows(monkeypatch):
     monkeypatch.setattr(golden_worker.sys, "platform", "linux")
     assert golden_worker.limit_windows_process_memory(1) is False
+
+
+def test_augmented_assignment_on_a_simple_subscript_runs_under_the_same_guards():
+    # golden_augmented_subscript_rejected (explore-tier3-03 uart_fifo_build, uart_tx)
+    from autortl.golden_worker import execute
+    source = "\n".join([
+        "def init():",
+        "    return {'count': 3}",
+        "def step(state, inputs):",
+        "    key = 'count'",
+        "    state['count'] -= 1",
+        "    state[key] += 10",
+        "    return state, {'y': state['count']}",
+    ])
+    assert execute(source, [{}, {}]) == [{"y": 12}, {"y": 21}]
+    nested = source.replace("state['count'] -= 1", "state['count'] -= 1\n    t = [[0]]\n    t[0][0] += 1")
+    with pytest.raises(ValueError, match="supported only on a name"):
+        execute(nested, [{}])

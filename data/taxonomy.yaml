@@ -139,6 +139,12 @@ harness_failures:
   evaluator_verdict_format_rejects_verified_gain:
     meaning: "An evaluator wrote its verdict as 'Recommendation: ACCEPT', '**Recommendation:** ACCEPT' or '**ACCEPT**' instead of the heading-newline form; the parser read REJECT, so a deterministically verified improvement was discarded"
     repair: "Read the first verdict token after a Recommendation heading or label, ignoring emphasis and punctuation; keep the count-consistency and unresolved-criterion vetoes unchanged"
+  golden_augmented_subscript_rejected:
+    meaning: "The oracle sandbox refused every augmented assignment on a subscript, so a natural per-cycle model writing state[\"count\"] -= 1 was rejected and the module's last oracle attempt was lost (explore-tier3-03 uart_fifo_build, uart_tx)"
+    repair: "Rewrite name[constant] op= value and name[name] op= value as a plain assignment through the same bounded arithmetic; keep refusing other targets with a message naming the supported forms"
+  fixed_latency_handshake_found_at_oracle:
+    meaning: "A planner-written spec paired compare_mode fixed_latency with valid_ready ports; the generated-testbench shape rule refused it only when the oracle ran, costing one of the module's two oracle attempts (explore-tier3-03 uart_fifo_build, uart_tx)"
+    repair: "Check every generated-oracle module against the testbench generator's shape rules in the planner spec-repair loop, with a hint naming the two valid shapes"
   repeated_failure_hides_other_rules:
     meaning: "The fixer receives the first 15 testbench FAIL lines; in tier5 axil_regs_build one rule (rdata value) filled all 15, so the three violated AXI handshake rules (awready/wready independence, bvalid with the update) never reached it and three baseline repairs failed (explore-tier5-01)"
     repair: "Report each distinct failure kind once (digits ignored) with its count, up to 15 kinds, so every violated rule reaches the repair prompt"

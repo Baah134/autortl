@@ -242,10 +242,22 @@ def execute(source: str, stimulus: list[dict]) -> list[dict]:
 
         def visit_AugAssign(self, node):
             # Augmented arithmetic otherwise bypasses the same size guards.
-            if not isinstance(node.target, ast.Name):
-                raise ValueError("augmented subscript assignment is unsupported; use plain assignment")
-            replacement = ast.Assign([node.target], ast.BinOp(
-                ast.Name(node.target.id, ast.Load()), node.op, node.value))
+            target = node.target
+            if isinstance(target, ast.Name):
+                current = ast.Name(target.id, ast.Load())
+            elif (isinstance(target, ast.Subscript) and isinstance(target.value, ast.Name)
+                  and isinstance(target.slice, (ast.Constant, ast.Name))):
+                # golden_augmented_subscript_rejected: state["count"] -= 1 reads and
+                # writes one side-effect-free location, so it rewrites like a name.
+                current = ast.Subscript(ast.Name(target.value.id, ast.Load()),
+                                        ast.copy_location(type(target.slice)(**{f: getattr(target.slice, f)
+                                            for f in target.slice._fields}), target.slice), ast.Load())
+                if isinstance(current.slice, ast.Name):
+                    current.slice.ctx = ast.Load()
+            else:
+                raise ValueError("augmented assignment is supported only on a name or "
+                                 "name[constant]/name[name]; use plain assignment")
+            replacement = ast.Assign([target], ast.BinOp(current, node.op, node.value))
             return ast.copy_location(self.visit(replacement), node)
 
         @staticmethod

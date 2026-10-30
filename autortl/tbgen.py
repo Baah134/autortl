@@ -83,6 +83,29 @@ def _scoreboard_control(controls, direction, suffix):
     return found[0].name
 
 
+def shape_errors(spec: ModuleSpec) -> list[str]:
+    """The generated testbench's shape rules, checked before any oracle is written.
+
+    fixed_latency_handshake_found_at_oracle: a planner spec that pairs
+    fixed_latency with valid_ready ports used to fail only at oracle time.
+    """
+    try:
+        inputs, _ = _validate(spec)
+        if spec.compare_mode == "scoreboard":
+            controls = [p for p in spec.ports if p.protocol == "valid_ready"]
+            if len(controls) != 4 or not inputs:
+                raise ValueError("scoreboard needs exactly in_valid, in_ready, out_valid, out_ready "
+                                 "tagged valid_ready and at least one protocol none data input")
+            for direction, suffix in (("input", "valid"), ("output", "ready"),
+                                      ("output", "valid"), ("input", "ready")):
+                _scoreboard_control(controls, direction, suffix)
+    except ValueError as exc:
+        hint = (" (use compare_mode scoreboard for a valid/ready module, or tag every port none)"
+                if "fixed latency does not accept handshake ports" in str(exc) else "")
+        return [str(exc) + hint]
+    return []
+
+
 def gen_stimulus(spec: ModuleSpec, n_random=100, seed=1234):
     inputs, _ = _validate(spec)
     reset_steps = spec.reset.duration_cycles if any(p.name == spec.reset.signal for p in spec.ports) else 0
