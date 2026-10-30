@@ -91,6 +91,12 @@ harness_failures:
   golden_budget_long_period_examples:
     meaning: "A specification example longer than a few thousand cycles exhausted the golden worker's instruction budget, so a long-period serial design could not express full-frame anchors"
     repair: "Keep examples under the budget, about 2,000 cycles for a per-cycle UART model; check full frames at real timing with an independent qualified --tb"
+  backend_configuration_rough_edges:
+    meaning: "Found while documenting the new backends (Oct 29): model IDs with '/' were rejected; llm/endpoints.local.yaml sat inside the hashed llm/ folder, so editing it made resume refuse; the built-in openai backend's server and default model were not in the cohort; spec-repair feedback was cut to 1,800 characters; doctor required Codex even when another backend was configured; a malformed endpoints file raised after every bench entry had run; --jobs 0 crashed with a traceback"
+    repair: "Allow '/' in model aliases; default the endpoints file to the repository root, outside the harness identity; record the built-in openai server and model digest in the cohort; raise the feedback cap; make Codex optional in doctor when another backend is configured; guard endpoint loading in the runner; validate --jobs in argparse"
+  model_cli_binary_moved_by_update:
+    meaning: "The Codex desktop app replaced its versioned binary folder when it updated, so AUTORTL_CODEX_BIN pointed at a deleted file and every model call failed with 'worker could not launch' after a 13-minute test receipt (contract-campaign-23)"
+    repair: "Run run.py doctor before every gate so a missing model CLI fails in seconds; re-point AUTORTL_CODEX_BIN after an app update"
   candidate_rtl_evades_simulation_gate:
     meaning: "Nothing restricted system tasks, preprocessor directives, synthesis pragmas, hierarchical references, force/release or escaped identifiers in model-written RTL, so a candidate could print TEST PASSED itself, show simulation and synthesis different designs (`ifdef SYNTHESIS, translate_off), read the testbench's expected values, write files at model-chosen paths ($fopen), or hide a changed interface behind a decoy module header (whole-harness review, Oct 29; none of 466 archived model-produced RTL files used any of these)"
     repair: "Reject, before any tool runs, model-written RTL containing system tasks, compiler directives other than `timescale, translate/pragma/synthesis comments, hierarchical identifiers, force/release or escaped identifiers"
