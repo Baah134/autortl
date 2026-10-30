@@ -67,3 +67,15 @@ def test_token_totals_from_the_run_budget(tmp_path):
     (run / "budget.json").write_text('{"llm_calls": 3, "vivado_seconds": 1.0, "elapsed": 2.0,'
                                      ' "tokens": {"input_tokens": 12345, "cached_input_tokens": 10000, "output_tokens": 678}}')
     assert "| r | done | 3 | 12,345 / 678 |" in role_report.render([role_report.summarize(run)])
+
+
+def test_tokens_are_marked_incomplete_when_calls_reported_no_usage(tmp_path):
+    # command_endpoint_tokens_reported_as_zero
+    run = tmp_path / "r"
+    run.mkdir()
+    (run / "run_summary.json").write_text('{"status": "done"}')
+    (run / "budget.json").write_text('{"llm_calls": 3, "vivado_seconds": 1.0, "elapsed": 2.0,'
+                                     ' "calls_without_token_usage": 3,'
+                                     ' "tokens": {"input_tokens": 0, "cached_input_tokens": 0, "output_tokens": 0}}')
+    assert "| r | done | 3 | 0 / 0 (incomplete: 3 calls unreported) |" in \
+        role_report.render([role_report.summarize(run)])

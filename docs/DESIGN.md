@@ -248,12 +248,16 @@ Backends report usage as `input_tokens`, `cached_input_tokens` and
 `output_tokens` when they can. After a successful call the client adds them to
 the run's Budget, which saves them under `tokens` in budget.json. Tokens are
 accounting only. They have no ceiling and do not affect best-of-N degradation
-or replanning. Missing or malformed usage adds nothing. Command endpoints report
-no usage, so their runs show zero. The model budget is `max_llm_calls`, which
+or replanning. Missing or malformed usage adds no tokens; the call is counted
+instead in `calls_without_token_usage` in budget.json, and the run reports show
+the totals as incomplete when that count is nonzero. Command endpoints never
+report usage, so each of their calls is counted there; no estimate is invented
+(command_endpoint_tokens_reported_as_zero). The model budget is `max_llm_calls`, which
 counts every attempt, retries included. Tokens are charged outside the retry
 handling, so a checkpoint lock after a successful response still propagates as a
 resumable lock (token_save_lock_misattributed). A budget.json saved before token
-accounting loads with zero tokens. `tools/role_report.py` shows the totals per
+accounting loads with zero tokens, and one saved before the unreported-call count
+loads with a count of zero. `tools/role_report.py` shows the totals per
 run.
 
 ## Register-to-register slack

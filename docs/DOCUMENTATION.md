@@ -116,7 +116,7 @@ Tracks LLM calls, Vivado seconds, wall minutes against ceilings. `fraction_left(
 - **Design choice: degrade, never die.** A run that stops mid-flight wastes everything spent; a run that shrinks to best-of-1 and skips replans still delivers its best-so-far with a clean summary.
 - **Design choice: the worst fraction governs.** Whichever resource is scarcest is the binding constraint | the Pro-plan 5-hour window maps onto `max_llm_calls`/`max_wall_minutes` without special-casing Claude.
 - Thresholds (50/20/30) are named constants in behavior, tested in `test_budget.py`, tunable without touching the FSM.
-- **Token accounting.** `Budget.tokens` holds `input_tokens`, `cached_input_tokens` and `output_tokens`. `charge_tokens(usage)` adds one successful call's reported usage (positive integers only; missing or malformed usage adds nothing) and saves it under `tokens` in `budget.json`. Tokens have no ceiling and never affect `fraction_left()`. A `budget.json` saved before token accounting loads with zeros. Calls are charged per attempt (`charge_llm` runs before each backend attempt, retries included); tokens only after success.
+- **Token accounting.** `Budget.tokens` holds `input_tokens`, `cached_input_tokens` and `output_tokens`. `charge_tokens(usage)` adds one successful call's reported usage (nonnegative integers only) and saves it under `tokens` in `budget.json`. A call with missing or malformed usage adds no tokens and increments `calls_without_token_usage` instead (command endpoints never report usage), and the run reports then mark the totals incomplete (`command_endpoint_tokens_reported_as_zero`). Tokens have no ceiling and never affect `fraction_left()`. A `budget.json` saved before token accounting loads with zeros. Calls are charged per attempt (`charge_llm` runs before each backend attempt, retries included); tokens only after success.
 - Charges are never refunded: negative call counts or tool seconds raise `ValueError`.
 
 ### 3.9 watchdog.py | deterministic pathology detection (the "MCE" answer)
@@ -282,7 +282,7 @@ The earlier `claude_code`, `nvidia_nim` and `openrouter` adapters were removed; 
 Further detail: HTTP 408 maps to `CODEX_TIMEOUT` and any other non-success status to `CODEX_UNAVAILABLE`; responses over 16 MB are `CODEX_PROTOCOL`; loopback hosts (`localhost`, `127.0.0.1`, `::1`) bypass any configured proxy; error text names only scheme, host and port of the endpoint. With a user endpoint, `base_url` and `api_key_env` come from the endpoint, no key is sent unless `api_key_env` names one, and `<name>.default` is refused (an explicit model is required).
 
 ### 4.5 backends/command_cli.py
-Any program that reads the prompt on stdin and prints the answer on stdout, used through a `kind: command` endpoint. `argv[0]` is resolved on PATH and run as an argument list (`shell=False`) from an empty temporary folder with the harness timeout. An alias other than `default` is passed as `<model_flag> <alias>`; without `model_flag` that is `CODEX_UNAVAILABLE` ("use `<name>.default`"). Model output never reaches the arguments. A timeout kills the process tree. A nonzero exit is classified from the redacted stderr tail; empty stdout is `CODEX_PROTOCOL`. It reports no token usage. AutoRTL does not sandbox the command.
+Any program that reads the prompt on stdin and prints the answer on stdout, used through a `kind: command` endpoint. `argv[0]` is resolved on PATH and run as an argument list (`shell=False`) from an empty temporary folder with the harness timeout. An alias other than `default` is passed as `<model_flag> <alias>`; without `model_flag` that is `CODEX_UNAVAILABLE` ("use `<name>.default`"). Model output never reaches the arguments. A timeout kills the process tree. A nonzero exit is classified from the redacted stderr tail; empty stdout is `CODEX_PROTOCOL`. It reports no token usage, so each call is counted in `calls_without_token_usage`. AutoRTL does not sandbox the command.
 
 ### 4.6 endpoints.py + endpoints.example.yaml | user endpoints
 `load()` reads `llm/endpoints.local.yaml` (ignored by Git) or the file in `AUTORTL_ENDPOINTS` (a missing file named there is an error), as YAML (or JSON without pyyaml), under a top-level `endpoints:` mapping. `_validate` enforces:
@@ -471,7 +471,7 @@ The run folder is `--output-dir`, else `logs/run_v4_<timestamp>`; in a bench it 
 | `config.json` | Saved RunConfig (`schema_version` 1, absolute paths, `model`); `resume` reads it |
 | `runtime.json` | Python version, SHA-256 of every `.py`/`.yaml`/`.md`/`.v` under `autortl/`, `llm/`, `data/`, `.claude/skills/`, and tool identities; resume refuses when it changed |
 | `inputs/`, `inputs.json` | Frozen copies of the design, testbench and spec with their hashes |
-| `budget.json` | `llm_calls`, `vivado_seconds`, `elapsed`, and `tokens` (`input_tokens`, `cached_input_tokens`, `output_tokens`) |
+| `budget.json` | `llm_calls`, `vivado_seconds`, `elapsed`, and `tokens` (`input_tokens`, `cached_input_tokens`, `output_tokens`), and `calls_without_token_usage` (successful calls that reported no usage) |
 | `state.json` | FSM checkpoint |
 | `journal/<sha256>/` | One folder per stage: `started.json`, `completed.json`, `artifacts/` |
 | `events.jsonl` | Stage events (RUNNING, COMPLETE, infrastructure outcomes) |
