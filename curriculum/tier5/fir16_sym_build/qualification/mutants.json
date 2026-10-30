@@ -1,0 +1,22 @@
+[
+  {"name": "preadd_16bit_wrap", "why": "the symmetric pre-adder keeps 16 bits, so x[n-k] + x[n-15+k] wraps for large same-sign samples",
+   "find": "reg signed [16:0] pre [0:7];", "replace": "reg signed [15:0] pre [0:7];"},
+  {"name": "truncate_not_round", "why": "drops the rounding constant, so results floor instead of rounding half up",
+   "find": "+ 30'sd1024; // round half up", "replace": "+ 30'sd0; // round half up"},
+  {"name": "positive_saturation_wraps", "why": "positive overflow wraps to a negative value instead of saturating at 32767",
+   "find": "(scaled > 19'sd32767) ? 16'sh7fff :", "replace": "(scaled > 19'sd32767) ? scaled[15:0] :"},
+  {"name": "wrong_preadd_pair", "why": "pairs tap 3 with tap 11 instead of its mirror tap 12",
+   "find": "pre[3] <= tap[3] + tap[12];", "replace": "pre[3] <= tap[3] + tap[11];"},
+  {"name": "coefficient_sign_flip", "why": "h[2] = h[13] is +24 instead of -24",
+   "find": "localparam signed [9:0] H2 = -10'sd24;", "replace": "localparam signed [9:0] H2 = 10'sd24;"},
+  {"name": "history_shift_on_valid", "why": "the history shifts on in_valid alone, so a blocked sample enters it repeatedly",
+   "find": "if (accept) begin // history_shift", "replace": "if (in_valid) begin // history_shift"},
+  {"name": "bubble_not_collapsed", "why": "slot 4 advances only when the output can, so a gap in front of a stalled output never closes",
+   "find": "wire r4 = !v4 || r5;", "replace": "wire r4 = r5;"},
+  {"name": "stall_overwrites_output", "why": "a valid token in slot 4 overwrites the stalled output result and is lost",
+   "find": "if (r5) begin", "replace": "if (r5 || v4) begin"},
+  {"name": "reset_keeps_history", "why": "reset empties the slots but leaves the old samples in the delay line",
+   "find": "tap[i] <= 16'sd0; // clear_history", "replace": "tap[i] <= tap[i]; // clear_history"},
+  {"name": "asynchronous_reset", "why": "an off-edge reset pulse empties the pipeline and clears the history",
+   "find": "always @(posedge clk) begin // fir_pipe", "replace": "always @(posedge clk or posedge rst) begin // fir_pipe"}
+]
