@@ -1,0 +1,5 @@
+{
+  "stage": "module_debouncer:model:generator.generate:0",
+  "result": "`timescale 1ns/1ps\n// @latency 0\nmodule debouncer (\n    input  wire clk,\n    input  wire rst,\n    input  wire noisy,\n    output wire clean\n);\n\n    reg       candidate;\n    reg [3:0] count;\n    reg       clean_reg;\n\n    assign clean = clean_reg;\n\n    always @(posedge clk) begin\n        if (rst) begin\n            candidate <= 1'b0;\n            count     <= 4'd0;\n            clean_reg <= 1'b0;\n        end else if (noisy != candidate) begin\n            candidate <= noisy;\n            count     <= 4'd1;\n        end else if (count < 4'd8) begin\n            count <= count + 1'b1;\n            if (count == 4'd7)\n                clean_reg <= candidate;\n        end\n    end\n\nendmodule",
+  "artifacts": {}
+}

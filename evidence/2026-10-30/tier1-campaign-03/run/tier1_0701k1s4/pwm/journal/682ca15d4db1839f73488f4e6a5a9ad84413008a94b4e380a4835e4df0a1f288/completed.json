@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_4:decision:instruction:0",
+  "result": "Keep the 32-bit counter, its rollover branch, and reset logic unchanged. Replace only the PWM comparison with an explicitly sized 9-bit subtraction of the zero-extended 8-bit counter and duty, deriving `pwm_out` from the carry/borrow bit so the result remains true exactly when `counter[7:0] < duty`. Preserve the existing nonblocking output register update and verify the result against the frozen testbench and routed LUT, WNS, and WHS reports.",
+  "artifacts": {}
+}

@@ -1,0 +1,471 @@
+{
+  "allowed_flow_variations": "The harness may enable retiming or physical optimization. The candidate's retained synthesis script is authoritative for its actual settings.",
+  "authority": "Harness evidence is fixed. Proposed architectural goals cannot redefine it.",
+  "baseline_metrics": {
+    "bram_total": 50.0,
+    "bram_used": 0.0,
+    "dsp_total": 90,
+    "dsp_used": 0,
+    "dynamic_power_w": 0.003,
+    "ff_pct": 0.014423076923076924,
+    "ff_total": 41600,
+    "ff_used": 6,
+    "lut_pct": 0.028846153846153848,
+    "lut_total": 20800,
+    "lut_used": 6,
+    "reg2reg_wns_ns": 6.587,
+    "sim_error": "",
+    "sim_passed": true,
+    "synth_error": "",
+    "timing_met": true,
+    "total_power_w": 0.073,
+    "whs_ns": 0.219,
+    "wns_ns": 0.731
+  },
+  "build_spec": {
+    "authority": "Complete resolved typed build contract. Defined behavior is mandatory; explicitly unspecified cases remain unspecified. Frozen implementation identities do not turn incidental values in unspecified cases into requirements.",
+    "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\debouncer_build\\design_spec.json",
+    "resolved_spec": {
+      "connections": [],
+      "external_ports": [
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "clk",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "rst",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "noisy",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "output",
+          "name": "clean",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 1
+        }
+      ],
+      "modules": [
+        {
+          "behavior": "After reset, clean is 0. Track consecutive clock cycles for which noisy holds a value; update clean to that value only after it has held continuously for 8 cycles. Until then, clean holds its previous value. A change in noisy restarts the consecutive-cycle count.",
+          "clock_domains": [
+            "clk"
+          ],
+          "compare_mode": "fixed_latency",
+          "examples": [
+            {
+              "after_cycles": 7,
+              "expected": {
+                "clean": 0
+              },
+              "inputs": {
+                "noisy": 1,
+                "rst": 0
+              }
+            },
+            {
+              "after_cycles": 8,
+              "expected": {
+                "clean": 1
+              },
+              "inputs": {
+                "noisy": 1,
+                "rst": 0
+              }
+            }
+          ],
+          "golden_model": "",
+          "interface_signature": null,
+          "latency": 0,
+          "latency_known": true,
+          "name": "debouncer",
+          "parameters": {},
+          "ports": [
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "clk",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "rst",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "noisy",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "clean",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            }
+          ],
+          "reset": {
+            "active_high": true,
+            "duration_cycles": 5,
+            "kind": "sync",
+            "signal": "rst"
+          }
+        }
+      ],
+      "top_name": "debouncer_top"
+    },
+    "sha256": "e8ef78f821d1dbe9bca8d224cec77bc56bf31c707dedfd8d51760a9ffdb98564",
+    "truncated": false
+  },
+  "clock_period_ns": 10.0,
+  "declared_latency": {
+    "cycles": 0,
+    "known": true,
+    "meaning": "A source annotation declares numeric latency only when present. This known/cycles pair is authoritative for the current top module's annotation requirement. Only known=true requires a matching numeric top annotation. Child typed-module latency does not invent a top annotation for arbitrary aggregate wrappers. When known=false, absence of a top annotation is not a failed or unverifiable criterion. Unannotated numeric latency is UNKNOWN, not zero. Preserve the source's exact observable cycles and registered behavior. Annotation presence or absence alone is not independent proof of behavioral correctness; use the fixed source contract, all defined typed latency/minimum transfer age and deterministic verification, without inventing a numeric requirement.",
+    "source_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\debouncer_build\\iter_000\\debouncer_top.v",
+    "source_sha256": "fcd15057f7008543f609741c041dfff2011b88d4bda20a1fe70669b19c2ef1f0"
+  },
+  "execution_context": {
+    "dependencies": [
+      {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\debouncer_build\\modules\\debouncer\\debouncer.v",
+        "sha256": "98cfa5882d9815e82fa5e34547be50da94b3953e4f95efc5826ad62b1fc7c0e9"
+      }
+    ],
+    "part": "xc7a35tcpg236-1",
+    "period_ns": 10.0,
+    "promotions": {
+      "Designutils 20-1307": "ERROR",
+      "Synth 8-327": "ERROR",
+      "Synth 8-3352": "ERROR",
+      "Synth 8-9873": "ERROR",
+      "VRFC 10-3609": "ERROR"
+    },
+    "synthesis_template": "82fa3469b365c54e445b50a587f2dfd2ca06256e842bb05a2596faac46249cd4",
+    "tb": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\debouncer_build\\debouncer_top_tb.v",
+      "sha256": "d6d0e66aca34223c359aeb8a5a3c82afe8e30e6d238d82a7faa285a99c634ac0"
+    },
+    "tools": {
+      "vivado_bin": {
+        "path": "C:\\AMDDesignTools\\2025.2\\Vivado\\bin\\vivado.bat",
+        "sha256": "4f9c05aea82a71c7086a9e5edf01ba16ea70255f69cf3420c58b805ec113e994"
+      },
+      "xelab_bin": {
+        "path": "C:\\AMDDesignTools\\2025.2\\Vivado\\bin\\xelab.bat",
+        "sha256": "512a29ace988992d7fab14ca84f20f0b4515bb69ef1d5fef0a57c5f28b72c9b1"
+      },
+      "xsim_bin": {
+        "path": "C:\\AMDDesignTools\\2025.2\\Vivado\\bin\\xsim.bat",
+        "sha256": "8819fbb54fdf9cbcaaf24c2bf72801b403d5c93e0990ba32408b56c666761d21"
+      },
+      "xvlog_bin": {
+        "path": "C:\\AMDDesignTools\\2025.2\\Vivado\\bin\\xvlog.bat",
+        "sha256": "512a29ace988992d7fab14ca84f20f0b4515bb69ef1d5fef0a57c5f28b72c9b1"
+      }
+    },
+    "top": "debouncer_top"
+  },
+  "first_violated_path_excerpt": null,
+  "flow_and_constraints": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\debouncer_build\\iter_000\\synth.tcl",
+      "sha256": "6447c0e35a911130d0650d7b861e46a5e2b3eea7e380c6b7747556320dac9087",
+      "text": "set_msg_config -id {VRFC 10-3609} -new_severity ERROR\r\nset_msg_config -id {Synth 8-9873} -new_severity ERROR\r\nset_msg_config -id {Designutils 20-1307} -new_severity ERROR\r\nset_msg_config -id {Synth 8-327} -new_severity ERROR\r\nset_msg_config -id {Synth 8-3352} -new_severity ERROR\r\nset_part xc7a35tcpg236-1\r\nread_verilog \"C:/Users/prince.baah/Downloads/autortl-work/logs/tier1-campaign-03/tier1_0701k1s4/debouncer_build/iter_000/debouncer_top.v\" \"C:/Users/prince.baah/Downloads/autortl-work/logs/tier1-campaign-03/tier1_0701k1s4/debouncer_build/modules/debouncer/debouncer.v\"\r\nset fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/tier1-campaign-03/tier1_0701k1s4/debouncer_build/iter_000/timing.xdc\" w]\r\nputs $fp {create_clock -period 10.000 -name clk [get_ports clk]}\r\nclose $fp\r\nread_xdc \"C:/Users/prince.baah/Downloads/autortl-work/logs/tier1-campaign-03/tier1_0701k1s4/debouncer_build/iter_000/timing.xdc\"\r\nsynth_design -top debouncer_top -flatten_hierarchy rebuilt \r\nset fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/tier1-campaign-03/tier1_0701k1s4/debouncer_build/iter_000/timing_io.tcl\" w]\r\nputs $fp {set data_inputs [get_ports -filter {DIRECTION == IN && NAME != clk}]}\r\nputs $fp {if {[llength $data_inputs] > 0} {set_input_delay -clock clk -max 0.000 $data_inputs; set_input_delay -clock clk -min 0.000 $data_inputs}}\r\nputs $fp {if {[llength [all_outputs]] > 0} {set_output_delay -clock clk -max 0.000 [all_outputs]; set_output_delay -clock clk -min 0.000 [all_outputs]}}\r\nclose $fp\r\nsource \"C:/Users/prince.baah/Downloads/autortl-work/logs/tier1-campaign-03/tier1_0701k1s4/debouncer_build/iter_000/timing_io.tcl\"\r\nreport_utilization -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/tier1-campaign-03/tier1_0701k1s4/debouncer_build/iter_000/utilization.rpt\"\r\nreport_timing_summary -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/tier1-campaign-03/tier1_0701k1s4/debouncer_build/iter_000/timing.rpt\"\r\nopt_design\r\nplace_design\r\n\r\nroute_design\r\nreport_utilization -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/tier1-campaign-03/tier1_0701k1s4/debouncer_build/iter_000/utilization_routed.rpt\"\r\nreport_timing_summary -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/tier1-campaign-03/tier1_0701k1s4/debouncer_build/iter_000/timing_routed.rpt\"\r\ncatch { if {[llength [all_registers]] > 0} { report_timing -from [all_registers] -to [all_registers] -max_paths 1 -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/tier1-campaign-03/tier1_0701k1s4/debouncer_build/iter_000/timing_reg2reg.rpt\" } }\r\nreport_design_analysis -logic_level_distribution -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/tier1-campaign-03/tier1_0701k1s4/debouncer_build/iter_000/design_analysis.rpt\"\r\nreport_power -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/tier1-campaign-03/tier1_0701k1s4/debouncer_build/iter_000/power.rpt\"\r\ncatch { report_methodology -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/tier1-campaign-03/tier1_0701k1s4/debouncer_build/iter_000/methodology.rpt\" }\r\ncatch { report_qor_suggestions -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/tier1-campaign-03/tier1_0701k1s4/debouncer_build/iter_000/qor_suggestions.rpt\" }\r\nputs \"SYNTH_COMPLETE\"\r\n",
+      "truncated": false
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\debouncer_build\\iter_000\\timing.xdc",
+      "sha256": "fa142c09f0fadb5e303ca9fea08c02bc353451533e44aeee9cd9a0231cc8bede",
+      "text": "create_clock -period 10.000 -name clk [get_ports clk]\r\n",
+      "truncated": false
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\debouncer_build\\iter_000\\timing_io.tcl",
+      "sha256": "6b38098841a48bbb3ab15de49d2bf2baf7e4384f599259ff5f3afa2c2b1daf00",
+      "text": "set data_inputs [get_ports -filter {DIRECTION == IN && NAME != clk}]\r\nif {[llength $data_inputs] > 0} {set_input_delay -clock clk -max 0.000 $data_inputs; set_input_delay -clock clk -min 0.000 $data_inputs}\r\nif {[llength [all_outputs]] > 0} {set_output_delay -clock clk -max 0.000 [all_outputs]; set_output_delay -clock clk -min 0.000 [all_outputs]}\r\n",
+      "truncated": false
+    }
+  ],
+  "hard_gates": [
+    "Preserve typed build spec defined behavior, ports, parameter defaults, reset and observable cycles; explicitly unspecified cases remain unspecified.",
+    "Use the fixed provided testbench, tools, device and constraints without modification.",
+    "Static/interface checks, compile, simulation and real routed metric integrity must pass.",
+    "Timing closure requires setup slack >= 0 and hold slack >= 0.",
+    "Unknown or absent evidence cannot count as success."
+  ],
+  "metric_provenance": "Structured metrics are parsed from retained reports; routed utilization/timing reports take precedence when present. The manifest identifies complete files by hash. Header excerpts are bounded previews, not complete reports or an independent metric source.",
+  "objective": "minimize_luts",
+  "objective_policy": "First establish timing feasibility. A verified timing-feasible candidate may replace a known timing-infeasible previous best even with higher area or power; classify this as timing_recovery, not objective savings. Once both are timing-feasible, require strict improvement of the chosen objective. Unknown or contradictory incumbent timing evidence cannot establish recovery. A completed experiment may find no improvement. Do not invent mandatory savings, slack margins, tool versions, timing corners, new tests, thresholds, code-style quotas or external environment requirements.",
+  "part": "xc7a35tcpg236-1",
+  "report_headers": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\debouncer_build\\iter_000\\power.rpt",
+      "sha256": "63ff6f6fd2b2250d12fcac0c899776986c37e8abb93af2bd125408c8e6d6d968",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n---------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version     : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date             : Fri Oct 30 11:39:44 2026\r\n| Host             : Baah running 64-bit major release  (build 9200)\r\n| Command          : report_power -file C:/Users/prince.baah/Downloads/autortl-work/logs/tier1-campaign-03/tier1_0701k1s4/debouncer_build/iter_000/power.rpt\r\n| Design           : debouncer_top\r\n| Device           : xc7a35tcpg236-1\r\n| Design State     : routed\r\n| Grade            : commercial\r\n| Process          : typical\r\n| Characterization : Production\r\n---------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nPower Report\r\n\r\nTable of Contents\r\n-----------------\r\n1. Summary\r\n1.1 On-Chip Components\r\n1.2 Power Supply Summary\r\n1.3 Confidence Level\r\n2. Settings\r\n2.1 Environment\r\n2.2 Clock Constraints\r\n3. Detailed Reports\r\n3.1 By Hierarchy\r\n\r\n1. Summary\r\n----------\r\n\r\n+--------------------------+--------------+\r\n| Total On-Chip Power (W)  | 0.073        |\r\n| Design Power Budget (W)  | Unspecified* |\r\n| Power Budget Margin (W)  | NA           |\r\n| Dynamic (W)              | 0.003        |\r\n| Device Static (W)        | 0.070        |\r\n| Effective TJA (C/W)      | 5.0          |\r\n| Max Ambient (C)          | 84.6         |\r\n| Junction Temperature (C) | 25.4         |\r\n| Confidence Level         | Medium       |\r\n| Setting File             | ---          |\r\n| Simulation Activity F",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\debouncer_build\\iter_000\\timing.rpt",
+      "sha256": "6adcd31d9304825200d770a24221c8a84b2f3dc562f91bab80d24b761d8afaaa",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n-------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date         : Fri Oct 30 11:38:50 2026\r\n| Host         : Baah running 64-bit major release  (build 9200)\r\n| Command      : report_timing_summary -file C:/Users/prince.baah/Downloads/autortl-work/logs/tier1-campaign-03/tier1_0701k1s4/debouncer_build/iter_000/timing.rpt\r\n| Design       : debouncer_top\r\n| Device       : 7a35t-cpg236\r\n| Speed File   : -1  PRODUCTION 1.23 2018-06-13\r\n| Design State : Synthesized\r\n-------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nTiming Summary Report\r\n\r\n------------------------------------------------------------------------------------------------\r\n| Timer Settings\r\n| --------------\r\n------------------------------------------------------------------------------------------------\r\n\r\n  Enable Multi Corner Analysis               :  Yes\r\n  Enable Pessimism Removal                   :  Yes\r\n  Pessimism Removal Resolution               :  Nearest Common Node\r\n  Enable Input Delay Default Clock           :  No\r\n  Enable Preset / Clear Arcs                 :  No\r\n  Disable Flight Delays                      :  No\r\n  Ignore I/O Paths                           :  No\r\n  Timing Early Launch at Borrowing Latches   :  No\r\n  Borrow Time for Max Delay Exceptions       :  Yes\r\n  Merge Timing Exceptions                    :  Yes\r\n  Inter-SLR Compensation                   ",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\debouncer_build\\iter_000\\timing_reg2reg.rpt",
+      "sha256": "e7d334afc802312c048fb4fa9aab0e554c3beb4536378599abf02627b348e73d",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date         : Fri Oct 30 11:39:44 2026\r\n| Host         : Baah running 64-bit major release  (build 9200)\r\n| Command      : report_timing -from [all_registers] -to [all_registers] -max_paths 1 -file C:/Users/prince.baah/Downloads/autortl-work/logs/tier1-campaign-03/tier1_0701k1s4/debouncer_build/iter_000/timing_reg2reg.rpt\r\n| Design       : debouncer_top\r\n| Device       : 7a35t-cpg236\r\n| Speed File   : -1  PRODUCTION 1.23 2018-06-13\r\n| Design State : Routed\r\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nTiming Report\r\n\r\nSlack (MET) :             6.587ns  (required time - arrival time)\r\n  Source:                 u_debouncer/count_reg[1]/C\r\n                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@5.000ns period=10.000ns})\r\n  Destination:            u_debouncer/clean_reg_reg/CE\r\n                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@5.000ns period=10.000ns})\r\n  Path Group:             clk\r\n  Path Type:              Setup (Max at Slow Process Corner)\r\n  Requirement:            10.000ns  (clk rise@10.000ns - clk rise@0.000ns)\r\n  Data Path Delay:        3.148ns  (logic 0.580ns (18.427%)  route 2.568ns",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\debouncer_build\\iter_000\\timing_routed.rpt",
+      "sha256": "4f5cc93b581430d3d65d3366744470d3ec4f943483ea5402a9e81d280aef8b9b",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date         : Fri Oct 30 11:39:44 2026\r\n| Host         : Baah running 64-bit major release  (build 9200)\r\n| Command      : report_timing_summary -file C:/Users/prince.baah/Downloads/autortl-work/logs/tier1-campaign-03/tier1_0701k1s4/debouncer_build/iter_000/timing_routed.rpt\r\n| Design       : debouncer_top\r\n| Device       : 7a35t-cpg236\r\n| Speed File   : -1  PRODUCTION 1.23 2018-06-13\r\n| Design State : Routed\r\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nTiming Summary Report\r\n\r\n------------------------------------------------------------------------------------------------\r\n| Timer Settings\r\n| --------------\r\n------------------------------------------------------------------------------------------------\r\n\r\n  Enable Multi Corner Analysis               :  Yes\r\n  Enable Pessimism Removal                   :  Yes\r\n  Pessimism Removal Resolution               :  Nearest Common Node\r\n  Enable Input Delay Default Clock           :  No\r\n  Enable Preset / Clear Arcs                 :  No\r\n  Disable Flight Delays                      :  No\r\n  Ignore I/O Paths                           :  No\r\n  Timing Early Launch at Borrowing Latches   :  No\r\n  Borrow Time for Max Delay Exceptions       :  Yes\r\n  Merge Timing Exceptions                    :  Yes\r\n  Inter-SLR Compensation   ",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\debouncer_build\\iter_000\\utilization.rpt",
+      "sha256": "8051c5f5c2f4f515a43c371b5e176f6d513d9711d4b8b4c4c8c1e2b139102449",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\n---------------------------------------------------------------------------------------------------------------------------------------------------------------------\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\n| Date         : Fri Oct 30 11:38:50 2026\n| Host         : Baah running 64-bit major release  (build 9200)\n| Command      : report_utilization -file C:/Users/prince.baah/Downloads/autortl-work/logs/tier1-campaign-03/tier1_0701k1s4/debouncer_build/iter_000/utilization.rpt\n| Design       : debouncer_top\n| Device       : xc7a35tcpg236-1\n| Speed File   : -1\n| Design State : Synthesized\n---------------------------------------------------------------------------------------------------------------------------------------------------------------------\n\nUtilization Design Information\n\nTable of Contents\n-----------------\n1. Slice Logic\n1.1 Summary of Registers by Type\n2. Memory\n3. DSP\n4. IO and GT Specific\n5. Clocking\n6. Specific Feature\n7. Primitives\n8. Black Boxes\n9. Instantiated Netlists\n\n1. Slice Logic\n--------------\n\n+-------------------------+------+-------+------------+-----------+-------+\n|        Site Type        | Used | Fixed | Prohibited | Available | Util% |\n+-------------------------+------+-------+------------+-----------+-------+\n| Slice LUTs*             |    6 |     0 |          0 |     20800 |  0.03 |\n|   LUT as Logic          |    6 |     0 |          0 |     20800 |  0.03 |\n|   LUT as Memory         |    0 |     0 |          0 |      9600 |  0.00 |\n| Slice Registers         |    6 |     0 |          0 |     41600 |  0.01 |\n|   Register as Flip Flop |    6 |     0 |          0 |     41600 |  ",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\debouncer_build\\iter_000\\utilization_routed.rpt",
+      "sha256": "7fd49f172517ebcea5d5769af0c7834f7b16dc78ed23211df9516d081d084018",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\n----------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\n| Date         : Fri Oct 30 11:39:44 2026\n| Host         : Baah running 64-bit major release  (build 9200)\n| Command      : report_utilization -file C:/Users/prince.baah/Downloads/autortl-work/logs/tier1-campaign-03/tier1_0701k1s4/debouncer_build/iter_000/utilization_routed.rpt\n| Design       : debouncer_top\n| Device       : xc7a35tcpg236-1\n| Speed File   : -1\n| Design State : Routed\n----------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n\nUtilization Design Information\n\nTable of Contents\n-----------------\n1. Slice Logic\n1.1 Summary of Registers by Type\n2. Slice Logic Distribution\n3. Memory\n4. DSP\n5. IO and GT Specific\n6. Clocking\n7. Specific Feature\n8. Primitives\n9. Black Boxes\n10. Instantiated Netlists\n\n1. Slice Logic\n--------------\n\n+-------------------------+------+-------+------------+-----------+-------+\n|        Site Type        | Used | Fixed | Prohibited | Available | Util% |\n+-------------------------+------+-------+------------+-----------+-------+\n| Slice LUTs              |    6 |     0 |          0 |     20800 |  0.03 |\n|   LUT as Logic          |    6 |     0 |          0 |     20800 |  0.03 |\n|   LUT as Memory         |    0 |     0 |          0 |      9600 |  0.00 |\n| Slice Registers         |    6 |     0 |          0 |     41600 |  0.01 |\n|   Register as Flip Flo",
+      "truncated": true
+    }
+  ],
+  "report_manifest": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\debouncer_build\\iter_000\\power.rpt",
+      "sha256": "63ff6f6fd2b2250d12fcac0c899776986c37e8abb93af2bd125408c8e6d6d968"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\debouncer_build\\iter_000\\timing.rpt",
+      "sha256": "6adcd31d9304825200d770a24221c8a84b2f3dc562f91bab80d24b761d8afaaa"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\debouncer_build\\iter_000\\timing_reg2reg.rpt",
+      "sha256": "e7d334afc802312c048fb4fa9aab0e554c3beb4536378599abf02627b348e73d"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\debouncer_build\\iter_000\\timing_routed.rpt",
+      "sha256": "4f5cc93b581430d3d65d3366744470d3ec4f943483ea5402a9e81d280aef8b9b"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\debouncer_build\\iter_000\\utilization.rpt",
+      "sha256": "8051c5f5c2f4f515a43c371b5e176f6d513d9711d4b8b4c4c8c1e2b139102449"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\debouncer_build\\iter_000\\utilization_routed.rpt",
+      "sha256": "7fd49f172517ebcea5d5769af0c7834f7b16dc78ed23211df9516d081d084018"
+    }
+  ],
+  "schema_version": 1,
+  "simulation": {
+    "failure_verdict": "TEST FAILED",
+    "required_verdict": "TEST PASSED",
+    "scope": "Provided testbench checks; not a formal equivalence proof.",
+    "tools": [
+      "xvlog",
+      "xelab",
+      "xsim -runall"
+    ]
+  },
+  "sources": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\debouncer_build\\iter_000\\debouncer_top.v",
+      "sha256": "fcd15057f7008543f609741c041dfff2011b88d4bda20a1fe70669b19c2ef1f0",
+      "text": "`timescale 1ns/1ps\r\n// @latency 0\r\n// Inherited fixed logical latency from transparent typed child wiring; not measured timing.\r\nmodule debouncer_top (\r\n    input wire clk,\r\n    input wire rst,\r\n    input wire noisy,\r\n    output wire clean\r\n);\r\n    debouncer u_debouncer (\r\n        .clk(clk),\r\n        .rst(rst),\r\n        .noisy(noisy),\r\n        .clean(clean)\r\n    );\r\nendmodule\r\n",
+      "truncated": false
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\debouncer_build\\modules\\debouncer\\debouncer.v",
+      "sha256": "98cfa5882d9815e82fa5e34547be50da94b3953e4f95efc5826ad62b1fc7c0e9",
+      "text": "`timescale 1ns/1ps\r\n// @latency 0\r\nmodule debouncer (\r\n    input  wire clk,\r\n    input  wire rst,\r\n    input  wire noisy,\r\n    output wire clean\r\n);\r\n\r\n    reg       candidate;\r\n    reg [3:0] count;\r\n    reg       clean_reg;\r\n\r\n    assign clean = clean_reg;\r\n\r\n    always @(posedge clk) begin\r\n        if (rst) begin\r\n            candidate <= 1'b0;\r\n            count     <= 4'd0;\r\n            clean_reg <= 1'b0;\r\n        end else if (noisy != candidate) begin\r\n            candidate <= noisy;\r\n            count     <= 4'd1;\r\n        end else if (count < 4'd8) begin\r\n            count <= count + 1'b1;\r\n            if (count == 4'd7)\r\n                clean_reg <= candidate;\r\n        end\r\n    end\r\n\r\nendmodule",
+      "truncated": false
+    }
+  ],
+  "testbench": {
+    "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\debouncer_build\\debouncer_top_tb.v",
+    "sha256": "d6d0e66aca34223c359aeb8a5a3c82afe8e30e6d238d82a7faa285a99c634ac0",
+    "text": "`timescale 1ns/1ps\r\nmodule debouncer_top_tb;\r\nreg _autortl_clk = 0;\r\nalways #5 _autortl_clk = ~_autortl_clk;\r\nreg rst;\r\nreg noisy;\r\nwire clean;\r\ninteger _autortl_cycle, _autortl_errors, _autortl_index;\r\n\r\nreg _autortl_stim_noisy [0:102];\r\nreg _autortl_exp_clean [0:102];\r\ndebouncer_top dut (.clk(_autortl_clk), .rst(rst), .noisy(noisy), .clean(clean));\r\ninitial begin\r\n_autortl_errors = 0;\r\nrst = 0;\r\nnoisy = 0;\r\n_autortl_stim_noisy[0] = 1'd0;\r\n_autortl_stim_noisy[1] = 1'd1;\r\n_autortl_stim_noisy[2] = 1'd1;\r\n_autortl_stim_noisy[3] = 1'd1;\r\n_autortl_stim_noisy[4] = 1'd0;\r\n_autortl_stim_noisy[5] = 1'd0;\r\n_autortl_stim_noisy[6] = 1'd0;\r\n_autortl_stim_noisy[7] = 1'd0;\r\n_autortl_stim_noisy[8] = 1'd0;\r\n_autortl_stim_noisy[9] = 1'd0;\r\n_autortl_stim_noisy[10] = 1'd1;\r\n_autortl_stim_noisy[11] = 1'd0;\r\n_autortl_stim_noisy[12] = 1'd0;\r\n_autortl_stim_noisy[13] = 1'd0;\r\n_autortl_stim_noisy[14] = 1'd0;\r\n_autortl_stim_noisy[15] = 1'd1;\r\n_autortl_stim_noisy[16] = 1'd1;\r\n_autortl_stim_noisy[17] = 1'd1;\r\n_autortl_stim_noisy[18] = 1'd0;\r\n_autortl_stim_noisy[19] = 1'd0;\r\n_autortl_stim_noisy[20] = 1'd0;\r\n_autortl_stim_noisy[21] = 1'd0;\r\n_autortl_stim_noisy[22] = 1'd0;\r\n_autortl_stim_noisy[23] = 1'd1;\r\n_autortl_stim_noisy[24] = 1'd0;\r\n_autortl_stim_noisy[25] = 1'd0;\r\n_autortl_stim_noisy[26] = 1'd1;\r\n_autortl_stim_noisy[27] = 1'd0;\r\n_autortl_stim_noisy[28] = 1'd0;\r\n_autortl_stim_noisy[29] = 1'd0;\r\n_autortl_stim_noisy[30] = 1'd1;\r\n_autortl_stim_noisy[31] = 1'd0;\r\n_autortl_stim_noisy[32] = 1'd1;\r\n_autortl_stim_noisy[33] = 1'd1;\r\n_autortl_stim_noisy[34] = 1'd1;\r\n_autortl_stim_noisy[35] = 1'd1;\r\n_autortl_stim_noisy[36] = 1'd0;\r\n_autortl_stim_noisy[37] = 1'd0;\r\n_autortl_stim_noisy[38] = 1'd1;\r\n_autortl_stim_noisy[39] = 1'd0;\r\n_autortl_stim_noisy[40] = 1'd0;\r\n_autortl_stim_noisy[41] = 1'd0;\r\n_autortl_stim_noisy[42] = 1'd1;\r\n_autortl_stim_noisy[43] = 1'd0;\r\n_autortl_stim_noisy[44] = 1'd1;\r\n_autortl_stim_noisy[45] = 1'd1;\r\n_autortl_stim_noisy[46] = 1'd0;\r\n_autortl_stim_noisy[47] = 1'd0;\r\n_autortl_stim_noisy[48] = 1'd0;\r\n_autortl_stim_noisy[49] = 1'd1;\r\n_autortl_stim_noisy[50] = 1'd0;\r\n_autortl_stim_noisy[51] = 1'd0;\r\n_autortl_stim_noisy[52] = 1'd0;\r\n_autortl_stim_noisy[53] = 1'd0;\r\n_autortl_stim_noisy[54] = 1'd0;\r\n_autortl_stim_noisy[55] = 1'd1;\r\n_autortl_stim_noisy[56] = 1'd0;\r\n_autortl_stim_noisy[57] = 1'd0;\r\n_autortl_stim_noisy[58] = 1'd1;\r\n_autortl_stim_noisy[59] = 1'd1;\r\n_autortl_stim_noisy[60] = 1'd0;\r\n_autortl_stim_noisy[61] = 1'd1;\r\n_autortl_stim_noisy[62] = 1'd1;\r\n_autortl_stim_noisy[63] = 1'd0;\r\n_autortl_stim_noisy[64] = 1'd0;\r\n_autortl_stim_noisy[65] = 1'd1;\r\n_autortl_stim_noisy[66] = 1'd0;\r\n_autortl_stim_noisy[67] = 1'd1;\r\n_autortl_stim_noisy[68] = 1'd0;\r\n_autortl_stim_noisy[69] = 1'd1;\r\n_autortl_stim_noisy[70] = 1'd0;\r\n_autortl_stim_noisy[71] = 1'd1;\r\n_autortl_stim_noisy[72] = 1'd1;\r\n_autortl_stim_noisy[73] = 1'd1;\r\n_autortl_stim_noisy[74] = 1'd1;\r\n_autortl_stim_noisy[75] = 1'd1;\r\n_autortl_stim_noisy[76] = 1'd1;\r\n_autortl_stim_noisy[77] = 1'd0;\r\n_autortl_stim_noisy[78] = 1'd1;\r\n_autortl_stim_noisy[79] = 1'd0;\r\n_autortl_stim_noisy[80] = 1'd1;\r\n_autortl_stim_noisy[81] = 1'd1;\r\n_autortl_stim_noisy[82] = 1'd1;\r\n_autortl_stim_noisy[83] = 1'd1;\r\n_autortl_stim_noisy[84] = 1'd0;\r\n_autortl_stim_noisy[85] = 1'd0;\r\n_autortl_stim_noisy[86] = 1'd1;\r\n_autortl_stim_noisy[87] = 1'd1;\r\n_autortl_stim_noisy[88] = 1'd0;\r\n_autortl_stim_noisy[89] = 1'd0;\r\n_autortl_stim_noisy[90] = 1'd1;\r\n_autortl_stim_noisy[91] = 1'd1;\r\n_autortl_stim_noisy[92] = 1'd1;\r\n_autortl_stim_noisy[93] = 1'd0;\r\n_autortl_stim_noisy[94] = 1'd1;\r\n_autortl_stim_noisy[95] = 1'd0;\r\n_autortl_stim_noisy[96] = 1'd0;\r\n_autortl_stim_noisy[97] = 1'd1;\r\n_autortl_stim_noisy[98] = 1'd0;\r\n_autortl_stim_noisy[99] = 1'd1;\r\n_autortl_stim_noisy[100] = 1'd1;\r\n_autortl_stim_noisy[101] = 1'd0;\r\n_autortl_stim_noisy[102] = 1'd0;\r\n_autortl_exp_clean[0] = 1'd0;\r\n_autortl_exp_clean[1] = 1'd0;\r\n_autortl_exp_clean[2] = 1'd0;\r\n_autortl_exp_clean[3] = 1'd0;\r\n_autortl_exp_clean[4] = 1'd0;\r\n_autortl_exp_clean[5] = 1'd0;\r\n_autortl_exp_clean[6] = 1'd0;\r\n_autortl_exp_clean[7] = 1'd0;\r\n_autortl_exp_clean[8] = 1'd0;\r\n_autortl_exp_clean[9] = 1'd0;\r\n_autortl_exp_clean[10] = 1'd0;\r\n_autortl_exp_clean[11] = 1'd0;\r\n_autortl_exp_clean[12] = 1'd0;\r\n_autortl_exp_clean[13] = 1'd0;\r\n_autortl_exp_clean[14] = 1'd0;\r\n_autortl_exp_clean[15] = 1'd0;\r\n_autortl_exp_clean[16] = 1'd0;\r\n_autortl_exp_clean[17] = 1'd0;\r\n_autortl_exp_clean[18] = 1'd0;\r\n_autortl_exp_clean[19] = 1'd0;\r\n_autortl_exp_clean[20] = 1'd0;\r\n_autortl_exp_clean[21] = 1'd0;\r\n_autortl_exp_clean[22] = 1'd0;\r\n_autortl_exp_clean[23] = 1'd0;\r\n_autortl_exp_clean[24] = 1'd0;\r\n_autortl_exp_clean[25] = 1'd0;\r\n_autortl_exp_clean[26] = 1'd0;\r\n_autortl_exp_clean[27] = 1'd0;\r\n_autortl_exp_clean[28] = 1'd0;\r\n_autortl_exp_clean[29] = 1'd0;\r\n_autortl_exp_clean[30] = 1'd0;\r\n_autortl_exp_clean[31] = 1'd0;\r\n_autortl_exp_clean[32] = 1'd0;\r\n_autortl_exp_clean[33] = 1'd0;\r\n_autortl_exp_clean[34] = 1'd0;\r\n_autortl_exp_clean[35] = 1'd0;\r\n_autortl_exp_clean[36] = 1'd0;\r\n_autortl_exp_clean[37] = 1'd0;\r\n_autortl_exp_clean[38] = 1'd0;\r\n_autortl_exp_clean[39] = 1'd0;\r\n_autortl_exp_clean[40] = 1'd0;\r\n_autortl_exp_clean[41] = 1'd0;\r\n_autortl_exp_clean[42] = 1'd0;\r\n_autortl_exp_clean[43] = 1'd0;\r\n_autortl_exp_clean[44] = 1'd0;\r\n_autortl_exp_clean[45] = 1'd0;\r\n_autortl_exp_clean[46] = 1'd0;\r\n_autortl_exp_clean[47] = 1'd0;\r\n_autortl_exp_clean[48] = 1'd0;\r\n_autortl_exp_clean[49] = 1'd0;\r\n_autortl_exp_clean[50] = 1'd0;\r\n_autortl_exp_clean[51] = 1'd0;\r\n_autortl_exp_clean[52] = 1'd0;\r\n_autortl_exp_clean[53] = 1'd0;\r\n_autortl_exp_clean[54] = 1'd0;\r\n_autortl_exp_clean[55] = 1'd0;\r\n_autortl_exp_clean[56] = 1'd0;\r\n_autortl_exp_clean[57] = 1'd0;\r\n_autortl_exp_clean[58] = 1'd0;\r\n_autortl_exp_clean[59] = 1'd0;\r\n_autortl_exp_clean[60] = 1'd0;\r\n_autortl_exp_clean[61] = 1'd0;\r\n_autortl_exp_clean[62] = 1'd0;\r\n_autortl_exp_clean[63] = 1'd0;\r\n_autortl_exp_clean[64] = 1'd0;\r\n_autortl_exp_clean[65] = 1'd0;\r\n_autortl_exp_clean[66] = 1'd0;\r\n_autortl_exp_clean[67] = 1'd0;\r\n_autortl_exp_clean[68] = 1'd0;\r\n_autortl_exp_clean[69] = 1'd0;\r\n_autortl_exp_clean[70] = 1'd0;\r\n_autortl_exp_clean[71] = 1'd0;\r\n_autortl_exp_clean[72] = 1'd0;\r\n_autortl_exp_clean[73] = 1'd0;\r\n_autortl_exp_clean[74] = 1'd0;\r\n_autortl_exp_clean[75] = 1'd0;\r\n_autortl_exp_clean[76] = 1'd0;\r\n_autortl_exp_clean[77] = 1'd0;\r\n_autortl_exp_clean[78] = 1'd0;\r\n_autortl_exp_clean[79] = 1'd0;\r\n_autortl_exp_clean[80] = 1'd0;\r\n_autortl_exp_clean[81] = 1'd0;\r\n_autortl_exp_clean[82] = 1'd0;\r\n_autortl_exp_clean[83] = 1'd0;\r\n_autortl_exp_clean[84] = 1'd0;\r\n_autortl_exp_clean[85] = 1'd0;\r\n_autortl_exp_clean[86] = 1'd0;\r\n_autortl_exp_clean[87] = 1'd0;\r\n_autortl_exp_clean[88] = 1'd0;\r\n_autortl_exp_clean[89] = 1'd0;\r\n_autortl_exp_clean[90] = 1'd0;\r\n_autortl_exp_clean[91] = 1'd0;\r\n_autortl_exp_clean[92] = 1'd0;\r\n_autortl_exp_clean[93] = 1'd0;\r\n_autortl_exp_clean[94] = 1'd0;\r\n_autortl_exp_clean[95] = 1'd0;\r\n_autortl_exp_clean[96] = 1'd0;\r\n_autortl_exp_clean[97] = 1'd0;\r\n_autortl_exp_clean[98] = 1'd0;\r\n_autortl_exp_clean[99] = 1'd0;\r\n_autortl_exp_clean[100] = 1'd0;\r\n_autortl_exp_clean[101] = 1'd0;\r\n_autortl_exp_clean[102] = 1'd0;\r\nrst = 1'b1;\r\nrepeat (5) @(posedge _autortl_clk);\r\n@(negedge _autortl_clk);\r\nrst = 1'b0;\r\nfor (_autortl_cycle=0; _autortl_cycle<103; _autortl_cycle=_autortl_cycle+1) begin\r\nif (_autortl_cycle > 0) @(negedge _autortl_clk);\r\nif (_autortl_cycle < 103) begin\r\nnoisy = _autortl_stim_noisy[_autortl_cycle];\r\nend\r\n#1;\r\n_autortl_index = _autortl_cycle - 0;\r\nif (_autortl_index >= 0 && _autortl_index < 103) begin\r\nif (clean !== _autortl_exp_clean[_autortl_index]) begin $display(\"FAIL index=%0d signal=clean\", _autortl_index); _autortl_errors = _autortl_errors + 1; end\r\nend\r\nend\r\nif (_autortl_errors == 0) $display(\"TEST PASSED\");\r\nelse $display(\"TEST FAILED: %0d errors\", _autortl_errors);\r\n$finish;\r\nend\r\ninitial begin #1280; $display(\"TEST FAILED: watchdog timeout\"); $finish; end\r\nendmodule\r\n",
+    "truncated": false
+  },
+  "testbench_top": "debouncer_top_tb",
+  "tool_exit_evidence": {
+    "history_count": 4,
+    "latest_by_tool": {
+      "vivado": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\debouncer_build\\iter_000\\vivado_synth_output.log",
+        "output_log_sha256": "5de1a34bef187320877eeef41d45add692d448972c0aa8037b391f4f83cc07bb",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xelab": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\debouncer_build\\iter_000\\xelab.log",
+        "output_log_sha256": "93ecd50069d6bb738f3c4a4dcee24a246bc74e983da1472e1553525a32a2ee47",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xsim": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\debouncer_build\\iter_000\\xsim.log",
+        "output_log_sha256": "c7fe3c2ebf3669de1aae21fc4fb6da2138a7f3a8ca1b8c0ce80335a726c0d150",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xvlog": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\debouncer_build\\iter_000\\xvlog.log",
+        "output_log_sha256": "df912dfd14e63c819a729e7f7cdfe34fa4fd57113e0b69d6a82f8a9e8c588d76",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      }
+    },
+    "missing_required_tools": [],
+    "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\debouncer_build\\iter_000\\tool_exit_records.log",
+    "records": [
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\debouncer_build\\iter_000",
+        "driver_returncode": 0,
+        "elapsed_seconds": 4.0,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xvlog.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\debouncer_build\\iter_000\\xvlog.log",
+        "output_log_sha256": "df912dfd14e63c819a729e7f7cdfe34fa4fd57113e0b69d6a82f8a9e8c588d76",
+        "pid": 1848,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xvlog"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\debouncer_build\\iter_000",
+        "driver_returncode": 0,
+        "elapsed_seconds": 4.061999999918044,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xelab.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\debouncer_build\\iter_000\\xelab.log",
+        "output_log_sha256": "93ecd50069d6bb738f3c4a4dcee24a246bc74e983da1472e1553525a32a2ee47",
+        "pid": 4800,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xelab"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\debouncer_build\\iter_000",
+        "driver_returncode": 0,
+        "elapsed_seconds": 7.594000000040978,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xsim.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\debouncer_build\\iter_000\\xsim.log",
+        "output_log_sha256": "c7fe3c2ebf3669de1aae21fc4fb6da2138a7f3a8ca1b8c0ce80335a726c0d150",
+        "pid": 3276,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xsim"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\debouncer_build\\iter_000",
+        "driver_returncode": 0,
+        "elapsed_seconds": 202.93699999991804,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/vivado.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\debouncer_build\\iter_000\\vivado_synth_output.log",
+        "output_log_sha256": "5de1a34bef187320877eeef41d45add692d448972c0aa8037b391f4f83cc07bb",
+        "pid": 30040,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "vivado"
+      }
+    ],
+    "schema_valid": true,
+    "sha256": "4ff018e29903a97be7fca4605c9dd8ce997707f7d7f4331ae96b12970433c879",
+    "status": "recorded",
+    "truncated": false
+  },
+  "top_module": "debouncer_top",
+  "verification_logs": [
+    {
+      "head": "INFO: [VRFC 10-2263] Analyzing Verilog file \"C:/Users/prince.baah/Downloads/autortl-work/logs/tier1-campaign-03/tier1_0701k1s4/debouncer_build/iter_000/debouncer_top.v\" into library work\r\nINFO: [VRFC 10-311] analyzing module debouncer_top\r\nINFO: [VRFC 10-2263] Analyzing Verilog file \"C:/Users/prince.baah/Downloads/autortl-work/logs/tier1-campaign-03/tier1_0701k1s4/debouncer_build/modules/debouncer/debouncer.v\" into library work\r\nINFO: [VRFC 10-311] analyzing module debouncer\r\nINFO: [VRFC 10-2263] Analyzing Verilog file \"C:/Users/prince.baah/Downloads/autortl-work/logs/tier1-campaign-03/tier1_0701k1s4/debouncer_build/debouncer_top_tb.v\" into library work\r\nINFO: [VRFC 10-311] analyzing module debouncer_top_tb\r\n\r\n",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\debouncer_build\\iter_000\\xvlog.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "df912dfd14e63c819a729e7f7cdfe34fa4fd57113e0b69d6a82f8a9e8c588d76",
+      "tail": "",
+      "truncated": false
+    },
+    {
+      "head": "Vivado Simulator v2025.2\r\nCopyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\nCopyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\nRunning: C:/AMDDesignTools/2025.2/Vivado/bin/unwrapped/win64.o/xelab.exe debouncer_top_tb -s debouncer_top_tb_snap --debug off \r\nMulti-threading is on. Using 10 slave threads.\r\nStarting static elaboration\r\nPass Through NonSizing Optimizer\r\nCompleted static elaboration\r\nStarting simulation data flow analysis\r\nCompleted simulation data flow analysis\r\nTime Resolution for simulation is 1ps\r\nCompiling module work.debouncer\r\nCompiling module work.debouncer_top_tb\r\nBuilt simulation snapshot debouncer_top_tb_snap\r\n\r\n",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\debouncer_build\\iter_000\\xelab.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "93ecd50069d6bb738f3c4a4dcee24a246bc74e983da1472e1553525a32a2ee47",
+      "tail": "",
+      "truncated": false
+    },
+    {
+      "head": "\r\n****** xsim v2025.2 (64-bit)\r\n  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025\r\n  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025\r\n  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025\r\n  **** Start of session at: Fri Oct 30 11:36:21 2026\r\n    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\n    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n\r\nsource xsim.dir/debouncer_top_tb_snap/xsim_script.tcl\r\n# xsim {debouncer_top_tb_snap} -autoloadwcfg -runall\r\nTime resolution is 1 ps\r\nrun -all\r\nTEST PASSED\r\n$finish called at time : 1071 ns : File \"C:/Users/prince.baah/Downloads/autortl-work/logs/tier1-campaign-03/tier1_0701k1s4/debouncer_build/debouncer_top_tb.v\" Line 240\r\nexit\r\nINFO: [Common 17-206] Exiting xsim at Fri Oct 30 11:36:23 2026...\r\n\r\n",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\debouncer_build\\iter_000\\sim_log.txt",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "c7fe3c2ebf3669de1aae21fc4fb6da2138a7f3a8ca1b8c0ce80335a726c0d150",
+      "tail": "",
+      "truncated": false
+    },
+    {
+      "head": "\r\n****** Vivado v2025.2 (64-bit)\r\n  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025\r\n  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025\r\n  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025\r\n  **** Start of session at: Fri Oct 30 11:36:27 2026\r\n    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\n    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n\r\nsource C:/Users/prince.baah/Downloads/autortl-work/logs/tier1-campaign-03/tier1_0701k1s4/debouncer_build/iter_000/synth.tcl\r\n# set_msg_config -id {VRFC 10-3609} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-9873} -new_severity ERROR\r\n# set_msg_config -id {Designutils 20-1307} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-327} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-3352} -new_severity ERROR\r\n# set_part xc7a35tcpg236-1\r\nINFO: [Coretcl 2-1500] The part has been set to 'xc7a35tcpg236-1' for the current project only. Run set_part -help for more details. To evaluate different speed grades in the current design, use the set_speed_grade command, or use the open_checkpoint -part command to change the part used by an existing checkpoint design.\r\nset_part: Time (s): cpu = 00:00:29 ; elapsed = 00:00:25 . Memory (MB): peak = 530.340 ; gain = 225.016\r\n# read_verilog \"C:/Users/prince.baah/Downloads/autortl-work/logs/tier1-campaign-03/tier1_0701k1s4/debouncer_build/iter_000/debouncer_top.v\" \"C:/Users/prince.baah/Downloads/autortl-work/logs/tier1-campaign-03/tier1_0701k1s4/debouncer_build/modules/debouncer/debouncer.v\"\r\n# set fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/tier1-campaign-03/tier1_0701k1s4/debouncer_build/iter_000/timing.xdc\" w]\r\n# puts $fp {create_clock -period 10.000 -name clk [get_ports clk]}\r\n# close $fp\r\n# read_xdc \"C:/Users/prince.",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\debouncer_build\\iter_000\\vivado_synth_output.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "5de1a34bef187320877eeef41d45add692d448972c0aa8037b391f4f83cc07bb",
+      "tail": "r1_0701k1s4/debouncer_build/iter_000/power.rpt\r\nRunning Vector-less Activity Propagation...\r\n\r\nFinished Running Vector-less Activity Propagation\r\n0 Infos, 0 Warnings, 0 Critical Warnings and 0 Errors encountered.\r\nreport_power completed successfully\r\n# catch { report_methodology -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/tier1-campaign-03/tier1_0701k1s4/debouncer_build/iter_000/methodology.rpt\" }\r\nCommand: report_methodology -file C:/Users/prince.baah/Downloads/autortl-work/logs/tier1-campaign-03/tier1_0701k1s4/debouncer_build/iter_000/methodology.rpt\r\nINFO: [Timing 38-35] Done setting XDC timing constraints.\r\nINFO: [DRC 23-133] Running Methodology with 2 threads\r\nINFO: [Vivado_Tcl 2-1520] The results of Report Methodology are in file C:/Users/prince.baah/Downloads/autortl-work/logs/tier1-campaign-03/tier1_0701k1s4/debouncer_build/iter_000/methodology.rpt.\r\nreport_methodology completed successfully\r\n# catch { report_qor_suggestions -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/tier1-campaign-03/tier1_0701k1s4/debouncer_build/iter_000/qor_suggestions.rpt\" }\r\nCommand: report_qor_suggestions -file C:/Users/prince.baah/Downloads/autortl-work/logs/tier1-campaign-03/tier1_0701k1s4/debouncer_build/iter_000/qor_suggestions.rpt\r\nCongestion Prediction Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.011 . Memory (MB): peak = 1978.539 ; gain = 0.000\r\nINFO: [Implflow 47-1309] PredResultString: 1:40.76:59.24\r\nfeatureProvider Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.043 . Memory (MB): peak = 1978.539 ; gain = 0.000\r\nINFO: [Implflow 47-1274] ML strategy prediction is not supported for 7-series devices.\r\nreport_qor_suggestions completed successfully\r\n# puts \"SYNTH_COMPLETE\"\r\nSYNTH_COMPLETE\r\nINFO: [Common 17-206] Exiting Vivado at Fri Oct 30 11:39:46 2026...\r\n\r\n",
+      "truncated": true
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_5:decision:instruction:0",
+  "result": "Keep the 32-bit counter, its increment and explicit `counter == 32'd255` rollover branch, and the synchronous reset logic unchanged. Replace only `pwm_out <= (counter < {24'd0, duty});` with an explicitly grouped lexicographic comparison: compare `counter[7:4]` against `duty[7:4]`, and compare the low nibbles only when the high nibbles are equal. Keep `pwm_out` registered in the same clocked branch and preserve its reset-to-zero behavior.",
+  "artifacts": {}
+}

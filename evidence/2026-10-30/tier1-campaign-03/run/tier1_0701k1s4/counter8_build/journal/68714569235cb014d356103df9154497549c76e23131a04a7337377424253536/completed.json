@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Interface and defined behavior: PASS \u2014 Ports and widths match; synchronous active-high reset has priority, enable increments modulo 256, and disabled operation holds. The candidate preserves the registered cycle behavior.\n- Top latency annotation: PASS \u2014 `// @latency 1` matches the authoritative known latency.\n- Deterministic verification: PASS \u2014 Ladder is ALIVE; simulation passed, and xvlog, xelab, xsim, and Vivado exited successfully. Synthesis log contains `SYNTH_COMPLETE`.\n- Routed metrics and timing feasibility: PASS \u2014 Retained routed reports are identified; timing is met with WNS 0.414 ns and WHS 0.233 ns.\n- LUT objective: FAIL \u2014 Both candidate and previous best use 6 LUTs. Since both are timing-feasible, the contract requires strictly fewer LUTs.\n## Summary\n- Passed: 4 of 5\n- Failed: 1 of 5\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes behavioral and verification gates, but does not improve the chosen objective: LUT usage remains equal to the timing-feasible previous best. Stall count is 0.",
+      "recommendation": "REJECT",
+      "passed": 4,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

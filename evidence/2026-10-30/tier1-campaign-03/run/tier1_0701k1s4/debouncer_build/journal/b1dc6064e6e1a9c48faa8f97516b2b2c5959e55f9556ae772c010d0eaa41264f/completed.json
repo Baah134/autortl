@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_3:decision:instruction:0",
+  "result": "Keep the module interface and `// @latency 0` annotation, and replace the binary `count` increment/saturation pattern with a 3-bit LFSR sequence: load a seed when `noisy != candidate`, advance through six states on subsequent stable cycles, then hold the terminal state. Update `clean_reg` from the stable input only on the edge after the terminal state is reached, preserving the existing synchronous active-high reset and candidate tracking behavior. Ensure the change restarts the interval on every sampled input transition and check the 7-cycle and 8-cycle boundary cases; promote only if all fixed verification gates pass and routed LUT use is strictly below 4.",
+  "artifacts": {}
+}

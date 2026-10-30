@@ -1,0 +1,332 @@
+{
+  "allowed_flow_variations": "The harness may enable retiming or physical optimization. The candidate's retained synthesis script is authoritative for its actual settings.",
+  "authority": "Harness evidence is fixed. Proposed architectural goals cannot redefine it.",
+  "baseline_metrics": {
+    "bram_total": 50.0,
+    "bram_used": 0.0,
+    "dsp_total": 90,
+    "dsp_used": 0,
+    "dynamic_power_w": 0.011,
+    "ff_pct": 0.021634615384615384,
+    "ff_total": 41600,
+    "ff_used": 9,
+    "lut_pct": 0.03365384615384615,
+    "lut_total": 20800,
+    "lut_used": 7,
+    "reg2reg_wns_ns": 5.343,
+    "sim_error": "",
+    "sim_passed": true,
+    "synth_error": "",
+    "timing_met": true,
+    "total_power_w": 0.081,
+    "whs_ns": 0.135,
+    "wns_ns": 0.553
+  },
+  "build_spec": null,
+  "clock_period_ns": 10.0,
+  "declared_latency": {
+    "cycles": null,
+    "known": false,
+    "meaning": "A source annotation declares numeric latency only when present. This known/cycles pair is authoritative for the current top module's annotation requirement. Only known=true requires a matching numeric top annotation. Child typed-module latency does not invent a top annotation for arbitrary aggregate wrappers. When known=false, absence of a top annotation is not a failed or unverifiable criterion. Unannotated numeric latency is UNKNOWN, not zero. Preserve the source's exact observable cycles and registered behavior. Annotation presence or absence alone is not independent proof of behavioral correctness; use the fixed source contract, all defined typed latency/minimum transfer age and deterministic verification, without inventing a numeric requirement.",
+    "source_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\pwm\\iter_000\\pwm.v",
+    "source_sha256": "7f66028a00d14286c547c9658beeda29cf4df1850d8c66196fc9e3179bc9d811"
+  },
+  "execution_context": {
+    "dependencies": [],
+    "part": "xc7a35tcpg236-1",
+    "period_ns": 10.0,
+    "promotions": {
+      "Designutils 20-1307": "ERROR",
+      "Synth 8-327": "ERROR",
+      "Synth 8-3352": "ERROR",
+      "Synth 8-9873": "ERROR",
+      "VRFC 10-3609": "ERROR"
+    },
+    "synthesis_template": "82fa3469b365c54e445b50a587f2dfd2ca06256e842bb05a2596faac46249cd4",
+    "tb": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\pwm\\inputs\\testbench_path.v",
+      "sha256": "be26d10bceec77042e908dd2c523112df99b489dc0cf3527035d070d5dffe094"
+    },
+    "tools": {
+      "vivado_bin": {
+        "path": "C:\\AMDDesignTools\\2025.2\\Vivado\\bin\\vivado.bat",
+        "sha256": "4f9c05aea82a71c7086a9e5edf01ba16ea70255f69cf3420c58b805ec113e994"
+      },
+      "xelab_bin": {
+        "path": "C:\\AMDDesignTools\\2025.2\\Vivado\\bin\\xelab.bat",
+        "sha256": "512a29ace988992d7fab14ca84f20f0b4515bb69ef1d5fef0a57c5f28b72c9b1"
+      },
+      "xsim_bin": {
+        "path": "C:\\AMDDesignTools\\2025.2\\Vivado\\bin\\xsim.bat",
+        "sha256": "8819fbb54fdf9cbcaaf24c2bf72801b403d5c93e0990ba32408b56c666761d21"
+      },
+      "xvlog_bin": {
+        "path": "C:\\AMDDesignTools\\2025.2\\Vivado\\bin\\xvlog.bat",
+        "sha256": "512a29ace988992d7fab14ca84f20f0b4515bb69ef1d5fef0a57c5f28b72c9b1"
+      }
+    },
+    "top": "pwm"
+  },
+  "first_violated_path_excerpt": null,
+  "flow_and_constraints": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\pwm\\iter_000\\synth.tcl",
+      "sha256": "42c5527a3ed930d284479e4feb818b8a27c9c7c3dba2c5775b6fd1d2e9d3d19b",
+      "text": "set_msg_config -id {VRFC 10-3609} -new_severity ERROR\r\nset_msg_config -id {Synth 8-9873} -new_severity ERROR\r\nset_msg_config -id {Designutils 20-1307} -new_severity ERROR\r\nset_msg_config -id {Synth 8-327} -new_severity ERROR\r\nset_msg_config -id {Synth 8-3352} -new_severity ERROR\r\nset_part xc7a35tcpg236-1\r\nread_verilog \"C:/Users/prince.baah/Downloads/autortl-work/logs/tier1-campaign-03/tier1_0701k1s4/pwm/iter_000/pwm.v\"\r\nset fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/tier1-campaign-03/tier1_0701k1s4/pwm/iter_000/timing.xdc\" w]\r\nputs $fp {create_clock -period 10.000 -name clk [get_ports clk]}\r\nclose $fp\r\nread_xdc \"C:/Users/prince.baah/Downloads/autortl-work/logs/tier1-campaign-03/tier1_0701k1s4/pwm/iter_000/timing.xdc\"\r\nsynth_design -top pwm -flatten_hierarchy rebuilt \r\nset fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/tier1-campaign-03/tier1_0701k1s4/pwm/iter_000/timing_io.tcl\" w]\r\nputs $fp {set data_inputs [get_ports -filter {DIRECTION == IN && NAME != clk}]}\r\nputs $fp {if {[llength $data_inputs] > 0} {set_input_delay -clock clk -max 0.000 $data_inputs; set_input_delay -clock clk -min 0.000 $data_inputs}}\r\nputs $fp {if {[llength [all_outputs]] > 0} {set_output_delay -clock clk -max 0.000 [all_outputs]; set_output_delay -clock clk -min 0.000 [all_outputs]}}\r\nclose $fp\r\nsource \"C:/Users/prince.baah/Downloads/autortl-work/logs/tier1-campaign-03/tier1_0701k1s4/pwm/iter_000/timing_io.tcl\"\r\nreport_utilization -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/tier1-campaign-03/tier1_0701k1s4/pwm/iter_000/utilization.rpt\"\r\nreport_timing_summary -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/tier1-campaign-03/tier1_0701k1s4/pwm/iter_000/timing.rpt\"\r\nopt_design\r\nplace_design\r\n\r\nroute_design\r\nreport_utilization -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/tier1-campaign-03/tier1_0701k1s4/pwm/iter_000/utilization_routed.rpt\"\r\nreport_timing_summary -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/tier1-campaign-03/tier1_0701k1s4/pwm/iter_000/timing_routed.rpt\"\r\ncatch { if {[llength [all_registers]] > 0} { report_timing -from [all_registers] -to [all_registers] -max_paths 1 -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/tier1-campaign-03/tier1_0701k1s4/pwm/iter_000/timing_reg2reg.rpt\" } }\r\nreport_design_analysis -logic_level_distribution -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/tier1-campaign-03/tier1_0701k1s4/pwm/iter_000/design_analysis.rpt\"\r\nreport_power -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/tier1-campaign-03/tier1_0701k1s4/pwm/iter_000/power.rpt\"\r\ncatch { report_methodology -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/tier1-campaign-03/tier1_0701k1s4/pwm/iter_000/methodology.rpt\" }\r\ncatch { report_qor_suggestions -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/tier1-campaign-03/tier1_0701k1s4/pwm/iter_000/qor_suggestions.rpt\" }\r\nputs \"SYNTH_COMPLETE\"\r\n",
+      "truncated": false
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\pwm\\iter_000\\timing.xdc",
+      "sha256": "fa142c09f0fadb5e303ca9fea08c02bc353451533e44aeee9cd9a0231cc8bede",
+      "text": "create_clock -period 10.000 -name clk [get_ports clk]\r\n",
+      "truncated": false
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\pwm\\iter_000\\timing_io.tcl",
+      "sha256": "6b38098841a48bbb3ab15de49d2bf2baf7e4384f599259ff5f3afa2c2b1daf00",
+      "text": "set data_inputs [get_ports -filter {DIRECTION == IN && NAME != clk}]\r\nif {[llength $data_inputs] > 0} {set_input_delay -clock clk -max 0.000 $data_inputs; set_input_delay -clock clk -min 0.000 $data_inputs}\r\nif {[llength [all_outputs]] > 0} {set_output_delay -clock clk -max 0.000 [all_outputs]; set_output_delay -clock clk -min 0.000 [all_outputs]}\r\n",
+      "truncated": false
+    }
+  ],
+  "hard_gates": [
+    "Preserve ports, parameter defaults, reset behavior and observable cycle behavior.",
+    "Use the fixed provided testbench, tools, device and constraints without modification.",
+    "Static/interface checks, compile, simulation and real routed metric integrity must pass.",
+    "Timing closure requires setup slack >= 0 and hold slack >= 0.",
+    "Unknown or absent evidence cannot count as success."
+  ],
+  "metric_provenance": "Structured metrics are parsed from retained reports; routed utilization/timing reports take precedence when present. The manifest identifies complete files by hash. Header excerpts are bounded previews, not complete reports or an independent metric source.",
+  "objective": "minimize_luts",
+  "objective_policy": "First establish timing feasibility. A verified timing-feasible candidate may replace a known timing-infeasible previous best even with higher area or power; classify this as timing_recovery, not objective savings. Once both are timing-feasible, require strict improvement of the chosen objective. Unknown or contradictory incumbent timing evidence cannot establish recovery. A completed experiment may find no improvement. Do not invent mandatory savings, slack margins, tool versions, timing corners, new tests, thresholds, code-style quotas or external environment requirements.",
+  "part": "xc7a35tcpg236-1",
+  "report_headers": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\pwm\\iter_000\\power.rpt",
+      "sha256": "830d1e71310b3d4859c7087a57245dfaf883ff03038e1f47769f7b2f8c2260ce",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n---------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version     : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date             : Fri Oct 30 11:37:57 2026\r\n| Host             : Baah running 64-bit major release  (build 9200)\r\n| Command          : report_power -file C:/Users/prince.baah/Downloads/autortl-work/logs/tier1-campaign-03/tier1_0701k1s4/pwm/iter_000/power.rpt\r\n| Design           : pwm\r\n| Device           : xc7a35tcpg236-1\r\n| Design State     : routed\r\n| Grade            : commercial\r\n| Process          : typical\r\n| Characterization : Production\r\n---------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nPower Report\r\n\r\nTable of Contents\r\n-----------------\r\n1. Summary\r\n1.1 On-Chip Components\r\n1.2 Power Supply Summary\r\n1.3 Confidence Level\r\n2. Settings\r\n2.1 Environment\r\n2.2 Clock Constraints\r\n3. Detailed Reports\r\n3.1 By Hierarchy\r\n\r\n1. Summary\r\n----------\r\n\r\n+--------------------------+--------------+\r\n| Total On-Chip Power (W)  | 0.081        |\r\n| Design Power Budget (W)  | Unspecified* |\r\n| Power Budget Margin (W)  | NA           |\r\n| Dynamic (W)              | 0.011        |\r\n| Device Static (W)        | 0.070        |\r\n| Effective TJA (C/W)      | 5.0          |\r\n| Max Ambient (C)          | 84.6         |\r\n| Junction Temperature (C) | 25.4         |\r\n| Confidence Level         | Low          |\r\n| Setting File             | ---          |\r\n| Simulation Activity File | ---          |\r\n| Design Nets Matched   ",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\pwm\\iter_000\\timing.rpt",
+      "sha256": "d6fbb7208e855962e1838d94412ee76defdb807c8dfab100b71d843188f326a9",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n-------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date         : Fri Oct 30 11:36:39 2026\r\n| Host         : Baah running 64-bit major release  (build 9200)\r\n| Command      : report_timing_summary -file C:/Users/prince.baah/Downloads/autortl-work/logs/tier1-campaign-03/tier1_0701k1s4/pwm/iter_000/timing.rpt\r\n| Design       : pwm\r\n| Device       : 7a35t-cpg236\r\n| Speed File   : -1  PRODUCTION 1.23 2018-06-13\r\n| Design State : Synthesized\r\n-------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nTiming Summary Report\r\n\r\n------------------------------------------------------------------------------------------------\r\n| Timer Settings\r\n| --------------\r\n------------------------------------------------------------------------------------------------\r\n\r\n  Enable Multi Corner Analysis               :  Yes\r\n  Enable Pessimism Removal                   :  Yes\r\n  Pessimism Removal Resolution               :  Nearest Common Node\r\n  Enable Input Delay Default Clock           :  No\r\n  Enable Preset / Clear Arcs                 :  No\r\n  Disable Flight Delays                      :  No\r\n  Ignore I/O Paths                           :  No\r\n  Timing Early Launch at Borrowing Latches   :  No\r\n  Borrow Time for Max Delay Exceptions       :  Yes\r\n  Merge Timing Exceptions                    :  Yes\r\n  Inter-SLR Compensation                     :  Conservative\r\n\r\n  Corner  Analyze    Anal",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\pwm\\iter_000\\timing_reg2reg.rpt",
+      "sha256": "5e6e8e4244705ea156e5e2a0838d43799329f4f41bb2c406b86a0d448a84baed",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date         : Fri Oct 30 11:37:56 2026\r\n| Host         : Baah running 64-bit major release  (build 9200)\r\n| Command      : report_timing -from [all_registers] -to [all_registers] -max_paths 1 -file C:/Users/prince.baah/Downloads/autortl-work/logs/tier1-campaign-03/tier1_0701k1s4/pwm/iter_000/timing_reg2reg.rpt\r\n| Design       : pwm\r\n| Device       : 7a35t-cpg236\r\n| Speed File   : -1  PRODUCTION 1.23 2018-06-13\r\n| Design State : Routed\r\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nTiming Report\r\n\r\nSlack (MET) :             5.343ns  (required time - arrival time)\r\n  Source:                 counter_reg[1]/C\r\n                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@5.000ns period=10.000ns})\r\n  Destination:            counter_reg[0]/R\r\n                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@5.000ns period=10.000ns})\r\n  Path Group:             clk\r\n  Path Type:              Setup (Max at Slow Process Corner)\r\n  Requirement:            10.000ns  (clk rise@10.000ns - clk rise@0.000ns)\r\n  Data Path Delay:        4.193ns  (logic 0.704ns (16.790%)  route 3.489ns (83.210%))\r\n  Logic Levels:           2  (LUT4=1 LUT6=1)\r\n  Clock P",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\pwm\\iter_000\\timing_routed.rpt",
+      "sha256": "f8b7fcb0e65fc7541e7c1ea89392d9f06496f159e43c5d4bebbf0726d9e7d751",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n--------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date         : Fri Oct 30 11:37:56 2026\r\n| Host         : Baah running 64-bit major release  (build 9200)\r\n| Command      : report_timing_summary -file C:/Users/prince.baah/Downloads/autortl-work/logs/tier1-campaign-03/tier1_0701k1s4/pwm/iter_000/timing_routed.rpt\r\n| Design       : pwm\r\n| Device       : 7a35t-cpg236\r\n| Speed File   : -1  PRODUCTION 1.23 2018-06-13\r\n| Design State : Routed\r\n--------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nTiming Summary Report\r\n\r\n------------------------------------------------------------------------------------------------\r\n| Timer Settings\r\n| --------------\r\n------------------------------------------------------------------------------------------------\r\n\r\n  Enable Multi Corner Analysis               :  Yes\r\n  Enable Pessimism Removal                   :  Yes\r\n  Pessimism Removal Resolution               :  Nearest Common Node\r\n  Enable Input Delay Default Clock           :  No\r\n  Enable Preset / Clear Arcs                 :  No\r\n  Disable Flight Delays                      :  No\r\n  Ignore I/O Paths                           :  No\r\n  Timing Early Launch at Borrowing Latches   :  No\r\n  Borrow Time for Max Delay Exceptions       :  Yes\r\n  Merge Timing Exceptions                    :  Yes\r\n  Inter-SLR Compensation                     :  Conservative\r\n\r\n  Corner ",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\pwm\\iter_000\\utilization.rpt",
+      "sha256": "c4e8a7422378302560827a0f9aab7746c73427071d53c970dc4b90d3546534f1",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\n---------------------------------------------------------------------------------------------------------------------------------------------------------\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\n| Date         : Fri Oct 30 11:36:39 2026\n| Host         : Baah running 64-bit major release  (build 9200)\n| Command      : report_utilization -file C:/Users/prince.baah/Downloads/autortl-work/logs/tier1-campaign-03/tier1_0701k1s4/pwm/iter_000/utilization.rpt\n| Design       : pwm\n| Device       : xc7a35tcpg236-1\n| Speed File   : -1\n| Design State : Synthesized\n---------------------------------------------------------------------------------------------------------------------------------------------------------\n\nUtilization Design Information\n\nTable of Contents\n-----------------\n1. Slice Logic\n1.1 Summary of Registers by Type\n2. Memory\n3. DSP\n4. IO and GT Specific\n5. Clocking\n6. Specific Feature\n7. Primitives\n8. Black Boxes\n9. Instantiated Netlists\n\n1. Slice Logic\n--------------\n\n+-------------------------+------+-------+------------+-----------+-------+\n|        Site Type        | Used | Fixed | Prohibited | Available | Util% |\n+-------------------------+------+-------+------------+-----------+-------+\n| Slice LUTs*             |    7 |     0 |          0 |     20800 |  0.03 |\n|   LUT as Logic          |    7 |     0 |          0 |     20800 |  0.03 |\n|   LUT as Memory         |    0 |     0 |          0 |      9600 |  0.00 |\n| Slice Registers         |    9 |     0 |          0 |     41600 |  0.02 |\n|   Register as Flip Flop |    9 |     0 |          0 |     41600 |  0.02 |\n|   Register as Latch     |    0 |     ",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\pwm\\iter_000\\utilization_routed.rpt",
+      "sha256": "d1dc1c1319f1bee0dbd51304bd11c0e712b83b735081550ebbe3becf7da65368",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\n----------------------------------------------------------------------------------------------------------------------------------------------------------------\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\n| Date         : Fri Oct 30 11:37:56 2026\n| Host         : Baah running 64-bit major release  (build 9200)\n| Command      : report_utilization -file C:/Users/prince.baah/Downloads/autortl-work/logs/tier1-campaign-03/tier1_0701k1s4/pwm/iter_000/utilization_routed.rpt\n| Design       : pwm\n| Device       : xc7a35tcpg236-1\n| Speed File   : -1\n| Design State : Routed\n----------------------------------------------------------------------------------------------------------------------------------------------------------------\n\nUtilization Design Information\n\nTable of Contents\n-----------------\n1. Slice Logic\n1.1 Summary of Registers by Type\n2. Slice Logic Distribution\n3. Memory\n4. DSP\n5. IO and GT Specific\n6. Clocking\n7. Specific Feature\n8. Primitives\n9. Black Boxes\n10. Instantiated Netlists\n\n1. Slice Logic\n--------------\n\n+-------------------------+------+-------+------------+-----------+-------+\n|        Site Type        | Used | Fixed | Prohibited | Available | Util% |\n+-------------------------+------+-------+------------+-----------+-------+\n| Slice LUTs              |    7 |     0 |          0 |     20800 |  0.03 |\n|   LUT as Logic          |    7 |     0 |          0 |     20800 |  0.03 |\n|   LUT as Memory         |    0 |     0 |          0 |      9600 |  0.00 |\n| Slice Registers         |    9 |     0 |          0 |     41600 |  0.02 |\n|   Register as Flip Flop |    9 |     0 |          0 |     41600 |  0",
+      "truncated": true
+    }
+  ],
+  "report_manifest": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\pwm\\iter_000\\power.rpt",
+      "sha256": "830d1e71310b3d4859c7087a57245dfaf883ff03038e1f47769f7b2f8c2260ce"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\pwm\\iter_000\\timing.rpt",
+      "sha256": "d6fbb7208e855962e1838d94412ee76defdb807c8dfab100b71d843188f326a9"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\pwm\\iter_000\\timing_reg2reg.rpt",
+      "sha256": "5e6e8e4244705ea156e5e2a0838d43799329f4f41bb2c406b86a0d448a84baed"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\pwm\\iter_000\\timing_routed.rpt",
+      "sha256": "f8b7fcb0e65fc7541e7c1ea89392d9f06496f159e43c5d4bebbf0726d9e7d751"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\pwm\\iter_000\\utilization.rpt",
+      "sha256": "c4e8a7422378302560827a0f9aab7746c73427071d53c970dc4b90d3546534f1"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\pwm\\iter_000\\utilization_routed.rpt",
+      "sha256": "d1dc1c1319f1bee0dbd51304bd11c0e712b83b735081550ebbe3becf7da65368"
+    }
+  ],
+  "schema_version": 1,
+  "simulation": {
+    "failure_verdict": "TEST FAILED",
+    "required_verdict": "TEST PASSED",
+    "scope": "Provided testbench checks; not a formal equivalence proof.",
+    "tools": [
+      "xvlog",
+      "xelab",
+      "xsim -runall"
+    ]
+  },
+  "sources": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\pwm\\iter_000\\pwm.v",
+      "sha256": "7f66028a00d14286c547c9658beeda29cf4df1850d8c66196fc9e3179bc9d811",
+      "text": "`timescale 1ns/1ps\r\n// Deliberately loose PWM: full 32-bit counter for an 8-bit duty task.\r\nmodule pwm (\r\n    input  wire       clk,\r\n    input  wire       rst,\r\n    input  wire [7:0] duty,\r\n    output reg        pwm_out\r\n);\r\n    reg [31:0] counter;\r\n    always @(posedge clk) begin\r\n        if (rst) begin\r\n            counter <= 32'd0;\r\n            pwm_out <= 1'b0;\r\n        end else begin\r\n            if (counter == 32'd255) counter <= 32'd0;\r\n            else counter <= counter + 32'd1;\r\n            pwm_out <= (counter < {24'd0, duty});\r\n        end\r\n    end\r\nendmodule\r\n",
+      "truncated": false
+    }
+  ],
+  "testbench": {
+    "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\pwm\\inputs\\testbench_path.v",
+    "sha256": "be26d10bceec77042e908dd2c523112df99b489dc0cf3527035d070d5dffe094",
+    "text": "`timescale 1ns/1ps\r\nmodule pwm_tb;\r\n    reg clk, rst; reg [7:0] duty; wire pwm_out;\r\n    integer errors, i, highs;\r\n    pwm dut(.clk(clk), .rst(rst), .duty(duty), .pwm_out(pwm_out));\r\n    always #5 clk = ~clk;\r\n    initial begin\r\n        clk=0; errors=0; rst=1; duty=8'd64;\r\n        repeat(4) @(posedge clk); rst=0; @(posedge clk);\r\n        // measure one full 256-cycle period: expect ~64 highs (+-1 for latency)\r\n        highs=0;\r\n        for (i=0; i<256; i=i+1) begin @(posedge clk); #1; if (pwm_out) highs=highs+1; end\r\n        if (highs < 62 || highs > 66) begin\r\n            $display(\"FAIL: duty=64 expected~64 highs got=%0d\", highs); errors=errors+1;\r\n        end\r\n        duty=8'd0; repeat(300) @(posedge clk);\r\n        highs=0;\r\n        for (i=0; i<256; i=i+1) begin @(posedge clk); #1; if (pwm_out) highs=highs+1; end\r\n        if (highs > 1) begin $display(\"FAIL: duty=0 got=%0d highs\", highs); errors=errors+1; end\r\n        if (errors==0) $display(\"TEST PASSED\"); else $display(\"TEST FAILED: %0d errors\", errors);\r\n        $finish;\r\n    end\r\nendmodule\r\n",
+    "truncated": false
+  },
+  "testbench_top": "pwm_tb",
+  "tool_exit_evidence": {
+    "history_count": 4,
+    "latest_by_tool": {
+      "vivado": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\pwm\\iter_000\\vivado_synth_output.log",
+        "output_log_sha256": "6cee3389fa35b210fb338a708cf2ca57b23f0dfa6446a9b30347a2bc5e9e8989",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xelab": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\pwm\\iter_000\\xelab.log",
+        "output_log_sha256": "0b60d96380cbca2070c6d8eb39f654fd0c911f797d6515417fcc5cbaae117bd5",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xsim": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\pwm\\iter_000\\xsim.log",
+        "output_log_sha256": "9e6a939b5c3a5df976bc2bdbbbbb23c69a948ca91a68facf40b7871afe047ca2",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xvlog": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\pwm\\iter_000\\xvlog.log",
+        "output_log_sha256": "07fbc1836a84c26baf4121a8428485c568dfdde92c996110952d905a4e239fd6",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      }
+    },
+    "missing_required_tools": [],
+    "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\pwm\\iter_000\\tool_exit_records.log",
+    "records": [
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\pwm\\iter_000",
+        "driver_returncode": 0,
+        "elapsed_seconds": 2.875,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xvlog.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\pwm\\iter_000\\xvlog.log",
+        "output_log_sha256": "07fbc1836a84c26baf4121a8428485c568dfdde92c996110952d905a4e239fd6",
+        "pid": 36320,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xvlog"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\pwm\\iter_000",
+        "driver_returncode": 0,
+        "elapsed_seconds": 3.547000000020489,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xelab.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\pwm\\iter_000\\xelab.log",
+        "output_log_sha256": "0b60d96380cbca2070c6d8eb39f654fd0c911f797d6515417fcc5cbaae117bd5",
+        "pid": 12436,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xelab"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\pwm\\iter_000",
+        "driver_returncode": 0,
+        "elapsed_seconds": 4.108999999938533,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xsim.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\pwm\\iter_000\\xsim.log",
+        "output_log_sha256": "9e6a939b5c3a5df976bc2bdbbbbb23c69a948ca91a68facf40b7871afe047ca2",
+        "pid": 27108,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xsim"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\pwm\\iter_000",
+        "driver_returncode": 0,
+        "elapsed_seconds": 226.23399999993853,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/vivado.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\pwm\\iter_000\\vivado_synth_output.log",
+        "output_log_sha256": "6cee3389fa35b210fb338a708cf2ca57b23f0dfa6446a9b30347a2bc5e9e8989",
+        "pid": 14972,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "vivado"
+      }
+    ],
+    "schema_valid": true,
+    "sha256": "cc940926db97bbd1fdc6c83eb8bf70fb96e92605f2f60e84d303fbfaa01d2cb0",
+    "status": "recorded",
+    "truncated": false
+  },
+  "top_module": "pwm",
+  "verification_logs": [
+    {
+      "head": "INFO: [VRFC 10-2263] Analyzing Verilog file \"C:/Users/prince.baah/Downloads/autortl-work/logs/tier1-campaign-03/tier1_0701k1s4/pwm/iter_000/pwm.v\" into library work\r\nINFO: [VRFC 10-311] analyzing module pwm\r\nINFO: [VRFC 10-2263] Analyzing Verilog file \"C:/Users/prince.baah/Downloads/autortl-work/logs/tier1-campaign-03/tier1_0701k1s4/pwm/inputs/testbench_path.v\" into library work\r\nINFO: [VRFC 10-311] analyzing module pwm_tb\r\n\r\n",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\pwm\\iter_000\\xvlog.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "07fbc1836a84c26baf4121a8428485c568dfdde92c996110952d905a4e239fd6",
+      "tail": "",
+      "truncated": false
+    },
+    {
+      "head": "Vivado Simulator v2025.2\r\nCopyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\nCopyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\nRunning: C:/AMDDesignTools/2025.2/Vivado/bin/unwrapped/win64.o/xelab.exe pwm_tb -s pwm_tb_snap --debug off \r\nMulti-threading is on. Using 10 slave threads.\r\nStarting static elaboration\r\nPass Through NonSizing Optimizer\r\nCompleted static elaboration\r\nStarting simulation data flow analysis\r\nCompleted simulation data flow analysis\r\nTime Resolution for simulation is 1ps\r\nCompiling module work.pwm\r\nCompiling module work.pwm_tb\r\nBuilt simulation snapshot pwm_tb_snap\r\n\r\n",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\pwm\\iter_000\\xelab.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "0b60d96380cbca2070c6d8eb39f654fd0c911f797d6515417fcc5cbaae117bd5",
+      "tail": "",
+      "truncated": false
+    },
+    {
+      "head": "\r\n****** xsim v2025.2 (64-bit)\r\n  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025\r\n  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025\r\n  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025\r\n  **** Start of session at: Fri Oct 30 11:34:12 2026\r\n    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\n    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n\r\nsource xsim.dir/pwm_tb_snap/xsim_script.tcl\r\n# xsim {pwm_tb_snap} -autoloadwcfg -runall\r\nTime resolution is 1 ps\r\nrun -all\r\nTEST PASSED\r\n$finish called at time : 8166 ns : File \"C:/Users/prince.baah/Downloads/autortl-work/logs/tier1-campaign-03/tier1_0701k1s4/pwm/inputs/testbench_path.v\" Line 21\r\nexit\r\nINFO: [Common 17-206] Exiting xsim at Fri Oct 30 11:34:14 2026...\r\n\r\n",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\pwm\\iter_000\\sim_log.txt",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "9e6a939b5c3a5df976bc2bdbbbbb23c69a948ca91a68facf40b7871afe047ca2",
+      "tail": "",
+      "truncated": false
+    },
+    {
+      "head": "\r\n****** Vivado v2025.2 (64-bit)\r\n  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025\r\n  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025\r\n  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025\r\n  **** Start of session at: Fri Oct 30 11:34:17 2026\r\n    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\n    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n\r\nsource C:/Users/prince.baah/Downloads/autortl-work/logs/tier1-campaign-03/tier1_0701k1s4/pwm/iter_000/synth.tcl\r\n# set_msg_config -id {VRFC 10-3609} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-9873} -new_severity ERROR\r\n# set_msg_config -id {Designutils 20-1307} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-327} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-3352} -new_severity ERROR\r\n# set_part xc7a35tcpg236-1\r\nINFO: [Coretcl 2-1500] The part has been set to 'xc7a35tcpg236-1' for the current project only. Run set_part -help for more details. To evaluate different speed grades in the current design, use the set_speed_grade command, or use the open_checkpoint -part command to change the part used by an existing checkpoint design.\r\nset_part: Time (s): cpu = 00:00:24 ; elapsed = 00:00:18 . Memory (MB): peak = 531.871 ; gain = 227.336\r\n# read_verilog \"C:/Users/prince.baah/Downloads/autortl-work/logs/tier1-campaign-03/tier1_0701k1s4/pwm/iter_000/pwm.v\"\r\n# set fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/tier1-campaign-03/tier1_0701k1s4/pwm/iter_000/timing.xdc\" w]\r\n# puts $fp {create_clock -period 10.000 -name clk [get_ports clk]}\r\n# close $fp\r\n# read_xdc \"C:/Users/prince.baah/Downloads/autortl-work/logs/tier1-campaign-03/tier1_0701k1s4/pwm/iter_000/timing.xdc\"\r\n# synth_design -top pwm -flatten_hierarchy rebuilt \r\nCommand: synth_design -top pwm ",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\pwm\\iter_000\\vivado_synth_output.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "6cee3389fa35b210fb338a708cf2ca57b23f0dfa6446a9b30347a2bc5e9e8989",
+      "tail": "e C:/Users/prince.baah/Downloads/autortl-work/logs/tier1-campaign-03/tier1_0701k1s4/pwm/iter_000/power.rpt\r\nRunning Vector-less Activity Propagation...\r\n\r\nFinished Running Vector-less Activity Propagation\r\n0 Infos, 0 Warnings, 0 Critical Warnings and 0 Errors encountered.\r\nreport_power completed successfully\r\n# catch { report_methodology -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/tier1-campaign-03/tier1_0701k1s4/pwm/iter_000/methodology.rpt\" }\r\nCommand: report_methodology -file C:/Users/prince.baah/Downloads/autortl-work/logs/tier1-campaign-03/tier1_0701k1s4/pwm/iter_000/methodology.rpt\r\nINFO: [Timing 38-35] Done setting XDC timing constraints.\r\nINFO: [DRC 23-133] Running Methodology with 2 threads\r\nINFO: [Vivado_Tcl 2-1520] The results of Report Methodology are in file C:/Users/prince.baah/Downloads/autortl-work/logs/tier1-campaign-03/tier1_0701k1s4/pwm/iter_000/methodology.rpt.\r\nreport_methodology completed successfully\r\n# catch { report_qor_suggestions -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/tier1-campaign-03/tier1_0701k1s4/pwm/iter_000/qor_suggestions.rpt\" }\r\nCommand: report_qor_suggestions -file C:/Users/prince.baah/Downloads/autortl-work/logs/tier1-campaign-03/tier1_0701k1s4/pwm/iter_000/qor_suggestions.rpt\r\nCongestion Prediction Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.054 . Memory (MB): peak = 1955.988 ; gain = 0.000\r\nINFO: [Implflow 47-1309] PredResultString: 1:49.38:50.62\r\nfeatureProvider Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.127 . Memory (MB): peak = 1955.988 ; gain = 0.000\r\nINFO: [Implflow 47-1274] ML strategy prediction is not supported for 7-series devices.\r\nreport_qor_suggestions completed successfully\r\n# puts \"SYNTH_COMPLETE\"\r\nSYNTH_COMPLETE\r\nINFO: [Common 17-206] Exiting Vivado at Fri Oct 30 11:37:59 2026...\r\n\r\n",
+      "truncated": true
+    }
+  ]
+}
