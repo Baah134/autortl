@@ -77,17 +77,29 @@ Status is tracked at the end of this file.
 15. Update the README results, PROGRESS, SESSION_HANDOFF and TASKS. Audit,
     push, fast-forward `main`, hand the lease off with a mailbox note.
 
-## Status
+## Status (updated 20:20 EDT)
 
 | Step | State | Evidence |
 |---|---|---|
-| 1 | done: 3/4, two harness gaps found | evidence/2026-10-29/tier1-campaign-01 |
-| 2 | done: merged f7d19e0 (1,516 tests), audit PASS, pushed | |
-| 3 | campaign18 (gpt-6-luna) running on the merged identity | logs/contract-campaign-18 |
-| 8 | done: tools/role_report.py | |
-| 9 | done: d2ea74c | |
-| 14 | implemented on claude/reg2reg-timing (advisory reg-to-reg slack) | |
+| Phase 1-3 | done: portability, reg2reg, infra-history, doctor, parallel bench, tokens, review fixes, OpenAI and user-defined endpoints, demo; final identity 7c592d6 (249 files, 1,689 tests) | SESSION_HANDOFF |
+| Model matrix | done: tier0 2/2 on four models; verdict-format bug confirmed live and fixed | evidence/2026-10-29/model-matrix-01 |
+| Tier0 on final identity | campaign20, 21 passed (streak 2); 22 lost to host sleep; 23 running | evidence/2026-10-29/contract-campaign-2x |
 
-Reordered to save gate runs: merge reg2reg after campaign18, run tier1-02
-next (fixes are likeliest there), then hold tier0 and tier1 on the final
-identity.
+## Next hours
+
+1. **20:20-20:40** campaign23: tier0 held on the final identity.
+2. **20:40-22:00** tier1-campaign-03, 04, 05 with `--jobs 4`: hold tier1 on the
+   same identity. Triage every role failure with tools/role_report.py.
+3. **In parallel (subagents, no Vivado):** tier4 curriculum entries; a
+   whole-harness robustness review; an HTML run viewer; design docs for the
+   day's features.
+4. **22:00** merge one batch on a new identity: claude/tier2-prep (planner
+   example budget, Verilog-2001 rule), the tier4 entries, and fixes from the
+   robustness review. Full suite, audit, push.
+5. **22:15 onward** tier2 then tier3 campaigns with `--jobs 4`, each
+   triaged; qualify the tier4 testbenches in Vivado against their mutants;
+   first tier4 campaign.
+6. **Overnight** re-hold tier0/tier1 on the new identity, hold tier2.
+
+The host must stay awake and plugged in: three gates today were lost or
+slowed by Modern Standby and sleep.
