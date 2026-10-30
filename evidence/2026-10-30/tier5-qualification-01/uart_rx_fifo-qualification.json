@@ -1,0 +1,107 @@
+{
+  "entry": "curriculum\\tier5\\uart_rx_fifo_build",
+  "top": "uart_rx_fifo_tb",
+  "testbench_sha256": "0dec01b36c1add6edc87041f60921640eb6eade5e7b9f086fb2e76e997d5db54",
+  "runs": [
+    {
+      "case": "reference",
+      "why": "control",
+      "expect_pass": true,
+      "verdict": "TEST PASSED",
+      "assertion_detected": false,
+      "as_required": true,
+      "source_sha256": "72f2519a71dd0c4b59432b35cf8378a8e223b11d3a201f302ab95249b94d4b0e"
+    },
+    {
+      "case": "single_flop_sync",
+      "why": "the synchronizer has one flop, so every decision happens one cycle early",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 11156 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "9ca82e2e42a6404de71b328d1b0dd8478d873c88f79751f1648a6c6c9144e9df"
+    },
+    {
+      "case": "center_sample_only",
+      "why": "each bit is the centre sample alone; one corrupted centre vote flips the bit",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 147396 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "39de13f3ab58ba06da86375a02a3530b44f9875846efb3669b80f67b6ca9d913"
+    },
+    {
+      "case": "msb_first",
+      "why": "data bits are assembled MSB first, so every byte arrives bit-reversed",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 61170 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "f455a159926a71e1f8e914915cc33544b227cec1393c6cbf01c9da3ee7c83db9"
+    },
+    {
+      "case": "stop_bit_ignored",
+      "why": "a low stop bit still delivers the byte and never reports a framing error",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 251209 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "bba36d8997c77716e5972f96761c242613387ed95156f2bef5c4e45cb30dae28"
+    },
+    {
+      "case": "no_false_start_reject",
+      "why": "a short low glitch starts a frame that delivers a spurious 0xFF byte",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 46566 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "64277488352995d331aa8b14c91d29338addb3bfaab1d9eb20231067f3e324e5"
+    },
+    {
+      "case": "samples_one_tick_late",
+      "why": "the three votes sit one oversample tick late (8D, 9D, 10D)",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 212941 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "6d2ff18edc1268a6def2f2494da1d83d91879a6e62381ff4abae2eeec8059bd1"
+    },
+    {
+      "case": "divider_ignored",
+      "why": "hard-codes the default of 2 clk cycles per oversample tick",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 258973 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "4ec3006c22f12e929d7d1d808dbac215eb79ac1c52abc1622edcd5af438a03fd"
+    },
+    {
+      "case": "fifo_full_rejects_simultaneous_pop",
+      "why": "a full FIFO drops a byte written at the same edge as a pop and reports overflow",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 9270 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "7f31f3ef786df55b6f3dfc906ee391fa6b11cebcbd8076427a2f54f10bd836d0"
+    },
+    {
+      "case": "frame_error_counter_wraps",
+      "why": "the framing-error counter wraps from 15 to 0 instead of saturating",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 108465 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "06e0a466241dcea2c0206315f94490108719a3a0e3fe1c99629b07ee902719f9"
+    },
+    {
+      "case": "top_overflow_counter_miswired",
+      "why": "the integration counts framing errors as overflows",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 35550 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "133dfdb3898be201122dbebc75a8da6b7068ab1225bfc134d538d1a137fdf7c5"
+    }
+  ],
+  "qualified": true
+}

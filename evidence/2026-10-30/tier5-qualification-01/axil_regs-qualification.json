@@ -1,0 +1,107 @@
+{
+  "entry": "curriculum\\tier5\\axil_regs_build",
+  "top": "axil_regs_tb",
+  "testbench_sha256": "db525cbfd0c53195949e5972f5493ceef6b09391f1dadc377284cdbf9e0e5923",
+  "runs": [
+    {
+      "case": "reference",
+      "why": "control",
+      "expect_pass": true,
+      "verdict": "TEST PASSED",
+      "assertion_detected": false,
+      "as_required": true,
+      "source_sha256": "d51742430ba3831754fbeac8c8e9b4fd12a2ff80e91bad2c723baa33b01f0b24"
+    },
+    {
+      "case": "aw_ready_waits_for_w",
+      "why": "AWREADY waits for WVALID, coupling the address channel to the data channel",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 8185 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "cc9fe3029adcd21542f7da1b6d0c9ed380a855b760840d9b5cfd991595703f1b"
+    },
+    {
+      "case": "write_while_response_pending",
+      "why": "a held pair is written while the previous response is stalled, so that response is overwritten",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 5768 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "692b408460c452b1d4c4b227841972dc599c6e5c5604d4519ada4e13c5fe8a9b"
+    },
+    {
+      "case": "slverr_never_reported",
+      "why": "out-of-range writes respond OKAY",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 1638 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "7fa944269b0f824b8478ea1e673fe8f4cfd83ee65cc2d217f856e6651d50301d"
+    },
+    {
+      "case": "out_of_range_write_aliases",
+      "why": "an out-of-range write lands in the register its low address bits alias",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 4185 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "19f4ca9ce631b0e098c9a38696de6d7be49d3ac6ea0698e48a7bede89ee96bba"
+    },
+    {
+      "case": "index_from_low_address_bits",
+      "why": "the register index uses byte-address bits 2:0 instead of word bits 4:2",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 10012 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "caad10db3ef0e740b3f5de278043d2cdd3815196c318efa2774e7fc877611c1e"
+    },
+    {
+      "case": "byte_strobes_ignored",
+      "why": "read/write registers take all four bytes whatever WSTRB says",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 6984 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "77e1b31fbcb58b74ba41c2b52b90751d0d1153e863b06fe899e2eeef95330755"
+    },
+    {
+      "case": "w1c_clear_beats_set",
+      "why": "a flag raised at the same edge as its write-1-to-clear is lost",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 86 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "3d34c9db3312a6b593dfefcfb01b755d0f2fa5738d3e91e10bc265cbfb071607"
+    },
+    {
+      "case": "read_reaccept_while_stalled",
+      "why": "a new ARVALID is captured while R is stalled, changing RDATA under backpressure",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 5248 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "700039be59530e7621ce4ba0b0cc34ddf3c6d8528480d461dfc8c3daae4ef287"
+    },
+    {
+      "case": "out_of_range_read_aliases",
+      "why": "an out-of-range read returns the aliased register instead of zero",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 1360 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "03874551c9b1e47423e42fed8c02b1c9cba2c74ba6b8db896ac9aedc3334a9b3"
+    },
+    {
+      "case": "irq_ignores_mask",
+      "why": "the interrupt output ignores IRQ_MASK",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 576 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "944671219c92b54f12d6dd5726b5ca624abfc9468ba22b5f3569e7bb448c904a"
+    }
+  ],
+  "qualified": true
+}
