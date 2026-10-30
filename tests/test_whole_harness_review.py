@@ -47,11 +47,18 @@ def test_latency_check_no_longer_skips_a_missing_annotation():
 def test_doctor_surgery_runs_the_companion_gate():
     # doctor_surgery_skips_companion_gate
     surgery = FSM[FSM.index('source = self._model("doctor", "surgery"'):]
-    assert surgery.index("companions.violation(") < surgery.index('work = parent / f"doctor_')
+    assert surgery.index("self._boundary_violation(") < surgery.index('work = parent / f"doctor_')
 
 
 def test_baseline_repair_runs_the_companion_gate():
     # baseline_repair_skips_companion_check (Codex review of 749d6d1)
     fix_loop = FSM[FSM.index("def _fix_loop"):]
     fix_loop = fix_loop[:fix_loop.index("\n    def ")]
-    assert "companions.violation(repaired" in fix_loop
+    assert "self._boundary_violation(repaired" in fix_loop
+
+
+def test_boundary_gate_dispatches_to_companion_or_unit_rule():
+    # frozen_children_block_build_optimization: one gate, two edit scopes
+    gate = FSM[FSM.index("def _boundary_violation"):]
+    gate = gate[:gate.index("\n    def ")]
+    assert "companions.violation(source" in gate and "companions.unit_violation(source" in gate

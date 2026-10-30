@@ -179,15 +179,15 @@ one paragraph
 one sentence
 ## Instruction for generator
 2-4 sentences naming the exact code pattern to change. The generator also receives
-the immutable harness facts, fixed contract and frozen compilation boundary.
+the immutable harness facts, fixed contract and immutable compilation boundary.
 Respect explicit unspecified cases in supplied build specifications; do not invent
 extra behavioral requirements. Use retained trial evidence to avoid repeating an
 unchanged failed experiment. Prior proposal outcomes are advisory observations,
 not new contract requirements. Name a concrete change from an already tried
 proposal when appropriate; identical RTL remains valid for different physical
 settings, and a new source hash alone does not establish an improvement.
-Moving a frozen child's logic into the editable top unchanged is not an
-optimization: synthesis flattens the hierarchy and routes the same design.
+Moving a child's logic into the top unchanged, or only regrouping modules, is
+not an optimization: synthesis flattens the hierarchy and routes the same design.
 Inline only together with a named logic change across the boundary."""
 
 RESTART_PLAN = """The loop has stalled ({stall_count} iterations without improvement).

@@ -382,6 +382,41 @@ def not_live(candidate_verilog, top, extra_sources, required):
     return sorted(set(required) - live_reached(candidate_verilog, top, extra_sources))
 
 
+def unit_violation(candidate_verilog, top, required, tb):
+    """Whole-design build mode: the candidate is the complete editable unit.
+
+    No companions remain, so the only stale-check risk is a module the trusted
+    testbench instantiates directly: the candidate must keep defining it and
+    reach it from the top through live instances (the same rule as for frozen
+    companions, applied to the candidate's own modules). Each module may be
+    defined once. "" when acceptable.
+    """
+    names = [match[1] for match in re.finditer(rf"\bmodule\s+({IDENT})\b", _clean(candidate_verilog))]
+    duplicated = sorted({name for name in names if names.count(name) > 1})
+    if duplicated:
+        return (f"ERROR: the editable unit defines module(s) {', '.join(duplicated)} more than once; define each "
+                f"module exactly once, with {top} last.")
+    if top not in names:
+        return f"ERROR: the editable unit no longer defines the top module {top}; keep {top} with its exact contract."
+    if not required:
+        return ""
+    missing = unreachable(candidate_verilog, top, [], required)
+    if missing:
+        listed = ", ".join(missing)
+        return (f"ERROR: the editable unit no longer defines or instantiates {listed} under the top {top}, while the "
+                f"trusted testbench {Path(tb).name} instantiates {listed} directly; those checks would test a "
+                f"module the top does not use. Keep {listed} defined and instantiated from {top}.")
+    dead = not_live(candidate_verilog, top, [], required)
+    if not dead:
+        return ""
+    listed = ", ".join(dead)
+    return (f"ERROR: the top {top} reaches {listed} only through dead, conditional or disconnected instances, while "
+            f"the trusted testbench {Path(tb).name} instantiates {listed} directly "
+            f"(companion_instance_does_not_prove_top_behavior). Keep a live instance of {listed} under {top}: an "
+            f"unconditional module-level instance (not inside generate, if/else, case, for or begin/end) with at "
+            f"least one output connected to logic that drives an output port of its parent.")
+
+
 def violation(candidate_verilog, top, extra_sources, tb):
     """A repair-ready error message, or "" when the candidate is acceptable."""
     required = required_by_testbench(tb, extra_sources)
