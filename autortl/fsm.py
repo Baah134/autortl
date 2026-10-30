@@ -41,7 +41,7 @@ from . import vivado
 from . import companions
 from .vivado import advisor_digest
 from .report_parser import VivadoMetrics, extract_message_ids
-from .golden import GoldenModel, qualify_against_examples, validate_examples
+from .golden import GoldenModel, GoldenTimeoutError, qualify_against_examples, validate_examples
 from .tbgen import generate as generate_tb
 from .tbqual import qualify as qualify_tb, assertion_failure_proof, qualification_mutations
 import sys
@@ -626,6 +626,10 @@ class Orchestrator:
                 if errors:
                     raise ValueError("; ".join(errors[:10]))
                 tb = generate_tb(m, gm, mdir)
+            except GoldenTimeoutError as exc:
+                # Infrastructure: no feedback, no repair attempt, no rejection record.
+                self._record_build_tool_block(exc, FailureKind.INFRA, "golden oracle execution")
+                return None
             except (SyntaxError, ValueError, KeyError, TypeError) as exc:
                 feedback = f"{type(exc).__name__}: {str(exc)[:2000]}"
                 atomic_write_text(mdir / f"golden_attempt_{attempt}.log", json.dumps({

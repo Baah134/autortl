@@ -91,6 +91,35 @@ def bounded_sum(values, start=0):
         result = bounded_binary(result, value, "Add")
     return result
 
+
+def bounded_copy(value):
+    # Every .copy attribute load is wrapped, so a bound copy held in a variable
+    # and called later is charged too (golden_sandbox_allocation_and_timeout_gaps).
+    method = value.copy
+
+    def charged_copy():
+        reserve_allocation(len(value))
+        return method()
+    return charged_copy
+
+
+def bounded_slice(value, lower=None, upper=None, step=None):
+    span = slice(lower, upper, step)
+    if isinstance(value, (list, tuple, str)):
+        # Charge the result length before the copy exists; range slicing is O(1).
+        reserve_allocation(len(range(len(value))[span]))
+    return value[span]
+
+
+def bounded_slice_assign(new, target, lower=None, upper=None, step=None):
+    # Slice assignment can grow a list (a[:0] = a doubles it); charge every new element.
+    if isinstance(target, list):
+        if isinstance(new, (list, tuple, str)):
+            reserve_allocation(len(new))
+        else:
+            new = bounded_list(new)
+    target[slice(lower, upper, step)] = new
+
 SAFE_BUILTINS = {name: value for name, value in {
     "abs": abs, "min": min, "max": max, "int": int, "bool": bool,
     "len": len, "range": bounded_range, "enumerate": enumerate, "zip": zip,
@@ -110,10 +139,38 @@ ALLOWED = {
 }
 
 
+MAX_SYNTAX_DEPTH = 200
+
+
+def syntax_depth(tree: ast.AST) -> int:
+    """Deepest node nesting, computed iteratively so the check itself cannot recurse."""
+    deepest, pending = 0, [(tree, 1)]
+    while pending:
+        node, depth = pending.pop()
+        deepest = max(deepest, depth)
+        pending.extend((child, depth + 1) for child in ast.iter_child_nodes(node))
+    return deepest
+
+
 def validate_source(source: str) -> ast.Module:
     if len(source) > 64000:
         raise ValueError("golden source exceeds 64 KB")
+    # The supervisor parses model text here. Deeply nested or very long expressions
+    # make CPython's parser (and recursive AST consumers such as literal_eval) raise
+    # MemoryError or RecursionError, which no caller handles; report them as an
+    # ordinary invalid model instead (model_text_overflows_supervisor_parser).
+    try:
+        return _validate_parsed(source)
+    except (MemoryError, RecursionError) as exc:
+        raise ValueError("golden source is too deeply nested or complex to parse "
+                         f"({type(exc).__name__}); split long expressions into separate statements") from None
+
+
+def _validate_parsed(source: str) -> ast.Module:
     tree = ast.parse(source)
+    if syntax_depth(tree) > MAX_SYNTAX_DEPTH:
+        raise ValueError(f"golden source nests deeper than {MAX_SYNTAX_DEPTH} syntax levels; "
+                         "split long expressions into separate statements")
     funcs = {node.name for node in tree.body if isinstance(node, ast.FunctionDef)}
     if not {"init", "step"} <= funcs:
         raise ValueError("golden model must define init() and step()")
@@ -132,9 +189,19 @@ def validate_source(source: str) -> ast.Module:
         elif not (isinstance(node, ast.Expr) and isinstance(node.value, ast.Constant)
                   and isinstance(node.value.value, str)):
             raise ValueError("golden top-level execution is unsupported")
+    # A slice store is charged only as the sole target of a plain assignment, where
+    # execute() rewrites it; elsewhere (for-targets, chained or tuple targets) reject it.
+    charged_slice_stores = {id(node.targets[0]) for node in ast.walk(tree)
+                            if isinstance(node, ast.Assign) and len(node.targets) == 1}
     for node in ast.walk(tree):
         if type(node).__name__ not in ALLOWED:
             raise ValueError(f"unsupported golden syntax: {type(node).__name__}")
+        if isinstance(node, ast.FunctionDef) and node.decorator_list:
+            # A decorator calls an arbitrary held value; nested functions included.
+            raise ValueError("golden decorators are unsupported")
+        if (isinstance(node, ast.Subscript) and isinstance(node.slice, ast.Slice)
+                and not isinstance(node.ctx, ast.Load) and id(node) not in charged_slice_stores):
+            raise ValueError("golden slice assignment is supported only as a single plain assignment target")
         if isinstance(node, (ast.Name, ast.arg, ast.FunctionDef)):
             name = node.id if isinstance(node, ast.Name) else node.arg if isinstance(node, ast.arg) else node.name
             if name.startswith("_"):
@@ -181,8 +248,42 @@ def execute(source: str, stimulus: list[dict]) -> list[dict]:
                 ast.Name(node.target.id, ast.Load()), node.op, node.value))
             return ast.copy_location(self.visit(replacement), node)
 
+        @staticmethod
+        def slice_bounds(span):
+            return [part if part is not None else ast.Constant(None)
+                    for part in (span.lower, span.upper, span.step)]
+
+        def visit_Subscript(self, node):
+            # Slicing copies; charge it to the cumulative allocation cap.
+            self.generic_visit(node)
+            if isinstance(node.ctx, ast.Load) and isinstance(node.slice, ast.Slice):
+                return ast.copy_location(ast.Call(ast.Name("_bounded_slice", ast.Load()),
+                                         [node.value, *self.slice_bounds(node.slice)], []), node)
+            return node
+
+        def visit_Attribute(self, node):
+            # .copy() copies; wrap the attribute itself so an indirect call is charged too.
+            self.generic_visit(node)
+            if isinstance(node.ctx, ast.Load) and node.attr == "copy":
+                return ast.copy_location(ast.Call(ast.Name("_bounded_copy", ast.Load()),
+                                         [node.value], []), node)
+            return node
+
+        def visit_Assign(self, node):
+            self.generic_visit(node)
+            target = node.targets[0]
+            if (len(node.targets) == 1 and isinstance(target, ast.Subscript)
+                    and isinstance(target.slice, ast.Slice)):
+                # Argument order keeps Python's order: value, then target, then bounds.
+                call = ast.Call(ast.Name("_bounded_slice_assign", ast.Load()),
+                                [node.value, target.value, *self.slice_bounds(target.slice)], [])
+                return ast.copy_location(ast.Expr(call), node)
+            return node
+
     tree = ast.fix_missing_locations(BoundedArithmetic().visit(tree))
-    namespace = {"__builtins__": SAFE_BUILTINS.copy(), "_bounded_binary": bounded_binary}
+    namespace = {"__builtins__": SAFE_BUILTINS.copy(), "_bounded_binary": bounded_binary,
+                 "_bounded_slice": bounded_slice, "_bounded_slice_assign": bounded_slice_assign,
+                 "_bounded_copy": bounded_copy}
     remaining = 200000
 
     def instruction_limit(frame, event, arg):
@@ -209,6 +310,77 @@ def execute(source: str, stimulus: list[dict]) -> list[dict]:
         sys.settrace(None)
 
 
+_job_handle = None  # kept open for the life of the worker
+
+
+def limit_windows_process_memory(limit_bytes: int) -> bool:
+    """Put this process in a Windows Job Object capping its committed memory.
+
+    Windows has no RLIMIT_AS. The worker assigns itself before it reads the
+    request, so no generated code runs outside the limit. Returns False, without
+    raising, when the platform or the job API refuses (for example, a parent job
+    that forbids nesting); the instruction and allocation budgets still apply.
+    """
+    global _job_handle
+    if sys.platform != "win32":
+        return False
+    try:
+        import ctypes
+        from ctypes import wintypes
+
+        class IO_COUNTERS(ctypes.Structure):
+            _fields_ = [(name, ctypes.c_ulonglong) for name in (
+                "ReadOperationCount", "WriteOperationCount", "OtherOperationCount",
+                "ReadTransferCount", "WriteTransferCount", "OtherTransferCount")]
+
+        class JOBOBJECT_BASIC_LIMIT_INFORMATION(ctypes.Structure):
+            _fields_ = [("PerProcessUserTimeLimit", ctypes.c_longlong),
+                        ("PerJobUserTimeLimit", ctypes.c_longlong),
+                        ("LimitFlags", wintypes.DWORD),
+                        ("MinimumWorkingSetSize", ctypes.c_size_t),
+                        ("MaximumWorkingSetSize", ctypes.c_size_t),
+                        ("ActiveProcessLimit", wintypes.DWORD),
+                        ("Affinity", ctypes.c_size_t),
+                        ("PriorityClass", wintypes.DWORD),
+                        ("SchedulingClass", wintypes.DWORD)]
+
+        class JOBOBJECT_EXTENDED_LIMIT_INFORMATION(ctypes.Structure):
+            _fields_ = [("BasicLimitInformation", JOBOBJECT_BASIC_LIMIT_INFORMATION),
+                        ("IoInfo", IO_COUNTERS),
+                        ("ProcessMemoryLimit", ctypes.c_size_t),
+                        ("JobMemoryLimit", ctypes.c_size_t),
+                        ("PeakProcessMemoryUsed", ctypes.c_size_t),
+                        ("PeakJobMemoryUsed", ctypes.c_size_t)]
+
+        job_object_extended_limit_information = 9
+        job_object_limit_process_memory = 0x00000100
+        kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+        kernel32.CreateJobObjectW.argtypes = [ctypes.c_void_p, wintypes.LPCWSTR]
+        kernel32.CreateJobObjectW.restype = wintypes.HANDLE
+        kernel32.SetInformationJobObject.argtypes = [wintypes.HANDLE, ctypes.c_int,
+                                                     ctypes.c_void_p, wintypes.DWORD]
+        kernel32.SetInformationJobObject.restype = wintypes.BOOL
+        kernel32.GetCurrentProcess.restype = wintypes.HANDLE
+        kernel32.AssignProcessToJobObject.argtypes = [wintypes.HANDLE, wintypes.HANDLE]
+        kernel32.AssignProcessToJobObject.restype = wintypes.BOOL
+        kernel32.CloseHandle.argtypes = [wintypes.HANDLE]
+        job = kernel32.CreateJobObjectW(None, None)
+        if not job:
+            return False
+        info = JOBOBJECT_EXTENDED_LIMIT_INFORMATION()
+        info.BasicLimitInformation.LimitFlags = job_object_limit_process_memory
+        info.ProcessMemoryLimit = limit_bytes
+        if not (kernel32.SetInformationJobObject(job, job_object_extended_limit_information,
+                                                 ctypes.byref(info), ctypes.sizeof(info))
+                and kernel32.AssignProcessToJobObject(job, kernel32.GetCurrentProcess())):
+            kernel32.CloseHandle(job)
+            return False
+        _job_handle = job
+        return True
+    except Exception:
+        return False
+
+
 def main() -> None:
     try:
         # Extra OS limits where available; no generated code sees this module.
@@ -217,7 +389,7 @@ def main() -> None:
             resource.setrlimit(resource.RLIMIT_AS, (256 * 1024 * 1024,) * 2)
             resource.setrlimit(resource.RLIMIT_CPU, (3, 3))
         except ImportError:
-            pass
+            limit_windows_process_memory(256 * 1024 * 1024)
         request = json.loads(sys.stdin.read(1000001))
         result = execute(request["source"], request["stimulus"])
         encoded = json.dumps({"outputs": result})
