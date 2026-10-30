@@ -62,7 +62,7 @@ supported schema and limits.
    hardware/basys3/harness_built/uart_tx).
 4. **Best-of-N (N=4)** with objective-weighted mutation prompts (bestofn.py),
    hash dedupe, deterministic selection: (rungs, timing feasibility, objective
-   metric, brevity). A verified timing recovery can use more resources; it is
+   metric, resource tie-break, brevity). A verified timing recovery can use more resources; it is
    recorded separately from objective savings. While the incumbent is still
    timing-infeasible, a verified infeasible candidate with strictly better setup
    WNS (hold no worse than 0.05 ns) replaces it as `timing_progress`, and
@@ -328,6 +328,24 @@ compare `reg2reg_wns_ns` when every compared design has a finite value, and
 otherwise compare `wns_ns` for all of them, never a mix
 (`objectives.objective_field`). The fixed optimize contract states this rule.
 No gate or curriculum criterion reads it (maximize_freq_ranks_on_pad_delay).
+
+**Resource objective tie-break.** Between two verified timing-feasible designs,
+minimize_luts compares (`lut_used`, `ff_used`) and minimize_ffs compares
+(`ff_used`, `lut_used`) lexicographically. An equal primary count with a
+strictly lower secondary count is an objective improvement, recorded as kind
+`objective`; a higher primary count never is. When either design lacks a
+finite, nonnegative secondary value there is no tie-break and only the primary
+counts (`objectives.tie_break_field`). `improvement_kind`, best-of-N selection
+among feasible candidates (secondary before code length, used only when every
+feasible candidate reports it), the fixed optimize contract and its saved
+objective policy, and the planner and evaluator prompts all state this rule.
+Promotion still needs evaluator ACCEPT, so the evaluator prompt says not to
+reject such a candidate for an unchanged primary count. maximize_freq and
+minimize_power have no tie-break; feasibility, recovery and progress are
+unchanged. The saved objective policy is contract evidence, so checkpoints
+saved before this rule do not resume (equal_lut_ff_saving_discarded;
+crc16_stream_build in explore-tier4-01 and -02: 16 LUT, 34 to 18 or 19 FF,
+timing met, rejected).
 
 ## Curriculum governance
 Tier held = 3 consecutive runs ≥80%. Regressions on held tiers block harness

@@ -125,7 +125,8 @@ exit zero mean the bounded experiment completed; timing_closed must also be true
 before calling a design timing closed. A verified feasible candidate may replace
 a known timing-failing baseline even with higher area, labeled timing_recovery.
 Among timing-feasible designs, promotion still requires strict improvement of
-the selected objective. Missing or contradictory timing cannot establish recovery.
+the selected objective; minimize_luts and minimize_ffs compare (LUTs, FFs) and
+(FFs, LUTs) lexicographically (DESIGN.md, resource objective tie-break). Missing or contradictory timing cannot establish recovery.
 All behavior, metric, receipt and final evaluation gates continue to apply.
 
 
