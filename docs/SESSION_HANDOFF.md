@@ -4,7 +4,23 @@ Updated October 29, 2026 (America/New_York). Verify files, Git, ownership and
 actual jobs before acting. Canonical checkout: Downloads/autortl-work. Preserve
 the separate Downloads/autortl copy. User choice: command-line Vivado.
 
-## Latest - October 30 morning (Claude Code): taking over Codex's review
+## Latest - October 30 midday (Claude Code): tier0 held, tier1 qualifying
+
+- **Tier0 held on ca61dbc** (campaigns 28-30, cohort f82bccb9, model
+  gpt-6-luna requested). `main` was fast-forwarded to ca61dbc.
+- **Tier1:** tier1-campaign-03 passed 4/4 (debouncer from prose 6 -> 3 LUT,
+  encoder8 6 -> 3); 04 running; 05 next. Gates use `--jobs 4`.
+- **Tier2 exploration** (tools/explore.py, no history writes;
+  evidence/2026-10-30/explore-tier2-01): skid/sync/packet FIFO builds recovered
+  timing; fir8 showed `infeasible_progress_discarded`.
+- **Staged, merge after the tier1 hold:** worktree Downloads/autortl-portability,
+  branch claude/post-hold (1,915 tests): tier-concurrent history
+  (`cross_tier_benches_serialized`), the live-companion rule (resolves the
+  companion-boundary decision; 0 extra historical rejections), timing_progress
+  selection (`infeasible_progress_discarded`), DESIGN stale-lock sentence.
+- Codex CLI: `...\OpenAI\Codex\bin\0ab0e7a8f3779036\codex.exe`.
+
+## October 30 morning (Claude Code): taking over Codex's review
 
 - Correction to the October 29 late note below: the golden-sandbox hardening
   (branch `golden-hardening`, d71c49c) was NOT in 0cf7413. The agent had
