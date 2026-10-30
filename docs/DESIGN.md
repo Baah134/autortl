@@ -231,7 +231,8 @@ In build mode, a spec file that loads as a DesignSpec is law. A lint error ends
 the run as spec_lint_failed, and a load error is raised. A prose request is
 turned into a spec by the planner. That planner-written spec gets its lint or
 load errors back for at most `max_fix_attempts` repairs (default 3). Each repair
-prompt carries the errors and the previous spec. Each repair is a journaled
+prompt carries the errors and the previous spec. The planner receives at most
+1,800 characters of that feedback, so a long previous spec is cut. Each repair is a journaled
 planner call charged to the budget. If errors remain, the run ends as
 spec_lint_failed with the errors in the checkpoint. The spec prompt also states
 the structural rules, such as a top_name that differs from every module name
