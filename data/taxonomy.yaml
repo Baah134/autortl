@@ -496,3 +496,31 @@ methodology:
   "LUTAR-1":
     meaning: "LUT on a clock or combinational clock path"
     advice: "Never gate or generate clocks in logic; plan clock enables instead"
+
+  rtl_comment_literal_hides_forbidden_tasks:
+    meaning: "Comment delimiters inside Verilog strings hid later forbidden tasks from safety scanning"
+    repair: "Tokenize strings and comments in source order and regress forbidden-task, directive and pragma hiding"
+
+  baseline_repair_skips_companion_check:
+    meaning: "Baseline repair omitted the frozen-companion gate applied to normal and doctor candidates"
+    repair: "Apply the same companion guard before any repaired-source flow and retain failure evidence"
+
+  companion_instance_does_not_prove_top_behavior:
+    meaning: "Textual instances in dead or disconnected logic do not establish that a separately tested companion implements the optimized top"
+    repair: "Use a mechanically checked transparent-wrapper boundary when qualification depends on child-only behavior; otherwise require independent top behavior checks"
+
+  tool_id_masks_host_failure:
+    meaning: "Tool-ID precedence classified real permission failures and mixed host-failure logs as design bugs"
+    repair: "Recognize decisive host failures across the log without treating routine informational license acquisition as infrastructure"
+
+  board_simulation_outcome_not_proven:
+    meaning: "Board-suite simulation ignored XSIM exit and counted elaboration or missing-verdict failures as killed behavioral faults"
+    repair: "Require explicit process completion and assertion failure for fault detection; infrastructure and missing evidence never count"
+
+  board_image_assumed_without_programming:
+    meaning: "Hardware checking could label a requested bitstream as programmed without a programming receipt"
+    repair: "Require a successful programming record matching the selected payload before reporting verified board image identity"
+
+  golden_hardening_not_integrated:
+    meaning: "Handoff and README described pending worker-branch code and tests as integrated into the frozen harness"
+    repair: "Integrate the exact reviewed changes without reverting subsequent guards, then derive counts and gates from the actual combined source"

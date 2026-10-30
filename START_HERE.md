@@ -5,29 +5,25 @@ You can continue without access to the previous provider's conversation.
 
 Canonical checkout: `C:/Users/prince.baah/Downloads/autortl-work`.
 GitHub integration branch: `main`. Development branch: `codex/contract-context`.
-Last verified main milestone **185dadc** uses the older validated runtime;
-**cbab6cf** is development-only pending the remaining FPGA gates. The main
-milestone includes a generated signed FIR reduced
-78 to 52 LUTs and recovered setup timing to +0.169 ns (hold +0.106 ns), with an
-independent 800-cycle replay and six restored integrity probes. Full 1,429-test
-regression and 28-case independent checker admission passed. All 1,155 newly
-published evidence blobs were verified against committed bytes.
+Current coordinator: Codex resumed October29 at the user's explicit request.
+Read the current SESSION_HANDOFF section and live session.py ownership before
+editing. Development base749d6d1; last checked remote main0939c43.
 
-Current local work strengthens generated verification: a frozen 27-fault audit
-measured 18 detections before correction and 22 after it, with five legal driver
-controls and a detected faulty-producer probe. The exact 230-file runtime passed 1,450 tests in 457.63
-seconds. Tested runtime is published on development at cbab6cf; fresh FIR build02
-completed and its archive is still untracked. Campaign13 has no completion receipt
-and must be treated as interrupted/unverified, not a passing tier0 gate. Main retains the
-completed original FIR milestone until the changed runtime gates pass. Read SESSION_HANDOFF
-for actual jobs and exact next commands before editing or launching tools.
+Claude added physical Basys3 validation for six unedited harness winners, each
+50,000 transactions with0mismatches, plus a harness-generated UART transmitter
+that streamed1,000,000bytes. CI, evidence audit, model endpoints and qualified
+tier4 graders are implemented. These are bounded results, not a wholly
+harness-generated board system or a controlled public-benchmark advantage.
 
-The prior elastic dot product and multi-module/FIFO/divider results remain in
-their separate archives. The harness targets Artix-7 at 100 MHz with ideal I/O.
-Separately, every archived winner has been run on a physical Basys 3 through a
-hand-written shell (hardware/basys3/harness_winners); see docs/TARGETS.md for
-exactly what that does and does not establish. No model-strength comparison is
-claimed.
+The independent review passed1654harness tests and reproduced acceptance gaps.
+The claimed golden sandbox branch is still pending integration;1742tests was
+not the count in the actual reviewed checkout. Campaign25 passed2/2 and was
+archived before this repair batch. New implementation is in isolated stages.
+Root recorded taxonomy/acceptance criteria first; full regression and fresh
+tier0 on the combined source remain required. No new gate is running yet.
+
+See docs/SESSION_HANDOFF.md for exact scoped stages, evidence and next actions;
+AGENTS.md and docs/AGENT_HANDOFF.md govern sequential coordinator ownership.
 
 Keep source-bound planning and exact candidate dedupe. Additional prior-proposal
 prompt context is experimental/opt-in after its study did not establish a benefit.

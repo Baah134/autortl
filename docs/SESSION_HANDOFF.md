@@ -4,6 +4,43 @@ Updated October 29, 2026 (America/New_York). Verify files, Git, ownership and
 actual jobs before acting. Canonical checkout: Downloads/autortl-work. Preserve
 the separate Downloads/autortl copy. User choice: command-line Vivado.
 
+## Current — Codex resumed October29 after explicit user takeover
+
+User: follow off from where Claude usage stopped. Root claimed an8h lease with
+a recorded reason; no vendor/model jobs active, Claude GUI processes untouched.
+Read actual ownership, not the older Claude checkpoint below.
+
+- Base749d6d1, remote development verified at that commit; remote main0939c43.
+- Independent frozen-copy review:1654harness tests passed532.84s (actual tests/,
+  not README1742); tooling181passed plus local-clone test passed separately
+  outside restricted sandbox. Audit43719claims passes with171known losses.
+- Campaign25 finished2/2, streak2/heldfalse, old272source unchanged. Archived
+ 428files before source changes. Campaign26 and tier1 03..05 contain prepared
+ archive helpers only, not launched measurements. Preserve them.
+- Missing golden-hardening d71c49c was never merged despite prior claims.
+ Root recorded new failure taxonomy and acceptance plan before patches.
+ Current canonical changes: taxonomy + review/progress notes and review evidence.
+ Implementation is being prepared in isolated workspace stages only.
+- Isolated work (workspace Documents/Codex/2026-10-15/hey/work):
+ resume-golden-stage (golden files/tests plus exact timeout-only FSM delta);
+ resume-rtl-triage-stage (5scopedfiles,149focus passed;14originalfailures);
+ resume-board-proof-stage (board process/mutation/program identity checks);
+ resume-fsm-stage (companion boundary/baseline repair,44focus passed;
+ original6failed/1passed retained in resume-fsm-before). Do not copy whole
+ golden branch diff: it would revert newer latency and Doctor guards.
+- No vendor/model job currently owned. Review pytest sessions21437 and88411
+ completed; prior restricted harness attempt was intentionally stopped.
+ Review snapshot and probes are read-only under work/review-oct29-749d6d1;
+ full reviewed evidence is evidence/2026-10-29/codex-resume-review-01.
+- Next: review all staged deltas, integrate only claimed files and exact
+ golden timeout catch, run combined focused + complete harness/tooling checks,
+ freeze/commit tested source, then a NEW fulltier0 gate with existing budgets.
+ Do not edit frozen sources during gates or resume older runtime experiments.
+- Coordinator token is private outside repo; task claims in SQLite. No custom
+ concurrent-worker sessions were added; development agents still take turns.
+
+Earlier checkpoint sections below are historical and may report stale jobs.
+
 ## Latest - October 29 late (Claude Code): hardened identity
 
 - **Hardened identity 0cf7413** (272 files, 1,742 tests, audit PASS, pushed).

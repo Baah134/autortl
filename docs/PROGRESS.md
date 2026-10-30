@@ -1554,3 +1554,33 @@ corrected as an explicit doc-only delta after the frozen experiments.
   campaign15's 232-file freeze, each with 1,461 tests and unchanged prefixes.
   It is the first held tier. Evidence: evidence/2026-10-29/contract-campaign-16
   and contract-campaign-17. The golden budget is documented in DESIGN.
+
+## October29 — Codex resumes Claude; acceptance hardening before more curricula
+
+User explicitly requested takeover after Claude usage stopped. No active vendor
+or model job was found; Claude application processes were left untouched.
+Development749d6d1 is the reference: independent1654tests passed532.84s; tooling
+181passed plus its sandbox-blocked local-clone test passed separately. Six pure
+or mock probes reproduce safety, companion, triage and board-suite gaps. The
+committed-blob audit passes43719claims with138justified exceptions and171known
+historical losses; no loss is relabeled recovered.
+
+Campaign25 finished2/2, streak2, heldfalse,1654tests,272frozen files unchanged.
+Its428-file archive was completed before source changes. Campaign26 and tier1
+03..05 have only prepared archive helpers; do not represent them as launched.
+
+Fixed plan, before implementation: preserve749 source/results; integrate the
+pending d71c49c golden files/tests and only its timeout handling in FSM (do not
+revert newer latency/Doctor guards). Repair string-aware scanning and true host
+failure precedence; apply baseline companion protection; strengthen child-only
+qualification boundaries without claiming lexical instantiation proves semantics.
+Board-suite checks must require zero process exits and real behavioral fault
+assertions, and never infer programmed payload identity from an unprogrammed file.
+
+Acceptance: new regressions fail against749 and pass with corrections; all prior
+focused suites and full harness/tooling pass; exact source identities are frozen
+through fresh fulltier0 gate with existing budgets. Preserve every attempt and
+run the committed-blob audit. Do not spend on a third hold run of code scheduled
+for replacement. No new roles, services, model escalation or budget expansion.
+Only then continue higher curricula and the CV-oriented board/public-task plan.
+
