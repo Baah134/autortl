@@ -312,8 +312,11 @@ that tier's records, so benches of different tiers may run at once; earlier
 bytes are never rewritten (cross_tier_benches_serialized). A held lock, a
 rewritten history or a record of the same tier added meanwhile fails closed as
 infrastructure. Nothing is written, the record stays in the campaign's
-summary.json and the bench exits 3 (concurrent_bench_drops_history). A lock older
-than ten minutes was left by a crashed bench and is replaced automatically
+summary.json and the bench exits 3 (concurrent_bench_drops_history). The lock
+records the owning process ID. A lock whose recorded owner is no longer running
+(checked without signalling it; OpenProcess on Windows) was left by a crashed
+bench and is replaced at once (dead_bench_lock_blocks_until_stale). A lock with
+no readable owner is replaced only when older than ten minutes
 (stale_history_lock_blocks_benches).
 
 **Infrastructure-blocked campaigns.** A campaign with any entry whose summary

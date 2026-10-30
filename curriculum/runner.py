@@ -156,6 +156,64 @@ def _grew_by_other_tiers(expected: bytes, current: bytes, tier: int) -> bool:
     return all(r["tier"] != tier for r in records)
 
 
+def _take_lock(lock: Path) -> None:
+    """Create the lock exclusively and record this process as its owner."""
+    fd = os.open(lock, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+    try:
+        os.write(fd, str(os.getpid()).encode("ascii"))
+    finally:
+        os.close(fd)
+
+
+def _lock_owner(lock: Path) -> int | None:
+    """The process ID a lock records, or None when it records none readable."""
+    try:
+        text = lock.read_bytes()[:32].decode("ascii").strip()
+    except (OSError, UnicodeDecodeError):
+        return None
+    if not re.fullmatch(r"[1-9][0-9]{0,9}", text) or int(text) >= 2 ** 31:
+        return None
+    return int(text)
+
+
+def _process_running(pid: int) -> bool:
+    """False only when pid is known not to be running; never signals the process.
+
+    Windows: OpenProcess plus GetExitCodeProcess (os.kill would terminate it).
+    Elsewhere: kill(pid, 0), which only checks. Any doubt counts as running,
+    so an unclear lock falls back to the age rule.
+    """
+    if pid == os.getpid():
+        return True
+    if os.name == "nt":
+        import ctypes
+        from ctypes import wintypes
+        kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+        kernel32.OpenProcess.argtypes = [wintypes.DWORD, wintypes.BOOL, wintypes.DWORD]
+        kernel32.OpenProcess.restype = wintypes.HANDLE
+        kernel32.GetExitCodeProcess.argtypes = [wintypes.HANDLE, ctypes.POINTER(wintypes.DWORD)]
+        kernel32.GetExitCodeProcess.restype = wintypes.BOOL
+        kernel32.CloseHandle.argtypes = [wintypes.HANDLE]
+        kernel32.CloseHandle.restype = wintypes.BOOL
+        handle = kernel32.OpenProcess(0x1000, False, pid)  # PROCESS_QUERY_LIMITED_INFORMATION
+        if not handle:
+            return ctypes.get_last_error() != 87  # ERROR_INVALID_PARAMETER: no such process
+        try:
+            code = wintypes.DWORD()
+            if not kernel32.GetExitCodeProcess(handle, ctypes.byref(code)):
+                return True
+            return code.value == 259  # STILL_ACTIVE
+        finally:
+            kernel32.CloseHandle(handle)
+    try:
+        os.kill(pid, 0)
+    except ProcessLookupError:
+        return False
+    except OSError:
+        return True
+    return True
+
+
 def _commit_history(expected: bytes, record) -> None:
     """Append record only if the history is unchanged for this record's tier.
 
@@ -168,20 +226,26 @@ def _commit_history(expected: bytes, record) -> None:
     """
     lock = RESULTS.with_name(RESULTS.name + ".lock")
     try:
-        os.close(os.open(lock, os.O_CREAT | os.O_EXCL | os.O_WRONLY))
+        _take_lock(lock)
     except FileExistsError as exc:
-        # The locked section takes milliseconds; an old lock was left by a crashed
-        # bench (stale_history_lock_blocks_benches) and is replaced once.
+        # The locked section takes milliseconds; a lock whose owner is gone
+        # (dead_bench_lock_blocks_until_stale) or an old one without a readable
+        # owner was left by a crashed bench (stale_history_lock_blocks_benches)
+        # and is replaced once.
         try:
             age = time.time() - lock.stat().st_mtime
         except OSError:
             age = 0
-        if age <= STALE_LOCK_SECONDS:
+        owner = _lock_owner(lock)
+        if owner is not None and not _process_running(owner):
+            print(f"[bench] replacing a history lock left by process {owner}, which is no longer running")
+        elif age > STALE_LOCK_SECONDS:
+            print(f"[bench] replacing a stale history lock ({age / 60:.0f} minutes old)")
+        else:
             raise HistoryConflictError(f"{lock} exists: another bench is writing the history") from exc
-        print(f"[bench] replacing a stale history lock ({age / 60:.0f} minutes old)")
         lock.unlink(missing_ok=True)
         try:
-            os.close(os.open(lock, os.O_CREAT | os.O_EXCL | os.O_WRONLY))
+            _take_lock(lock)
         except FileExistsError as again:
             raise HistoryConflictError(f"{lock} exists: another bench is writing the history") from again
     try:
