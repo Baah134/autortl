@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Interface and ports: PASS \u2014 candidate preserves the top name and all port names, directions, and widths.\n- Reset and cycle behavior: PASS \u2014 synchronous active-high reset and registered mux output behavior are preserved.\n- Top latency annotation: PASS \u2014 authoritative latency is unknown, so no numeric annotation is required.\n- Compile and simulation: PASS \u2014 required tools exited successfully; simulation reported `TEST PASSED`.\n- Synthesis and routed metrics: PASS \u2014 synthesis completed; retained routed metrics show WNS 0.579 ns and WHS 0.057 ns.\n- Timing feasibility: PASS \u2014 candidate timing is met with nonnegative setup and hold slack.\n- Objective improvement: FAIL \u2014 both candidate and previous best are timing-feasible, and LUT usage is unchanged at 8; strict LUT reduction is required.\n## Summary\n- Passed: 6 of 7\n- Failed: 1 of 7\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate preserves the mux interface, reset, and registered cycle behavior, and passes the deterministic compile, simulation, synthesis, and timing gates. However, the previous best is already timing-feasible, and the candidate does not reduce LUT usage, so it fails the required strict improvement for `minimize_luts`.",
+      "recommendation": "REJECT",
+      "passed": 6,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

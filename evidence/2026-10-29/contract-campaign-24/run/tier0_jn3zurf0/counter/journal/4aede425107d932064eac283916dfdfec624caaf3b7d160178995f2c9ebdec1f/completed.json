@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_1:decision:instruction:0",
+  "result": "Remove the unused `prev_count` register and the procedural `count_next` temporary. When `load` is inactive and `enable` is active, update `count` with `count + 1'b1` so the fixed-width result wraps naturally, and set `overflow` from the pre-edge all-ones condition using a reduction-AND of `count`. Preserve the existing reset, load, enable and hold priorities, including overflow holding while disabled, and leave the registered threshold flag logic and parameterized comparisons unchanged.",
+  "artifacts": {}
+}
