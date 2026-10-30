@@ -295,8 +295,9 @@ that tier's records, so benches of different tiers may run at once; earlier
 bytes are never rewritten (cross_tier_benches_serialized). A held lock, a
 rewritten history or a record of the same tier added meanwhile fails closed as
 infrastructure. Nothing is written, the record stays in the campaign's
-summary.json and the bench exits 3 (concurrent_bench_drops_history). A lock left
-by a crashed bench must be deleted by hand.
+summary.json and the bench exits 3 (concurrent_bench_drops_history). A lock older
+than ten minutes was left by a crashed bench and is replaced automatically
+(stale_history_lock_blocks_benches).
 
 **Infrastructure-blocked campaigns.** A campaign with any entry whose summary
 has `failure_kind: infra` gets no verdict. This covers infra_blocked and
