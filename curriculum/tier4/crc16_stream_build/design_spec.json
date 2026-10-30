@@ -1,0 +1,211 @@
+{
+  "top_name": "crc16_stream",
+  "modules": [
+    {
+      "name": "crc16_stream_core",
+      "behavior": "Streaming CRC-16/CCITT-FALSE generator over a valid/ready byte stream with a frame-end flag. Algorithm: width 16, polynomial 0x1021, initial value 0xFFFF, input and output NOT reflected, no final XOR, each byte processed most-significant bit first. One byte update of state S with byte D: S = S ^ (D << 8), then 8 times S = S[15] ? ((S << 1) ^ 0x1021) : (S << 1), masked to 16 bits. Check value: the bytes 0x31..0x39 ('123456789') sent as one frame give 0x29B1 on the last byte. The module keeps a running frame state F, equal to 0xFFFF after reset. A byte is accepted at a rising clk edge exactly when in_valid && in_ready before that edge and rst is low. For each accepted byte let C = update(F, in_data): register out_crc = C, out_last = in_last and out_valid = 1, then set F = 0xFFFF if in_last = 1 (the next accepted byte starts a new frame), else F = C. So out_crc is the CRC of every byte of the current frame up to and including this byte, and the consumer takes the frame CRC from the output whose out_last = 1. Invalid or blocked bytes never change F or the output. One output slot, capacity 1: in_ready = !out_valid || out_ready, a combinational path from out_ready; out_valid is the slot state. At an edge with out_valid && out_ready and no accepted byte, out_valid clears; at an edge that both retires and accepts, the slot is replaced and out_valid stays 1, so one byte per cycle is sustained. No bypass: a byte captured at edge k is visible after edge k and can transfer at edge k+1 at the earliest (minimum accepted-transfer age 1). While out_valid && !out_ready, out_valid, out_crc and out_last stay stable. out_crc and out_last are unspecified while out_valid = 0. Synchronous active-high rst at a rising edge clears out_valid, discards the slot, restarts the frame (F = 0xFFFF) and overrides any capture. Reset has no effect between edges (an off-edge rst pulse changes nothing), and in_ready/out_valid reflect slot state even while rst is asserted: no combinational reset gating. Producers hold in_data, in_last and in_valid while blocked. For the Python scoreboard oracle ONLY: each non-reset step is one accepted byte; keep F in state, compute C, return out_crc = C and out_last = in_last, then advance F as above. A supplied rst returns F to 0xFFFF and outputs 0; init() is the reset state. Do not model the slot, readiness or backpressure in the oracle. Each example starts from reset and after_cycles repeats the same accepted byte.",
+      "ports": [
+        {
+          "name": "clk",
+          "direction": "input",
+          "width": 1,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "rst",
+          "direction": "input",
+          "width": 1,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "in_data",
+          "direction": "input",
+          "width": 8,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "in_last",
+          "direction": "input",
+          "width": 1,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "in_valid",
+          "direction": "input",
+          "width": 1,
+          "protocol": "valid_ready",
+          "signed": false
+        },
+        {
+          "name": "in_ready",
+          "direction": "output",
+          "width": 1,
+          "protocol": "valid_ready",
+          "signed": false
+        },
+        {
+          "name": "out_crc",
+          "direction": "output",
+          "width": 16,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "out_last",
+          "direction": "output",
+          "width": 1,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "out_valid",
+          "direction": "output",
+          "width": 1,
+          "protocol": "valid_ready",
+          "signed": false
+        },
+        {
+          "name": "out_ready",
+          "direction": "input",
+          "width": 1,
+          "protocol": "valid_ready",
+          "signed": false
+        }
+      ],
+      "latency": 1,
+      "latency_known": true,
+      "compare_mode": "scoreboard",
+      "reset": {
+        "signal": "rst",
+        "kind": "sync",
+        "active_high": true,
+        "duration_cycles": 3
+      },
+      "parameters": {},
+      "clock_domains": [
+        "clk"
+      ],
+      "examples": [
+        {
+          "inputs": {
+            "rst": 0,
+            "in_valid": 1,
+            "out_ready": 1,
+            "in_data": 49,
+            "in_last": 0
+          },
+          "expected": {
+            "out_crc": 51074,
+            "out_last": 0
+          },
+          "after_cycles": 1
+        },
+        {
+          "inputs": {
+            "rst": 0,
+            "in_valid": 1,
+            "out_ready": 1,
+            "in_data": 0,
+            "in_last": 0
+          },
+          "expected": {
+            "out_crc": 7439,
+            "out_last": 0
+          },
+          "after_cycles": 2
+        },
+        {
+          "inputs": {
+            "rst": 0,
+            "in_valid": 1,
+            "out_ready": 1,
+            "in_data": 255,
+            "in_last": 1
+          },
+          "expected": {
+            "out_crc": 65280,
+            "out_last": 1
+          },
+          "after_cycles": 3
+        }
+      ]
+    }
+  ],
+  "connections": [],
+  "external_ports": [
+    {
+      "name": "clk",
+      "direction": "input",
+      "width": 1,
+      "protocol": "none",
+      "signed": false
+    },
+    {
+      "name": "rst",
+      "direction": "input",
+      "width": 1,
+      "protocol": "none",
+      "signed": false
+    },
+    {
+      "name": "in_data",
+      "direction": "input",
+      "width": 8,
+      "protocol": "none",
+      "signed": false
+    },
+    {
+      "name": "in_last",
+      "direction": "input",
+      "width": 1,
+      "protocol": "none",
+      "signed": false
+    },
+    {
+      "name": "in_valid",
+      "direction": "input",
+      "width": 1,
+      "protocol": "valid_ready",
+      "signed": false
+    },
+    {
+      "name": "in_ready",
+      "direction": "output",
+      "width": 1,
+      "protocol": "valid_ready",
+      "signed": false
+    },
+    {
+      "name": "out_crc",
+      "direction": "output",
+      "width": 16,
+      "protocol": "none",
+      "signed": false
+    },
+    {
+      "name": "out_last",
+      "direction": "output",
+      "width": 1,
+      "protocol": "none",
+      "signed": false
+    },
+    {
+      "name": "out_valid",
+      "direction": "output",
+      "width": 1,
+      "protocol": "valid_ready",
+      "signed": false
+    },
+    {
+      "name": "out_ready",
+      "direction": "input",
+      "width": 1,
+      "protocol": "valid_ready",
+      "signed": false
+    }
+  ]
+}

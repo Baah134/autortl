@@ -1,0 +1,11 @@
+mode: build
+top: crc16_stream
+spec: design_spec.json
+tb: crc16_stream_tb.v
+generate_golden: true
+iterations: 3
+objective: minimize_luts
+target_freq_mhz: 100.0
+stresses: "bit-exact CRC-16/CCITT-FALSE; per-frame restart on in_last; one-slot full-rate elasticity; reset and stall semantics"
+pass_criteria:
+  timing_met: true
