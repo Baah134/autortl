@@ -80,7 +80,7 @@ class Planner:
                                        objective=cfg.objective)
         if feedback:
             p += ("\n\nYour previous design_spec failed the harness's structural check. Fix exactly "
-                  "these errors and output the complete corrected JSON only:\n" + str(feedback)[:1800])
+                  "these errors and output the complete corrected JSON only:\n" + str(feedback)[:8000])
         return _ask(self, "planner", evidence_prompt(self, p), system=role_system(prompts.PLANNER_SYSTEM),
                    budget=budget)
 

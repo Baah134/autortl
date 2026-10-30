@@ -1,7 +1,7 @@
 """User-defined model endpoints: plug any AI into every harness role.
 
-Endpoints live in a local file that is never committed:
-`llm/endpoints.local.yaml`, or the path in AUTORTL_ENDPOINTS. Each one has a
+Endpoints live in a local file that is never committed: `endpoints.local.yaml`
+at the repository root, or the path in AUTORTL_ENDPOINTS. Each one has a
 name, used as `run.py --model <name>.<model>`, and a kind:
 
     endpoints:
@@ -33,7 +33,9 @@ try:
 except ImportError:  # the harness requires pyyaml; endpoints also accept JSON
     yaml = None
 
-LOCAL = Path(__file__).with_name("endpoints.local.yaml")
+# Outside autortl/, llm/, data/ and .claude/skills, so editing it never changes the
+# harness identity that resume checks; its definition is recorded in the cohort instead.
+LOCAL = Path(__file__).resolve().parents[1] / "endpoints.local.yaml"
 BUILTIN = ("codex", "openai")
 NAME = re.compile(r"[a-z][a-z0-9_-]{0,31}")
 ENV_NAME = re.compile(r"[A-Za-z_][A-Za-z0-9_]{0,63}")

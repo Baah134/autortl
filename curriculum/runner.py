@@ -302,7 +302,16 @@ def run_tier(tier: int, **overrides) -> int:
         # The model the run named for every role; the CLI does not report one back.
         identity.update(model_identity=requested.pop(), model_identity_status="requested")
         from llm import endpoints
-        endpoint = endpoints.load().get(identity["model_identity"].partition(".")[0])
+        backend = identity["model_identity"].partition(".")[0]
+        try:
+            endpoint = endpoints.load().get(backend)
+        except endpoints.EndpointError as exc:  # never lose a finished campaign to a bad file
+            endpoint = {"unreadable_endpoints_file": str(exc)[:200]}
+        if backend == "openai":
+            # The built-in backend is configured by environment, so record it here.
+            import os
+            endpoint = {"kind": "openai", "base_url": os.environ.get("AUTORTL_OPENAI_BASE_URL") or "default",
+                        "default_model": os.environ.get("AUTORTL_OPENAI_MODEL") or ""}
         if endpoint is not None:
             # A user endpoint is configuration outside the frozen source; its
             # definition is part of the cohort, so editing it starts a new one.

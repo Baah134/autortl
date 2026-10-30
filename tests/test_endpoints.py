@@ -158,3 +158,21 @@ def test_the_endpoint_definition_is_part_of_the_cohort(curriculum, configured): 
     first, second = records()[-2:]
     assert first["runtime_identity"]["model_endpoint_sha256"] != second["runtime_identity"]["model_endpoint_sha256"]
     assert first["cohort"] != second["cohort"] and second["consecutive_qualifying_runs"] == 1
+
+
+def test_the_default_endpoints_file_is_outside_the_harness_identity():
+    # backend_configuration_rough_edges: editing it must never make resume refuse
+    root = endpoints.LOCAL.parent
+    assert endpoints.LOCAL.name == "endpoints.local.yaml" and (root / "run.py").is_file()
+    assert root.name != "llm"
+
+
+def test_hosted_model_ids_with_a_slash_can_be_pinned():
+    from autortl.config import RunConfig
+    RunConfig(mode="optimize", model="together.meta-llama/Llama-3.1-8B-Instruct").validate()
+
+
+def test_jobs_zero_is_an_argument_error():
+    import run
+    with pytest.raises(SystemExit):
+        run.main(["bench", "--tier", "0", "--jobs", "0"])

@@ -65,8 +65,8 @@ class RunConfig:
         if self.parallel_candidates:
             raise ValueError("parallel_candidates=True is unsupported; candidates execute sequentially")
         if self.model is not None and (not isinstance(self.model, str)
-                                       or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:-]{0,79}", self.model)):
-            raise ValueError("model must be a plain model alias (letters, digits, . _ : -)")
+                                       or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:/-]{0,119}", self.model)):
+            raise ValueError("model must be a plain model alias (letters, digits, . _ : / -)")
         if self.model == "default":
             raise ValueError("model 'default' would be the unpinned CLI default; omit --model instead")
         if self.work_dir is None:
