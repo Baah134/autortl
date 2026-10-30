@@ -1,0 +1,11 @@
+mode: build
+top: uart_rx_fifo
+spec: design_spec.json
+tb: uart_rx_fifo_tb.v
+generate_golden: true
+iterations: 3
+objective: minimize_luts
+target_freq_mhz: 100.0
+stresses: "three generated children; four internal connections; 16x oversampled UART receive with two-flop synchronizer, majority vote, false-start rejection and framing errors; parameter-dependent bit timing; FIFO with simultaneous pop/push when full; saturating counters"
+pass_criteria:
+  timing_met: true
