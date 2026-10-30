@@ -70,7 +70,9 @@ def candidate_scope(top_module, extra_sources, testbench_companions=()):
             "modules": sorted(testbench_companions),
             "why": "The trusted testbench instantiates these companions directly. Inlining them would leave those "
                    "checks testing the frozen companion instead of your top, so a candidate that stops "
-                   "instantiating them is rejected."}
+                   "instantiating them is rejected. Each must stay a live instance: unconditional at module "
+                   "level (not inside generate, if/else, case, for or begin/end) with at least one output "
+                   "feeding logic that drives a top output port."}
     render = lambda: _HEADER + json.dumps(scope,sort_keys=True,indent=2)
     if len(render()) > MAX_SCOPE_CHARS:
         raise ValueError("frozen companion metadata exceeds candidate context budget; partition the compilation unit")
