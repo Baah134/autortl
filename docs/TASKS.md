@@ -822,3 +822,24 @@ output, checked lexically. Over the archive it rejects 0 candidates beyond the
 existing inlining rule (26 optimized candidates; 190 files in a broader sweep)
 and every mechanical baseline top passes, while it closes the dead or
 disconnected instance bypass. Branch live-companion (709f2561).
+
+## October30 (Claude Code): whole-design optimization after a build
+
+explore-tier4-01: after each tier4 build the optimizer could edit only the
+mechanical top wrapper; all 8 post-build candidates verified and met timing
+and none could change the LUT count (taxonomy
+`frozen_children_block_build_optimization`).
+
+**Decided and implemented (branch build-whole-design-optimize):** when the
+supplied testbench instantiates the top, the optimizer edits one unit holding
+every generated child and the top, verified by that testbench and every other
+gate; otherwise the children stay frozen and the harness facts say why
+(DESIGN.md, post-build edit scope). Modules the trusted testbench instantiates
+directly must stay live under the top (spi_master_build's parameter cases).
+Interpretation to confirm: it applies to single-child builds with a supplied
+testbench too (crc16_stream_build, spi_master_build and the tier1-3 build
+entries), not only to rr_regfile_build's two-child spec.
+
+Remaining acceptance: controlled pytest only so far. Before relying on it,
+rerun tier4 exploration and the held-tier gates (the tier1-3 build entries
+now optimize the whole unit), and record whether any candidate changes LUTs.

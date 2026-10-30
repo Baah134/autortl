@@ -196,6 +196,39 @@ fully reliable FSM resume remain separate development work.
 - `doctor` checks the machine and runs no design; see
   [environment check and offline demo](#environment-check-and-offline-demo).
 
+## Post-build edit scope
+A build hands its integrated design to the optimize loop in one of two modes,
+decided by the harness, recorded as `edit_scope` in harness_facts.json, the
+fixed contract, state.json and run_summary.json, and checked on resume.
+
+- **whole_design.** The supplied testbench (a frozen run input, never the
+  harness-adapted child testbench) exists and instantiates the top. The
+  optimizer edits one source unit (`modules/<top>_unit.v`): every generated
+  child module in spec order, then the mechanical top, the same verified
+  text. No frozen companion is compiled beside it. Only the top carries the
+  contract (name, ports, parameters and defaults, reset, clocking, latency
+  annotation rule, observable cycles at its ports). Child names, ports and
+  boundaries are internal. A candidate must define the top once (static
+  interface check and the unit gate); modules the trusted testbench
+  instantiates directly must stay defined and live-reached from the top (the
+  live-companion rule applied to the candidate's own modules), so those
+  checks never test a module the top no longer uses. The trusted testbench
+  and every other gate (static, RTL safety, latency, compile, simulation,
+  routed timing, metrics, receipts, evaluator) verify every candidate. The
+  per-child generated oracles and testbenches verified the baseline children
+  only and are never cited for changed children. `<top>_best.v` holds the
+  whole unit.
+- **frozen_children.** No supplied testbench (a single-child build whose
+  integration testbench the harness adapted from the generated child
+  testbench), or a supplied testbench that does not instantiate the top. The
+  children stay frozen companions and only the top wrapper is editable, as
+  before; the recorded reason says which. A multi-module build without a
+  supplied testbench is still build_blocked.
+
+The mode applies to every build with at least one child, single-child builds
+included: their mechanical wrapper is just as unable to change the objective.
+Taxonomy `frozen_children_block_build_optimization` (explore-tier4-01).
+
 ## Role-output parsing
 Roles answer in free text, and its format varies between models. The harness
 extracts what it needs with tolerant parsers. Tolerance only decides which text
