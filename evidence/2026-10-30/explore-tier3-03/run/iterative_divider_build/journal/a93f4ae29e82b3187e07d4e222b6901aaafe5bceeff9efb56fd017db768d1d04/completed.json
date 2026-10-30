@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_3:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 3\n## Contract check\n- Interface and latency annotation: PASS \u2014 top ports match the contract and the top declares `// @latency 9`.\n- Defined behavior and parameter schedule: PASS \u2014 the authoritative ladder reports ALIVE; simulation passed the selected WIDTH cases and checked arithmetic, timing, handshakes, stalls, and resets.\n- Compile, elaboration, and simulation gates: PASS \u2014 required tools exited successfully and simulation reported `TEST PASSED`.\n- Routed reports and metric integrity: PASS \u2014 retained routed timing and utilization evidence is present and consistent with the reported metrics.\n- Timing closure: PASS \u2014 timing is feasible, with WNS 0.301 ns and WHS 0.078 ns.\n- Minimize-LUT objective: FAIL \u2014 candidate uses 34 LUTs versus 27 for the previous best; both are timing-feasible, so strict LUT improvement is required.\n\n## Summary\n- Passed: 5 of 6\n- Failed: 1 of 6\n- Improved over previous best: NO\n\n## Recommendation\nREJECT\n\n## Reason\nThe candidate passes behavioral, tool, and timing gates, but it does not improve the selected objective: LUT use increased from 27 to 34 while the previous best was already timing-feasible. The improved register-to-register slack and lower power are advisory for this `minimize_luts` comparison, so the failed objective criterion requires rejection.",
+      "recommendation": "REJECT",
+      "passed": 5,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

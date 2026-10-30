@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_1:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 1,
+    "instruction": "In `iterative_divider_core`, replace the separate `remainder_trial >= divisor_extended` comparison and subtraction decision with one explicitly extended unsigned subtraction: subtract the zero-extended divisor from the zero-extended trial remainder, use the extra result bit to detect borrow, and use the low `WIDTH+1` bits as the difference. Preserve the existing conditional remainder and quotient updates, exactly WIDTH compute steps, divide-by-zero behavior, and registered outputs for every supported WIDTH from 1 through 16. Keep the top interface and `// @latency 9` annotation unchanged; veri",
+    "candidates": [
+      {
+        "iteration": 1,
+        "mutation": "standard",
+        "instruction": "In `iterative_divider_core`, replace the separate `remainder_trial >= divisor_extended` comparison and subtraction decision with one explicitly extended unsigned subtraction: subtract the zero-extended divisor from the zero-extended trial remainder, use the extra result bit to detect borrow, and use the low `WIDTH+1` bits as the difference. Preserve the existing conditional remainder and quotient updates, exactly WIDTH compute steps, divide-by-zero behavior, and registered outputs for every supported WIDTH from 1 through 16. Keep the top interface and `// @latency 9` annotation unchanged; veri",
+        "generated_source_sha256": "2c729ce269b829a2dc3dab1e97f7216446462118e141bd7497b5ff25bca3bc1e",
+        "final_source_sha256": "2c729ce269b829a2dc3dab1e97f7216446462118e141bd7497b5ff25bca3bc1e",
+        "generated_code_hash": "73d7c8dc9158f6f0",
+        "final_code_hash": "73d7c8dc9158f6f0",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.314,
+          "whs_ns": 0.126,
+          "lut_used": 29,
+          "ff_used": 45,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.023,
+          "total_power_w": 0.094
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier3-03\\iterative_divider_build\\iter_001\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier3-03\\iterative_divider_build\\iter_001\\cand_standard\\synth.tcl",
+          "sha256": "55b48e3c41ece3d838cfcfa836e7cfd611ee3d1bd03f9c864cabbdf3e90f78cd"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier3-03\\iterative_divider_build\\iter_001\\cand_standard\\iterative_divider.v",
+          "sha256": "56f9e98532e7c31b7dae34aac2c93d8bc77ddd90288efaf6085bb92c4433ad2a"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "ACCEPT",
+    "is_best": true,
+    "selected_source_sha256": "2c729ce269b829a2dc3dab1e97f7216446462118e141bd7497b5ff25bca3bc1e"
+  },
+  "artifacts": {}
+}

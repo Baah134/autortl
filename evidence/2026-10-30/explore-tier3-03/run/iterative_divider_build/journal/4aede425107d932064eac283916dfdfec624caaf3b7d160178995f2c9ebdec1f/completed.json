@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_1:decision:instruction:0",
+  "result": "In `iterative_divider_core`, replace the separate `remainder_trial >= divisor_extended` comparison and subtraction decision with one explicitly extended unsigned subtraction: subtract the zero-extended divisor from the zero-extended trial remainder, use the extra result bit to detect borrow, and use the low `WIDTH+1` bits as the difference. Preserve the existing conditional remainder and quotient updates, exactly WIDTH compute steps, divide-by-zero behavior, and registered outputs for every supported WIDTH from 1 through 16. Keep the top interface and `// @latency 9` annotation unchanged; verify all mandatory gates and compare routed LUTs against the incumbent.",
+  "artifacts": {}
+}
