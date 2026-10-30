@@ -4,7 +4,30 @@ Updated October 29, 2026 (America/New_York). Verify files, Git, ownership and
 actual jobs before acting. Canonical checkout: Downloads/autortl-work. Preserve
 the separate Downloads/autortl copy. User choice: command-line Vivado.
 
-## Latest - October 29 evening (Claude Code): final identity, any-model harness
+## Latest - October 29 late (Claude Code): hardened identity
+
+- **Hardened identity 0cf7413** (272 files, 1,742 tests, audit PASS, pushed).
+  A whole-harness review found a critical gap: model-written RTL could print
+  its own TEST PASSED or use `ifdef / translate_off / hierarchical references
+  to evade the simulation gate. None of 466 archived model-produced files did;
+  `static_checks.rtl_safety_violations` now rejects all of them. Also fixed:
+  triage read every synthesis log as infrastructure (routine "Got license"
+  lines); ladder infra outcomes reached history; deleted @latency skipped the
+  latency check; doctor surgery skipped the companion gate; supervisor parser
+  overflow; golden sandbox copy/slice/decorator/timeout gaps (subagent).
+- **Tier4 added** (CRC-16 stream, SPI master, arbiter + register file); all
+  three testbenches qualified in Vivado, 30/30 mutants caught
+  (evidence/2026-10-29/tier4-qualification-01).
+- **Codex CLI moved** when the desktop app updated (20:24): use
+  `AUTORTL_CODEX_BIN=C:\Users\prince.baah\AppData\Local\OpenAI\Codex\bin\0ab0e7a8f3779036\codex.exe`.
+  Gates now run `run.py doctor` first. contract-campaign-22 (host sleep) and
+  -23 (moved binary) gave no verdict.
+- **Tools:** `tools/run_view.py` (HTML page per run/campaign);
+  docs/DESIGN.md and DOCUMENTATION.md cover the day's features.
+- **Now:** tier0 on the hardened identity: campaign24 passed (streak 1),
+  25 running, then 26; then tier1-campaign-03..05 with `--jobs 4`.
+
+## October 29 evening (Claude Code): final identity, any-model harness
 
 - **Merged into codex/contract-context (7c592d6, pushed, audit PASS, 1,689
   tests):** model-portable parsers and `--model`; planner spec repair; seed
