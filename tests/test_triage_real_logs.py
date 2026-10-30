@@ -24,3 +24,22 @@ def test_real_license_and_lock_failures_stay_infrastructure():
     assert classify("ERROR: [XSIM 43-3225] Cannot open file xsim.dir/work/x.pb: used by another process") \
         == FailureKind.INFRA
     assert classify(INFO_LICENSE + "\ntimed out after 900s") == FailureKind.INFRA
+
+
+import pytest
+
+@pytest.mark.parametrize("host", [
+    "ERROR: Permission denied",
+    "timed out after 900s",
+    "ERROR: [Common 17-345] A valid license was not found for feature 'Synthesis'",
+    "ERROR: [XSIM 43-3225] Cannot open file design.v: Permission denied",
+    "ERROR: No space left on device",
+])
+@pytest.mark.parametrize("host_first", [True, False])
+def test_genuine_host_failure_outranks_design_error_anywhere(host, host_first):
+    design = "ERROR: [Synth 8-439] module 'sub' not found"
+    assert classify("\n".join([host, design] if host_first else [design, host])) == FailureKind.INFRA
+
+
+def test_permission_host_error_on_design_id_line_is_infrastructure():
+    assert classify("ERROR: [VRFC 10-1] Cannot open source input.v: Permission denied") == FailureKind.INFRA

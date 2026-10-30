@@ -12,8 +12,28 @@ from .spec import ModuleSpec, Port, ResetSpec
 IDENT = r"[A-Za-z_][A-Za-z0-9_$]*"
 
 
+# Source-order tokens prevent comment delimiters inside strings/escaped names
+# from consuming actual RTL. Incomplete comments/strings consume through EOF.
+_NONCODE_TOKENS = re.compile(
+    r'//[^\r\n]*|/\*[\s\S]*?(?:\*/|\Z)|"(?:\\[\s\S]|[^"\\])*(?:"|\Z)|\\[^\s]+'
+)
+
+
+def comment_spans(text: str):
+    """Yield actual comment matches, excluding strings and escaped identifiers."""
+    for token in _NONCODE_TOKENS.finditer(text):
+        if token[0].startswith(("//", "/*")):
+            yield token
+
+
 def strip_comments(text: str) -> str:
-    return re.sub(r"//[^\n]*|/\*.*?\*/", " ", text, flags=re.S)
+    """Mask real comments while retaining strings, offsets and line endings."""
+    result = list(text)
+    for token in comment_spans(text):
+        for index in range(token.start(), token.end()):
+            if result[index] not in "\r\n":
+                result[index] = " "
+    return "".join(result)
 
 
 

@@ -44,3 +44,21 @@ def test_sequential_benches_still_append(curriculum):  # noqa: F811
     for _ in range(3):
         assert runner.run_tier(0, output_root=output) == 0
     assert [r["consecutive_qualifying_runs"] for r in records()] == [1, 2, 3]
+
+
+def test_a_stale_lock_is_replaced_but_a_fresh_one_still_blocks(curriculum):  # noqa: F811
+    import os, time
+    _, _, output = curriculum
+    lock = runner.RESULTS.with_name(runner.RESULTS.name + ".lock")
+    lock.parent.mkdir(parents=True, exist_ok=True)
+    lock.write_text("")
+    old = time.time() - runner.STALE_LOCK_SECONDS - 60
+    os.utime(lock, (old, old))
+    assert runner.run_tier(0, output_root=output) == 0  # stale_history_lock_blocks_benches
+    assert len(records()) == 1 and not lock.exists()
+
+
+def test_every_entry_records_the_requested_model(curriculum):  # noqa: F811
+    _, _, output = curriculum
+    assert runner.run_tier(0, output_root=output, model="gpt-6-luna") == 0
+    assert {r["runtime_identity"]["model_identity"] for r in records()[-1]["results"]} == {"gpt-6-luna"}

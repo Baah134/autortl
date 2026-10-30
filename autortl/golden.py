@@ -15,6 +15,16 @@ from .spec import ModuleSpec
 from .golden_worker import validate_source
 
 
+class GoldenTimeoutError(RuntimeError):
+    """The oracle worker missed its wall-clock deadline: infrastructure, not a verdict.
+
+    Deliberately not a ValueError. Callers treat ValueError as an oracle rejection
+    that is fed back to the model and spends a repair attempt, and a deadline miss
+    depends on machine load, so a resumed run could replay it differently
+    (golden_sandbox_allocation_and_timeout_gaps).
+    """
+
+
 class GoldenModel:
     """Wraps a user/LLM-supplied python file exposing:
          init() -> state
@@ -49,7 +59,9 @@ class GoldenModel:
                                         timeout=self.timeout_s, cwd=directory,
                                         env=environment, shell=False)
             except subprocess.TimeoutExpired as exc:
-                raise ValueError("golden execution timed out") from exc
+                raise GoldenTimeoutError(
+                    f"golden worker timed out after {self.timeout_s}s; infrastructure "
+                    "failure, not a verdict on the model") from exc
         try:
             response = json.loads(result.stdout)
         except (ValueError, TypeError) as exc:

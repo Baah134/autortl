@@ -61,3 +61,60 @@ endmodule"""
 
 def test_ordinary_rtl_is_untouched():
     assert rtl_safety_violations(LEGITIMATE) == []
+
+
+@pytest.mark.parametrize("literal", ['"//"', '"/*"', '"/* not a comment */"'])
+def test_literal_comment_delimiters_cannot_hide_system_tasks(literal):
+    source = HEADER + 'wire [255:0] marker = ' + literal + '; always @(posedge clk) begin $display("TEST PASSED"); $finish; end\nendmodule'
+    assert any("system tasks" in error for error in rtl_safety_violations(source))
+
+
+def test_real_pragma_after_comment_literal_is_detected():
+    source = HEADER + 'wire [15:0] marker = "/*"; // synthesis translate_off\nalways @(posedge clk) y <= a;\n// synthesis translate_on\nendmodule'
+    assert any("pragma" in error for error in rtl_safety_violations(source))
+
+
+def test_comment_text_inside_literal_is_not_a_pragma():
+    source = HEADER + 'wire [255:0] marker = "// synthesis translate_off";\nendmodule'
+    assert rtl_safety_violations(source) == []
+
+
+def test_string_aware_comment_stripping_preserves_positions_and_literals():
+    from autortl.verilog_interface import strip_comments
+    source = 'wire [31:0] a = "//"; /* one\ntwo */ wire [31:0] b = "/*"; // end\n'
+    result = strip_comments(source)
+    assert len(result) == len(source)
+    assert [i for i,c in enumerate(result) if c == "\n"] == [i for i,c in enumerate(source) if c == "\n"]
+    assert '"//"' in result and '"/*"' in result
+    assert 'one' not in result and 'two' not in result and '// end' not in result
+
+
+def test_literal_evasion_fails_complete_static_contract_gate():
+    contract = ModuleSpec(name="acc", behavior="", ports=[
+        Port("clk", "input", 1), Port("rst", "input", 1),
+        Port("a", "input", 8), Port("y", "output", 8)])
+    source = HEADER + 'wire [15:0] marker = "//"; always @(posedge clk) begin $display("TEST PASSED"); $finish; end\nassign y=0;\nendmodule'
+    result = check(source, contract)
+    assert not result.passed
+    assert any("system tasks" in error for error in result.errors)
+
+
+def test_escaped_quote_literal_does_not_hide_following_real_comment():
+    from autortl.verilog_interface import strip_comments, comment_spans
+    source = r'wire [255:0] s="quote \" // literal"; /* actual */ wire x;'
+    result = strip_comments(source)
+    assert '// literal' in result and 'actual' not in result and 'wire x;' in result
+    assert [token[0] for token in comment_spans(source)] == ['/* actual */']
+
+
+def test_unterminated_comment_mask_preserves_crlf():
+    from autortl.verilog_interface import strip_comments
+    source='wire a; /* never closed\r\n$finish;'
+    result=strip_comments(source)
+    assert result.startswith('wire a; ') and '$finish' not in result
+    assert len(result)==len(source) and result.count('\r\n')==1
+
+
+def test_literal_comment_delimiter_cannot_hide_following_directive():
+    source=HEADER+'wire [15:0] s="/*"; `define HIDDEN 1\nendmodule'
+    assert any("compiler directives" in error for error in rtl_safety_violations(source))

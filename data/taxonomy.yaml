@@ -91,6 +91,12 @@ harness_failures:
   golden_budget_long_period_examples:
     meaning: "A specification example longer than a few thousand cycles exhausted the golden worker's instruction budget, so a long-period serial design could not express full-frame anchors"
     repair: "Keep examples under the budget, about 2,000 cycles for a per-cycle UART model; check full frames at real timing with an independent qualified --tb"
+  stale_history_lock_blocks_benches:
+    meaning: "A bench that crashed inside the history commit left curriculum/results.jsonl.lock behind, and every later bench then exited 3 until someone deleted it by hand (docs review, Oct 29)"
+    repair: "The locked section takes milliseconds, so a lock older than ten minutes is stale: report it and replace it once"
+  entry_identity_omits_requested_model:
+    meaning: "Each entry's runtime_identity in a campaign record said unobserved_cli_default even when the campaign pinned and recorded a requested model (docs review, Oct 29)"
+    repair: "Copy the campaign's requested model identity into every entry's runtime_identity"
   backend_configuration_rough_edges:
     meaning: "Found while documenting the new backends (Oct 29): model IDs with '/' were rejected; llm/endpoints.local.yaml sat inside the hashed llm/ folder, so editing it made resume refuse; the built-in openai backend's server and default model were not in the cohort; spec-repair feedback was cut to 1,800 characters; doctor required Codex even when another backend was configured; a malformed endpoints file raised after every bench entry had run; --jobs 0 crashed with a traceback"
     repair: "Allow '/' in model aliases; default the endpoints file to the repository root, outside the harness identity; record the built-in openai server and model digest in the cohort; raise the feedback cap; make Codex optional in doctor when another backend is configured; guard endpoint loading in the runner; validate --jobs in argparse"

@@ -62,3 +62,71 @@ def test_winner_utilization_rejects_a_report_without_the_table(tmp_path):
     report.write_text("| Design : stream_shell\n")
     with pytest.raises(ValueError, match="Slice LUTs"):
         reports.winner_utilization(report)
+
+
+def receipt_setup(tmp_path, monkeypatch):
+    from hwsuite import cli,designs
+    from types import SimpleNamespace
+    design=designs.load()['sync_fifo']
+    bit=bit_file(tmp_path/'image.bit','12:00:00',b'\x01\x02\x03'*100)
+    args=SimpleNamespace(bit=bit,design=design.name,vivado=tmp_path)
+    monkeypatch.setattr(cli,'SUITE',tmp_path/'suite')
+    monkeypatch.setattr(cli,'_tool',lambda folder,name:name)
+    monkeypatch.setattr(cli,'_run',lambda cmd,cwd,log:(log.write_text('RESULT: programmed mock_device\n'),0)[1])
+    return cli,design,args,bit
+
+
+def test_existing_file_is_not_evidence_it_was_programmed(tmp_path, monkeypatch):
+    cli,design,args,_=receipt_setup(tmp_path,monkeypatch)
+    with pytest.raises(cli.SuiteError,match='programming receipt'):
+        cli._on_board(args,design)
+
+
+def test_legacy_record_is_not_retroactively_a_successful_programming_receipt(tmp_path, monkeypatch):
+    import json
+    cli,design,args,bit=receipt_setup(tmp_path,monkeypatch)
+    cli._programmed().parent.mkdir(parents=True)
+    cli._programmed().write_text(json.dumps({'design':design.name,'bitstream':str(bit),
+                                           'payload_sha256':reports.bitstream_payload_sha256(bit)}))
+    with pytest.raises(cli.SuiteError,match='programming receipt'):
+        cli._on_board(args,design)
+
+
+@pytest.mark.parametrize('damage',['exit','console','payload','schema'])
+def test_corrupt_programming_receipts_are_rejected(tmp_path, monkeypatch, damage):
+    import json
+    cli,design,args,bit=receipt_setup(tmp_path,monkeypatch)
+    cli.cmd_program(args,{design.name:design})
+    record=json.loads(cli._programmed().read_text())
+    if damage=='exit':record['tool_exit_code']=1
+    elif damage=='console':record['console_sha256']='0'*64
+    elif damage=='payload':record['payload_sha256']='0'*64
+    else:record.pop('schema',None)
+    cli._programmed().write_text(json.dumps(record))
+    with pytest.raises(cli.SuiteError,match='programming receipt'):
+        cli._on_board(args,design)
+
+
+def test_programming_receipt_binds_successful_exit_console_and_payload(tmp_path, monkeypatch):
+    import hashlib,json
+    cli,design,args,bit=receipt_setup(tmp_path,monkeypatch)
+    cli.cmd_program(args,{design.name:design})
+    record=json.loads(cli._programmed().read_text())
+    assert record['schema']==1 and record['tool_exit_code']==0
+    assert record['console_sha256']==hashlib.sha256(Path(record['console_path']).read_bytes()).hexdigest()
+    assert cli._on_board(args,design)==reports.bitstream_payload_sha256(bit)
+    # A .bit timestamp is outside its programmed configuration payload.
+    bit_file(bit,'12:01:00',b'\x01\x02\x03'*100)
+    assert cli._on_board(args,design)==record['payload_sha256']
+
+
+def test_bitstream_changed_while_programming_cannot_create_receipt(tmp_path, monkeypatch):
+    cli,design,args,bit=receipt_setup(tmp_path,monkeypatch)
+    def changed(cmd,cwd,log):
+        log.write_text('RESULT: programmed mock_device\n')
+        bit_file(bit,'12:01:00',b'\xff'*300)
+        return 0
+    monkeypatch.setattr(cli,'_run',changed)
+    with pytest.raises(cli.SuiteError,match='changed'):
+        cli.cmd_program(args,{design.name:design})
+    assert not cli._programmed().exists()

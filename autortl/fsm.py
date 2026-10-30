@@ -41,7 +41,7 @@ from . import vivado
 from . import companions
 from .vivado import advisor_digest
 from .report_parser import VivadoMetrics, extract_message_ids
-from .golden import GoldenModel, qualify_against_examples, validate_examples
+from .golden import GoldenModel, GoldenTimeoutError, qualify_against_examples, validate_examples
 from .tbgen import generate as generate_tb
 from .tbqual import qualify as qualify_tb, assertion_failure_proof, qualification_mutations
 import sys
@@ -626,6 +626,10 @@ class Orchestrator:
                 if errors:
                     raise ValueError("; ".join(errors[:10]))
                 tb = generate_tb(m, gm, mdir)
+            except GoldenTimeoutError as exc:
+                # Infrastructure: no feedback, no repair attempt, no rejection record.
+                self._record_build_tool_block(exc, FailureKind.INFRA, "golden oracle execution")
+                return None
             except (SyntaxError, ValueError, KeyError, TypeError) as exc:
                 feedback = f"{type(exc).__name__}: {str(exc)[:2000]}"
                 atomic_write_text(mdir / f"golden_attempt_{attempt}.log", json.dumps({
@@ -1444,10 +1448,12 @@ class Orchestrator:
                                          previous, self.budget)
             checked = static_check(repaired, original_contract)
             latency = declared_latency(repaired, original_contract.name) if checked.passed else None
+            # baseline_repair_skips_companion_check (Codex review): the same guard as other candidates.
+            companion_error = companions.violation(repaired, self.cfg.top_module, extra, tb) if tb else ""
             if not checked.passed or (
-                    getattr(original_contract, "latency_known", True) and latency != original_contract.latency):
+                    getattr(original_contract, "latency_known", True) and latency != original_contract.latency) or companion_error:
                 m.sim_passed = False
-                m.sim_error = "Repair violated static/interface/latency contract"
+                m.sim_error = companion_error or "Repair violated static/interface/latency contract"
                 self._last_flow_failure_kind = FailureKind.DESIGN
                 return verilog, m
             verilog = repaired

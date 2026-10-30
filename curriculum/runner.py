@@ -9,6 +9,7 @@ import os
 import re
 from pathlib import Path
 import tempfile
+import time
 import yaml
 from autortl.config import RunConfig
 from autortl.fsm import Orchestrator
@@ -22,6 +23,7 @@ OVERRIDES = {"proposal_feedback", "vivado_bin", "xvlog_bin", "xelab_bin", "xsim_
              "target_freq_mhz", "objective", "max_iterations", "best_of_n",
              "max_llm_calls", "max_vivado_minutes", "max_wall_minutes", "max_infra_retries", "model"}
 EXECUTOR = ProcessPoolExecutor  # for --jobs > 1; separate processes keep per-tool timing apart
+STALE_LOCK_SECONDS = 600
 
 
 def _run_entry(cfg, run_dir):
@@ -145,8 +147,20 @@ def _commit_history(expected: bytes, history, record) -> None:
     try:
         os.close(os.open(lock, os.O_CREAT | os.O_EXCL | os.O_WRONLY))
     except FileExistsError as exc:
-        raise HistoryConflictError(f"{lock} exists: another bench is writing the history "
-                                   "(if no bench is running, a crashed one left it; delete it)") from exc
+        # The locked section takes milliseconds; an old lock was left by a crashed
+        # bench (stale_history_lock_blocks_benches) and is replaced once.
+        try:
+            age = time.time() - lock.stat().st_mtime
+        except OSError:
+            age = 0
+        if age <= STALE_LOCK_SECONDS:
+            raise HistoryConflictError(f"{lock} exists: another bench is writing the history") from exc
+        print(f"[bench] replacing a stale history lock ({age / 60:.0f} minutes old)")
+        lock.unlink(missing_ok=True)
+        try:
+            os.close(os.open(lock, os.O_CREAT | os.O_EXCL | os.O_WRONLY))
+        except FileExistsError as again:
+            raise HistoryConflictError(f"{lock} exists: another bench is writing the history") from again
     try:
         if _history_bytes() != expected:
             raise HistoryConflictError("curriculum history changed during this campaign; "
@@ -301,6 +315,9 @@ def run_tier(tier: int, **overrides) -> int:
     if len(requested) == 1 and None not in requested:
         # The model the run named for every role; the CLI does not report one back.
         identity.update(model_identity=requested.pop(), model_identity_status="requested")
+        for record in records:  # entry_identity_omits_requested_model
+            record["runtime_identity"].update(model_identity=identity["model_identity"],
+                                              model_identity_status="requested")
         from llm import endpoints
         backend = identity["model_identity"].partition(".")[0]
         try:

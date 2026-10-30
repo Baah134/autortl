@@ -251,7 +251,9 @@ def test_program_and_hw_use_an_archived_bitstream_with_bit(tmp_path, monkeypatch
 
     monkeypatch.setattr(cli, "_run", fake_run)
     monkeypatch.setattr(cli, "_tool", lambda vivado, name: name)
-    monkeypatch.setattr(hw, "run", lambda design, **kw: {"passed": True, "checked": 1})
+    monkeypatch.setattr(hw, "run", lambda design, **kw: {
+        "passed": True, "checked": 1, "requested": 1, "mismatches": 0,
+        "wrong_model": False, "short_reply": None, "first_mismatch": None})
     monkeypatch.setattr(hw, "format_report", lambda report: "ok")
     assert cli_main(["program", "--design", "sync_fifo"]) == 1          # nothing built, no --bit
     assert cli_main(["program", "--design", "sync_fifo", "--bit", str(archived)]) == 0
@@ -296,3 +298,144 @@ def test_archived_bitstreams_match_the_board_evidence():
 def test_cli_rejects_unknown_design(capsys):
     assert cli_main(["verify", "--design", "nope"]) == 1
     assert "unknown design" in capsys.readouterr().err
+
+
+GOOD_SIM = "COVERAGE: 300 cycles with a result held under backpressure, 40 cycles accepting while retiring\nPASS: 1200 results matched the model, with a restart at 600 (stalled 300, overlap 40)\n"
+BAD_SIM = "ERROR: transaction 17 result differs from the model\nFAIL: 1 errors, 1200 of 1200 results checked\n"
+
+
+def fake_sim_tools(tmp_path, monkeypatch, *, failure=None, xsim_code=0, fault_only=False):
+    """Real fixture log files and mocked process exits; no vendor invocation."""
+    from hwsuite import cli
+    suite = tmp_path / "suite"
+    (suite / "sim").mkdir(parents=True)
+    (suite / "sim" / "tb_stream_shell.v").write_text("module tb_stream_shell; endmodule\n")
+    source = tmp_path / "winner.v"
+    source.write_text("module sync_fifo; endmodule\n")
+    monkeypatch.setattr(cli, "SUITE", suite)
+    monkeypatch.setattr(cli, "rtl_sources", lambda design, winner: [source])
+    monkeypatch.setattr(cli, "_tool", lambda folder, name: name)
+    calls = []
+
+    def run(cmd, cwd, log):
+        tool = cmd[0]
+        calls.append(tool)
+        bad = not fault_only or "fault" in cwd.parts
+        if bad and failure == "xelab" and tool == "xelab":
+            log.write_text("ERROR: [XSIM 43-3322] elaboration failed\n")
+            return 1
+        if tool == "xsim":
+            log.write_text(failure if bad and failure not in (None, "xelab") else (BAD_SIM if bad and fault_only else GOOD_SIM))
+            return xsim_code if bad else 0
+        log.write_text("INFO: successful tool process\n")
+        return 0
+
+    monkeypatch.setattr(cli, "_run", run)
+    return cli, source, calls
+
+
+def test_simulation_rejects_nonzero_xsim_even_after_pass(tmp_path, monkeypatch):
+    cli, source, _ = fake_sim_tools(tmp_path, monkeypatch, xsim_code=7)
+    passed, verdict = cli.simulate(TABLE['sync_fifo'], tmp_path, tmp_path/'sim', source)
+    assert not passed and 'exit' in verdict.lower()
+    receipt = json.loads((tmp_path/'sim/simulation.json').read_text())
+    assert receipt['tool_exits']['xsim'] == 7 and receipt['outcome'] == 'tool_failure'
+
+
+@pytest.mark.parametrize('failure,xsim_code', [
+    ('xelab', 0), ('no simulator verdict\n', 0),
+    ('FAIL: timeout after 0 of 1200 results\n', 0),
+    ('FAIL: 1 errors, 1200 of 1200 results checked\n', 0),
+    (BAD_SIM, 7),
+    ('ERROR: [Common 17-345] license unavailable\n'+BAD_SIM, 0),
+    (BAD_SIM+'PASS: 1200 results matched the model\n', 0),
+    ('ERROR: transaction 17 result differs from the model\nFAIL: 1 errors, 1199 of 1200 results checked\n', 0),
+])
+def test_fault_gate_never_counts_tool_timeout_incomplete_or_unproved_failures(tmp_path, monkeypatch, failure, xsim_code):
+    cli, _, _ = fake_sim_tools(tmp_path, monkeypatch, failure=failure, xsim_code=xsim_code, fault_only=True)
+    from types import SimpleNamespace
+    args = SimpleNamespace(design='sync_fifo', vivado=tmp_path)
+    with pytest.raises(cli.SuiteError, match='simulation'):
+        cli.cmd_sim(args, TABLE)
+    summary = json.loads((tmp_path/'suite/build/sim_summary.json').read_text())
+    assert summary['sync_fifo']['fault_caught'] is False
+
+
+def test_fault_gate_requires_complete_actual_mismatch_and_successful_exits(tmp_path, monkeypatch):
+    cli, _, _ = fake_sim_tools(tmp_path, monkeypatch, failure=BAD_SIM, fault_only=True)
+    from types import SimpleNamespace
+    cli.cmd_sim(SimpleNamespace(design='sync_fifo', vivado=tmp_path), TABLE)
+    folder=tmp_path/'suite/build/sync_fifo/fault/sim'
+    receipt=json.loads((folder/'simulation.json').read_text())
+    assert receipt['outcome']=='behavioral_failure'
+    assert receipt['tool_exits']=={'xvlog':0,'xelab':0,'xsim':0}
+    assert cli._simulation_evidence(folder, 'behavioral_failure')
+    (folder/'xsim.txt').write_text(BAD_SIM+'INFO: modified after receipt\n')
+    assert not cli._simulation_evidence(folder, 'behavioral_failure')
+
+
+def test_source_drift_during_simulation_invalidates_result(tmp_path, monkeypatch):
+    cli, source, _=fake_sim_tools(tmp_path, monkeypatch)
+    run=cli._run
+    def changed(cmd,cwd,log):
+        code=run(cmd,cwd,log)
+        if cmd[0]=='xsim':source.write_text(source.read_text()+'// changed\n')
+        return code
+    monkeypatch.setattr(cli,'_run',changed)
+    passed,_=cli.simulate(TABLE['sync_fifo'],tmp_path,tmp_path/'sim',source)
+    assert not passed
+
+
+def fake_program(tmp_path, monkeypatch):
+    from hwsuite import cli
+    bit=REPO/'evidence/2026-10-28/basys3-bitstreams-01/harness_winners/sync_fifo.bit'
+    monkeypatch.setattr(cli,'SUITE',tmp_path/'suite')
+    monkeypatch.setattr(cli,'_tool',lambda folder,name:name)
+    monkeypatch.setattr(cli,'_run',lambda cmd,cwd,log:(log.write_text('RESULT: programmed mock_device\n'),0)[1])
+    assert cli_main(['program','--design','sync_fifo','--bit',str(bit)])==0
+    return cli,bit
+
+
+@pytest.mark.parametrize('damage', ['short','partial','zero_mismatches','no_first_mismatch','contradictory_pass'])
+def test_wrong_model_must_complete_and_show_real_mismatches(tmp_path, monkeypatch, damage):
+    cli,bit=fake_program(tmp_path,monkeypatch)
+    from hwsuite import hw
+    result={'passed':False,'checked':4,'requested':4,'mismatches':1,'wrong_model':True,
+            'short_reply':None,'first_mismatch':{'index':1,'tx':'01','expected':'00','got':'01'}}
+    if damage=='short':result.update(checked=0,mismatches=0,first_mismatch=None,short_reply={'got':0,'wanted':4})
+    elif damage=='partial':result['checked']=3
+    elif damage=='zero_mismatches':result['mismatches']=0
+    elif damage=='no_first_mismatch':result['first_mismatch']=None
+    else:result['passed']=True
+    monkeypatch.setattr(hw,'run',lambda design,**kw:dict(result))
+    monkeypatch.setattr(hw,'format_report',lambda report:'mock hardware report')
+    assert cli_main(['hw','--design','sync_fifo','--bit',str(bit),'--count','4','--wrong-model'])==1
+    saved=json.loads((tmp_path/'suite/build/sync_fifo/hw/wrong_model_4.json').read_text())
+    assert saved['control_accepted'] is False
+
+
+def test_complete_wrong_model_control_embeds_verified_programming_receipt(tmp_path, monkeypatch):
+    cli,bit=fake_program(tmp_path,monkeypatch)
+    from hwsuite import hw
+    result={'passed':False,'checked':4,'requested':4,'mismatches':1,'wrong_model':True,
+            'short_reply':None,'first_mismatch':{'index':1,'tx':'01','expected':'00','got':'01'}}
+    monkeypatch.setattr(hw,'run',lambda design,**kw:dict(result))
+    monkeypatch.setattr(hw,'format_report',lambda report:'mock hardware report')
+    assert cli_main(['hw','--design','sync_fifo','--bit',str(bit),'--count','4','--wrong-model'])==0
+    saved=json.loads((tmp_path/'suite/build/sync_fifo/hw/wrong_model_4.json').read_text())
+    assert saved['control_accepted'] and saved['programming_verified']
+    assert saved['programming_receipt']['tool_exit_code']==0
+
+
+def test_hardware_receipt_drift_during_run_cannot_be_claimed_verified(tmp_path, monkeypatch):
+    cli,bit=fake_program(tmp_path,monkeypatch)
+    from hwsuite import hw
+    def run(design,**kw):
+        cli._programmed().unlink()
+        return {'passed':True,'checked':4,'requested':4,'mismatches':0,'wrong_model':False,
+                'short_reply':None,'first_mismatch':None}
+    monkeypatch.setattr(hw,'run',run)
+    monkeypatch.setattr(hw,'format_report',lambda report:'mock hardware report')
+    assert cli_main(['hw','--design','sync_fifo','--bit',str(bit),'--count','4'])==1
+    saved=json.loads((tmp_path/'suite/build/sync_fifo/hw/model_4.json').read_text())
+    assert not saved['programming_verified'] and not saved['control_accepted']
