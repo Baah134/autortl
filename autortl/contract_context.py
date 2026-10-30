@@ -192,13 +192,19 @@ def _build_spec_evidence(path, top_module):
                         "do not turn incidental values in unspecified cases into requirements."}
 
 
-def run_evidence(cfg, baseline, sources, tb, directory, execution_context, *, build_spec_path=None) -> dict:
+def run_evidence(cfg, baseline, sources, tb, directory, execution_context, *, build_spec_path=None,
+                 edit_scope=None) -> dict:
     from .verilog_interface import infer_module
     directory = Path(directory)
     if cfg.mode == "build" and build_spec_path is None:
         raise ValueError("build mode requires complete typed build spec evidence")
     if cfg.mode != "build" and build_spec_path is not None:
         raise ValueError("standalone optimization cannot use a typed build spec exception")
+    if edit_scope is not None:
+        if cfg.mode != "build":
+            raise ValueError("only a build hands its generated modules to the optimizer")
+        if edit_scope.get("mode") not in ("whole_design", "frozen_children") or edit_scope.get("top") != cfg.top_module:
+            raise ValueError("invalid build edit scope evidence")
     build_spec = _build_spec_evidence(build_spec_path,cfg.top_module) if build_spec_path is not None else None
     source_facts = [file_evidence(path) for path in sources]
     source_contract = infer_module(Path(sources[0]).read_text(encoding="utf-8", errors="replace"), cfg.top_module)
@@ -217,7 +223,9 @@ def run_evidence(cfg, baseline, sources, tb, directory, execution_context, *, bu
                    "fixed source contract, all defined typed latency/minimum transfer age and deterministic "
                    "verification, without inventing a numeric requirement.",
     }
+    scope_fact = {} if edit_scope is None else {"edit_scope": dict(edit_scope)}
     return {
+        **scope_fact,
         "schema_version": 1,
         "authority": "Harness evidence is fixed. Proposed architectural goals cannot redefine it.",
         "top_module": cfg.top_module, "part": cfg.target_part,
@@ -293,6 +301,31 @@ def render_fixed_optimize_contract(evidence: dict) -> str:
         "report_manifest": evidence["report_manifest"],
         "build_spec": evidence.get("build_spec"),
     }
+    scope = evidence.get("edit_scope")
+    boundary = ""
+    if scope is not None:
+        fixed["edit_scope"] = scope
+        if scope["mode"] == "whole_design":
+            required = ", ".join(scope.get("testbench_modules") or [])
+            boundary = (
+                "## Edit boundary\n\n"
+                f"The editable source is one unit holding every generated child module ({', '.join(scope['children'])}) "
+                f"and the top {scope['top']}, children first and top last; no frozen companion is compiled beside it. "
+                f"Only the top {scope['top']} carries the interface contract: its name, ports, parameters and "
+                "defaults, reset, clocking, latency annotation rule and every observable cycle at its ports are "
+                "fixed. Child module names, ports and boundaries are internal and may change while the top's "
+                f"contract holds. Every candidate must define {scope['top']}"
+                + (f"; modules the trusted testbench instantiates directly ({required}) must stay defined and be "
+                   f"live-reached from {scope['top']}" if required else "")
+                + ". Every candidate is verified by the trusted integration testbench below and every other gate. "
+                "The per-child generated oracles and testbenches verified the baseline children only; they are "
+                "not evidence for changed children and must not be cited as such. Typed child contracts in the "
+                "build spec describe the baseline decomposition; their composed behavior at the top's ports "
+                "remains mandatory.\n\n")
+        else:
+            boundary = ("## Edit boundary\n\n"
+                        f"Only the top {scope['top']} is editable; generated children are frozen companions. "
+                        "Reason: " + scope["reason"] + "\n\n")
     if evidence.get("build_spec") is not None:
         obligations = (
             "The complete resolved typed build specification below is the behavioral authority. "
@@ -330,6 +363,7 @@ def render_fixed_optimize_contract(evidence: dict) -> str:
         "Planner, generator and evaluator cannot amend its requirements.\n\n"
         "## Behavioral obligations\n\n"
         + obligations + "\n\n"
+        + boundary
         + "## Verification gates\n\n"
         + annotation_rule + "\n\n"
         + "Use the frozen testbench unchanged. Pass static/interface and declared "

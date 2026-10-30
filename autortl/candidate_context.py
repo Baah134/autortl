@@ -1,4 +1,8 @@
-"""Bounded advisory context for the editable top and frozen compilation inputs.
+"""Bounded advisory context for the editable source and frozen compilation inputs.
+
+The editable source is either a top module beside frozen companions or, after a
+build verified by a trusted integration testbench, one unit holding every
+generated module and the top (taxonomy frozen_children_block_build_optimization).
 
 Declaration discovery is context only. The compiler and interface checks remain
 acceptance authorities; an unsupported interface never becomes an invented fact.
@@ -26,6 +30,24 @@ clock usage. Do not add clocks or change latency to obtain timing closure.
 The module inventory is advisory context, not a semantic acceptance result.
 Source previews are bounded excerpts; paths and SHA256 identify complete files.
 """
+_UNIT_HEADER = """# CANDIDATE COMPILATION BOUNDARY (immutable)
+The editable source is ONE unit holding every generated child module of this
+build and the top module named below (children first, top last). No frozen
+companion file is compiled beside it. Return the COMPLETE unit -- every module
+the top needs, top module last -- in one verilog fence: a module you omit is
+not supplied from anywhere else.
+Only the top carries the contract: keep its name, ports, parameters and
+defaults, reset, clocking, latency annotation rule and every observable cycle
+at its ports. You may change, merge, split, rename or remove child modules and
+move logic across their boundaries, as long as the top's contract holds.
+Restructuring or inlining by itself saves nothing: synthesis flattens the
+hierarchy, so change logic, such as sharing or removing state.
+Every candidate is verified by the trusted integration testbench of the top
+and every other gate. The per-child generated oracles and testbenches verified
+the baseline children only; they do not verify changed children.
+Do not add clocks or change latency to obtain timing closure.
+The module inventory is advisory context, not a semantic acceptance result.
+"""
 
 
 def _inventory(text):
@@ -49,15 +71,49 @@ def _inventory(text):
     return result
 
 
-def candidate_scope(top_module, extra_sources, testbench_companions=()):
+def _unit_scope(top_module, editable_unit):
+    """Whole-design build mode: one editable multi-module unit, no companions."""
+    fact = file_evidence(Path(editable_unit["source"]), limit=0)
+    modules = _inventory(Path(editable_unit["source"]).read_text(encoding="utf-8", errors="replace"))
+    if not any(module["name"] == top_module for module in modules):
+        raise ValueError("editable unit does not declare the top module")
+    scope = {"editable_top": top_module,
+             "editable_unit": {"path": fact["path"], "sha256": fact["sha256"], "modules": modules,
+                               "note": "The generation seed is the complete current unit text."},
+             "frozen_companions": []}
+    required = sorted(editable_unit.get("testbench_modules") or ())
+    if required:
+        scope["must_keep_live_under_top"] = {
+            "modules": required,
+            "why": "The trusted testbench instantiates these modules directly, so it also checks them on their "
+                   "own. Keep each defined with an interface that testbench accepts and keep it a live instance "
+                   "reached from the top: unconditional at module level (not inside generate, if/else, case, for "
+                   "or begin/end) with at least one output feeding logic that drives a top output port. "
+                   "Otherwise those checks would test a module the top no longer uses, and the candidate is "
+                   "rejected."}
+    text = _UNIT_HEADER + json.dumps(scope, sort_keys=True, indent=2)
+    if len(text) > MAX_SCOPE_CHARS:
+        raise ValueError("editable unit metadata exceeds candidate context budget; partition the compilation unit")
+    return text
+
+
+def candidate_scope(top_module, extra_sources, testbench_companions=(), *, editable_unit=None):
     """Return bounded model guidance; never silently omit frozen input metadata.
 
     testbench_companions names frozen companions the trusted testbench
     instantiates directly. The top must keep instantiating those; the field
     appears only when nonempty, so other runs' prompts are unchanged.
+
+    editable_unit ({"source": path, "testbench_modules": [...]}) selects the
+    whole-design build mode: the unit holds every generated module and the
+    top, nothing is frozen, and extra_sources must be empty.
     """
     if not valid_identifier(top_module):
         raise ValueError("candidate scope requires a valid editable top identifier")
+    if editable_unit is not None:
+        if extra_sources or testbench_companions:
+            raise ValueError("an editable unit has no frozen companions")
+        return _unit_scope(top_module, editable_unit)
     paths = list(dict.fromkeys(Path(path).resolve() for path in extra_sources))
     files = []
     for path in paths:

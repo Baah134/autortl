@@ -144,6 +144,8 @@ class Orchestrator:
     def __init__(self, cfg: RunConfig, run_dir: Path | None = None):
         self.cfg = cfg
         self._scope = "initial"
+        self._edit_scope = None   # build mode only: whole_design or frozen_children
+        self._unit_inputs = {}    # whole_design: verified child/top/unit file identities
         self._counts = {}
         self._proposal_artifacts = {}
         self._journal_enabled = False
@@ -572,6 +574,8 @@ class Orchestrator:
         # hand off to optimize with the integrated design
         self.cfg.top_module = spec.top_name
         self.cfg.design_path = top_file
+        # The frozen supplied testbench, before any harness adaptation below.
+        supplied_tb = Path(self.cfg.testbench_path) if self.cfg.testbench_path else None
         if not self.cfg.testbench_path:
             if len(spec.modules) != 1:
                 return {"status": "build_blocked", "error": "Multi-module build requires trusted integration testbench"}
@@ -582,7 +586,61 @@ class Orchestrator:
             integration_tb = self.state.run_dir / f"{spec.top_name}_tb.v"
             integration_tb.write_text(adapted, encoding="utf-8")
             self.cfg.testbench_path = integration_tb
-        return self._run_optimize(None, extra_sources=list(module_files.values()))
+        edit_scope = self._build_edit_scope(spec, supplied_tb, list(module_files))
+        recorded = (saved or {}).get("edit_scope")
+        if recorded is not None and recorded != edit_scope:
+            raise ValueError("Build edit scope changed since checkpoint")
+        self._edit_scope = edit_scope
+        self._snapshot(edit_scope=edit_scope)
+        if edit_scope["mode"] != "whole_design":
+            return self._run_optimize(None, extra_sources=list(module_files.values()))
+        # frozen_children_block_build_optimization: one editable unit holding the
+        # verified children (first) and the mechanical top (last); no companions.
+        unit = self.state.run_dir / "modules" / f"{spec.top_name}_unit.v"
+        parts = [path.read_text(encoding="utf-8") for path in [*module_files.values(), top_file]]
+        unit.write_text("".join(part if part.endswith("\n") else part + "\n" for part in parts),
+                        encoding="utf-8")
+        # DONE binds the unit to the verified children it was assembled from.
+        self._unit_inputs = {str(path.resolve()): hashlib.sha256(path.read_bytes()).hexdigest()
+                             for path in [*module_files.values(), top_file, unit]}
+        self.cfg.design_path = unit
+        print(f"[build] editable unit: {', '.join(module_files)} + {spec.top_name}; "
+              f"verified by the trusted integration testbench")
+        return self._run_optimize(None, extra_sources=[])
+
+    def _build_edit_scope(self, spec: DesignSpec, supplied_tb: Path | None, children: list[str]) -> dict:
+        """Decide what the post-build optimizer may edit; recorded in harness facts.
+
+        Children become editable only when a trusted, independent integration
+        testbench (the supplied one, which instantiates the top) can verify them
+        through the top. A harness-adapted child testbench is not independent.
+        """
+        top = spec.top_name
+        frozen = lambda reason: {"mode": "frozen_children", "top": top, "children": children,
+                                 "testbench_modules": [], "reason": reason}
+        if supplied_tb is None or not supplied_tb.is_file():
+            return frozen("No trusted independent integration testbench was supplied. The integration testbench "
+                          "was adapted from the generated child testbench, so it cannot independently verify "
+                          "changed children; generated children stay frozen companions verified by their own "
+                          "generated checks, and only the top wrapper is editable.")
+        text = supplied_tb.read_text(encoding="utf-8", errors="replace")
+        if top not in companions.instantiated(text, {top}):
+            return frozen(f"The supplied testbench does not instantiate the top {top}, so it cannot verify changed "
+                          "children through the top; generated children stay frozen companions and only the top "
+                          "wrapper is editable.")
+        return {"mode": "whole_design", "top": top, "children": children,
+                "testbench_modules": sorted(companions.instantiated(text, set(children))),
+                "reason": f"The supplied testbench instantiates the top {top} and is the trusted integration "
+                          "authority, so every generated child module and the mechanical top form one editable "
+                          "unit verified through the top. Per-child generated oracles and testbenches verified "
+                          "the baseline children only and are not evidence for changed children."}
+
+    def _boundary_violation(self, source: str, extra: list[Path], tb: Path | None) -> str:
+        """The edit-boundary gate for any proposed top or editable unit ("" when acceptable)."""
+        scope = self._edit_scope
+        if scope is not None and scope["mode"] == "whole_design":
+            return companions.unit_violation(source, self.cfg.top_module, scope["testbench_modules"], tb)
+        return companions.violation(source, self.cfg.top_module, extra, tb)
 
     def _build_module(self, m: ModuleSpec, mdir: Path) -> str | None:
         """Generate one module through the ladder with best-of-N. Returns verilog."""
@@ -756,10 +814,16 @@ class Orchestrator:
         # ---- fixed harness contract: no model negotiation ----
         facts = run_evidence(cfg, baseline, [base_v] + extra_sources, tb_path,
                              idir, self._cache_context(tb_path, extra_sources),
-                             **({"build_spec_path": state.spec_path} if cfg.mode == "build" else {}))
+                             **({"build_spec_path": state.spec_path} if cfg.mode == "build" else {}),
+                             **({"edit_scope": self._edit_scope} if self._edit_scope is not None else {}))
         context = save_evidence(state.run_dir / "harness_facts.json", facts)
-        role_context = context + "\n\n" + candidate_scope(
-            cfg.top_module, extra_sources, companions.required_by_testbench(tb_path, extra_sources))
+        if self._edit_scope is not None and self._edit_scope["mode"] == "whole_design":
+            scope_text = candidate_scope(cfg.top_module, [], editable_unit={
+                "source": base_v, "testbench_modules": self._edit_scope["testbench_modules"]})
+        else:
+            scope_text = candidate_scope(
+                cfg.top_module, extra_sources, companions.required_by_testbench(tb_path, extra_sources))
+        role_context = context + "\n\n" + scope_text
         for role in (self.planner, self.generator, self.evaluator, self.doctor):
             role.run_context = role_context
         contract_md = render_fixed_optimize_contract(facts)
@@ -1082,6 +1146,7 @@ class Orchestrator:
                    "improvement_kind": (None if best_iter == 0 else "timing_progress" if not timing_feasible(best_m)
                                         else improvement_kind(best_m, baseline, cfg.objective)),
                    "top_module": cfg.top_module,
+                   **({"edit_scope": self._edit_scope["mode"]} if self._edit_scope is not None else {}),
                    "best_metrics": best_m.to_dict(),
                    "baseline_metrics": baseline.to_dict(),
                    "best_artifact_dir": str(best_artifact_dir),
@@ -1142,6 +1207,8 @@ class Orchestrator:
 
         if facts.get("build_spec") is not None:
             retain_identity(facts["build_spec"], "Resolved build specification evidence")
+        for path, digest in self._unit_inputs.items():
+            retain_identity({"path": path, "sha256": digest}, "Completed verification dependency (editable unit input)")
         # Rejected Doctor reports still informed later plans. Retain their
         # originally observed digests, never freshly bless changed trial files.
         for evaluation_path in state.run_dir.glob("iter_*/evaluation_facts.json"):
@@ -1205,7 +1272,7 @@ class Orchestrator:
                 candidate.fail_reason = f"declared @latency {latency} != contract {contract.latency} (spec is law)"
                 return
             candidate.ladder_rungs_passed = 1
-            stale = companions.violation(candidate.verilog, self.cfg.top_module, extra, tb)
+            stale = self._boundary_violation(candidate.verilog, extra, tb)
             if stale:
                 # The testbench would grade a stale companion, not this candidate.
                 ok, error, kind = False, stale, FailureKind.DESIGN
@@ -1311,7 +1378,7 @@ class Orchestrator:
             latency = declared_latency(source, self.cfg.top_module)
             if getattr(contract, "latency_known", True) and latency != contract.latency:
                 return finish("latency_violation")
-            if companions.violation(source, self.cfg.top_module, extra, tb):
+            if self._boundary_violation(source, extra, tb):
                 # doctor_surgery_skips_companion_gate: never grade against a stale companion.
                 return finish("companion_violation")
             if (source == original_source and verification_dir is not None and
@@ -1458,7 +1525,7 @@ class Orchestrator:
             checked = static_check(repaired, original_contract)
             latency = declared_latency(repaired, original_contract.name) if checked.passed else None
             # baseline_repair_skips_companion_check (Codex review): the same guard as other candidates.
-            companion_error = companions.violation(repaired, self.cfg.top_module, extra, tb) if tb else ""
+            companion_error = self._boundary_violation(repaired, extra, tb) if tb else ""
             if not checked.passed or (
                     getattr(original_contract, "latency_known", True) and latency != original_contract.latency) or companion_error:
                 m.sim_passed = False
