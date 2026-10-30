@@ -48,6 +48,21 @@ class VivadoMetrics:
         return VivadoMetrics(**clean)
 
 
+def _distinct_failures(fails: list[str], limit: int = 15) -> str:
+    """First line of each failure kind (digits ignored), with its count.
+
+    repeated_failure_hides_other_rules: one rule repeated 32 times filled the
+    15-line window and hid three other violated rules from the fixer.
+    """
+    kinds: dict[str, list] = {}
+    for line in fails:
+        kinds.setdefault(re.sub(r"\d+", "N", line), [line, 0])[1] += 1
+    shown = [line + (f"  (x{count})" if count > 1 else "") for line, count in list(kinds.values())[:limit]]
+    if len(kinds) > limit:
+        shown.append(f"... {len(kinds) - limit} more failure kinds")
+    return "\n".join(shown)
+
+
 def parse_sim_log(log_path: Path) -> tuple[bool, str]:
     if not log_path.exists():
         return False, "Simulation log not found"
@@ -55,7 +70,7 @@ def parse_sim_log(log_path: Path) -> tuple[bool, str]:
     fails = [l.strip() for l in text.splitlines()
              if l.strip().startswith("FAIL") or "mismatch" in l.lower()]
     if re.search(r"TEST\s+FAILED", text, re.IGNORECASE) or fails:
-        return False, "Testbench failures:\n" + "\n".join(fails[:15]) if fails \
+        return False, "Testbench failures:\n" + _distinct_failures(fails) if fails \
                else "testbench reported failure"
     if re.search(r"\$fatal|\*\*\s*Error|^\s*(?:ERROR|FATAL|CRITICAL WARNING)\s*:",
                  text, re.IGNORECASE | re.MULTILINE):

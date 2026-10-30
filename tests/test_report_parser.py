@@ -85,3 +85,17 @@ def test_from_dict_roundtrip():
     assert "lut_pct" in d
     m2 = VivadoMetrics.from_dict(d)
     assert m2.lut_used == 10
+
+
+def test_sim_fail_reports_each_failure_kind_once_with_its_count(tmp_path):
+    # repeated_failure_hides_other_rules (explore-tier5-01 axil_regs_build)
+    lines = [f"FAIL BEHAVIOR rule=rdata_value cycle={c}" for c in range(5, 37)]
+    lines += ["FAIL BEHAVIOR rule=awready_independent_of_w cycle=27",
+              "FAIL BEHAVIOR rule=bvalid_with_update cycle=40"]
+    p = tmp_path / "sim_log.txt"
+    p.write_text("\n".join(lines) + "\nTEST FAILED: 34 errors\n")
+    passed, err = parse_sim_log(p)
+    assert not passed and err.startswith("Testbench failures:\n")
+    assert "rule=rdata_value cycle=5  (x32)" in err
+    assert "awready_independent_of_w" in err and "bvalid_with_update" in err
+    assert err.count("rdata_value") == 1
