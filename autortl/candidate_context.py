@@ -18,6 +18,9 @@ Only the editable top module named below may be replaced. Return its RTL only.
 Companion files/modules are frozen and already compiled alongside your output:
 do not redeclare, replace, rename or modify them. You may instantiate them, or
 inline equivalent logic INSIDE the editable top while preserving its contract.
+Inlining by itself saves nothing: synthesis flattens the hierarchy, so a
+verbatim copy of a child routes to the same design. Inline only to make a
+logic change across the boundary, such as sharing or removing state.
 Preserve observable cycles, reset behavior, parameter/interface semantics and
 clock usage. Do not add clocks or change latency to obtain timing closure.
 The module inventory is advisory context, not a semantic acceptance result.
@@ -70,7 +73,9 @@ def candidate_scope(top_module, extra_sources, testbench_companions=()):
             "modules": sorted(testbench_companions),
             "why": "The trusted testbench instantiates these companions directly. Inlining them would leave those "
                    "checks testing the frozen companion instead of your top, so a candidate that stops "
-                   "instantiating them is rejected."}
+                   "instantiating them is rejected. Each must stay a live instance: unconditional at module "
+                   "level (not inside generate, if/else, case, for or begin/end) with at least one output "
+                   "feeding logic that drives a top output port."}
     render = lambda: _HEADER + json.dumps(scope,sort_keys=True,indent=2)
     if len(render()) > MAX_SCOPE_CHARS:
         raise ValueError("frozen companion metadata exceeds candidate context budget; partition the compilation unit")

@@ -89,3 +89,21 @@ def test_a_spec_that_crashes_the_loader_is_repaired_and_the_planner_sees_it(tmp_
 def test_spec_prompt_states_the_example_budget():
     # spec_prompt_omits_example_budget: the oracle sandbox cannot run full UART frames
     assert "after_cycles at or below 2000" in prompts.SPEC_PROMPT
+
+
+def test_per_cycle_example_lists_go_back_to_the_planner(tmp_path, monkeypatch):
+    # spec_example_values_skip_planner_repair (tier1-campaign-04 debouncer_build)
+    o, _ = create(tmp_path, monkeypatch)
+    prose(tmp_path, o)
+    spec = json.loads(GOOD)
+    example = spec["modules"][0]["examples"][0]
+    name = next(iter(example["expected"]))
+    example["expected"][name] = [0, 0, 1]
+    planner = Mock(side_effect=[json.dumps(spec), GOOD])
+    monkeypatch.setattr(o.planner, "make_spec", planner)
+    assert o.run()["status"] == "done"
+    assert "must be a masked port integer" in planner.call_args_list[1].kwargs["feedback"]
+
+
+def test_spec_prompt_states_example_values_are_held_integers():
+    assert "never a per-cycle list" in prompts.SPEC_PROMPT

@@ -142,6 +142,12 @@ harness_failures:
   spec_lint_failure_skips_planner_repair:
     meaning: "In build mode from a prose request, the planner named the top after its only module, which the prompt never forbade; structural lint rejected the spec and the run ended at once with spec_lint_failed, with no feedback round (tier1-campaign-01 debouncer_build)"
     repair: "State the structural rules (top_name differs from every module name, binding rules) in the spec prompt; give a planner-written spec its lint or load errors back for at most max_fix_attempts repairs; a supplied JSON spec stays law and fails at once"
+  spec_example_values_skip_planner_repair:
+    meaning: "The planner wrote spec examples as per-cycle lists instead of held integer values; structural lint did not check example values, so the run ended at golden qualification with invalid_spec_examples and no repair round (tier1-campaign-04 debouncer_build)"
+    repair: "Check a planner-written spec's examples with the oracle's own validate_examples inside the spec-repair loop and return the errors to the planner; state in the spec prompt that every example value is a single integer held constant for after_cycles steps from the reset state"
+  hierarchy_inlining_as_optimization:
+    meaning: "With frozen children, the planner proposed copying a child's logic into the editable top unchanged; Vivado flattens hierarchy during synthesis, so the routed design and its metrics were identical and the iteration was spent for nothing (explore-tier4-01: 2 of 5 rr_regfile and crc16_stream proposals)"
+    repair: "Tell the planner and the candidate boundary that inlining by itself changes nothing after synthesis; inline only to make a stated logic change across the boundary, such as sharing or removing state or simplifying a cross-module path"
   unpinned_model_identity:
     meaning: "Runs called the Codex CLI default model without naming it, and the CLI does not report the model, so a change of the desktop default would silently change the model inside one cohort"
     repair: "Let a run name its model (RunConfig.model, run.py --model); route every role through it, save it in config.json, and record it as the requested model identity in the bench cohort"
@@ -151,6 +157,9 @@ harness_failures:
   concurrent_bench_drops_history:
     meaning: "run_tier reads the curriculum history when a campaign starts and rewrites the whole file when it ends, so a second bench finishing in between had its record silently overwritten (found by reading the runner while planning parallel work)"
     repair: "Keep the history bytes read at the start; under a short exclusive lock, rewrite only if they are unchanged; otherwise fail closed as infrastructure (exit 3) with the record kept in the campaign's summary.json"
+  cross_tier_benches_serialized:
+    meaning: "The concurrent_bench_drops_history repair failed a campaign closed whenever the history changed at all, so benches of different tiers (tier1 and tier2 at once) could not share a machine: the later one exited 3 with its verdict kept out of the history, although governance for a tier reads only that tier's earlier records (user request, Oct 30)"
+    repair: "Under the same lock, commit when the history has only grown since the campaign started (its start bytes are an exact prefix of the current bytes) and every record appended meanwhile is for a different tier; append the record after the current bytes without re-serializing earlier records; a rewritten history or a same-tier record appended meanwhile still fails closed (exit 3)"
   io_dominated_timing_metric:
     meaning: "With I/O buffers and zero external delay, every harness-flow critical path of the six winners ends at an OBUF (101-107.5 MHz) while their logic closes at 181.8-425.5 MHz out of context, so candidate timing comparisons mostly measured pad delay (fmax-characterization-01; the 31-LUT counter: WNS +0.126 ns, worst register-to-register path +1.460 ns)"
     repair: "Keep acceptance on the full I/O-constrained WNS/WHS; also report register-to-register setup slack from the same routed design (guarded, since report_timing errors with no registers, Vivado 12-4739) as an advisory metric shown to the planner and evaluator"
@@ -181,6 +190,9 @@ harness_failures:
   infeasible_incumbent_blocks_recovery:
     meaning: "A smaller timing-invalid incumbent or candidate outranks a timing-closed design"
     repair: "Require verified timing feasibility before objective comparison; record timing recovery separately from area or power gain"
+  infeasible_progress_discarded:
+    meaning: "With a timing-infeasible incumbent (fir8 seed WNS -9.918 ns at 100 MHz), verified candidates that were still infeasible but much closer (WNS -3.797, -2.766) were all rejected because none met timing, so every iteration restarted from the seed and the run exhausted its budget without retaining any progress"
+    repair: "While the incumbent is timing-infeasible, promote a verified, still-infeasible candidate with strictly better setup WNS and hold not worse beyond a small tolerance as timing_progress so the next iteration builds on it; a timing-feasible candidate always outranks an infeasible one, a feasible incumbent is never replaced by an infeasible candidate, and final timing_closed and curriculum acceptance still require closure"
   missing_editable_hierarchy_boundary:
     meaning: "An optimizer redeclared frozen companion RTL because generation and repair omitted dependency evidence"
     repair: "Provide the editable top and immutable companion identities to generation, repair and timing surgery; keep duplicate-module rejection"

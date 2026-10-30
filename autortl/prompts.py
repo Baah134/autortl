@@ -77,6 +77,9 @@ must be true. An absent annotation in an existing optimization source is a
 separate case and must never be interpreted as zero cycles.
 Every module MUST include 2-3 concrete examples. Keep modules under ~60 lines
 of eventual Verilog each; split anything bigger.
+Each example holds its inputs constant for after_cycles clock steps, starting
+from the reset state, then checks the expected outputs; every inputs and
+expected value is a single integer, never a per-cycle list.
 Each example runs the Python reference for after_cycles steps inside a fixed
 sandbox budget, so keep every after_cycles at or below 2000. For long-period
 designs (for example a UART bit lasting hundreds of cycles), make each example
@@ -179,7 +182,10 @@ extra behavioral requirements. Use retained trial evidence to avoid repeating an
 unchanged failed experiment. Prior proposal outcomes are advisory observations,
 not new contract requirements. Name a concrete change from an already tried
 proposal when appropriate; identical RTL remains valid for different physical
-settings, and a new source hash alone does not establish an improvement."""
+settings, and a new source hash alone does not establish an improvement.
+Moving a frozen child's logic into the editable top unchanged is not an
+optimization: synthesis flattens the hierarchy and routes the same design.
+Inline only together with a named logic change across the boundary."""
 
 RESTART_PLAN = """The loop has stalled ({stall_count} iterations without improvement).
 # Contract
@@ -250,10 +256,15 @@ and immutable run facts. Judge improvement from those metrics and the recorded
 improvement_kind. A verified candidate with timing_met=true, nonnegative setup
 and hold may replace a known timing-infeasible previous best even if area/power
 is equal or higher: timing_recovery is feasibility recovery, not resource savings.
-Unknown or contradictory timing evidence cannot establish recovery. Once both
+Unknown or contradictory timing evidence cannot establish recovery. While the
+previous best is still timing-infeasible, timing progress counts: when the
+recorded improvement_kind is timing_progress (verified, still infeasible, strictly
+better setup WNS, hold not worse beyond a small tolerance), the unmet timing is
+not a failed criterion for this comparison; it is progress, not closure. Once both
 incumbent and candidate are timing-feasible, require strict improvement of the
 chosen objective. Never reject a valid timing recovery solely for higher area
-or power. Extra savings or slack margins are advisory goals, not mandatory gates. Do not invent missing
+or power, and never reject valid timing progress solely for higher area, power
+or still-negative slack. Extra savings or slack margins are advisory goals, not mandatory gates. Do not invent missing
 measurements or change the provided testbench, latency, constraints or tools.
 Use authoritative declared_latency for the current top's annotation requirement.
 If known=false, do not reject or demand investigation solely because the top has

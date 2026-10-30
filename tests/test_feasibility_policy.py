@@ -1,7 +1,7 @@
 """Timing feasibility takes priority without weakening verification or objective gates."""
 import json
 import pytest
-from autortl.objectives import timing_feasible, improvement_kind
+from autortl.objectives import timing_feasible, improvement_kind, timing_progress, HOLD_PROGRESS_TOLERANCE_NS
 from autortl.bestofn import Candidate, select
 from autortl.contract_context import run_evidence, render_fixed_optimize_contract
 from autortl.config import RunConfig
@@ -117,3 +117,71 @@ def test_rendered_contract_and_evaluator_explain_recovery_without_claiming_savin
     assert "timing_recovery" in facts["objective_policy"]
     assert text==render_fixed_optimize_contract(json.loads(json.dumps(facts)))
     assert "Never reject a valid timing recovery solely for higher area" in prompts.EVALUATE
+    # taxonomy: infeasible_progress_discarded. The evaluator and contract name progress as non-closure.
+    assert "timing_progress" in text and "not closure" in text
+    assert "timing_progress" in facts["objective_policy"]
+    assert "timing progress counts" in prompts.EVALUATE and "timing_progress" in prompts.EVALUATE
+
+
+# taxonomy: infeasible_progress_discarded (fir8: seed -9.918 ns, verified candidates -3.797/-2.766 ns discarded)
+FIR8_SEED=dict(timing_met=False,wns_ns=-9.918,whs_ns=.05)
+
+
+@pytest.mark.parametrize("objective",OBJECTIVES)
+def test_better_setup_wns_on_infeasible_incumbent_is_timing_progress(objective):
+    better=metric(timing_met=False,wns_ns=-3.797,whs_ns=.05,lut_used=40,ff_used=30,dynamic_power_w=.3)
+    assert timing_progress(better,metric(**FIR8_SEED))
+    assert improvement_kind(better,metric(**FIR8_SEED),objective,progress=True)=="timing_progress"
+    # The default (Doctor trial) comparison stays closure-only.
+    assert improvement_kind(better,metric(**FIR8_SEED),objective) is None
+
+
+@pytest.mark.parametrize("wns",[-10.29,-9.918])
+def test_equal_or_worse_setup_wns_is_not_progress(wns):
+    assert improvement_kind(metric(timing_met=False,wns_ns=wns,whs_ns=.05),metric(**FIR8_SEED),
+                            "minimize_luts",progress=True) is None
+
+
+@pytest.mark.parametrize("whs,expected",[(.05-HOLD_PROGRESS_TOLERANCE_NS,"timing_progress"),
+                                         (.05-HOLD_PROGRESS_TOLERANCE_NS-.001,None),(-.5,None)])
+def test_progress_hold_tolerance(whs,expected):
+    candidate=metric(timing_met=False,wns_ns=-2.766,whs_ns=whs)
+    assert improvement_kind(candidate,metric(**FIR8_SEED),"minimize_luts",progress=True)==expected
+
+
+def test_hold_only_failure_is_not_setup_progress():
+    hold_failing=metric(timing_met=False,wns_ns=.2,whs_ns=-.02)
+    assert improvement_kind(metric(timing_met=False,wns_ns=.4,whs_ns=-.02),hold_failing,
+                            "maximize_freq",progress=True) is None
+
+
+@pytest.mark.parametrize("objective",OBJECTIVES)
+def test_feasible_incumbent_never_replaced_by_infeasible_candidate_even_with_progress(objective):
+    for bad in (metric(lut_used=1,timing_met=False,wns_ns=-.01),metric(lut_used=1,timing_met=False,whs_ns=-.01)):
+        assert improvement_kind(bad,metric(),objective,progress=True) is None
+
+
+@pytest.mark.parametrize("objective",OBJECTIVES)
+def test_feasible_candidate_is_recovery_not_progress(objective):
+    assert improvement_kind(metric(lut_used=99),metric(**FIR8_SEED),objective,progress=True)=="timing_recovery"
+
+
+@pytest.mark.parametrize("change",[dict(sim_passed=False),dict(sim_error="FAIL"),dict(synth_error="x"),
+                                   dict(wns_ns=-999.),dict(whs_ns=float("nan")),dict(timing_met=None),
+                                   dict(timing_met=True)])
+def test_unverified_or_unknown_timing_cannot_be_progress(change):
+    candidate=metric(**{**dict(timing_met=False,wns_ns=-2.766,whs_ns=.05),**change})
+    assert improvement_kind(candidate,metric(**FIR8_SEED),"minimize_luts",progress=True) is None
+    assert improvement_kind(metric(timing_met=False,wns_ns=-2.766,whs_ns=.05),
+                            metric(**{**FIR8_SEED,**change}),"minimize_luts",progress=True) is None
+
+
+@pytest.mark.parametrize("objective",OBJECTIVES)
+def test_selection_ranks_infeasible_by_setup_wns_and_feasible_first(objective):
+    far=Candidate("far","standard",5,metric(timing_met=False,wns_ns=-9.0,lut_used=1,ff_used=1,dynamic_power_w=.001))
+    near=Candidate("near","pipeline",5,metric(timing_met=False,wns_ns=-2.766,lut_used=90,ff_used=90,dynamic_power_w=.9))
+    assert select([far,near],objective) is near
+    # Feasible always wins, even against an infeasible candidate with larger setup WNS (hold failure).
+    hold_failing=Candidate("hold","narrow",5,metric(timing_met=False,wns_ns=5.0,whs_ns=-.01,lut_used=1))
+    closed=Candidate("closed","share",5,metric(wns_ns=0.0,lut_used=99,ff_used=99,dynamic_power_w=.9))
+    assert select([hold_failing,near,closed],objective) is closed

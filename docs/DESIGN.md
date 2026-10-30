@@ -63,7 +63,12 @@ supported schema and limits.
 4. **Best-of-N (N=4)** with objective-weighted mutation prompts (bestofn.py),
    hash dedupe, deterministic selection: (rungs, timing feasibility, objective
    metric, brevity). A verified timing recovery can use more resources; it is
-   recorded separately from objective savings.
+   recorded separately from objective savings. While the incumbent is still
+   timing-infeasible, a verified infeasible candidate with strictly better setup
+   WNS (hold no worse than 0.05 ns) replaces it as `timing_progress`, and
+   infeasible candidates rank by setup WNS; a feasible design always outranks an
+   infeasible one, and progress is never closure (`timing_closed` stays false and
+   curriculum acceptance still fails; taxonomy `infeasible_progress_discarded`).
 5. **Error taxonomy** keyed on official Vivado message IDs
    (data/taxonomy.yaml). Unknown IDs: query Vivado's own help, log for
    curation. Severity promotion only — never demote.
@@ -287,12 +292,17 @@ reach the parent (parallel_build_winner_digest_lost). Parallel entries share one
 host.
 
 **History.** The history file `curriculum/results.jsonl` is read when a campaign
-starts and rewritten when it ends. The rewrite happens only under an exclusive
-lock file (`results.jsonl.lock`), and only if the history bytes are unchanged
-since the start. A held lock or a changed history fails closed as
+starts, and the campaign's record is appended when it ends. The append happens
+only under an exclusive lock file (`results.jsonl.lock`), and only if the
+history bytes read at the start are still an exact prefix of the file and every
+record added since is for a different tier. Governance for a tier reads only
+that tier's records, so benches of different tiers may run at once; earlier
+bytes are never rewritten (cross_tier_benches_serialized). A held lock, a
+rewritten history or a record of the same tier added meanwhile fails closed as
 infrastructure. Nothing is written, the record stays in the campaign's
-summary.json and the bench exits 3 (concurrent_bench_drops_history). A lock left
-by a crashed bench must be deleted by hand.
+summary.json and the bench exits 3 (concurrent_bench_drops_history). A lock older
+than ten minutes was left by a crashed bench and is replaced automatically
+(stale_history_lock_blocks_benches).
 
 **Infrastructure-blocked campaigns.** A campaign with any entry whose summary
 has `failure_kind: infra` gets no verdict. This covers infra_blocked and

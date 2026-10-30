@@ -41,21 +41,51 @@ def timing_feasible(metrics) -> bool:
     return _timing_state(metrics) is True
 
 
+def timing_infeasible(metrics) -> bool:
+    """True only with consistent, finite timing evidence that fails setup or hold."""
+    return _timing_state(metrics) is False
+
+
 def _verified(metrics):
     return (_get(metrics,"sim_passed") is True and
             _get(metrics,"sim_error","") == "" and _get(metrics,"synth_error","") == "")
 
 
-def improvement_kind(new, best, objective: str) -> str | None:
-    """Return timing_recovery, objective, or None; unknown evidence never wins.
+# Hold slack a timing_progress candidate may lose relative to the incumbent.
+HOLD_PROGRESS_TOLERANCE_NS = 0.05
+
+
+def timing_progress(new, best) -> bool:
+    """True when both verified designs are known setup-failing and infeasible,
+    new has strictly better setup WNS, and hold is not worse beyond tolerance.
+
+    Progress is not closure: it never applies once the incumbent is feasible,
+    and a feasible candidate is a timing_recovery instead.
+    """
+    if not _verified(new) or not _verified(best):
+        return False
+    if _timing_state(new) is not False or _timing_state(best) is not False:
+        return False
+    new_setup, best_setup = _get(new,"wns_ns"), _get(best,"wns_ns")
+    new_hold, best_hold = _get(new,"whs_ns"), _get(best,"whs_ns")
+    return (best_setup < 0 and new_setup > best_setup
+            and new_hold >= best_hold - HOLD_PROGRESS_TOLERANCE_NS)
+
+
+def improvement_kind(new, best, objective: str, *, progress: bool = False) -> str | None:
+    """Return timing_recovery, objective, timing_progress, or None; unknown evidence never wins.
 
     Timing recovery is a feasibility improvement, not a resource/power saving.
+    With progress=True, a verified but still-infeasible candidate that improves
+    on an infeasible incumbent (see timing_progress) returns timing_progress.
     The caller still enforces source, testbench, report and process-exit integrity.
     """
     if objective not in _OBJECTIVES:
         raise ValueError("unsupported objective: " + str(objective))
-    if not _verified(new) or not _verified(best) or not timing_feasible(new):
+    if not _verified(new) or not _verified(best):
         return None
+    if not timing_feasible(new):
+        return "timing_progress" if progress and timing_progress(new, best) else None
     previous_timing = _timing_state(best)
     if previous_timing is None:
         return None
