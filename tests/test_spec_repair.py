@@ -132,7 +132,12 @@ def test_generated_oracle_shape_errors_go_back_to_the_planner(tmp_path, monkeypa
     monkeypatch.setattr(fsm, "tb_shape_errors", shapes)
     planner = Mock(side_effect=[GOOD, GOOD])
     monkeypatch.setattr(o.planner, "make_spec", planner)
-    o.run()
+    class LintPassed(Exception):
+        pass
+    monkeypatch.setattr(fsm, "write_stub_project", Mock(side_effect=LintPassed))
+    import pytest
+    with pytest.raises(LintPassed):  # stop before the fixture's forbidden oracle
+        o.run()
     assert planner.call_count == 2
     assert "fixed latency does not accept handshake ports" in \
         planner.call_args_list[1].kwargs["feedback"]
