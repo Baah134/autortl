@@ -69,6 +69,12 @@ Output ONLY JSON matching this schema (no commentary):
 Protocol valid_ready marks only handshake ports (in_valid, in_ready, out_valid,
 out_ready); payload ports such as in_data and out_data are protocol none.
 Example expected values list exactly the protocol none outputs.
+compare_mode scoreboard fits only a module with exactly one valid/ready input
+channel and one valid/ready output channel. Every other module, including a
+stream sink or source such as a UART transmitter fed by a FIFO, uses
+fixed_latency with every port protocol none, and the ports connected to it are
+none as well (protocol must match across a connection); describe the
+handshake cycle-exactly in behavior instead.
 Port signed is an optional boolean (default false). packed_dimensions is optional
 null (legacy descending [width-1:0], scalar for width 1) or a list of [left,right]
 integer bound pairs, for example [[0,7]] or [[1,0],[3,0]]. Preserve direction and

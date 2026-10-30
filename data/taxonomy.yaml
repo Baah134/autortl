@@ -139,6 +139,9 @@ harness_failures:
   evaluator_verdict_format_rejects_verified_gain:
     meaning: "An evaluator wrote its verdict as 'Recommendation: ACCEPT', '**Recommendation:** ACCEPT' or '**ACCEPT**' instead of the heading-newline form; the parser read REJECT, so a deterministically verified improvement was discarded"
     repair: "Read the first verdict token after a Recommendation heading or label, ignoring emphasis and punctuation; keep the count-consistency and unresolved-criterion vetoes unchanged"
+  one_sided_handshake_has_no_oracle_shape:
+    meaning: "A UART transmitter consumes a valid/ready stream but drives a plain serial line, so it fits neither generated-oracle shape (scoreboard needs both channels, fixed_latency forbids handshake ports); the planner cycled through all three wrong taggings and the spec failed lint (explore-tier3-04 uart_fifo_build)"
+    repair: "State in the spec prompt and the shape error that scoreboard fits only one input and one output channel and every other module uses fixed_latency with all ports none, its neighbors' connected ports none too, the handshake described cycle-exactly in behavior"
   golden_augmented_subscript_rejected:
     meaning: "The oracle sandbox refused every augmented assignment on a subscript, so a natural per-cycle model writing state[\"count\"] -= 1 was rejected and the module's last oracle attempt was lost (explore-tier3-03 uart_fifo_build, uart_tx)"
     repair: "Rewrite name[constant] op= value and name[name] op= value as a plain assignment through the same bounded arithmetic; keep refusing other targets with a message naming the supported forms"

@@ -94,4 +94,7 @@ def test_shape_errors_catch_fixed_latency_with_handshake_ports_before_any_oracle
     wrong.compare_mode = "fixed_latency"
     errors = shape_errors(wrong)
     assert errors and "fixed latency does not accept handshake ports" in errors[0]
-    assert "use compare_mode scoreboard" in errors[0]
+    assert "otherwise use fixed_latency with every port none" in errors[0]
+    # one_sided_handshake_has_no_oracle_shape: the prompt states the shape that always fits
+    from autortl import prompts
+    assert "stream sink or source such as a UART transmitter" in prompts.SPEC_PROMPT

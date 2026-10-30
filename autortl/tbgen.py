@@ -100,8 +100,11 @@ def shape_errors(spec: ModuleSpec) -> list[str]:
                                       ("output", "valid"), ("input", "ready")):
                 _scoreboard_control(controls, direction, suffix)
     except ValueError as exc:
-        hint = (" (use compare_mode scoreboard for a valid/ready module, or tag every port none)"
-                if "fixed latency does not accept handshake ports" in str(exc) else "")
+        # one_sided_handshake_has_no_oracle_shape: name the shape that always fits.
+        hint = (" (scoreboard fits only one valid/ready input and one valid/ready output channel;"
+                " otherwise use fixed_latency with every port none, and tag the connected ports"
+                " on neighboring modules none too)"
+                if "handshake" in str(exc) or "scoreboard" in str(exc) else "")
         return [str(exc) + hint]
     return []
 
