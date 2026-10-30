@@ -287,9 +287,13 @@ reach the parent (parallel_build_winner_digest_lost). Parallel entries share one
 host.
 
 **History.** The history file `curriculum/results.jsonl` is read when a campaign
-starts and rewritten when it ends. The rewrite happens only under an exclusive
-lock file (`results.jsonl.lock`), and only if the history bytes are unchanged
-since the start. A held lock or a changed history fails closed as
+starts, and the campaign's record is appended when it ends. The append happens
+only under an exclusive lock file (`results.jsonl.lock`), and only if the
+history bytes read at the start are still an exact prefix of the file and every
+record added since is for a different tier. Governance for a tier reads only
+that tier's records, so benches of different tiers may run at once; earlier
+bytes are never rewritten (cross_tier_benches_serialized). A held lock, a
+rewritten history or a record of the same tier added meanwhile fails closed as
 infrastructure. Nothing is written, the record stays in the campaign's
 summary.json and the bench exits 3 (concurrent_bench_drops_history). A lock left
 by a crashed bench must be deleted by hand.

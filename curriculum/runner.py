@@ -135,13 +135,36 @@ def _history_bytes() -> bytes:
     return RESULTS.read_bytes() if RESULTS.exists() else b""
 
 
-def _commit_history(expected: bytes, history, record) -> None:
-    """Write history + record only if nobody changed the history meanwhile.
+def _grew_by_other_tiers(expected: bytes, current: bytes, tier: int) -> bool:
+    """True if current is expected plus whole records of tiers other than tier.
 
-    Benches read the history when they start and rewrite it when they end, so
-    two at once would drop one record (concurrent_bench_drops_history). A short
+    Governance for a tier reads only that tier's earlier records, so a history
+    that only grew, by records of other tiers, is still the history this
+    campaign was governed against (cross_tier_benches_serialized).
+    """
+    if not current.startswith(expected):
+        return False  # rewritten, truncated or edited: not the history we read
+    appended = current[len(expected):]
+    if not appended:
+        return True
+    if expected and not expected.endswith(b"\n"):
+        return False  # the boundary is mid-line, so the appended records are unclear
+    try:
+        records = _parse_history(appended.decode("utf-8"))
+    except ValueError:
+        return False
+    return all(r["tier"] != tier for r in records)
+
+
+def _commit_history(expected: bytes, record) -> None:
+    """Append record only if the history is unchanged for this record's tier.
+
+    Benches read the history when they start and write it when they end, so
+    two at once could drop one record (concurrent_bench_drops_history). A short
     exclusive lock covers the compare and the write; a conflict fails closed and
-    leaves this campaign's record in its own summary.json.
+    leaves this campaign's record in its own summary.json. Records of other
+    tiers appended meanwhile are kept and are no conflict
+    (cross_tier_benches_serialized); the earlier bytes are never re-serialized.
     """
     lock = RESULTS.with_name(RESULTS.name + ".lock")
     try:
@@ -162,19 +185,27 @@ def _commit_history(expected: bytes, history, record) -> None:
         except FileExistsError as again:
             raise HistoryConflictError(f"{lock} exists: another bench is writing the history") from again
     try:
-        if _history_bytes() != expected:
+        current = _history_bytes()
+        if not _grew_by_other_tiers(expected, current, record["tier"]):
             raise HistoryConflictError("curriculum history changed during this campaign; "
                                        "run benches one at a time")
-        atomic_write_text(RESULTS, "".join(json.dumps(r, default=str) + "\n" for r in history + [record]))
+        text = current.decode("utf-8")
+        if text and not text.endswith("\n"):
+            text += "\n"
+        atomic_write_text(RESULTS, text + json.dumps(record, default=str) + "\n")
     finally:
         lock.unlink(missing_ok=True)
 
 
 def _history():
-    records = []
     if not RESULTS.exists():
-        return records
-    for number, line in enumerate(RESULTS.read_text(encoding="utf-8").splitlines(), 1):
+        return []
+    return _parse_history(RESULTS.read_text(encoding="utf-8"))
+
+
+def _parse_history(text):
+    records = []
+    for number, line in enumerate(text.splitlines(), 1):
         if not line.strip():
             continue
         try:
@@ -355,7 +386,7 @@ def run_tier(tier: int, **overrides) -> int:
         return 3
     atomic_write_text(campaign / "summary.json", json.dumps(rec, indent=2, default=str))
     try:
-        _commit_history(history_bytes, history, rec)
+        _commit_history(history_bytes, rec)
     except HistoryConflictError as exc:
         # Infrastructure: nothing enters the history; the record stays in summary.json.
         print(f"[bench] history not updated: {exc}; record kept in {campaign / 'summary.json'}")
