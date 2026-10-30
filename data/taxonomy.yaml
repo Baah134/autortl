@@ -518,6 +518,9 @@ harness_failures:
   gate_jobs_zero_silently_serial:
     meaning: "tools/tier0_gate.py accepted --jobs 0 or a negative value and quietly ran the bench one entry at a time instead of rejecting the argument (docs review, Oct 29; follows backend_configuration_rough_edges)"
     repair: "Validate --jobs as a positive integer in argparse for every tool that takes it, so 0 is a usage error before anything runs"
+  equal_lut_ff_saving_discarded:
+    meaning: "Under minimize_luts a verified, timing-feasible candidate with equal LUTs and strictly fewer flip-flops was not an objective improvement, so a real saving was discarded once LUTs sat at their floor (explore-tier4-01 crc16_stream_build iteration 3: 16 LUT, 34 -> 18 FF, REJECTED; explore-tier4-02 iteration 2: 16 LUT, 34 -> 19 FF, REJECTED)"
+    repair: "Between two verified timing-feasible designs, minimize_luts compares (lut_used, ff_used) lexicographically and minimize_ffs compares (ff_used, lut_used): equal primary with a strictly lower secondary is an objective improvement, a worse primary never is, and a missing or non-finite secondary gives no tie-break; apply it in improvement_kind, best-of-N selection, the fixed contract and the planner and evaluator prompts; maximize_freq and minimize_power are unchanged"
 
 methodology:
   "TIMING-6":
