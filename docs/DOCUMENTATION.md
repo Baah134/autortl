@@ -2,7 +2,7 @@
 
 Every file in the repository, what it does, the design choices inside it, and why those choices were made. `docs/DESIGN.md` is the architecture spec; this document is the implementation record. Written for the engineer (you, or a Claude Code session) who needs to modify any file and wants the reasoning that produced it.
 
-**Repository totals:** 146 files | 23 harness modules | 3 LLM backends | 8 skills | 6 curriculum tiers | 84 passing tests.
+**Repository totals (original build):** 146 files | 23 harness modules | 3 LLM backends | 8 skills | 6 curriculum tiers | 84 passing tests. **Now:** 33 modules in `autortl/` | 3 model backends (Codex CLI, OpenAI-compatible HTTP, command) plus user endpoints | 9 skills | 6 curriculum tiers. Sections 10-12 are the current reference for the CLI, environment variables and the files a run writes.
 
 ---
 
@@ -10,7 +10,7 @@ Every file in the repository, what it does, the design choices inside it, and wh
 
 ```
 autortl_v4/
-|- run.py                      CLI entry: optimize | build | resume | bench
+|- run.py                      CLI entry: optimize | build | resume | bench | doctor
 |- requirements.txt            pyyaml, pytest (stdlib for everything else)
 |- README.md                   quick start
 |- CLAUDE.md                   standing instructions for Claude Code sessions
@@ -18,11 +18,13 @@ autortl_v4/
 |  |- DESIGN.md                architecture spec (single source of truth)
 |  |- DOCUMENTATION.md         this file
 |- autortl/                    the harness (23 modules)
-|- llm/                        model routing + 2 backends
-|- data/taxonomy.yaml          Vivado message-ID dictionary
-|- .claude/skills/             8 SKILL.md guidebooks + verified snippets
+|- llm/                        model routing, 3 backends, user endpoints
+|- data/taxonomy.yaml          Vivado message IDs + harness failure modes
+|- .claude/skills/             SKILL.md guidebooks + verified snippets
 |- curriculum/                 tiered benchmark designs + runner
-|- tests/                      84 pytest checks + captured Vivado fixtures
+|- tests/                      pytest checks + captured Vivado fixtures
+|- tools/                      role_report.py, tier0_gate.py, evidence_audit.py
+|- scripts/                    demo.py (offline walkthrough) and tool checks
 ```
 
 **Why this shape:** the harness (`autortl/`) never imports from `llm/` backends directly | it goes through `llm/client.py` only. Knowledge (`skills/`, `taxonomy.yaml`) is data, not code. Tests mirror module names one-to-one. Anything an LLM writes lands in `.v`/`.py` files only | never in TCL, shell, or paths (defence #11).
@@ -32,12 +34,12 @@ autortl_v4/
 ## 2. Root Files
 
 ### run.py
-The CLI. Four subcommands sharing one parent parser for the common flags (part, frequency, objective, iterations, N, tool paths, route override).
+The CLI. Five subcommands: `optimize`, `build` and `bench` share one parent parser for the common flags; `resume` takes only `--run`; `doctor` takes only tool paths. Section 10 lists every option.
 
 - **Design choice: subcommands over flags.** `optimize` and `build` are different entry states of the same FSM, not different programs. The CLI makes the mode explicit, then both converge on `Orchestrator(cfg).run()`.
 - **Design choice: tool paths are flags** (`--vivado`, `--xvlog`, `--xelab`, `--xsim`) with bare-name defaults. Windows installs put Vivado at nonstandard paths (`C:\AMDDesignTools\2025.2`); hardcoding broke us repeatedly in v1-v3.
-- **Design choice: `--route generator=openrouter.nemotron-super`** exists so routing experiments never require editing routing.yaml. Routing is data; the CLI is just a one-shot override.
-- `bench` imports lazily so curriculum runs do not pay orchestrator import cost when only listing entries.
+- **`--route` is rejected.** The old one-shot route override no longer exists; `--model` pins the model (and optionally the backend) for every role instead.
+- `bench` and `doctor` import lazily.
 
 ### requirements.txt
 Two packages: `pyyaml`, `pytest`. Everything else is stdlib.
@@ -114,6 +116,8 @@ Tracks LLM calls, Vivado seconds, wall minutes against ceilings. `fraction_left(
 - **Design choice: degrade, never die.** A run that stops mid-flight wastes everything spent; a run that shrinks to best-of-1 and skips replans still delivers its best-so-far with a clean summary.
 - **Design choice: the worst fraction governs.** Whichever resource is scarcest is the binding constraint | the Pro-plan 5-hour window maps onto `max_llm_calls`/`max_wall_minutes` without special-casing Claude.
 - Thresholds (50/20/30) are named constants in behavior, tested in `test_budget.py`, tunable without touching the FSM.
+- **Token accounting.** `Budget.tokens` holds `input_tokens`, `cached_input_tokens` and `output_tokens`. `charge_tokens(usage)` adds one successful call's reported usage (positive integers only; missing or malformed usage adds nothing) and saves it under `tokens` in `budget.json`. Tokens have no ceiling and never affect `fraction_left()`. A `budget.json` saved before token accounting loads with zeros. Calls are charged per attempt (`charge_llm` runs before each backend attempt, retries included); tokens only after success.
+- Charges are never refunded: negative call counts or tool seconds raise `ValueError`.
 
 ### 3.9 watchdog.py | deterministic pathology detection (the "MCE" answer)
 `inspect(history, recent_codes, recent_errors, budget_fraction)` -> typed `Signal`s: **STAGNATION** (3 iterations, no best), **CHURN** (last two candidates hash-identical), **REPEATED_ERROR** (same signature 3x), **BUDGET_ANOMALY** (>50% spent, nothing gained).
@@ -128,6 +132,7 @@ Tracks LLM calls, Vivado seconds, wall minutes against ceilings. `fraction_left(
 - **Design choice: `lut_pct`/`ff_pct` are properties**, excluded from `from_dict` input. v3 stored them and round-tripping crashed; computed-only cannot desync.
 - **Design choice: sim verdicts are machine-parsed** from mandated marker lines (`TEST PASSED` / `FAIL index=...`). The tbgen emits exactly these markers; parser and generator are two halves of one contract.
 - **Tested against captured real report files** in `tests/fixtures/` | parser tests against synthetic strings prove nothing.
+- **`reg2reg_wns_ns` is advisory.** `parse_reg2reg` reads the first `Slack (MET|VIOLATED) : X ns` line of `timing_reg2reg.rpt` into `VivadoMetrics.reg2reg_wns_ns`; it stays `None` when the report is absent or has no slack line. `timing_met` is still computed from the full I/O-constrained `wns_ns`/`whs_ns` only. Older metric dictionaries without the field load as `None`.
 
 ### 3.11 vivado.py | the toolchain driver
 `xvlog_check` (rung 2), `xsim_run` (rungs 3-4: xvlog -> xelab -> xsim, batch, **no project mode**), `run_synthesis` (rung 5: templated non-project TCL with auto-generated XDC, optional `-retiming`/`phys_opt_design` for the Timing Doctor's knob rung), `promotion_tcl` (severity promotion from the taxonomy), `_tcl_path` (path sanitiser).
@@ -137,6 +142,8 @@ Tracks LLM calls, Vivado seconds, wall minutes against ceilings. `fraction_left(
 - **Design choice: the XDC is written by the TCL itself** so the clock constraint always exists | [Timing 38-282] "no clock" failures are structurally impossible.
 - **Design choice: promotion only.** `promotion_tcl` skips any entry whose override is not ERROR. The demote path does not exist in code, so a future "make the run look clean" temptation has nothing to call.
 - **Design choice: `SYNTH_COMPLETE` sentinel** printed at script end; return code alone is unreliable across Vivado versions.
+- **I/O constraints.** After `synth_design` the script writes and sources `timing_io.tcl`: zero min/max input delay on every data input except `clk`, and zero min/max output delay on every output. Acceptance WNS/WHS therefore include pad delay.
+- **Guarded register-to-register report.** After routing, `report_timing -from [all_registers] -to [all_registers] -max_paths 1` writes `timing_reg2reg.rpt`, but only when the design has registers and inside `catch`, because `report_timing` errors with no registers (Vivado 12-4739). It is advisory (taxonomy `io_dominated_timing_metric`).
 - Every runner records wall seconds (`vivado_seconds()`) for the budget, and `message_ids_in()` aggregates IDs across all four logs for the evaluator.
 
 ### 3.12 golden.py | the Python oracle
@@ -171,6 +178,7 @@ YAML keyed on **official Vivado message IDs**: `meaning`, `repair` (an instructi
 - **Design choice: message IDs as keys, not invented regexes.** AMD maintains the ID namespace across versions; our v3 regex signatures were brittle. The taxonomy now grows against a stable namespace.
 - **Design choice: curation-by-experience.** 10 entries seeded | every one an error class actually hit in v1-v3 ([Synth 8-327] latch and [Synth 8-3352] multi-driven promoted to ERROR; [Vivado 12-4473] documented as a wrapper whose real cause lives in the referenced logs). Bulk-ingesting AMD's thousands of IDs was explicitly rejected: noise destroys trust in the dictionary.
 - **Design choice: the YAML is the machine view; the `vivado-messages` skill is the model-facing view of the same content.** One knowledge source, two renderings, harvest pipeline feeds both.
+- **`harness_failures:`** is a second section of the same file. Each entry names a harness failure mode (`meaning`, `repair`), recorded before its fix lands, per the CLAUDE.md rule. Entries added for the features in this document include `fence_tag_drops_generated_modules`, `golden_fence_tag_keeps_prose`, `evaluator_verdict_format_rejects_verified_gain`, `evaluator_verdict_conflict_or_blank_line`, `spec_lint_failure_skips_planner_repair`, `unpinned_model_identity`, `seed_without_timescale_costs_model_repair`, `concurrent_bench_drops_history`, `io_dominated_timing_metric`, `parallel_build_winner_digest_lost`, `token_save_lock_misattributed`, `infra_outcomes_missing_failure_kind`, `generator_instantiates_unsimulated_primitive`, `infra_blocked_entry_enters_history` and `host_standby_stalls_tools`.
 
 ### 3.16 bestofn.py | forced diversity + deterministic selection (Pothole 3)
 `MUTATIONS` (six architectural directives: standard, pipeline, share, narrow, infer, wildcard), `PORTFOLIO` (per-objective ordered pick of 4: e.g. minimize_luts -> standard, narrow, share, wildcard), `dedupe` (code-hash), `select` (sort by rungs passed desc, then objective metric, then code length).
@@ -190,7 +198,7 @@ YAML keyed on **official Vivado message IDs**: `meaning`, `repair` (an instructi
 Frontmatter parser, `conventions()` (the law | always injected into the **system** prompt), `select_for_module` (**protocol-first**: >1 clock domain -> cdc; behavior keywords like multiply/ram -> xilinx-inference; verilog-idioms always), `select_for_timing` (timing-closure + vivado-messages), `inject` (concatenate bodies under a 12,000-char cap).
 
 - **Design choice: conventions are not a skill lookup.** Optional loading is fine for expertise; it is unacceptable for law. `autortl-conventions` rides the system prompt of every role, every call.
-- **Design choice: harness-side loading exists at all** because generator/evaluator run `--max-turns 1` (no native skill discovery) and the NIM/OpenRouter fallbacks have no skills mechanism. One knowledge format, two loading paths: Claude Code native when agentic, harness-injected everywhere else.
+- **Design choice: harness-side loading exists at all** because generator/evaluator run `--max-turns 1` (no native skill discovery) and the OpenAI-compatible and command backends have no skills mechanism. One knowledge format, two loading paths: Claude Code native when agentic, harness-injected everywhere else.
 - **Design choice: protocol-first matching** (Pothole 5): the presence of two clock domains in the *typed spec* selects the cdc skill | never the word "FIFO" in a name. The interface dictates hardware reality; names are semantics.
 - The char cap prevents skill bloat from crowding the actual task out of context.
 
@@ -210,11 +218,16 @@ PLANNER/GENERATOR/EVALUATOR/DOCTOR system prompts, plus SPEC_PROMPT, CONTRACT_PR
 - **Design choice: jsonl for designs** | appendable without rewriting, one corrupt line loses one record, and the watchdog/curriculum tooling stream it trivially.
 
 ### 3.21 roles.py | Planner, Generator, Evaluator, TimingDoctor
-Thin classes: each method builds a prompt from its allowed inputs and calls `llm.client.ask(role, ...)`. `Evaluation.parse` regexes the recommendation (ACCEPT|REJECT|RESTART, default **REJECT** when unparseable) and pass/fail counts.
+Thin classes: each method builds a prompt from its allowed inputs and calls `llm.client.ask(role, ...)` through `_ask`, which passes the run's pinned model (`role.model`, set from `RunConfig.model` by the Orchestrator for all four roles). `Evaluation.parse` reads the recommendation (ACCEPT|REJECT|RESTART, default **REJECT** when unparseable) and pass/fail counts.
 
 - **Design choice: the isolation lives here structurally.** The Generator's methods do not *accept* metrics or history as parameters | wrong context cannot be passed by accident.
 - **Design choice: unparseable evaluation defaults to REJECT.** Fail-closed: a garbled report never accidentally accepts a design.
-- **Design choice: the Doctor is the only role with `max_turns=3`.** Reading a timing path benefits from bounded agency; generation and grading are deliberately de-agented so the harness stays the only loop.
+- **`Evaluation.parse` rules.** Every Recommendation heading or label line is collected (`## Recommendation` then the verdict, `Recommendation: ACCEPT`, `**Recommendation:** **ACCEPT**`, with blank lines allowed after a heading). A verdict is read only when each line names exactly one of ACCEPT/REJECT/RESTART and all lines agree; otherwise REJECT. Then the vetoes: REJECT unless `Passed: N of M` and `Failed: K` are both present with N > 0 and N + K = M; REJECT on any `- ...: FAIL` or `INVESTIGATE` criterion line; REJECT when ACCEPT has K > 0. A forced REJECT records at least one failure.
+- **`generated_rtl`** = `extract_verilog` plus `default_timescale`: a source with no (uncommented) `` `timescale`` gets `` `timescale 1ns/1ps`` prepended (XSIM 43-4099). The Orchestrator applies the same `default_timescale` to the verified baseline copy, never to the original generation seed.
+- **`golden_source`** takes the first fence tagged python/py/python3 (any case), else the first fence defining both `def init(` and `def step(`, else the raw response.
+- **Advisory register-to-register slack** (`reg2reg_text`) appears in the PLAN and EVALUATE prompts, labelled advisory and not a gate.
+- **Primitive guidance.** The generator and timing-doctor system prompts forbid instantiating UNISIM primitives (CARRY4, LUT6, FDRE, DSP48E1 and so on), because verification simulates behavioral RTL without UNISIM (`generator_instantiates_unsimulated_primitive`).
+- **The Doctor passes `max_turns=3`.** No current backend enforces `max_turns`; each records `max_turns_enforced: false` and only the wall-time timeout bounds the call.
 
 ### 3.22 fsm.py | the Orchestrator (the heart)
 Explicit resumable state machine. **Build mode:** spec (planner) -> lint -> stub elaboration -> per-module build (golden model -> qualify -> tbgen -> generate through the ladder -> tbqual; artifact-cache hits imported wholesale) -> mechanical top -> compiles -> flows into optimize as its baseline. **Optimize mode:** baseline (fix loop if broken | your v3 decision that the agent should repair, not refuse, is preserved) -> contract negotiation (propose/review/refine, <=3 rounds) -> main loop: watchdog -> conditional replan -> best-of-N through the ladder (static -> latency law -> xvlog -> sim with one taxonomy-guided fix -> synthesis with metrics gate + cache) -> deterministic select -> Timing Doctor (knobs -> surgery, surgery re-faces the ladder) -> LLM evaluation -> best/stall bookkeeping -> restart mechanism (<=2 replans, budget-gated) -> summary + `<top>_best.v`.
@@ -225,34 +238,65 @@ Explicit resumable state machine. **Build mode:** spec (planner) -> lint -> stub
 - **Design choice: surgery output re-enters the ladder.** Nothing the Doctor writes is trusted; it is a candidate like any other.
 - **Design choice: restart preserves the best.** The working design resets to baseline; `best_v/best_m` survive | restarts are free options, never gambles.
 - **Design choice: `_infer_contract`** regexes an interface-only ModuleSpec from an existing design so optimize mode gets static interface checks without demanding a spec file from the user.
+- **Planner spec repair (`_run_build`).** A spec file that loads as a `DesignSpec` is law: a lint error returns `spec_lint_failed` and a load error is raised. Otherwise the planner writes the spec from the prose request. The outermost `{...}` of each answer is written to `design_spec.json`, loaded and linted. On lint or load errors the planner is asked again (`make_spec` with feedback: the errors plus the previous spec) up to `max_fix_attempts` times (default 3). Each attempt is a journaled planner call charged to the budget. Remaining errors end the run as `spec_lint_failed` with `lint_errors` in the checkpoint (`spec_lint_failure_skips_planner_repair`).
+- **Model pinning.** `__init__` sets `role.model = cfg.model` on the planner, generator, evaluator and timing doctor.
+- **Outcomes.** A `ModelCallError` (auth, quota or exhausted retries) ends the run as `model_blocked` with `failure_kind: infra`; changed verification evidence ends it as `infra_blocked`; exhausted call or tool budgets end it as `budget_exhausted`. None of these is a design failure.
 
 ### 3.23 __init__.py
 Version string. Nothing else | import side effects in `__init__` files caused a circular-import scare in v3.
+
+### 3.24 doctor.py | environment check (`run.py doctor`)
+Runs a list of `Check(name, status, detail, fix, required)` and prints each as OK, MISSING or WARN with the fix. It runs no design and makes no model call; the only commands it starts are `xvlog --version`, `codex --version` and `codex login status`, each from an empty temporary folder.
+
+- **Required:** Python 3.12 or newer; `pyyaml`; `vivado`, `xvlog`, `xelab`, `xsim` (the `--vivado/--xvlog/--xelab/--xsim` paths, else PATH as the bare name, `.bat` or `.exe`); the Codex CLI (`AUTORTL_CODEX_BIN` or PATH) answering `--version`; `codex login status` saying logged in; a writable checkout.
+- **Warnings only:** `pytest` missing; `xvlog --version` not naming the Vivado Simulator; `AUTORTL_OPENAI_API_KEY` unset (when set it reports the endpoint host and `AUTORTL_OPENAI_MODEL`, never the key); each user endpoint (a `command` whose `argv[0]` is not on PATH, or an `openai` endpoint whose `api_key_env` is unset); an unreadable endpoints file.
+- Exit code 0 when no required check is MISSING, else 1.
 
 ---
 
 ## 4. The LLM Layer | `llm/`
 
 ### 4.1 routing.yaml | routing is data
-Per-role chains: planner/doctor `claude opus -> sonnet -> openrouter ultra -> nvidia ultra`; generator `sonnet -> nvidia super -> openrouter super`; evaluator `sonnet -> openrouter super`. Defaults: 2 retries per backend, 180 s timeout.
+Every role (planner, generator, evaluator, timing_doctor) has the chain `[codex.default]`. Defaults: `max_retries_per_backend: 2`, `timeout_s: 180`. An entry is `backend.alias`; `backend` is `codex`, `openai` or a user endpoint name. Without pyyaml the client falls back to the same Codex-only chains.
 
-- **Why YAML:** re-routing is an experiment you run weekly; it must never require a code change. The CLI `--route` prepends a one-shot override.
-- **Why planner/doctor get the big model and generator/evaluator do not:** planning and timing surgery are the judgment-heavy roles; generation and grading are deliberately constrained roles where Opus is wasted window budget. If Opus is unavailable on Pro, the chain silently continues at sonnet | **the harness must not care** (the thesis, enforced by fallback).
+- **Why YAML:** routing stays data. Per-run model choice is `--model`, not an edit of this file; `--route` is rejected.
 
 ### 4.2 client.py | one public function
-`ask(role, prompt, system, budget, route_override, max_turns)`: walk the chain, retry with exponential backoff on retryable signatures, charge the budget on success, **record every attempt** (role, entry, ok, seconds) to `router_stats.jsonl`, raise only when the whole chain fails. Plus `extract_verilog` (module-validating, think-tag-stripping, multi-fence-aware | the hardened v3 extractor) and `declared_latency` (`// @latency N` parser).
+`ask(role, prompt, system, budget, route_override, max_turns, model)`: build the chain, walk it, retry, charge the budget, **record every attempt** (ts, role, entry, ok, seconds, metadata, error type) to `llm/router_stats.jsonl`, and raise `ModelCallError(role, code)` when the chain fails. Plus `extract_verilog` and `declared_latency` (reads only the selected module's real `// @latency N` annotation; ambiguous files stay unknown).
 
+- **Chain with `model`.** If the part of `model` before the first `.` is `codex`, `openai` or a defined user endpoint, the chain is exactly `[model]` (`openai.gpt-4o-mini`, `ollama.llama3.1`). Otherwise `model` replaces the alias of every routing entry and keeps its backend (`codex.<model>`). A prefix that names no backend, including a mistyped endpoint name or one in an unreadable endpoints file, is therefore passed to Codex as part of the alias. `route_override` (not reachable from the CLI) replaces the chain last.
+- **Budget per attempt.** Before every attempt the client refuses when the budget is exhausted or `llm_calls >= max_llm_calls` (`RuntimeError("LLM_BUDGET: ...")`), charges one call, and caps the call timeout at the wall time left. Backoff sleeps are capped the same way.
+- **Retry split.** `CODEX_TIMEOUT` and `CODEX_NETWORK` retry on the same entry with backoff `2 ** attempt` seconds. `CODEX_AUTH` and `CODEX_QUOTA` raise `ModelCallError` at once (the run becomes `model_blocked`). Any other error moves to the next chain entry. An empty or whitespace-only answer is `CODEX_PROTOCOL`.
+- **Tokens after success.** The successful call's `meta["usage"]` is charged with `budget.charge_tokens` outside the retry handling, so a `CheckpointLockedError` from saving `budget.json` propagates unchanged (`token_save_lock_misattributed`).
 - **Design choice: recording-only stats (your decision #2).** The data accumulates from run one; reordering by observed success is enabled only after ~10 runs exist. Acting on 3 samples is noise.
-- **Design choice: retryable vs non-retryable split.** A 429 retries with backoff on the same backend; an auth error moves to the next chain entry immediately | retrying a bad key 3 times wastes 15 s per call.
-- **Design choice: extractor prefers the block that *starts* with `module`**, then any block containing module...endmodule, then a raw-text module scan, and warns loudly as last resort. Every tier of that ladder corresponds to a real v3 failure.
+- **`extract_verilog` order.** Strip `<think>...</think>`. Read fences tagged `verilog`, `systemverilog`, `sv`, `v` (any case) or untagged before fences with other tags. If more than one HDL fence starts a module and all module names are distinct, return them joined, so a multi-module answer is never returned in part; repeated names keep the first block. Else the first fence starting a module; else the first fence containing `module ` and `endmodule`; else a raw `module ... endmodule` span (with any leading `` `timescale`` or comment lines); else the whole text, which rung 1 rejects if it has no module (`fence_tag_drops_generated_modules`).
 
 ### 4.3 backends/codex_cli.py
-`codex exec --sandbox read-only --ephemeral --json` with the prompt on stdin, using the existing Codex login. Returns the final message plus model, usage and session metadata; failures raise typed `CodexError` codes (`CODEX_AUTH`, `CODEX_QUOTA`, `CODEX_NETWORK`, `CODEX_TIMEOUT`, `CODEX_PROTOCOL`, `CODEX_UNAVAILABLE`) that the client keys its retries on.
+`codex exec --sandbox read-only --ephemeral --json --output-last-message <tmp>/final.txt --skip-git-repo-check -C <tmp> -` with the prompt on stdin, from a fresh temporary folder, using the existing Codex login. The executable is `AUTORTL_CODEX_BIN`, else `codex` on PATH (`CODEX_UNAVAILABLE` when neither exists). An alias other than `default` adds `--model <alias>`; metadata records it as `requested_model`. Returns the final message plus model, usage (`input_tokens`, `cached_input_tokens`, `output_tokens`) and session metadata; failures raise typed `CodexError` codes (`CODEX_AUTH`, `CODEX_QUOTA`, `CODEX_NETWORK`, `CODEX_TIMEOUT`, `CODEX_PROTOCOL`, `CODEX_UNAVAILABLE`) that the client keys its retries on. A timeout kills the worker's process tree (`taskkill /T /F` on Windows). Diagnostics keep only error events and error-like stderr lines, redacted before truncation.
 
 ### 4.4 backends/openai_http.py
 Standard-library client for any OpenAI-compatible `POST <base>/chat/completions` endpoint, routed as `openai.<model>` (or `--model openai.<model>`). Configuration is environment-only: `AUTORTL_OPENAI_API_KEY` (required), `AUTORTL_OPENAI_BASE_URL` (default `https://api.openai.com/v1`; local Ollama or vLLM servers work), `AUTORTL_OPENAI_MODEL` (used for `openai.default`). HTTP failures map onto the same `CodexError` codes (401/403 auth, 429 quota, 5xx and connection network, timeout, malformed body protocol). The key, prompt and system text are redacted from every error, redirects are refused so the key never reaches another host, and token usage is reported in the same `input_tokens` / `cached_input_tokens` / `output_tokens` shape.
 
-The earlier `claude_code`, `nvidia_nim` and `openrouter` adapters were removed; OpenAI-compatible providers are reached through `AUTORTL_OPENAI_BASE_URL`.
+The earlier `claude_code`, `nvidia_nim` and `openrouter` adapters were removed; OpenAI-compatible providers are reached through `AUTORTL_OPENAI_BASE_URL` or a user endpoint of `kind: openai`.
+
+Further detail: HTTP 408 maps to `CODEX_TIMEOUT` and any other non-success status to `CODEX_UNAVAILABLE`; responses over 16 MB are `CODEX_PROTOCOL`; loopback hosts (`localhost`, `127.0.0.1`, `::1`) bypass any configured proxy; error text names only scheme, host and port of the endpoint. With a user endpoint, `base_url` and `api_key_env` come from the endpoint, no key is sent unless `api_key_env` names one, and `<name>.default` is refused (an explicit model is required).
+
+### 4.5 backends/command_cli.py
+Any program that reads the prompt on stdin and prints the answer on stdout, used through a `kind: command` endpoint. `argv[0]` is resolved on PATH and run as an argument list (`shell=False`) from an empty temporary folder with the harness timeout. An alias other than `default` is passed as `<model_flag> <alias>`; without `model_flag` that is `CODEX_UNAVAILABLE` ("use `<name>.default`"). Model output never reaches the arguments. A timeout kills the process tree. A nonzero exit is classified from the redacted stderr tail; empty stdout is `CODEX_PROTOCOL`. It reports no token usage. AutoRTL does not sandbox the command.
+
+### 4.6 endpoints.py + endpoints.example.yaml | user endpoints
+`load()` reads `llm/endpoints.local.yaml` (ignored by Git) or the file in `AUTORTL_ENDPOINTS` (a missing file named there is an error), as YAML (or JSON without pyyaml), under a top-level `endpoints:` mapping. `_validate` enforces:
+
+| Field | Kind | Rule |
+|---|---|---|
+| name | both | `[a-z][a-z0-9_-]{0,31}`, not `codex` or `openai` |
+| `kind` | both | `openai` or `command` |
+| `base_url` | openai | required, `http(s)://host...` |
+| `api_key_env` | openai | optional environment variable name; the key itself is never in the file |
+| `argv` | command | required non-empty list of strings |
+| `model_flag` | command | optional, must start with `-` |
+
+Any other field is rejected (with a hint when it looks like a key). `digest(definition)` is the SHA-256 of the definition's canonical JSON; the bench records it as `model_endpoint_sha256`. `endpoints.example.yaml` shows `ollama` and `together` (openai) and `claude` and `ollama-cli` (command). Because the run's `runtime.json` hashes every `.yaml` under `llm/`, an `endpoints.local.yaml` kept there is also part of the frozen implementation identity; one kept elsewhere through `AUTORTL_ENDPOINTS` is not.
 
 ---
 
@@ -279,10 +323,16 @@ Format: Anthropic SKILL.md (YAML frontmatter description + markdown body + `snip
 ## 6. Curriculum | `curriculum/`
 
 ### runner.py
-`run_tier(N)`: iterate entry folders, build a RunConfig from each `meta.yaml`, run the orchestrator, check `pass_criteria` (max_luts, timing_met) against `best_metrics`, append to `results.jsonl`, return shell-friendly 0/1 at the 80% threshold.
+`run_tier(N, **overrides)`: iterate entry folders, build a RunConfig from each `meta.yaml` plus the CLI overrides, run the orchestrator, check mandatory gates and `pass_criteria` (`max_luts`, `max_ffs`; `timing_met` cannot be disabled) against `best_metrics`, compute governance, and commit the campaign record to `curriculum/results.jsonl`. Accepted overrides: `proposal_feedback`, tool binaries, `target_part`, `target_freq_mhz`, `objective`, `max_iterations`, `best_of_n`, the three budget ceilings, `max_infra_retries` and `model`. Each campaign gets a fresh `tier<N>_*` folder under the output root (default `logs/curriculum`) with one run folder per entry, `entries.json` (rewritten after each entry) and `summary.json`.
 
 - **Design choice: meta.yaml per entry** | curriculum entries are data; adding one is a folder, never a code change.
-- **Design choice: exceptions become entry failures**, not runner crashes | one broken entry cannot hide the results of the rest.
+- **Design choice: exceptions become entry failures**, not runner crashes | one broken entry cannot hide the results of the rest. An escaped `CheckpointLockedError` is instead an `infra_blocked` entry with `failure_kind: infra`.
+- **Cohort.** SHA-256 over each entry's source hashes and configuration (paths removed; `model` included) plus the campaign runtime identity: the single frozen `runtime.json` digest shared by all entries, the governance code hash (`runner.py`), and the model identity. `model_identity` is null with status `unobserved_cli_default` unless every entry requested the same `--model`; then it is that string with status `requested`, plus `model_endpoint_sha256` when its prefix names a user endpoint. Per-entry `runtime_identity` records keep `unobserved_cli_default`. Missing or mixed runtime provenance, or a governance file changed during the campaign, makes the identity `unknown` and the campaign cannot qualify. `--jobs` is not part of the cohort.
+- **Governance.** Qualified = known provenance, pass rate >= 80% and no regression of an entry that passed in a held record of the same cohort. The streak counts consecutive qualifying records of the same cohort and the same full/subset scope. Held = full tier and streak >= 3. `--entries` subsets never hold a tier.
+- **Parallel entries (`jobs`).** With `jobs > 1`, entries run in a `ProcessPoolExecutor` with that many workers; each has its own run folder, budget and journal. A worker that dies yields an `exception` record. Records are still assembled in entry order. The winner file is located from the summary's `top_module`, since build mode's rewrite of `cfg.top_module` stays in the worker (`parallel_build_winner_digest_lost`).
+- **Infrastructure-blocked campaigns.** If any entry's summary has `failure_kind: infra` (infra_blocked, model_blocked, escaped checkpoint lock), the record gets `infra_blocked_entries`, is written only to `summary.json`, the history is untouched, and `run_tier` returns 3 (`infra_blocked_entry_enters_history`).
+- **Append-safe history.** The history bytes are read at the start. At the end `_commit_history` creates `results.jsonl.lock` with `O_CREAT | O_EXCL`, compares the bytes, and atomically rewrites history plus the new record only if they are unchanged; the lock is removed afterwards. An existing lock or changed bytes raise `HistoryConflictError`: nothing is written, the record stays in `summary.json`, and `run_tier` returns 3 (`concurrent_bench_drops_history`). A lock left by a crash must be deleted by hand.
+- **Return codes.** 0 qualified, 1 not qualified (or no entries), 3 no verdict (infrastructure-blocked entry or history conflict).
 
 ### Entries shipped
 - **tier0/counter** | the v1-v3 counter, verbatim, with its testbench. `pass_criteria: max_luts 67` (v3's iteration-1 cleanup) | **the past is the regression bar**. The known v3 best (48 LUTs, WNS 4.092) is recorded in the meta as the stretch target.
@@ -344,6 +394,94 @@ One test file per harness module, plus `conftest.py` (path bootstrap) and `fixtu
 
 - `xsim_run` assumes the tb top is `<module>_tb` | curriculum convention; a `--tb-top` flag is a 5-line addition if ever needed.
 - The optimize-mode `_infer_contract` regex reads ANSI-style port lists; K&R-style headers would need extension.
-- `parallel_candidates` is plumbed in config but the FSM runs candidates sequentially | flip after verifying your Claude tier tolerates parallel headless sessions.
+- `parallel_candidates` exists in config, but `RunConfig.validate` rejects `True`; candidates run sequentially. Parallelism exists only between bench entries (`bench --jobs`).
 - The begin/end heuristic in static_checks is intentionally noisy-tolerant; xvlog is the authority one rung later.
 - Build-mode `_build_module` runs best-of-1 for module bodies (best-of-N is exercised in the optimize loop); raising it is a config change once tier-3 timings are known.
+
+---
+
+## 10. CLI Reference
+
+### run.py common options (`optimize`, `build`, `bench`)
+
+| Option | RunConfig field | Default | Notes |
+|---|---|---|---|
+| `--target-part` (`--target_part`) | `target_part` | `xc7a35tcpg236-1` | |
+| `--target-freq-mhz` (`--target_freq_mhz`) | `target_freq_mhz` | 100.0 | must be positive |
+| `--objective` | `objective` | `minimize_luts` | `minimize_luts`, `minimize_ffs`, `maximize_freq`, `minimize_power` |
+| `--iterations` | `max_iterations` | 10 | must be positive |
+| `--best-of-n` (`--best_of_n`) | `best_of_n` | 4 | must be positive |
+| `--vivado`, `--xvlog`, `--xelab`, `--xsim` | `*_bin` | bare names | Windows: pass `<Vivado>/bin/<tool>.bat` |
+| `--output-dir` (`--work-dir`) | run directory | `logs/run_v4_<YYYYmmdd_HHMMSS>` | exact new run folder; for `bench`, the campaign output root (default `logs/curriculum`) |
+| `--max-llm-calls` | `max_llm_calls` | 200 | counts every attempt, retries included |
+| `--max-vivado-minutes` | `max_vivado_minutes` | 120 | |
+| `--max-wall-minutes` | `max_wall_minutes` | 240 | |
+| `--max-infra-retries` | `max_infra_retries` | 2 | |
+| `--proposal-feedback` / `--no-proposal-feedback` | `proposal_feedback` | off | experimental prior-proposal context |
+| `--model` | `model` | none (each backend's default) | alias for every role, or `backend.model` (`openai.<model>`, `<endpoint>.<model>`); `[A-Za-z0-9][A-Za-z0-9._:-]{0,79}`, not `default`; saved in config.json; part of the bench cohort |
+| `--route` | | | rejected |
+
+Budget ceilings and `--max-infra-retries` may be 0 but not negative; iterations, best-of-N and frequency must be positive.
+
+### Subcommands
+
+| Command | Options | Exit codes |
+|---|---|---|
+| `optimize` | `--design FILE` (required), `--tb FILE`, `--top NAME` (required) | 0 status done; 1 otherwise; 3 checkpoint lock (`infra_blocked`, resumable) |
+| `build` | `--spec FILE` (required; JSON spec or prose), `--tb FILE` (independent integration testbench), `--top NAME`, `--generate-golden` | as `optimize` |
+| `resume` | `--run DIR` (required); loads `config.json`, accepts no overrides | as `optimize` |
+| `bench` | `--tier N` (required), `--entries NAME ...` (subset; never holds a tier), `--jobs N` (default 1; not part of the cohort) | 0 qualified; 1 not qualified; 3 no verdict |
+| `doctor` | `--vivado`, `--xvlog`, `--xelab`, `--xsim` | 0 ready; 1 a required check missing |
+
+`optimize`, `build` and `resume` print a JSON object with `status`, `best_iteration`, `timing_closed`, `improvement_kind` and `run_dir`. Argument errors exit 2. In `bench`, each entry's `meta.yaml` supplies mode, files, top, objective, frequency and iterations (default 5); CLI options override them.
+
+### Other entry points
+
+| Command | Purpose |
+|---|---|
+| `python scripts/demo.py [--output-dir DIR]` | Offline simulated walkthrough of one optimize run on `curriculum/tier0/mux4` (DIR must be new or empty; default a fresh temp folder). No Vivado, model or network; every number is made up. |
+| `python tools/role_report.py DIR... [--json]` | Per-run and per-role report from `events.jsonl`, `designs.jsonl`, `run_summary.json` and `budget.json`: completed, unfinished and retried calls per role method, repairs, evaluator verdicts, model calls and tokens in/out. Never reads model responses. DIR may be a run or any folder holding runs. |
+| `python tools/tier0_gate.py --name NAME [--python PY] [--tier 0\|1] [--jobs N] [--model M] [--vivado-bin DIR]` | Merge gate: freezes source identities, requires a full pytest receipt, runs `bench` with fixed per-tier budgets, then requires source, router-stats prefix and history prefix unchanged. Writes `logs/NAME*`; refuses to overwrite an earlier attempt or to run when a higher tier is held. |
+
+---
+
+## 11. Environment Variables
+
+| Variable | Read by | Meaning |
+|---|---|---|
+| `AUTORTL_CODEX_BIN` | `llm/backends/codex_cli.py`, `doctor` | Codex CLI executable; otherwise `codex` must be on PATH |
+| `AUTORTL_OPENAI_API_KEY` | `llm/backends/openai_http.py`, `doctor` | Required for the built-in `openai.*` backend; sent as a Bearer token, never stored or printed |
+| `AUTORTL_OPENAI_BASE_URL` | `openai_http.py`, `doctor` | Base URL of an OpenAI-compatible server; default `https://api.openai.com/v1` |
+| `AUTORTL_OPENAI_MODEL` | `openai_http.py`, `doctor` | Model used for `openai.default` |
+| `AUTORTL_ENDPOINTS` | `llm/endpoints.py` | Path of the user endpoints file instead of `llm/endpoints.local.yaml`; a missing file named here is an error |
+| `AUTORTL_VIVADO_BIN` | `tools/tier0_gate.py`, `scripts/check_counter_cli.py`, `hardware/basys3` tools | Vivado `bin` folder for those helpers. `run.py` and the harness do not read it; pass `--vivado/--xvlog/--xelab/--xsim` instead |
+| the variable named by an endpoint's `api_key_env` | `openai_http.py`, `doctor` | Key for that user endpoint |
+
+The cohort records none of these values. A user endpoint's definition (which names its key variable but holds no key) is recorded as a digest.
+
+---
+
+## 12. Files Written per Run
+
+The run folder is `--output-dir`, else `logs/run_v4_<timestamp>`; in a bench it is `<campaign>/<entry>`.
+
+| File | Content |
+|---|---|
+| `config.json` | Saved RunConfig (`schema_version` 1, absolute paths, `model`); `resume` reads it |
+| `runtime.json` | Python version, SHA-256 of every `.py`/`.yaml`/`.md`/`.v` under `autortl/`, `llm/`, `data/`, `.claude/skills/`, and tool identities; resume refuses when it changed |
+| `inputs/`, `inputs.json` | Frozen copies of the design, testbench and spec with their hashes |
+| `budget.json` | `llm_calls`, `vivado_seconds`, `elapsed`, and `tokens` (`input_tokens`, `cached_input_tokens`, `output_tokens`) |
+| `state.json` | FSM checkpoint |
+| `journal/<sha256>/` | One folder per stage: `started.json`, `completed.json`, `artifacts/` |
+| `events.jsonl` | Stage events (RUNNING, COMPLETE, infrastructure outcomes) |
+| `contract.md`, `harness_facts.json` | Rendered optimization contract and the facts it is bound to |
+| `plan.md`, `progress.md`, `designs.jsonl` | Planner plan, append-only diary, one record per iteration |
+| `metrics_cache.json` | Metrics reuse cache |
+| `design_spec.json`, `stubs/`, `modules/` | Build mode: the spec, stub elaboration, per-module work and the mechanical top |
+| `iter_NNN/` | Per iteration (`iter_000` is the baseline): `cand_<mutation>/` work folders, `evaluation.md`, `evaluation_facts.json`, `proposal_*.json`, Doctor trial folders |
+| `run_summary.json` | Final summary: status and metrics on completion; otherwise status and error details, with `failure_kind` where the cause is classified |
+| `<top>_best.v` | Winning source |
+
+Each tool work folder holds `xvlog.log`, `xelab.log`, `xsim.log`, `sim_log.txt`, `tool_exit_records.log` and, after a passing simulation, `verification_inputs.log`. A synthesis folder adds `synth.tcl`, `timing.xdc`, `timing_io.tcl`, `utilization.rpt`, `timing.rpt`, `utilization_routed.rpt`, `timing_routed.rpt`, `timing_reg2reg.rpt` (only when the design has registers; advisory), `design_analysis.rpt`, `power.rpt`, `methodology.rpt` and `qor_suggestions.rpt` (both optional) and `vivado_synth_output.log`.
+
+Outside the run folder: every model attempt appends to `llm/router_stats.jsonl`; unknown Vivado message IDs go to `data/unknown_message_ids.log`; a bench campaign writes `entries.json` and `summary.json` in its `tier<N>_*` folder and, when it has a verdict, its record to `curriculum/results.jsonl`.
