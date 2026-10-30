@@ -252,3 +252,15 @@ def test_restart_receives_current_completed_outcome_and_preserves_incumbent(tmp_
     assert read(o,2,'restart')['seed_sha256'] == source_identity(SOURCE)
     assert read(o,3,'input')['seed_sha256'] == source_identity(SOURCE)
     assert (o.state.run_dir/'m_best.v').read_text() == WINNER
+
+
+def test_progress_tells_the_planner_why_no_candidate_survived(tmp_path, monkeypatch):
+    # rejection_reason_hidden_from_planner (explore-fir8-02): with feedback off,
+    # progress.md is what the planner reads, so it must carry the reason.
+    o = setup(tmp_path, monkeypatch, iterations=2, enabled=False)
+    o.generator.generate = Mock(side_effect=['bad source', WINNER])
+    assert o.run()['best_iteration'] == 2
+    progress = o.state.progress_path.read_text(encoding='utf-8')
+    entry = progress.split('iter 001')[1].split('iter 002')[0]
+    assert 'no candidate survived the ladder (standard: ' in entry and 'tried: ' in entry
+    assert 'standard: unknown' not in entry

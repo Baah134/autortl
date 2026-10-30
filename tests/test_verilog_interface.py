@@ -62,3 +62,13 @@ def test_inferred_latency_distinguishes_absent_annotation_from_zero(annotation, 
     assert contract.latency_known is known and contract.latency == cycles
     # Numeric metadata records a declaration; it does not analyze the RTL's cycles.
     assert contract.interface_signature is not None
+
+
+def test_attribute_instances_on_ports_do_not_change_the_interface():
+    # port_attribute_rejected (explore-fir8-02): (* IOB = "TRUE" *) on a registered output
+    plain = infer_module("module f(input clk, output reg signed [31:0] y); endmodule", "f")
+    marked = infer_module('module f(input clk, (* IOB = "TRUE", KEEP = "yes" *) (* x *) '
+                          "output reg signed [31:0] y); endmodule", "f")
+    assert [(p.name, p.direction, p.width, p.signed) for p in marked.ports] ==            [(p.name, p.direction, p.width, p.signed) for p in plain.ports]
+    with pytest.raises(ValueError):
+        infer_module("module f(input clk, (* IOB = 1 output y); endmodule", "f")

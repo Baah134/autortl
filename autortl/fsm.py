@@ -984,7 +984,11 @@ class Orchestrator:
                     "recommendation": "REJECT", "is_best": False,
                     "selected_source_sha256": None}))
                 stall += 1
-                state.append_progress(it, "no candidate survived the ladder", "REJECT")
+                # rejection_reason_hidden_from_planner: the planner reads progress, so say why.
+                reasons = "; ".join(f"{c.mutation}: {' '.join(str(getattr(c, 'fail_reason', '') or 'unknown').split())[:160]}"
+                                    for c in all_candidates)
+                state.append_progress(it, f"no candidate survived the ladder ({reasons}); tried: "
+                                      + " ".join(instruction.split())[:120], "REJECT")
                 state.append_design({"iteration": it, "is_best": False,
                                      "recommendation": "REJECT",
                                      "sim_passed": False})

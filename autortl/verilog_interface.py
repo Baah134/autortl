@@ -309,6 +309,11 @@ def _declarations(text: str, values: dict) -> tuple[list[Port], list[dict]]:
     ports, signatures = [], []
     direction, width, signed, dims, symbolic, value_type = None, 1, False, [], [], "logic"
     for item in split_items(text):
+        # port_attribute_rejected: (* IOB = "TRUE" *) and the like do not change the interface.
+        while item.startswith("(*"):
+            end = item.find("*)")
+            if end < 0: raise ValueError("unterminated attribute instance")
+            item = item[end + 2:].lstrip()
         match = re.match(r"^(input|output|inout)\b", item)
         if match:
             direction, width, signed, dims, symbolic, value_type = match[1], 1, False, [], [], "logic"

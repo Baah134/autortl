@@ -139,6 +139,12 @@ harness_failures:
   evaluator_verdict_format_rejects_verified_gain:
     meaning: "An evaluator wrote its verdict as 'Recommendation: ACCEPT', '**Recommendation:** ACCEPT' or '**ACCEPT**' instead of the heading-newline form; the parser read REJECT, so a deterministically verified improvement was discarded"
     repair: "Read the first verdict token after a Recommendation heading or label, ignoring emphasis and punctuation; keep the count-consistency and unresolved-criterion vetoes unchanged"
+  port_attribute_rejected:
+    meaning: "A candidate put a legal Verilog attribute instance on a port declaration ((* IOB = \"TRUE\" *) on fir8's registered output, to pack it into the I/O block against pad-dominated timing); the interface parser refused it as an unsupported port declaration before any tool ran (explore-fir8-02, three iterations)"
+    repair: "Skip attribute instances before reading a port declaration; they never change direction, width, signedness or name, and the RTL safety gate still applies"
+  rejection_reason_hidden_from_planner:
+    meaning: "When no candidate survived the ladder, progress.md said only that, so the planner, which reads progress but not the off-by-default proposal feedback, re-proposed the same rejected change three times (explore-fir8-02 iterations 3-5)"
+    repair: "Write each candidate's bounded rejection reason and the tried instruction into the progress entry the planner reads"
   payload_ports_tagged_valid_ready:
     meaning: "The planner tagged a scoreboard FIFO's payload ports (in_data, out_data) protocol valid_ready, so no protocol none output was left for examples to check; the error said only 'all data output ports' and three repairs repeated the mistake (explore-tier3-02 uart_fifo_build)"
     repair: "Name the required protocol none outputs in the example error and state in the spec prompt that only handshake ports are valid_ready and payload ports are none"
