@@ -256,11 +256,12 @@ resumable lock (token_save_lock_misattributed). A budget.json saved before token
 accounting loads with zero tokens. `tools/role_report.py` shows the totals per
 run.
 
-## Advisory register-to-register slack
+## Register-to-register slack
 Acceptance timing is unchanged. The routed WNS and WHS of the full design, with
-zero input and output delay on every data port, decide timing_met, candidate
-selection, the Timing Doctor and curriculum acceptance. With I/O buffers in the
-path, those numbers mostly measure pad delay (io_dominated_timing_metric).
+zero input and output delay on every data port, decide timing_met, timing
+feasibility, the ranking of timing-infeasible candidates, timing_progress, the
+Timing Doctor and curriculum acceptance. With I/O buffers in the path, those
+numbers mostly measure pad delay (io_dominated_timing_metric).
 
 After routing, the same synthesis script also writes `timing_reg2reg.rpt`:
 `report_timing` from all registers to all registers, one path. The command is
@@ -268,8 +269,15 @@ guarded. It runs only when the design has registers, inside `catch`, because
 `report_timing` errors when there are none (Vivado 12-4739). The parser reads
 that path's slack into `VivadoMetrics.reg2reg_wns_ns`. The value stays null when
 the report is absent or has no slack line. The planner and evaluator prompts
-show it, labelled advisory. No gate, selection rule or curriculum criterion
-reads it.
+show it, labelled as not a timing gate.
+
+**maximize_freq comparison.** Only the maximize_freq objective comparison
+between timing-feasible verified designs reads it: `improvement_kind` between a
+candidate and the incumbent, and best-of-N selection among feasible candidates,
+compare `reg2reg_wns_ns` when every compared design has a finite value, and
+otherwise compare `wns_ns` for all of them, never a mix
+(`objectives.objective_field`). The fixed optimize contract states this rule.
+No gate or curriculum criterion reads it (maximize_freq_ranks_on_pad_delay).
 
 ## Curriculum governance
 Tier held = 3 consecutive runs ≥80%. Regressions on held tiers block harness
