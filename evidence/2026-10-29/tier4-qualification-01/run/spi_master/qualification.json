@@ -1,0 +1,107 @@
+{
+  "entry": "curriculum\\tier4\\spi_master_build",
+  "top": "spi_master_tb",
+  "testbench_sha256": "2db6641d00f05bf1c637a0cdc00af67d437a537a59f92a9fa91163901e0dbba1",
+  "runs": [
+    {
+      "case": "reference",
+      "why": "control",
+      "expect_pass": true,
+      "verdict": "TEST PASSED",
+      "assertion_detected": false,
+      "as_required": true,
+      "source_sha256": "f665e1a7726a454e6844c1fa47d5f1ad370f457b6a27ac927cf8a78db70bcc6c"
+    },
+    {
+      "case": "rx_lsb_first",
+      "why": "received bits shift in from the top, so the byte arrives bit-reversed",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 262 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "3bada96bce68f7c497785519a4fae872b444939b8c6a602b6beaaadad03c6b03"
+    },
+    {
+      "case": "sample_on_falling_edge",
+      "why": "MISO sampled when SCLK falls (mode 1 timing) instead of when it rises",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 390 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "0ce7a1f3e01d465c61bf29186c430c1c3f85d8089fb9ce747f9f8e5ae8ae2009"
+    },
+    {
+      "case": "half_period_one_long",
+      "why": "each SCLK half period lasts HALF_PERIOD+1 clk cycles",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 30228 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "40e31740f2deb4b68dd4585a69bae3362584538851f5d65437cd45af5612ddef"
+    },
+    {
+      "case": "parameter_ignored",
+      "why": "hard-codes the default half period of 2 cycles",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 53726 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "4967c05cb18d3f863e551cd2f76f7701998507cc94187c03988ffac52de70880"
+    },
+    {
+      "case": "mosi_shift_on_rise",
+      "why": "MOSI advances at the rising SCLK edge, violating mode 0 data setup",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 13486 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "9c56cfebc227ebdf2168d51782029d8f2f3ddd93bddab715973417c3abd42d28"
+    },
+    {
+      "case": "seven_bit_transfer",
+      "why": "the transfer ends after 14 SCLK toggles, one bit short",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 9164 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "91050df99fc6bc91c2915e32520970d433b82e7b43aaddceddb750269fc4192e"
+    },
+    {
+      "case": "accept_while_response_held",
+      "why": "cmd_ready ignores a held response, so a new transfer can start and overwrite it",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 5416 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "2896b71fa41e74b9e5067956851a57ac8bdcd83b278de83e9ea8a9cda98b3cbf"
+    },
+    {
+      "case": "response_dropped_under_stall",
+      "why": "rsp_valid clears after one cycle even while rsp_ready is low",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 3402 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "992038af1f2836b3c34d761699e6c71f5195a77fd7c41b5097aaa386c58c776a"
+    },
+    {
+      "case": "reset_keeps_transfer",
+      "why": "reset idles the bus pins but lets the transfer counter keep running",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 39614 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "a78bda80ba69f10ea73d632d6719f6f4bbd465a6c0e69abf7633c638d9cfbbe1"
+    },
+    {
+      "case": "asynchronous_reset",
+      "why": "an off-edge reset pulse aborts an active transfer",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 2384 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "e3a176dcadaec6040a416af20d4f2d83f704ab64aaabcf738a0f04e0aa2524ad"
+    }
+  ],
+  "qualified": true
+}

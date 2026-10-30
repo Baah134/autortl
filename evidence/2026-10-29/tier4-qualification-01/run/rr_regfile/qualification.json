@@ -1,0 +1,107 @@
+{
+  "entry": "curriculum\\tier4\\rr_regfile_build",
+  "top": "rr_regfile_tb",
+  "testbench_sha256": "83456a9774c84ca1790c492f2fbfb59dc369c1d08cd79bd10df643fdbfdc264c",
+  "runs": [
+    {
+      "case": "reference",
+      "why": "control",
+      "expect_pass": true,
+      "verdict": "TEST PASSED",
+      "assertion_detected": false,
+      "as_required": true,
+      "source_sha256": "fbdc1398925361fab598b84a0b9be32f351aed7bcb367de3a48f8c001af3613e"
+    },
+    {
+      "case": "fixed_priority",
+      "why": "the pointer never advances, so requester 0 always wins (starvation)",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 2902 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "d840136f1d4406ae88db2614e1eef5c944e3dbdac56d20fd4facef93e48cf264"
+    },
+    {
+      "case": "reset_pointer_zero",
+      "why": "after reset requester 1, not requester 0, has highest priority",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 92 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "d5802b701adb3f9aed4f3982416948d18679bd7c6c2aeee68078162c226fc786"
+    },
+    {
+      "case": "regrant_same_requester",
+      "why": "the search starts at the last winner, so a busy requester keeps the grant",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 3341 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "4ca06958d141393f2108da2256f5763889fc230e7fef14e2e378ce728ff488aa"
+    },
+    {
+      "case": "data_select_off_by_one",
+      "why": "a grant to requester 1 writes requester 2's data",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 743 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "d8c3a04e19e0d2458485b302b27865c65740a786acd7dda3b8cc296b78f472c0"
+    },
+    {
+      "case": "binary_grant",
+      "why": "grant is the binary winner index instead of one-hot",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 3048 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "89688cabb4482c1a8aeffe474c7ee154c1c27a655a10118ee46baaafe48d2a57"
+    },
+    {
+      "case": "write_first_bypass",
+      "why": "a same-edge read returns the new write data instead of the old contents",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 380 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "666dc65e01a8b0bc29bd65c80aa1e92afae35a8c7a783ffa7eeb4004be79ca14"
+    },
+    {
+      "case": "write_ignores_enable",
+      "why": "idle cycles write zero to entry 0",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 128 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "f741a96c909721bc8f6ad413f81be8d5b2de03a136711eb3b138ecd792c92269"
+    },
+    {
+      "case": "reset_keeps_memory",
+      "why": "reset clears rd_data but not the stored entries",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 94 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "3e308eadc735b06a003cdbabcaa61389bbde1011e45525cb8b7120f77e92a10a"
+    },
+    {
+      "case": "asynchronous_regfile_reset",
+      "why": "an off-edge reset pulse clears the register file",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 44 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "02591f7a62d157840e9b3caa09430765c58859894d39cdb450129ee38d1ae782"
+    },
+    {
+      "case": "top_read_address_miswired",
+      "why": "the integration wires requester 0's address to the read port",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 2815 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "422c17382aa01f7f198358184ef5f154cee96eea90916bb54e4ba1949998dd37"
+    }
+  ],
+  "qualified": true
+}

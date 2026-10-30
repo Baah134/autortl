@@ -1,0 +1,107 @@
+{
+  "entry": "curriculum\\tier4\\crc16_stream_build",
+  "top": "crc16_stream_tb",
+  "testbench_sha256": "a90ca8b0fbe4af41c162485fb2e3df80c253ec0bea3189d8f9c33512f59ec207",
+  "runs": [
+    {
+      "case": "reference",
+      "why": "control",
+      "expect_pass": true,
+      "verdict": "TEST PASSED",
+      "assertion_detected": false,
+      "as_required": true,
+      "source_sha256": "7654505ea255f63fc89274f2c6c0ccd6bf1262f5290831151a1d5a7affa29f08"
+    },
+    {
+      "case": "wrong_polynomial",
+      "why": "uses the CRC-16/IBM polynomial 0x8005 instead of 0x1021",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 2856 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "e566e9bf83653dc03f6e7fbdd2dc29bca6fe373a3960f0b27edd0541ab9dd7f0"
+    },
+    {
+      "case": "reset_init_zero",
+      "why": "reset starts the first frame from 0x0000 (XMODEM init) instead of 0xFFFF",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 84 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "9d779fae859553569d43be1b23f63ae4c16f52cb2b174533ab276313e5147adf"
+    },
+    {
+      "case": "reset_keeps_frame",
+      "why": "reset clears the slot but leaves the partial frame CRC in place",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 84 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "bff8122c7843f2b29729aa0de86d191f4b4112c4e91f1b512fc1edbefc148dac"
+    },
+    {
+      "case": "no_restart_after_last",
+      "why": "the byte after a frame end continues the old frame's CRC",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 2780 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "dac2d75ee027b50d93d7559751452d4410f2f9b71001c145b3bf9d125a6c4c72"
+    },
+    {
+      "case": "reflected_input_bits",
+      "why": "processes each byte LSB first (reflected input, as in CRC-16/KERMIT)",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 2826 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "01fc7b351c77d04fb096f73f279daae07e27e82fe6568d79334b455e87a050b4"
+    },
+    {
+      "case": "capture_while_blocked",
+      "why": "accepts a byte on in_valid alone, overwriting a stalled output and advancing the CRC",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 2162 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "ed8fcbd74d4abe14e51ffef5d95b1a33e111f32b5a6222c692acec1b17d96bda"
+    },
+    {
+      "case": "throughput_bubble",
+      "why": "ready ignores out_ready, so a full slot cannot retire and refill in one cycle",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 5397 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "fd282f1b4d4fce498c128ec36bcb708a51522e6d986bb5498c5df6431de7631e"
+    },
+    {
+      "case": "dropped_last_flag",
+      "why": "out_last never reports the frame end",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 392 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "d3b08c63eed4ba1c52002346e60de99306f96beffb5bcd6d674f5fb2e281a4b8"
+    },
+    {
+      "case": "valid_dropped_under_stall",
+      "why": "out_valid clears on an idle cycle even while out_ready is low",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 2060 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "8cfb17c207eadbe5a5a249501b0d65bab05afdc3179b40f623bfb0fea470dfeb"
+    },
+    {
+      "case": "asynchronous_reset",
+      "why": "an off-edge reset pulse clears the occupied slot",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 33 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "69865e6d6ac41fdd0406e593bc941addf1f9345f8dc1533dd4cbb52ed9778b46"
+    }
+  ],
+  "qualified": true
+}
