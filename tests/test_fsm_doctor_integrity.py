@@ -23,7 +23,7 @@ def trial(tmp_path, monkeypatch):
     parent = o.state.iter_dir(1)
     original = parent / "cand_standard"
     original.mkdir()
-    source = "module m(input clk, output y); assign y=0; endmodule"
+    source = "// @latency 0\nmodule m(input clk, output y); assign y=0; endmodule"
     (original / "m.v").write_text(source)
     (original / "timing.rpt").write_text("original timing report")
     tb = tmp_path / "tb.v"
@@ -67,7 +67,7 @@ def test_failed_surgery_never_overwrites_verified_candidate(trial, stage):
     if stage == "static":
         fsm.static_check.return_value = SimpleNamespace(passed=False)
     elif stage == "latency":
-        o.doctor.surgery.return_value = "// @latency 3\n" + o.doctor.surgery.return_value
+        o.doctor.surgery.return_value = o.doctor.surgery.return_value.replace("@latency 0", "@latency 3")
     elif stage == "sim":
         fsm.vivado.xsim_run.return_value = (False, "license unavailable", FailureKind.INFRA)
     elif stage == "synth":

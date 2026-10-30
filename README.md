@@ -324,7 +324,7 @@ read only from the environment and is never written to run files or logs.
 `python run.py doctor` reports whether the key is set.
 
 **Bring your own model.** To plug in any AI, name it in
-`llm/endpoints.local.yaml` (Git ignores it; copy
+`endpoints.local.yaml` at the repository root (Git ignores it; copy
 [`llm/endpoints.example.yaml`](llm/endpoints.example.yaml)) and pass
 `--model <endpoint>.<model>`. An endpoint is either an OpenAI-compatible URL,
 with an optional `api_key_env` naming the variable that holds its key, or a

@@ -1,0 +1,11 @@
+mode: build
+top: spi_master
+spec: design_spec.json
+tb: spi_master_tb.v
+generate_golden: false
+iterations: 3
+objective: minimize_luts
+target_freq_mhz: 100.0
+stresses: "cycle-exact multi-cycle serial protocol; parameter-dependent schedule; miso sample instant; single outstanding command; reset abort at every phase; trusted-testbench-only build path"
+pass_criteria:
+  timing_met: true

@@ -1,0 +1,23 @@
+[
+  {"name": "wrong_polynomial", "why": "uses the CRC-16/IBM polynomial 0x8005 instead of 0x1021",
+   "find": "16'h1021", "replace": "16'h8005"},
+  {"name": "reset_init_zero", "why": "reset starts the first frame from 0x0000 (XMODEM init) instead of 0xFFFF",
+   "find": "frame_crc <= 16'hFFFF; // frame_reset", "replace": "frame_crc <= 16'h0000; // frame_reset"},
+  {"name": "reset_keeps_frame", "why": "reset clears the slot but leaves the partial frame CRC in place",
+   "find": "frame_crc <= 16'hFFFF; // frame_reset", "replace": "frame_crc <= frame_crc; // frame_reset"},
+  {"name": "no_restart_after_last", "why": "the byte after a frame end continues the old frame's CRC",
+   "find": "frame_crc <= in_last ? 16'hFFFF : next_crc;", "replace": "frame_crc <= next_crc;"},
+  {"name": "reflected_input_bits", "why": "processes each byte LSB first (reflected input, as in CRC-16/KERMIT)",
+   "find": "c = crc_in ^ {data, 8'h00};",
+   "replace": "c = crc_in ^ {data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7], 8'h00};"},
+  {"name": "capture_while_blocked", "why": "accepts a byte on in_valid alone, overwriting a stalled output and advancing the CRC",
+   "find": "wire accept = in_valid && in_ready;", "replace": "wire accept = in_valid;"},
+  {"name": "throughput_bubble", "why": "ready ignores out_ready, so a full slot cannot retire and refill in one cycle",
+   "find": "assign in_ready = !out_valid || out_ready;", "replace": "assign in_ready = !out_valid;"},
+  {"name": "dropped_last_flag", "why": "out_last never reports the frame end",
+   "find": "out_last <= in_last;", "replace": "out_last <= 1'b0;"},
+  {"name": "valid_dropped_under_stall", "why": "out_valid clears on an idle cycle even while out_ready is low",
+   "find": "end else if (out_ready) begin", "replace": "end else begin"},
+  {"name": "asynchronous_reset", "why": "an off-edge reset pulse clears the occupied slot",
+   "find": "always @(posedge clk) begin", "replace": "always @(posedge clk or posedge rst) begin"}
+]

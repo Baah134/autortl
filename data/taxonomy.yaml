@@ -26,6 +26,14 @@ messages:
     meaning: "Static elaboration of the top design failed; the true cause is the preceding VRFC message"
     repair: "Repair the VRFC message reported before this one; this ID is only a wrapper"
     severity_override: null
+  "VRFC 10-4982":
+    meaning: "Verilog syntax error at the reported line"
+    repair: "Fix the construct at that line in plain Verilog-2001 (the harness compiles .v files); a common cause is indexing or part-selecting a concatenation such as {d, c, b, a}[sel*8 +: 8], which needs a named wire first; SystemVerilog-only syntax is another"
+    severity_override: null
+  "VRFC 10-8530":
+    meaning: "A module was ignored because of earlier compile errors in it"
+    repair: "Repair the earlier VRFC error in that module; this ID only reports the consequence"
+    severity_override: null
   "Common 17-53":
     meaning: "Harness queried design objects before opening a design during constraint-file generation"
     repair: "For No open design errors, fix Tcl execution order; preserve get_ports literally when writing XDC and do not mutate RTL"
@@ -83,6 +91,39 @@ harness_failures:
   golden_budget_long_period_examples:
     meaning: "A specification example longer than a few thousand cycles exhausted the golden worker's instruction budget, so a long-period serial design could not express full-frame anchors"
     repair: "Keep examples under the budget, about 2,000 cycles for a per-cycle UART model; check full frames at real timing with an independent qualified --tb"
+  backend_configuration_rough_edges:
+    meaning: "Found while documenting the new backends (Oct 29): model IDs with '/' were rejected; llm/endpoints.local.yaml sat inside the hashed llm/ folder, so editing it made resume refuse; the built-in openai backend's server and default model were not in the cohort; spec-repair feedback was cut to 1,800 characters; doctor required Codex even when another backend was configured; a malformed endpoints file raised after every bench entry had run; --jobs 0 crashed with a traceback"
+    repair: "Allow '/' in model aliases; default the endpoints file to the repository root, outside the harness identity; record the built-in openai server and model digest in the cohort; raise the feedback cap; make Codex optional in doctor when another backend is configured; guard endpoint loading in the runner; validate --jobs in argparse"
+  model_cli_binary_moved_by_update:
+    meaning: "The Codex desktop app replaced its versioned binary folder when it updated, so AUTORTL_CODEX_BIN pointed at a deleted file and every model call failed with 'worker could not launch' after a 13-minute test receipt (contract-campaign-23)"
+    repair: "Run run.py doctor before every gate so a missing model CLI fails in seconds; re-point AUTORTL_CODEX_BIN after an app update"
+  candidate_rtl_evades_simulation_gate:
+    meaning: "Nothing restricted system tasks, preprocessor directives, synthesis pragmas, hierarchical references, force/release or escaped identifiers in model-written RTL, so a candidate could print TEST PASSED itself, show simulation and synthesis different designs (`ifdef SYNTHESIS, translate_off), read the testbench's expected values, write files at model-chosen paths ($fopen), or hide a changed interface behind a decoy module header (whole-harness review, Oct 29; none of 466 archived model-produced RTL files used any of these)"
+    repair: "Reject, before any tool runs, model-written RTL containing system tasks, compiler directives other than `timescale, translate/pragma/synthesis comments, hierarchical identifiers, force/release or escaped identifiers"
+  triage_misreads_license_info_as_infra:
+    meaning: "Failure triage matched 'license' anywhere, and every Vivado synthesis log contains INFO [Common 17-349] Got license, so every synthesis failure, design or not, was classified as infrastructure: never repaired, retried, and able to end a run infra_blocked; model-controlled text could also steer the verdict (whole-harness review, Oct 29)"
+    repair: "Match infrastructure signatures only on ERROR or CRITICAL WARNING lines and tool metadata, never INFO lines or ordinary output; a tool-ID design error on an ERROR line takes precedence"
+  ladder_infra_blocked_missing_failure_kind:
+    meaning: "The optimize loop's infra_blocked returns carried no failure_kind, so those runs entered the curriculum history as failed entries (whole-harness review, Oct 29)"
+    repair: "Tag every infra_blocked and model_blocked outcome with failure_kind infra, and treat those statuses as infrastructure in the bench"
+  model_text_overflows_supervisor_parser:
+    meaning: "Deeply nested or very long model-written expressions made ast.parse in the supervisor raise MemoryError or RecursionError, outside every handled exception type, crashing the run in a way every resume replays (whole-harness review, Oct 29)"
+    repair: "Convert MemoryError and RecursionError from parsing model text into the ordinary validation error, and bound expression size before parsing"
+  doctor_surgery_skips_companion_gate:
+    meaning: "Timing-doctor surgery and baseline repairs were verified without the stale-companion check, so a rewrite that inlines a frozen companion could be graded against the stale companion file (whole-harness review, Oct 29)"
+    repair: "Apply the companion check to every model-written candidate path, including doctor surgery and repairs"
+  latency_annotation_deletion_skips_check:
+    meaning: "The latency check compared the candidate's @latency annotation only when one was present, so deleting the annotation skipped it for contracts with a known latency (whole-harness review, Oct 29)"
+    repair: "When the contract's latency is known, require the candidate to declare exactly that latency"
+  golden_sandbox_allocation_and_timeout_gaps:
+    meaning: "The golden sandbox did not charge copy() or slicing to its allocation cap and has no OS memory limit on Windows; decorators on nested functions were unchecked; and a golden timeout was fed back to the model as an oracle rejection, spending a repair attempt and replaying differently on resume (whole-harness review, Oct 29)"
+    repair: "Charge copies and slices to the allocation cap, reject decorators everywhere, and raise a distinct timeout that the harness treats as infrastructure"
+  generator_selects_from_concatenation:
+    meaning: "An optimization candidate part-selected a concatenation directly ({d, c, b, a}[sel * 8 +: 8]), which Verilog-2001 does not allow; xvlog failed (VRFC 10-4982) with no taxonomy hint and a repair call was spent (contract-campaign-20 mux4)"
+    repair: "Tell the generator the harness compiles plain Verilog-2001 and to name a concatenation in a wire before selecting from it; give VRFC 10-4982 and 10-8530 repair hints"
+  spec_prompt_omits_example_budget:
+    meaning: "The planner's spec prompt never stated the golden sandbox's per-example budget, so a prose request for a long-period design (tier3 uart_fifo_build: UART at DIV=868, a 8,680-cycle frame) invites full-frame examples the oracle cannot run (predicted by an offline pre-flight of tier2/tier3, not yet observed)"
+    repair: "State the limit in the spec prompt (after_cycles at or below 2000) and tell the planner to check an early part of long-period behavior in examples, leaving full frames to the generated and independent testbenches"
   fence_tag_drops_generated_modules:
     meaning: "A model fenced its Verilog with a tag other than lowercase verilog/systemverilog/sv (Verilog, v, SystemVerilog), so extraction fell back to the first module...endmodule span and silently dropped every later module of a multi-module answer"
     repair: "Match fence tags case-insensitively and accept v; then accept any fenced block that starts a module before falling back to raw spans; never return a partial multi-module answer as if complete"

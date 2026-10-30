@@ -68,7 +68,12 @@ def main(argv=None):
     p_bch = sub.add_parser("bench", parents=[common])
     p_bch.add_argument("--tier", type=int, required=True)
     p_bch.add_argument("--entries", nargs="+", help="run only named entries; never holds the full tier")
-    p_bch.add_argument("--jobs", type=int, default=1,
+    def positive(text):
+        value = int(text)
+        if value < 1:
+            raise argparse.ArgumentTypeError("must be at least 1")
+        return value
+    p_bch.add_argument("--jobs", type=positive, default=1,
                        help="run up to this many entries at once, as separate processes (default 1); not part of the cohort")
 
     p_doc = sub.add_parser("doctor", help="check Python, Vivado and the model CLI; runs no design")

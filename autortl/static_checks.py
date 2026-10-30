@@ -16,8 +16,42 @@ class StaticResult:
     errors: list[str]
 
 
+_ALLOWED_SYSTEM_FUNCTIONS = {"$signed", "$unsigned", "$clog2", "$bits"}
+
+
+def rtl_safety_violations(verilog: str) -> list[str]:
+    """Constructs model-written RTL may not use (candidate_rtl_evades_simulation_gate).
+
+    Each could let a candidate pass simulation without being tested, show
+    simulation and synthesis different designs, read the testbench, or write
+    files: system tasks (a candidate printing TEST PASSED), compiler directives
+    (`ifdef SYNTHESIS), pragma comments (translate_off), hierarchical
+    references (reading the testbench), force/release/deassign, defparam and
+    escaped identifiers (a decoy module header).
+    """
+    errs = []
+    comments = re.findall(r"//[^\n]*|/\*.*?\*/", verilog, flags=re.DOTALL)
+    if any(re.match(r"\s*(?:synthesis|pragma|synopsys)\b", c[2:].lstrip("*"), re.IGNORECASE) for c in comments):
+        errs.append("synthesis/pragma comment directives (translate_off and the like) are not allowed")
+    code = re.sub(r'"(?:\\.|[^"\\])*"', '""', strip_comments(verilog))
+    tasks = sorted(set(re.findall(r"\$[A-Za-z_]\w*", code)) - _ALLOWED_SYSTEM_FUNCTIONS)
+    if tasks:
+        errs.append("system tasks are not allowed in design RTL: " + ", ".join(tasks[:6]))
+    directives = sorted(set(re.findall(r"`([A-Za-z_]\w*)", code)) - {"timescale"})
+    if directives:
+        errs.append("compiler directives other than `timescale are not allowed: "
+                    + ", ".join("`" + d for d in directives[:6]))
+    if re.search(r"(?<![\w.$'])[A-Za-z_]\w*(?:\s*\[[^\]]*\])?\s*\.\s*[A-Za-z_\\]", code):
+        errs.append("hierarchical references (a.b) are not allowed in design RTL")
+    if re.search(r"\b(?:force|release|deassign|defparam)\b", code):
+        errs.append("force/release/deassign/defparam are not allowed in design RTL")
+    if re.search(r"\\\S", code):
+        errs.append("escaped identifiers are not allowed in design RTL")
+    return errs
+
+
 def check(verilog: str, contract: ModuleSpec | None = None) -> StaticResult:
-    errs: list[str] = []
+    errs: list[str] = rtl_safety_violations(verilog)
     src = _strip_comments(verilog)
 
     if not re.search(r"\bmodule\s+\w+", src):

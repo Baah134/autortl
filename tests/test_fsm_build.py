@@ -10,7 +10,7 @@ from autortl.triage import FailureKind
 from tests.test_fsm_resume import write_mock_tool_receipts
 
 ROOT = Path(__file__).resolve().parents[1]
-RTL = "module counter8_core(input clk,input rst,input enable,output reg [7:0] count); always @(posedge clk) if(rst) count<=0; else if(enable) count<=count+1'b1; endmodule"
+RTL = "// @latency 1\nmodule counter8_core(input clk,input rst,input enable,output reg [7:0] count); always @(posedge clk) if(rst) count<=0; else if(enable) count<=count+1'b1; endmodule"
 
 
 def create(tmp_path, monkeypatch, mutant_kind=FailureKind.DESIGN):

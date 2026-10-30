@@ -84,3 +84,8 @@ def test_a_spec_that_crashes_the_loader_is_repaired_and_the_planner_sees_it(tmp_
     assert o.run()["status"] == "done"
     feedback = planner.call_args_list[1].kwargs["feedback"]
     assert "spec JSON does not load" in feedback and broken in feedback
+
+
+def test_spec_prompt_states_the_example_budget():
+    # spec_prompt_omits_example_budget: the oracle sandbox cannot run full UART frames
+    assert "after_cycles at or below 2000" in prompts.SPEC_PROMPT

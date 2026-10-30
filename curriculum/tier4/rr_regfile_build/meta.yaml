@@ -1,0 +1,11 @@
+mode: build
+top: rr_regfile
+spec: design_spec.json
+tb: rr_regfile_tb.v
+generate_golden: true
+iterations: 2
+objective: minimize_luts
+target_freq_mhz: 100.0
+stresses: "two generated children; three explicit internal connections; round-robin fairness state; read-first register file; two-edge integrated write-to-read timing"
+pass_criteria:
+  timing_met: true

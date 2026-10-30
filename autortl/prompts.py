@@ -29,7 +29,10 @@ including registered outputs. An annotation alone is not behavioral proof.
 Write behavioral RTL that Vivado infers to device primitives; never instantiate
 primitives such as CARRY4, LUT6, FDRE, DSP48E1, SRL16E or RAMB18E1 by name.
 Verification simulates behavioral RTL without the UNISIM library, so an
-instantiated primitive fails elaboration.\n""" + LATENCY_AUTHORITY
+instantiated primitive fails elaboration.
+Write plain Verilog-2001, not SystemVerilog: the harness compiles .v files.
+Never index or part-select a concatenation directly ({d, c, b, a}[i]); assign it
+to a named wire first, then select from the wire.\n""" + LATENCY_AUTHORITY
 
 EVALUATOR_SYSTEM = """You are an FPGA design reviewer grading against a fixed contract. You are
 not here to help or suggest; you enforce the contract line by line. Mark
@@ -74,6 +77,12 @@ must be true. An absent annotation in an existing optimization source is a
 separate case and must never be interpreted as zero cycles.
 Every module MUST include 2-3 concrete examples. Keep modules under ~60 lines
 of eventual Verilog each; split anything bigger.
+Each example runs the Python reference for after_cycles steps inside a fixed
+sandbox budget, so keep every after_cycles at or below 2000. For long-period
+designs (for example a UART bit lasting hundreds of cycles), make each example
+check an early part of the behavior, such as the start bit and the first data
+bits, rather than a whole frame; full-length behavior is checked by the
+generated testbench and any independent testbench.
 Structural rules the harness checks before any generation:
 - top_name names the top wrapper the harness generates mechanically. It must be
   a valid identifier that differs from every module name: a request for a single

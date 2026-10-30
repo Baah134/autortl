@@ -123,10 +123,13 @@ def integer(expression: str, parameters: dict[str, int]) -> int:
             raise ValueError("unknown digits in width/parameter") from exc
     expression = re.sub(r"(\d+)'[sS]?([bBoOdDhH])([0-9a-fA-F_xXzZ?]+)", literal, expression)
     expression = expression.replace("$clog2", "clog2")
+    # model_text_overflows_supervisor_parser: bound model text before parsing it here.
+    if len(expression) > 512:
+        raise ValueError("integer expression too long")
     try:
         tree = ast.parse(expression.strip(), mode="eval")
-    except SyntaxError as exc:
-        raise ValueError(f"unsupported integer expression: {expression}") from exc
+    except (SyntaxError, MemoryError, RecursionError) as exc:
+        raise ValueError(f"unsupported integer expression: {expression[:120]}") from exc
     operations = {ast.Add: operator.add, ast.Sub: operator.sub, ast.Mult: operator.mul,
                   ast.LShift: operator.lshift, ast.RShift: operator.rshift,
                   ast.BitAnd: operator.and_, ast.BitOr: operator.or_, ast.BitXor: operator.xor,
@@ -178,9 +181,11 @@ def _dependencies(expression: str) -> set[str]:
 
 def _validate_expression(expression: str, names: set[str]) -> None:
     normalized = re.sub(r"\d+'[sS]?[bBoOdDhH][0-9a-fA-F_xXzZ?]+", "0", expression).replace("$clog2", "clog2")
+    if len(normalized) > 512:
+        raise ValueError("symbolic constant expression too long")
     try:
         tree = ast.parse(normalized.strip(), mode="eval")
-    except SyntaxError as exc:
+    except (SyntaxError, MemoryError, RecursionError) as exc:
         raise ValueError("unsupported symbolic constant expression") from exc
     allowed = (ast.Expression, ast.Constant, ast.Name, ast.Load, ast.UnaryOp, ast.UAdd,
                ast.USub, ast.Invert, ast.BinOp, ast.Add, ast.Sub, ast.Mult, ast.Div,

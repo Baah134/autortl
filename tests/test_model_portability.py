@@ -127,7 +127,7 @@ def test_orchestrator_hands_the_model_to_every_role(tmp_path):
     assert isinstance(orch.generator, Generator) and isinstance(orch.doctor, TimingDoctor)
 
 
-@pytest.mark.parametrize("bad", ["", "gpt 5", "--model", "a;b", "x" * 81, "../x", 5])
+@pytest.mark.parametrize("bad", ["", "gpt 5", "--model", "a;b", "x" * 121, "../x", 5])
 def test_model_alias_is_validated(bad):
     with pytest.raises(ValueError, match="model"):
         RunConfig(mode="optimize", model=bad).validate()

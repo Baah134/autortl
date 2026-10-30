@@ -154,8 +154,15 @@ def endpoint_checks():
 
 
 def run_checks(paths, root):
-    return [python_check(), *package_checks(), *tool_checks(paths), *model_check(), openai_check(),
-            *endpoint_checks(), workspace_check(root)]
+    others = [openai_check(), *endpoint_checks()]
+    codex = model_check()
+    if any(c.status == "OK" for c in others):
+        # Another backend is ready, so Codex is an option rather than a requirement.
+        for c in codex:
+            c.required = False
+            if c.status == "MISSING":
+                c.status = "WARN"
+    return [python_check(), *package_checks(), *tool_checks(paths), *codex, *others, workspace_check(root)]
 
 
 def render(checks):

@@ -1,0 +1,23 @@
+[
+  {"name": "rx_lsb_first", "why": "received bits shift in from the top, so the byte arrives bit-reversed",
+   "find": "rx_shift <= {rx_shift[6:0], miso};", "replace": "rx_shift <= {miso, rx_shift[7:1]};"},
+  {"name": "sample_on_falling_edge", "why": "MISO sampled when SCLK falls (mode 1 timing) instead of when it rises",
+   "find": "wire sample_now = busy && half_done && !sclk;", "replace": "wire sample_now = busy && half_done && sclk;"},
+  {"name": "half_period_one_long", "why": "each SCLK half period lasts HALF_PERIOD+1 clk cycles",
+   "find": "wire half_done = (tick == HALF_PERIOD - 1);", "replace": "wire half_done = (tick == HALF_PERIOD);"},
+  {"name": "parameter_ignored", "why": "hard-codes the default half period of 2 cycles",
+   "find": "wire half_done = (tick == HALF_PERIOD - 1);", "replace": "wire half_done = (tick == 2 - 1);"},
+  {"name": "mosi_shift_on_rise", "why": "MOSI advances at the rising SCLK edge, violating mode 0 data setup",
+   "find": "sclk <= 1'b1; // drive_rise",
+   "replace": "sclk <= 1'b1; mosi <= tx_shift[7]; tx_shift <= {tx_shift[6:0], 1'b0}; // drive_rise"},
+  {"name": "seven_bit_transfer", "why": "the transfer ends after 14 SCLK toggles, one bit short",
+   "find": "end else if (half == 5'd15) begin", "replace": "end else if (half == 5'd13) begin"},
+  {"name": "accept_while_response_held", "why": "cmd_ready ignores a held response, so a new transfer can start and overwrite it",
+   "find": "assign cmd_ready = !busy && !rsp_valid;", "replace": "assign cmd_ready = !busy;"},
+  {"name": "response_dropped_under_stall", "why": "rsp_valid clears after one cycle even while rsp_ready is low",
+   "find": "if (rsp_valid && rsp_ready) rsp_valid <= 1'b0;", "replace": "if (rsp_valid) rsp_valid <= 1'b0;"},
+  {"name": "reset_keeps_transfer", "why": "reset idles the bus pins but lets the transfer counter keep running",
+   "find": "busy <= 1'b0; // reset_busy", "replace": "busy <= busy; // reset_busy"},
+  {"name": "asynchronous_reset", "why": "an off-edge reset pulse aborts an active transfer",
+   "find": "always @(posedge clk) begin // spi_fsm", "replace": "always @(posedge clk or posedge rst) begin // spi_fsm"}
+]
