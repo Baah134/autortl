@@ -39,7 +39,7 @@ board. Every number links to an archived run.
   line you name in a local config file. The same tier0 bench passed on four
   different models, and the role parsers read each model's own output format
   ([model matrix](evidence/2026-10-29/model-matrix-01/README.md)).
-- **Reproducible by construction.** 1,689 regression tests, crash-safe
+- **Reproducible by construction.** 1,742 regression tests, crash-safe
   resumable runs, fixed model-call and tool-time budgets, per-run token
   accounting, and a CI audit that checks over 34,000 recorded SHA-256 claims
   against the committed bytes. Curriculum tier 0 is held: three consecutive
@@ -229,13 +229,23 @@ harness regenerated the transmitter from the revised spec, and it streamed
   legal idle traffic and off-edge reset pulses raised the generated
   testbenches' fault detection from 18 to 22 of 27 injected faults with no
   extra model calls, and the independent checker catches all 27.
-- **Candidates cannot game the tests.** A candidate that stops instantiating
-  a component the trusted testbench checks is rejected before any tool runs
+- **Candidates cannot game the tests.** Before any tool runs, model-written
+  RTL is rejected if it uses system tasks, preprocessor directives, synthesis
+  pragmas, hierarchical references or escaped identifiers, the constructs a
+  design could use to fake a pass or show simulation and synthesis different
+  logic. A candidate that stops instantiating a component the trusted
+  testbench checks is rejected too
   ([evidence](evidence/2026-10-29/harness-uart-tx-02/README.md)).
 - **Every check must catch a fault.** New checks ship with a deliberately
   broken design that they are required to fail.
-- **Independent review.** Harness changes are reviewed by a separate agent
-  before they merge, and each confirmed finding gets a regression test.
+- **Independent review.** Harness changes, and the harness as a whole, are
+  reviewed by separate agents; each confirmed finding gets a taxonomy entry
+  and a regression test before it is fixed.
+- **New tiers are qualified first.** Tier 4 (a CRC-16 stream, an SPI master
+  and a two-module arbiter with a register file) entered the curriculum only
+  after each independent testbench passed its reference design and caught all
+  ten planted faults
+  ([qualification](evidence/2026-10-29/tier4-qualification-01/README.md)).
 - **The evidence is audited.** CI checks every recorded SHA-256 claim, over
   34,000 of them, against the committed bytes
   ([audit](evidence/2026-10-28/evidence-integrity-01/README.md)).
