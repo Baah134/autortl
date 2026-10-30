@@ -1,0 +1,80 @@
+{
+  "stage": "iteration_1:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 1,
+    "instruction": "Replace the wrapper\u2019s direct output path with a depth-3 shift-register FIFO: store accepted payloads in order, drive `out_data` from the registered head, and shift the next word into the head on a pop when entries remain. Preserve synchronous active-high reset, no empty bypass, stable valid and payload during stalls, full simultaneous pop/push behavior, and one transfer per cycle; retain the matching `// @latency 1` annotation. Keep a `sync_fifo_core` instance in the top as required by the compilation boundary, but ensure the new top-level FIFO provides the externally observable behavior; do n",
+    "candidates": [
+      {
+        "iteration": 1,
+        "mutation": "standard",
+        "instruction": "Replace the wrapper\u2019s direct output path with a depth-3 shift-register FIFO: store accepted payloads in order, drive `out_data` from the registered head, and shift the next word into the head on a pop when entries remain. Preserve synchronous active-high reset, no empty bypass, stable valid and payload during stalls, full simultaneous pop/push behavior, and one transfer per cycle; retain the matching `// @latency 1` annotation. Keep a `sync_fifo_core` instance in the top as required by the compilation boundary, but ensure the new top-level FIFO provides the externally observable behavior; do n",
+        "generated_source_sha256": "493455d8cd9dfdb01aa031baaba19e63a71769034ae33c18335a8c2894b8e975",
+        "final_source_sha256": "493455d8cd9dfdb01aa031baaba19e63a71769034ae33c18335a8c2894b8e975",
+        "generated_code_hash": "8fe4c631a57ff581",
+        "final_code_hash": "8fe4c631a57ff581",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": false,
+          "wns_ns": -0.161,
+          "whs_ns": 0.023,
+          "lut_used": 21,
+          "ff_used": 26,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.013,
+          "total_power_w": 0.083
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\cand_standard\\synth.tcl",
+          "sha256": "fb90d49bcc97880f44f0c8052005b6298c8790266ed763668a0ed1e43299bc7e"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\cand_standard\\sync_fifo.v",
+          "sha256": "0e16378004a580ee19e53e414d8ce01f1de2ae0cb3af1d279afc249bda4c3e51"
+        }
+      }
+    ],
+    "doctor": {
+      "status": "ADOPTED",
+      "action": "tool_knobs",
+      "reason": "policy_improvement",
+      "tools_ran": true,
+      "measured_metrics": {
+        "sim_passed": true,
+        "timing_met": true,
+        "wns_ns": 0.063,
+        "whs_ns": 0.099,
+        "lut_used": 21,
+        "ff_used": 27,
+        "dsp_used": 0,
+        "bram_used": 0.0,
+        "dynamic_power_w": 0.013,
+        "total_power_w": 0.083
+      },
+      "adopted": true,
+      "input_source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\cand_standard\\sync_fifo.v",
+        "sha256": "0e16378004a580ee19e53e414d8ce01f1de2ae0cb3af1d279afc249bda4c3e51"
+      },
+      "trial_source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\doctor_tool_knobs_trial\\sync_fifo.v",
+        "sha256": "0e16378004a580ee19e53e414d8ce01f1de2ae0cb3af1d279afc249bda4c3e51"
+      },
+      "trial_flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\doctor_tool_knobs_trial\\synth.tcl",
+        "sha256": "fe42180f95dc3d87ca44d91e07f8ee683dc2493956a13a749bc608b6467ba228"
+      },
+      "identity_count": 3
+    },
+    "recommendation": "ACCEPT",
+    "is_best": true,
+    "selected_source_sha256": "493455d8cd9dfdb01aa031baaba19e63a71769034ae33c18335a8c2894b8e975"
+  },
+  "artifacts": {}
+}

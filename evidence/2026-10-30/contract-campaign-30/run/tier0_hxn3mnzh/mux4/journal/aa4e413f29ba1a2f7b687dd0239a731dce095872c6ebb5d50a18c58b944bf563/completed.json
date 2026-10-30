@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_1:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 1,
+    "instruction": "Replace the `case (sel)` data selection with a variable indexed 8-bit slice of `{d, c, b, a}`, using `sel` to choose the slice, while keeping the existing `if (rst) y <= 8'd0` priority and the same rising-edge register. Preserve all ports and the exact one-cycle registered behavior. Evaluate whether routed LUT use falls below 8; retain the candidate only if simulation, metric integrity, and both setup and hold gates pass.",
+    "candidates": [
+      {
+        "iteration": 1,
+        "mutation": "standard",
+        "instruction": "Replace the `case (sel)` data selection with a variable indexed 8-bit slice of `{d, c, b, a}`, using `sel` to choose the slice, while keeping the existing `if (rst) y <= 8'd0` priority and the same rising-edge register. Preserve all ports and the exact one-cycle registered behavior. Evaluate whether routed LUT use falls below 8; retain the candidate only if simulation, metric integrity, and both setup and hold gates pass.",
+        "generated_source_sha256": "d32eec3436bf8ebdd1843c3112a0ef32e01929396fab1d0b8629ae8fc821a1cc",
+        "final_source_sha256": "d32eec3436bf8ebdd1843c3112a0ef32e01929396fab1d0b8629ae8fc821a1cc",
+        "generated_code_hash": "d97f0250a07e2511",
+        "final_code_hash": "d97f0250a07e2511",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.579,
+          "whs_ns": 0.046,
+          "lut_used": 8,
+          "ff_used": 8,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.04,
+          "total_power_w": 0.111
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\contract-campaign-30\\tier0_hxn3mnzh\\mux4\\iter_001\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\contract-campaign-30\\tier0_hxn3mnzh\\mux4\\iter_001\\cand_standard\\synth.tcl",
+          "sha256": "42b86a44d713727337c52cbd040eca6da7d259427aa833438e0ef9687bca9ef0"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\contract-campaign-30\\tier0_hxn3mnzh\\mux4\\iter_001\\cand_standard\\mux4.v",
+          "sha256": "cfadccd16a3e3dffa1db62ca3c7e360084777c618097e94acfa8057fdbec0e2c"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": "d32eec3436bf8ebdd1843c3112a0ef32e01929396fab1d0b8629ae8fc821a1cc"
+  },
+  "artifacts": {}
+}

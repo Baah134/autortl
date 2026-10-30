@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_3:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 3\n## Contract check\n- Deterministic correctness ladder: PASS \u2014 standard ladder reports 5 rungs ALIVE.\n- Top latency annotation: PASS \u2014 `// @latency 1` matches the authoritative current-top latency.\n- Compile, elaboration, and simulation gates: PASS \u2014 required tool exits are successful and the fixed testbench reports `TEST PASSED`.\n- Routed metric evidence: PASS \u2014 retained routed timing and utilization reports are present; the process exit gate passed.\n- Timing feasibility: FAIL \u2014 setup WNS is -3.797 ns, below 0; hold WHS is +0.100 ns.\n- Improvement over previous best: FAIL \u2014 WNS improved from -9.918 ns, but the candidate remains timing-infeasible; `improvement_kind` is null and no timing recovery is established.\n## Summary\n- Passed: 4 of 6\n- Failed: 2 of 6\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes the correctness ladder, annotation, tool, simulation, and evidence checks, but fails mandatory setup timing. Its better WNS does not qualify as a promotion because both the candidate and previous best are timing-infeasible, and the evidence records no accepted improvement. Stall count is 2, below the RESTART threshold.",
+      "recommendation": "REJECT",
+      "passed": 4,
+      "failed": 2
+    }
+  },
+  "artifacts": {}
+}

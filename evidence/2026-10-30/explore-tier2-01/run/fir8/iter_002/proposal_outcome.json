@@ -1,0 +1,77 @@
+{
+  "candidates": [
+    {
+      "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\fir8\\iter_002\\cand_standard",
+      "cache_hit": false,
+      "final_code_hash": "62a35729ea46e798",
+      "final_source_sha256": "39437e62df16bd726b1309e00f3225ae3bef2426743a9677f3bc5bf6a649ab03",
+      "flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\fir8\\iter_002\\cand_standard\\synth.tcl",
+        "sha256": "399554a5278b83329da119b0a3ab95558dce2975370c3e41ca19962ee5fe8da9"
+      },
+      "generated_code_hash": "62a35729ea46e798",
+      "generated_source_sha256": "39437e62df16bd726b1309e00f3225ae3bef2426743a9677f3bc5bf6a649ab03",
+      "instruction": "Keep the ports, parameters, `// @latency 1`, delay registers, reset logic, and `sum_pipe0`, `sum_pipe1`, and `y_out` cycle assignments unchanged. Replace only the eight-term expression feeding `sum_pipe0` with explicitly signed 32-bit product terms and a balanced pairwise addition tree, preserving the existing 32-bit result semantics for every supported coefficient value. This changes the combinational structure without adding pipeline stages; judge it only by the unchanged verification gates and routed timing evidence.",
+      "iteration": 2,
+      "metrics": {
+        "bram_used": 0.0,
+        "dsp_used": 5,
+        "dynamic_power_w": 0.077,
+        "ff_used": 224,
+        "lut_used": 150,
+        "sim_passed": true,
+        "timing_met": false,
+        "total_power_w": 0.147,
+        "whs_ns": 0.151,
+        "wns_ns": -10.304
+      },
+      "mutation": "standard",
+      "reason": "",
+      "rungs": 5,
+      "source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\fir8\\iter_002\\cand_standard\\fir8.v",
+        "sha256": "1ab2c355171aa2090a1a980adef4cd05bf359508a15e8979fd3a45a4649c7ff8"
+      },
+      "status": "measured"
+    }
+  ],
+  "doctor": {
+    "action": "rtl_surgery",
+    "adopted": false,
+    "identity_count": 3,
+    "input_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\fir8\\iter_002\\cand_standard\\fir8.v",
+      "sha256": "1ab2c355171aa2090a1a980adef4cd05bf359508a15e8979fd3a45a4649c7ff8"
+    },
+    "measured_metrics": {
+      "bram_used": 0.0,
+      "dsp_used": 3,
+      "dynamic_power_w": 0.075,
+      "ff_used": 236,
+      "lut_used": 249,
+      "sim_passed": true,
+      "timing_met": false,
+      "total_power_w": 0.146,
+      "whs_ns": 0.077,
+      "wns_ns": -2.752
+    },
+    "proposed_source_text_sha256": "d72e1436de9e9779ba54c8e97eb956c3f70304903b856be7da8c8835103d217c",
+    "reason": "timing_not_closed",
+    "status": "NOT_ADOPTED",
+    "tools_ran": true,
+    "trial_flow_script": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\fir8\\iter_002\\doctor_rtl_surgery_trial\\synth.tcl",
+      "sha256": "3a9cc233e3587be993c71f0f1e9a4fda226a3c121cb9142dfe744e1a93f093ed"
+    },
+    "trial_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\fir8\\iter_002\\doctor_rtl_surgery_trial\\fir8.v",
+      "sha256": "f9f9c08f54e24298ad873d6c175fcbeece42def87f8d72fce8fea52cb287370e"
+    }
+  },
+  "instruction": "Keep the ports, parameters, `// @latency 1`, delay registers, reset logic, and `sum_pipe0`, `sum_pipe1`, and `y_out` cycle assignments unchanged. Replace only the eight-term expression feeding `sum_pipe0` with explicitly signed 32-bit product terms and a balanced pairwise addition tree, preserving the existing 32-bit result semantics for every supported coefficient value. This changes the combinational structure without adding pipeline stages; judge it only by the unchanged verification gates and routed timing evidence.",
+  "is_best": false,
+  "iteration": 2,
+  "recommendation": "REJECT",
+  "schema_version": 1,
+  "selected_source_sha256": "39437e62df16bd726b1309e00f3225ae3bef2426743a9677f3bc5bf6a649ab03"
+}

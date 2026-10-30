@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_4:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 4\n## Contract check\n- Ports, parameters, reset, and observable cycle behavior: PASS \u2014 interface and registered pipeline are preserved; the default-coefficient path is guarded and other parameter values retain the original expression.\n- Top latency annotation: PASS \u2014 `// @latency 1` matches the authoritative latency.\n- Static/interface checks, compilation, and elaboration: PASS \u2014 ladder reports 5 rungs ALIVE; xvlog and xelab exited successfully.\n- Simulation: PASS \u2014 unchanged testbench reports `TEST PASSED`.\n- Routed reports, metric integrity, and tool exits: PASS \u2014 retained routed reports are present and the process exit gate passed.\n- Setup timing: FAIL \u2014 WNS is \u22122.766 ns and `timing_met=false`.\n- Hold timing: PASS \u2014 WHS is +0.151 ns.\n- Promotion and objective: FAIL \u2014 timing feasibility is required before promotion; the candidate remains infeasible, and no accepted improvement is recorded.\n## Summary\n- Passed: 6 of 8\n- Failed: 2 of 8\n- Improved over previous best: NO\n## Recommendation\nRESTART\n## Reason\nThe candidate improves WNS from \u22129.918 ns to \u22122.766 ns and passes simulation, but negative setup slack means it cannot replace the known timing-infeasible previous best or satisfy the maximize-frequency promotion gate. The stall count is 3, so the recommendation is RESTART.",
+      "recommendation": "REJECT",
+      "passed": 6,
+      "failed": 2
+    }
+  },
+  "artifacts": {}
+}

@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_2:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 2,
+    "instruction": "In `skid_buffer`, replace the two-bit `occupancy` state and its case-based updates with `head_valid` and `tail_valid` bits, deriving `out_valid` from their OR and preserving the specified combinational `in_ready` rule. Update the existing head and tail registers for empty push, single-entry push/pop, and full simultaneous pop/push so data order, stall stability, and one-cycle minimum transfer age remain unchanged. Keep synchronous active-high reset behavior and `// @latency 1`; aim for fewer than 15 routed LUTs, and retain the candidate only if all gates pass with WNS and WHS at least zero.",
+    "candidates": [
+      {
+        "iteration": 2,
+        "mutation": "standard",
+        "instruction": "In `skid_buffer`, replace the two-bit `occupancy` state and its case-based updates with `head_valid` and `tail_valid` bits, deriving `out_valid` from their OR and preserving the specified combinational `in_ready` rule. Update the existing head and tail registers for empty push, single-entry push/pop, and full simultaneous pop/push so data order, stall stability, and one-cycle minimum transfer age remain unchanged. Keep synchronous active-high reset behavior and `// @latency 1`; aim for fewer than 15 routed LUTs, and retain the candidate only if all gates pass with WNS and WHS at least zero.",
+        "generated_source_sha256": "d1ab365144e84db220d814d7742580849677dadb2744aef05d4cc3d9f7198607",
+        "final_source_sha256": "d1ab365144e84db220d814d7742580849677dadb2744aef05d4cc3d9f7198607",
+        "generated_code_hash": "cb1be8ea712c5a92",
+        "final_code_hash": "cb1be8ea712c5a92",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.036,
+          "whs_ns": 0.195,
+          "lut_used": 12,
+          "ff_used": 18,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.013,
+          "total_power_w": 0.083
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\skid_buffer_build\\iter_002\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\skid_buffer_build\\iter_002\\cand_standard\\synth.tcl",
+          "sha256": "8c6f267533ee4d532e07758838cb269baa5af162832d918d338c56efc81891cd"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\skid_buffer_build\\iter_002\\cand_standard\\skid_buffer.v",
+          "sha256": "fe343280e79066f5ee916636cc3a4642467dddc935cd0818a9dab919574f2536"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "ACCEPT",
+    "is_best": true,
+    "selected_source_sha256": "d1ab365144e84db220d814d7742580849677dadb2744aef05d4cc3d9f7198607"
+  },
+  "artifacts": {}
+}

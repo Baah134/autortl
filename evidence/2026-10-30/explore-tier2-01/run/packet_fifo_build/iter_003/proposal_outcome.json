@@ -1,0 +1,77 @@
+{
+  "candidates": [
+    {
+      "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\packet_fifo_build\\iter_003\\cand_standard",
+      "cache_hit": false,
+      "final_code_hash": "45eb86a4c4f46e99",
+      "final_source_sha256": "f6b98125f06e6e05bc16322e223005453126d452a0a97787f672399ad90f31ca",
+      "flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\packet_fifo_build\\iter_003\\cand_standard\\synth.tcl",
+        "sha256": "3a175f33edc3f60b809906be75f977169d8b86516e15def08e5634bd8ba439e9"
+      },
+      "generated_code_hash": "45eb86a4c4f46e99",
+      "generated_source_sha256": "f6b98125f06e6e05bc16322e223005453126d452a0a97787f672399ad90f31ca",
+      "instruction": "In the top-level FIFO control, replace the registered `tail_write_ptr` and its reset, toggle, and write-address uses with a combinational address derived as `tail_read_ptr ^ (occupancy == 2'd2)`. Preserve the existing head/tail data updates, occupancy transitions, synchronous reset behavior, direct ready/valid behavior, and minimum transfer age; this address relation must hold for every reachable occupancy and simultaneous push/pop case. Keep the `packet_fifo_core` instance and its connections unchanged, and retain `// @latency 1`. This is a LUT objective experiment: promote only if all fixed ",
+      "iteration": 3,
+      "metrics": {
+        "bram_used": 0.0,
+        "dsp_used": 0,
+        "dynamic_power_w": 0.014,
+        "ff_used": 12,
+        "lut_used": 23,
+        "sim_passed": true,
+        "timing_met": false,
+        "total_power_w": 0.084,
+        "whs_ns": 0.095,
+        "wns_ns": -0.104
+      },
+      "mutation": "standard",
+      "reason": "",
+      "rungs": 5,
+      "source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\packet_fifo_build\\iter_003\\cand_standard\\packet_fifo.v",
+        "sha256": "2b67a6337b39adf47aa65de4d9ed89eed92ba48b07a70e46a0c2500547fd2429"
+      },
+      "status": "measured"
+    }
+  ],
+  "doctor": {
+    "action": "rtl_surgery",
+    "adopted": false,
+    "identity_count": 3,
+    "input_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\packet_fifo_build\\iter_003\\cand_standard\\packet_fifo.v",
+      "sha256": "2b67a6337b39adf47aa65de4d9ed89eed92ba48b07a70e46a0c2500547fd2429"
+    },
+    "measured_metrics": {
+      "bram_used": 0.0,
+      "dsp_used": 0,
+      "dynamic_power_w": 0.014,
+      "ff_used": 13,
+      "lut_used": 27,
+      "sim_passed": true,
+      "timing_met": false,
+      "total_power_w": 0.084,
+      "whs_ns": 0.033,
+      "wns_ns": -0.052
+    },
+    "proposed_source_text_sha256": "cd9b5af74aea0bbc4b82bb575a2317d944621d28347205d17e88cc4f1632daea",
+    "reason": "timing_not_closed",
+    "status": "NOT_ADOPTED",
+    "tools_ran": true,
+    "trial_flow_script": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\packet_fifo_build\\iter_003\\doctor_rtl_surgery_trial\\synth.tcl",
+      "sha256": "27ceb91e09367e4908cd84ff362cc83336093b510b16e9c083220d4306b462dd"
+    },
+    "trial_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\packet_fifo_build\\iter_003\\doctor_rtl_surgery_trial\\packet_fifo.v",
+      "sha256": "74157d786abc51b5f4b0e652d73dc9cabd1f175dfddce1841da3290faed9472d"
+    }
+  },
+  "instruction": "In the top-level FIFO control, replace the registered `tail_write_ptr` and its reset, toggle, and write-address uses with a combinational address derived as `tail_read_ptr ^ (occupancy == 2'd2)`. Preserve the existing head/tail data updates, occupancy transitions, synchronous reset behavior, direct ready/valid behavior, and minimum transfer age; this address relation must hold for every reachable occupancy and simultaneous push/pop case. Keep the `packet_fifo_core` instance and its connections unchanged, and retain `// @latency 1`. This is a LUT objective experiment: promote only if all fixed ",
+  "is_best": false,
+  "iteration": 3,
+  "recommendation": "REJECT",
+  "schema_version": 1,
+  "selected_source_sha256": "f6b98125f06e6e05bc16322e223005453126d452a0a97787f672399ad90f31ca"
+}

@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Interface and cycle behavior: PASS \u2014 Ports and parameters are preserved. Removing the unused `prev_count` and `count_next` registers does not change observable behavior; reset, load, enable, overflow, and registered flags retain their defined cycles.\n- Top latency annotation: PASS \u2014 Authoritative latency is unknown, so no numeric top annotation is required.\n- Compilation and simulation: PASS \u2014 Required tool exits succeeded, and the fixed testbench reported `TEST PASSED`.\n- Routed metrics and timing feasibility: PASS \u2014 Retained routed metrics show 55 LUTs, setup WNS 0.494 ns, hold WHS 0.113 ns, and `timing_met=true`.\n- Objective and promotion: FAIL \u2014 Both candidate and previous best use 55 LUTs and are timing-feasible. The `minimize_luts` objective requires strictly fewer LUTs for promotion.\n\n## Summary\n- Passed: 4 of 5\n- Failed: 1 of 5\n- Improved over previous best: NO\n\n## Recommendation\nREJECT\n\n## Reason\nThe candidate preserves the defined behavior and passes the deterministic verification and timing gates, but it does not reduce LUT usage from the previous best. Since both designs are timing-feasible, equal LUT usage fails the required strict objective improvement.",
+      "recommendation": "REJECT",
+      "passed": 4,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

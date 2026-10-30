@@ -1,0 +1,78 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025
+| Date         : Fri Oct 30 11:00:31 2026
+| Host         : Baah running 64-bit major release  (build 9200)
+| Command      : report_timing -from [all_registers] -to [all_registers] -max_paths 1 -file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier2-01/fir8/iter_003/doctor_rtl_surgery_trial/timing_reg2reg.rpt
+| Design       : fir8
+| Device       : 7a35t-cpg236
+| Speed File   : -1  PRODUCTION 1.23 2018-06-13
+| Design State : Routed
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Timing Report
+
+Slack (VIOLATED) :        -3.797ns  (required time - arrival time)
+  Source:                 gen_symmetric.full_prod2/CLK
+                            (rising edge-triggered cell DSP48E1 clocked by clk  {rise@0.000ns fall@3.333ns period=6.667ns})
+  Destination:            sum_pipe0_reg/PCIN[0]
+                            (rising edge-triggered cell DSP48E1 clocked by clk  {rise@0.000ns fall@3.333ns period=6.667ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            6.667ns  (clk rise@6.667ns - clk rise@0.000ns)
+  Data Path Delay:        8.997ns  (logic 8.991ns (99.933%)  route 0.006ns (0.067%))
+  Logic Levels:           2  (DSP48E1=2)
+  Clock Path Skew:        -0.032ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    4.290ns = ( 10.957 - 6.667 ) 
+    Source Clock Delay      (SCD):    4.656ns
+    Clock Pessimism Removal (CPR):    0.335ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+    M18                                               0.000     0.000 r  clk (IN)
+                         net (fo=0)                   0.000     0.000    clk
+    M18                  IBUF (Prop_ibuf_I_O)         0.938     0.938 r  clk_IBUF_inst/O
+                         net (fo=1, routed)           1.972     2.910    clk_IBUF
+    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.096     3.006 r  clk_IBUF_BUFG_inst/O
+                         net (fo=164, routed)         1.651     4.656    clk_IBUF_BUFG
+    DSP48_X0Y6           DSP48E1                                      r  gen_symmetric.full_prod2/CLK
+  -------------------------------------------------------------------    -------------------
+    DSP48_X0Y6           DSP48E1 (Prop_dsp48e1_CLK_PCOUT[47])
+                                                      5.565    10.221 r  gen_symmetric.full_prod2/PCOUT[47]
+                         net (fo=1, routed)           0.002    10.223    gen_symmetric.full_prod2_n_106
+    DSP48_X0Y7           DSP48E1 (Prop_dsp48e1_PCIN[47]_PCOUT[47])
+                                                      1.713    11.936 r  sum_comb/PCOUT[47]
+                         net (fo=1, routed)           0.002    11.938    sum_comb_n_106
+    DSP48_X0Y8           DSP48E1 (Prop_dsp48e1_PCIN[47]_PCOUT[0])
+                                                      1.713    13.651 r  sum_comb__0/PCOUT[0]
+                         net (fo=1, routed)           0.002    13.653    sum_comb__0_n_153
+    DSP48_X0Y9           DSP48E1                                      r  sum_pipe0_reg/PCIN[0]
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        6.667     6.667 r  
+    M18                                               0.000     6.667 r  clk (IN)
+                         net (fo=0)                   0.000     6.667    clk
+    M18                  IBUF (Prop_ibuf_I_O)         0.805     7.472 r  clk_IBUF_inst/O
+                         net (fo=1, routed)           1.868     9.340    clk_IBUF
+    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.091     9.431 r  clk_IBUF_BUFG_inst/O
+                         net (fo=164, routed)         1.526    10.957    clk_IBUF_BUFG
+    DSP48_X0Y9           DSP48E1                                      r  sum_pipe0_reg/CLK
+                         clock pessimism              0.335    11.291    
+                         clock uncertainty           -0.035    11.256    
+    DSP48_X0Y9           DSP48E1 (Setup_dsp48e1_CLK_PCIN[0])
+                                                     -1.400     9.856    sum_pipe0_reg
+  -------------------------------------------------------------------
+                         required time                          9.856    
+                         arrival time                         -13.653    
+  -------------------------------------------------------------------
+                         slack                                 -3.797    
+
+
+
+

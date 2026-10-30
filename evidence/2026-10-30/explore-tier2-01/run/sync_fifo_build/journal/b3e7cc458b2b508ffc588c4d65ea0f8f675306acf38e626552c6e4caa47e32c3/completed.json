@@ -1,0 +1,5 @@
+{
+  "stage": "module_sync_fifo_core:model:generator.golden_model:0",
+  "result": "def init():\n    return dict()\n\ndef step(state, inputs):\n    outputs = dict()\n    if inputs.get(\"rst\", 0):\n        outputs[\"out_data\"] = 0\n        return init(), outputs\n    outputs[\"out_data\"] = int(inputs.get(\"in_data\", 0)) & 255\n    return state, outputs",
+  "artifacts": {}
+}

@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_3:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 3\n## Contract check\n- FIFO behavior: PASS \u2014 deterministic simulation passed the required scenarios, including stalls, reset, transfers, and parameterized child configurations.\n- Interface and latency: PASS \u2014 top ports match the contract, and `// @latency 1` matches the authoritative latency.\n- Tool and simulation gates: PASS \u2014 xvlog, xelab, xsim, and Vivado exited successfully; simulation reported `TEST PASSED` and synthesis reported `SYNTH_COMPLETE`.\n- Metric integrity: PASS \u2014 routed reports are retained, and the reported metrics are consistent.\n- Timing feasibility: FAIL \u2014 setup WNS is \u22120.104 ns and `timing_met=false`; positive hold slack does not satisfy the setup gate.\n- Improvement over previous best: FAIL \u2014 the previous best is timing-feasible, so this is not timing recovery; LUTs are unchanged at 23, and no strict objective gain is recorded.\n## Summary\n- Passed: 4 of 6\n- Failed: 2 of 6\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes behavioral, interface, tool, and report checks, but fails mandatory setup timing. It cannot replace the timing-feasible previous best, and it shows no strict LUT improvement.",
+      "recommendation": "REJECT",
+      "passed": 4,
+      "failed": 2
+    }
+  },
+  "artifacts": {}
+}

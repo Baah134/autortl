@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_1:decision:instruction:0",
+  "result": "Replace the `skid_buffer_core` instance with inline two-entry FIFO logic using head and tail data registers plus occupancy state; assign `out_data` directly from the head register. On a pop from a full queue, shift the tail into the head; on simultaneous pop and push from a one-entry queue, load the new input into the head, and on simultaneous pop and push from a full queue, shift the tail to the head and load the input into the tail. Preserve the combinational ready rule, valid behavior, synchronous active-high reset priority, transfer timing, stall stability, and `// @latency 1`; data while invalid remains unspecified.",
+  "artifacts": {}
+}

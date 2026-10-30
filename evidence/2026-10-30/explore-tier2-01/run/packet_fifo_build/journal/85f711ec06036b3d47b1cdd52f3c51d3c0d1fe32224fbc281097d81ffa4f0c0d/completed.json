@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_2:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 2\n## Contract check\n- Interface, frozen child instantiation, and defined FIFO behavior: PASS \u2014 the candidate preserves the top interface, instantiates `packet_fifo_core`, and the authoritative ladder reports ALIVE; the fixed temporal testbench passes.\n- Top latency annotation: PASS \u2014 `// @latency 1` matches the authoritative known latency of 1.\n- Compile and simulation gates: PASS \u2014 xvlog, xelab, and xsim exited successfully; the required `TEST PASSED` verdict is present.\n- Routed report and metric integrity: PASS \u2014 retained routed reports and successful synthesis evidence support the reported measurements.\n- Timing feasibility: PASS \u2014 timing_met is true, WNS is 0.069 ns, and WHS is 0.079 ns.\n- LUT objective: PASS \u2014 LUTs fell from 28 to 23 versus the timing-feasible previous best, a strict improvement for `minimize_luts`.\n- Deterministic promotion gates: PASS \u2014 the supplied evidence satisfies the required verification and promotion gates.\n## Summary\n- Passed: 7 of 7\n- Failed: 0 of 7\n- Improved over previous best: YES\n## Recommendation\nACCEPT\n## Reason\nThe candidate passes the authoritative behavioral and tool gates, meets setup and hold timing requirements, and strictly reduces LUT usage versus the timing-feasible previous best.",
+      "recommendation": "ACCEPT",
+      "passed": 7,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}
