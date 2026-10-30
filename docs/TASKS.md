@@ -775,3 +775,25 @@ register-to-register metric beside the unchanged acceptance timing.
    (`reg2reg_wns_ns`, guarded because report_timing errors with no
    registers), shown to the planner and evaluator as advisory. For the
    31-LUT counter: WNS +0.126 ns, register-to-register +1.460 ns.
+## October29 evening (Claude Code): next batch, from the docs review
+
+Found while documenting the day's features (docs subagent). To land with the
+whole-harness review fixes on claude/tier2-prep, taxonomy entries first:
+
+1. RunConfig.model rejects "/" so hosted IDs like `meta-llama/...` cannot be
+   pinned; allow it (still a single argv element, never a path).
+2. A mistyped endpoint prefix (`olama.x`) or an unreadable endpoints file
+   silently routes to Codex; the runner's end-of-campaign `endpoints.load()`
+   is unguarded.
+3. The built-in openai backend's base URL and AUTORTL_OPENAI_MODEL are not in
+   the cohort.
+4. Per-entry runtime_identity always says unobserved_cli_default.
+5. `llm/endpoints.local.yaml` sits inside the hashed `llm/` folder, so editing
+   it makes resume refuse; move the default outside the harness identity.
+6. Spec-repair feedback is cut to 1,800 characters by make_spec although
+   _run_build passes up to 6,000.
+7. Command endpoints report no tokens (zero in budget.json).
+8. doctor marks Codex as required even when another backend is configured.
+9. maximize_freq still ranks on the I/O-dominated WNS.
+10. A crashed bench leaves results.jsonl.lock (exit 3 until deleted by hand).
+11. `--jobs 0` raises a traceback instead of an argparse error.
