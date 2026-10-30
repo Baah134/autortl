@@ -815,3 +815,10 @@ not. Options: adopt it as written; require the companion instance to be live
 (connected to top outputs) and keep the top-level checks; or split such
 testbenches into a top-only bench plus a separate child qualification.
 Decide before tier2 to tier4 campaigns.
+**Decided (October30): the middle option.** A testbench-tested companion must
+keep a live instance in the candidate: unconditional (not in generate,
+if/else, case, for or begin/end) with at least one output reaching a top
+output, checked lexically. Over the archive it rejects 0 candidates beyond the
+existing inlining rule (26 optimized candidates; 190 files in a broader sweep)
+and every mechanical baseline top passes, while it closes the dead or
+disconnected instance bypass. Branch live-companion (709f2561).
