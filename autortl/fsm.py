@@ -663,7 +663,7 @@ class Orchestrator:
             for attempt in range(self.cfg.max_fix_attempts + 1):
                 result = static_check(source, contract)
                 latency = declared_latency(source, contract.name) if result.passed else None
-                if not result.passed or (getattr(contract, "latency_known", True) and latency is not None and latency != contract.latency):
+                if not result.passed or (getattr(contract, "latency_known", True) and latency != contract.latency):
                     break
                 if "`timescale" not in source:
                     source = "`timescale 1ns/1ps\n" + source
@@ -904,7 +904,7 @@ class Orchestrator:
                     self._snapshot(phase="INFRA_BLOCKED", iteration=it, best_iteration=best_iter)
                     state.append_event({"stage": "candidate_ladder", "iteration": it,
                                         "outcome": "infra_blocked"}, event_id=f"infra:{it}")
-                    return {"status": "infra_blocked", "iteration": it,
+                    return {"status": "infra_blocked", "failure_kind": FailureKind.INFRA.value, "iteration": it,
                             "best_iteration": best_iter, "best_metrics": best_m.to_dict(),
                             "run_dir": str(state.run_dir)}
                 proposal_records.append(self._proposal_evidence(idir, "outcome", {
@@ -939,7 +939,7 @@ class Orchestrator:
                         state.append_event({"stage": "doctor_verification_lineage", "iteration": it,
                                             "outcome": "infra_blocked", "reason": str(exc)},
                                            event_id=f"doctor-evidence:{it}")
-                        return {"status": "infra_blocked", "iteration": it,
+                        return {"status": "infra_blocked", "failure_kind": FailureKind.INFRA.value, "iteration": it,
                                 "best_iteration": best_iter, "best_metrics": best_m.to_dict(),
                                 "evidence_failure": [str(exc)], "run_dir": str(state.run_dir)}
                     if trial is not None:
@@ -988,7 +988,7 @@ class Orchestrator:
                 state.append_event({"stage": "process_exit_gate", "iteration": it,
                                     "outcome": "infra_blocked", "reasons": receipt_gate["reasons"]},
                                    event_id=f"exit-evidence:{it}")
-                return {"status": "infra_blocked", "iteration": it,
+                return {"status": "infra_blocked", "failure_kind": FailureKind.INFRA.value, "iteration": it,
                         "best_iteration": best_iter, "best_metrics": best_m.to_dict(),
                         "evidence_failure": receipt_gate["reasons"], "run_dir": str(state.run_dir)}
             ev = self._model("evaluator", "evaluate", it, contract_md, ladder_summary, wm,
@@ -1187,7 +1187,7 @@ class Orchestrator:
                 candidate.alive = False
                 candidate.fail_reason = "; ".join(checked.errors[:3])
                 return
-            if getattr(contract, "latency_known", True) and latency is not None and latency != contract.latency:
+            if getattr(contract, "latency_known", True) and latency != contract.latency:
                 candidate.alive = False
                 candidate.fail_reason = f"declared @latency {latency} != contract {contract.latency} (spec is law)"
                 return
@@ -1296,8 +1296,11 @@ class Orchestrator:
             if not static_check(source, contract).passed:
                 return finish("static_or_interface_violation")
             latency = declared_latency(source, self.cfg.top_module)
-            if getattr(contract, "latency_known", True) and latency is not None and latency != contract.latency:
+            if getattr(contract, "latency_known", True) and latency != contract.latency:
                 return finish("latency_violation")
+            if companions.violation(source, self.cfg.top_module, extra, tb):
+                # doctor_surgery_skips_companion_gate: never grade against a stale companion.
+                return finish("companion_violation")
             if (source == original_source and verification_dir is not None and
                     self._doctor_default_flow(Path(verification_dir), original_source, extra, tb)):
                 feedback["input_source"] = file_evidence(Path(verification_dir) / f"{self.cfg.top_module}.v", 1000)
@@ -1442,7 +1445,7 @@ class Orchestrator:
             checked = static_check(repaired, original_contract)
             latency = declared_latency(repaired, original_contract.name) if checked.passed else None
             if not checked.passed or (
-                    getattr(original_contract, "latency_known", True) and latency is not None and latency != original_contract.latency):
+                    getattr(original_contract, "latency_known", True) and latency != original_contract.latency):
                 m.sim_passed = False
                 m.sim_error = "Repair violated static/interface/latency contract"
                 self._last_flow_failure_kind = FailureKind.DESIGN

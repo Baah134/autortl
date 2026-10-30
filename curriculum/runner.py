@@ -317,7 +317,8 @@ def run_tier(tier: int, **overrides) -> int:
            "runtime_identity": identity,
            "passed": sum(r["ok"] for r in records), "total": len(records),
            "results": records, "evidence_dir": str(campaign), **governance}
-    blocked = sorted(r["entry"] for r in records if r["summary"].get("failure_kind") == "infra")
+    blocked = sorted(r["entry"] for r in records if r["summary"].get("failure_kind") == "infra"
+                     or r["summary"].get("status") in ("infra_blocked", "model_blocked"))
     if blocked:
         # Infrastructure never enters the history (infra_blocked_entry_enters_history):
         # the campaign gets no verdict and its record stays in summary.json.

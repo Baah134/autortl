@@ -92,7 +92,7 @@ def test_independent_original_top_tb_blocks_optimization_candidate_before_synthe
     o,synthesis=create(tmp_path,monkeypatch);o.cfg.generate_golden=True;o.cfg.max_fix_attempts=1
     expected_hash=hashlib.sha256(o.cfg.testbench_path.read_bytes()).hexdigest()
     monkeypatch.setattr(o.generator,"golden_model",Mock(return_value=COUNTER.replace('"count": 99','"count": 0')))
-    candidate="module counter8(input clk,input rst,input enable,output [7:0] count); counter8_core other(.clk(clk),.rst(rst),.enable(!enable),.count(count)); endmodule"
+    candidate="// @latency 1\nmodule counter8(input clk,input rst,input enable,output [7:0] count); counter8_core other(.clk(clk),.rst(rst),.enable(!enable),.count(count)); endmodule"
     monkeypatch.setattr(o.generator,"generate",Mock(side_effect=[RTL,candidate]))
     repair=Mock(return_value=candidate);monkeypatch.setattr(o.generator,"fix",repair)
     original_sim=fsm.vivado.xsim_run;checked=[]

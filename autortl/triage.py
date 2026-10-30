@@ -18,7 +18,7 @@ _INFRA_SIGNATURES = [
     r"\[Common 17-53\].*No open design",
     # A license failure, not Vivado's routine "Attempting to get a license" / "Got license".
     r"(?:could not|cannot|unable to|failed to)\s+(?:obtain|get|check\s*out|find)[^\n]*license"
-    r"|license[^\n]*(?:not (?:found|available|valid)|expired|denied|unavailable|checkout failed)",
+    r"|\blicense\b[^\n]*(?:not (?:found|available|valid)|expired|denied|unavailable|checkout failed)",
     r"cannot (?:open|create|write).*\.(?:pb|wdb|jou|log)",  # file locks (xsim holds handles)
     r"Permission denied",
     r"used by another process",
@@ -39,8 +39,9 @@ _DESIGN_SIGNATURES = [
 
 
 # Tool-ID errors that describe the design (triage_misreads_license_info_as_infra).
+# Only ERROR lines: a host failure still outranks a promoted CRITICAL WARNING.
 _DESIGN_ERROR_LINE = re.compile(
-    r"^\s*(?:ERROR|CRITICAL WARNING):\s*\[(?:Synth|VRFC|XSIM|Opt|Place|Route|Timing|DRC)\s+\d+-\d+\]",
+    r"^\s*ERROR:\s*\[(?:Synth|VRFC|XSIM|Opt|Place|Route|Timing|DRC)\s+\d+-\d+\]",
     re.IGNORECASE)
 # Infrastructure problems that can still arrive on a tool-ID line.
 _HOST_PROBLEM = re.compile(r"cannot (?:open|create|write).*\.(?:pb|wdb|jou|log)|used by another process"

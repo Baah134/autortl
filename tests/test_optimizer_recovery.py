@@ -153,6 +153,7 @@ def test_compile_repair_journal_replay_does_not_repeat_model_fix(tmp_path, monke
 def test_repair_cannot_change_known_latency(tmp_path, monkeypatch):
     o, c, contract, tb, parent, repair = setup_candidate(tmp_path, monkeypatch)
     contract.latency_known = True; contract.latency = 1
+    c.verilog = "// @latency 1\n" + c.verilog  # the candidate declares the contract latency
     repair.return_value = "// @latency 2\n" + WINNER
     tool = Mock(return_value=(False, "FAIL compile", FailureKind.DESIGN))
     monkeypatch.setattr(o, "_tool", tool)
