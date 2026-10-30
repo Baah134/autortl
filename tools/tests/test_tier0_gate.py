@@ -127,3 +127,17 @@ def test_agent_worktrees_are_not_part_of_the_identity(tmp_path):
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(rel)
     assert sorted(gate.identities(tmp_path)) == [".claude/skills/s/SKILL.md", "run.py"]
+
+
+def test_a_failing_doctor_stops_the_gate_before_any_freeze(tmp_path, monkeypatch):
+    monkeypatch.setattr(gate, "ROOT", tmp_path)
+    (tmp_path / "logs").mkdir()
+    calls = []
+    def run(cmd, **kwargs):
+        calls.append(cmd)
+        return type("R", (), {"returncode": 1, "stdout": "MISSING codex"})()
+    monkeypatch.setattr(gate.subprocess, "run", run)
+    with pytest.raises(SystemExit, match="environment not ready"):
+        gate.main(["--name", "gate-03"])
+    assert calls and "doctor" in calls[0]
+    assert not (tmp_path / "logs" / "gate-03-source-freeze.json").exists()

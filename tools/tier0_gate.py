@@ -114,6 +114,17 @@ def main(argv=None):
     from curriculum.runner import _history
     if any(record["tier"] > args.tier and record["held"] for record in _history()):
         raise SystemExit("a higher held tier requires its own gate")
+    # Fail fast before the long test receipt: a missing tool or a moved model CLI
+    # (the Codex app replaces its versioned binary folder when it updates) would
+    # otherwise only show up as an infrastructure-blocked bench.
+    folder = vivado_bin(args.vivado_bin)
+    doctor = subprocess.run([args.python, "run.py", "doctor"]
+                            + [a for name in ("vivado", "xvlog", "xelab", "xsim")
+                               for a in ("--" + name, folder + name + ".bat")],
+                            cwd=ROOT, capture_output=True, text=True, encoding="utf-8", errors="replace")
+    if doctor.returncode != 0:
+        print(doctor.stdout, flush=True)
+        raise SystemExit("environment not ready (run.py doctor); the gate was not started")
 
     source = identities()
     freeze_path.write_text(json.dumps(source, indent=2) + "\n", encoding="utf-8")
