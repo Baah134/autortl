@@ -36,7 +36,6 @@ def test_an_existing_exploration_is_never_overwritten(tmp_path, monkeypatch):
         explore.main(["--tier", "2", "--name", "x"])
 
 
-<<<<<<< HEAD
 def test_a_failing_doctor_stops_the_exploration_before_any_entry(tmp_path, monkeypatch):
     import subprocess
     import pytest
@@ -52,7 +51,8 @@ def test_a_failing_doctor_stops_the_exploration_before_any_entry(tmp_path, monke
         explore.main(["--tier", "9", "--name", "x", "--python", "PY"])
     assert len(calls) == 1 and calls[0][1:3] == ["run.py", "doctor"]
     assert not (tmp_path / "logs" / "x").exists()
-=======
+
+
 def test_jobs_zero_is_a_usage_error(tmp_path, monkeypatch, capsys):
     # backend_configuration_rough_edges, gate_jobs_zero_silently_serial
     import pytest
@@ -61,4 +61,3 @@ def test_jobs_zero_is_a_usage_error(tmp_path, monkeypatch, capsys):
         explore.main(["--tier", "2", "--name", "y", "--jobs", "0"])
     assert exit_info.value.code == 2 and "--jobs" in capsys.readouterr().err
     assert not (tmp_path / "logs").exists()
->>>>>>> harness-open-items
