@@ -13,11 +13,11 @@ design's valid/ready handshake far harder than UART traffic alone could.
 | Iterative unsigned divider | `generated-divider-attempt-01` | 2 in, 2 out | verified on board |
 | Packet-tagged FIFO | `generated-packet-attempt-01` | 2 in, 2 out | verified on board |
 | Synchronous FIFO (timing-recovered) | `generated-fifo-attempt-05` | 1 in, 1 out | verified on board |
-| Iterative AES-128 encryption (`aes128`) | `2026-11-02/tier6-aes128` | 32 in, 16 out | added, board run pending |
-| Iterative CORDIC sine and cosine (`cordic`) | `2026-11-02/tier6-cordic` | 2 in, 4 out | added, board run pending |
-| Symmetric 16-tap FIR, built for 150 MHz (`fir16_sym`) | `2026-11-02/fir16-ooc-02` | 2 in, 2 out | added, board run pending |
+| Iterative AES-128 encryption (`aes128`) | `2026-11-02/tier6-aes128` | 32 in, 16 out | verified on board |
+| Iterative CORDIC sine and cosine (`cordic`) | `2026-11-02/tier6-cordic` | 2 in, 4 out | verified on board |
+| Symmetric 16-tap FIR, built for 150 MHz (`fir16_sym`) | `2026-11-02/fir16-ooc-02` | 2 in, 2 out | verified on board |
 
-The three added designs pass simulation, and their injected faults fail it.
+The three designs added on November 2 also pass on the board: 50,000 / 50,000 transactions each with 0 mismatches, 10 restarts, and the wrong-model control failing as required (AES-128 build WNS +2.442 ns, CORDIC +1.955 ns, FIR16 +3.066 ns at 100 MHz). Record: [evidence/2026-11-02/basys3-tier56-board-01](../../../evidence/2026-11-02/basys3-tier56-board-01/README.md).
 They have not yet been built or run on the board. Their transactions:
 
 - **aes128**: bytes 0 to 15 are the key and bytes 16 to 31 the plaintext, each
