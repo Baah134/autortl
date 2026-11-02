@@ -1,10 +1,41 @@
 # Current AutoRTL checkpoint
 
-Updated October 29, 2026 (America/New_York). Verify files, Git, ownership and
+Updated November 1, 2026 (America/New_York). Verify files, Git, ownership and
 actual jobs before acting. Canonical checkout: Downloads/autortl-work. Preserve
 the separate Downloads/autortl copy. User choice: command-line Vivado.
 
-## Latest - October 30 midday (Claude Code): tier0 held, tier1 qualifying
+## Latest - November 1 (Claude Code): harder tiers, roles taught by tiers 3-5
+
+- **Branch `codex/contract-context`** (pushed to aac85448; later local commits
+  listed by `git log origin/codex/contract-context..`). `main` is still ca61dbc:
+  every tier hold is on the older identity and must be re-earned on the
+  current one before `main` moves (tier0 then tier1 gates, `--jobs 4`).
+- **Tier1 campaign 04: 3/4, not qualifying** (debouncer spec examples written
+  as per-cycle lists; fixed: `spec_example_values_skip_planner_repair`).
+- **Tier5 added and qualified in xsim** (AXI4-Lite registers, UART RX + FIFO,
+  16-tap symmetric FIR at 150 MHz; 30/30 mutants caught;
+  evidence/2026-10-30/tier5-qualification-01).
+- **Explorations (no verdicts) on tiers 2-5**, archived under
+  evidence/2026-10-30/explore-*: tier4 3/3 built; tier3 4/5 built (dot4 325 -> 17
+  LUT via DSP); editable children (whole-design edit scope) turned no-op
+  optimization into gains: divider 33 -> 27 LUT, SPI 25 -> 19 LUT, UART RX +
+  FIFO recovered timing then 70 -> 55 LUT; FIR16 at 150 MHz progressed
+  -10.77 -> -3.02 ns but did not close; fir8 timing progress -9.92 -> -2.77 ns.
+- **Harness changes merged this round** (each with a taxonomy entry and tests):
+  whole-design edit scope, planner spec repair of example values / payload
+  tagging / testbench shapes / oracle-example disputes, inlining guidance,
+  port attributes, rejection reasons in progress, distinct failure kinds for
+  the fixer, oracle augmented subscripts, maximize_freq on reg2reg slack,
+  equal-LUT flip-flop tie-break, child annotations never a criterion, dead
+  lock owner check, mistyped backend prefix, explore doctor preflight.
+- **In flight:** out-of-context flow and a target-capacity failure kind
+  (branch `ooc-flow`): the tier5 AXI top has 165 I/O against the package's 106,
+  so placement fails and the old triage sent a correct design to the fixer.
+  Needs one live Vivado check before merge. Then rerun tier5 AXI.
+- **Codex binary** moved to bin/22cfb1d302613eae; explore.py and the gate run
+  the doctor first.
+
+## October 30 midday (Claude Code): tier0 held, tier1 qualifying
 
 - **Tier0 held on ca61dbc** (campaigns 28-30, cohort f82bccb9, model
   gpt-6-luna requested). `main` was fast-forwarded to ca61dbc.
