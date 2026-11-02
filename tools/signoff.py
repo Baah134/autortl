@@ -69,6 +69,8 @@ def main(argv=None):
     parser.add_argument("--date", required=True, help="evidence/<date>/ folder for the archives")
     parser.add_argument("--max-campaigns", type=int, default=6)
     parser.add_argument("--python", default=sys.executable)
+    parser.add_argument("--prefix", default="signoff",
+                        help="campaign name prefix; a new pass on changed code uses a new prefix")
     args = parser.parse_args(argv)
     if sorted(args.tiers) != args.tiers:
         parser.error("--tiers must be ascending: lower tiers are held first")
@@ -76,7 +78,7 @@ def main(argv=None):
     for tier in args.tiers:
         held = False
         for n in range(1, args.max_campaigns + 1):
-            name = f"signoff-t{tier}-{n:02d}"
+            name = f"{args.prefix}-t{tier}-{n:02d}"
             dest = ROOT / "evidence" / args.date / name
             if dest.exists():
                 record = latest_full_record(tier)

@@ -96,3 +96,20 @@ def test_stops_when_a_tier_cannot_hold(tmp_path, monkeypatch):
     monkeypatch.setattr(signoff.subprocess, "run", fake_run)
     monkeypatch.setattr(signoff, "archive", lambda name, dest, **k: dest.mkdir(parents=True) or 1)
     assert signoff.main(["--tiers", "0", "1", "--date", "d", "--max-campaigns", "2"]) == 1
+
+
+def test_prefix_names_a_new_pass(tmp_path, monkeypatch):
+    monkeypatch.setattr(signoff, "ROOT", tmp_path)
+    (tmp_path / "logs").mkdir()
+    history = tmp_path / "results.jsonl"
+    monkeypatch.setattr(signoff, "HISTORY", history)
+    write_history(history, [])
+    names = []
+    def fake_run(cmd, **kwargs):
+        names.append(cmd[cmd.index("--name") + 1])
+        write_history(history, [{"tier": 0, "full_tier": True, "qualified": True, "held": True}])
+        return subprocess.CompletedProcess(cmd, 0)
+    monkeypatch.setattr(signoff.subprocess, "run", fake_run)
+    monkeypatch.setattr(signoff, "archive", lambda name, dest, **k: dest.mkdir(parents=True) or 1)
+    assert signoff.main(["--tiers", "0", "--date", "d", "--prefix", "signoff2"]) == 0
+    assert names == ["signoff2-t0-01"]
