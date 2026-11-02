@@ -335,7 +335,9 @@ def render_fixed_optimize_contract(evidence: dict) -> str:
                 "The per-child generated oracles and testbenches verified the baseline children only; they are "
                 "not evidence for changed children and must not be cited as such. Typed child contracts in the "
                 "build spec describe the baseline decomposition; their composed behavior at the top's ports "
-                "remains mandatory.\n\n")
+                "remains mandatory. Their latency fields and annotations bind nothing on their own: a child "
+                "module needs no // @latency annotation, and a missing or changed child annotation is never "
+                "a failed criterion (evaluator_requires_child_latency_annotation).\n\n")
         else:
             boundary = ("## Edit boundary\n\n"
                         f"Only the top {scope['top']} is editable; generated children are frozen companions. "

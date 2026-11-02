@@ -99,6 +99,8 @@ def test_trusted_testbench_hands_one_editable_unit_without_companions(tmp_path, 
     assert [Path(s["path"]).name for s in facts["sources"]] == ["counter8.v"]
     contract = o.state.read_contract()
     assert "## Edit boundary" in contract and "not evidence for changed children" in contract
+    # evaluator_requires_child_latency_annotation (explore-tier4-02 spi_master iteration 3)
+    assert "a child module needs no // @latency annotation" in contract.replace("\n", " ")
     scope = o.generator.run_context
     assert "ONE unit holding every generated child module" in scope
     assert "Companion files/modules are frozen" not in scope
