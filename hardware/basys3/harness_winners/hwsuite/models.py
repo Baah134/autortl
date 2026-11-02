@@ -9,6 +9,7 @@ hardware result must fail against it.
 """
 from __future__ import annotations
 
+import math
 import random
 
 
@@ -155,8 +156,248 @@ class SyncFifo(Model):
         return [bytes([b]) for b in (0x00, 0xFF, 0xA5, 0x5A, 0x01, 0x80, 0x7F, 0xFE)]
 
 
+def _signed(value: int, bits: int) -> int:
+    """The two's complement value of the low `bits` bits of `value`."""
+    value &= (1 << bits) - 1
+    return value - (1 << bits) if value >> (bits - 1) else value
+
+
+# ---------------------------------------------------------------- AES-128
+
+def _gf_mul(a: int, b: int) -> int:
+    """Multiply in GF(2^8) modulo x^8 + x^4 + x^3 + x + 1."""
+    product = 0
+    for _ in range(8):
+        if b & 1:
+            product ^= a
+        a = (a << 1) ^ 0x11B if a & 0x80 else a << 1
+        b >>= 1
+    return product
+
+
+def _gf_inverse(a: int) -> int:
+    """a^254 = a^-1 in GF(2^8) (0 maps to 0), by square and multiply."""
+    result, power, exponent = 1, a, 254
+    while exponent:
+        if exponent & 1:
+            result = _gf_mul(result, power)
+        power = _gf_mul(power, power)
+        exponent >>= 1
+    return result if a else 0
+
+
+def _rotl8(value: int, shift: int) -> int:
+    return ((value << shift) | (value >> (8 - shift))) & 0xFF
+
+
+def aes_sbox() -> list[int]:
+    """FIPS-197 S-box computed from its definition: GF(2^8) inverse, then the
+    affine map b ^ rotl(b,1) ^ rotl(b,2) ^ rotl(b,3) ^ rotl(b,4) ^ 0x63."""
+    table = []
+    for value in range(256):
+        inv = _gf_inverse(value)
+        table.append(inv ^ _rotl8(inv, 1) ^ _rotl8(inv, 2) ^ _rotl8(inv, 3) ^ _rotl8(inv, 4) ^ 0x63)
+    return table
+
+
+AES_SBOX = aes_sbox()
+
+
+def aes_key_step(key: bytes, rcon: int, sbox=AES_SBOX) -> bytes:
+    """One AES-128 KeyExpansion step (FIPS-197 5.2): {w0..w3} to {w4..w7}."""
+    words = [list(key[4 * i:4 * i + 4]) for i in range(4)]
+    temp = [sbox[b] for b in words[3][1:] + words[3][:1]]   # SubWord(RotWord(w3))
+    temp[0] ^= rcon
+    for i in range(4):
+        temp = [a ^ b for a, b in zip(words[i], temp)]      # w4 = w0 ^ temp, w5 = w1 ^ w4, ...
+        words[i] = temp
+    return bytes(sum(words, []))
+
+
+def aes_round(state: bytes, round_key: bytes, final: bool, sbox=AES_SBOX) -> bytes:
+    """One encryption round. Byte n sits at row n % 4, column n // 4 of the state."""
+    s = [sbox[b] for b in state]                                                  # SubBytes
+    s = [s[row + 4 * ((col + row) % 4)] for col in range(4) for row in range(4)]  # ShiftRows
+    if not final:                                                                 # MixColumns
+        mixed = []
+        for col in range(4):
+            a0, a1, a2, a3 = s[4 * col:4 * col + 4]
+            mixed += [_gf_mul(2, a0) ^ _gf_mul(3, a1) ^ a2 ^ a3,
+                      a0 ^ _gf_mul(2, a1) ^ _gf_mul(3, a2) ^ a3,
+                      a0 ^ a1 ^ _gf_mul(2, a2) ^ _gf_mul(3, a3),
+                      _gf_mul(3, a0) ^ a1 ^ a2 ^ _gf_mul(2, a3)]
+        s = mixed
+    return bytes(a ^ k for a, k in zip(s, round_key))                             # AddRoundKey
+
+
+def aes128_encrypt(key: bytes, plaintext: bytes, sbox=AES_SBOX) -> bytes:
+    """FIPS-197 AES-128 encryption of one block; blocks are byte strings in FIPS order."""
+    state = bytes(p ^ k for p, k in zip(plaintext, key))
+    round_key, rcon = bytes(key), 0x01
+    for rnd in range(1, 11):
+        round_key = aes_key_step(round_key, rcon, sbox)
+        rcon = _gf_mul(rcon, 2)
+        state = aes_round(state, round_key, rnd == 10, sbox)
+    return state
+
+
+class Aes128(Model):
+    """AES-128 encryption (FIPS-197). Bytes 0..15 = the key and bytes 16..31 =
+    the plaintext, each in FIPS byte order (byte 0 first, the most significant
+    byte of the spec's big-endian 128-bit port). The 16 result bytes are the
+    ciphertext in the same order. The wrong twin's S-box has two adjacent
+    entries (0x52, 0x53) exchanged."""
+    name, in_bytes, out_bytes = "aes128", 32, 16
+
+    def _compute(self, tx):
+        sbox = AES_SBOX
+        if self.is_wrong:
+            sbox = list(AES_SBOX)
+            sbox[0x52], sbox[0x53] = sbox[0x53], sbox[0x52]
+        ciphertext = aes128_encrypt(tx[:16], tx[16:], sbox)
+        return int.from_bytes(ciphertext, "little")         # step() emits byte 0 first
+
+    def leading(self):
+        known = [  # (key, plaintext): FIPS-197 C.1 and Appendix B, then AESAVS corners
+            ("000102030405060708090a0b0c0d0e0f", "00112233445566778899aabbccddeeff"),
+            ("2b7e151628aed2a6abf7158809cf4f3c", "3243f6a8885a308d313198a2e0370734"),
+            ("00" * 16, "00" * 16),
+            ("ff" * 16, "00" * 16),
+            ("00" * 16, "ff" * 16),
+            ("ff" * 16, "ff" * 16),
+            ("80" + "00" * 15, "00" * 16),
+            ("00" * 16, "80" + "00" * 15),
+            ("00" * 15 + "01", "00" * 15 + "01"),
+            ("10a58869d74be5a374cf867cfb473859", "00" * 16),
+        ]
+        return [bytes.fromhex(k) + bytes.fromhex(p) for k, p in known]
+
+
+# ---------------------------------------------------------------- CORDIC
+
+CORDIC_ITERATIONS = 16
+
+
+def cordic_atan_table() -> list[int]:
+    """round(atan(2^-i) / (2 pi) * 2^20), round half up, i = 0..15 (2^-20 turn units)."""
+    return [math.floor(math.atan(2.0 ** -i) / (2 * math.pi) * (1 << 20) + 0.5)
+            for i in range(CORDIC_ITERATIONS)]
+
+
+def cordic_gain() -> int:
+    """K = round(2^16 * prod_{i=0..15} 1/sqrt(1 + 2^-2i))."""
+    product = 1.0
+    for i in range(CORDIC_ITERATIONS):
+        product /= math.sqrt(1.0 + 2.0 ** (-2 * i))
+    return math.floor((1 << 16) * product + 0.5)
+
+
+CORDIC_ATAN = cordic_atan_table()
+CORDIC_K = cordic_gain()
+
+
+def cordic_prerot(angle: int) -> tuple[int, int]:
+    """(x0, z0) as unsigned 18- and 20-bit patterns: fold quadrants 01 and 10 by half a turn."""
+    x0, reduced = CORDIC_K, angle & 0xFFFF
+    if (reduced >> 15) & 1 != (reduced >> 14) & 1:
+        x0, reduced = -CORDIC_K, reduced ^ 0x8000
+    return x0 & 0x3FFFF, (_signed(reduced, 16) * 16) & 0xFFFFF
+
+
+def cordic_rotate(x0: int, z0: int, table, iterations: int = CORDIC_ITERATIONS) -> tuple[int, int]:
+    """The engine's micro-rotations from (x0, y = 0, z0); returns (x, y) as 18-bit patterns.
+    `table[i]` is the atan value presented at iteration i."""
+    x, y, z = _signed(x0, 18), 0, _signed(z0, 20)
+    for i in range(iterations):
+        xs, ys = x >> i, y >> i                    # Python >> on ints is arithmetic (floor)
+        if z >= 0:
+            x, y, z = _signed(x - ys, 18), _signed(y + xs, 18), _signed(z - table[i], 20)
+        else:
+            x, y, z = _signed(x + ys, 18), _signed(y - xs, 18), _signed(z + table[i], 20)
+    return x & 0x3FFFF, y & 0x3FFFF
+
+
+def cordic_out(x: int, y: int) -> tuple[int, int]:
+    """Q2.16 to Q2.14 with round half up: ((v + 2) >>> 2), low 16 bits. Returns (cos, sin)."""
+    return ((_signed(x, 18) + 2) >> 2) & 0xFFFF, ((_signed(y, 18) + 2) >> 2) & 0xFFFF
+
+
+def cordic_sincos(angle: int, table=CORDIC_ATAN) -> tuple[int, int]:
+    """(cos_out, sin_out) of the spec's contract, bit exact, as unsigned 16-bit patterns."""
+    x0, z0 = cordic_prerot(angle)
+    return cordic_out(*cordic_rotate(x0, z0, table))
+
+
+class Cordic(Model):
+    """16-iteration CORDIC sine and cosine. Bytes 0..1 = the 16-bit binary angle
+    (one turn = 2^16), least significant first. Result bytes 0..1 = sin_out and
+    bytes 2..3 = cos_out, each Q2.14 two's complement, least significant first
+    (the 32-bit word {cos_out, sin_out}). The wrong twin's arctangent entry 3
+    is 20735 (digits transposed) instead of 20753."""
+    name, in_bytes, out_bytes = "cordic", 2, 4
+
+    def _compute(self, tx):
+        table = CORDIC_ATAN
+        if self.is_wrong:
+            table = list(CORDIC_ATAN)
+            table[3] = 20735
+        cos_out, sin_out = cordic_sincos(int.from_bytes(tx, "little"), table)
+        return sin_out | cos_out << 16
+
+    def leading(self):
+        # Quadrant and octant boundaries, both sides of each fold, the circle's ends.
+        angles = (0x0000, 0x4000, 0x8000, 0xC000, 0x3FFF, 0x4001, 0x7FFF, 0x8001, 0xBFFF, 0xC001,
+                  0xFFFF, 0x0001, 0x2000, 0x6000, 0xA000, 0xE000, 0x1555, 0x2AAB, 0x5555, 0xD555)
+        return [a.to_bytes(2, "little") for a in angles]
+
+
+# ---------------------------------------------------------------- 16-tap FIR
+
+FIR16_COEFFICIENTS = (-6, -20, -24, 18, 110, 226, 330, 390, 390, 330, 226, 110, 18, -24, -20, -6)
+
+
+class Fir16Sym(Model):
+    """Direct-form 16-tap FIR: acc = sum_k h[k] * x[n-k] over accepted signed
+    16-bit samples (zeros before the first since reset), r = floor((acc + 1024)
+    / 2048), saturated to [-32768, 32767]. Byte 0..1 = the sample and result
+    bytes 0..1 = the output, both least significant first. History is cleared
+    by reset and only advances on accepted samples. The wrong twin flips the
+    sign of tap h[3] only."""
+    name, in_bytes, out_bytes = "fir16_sym", 2, 2
+
+    def reset(self):
+        self.history = [0] * 15                   # x[n-1] .. x[n-15]
+
+    def _compute(self, tx):
+        x = int.from_bytes(tx, "little", signed=True)
+        taps = list(FIR16_COEFFICIENTS)
+        if self.is_wrong:
+            taps[3] = -taps[3]
+        window = [x] + self.history
+        acc = sum(h * v for h, v in zip(taps, window))
+        self.history = window[:15]
+        r = (acc + 1024) >> 11                    # floor division: round half up
+        r = max(-32768, min(32767, r))
+        return r & 0xFFFF
+
+    def leading(self):
+        samples = []
+        for impulse in (32767, -32768, 512, -512, 1, -1):     # impulse responses; +-512 hit rounding ties
+            samples += [impulse] + [0] * 16
+        samples += [32767] * 20 + [-32768] * 20                # both rails saturate
+        samples += [-32768 if (i <= 2 or i >= 13) else 32767 for i in range(16)]   # |acc| maximum
+        samples += [32767 if (i <= 2 or i >= 13) else -32768 for i in range(16)]
+        samples += [(32767, -32768)[i % 2] for i in range(32)]                    # alternating extremes
+        return [(s & 0xFFFF).to_bytes(2, "little") for s in samples]
+
+    def random_tx(self, rng):
+        if rng.randrange(4) == 0:
+            return rng.choice((32767, -32768 & 0xFFFF)).to_bytes(2, "little")
+        return bytes([rng.randrange(256), rng.randrange(256)])
+
+
 MODELS = {cls.name: cls for cls in (Fir4, ElasticDot4, Dot4Pipeline, IterativeDivider,
-                                     PacketFifo, SyncFifo)}
+                                     PacketFifo, SyncFifo, Aes128, Cordic, Fir16Sym)}
 
 
 def model_for(name: str, wrong: bool = False) -> Model:
