@@ -6,6 +6,8 @@ the separate Downloads/autortl copy. User choice: command-line Vivado.
 
 ## Latest - November 1 (Claude Code): harder tiers, roles taught by tiers 3-5
 
+- **User directive (November 1): finished tiers are not re-held during the project.** After a harness change, run pytest and explorations of the current and harder tiers only; do not launch tier0_gate.py for tiers already done, and do not fast-forward `main`, until the end-of-project re-hold pass. A tier still in progress may be gated until it is done. (tier0 campaign 31 and tier1 campaign 05 were stopped after their test receipts for this reason; they recorded no bench verdict.)
+
 - **Branch `codex/contract-context`** (pushed to aac85448; later local commits
   listed by `git log origin/codex/contract-context..`). `main` is still ca61dbc:
   every tier hold is on the older identity and must be re-earned on the

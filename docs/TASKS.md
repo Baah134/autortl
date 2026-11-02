@@ -952,3 +952,7 @@ out-of-context flow once live (`tools/explore.py --tier 5 --entries
 axil_regs_build`) and confirm SYNTH_COMPLETE, a routed `timing_routed.rpt`
 with numeric WNS/WHS, Bonded IOB 0 and that `report_power` and
 `report_design_analysis` succeed out of context.
+
+## November 1 (user directive): no re-holding finished tiers mid-project
+
+**User directive (November 1): finished tiers are not re-held during the project.** After a harness change, run pytest and explorations of the current and harder tiers only; do not launch tier0_gate.py for tiers already done, and do not fast-forward `main`, until the end-of-project re-hold pass. A tier still in progress may be gated until it is done. (tier0 campaign 31 and tier1 campaign 05 were stopped after their test receipts for this reason; they recorded no bench verdict.)
