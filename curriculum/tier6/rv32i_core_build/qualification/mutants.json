@@ -1,0 +1,23 @@
+[
+  {"name": "srai_decoded_as_srli", "why": "the decoder drops instr[30] for OP-IMM shifts, so SRAI shifts in zeros",
+   "find": "alu_op = {(funct3 == 3'b101) ? instr[30] : 1'b0, funct3};", "replace": "alu_op = {1'b0, funct3};"},
+  {"name": "store_offset_from_rs2_field", "why": "the S immediate takes its low five bits from the rs2 field, the I-type position",
+   "find": "wire [31:0] imm_s = {{20{instr[31]}}, instr[31:25], instr[11:7]};",
+   "replace": "wire [31:0] imm_s = {{20{instr[31]}}, instr[31:25], instr[24:20]};"},
+  {"name": "slt_compares_unsigned", "why": "SLT and SLTI compare unsigned, so negative operands order wrongly",
+   "find": "3'b010: y = {31'd0, $signed(a) < $signed(b)};", "replace": "3'b010: y = {31'd0, a < b};"},
+  {"name": "shift_amount_not_masked", "why": "SLL shifts by the whole 32-bit operand instead of its low five bits",
+   "find": "3'b001: y = a << sh;", "replace": "3'b001: y = a << b;"},
+  {"name": "x0_writable", "why": "the register file stores writes to x0, so x0 no longer reads zero",
+   "find": "if (we && waddr != 5'd0) regs[waddr] <= wdata;", "replace": "if (we) regs[waddr] <= wdata;"},
+  {"name": "imem_write_address_truncated", "why": "the program loader drops imem_waddr[5], so words 32..63 overwrite 0..31",
+   "find": "if (imem_we) mem[imem_waddr] <= imem_wdata;", "replace": "if (imem_we) mem[imem_waddr[4:0]] <= imem_wdata;"},
+  {"name": "data_address_not_word_aligned", "why": "the byte address bits [4:0] index the data memory instead of word bits [6:2]",
+   "find": "assign dmem_addr = res[6:2];", "replace": "assign dmem_addr = res[4:0];"},
+  {"name": "bge_not_taken_on_equal", "why": "BGE behaves as a strict greater-than and falls through on equal operands",
+   "find": "3'b101: taken = !lt;", "replace": "3'b101: taken = !lt && !eq;"},
+  {"name": "jalr_keeps_bit0", "why": "JALR does not clear bit 0 of the computed target",
+   "find": "else if (kind == 3'd5) npc <= {y[31:1], 1'b0};", "replace": "else if (kind == 3'd5) npc <= y;"},
+  {"name": "load_skips_memory_wait", "why": "a load goes from M straight to write-back and writes the address instead of the loaded word",
+   "find": "S_M: state <= ld_q ? S_L : S_W;", "replace": "S_M: state <= S_W;"}
+]
