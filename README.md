@@ -33,13 +33,15 @@ board. Every number links to an archived run.
 - **Real optimization, not just passing tests.** The FIR went from failing
   timing at 78 LUTs to 52 LUTs with positive slack, and a dot product from
   328 to 20 LUTs by moving arithmetic into DSP slices.
-- **Multi-module designs, built and then optimized as a whole.** From typed
-  specifications the roles build designs of up to four modules (a UART
-  receiver with oversampling, a FIFO and error counters; an SPI master; a
-  CRC-16 stream; a round-robin arbiter with a register file), verify each one
-  against an independent testbench, then optimize inside every module: the
-  UART receiver went from missing 100 MHz to 55 LUTs with timing met, and the
-  SPI master from 25 to 19 LUTs.
+- **A RISC-V CPU, AES-128 and CORDIC, built by the agents.** From typed
+  specifications the roles build designs of up to seven modules, verify each
+  against an independent testbench, then optimize inside every module. A
+  multi-cycle RV32I core passes an ISA-level checker running hand-written and
+  40 random programs (2,093 → 1,530 LUTs, timing met); an AES-128 core passes
+  15 official FIPS-197/AESAVS known answers (9,108 → 614 LUTs, from missing
+  timing by 9.8 ns to +2.2 ns); a CORDIC sin/cos unit is bit-exact against its
+  model and closes 100 MHz. A 16-tap symmetric FIR closes **150 MHz** (394 →
+  148 LUTs, from −10.25 ns to +0.75 ns).
 - **Verifiers that are tested themselves.** Before a testbench may grade
   anything, it must pass a correct design and fail deliberately broken ones.
   An audit injected 27 faults into the FIR: generated testbenches first caught
@@ -50,7 +52,7 @@ board. Every number links to an archived run.
   line you name in a local config file. The same tier0 bench passed on four
   different models, and the role parsers read each model's own output format
   ([model matrix](evidence/2026-10-29/model-matrix-01/README.md)).
-- **Reproducible by construction.** 2,022 regression tests, crash-safe
+- **Reproducible by construction.** 2,258 regression tests, crash-safe
   resumable runs, fixed model-call and tool-time budgets, per-run token
   accounting, and a CI audit that checks over 34,000 recorded SHA-256 claims
   against the committed bytes. Curriculum tier 0 is held: three consecutive
@@ -153,6 +155,10 @@ and [winner](evidence/2026-10-26/generated-signed-fir4-attempt-01/run/signed_fir
 | UART receiver + FIFO + error counters (4 modules, tier 5) | Setup −1.166 → +0.443 ns · 70 → 55 LUTs after timing recovery | Independent fault-qualified test · 1,000,000-byte echo on the board |
 | UART transmitter + FIFO from a prose request (tier 3) | Setup −1.188 → +0.179 ns · 170 → 36 LUTs / 117 → 27 FFs | Independent fault-qualified test · 1,000,000-byte echo on the board |
 | AXI4-Lite register block (tier 5, out of context) | Built from specification: 95 LUTs · setup +5.441 ns | Independent fault-qualified test |
+| 16-tap symmetric FIR at 150 MHz (tier 5, out of context) | 394 → 148 LUTs · 9 DSPs · setup −10.25 → +0.751 ns | Independent fault-qualified test |
+| RISC-V RV32I core, 6 modules (tier 6, out of context) | 2,093 → 1,530 LUTs / 4,356 → 3,325 FFs · setup +0.916 ns | ISA-level checker, 44 programs, fault-qualified |
+| AES-128 encryption core (tier 6, out of context) | 9,108 → 614 LUTs · setup −9.76 → +2.216 ns | 15 FIPS-197/AESAVS known answers + 525 random blocks |
+| CORDIC sin/cos, 4 modules (tier 6) | Setup −1.757 → +0.076 ns · 194 LUTs | Bit-exact model + true sin/cos within 4 LSB |
 | SPI master (tier 4) | 25 → 19 LUTs / 37 → 33 FFs · setup +0.354 ns | Independent fault-qualified test |
 | CRC-16 stream, arbiter + register file (tier 4) | Built from specification: 16 and 42 LUTs, timing met | Independent fault-qualified test |
 | Curriculum tier 0 (counter, mux4) | Held: 3 consecutive qualifying runs · counter 55 → 31 LUTs | All mandatory gates |
@@ -258,12 +264,14 @@ harness regenerated the transmitter from the revised spec, and it streamed
   reviewed by separate agents; each confirmed finding gets a taxonomy entry
   and a regression test before it is fixed.
 - **New tiers are qualified first.** Tier 4 (a CRC-16 stream, an SPI master
-  and a two-module arbiter with a register file) and tier 5 (an AXI4-Lite
+  and a two-module arbiter with a register file), tier 5 (an AXI4-Lite
   register block, a UART receiver with a FIFO, and a 16-tap symmetric FIR at
-  150 MHz) entered the curriculum only after each independent testbench passed
-  its reference design and caught all ten planted faults
+  150 MHz) and tier 6 (an RV32I CPU, AES-128 and CORDIC) entered the
+  curriculum only after each independent testbench passed its reference
+  design and caught all ten planted faults
   ([tier 4](evidence/2026-10-29/tier4-qualification-01/README.md),
-  [tier 5](evidence/2026-10-30/tier5-qualification-01/README.md)).
+  [tier 5](evidence/2026-10-30/tier5-qualification-01/README.md),
+  [tier 6](curriculum/tier6/README.md)).
 - **Each hard run teaches the roles something.** Runs on tiers 3 to 5 turned
   into concrete harness rules: optimizing children and top as one unit when an
   independent testbench guards the top, keeping partial timing progress,
