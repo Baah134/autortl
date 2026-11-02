@@ -11,6 +11,8 @@ import itertools
 import sys
 
 _allocation_left = 100000
+INIT_INSTRUCTION_BUDGET = 2000000  # module body + init(): constant tables are built here
+STEP_INSTRUCTION_BUDGET = 200000   # every step() of one run together, as before
 
 
 def reserve_allocation(count):
@@ -296,19 +298,23 @@ def execute(source: str, stimulus: list[dict]) -> list[dict]:
     namespace = {"__builtins__": SAFE_BUILTINS.copy(), "_bounded_binary": bounded_binary,
                  "_bounded_slice": bounded_slice, "_bounded_slice_assign": bounded_slice_assign,
                  "_bounded_copy": bounded_copy}
-    remaining = 200000
+    # golden_table_setup_exhausts_step_budget: one-time setup (module body and
+    # init, where constant tables such as an AES S-box are built) gets its own
+    # budget; the per-run step budget is unchanged.
+    remaining, phase = INIT_INSTRUCTION_BUDGET, "setup"
 
     def instruction_limit(frame, event, arg):
         nonlocal remaining
         remaining -= 1
         if remaining <= 0:
-            raise ValueError("golden instruction budget exhausted")
+            raise ValueError(f"golden instruction budget exhausted ({phase})")
         return instruction_limit
 
     sys.settrace(instruction_limit)
     try:
         exec(compile(tree, "<restricted-golden>", "exec"), namespace)
         state = namespace["init"]()
+        remaining, phase = STEP_INSTRUCTION_BUDGET, "steps"
         outputs = []
         for inputs in stimulus:
             state, out = namespace["step"](state, inputs)

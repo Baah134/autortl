@@ -278,3 +278,32 @@ def test_augmented_assignment_on_a_simple_subscript_runs_under_the_same_guards()
     nested = source.replace("state['count'] -= 1", "state['count'] -= 1\n    t = [[0]]\n    t[0][0] += 1")
     with pytest.raises(ValueError, match="supported only on a name"):
         execute(nested, [{}])
+
+
+def test_setup_and_steps_have_separate_instruction_budgets(monkeypatch):
+    # golden_table_setup_exhausts_step_budget (explore-tier6-01 aes_round)
+    from autortl import golden_worker
+    from autortl.golden_worker import execute
+    heavy_init = "\n".join([
+        "def init():",
+        "    t = 0",
+        "    for i in range(300):",
+        "        for j in range(100):",
+        "            t = t + 1",
+        "    return {'t': t}",
+        "def step(state, inputs):",
+        "    return state, {'y': state['t'] & 255}",
+    ])
+    monkeypatch.setattr(golden_worker, "STEP_INSTRUCTION_BUDGET", 5000)
+    assert execute(heavy_init, [{}] * 10)[0] == {"y": 30000 & 255}  # setup no longer eats the step budget
+    heavy_step = heavy_init.replace("    return state, {'y'", "    for i in range(100):\n        for j in range(50):\n            pass\n    return state, {'y'")
+    with pytest.raises(ValueError, match=r"budget exhausted \(steps\)"):
+        execute(heavy_step, [{}] * 10)
+    monkeypatch.setattr(golden_worker, "INIT_INSTRUCTION_BUDGET", 5000)
+    with pytest.raises(ValueError, match=r"budget exhausted \(setup\)"):
+        execute(heavy_init, [{}])
+
+
+def test_golden_prompt_asks_for_tables_built_once_in_init():
+    from autortl import prompts
+    assert "once in init() from their definition" in prompts.GOLDEN_MODEL

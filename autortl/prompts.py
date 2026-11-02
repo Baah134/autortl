@@ -333,6 +333,11 @@ Restricted Python execution, not general Python:
 Allowed builtins: {safe_builtins}
 Allowed methods: {safe_methods}
 Use integer arithmetic/bit operations, assignments, if/else and bounded loops.
+Execution is metered: init() has a large one-time budget, all step() calls of a
+run share a smaller one. Build constant tables (an S-box, coefficient or arctan
+table) once in init() from their definition with an efficient loop, keep them
+in state, and only look them up in step(); never rebuild them per step, and do
+not type long tables from memory.
 Helper functions are allowed. No imports, classes, try/except, raise, lambda,
 f-strings, list/dict/set comprehensions, floats, decorators or default arguments.
 Generator expressions are supported. Do not use private names starting with '_'.
