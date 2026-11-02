@@ -1,0 +1,81 @@
+{
+  "stage": "iteration_3:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 3,
+    "instruction": "Change only the `sum = s4a + c4a` final adder pattern: divide the 32-bit addition into small fixed-width segments, compute each segment\u2019s sum for carry-in 0 and 1 in parallel, then select the correct result using the carry from the preceding segment. Preserve modulo-32-bit arithmetic, all eight parameterized products, the existing compressor tree, and the registered `y_out` assignment and synchronous reset. Keep the top-level interface and `// @latency 1`; do not add pipeline stages or alter the delay-register behavior.",
+    "candidates": [
+      {
+        "iteration": 3,
+        "mutation": "standard",
+        "instruction": "Change only the `sum = s4a + c4a` final adder pattern: divide the 32-bit addition into small fixed-width segments, compute each segment\u2019s sum for carry-in 0 and 1 in parallel, then select the correct result using the carry from the preceding segment. Preserve modulo-32-bit arithmetic, all eight parameterized products, the existing compressor tree, and the registered `y_out` assignment and synchronous reset. Keep the top-level interface and `// @latency 1`; do not add pipeline stages or alter the delay-register behavior.",
+        "generated_source_sha256": "6101300655896f4bdf1a4de882129b8a1c1acc8abdeafc82aa57b2f54ed6d730",
+        "final_source_sha256": "6101300655896f4bdf1a4de882129b8a1c1acc8abdeafc82aa57b2f54ed6d730",
+        "generated_code_hash": "f65e14c936a65d68",
+        "final_code_hash": "f65e14c936a65d68",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": false,
+          "wns_ns": -3.983,
+          "whs_ns": 0.01,
+          "lut_used": 428,
+          "ff_used": 192,
+          "dsp_used": 2,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.027,
+          "total_power_w": 0.095
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-fir8-03\\fir8\\iter_003\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-fir8-03\\fir8\\iter_003\\cand_standard\\synth.tcl",
+          "sha256": "17ad27c5782e5e29d829a4b7b557dd32cdf893d6d6778b6fdf4e545aa496d2ce"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-fir8-03\\fir8\\iter_003\\cand_standard\\fir8.v",
+          "sha256": "bff7e21057c8c01c3cdcab6806c7a826e18c69f34c4b44a7fa1619857b5aef66"
+        }
+      }
+    ],
+    "doctor": {
+      "status": "NOT_ADOPTED",
+      "action": "rtl_surgery",
+      "reason": "timing_not_closed",
+      "tools_ran": true,
+      "measured_metrics": {
+        "sim_passed": true,
+        "timing_met": false,
+        "wns_ns": -4.322,
+        "whs_ns": 0.106,
+        "lut_used": 369,
+        "ff_used": 208,
+        "dsp_used": 2,
+        "bram_used": 0.0,
+        "dynamic_power_w": 0.024,
+        "total_power_w": 0.092
+      },
+      "adopted": false,
+      "input_source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-fir8-03\\fir8\\iter_003\\cand_standard\\fir8.v",
+        "sha256": "bff7e21057c8c01c3cdcab6806c7a826e18c69f34c4b44a7fa1619857b5aef66"
+      },
+      "trial_source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-fir8-03\\fir8\\iter_003\\doctor_rtl_surgery_trial\\fir8.v",
+        "sha256": "eed35b7a4b6dae388393cabc5e7317cd4a5dca224958d5e611599c7ca4a185af"
+      },
+      "trial_flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-fir8-03\\fir8\\iter_003\\doctor_rtl_surgery_trial\\synth.tcl",
+        "sha256": "7078b55e23e4e91e96776322ed9a09580ee5d6256c055908bd1410687108ff5a"
+      },
+      "identity_count": 3,
+      "proposed_source_text_sha256": "b2099e37d8f62e040a9d295ac46de1a2a32412225d423495cc7b3f5f04e426e9"
+    },
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": "6101300655896f4bdf1a4de882129b8a1c1acc8abdeafc82aa57b2f54ed6d730"
+  },
+  "artifacts": {}
+}

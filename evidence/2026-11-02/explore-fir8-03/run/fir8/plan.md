@@ -1,0 +1,9 @@
+# PLAN — iteration 6
+## Current state assessment
+The verified incumbent is timing-feasible at WNS +0.267 ns and WHS +0.201 ns. Iteration 5’s symmetric sample pre-addition failed timing at WNS −0.226 ns, with its critical path running from a delay-register output into a pair-product DSP register. Since both designs are timing-feasible only if the candidate closes timing, promotion also requires a strict improvement in register-to-register setup slack over the incumbent’s +0.267 ns.
+
+## Hypothesis
+Regrouping the existing registered products in symmetric tap order may improve placement and routing of the accumulation logic while keeping sample-to-product paths and the one-cycle output behavior unchanged.
+
+## Instruction for generator
+Keep the eight signed 32-bit product registers and their multiplication assignments unchanged; do not pre-add raw samples or alter the product-register boundary. Change only the carry-save compressor grouping of `p0`–`p7` to pair symmetric product indices (`p0/p7`, `p1/p6`, `p2/p5`, `p3/p4`), then reduce the same eight 32-bit values to `sum` with carry-save stages and one final adder. Preserve modulo-32-bit arithmetic, reset behavior, `y_out` registration, and `// @latency 1`; retain the candidate only if all verification gates pass, routed WNS/WHS are nonnegative, and register-to-register setup slack strictly exceeds the incumbent.

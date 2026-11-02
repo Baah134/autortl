@@ -1,0 +1,77 @@
+{
+  "candidates": [
+    {
+      "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-fir8-03\\fir8\\iter_001\\cand_standard",
+      "cache_hit": false,
+      "final_code_hash": "3d32dbc22dd51cc3",
+      "final_source_sha256": "8e372b3fd9caf05aea162cbed6673330628d42f452e1dbe3884de73492116083",
+      "flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-fir8-03\\fir8\\iter_001\\cand_standard\\synth.tcl",
+        "sha256": "8ead4d24c7b12804a44f80588c58abafcc02052eeda952893ab3a58585bc2022"
+      },
+      "generated_code_hash": "3d32dbc22dd51cc3",
+      "generated_source_sha256": "8e372b3fd9caf05aea162cbed6673330628d42f452e1dbe3884de73492116083",
+      "instruction": "Change only the `y_out` sum pattern: form four pairwise sums of `p0`\u2013`p7`, then two sums of those results, then a final sum, keeping every intermediate 32 bits so addition retains the existing modulo-2\u00b3\u00b2 behavior. Preserve the products, delay-line shifts, synchronous reset and registered `y_out` assignment, along with all ports and parameter semantics. Keep `// @latency 1`; do not add registers or alter the cycle at which each tap contributes. Check signed products, arbitrary supported coefficient values, overflow, and reset behavior through the fixed verification and routed timing gates.",
+      "iteration": 1,
+      "metrics": {
+        "bram_used": 0.0,
+        "dsp_used": 5,
+        "dynamic_power_w": 0.012,
+        "ff_used": 192,
+        "lut_used": 150,
+        "sim_passed": true,
+        "timing_met": false,
+        "total_power_w": 0.08,
+        "whs_ns": 0.107,
+        "wns_ns": -9.707
+      },
+      "mutation": "standard",
+      "reason": "",
+      "rungs": 5,
+      "source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-fir8-03\\fir8\\iter_001\\cand_standard\\fir8.v",
+        "sha256": "bf2bc1e91ddb62704509da006ba55d1b3fe4ee8fab0c5cabef456e034efe1eb8"
+      },
+      "status": "measured"
+    }
+  ],
+  "doctor": {
+    "action": "rtl_surgery",
+    "adopted": false,
+    "identity_count": 3,
+    "input_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-fir8-03\\fir8\\iter_001\\cand_standard\\fir8.v",
+      "sha256": "bf2bc1e91ddb62704509da006ba55d1b3fe4ee8fab0c5cabef456e034efe1eb8"
+    },
+    "measured_metrics": {
+      "bram_used": 0.0,
+      "dsp_used": 2,
+      "dynamic_power_w": 0.014,
+      "ff_used": 192,
+      "lut_used": 284,
+      "sim_passed": true,
+      "timing_met": false,
+      "total_power_w": 0.083,
+      "whs_ns": 0.154,
+      "wns_ns": -2.84
+    },
+    "proposed_source_text_sha256": "1f5f8a0dd6cc4252cc4a00c5f367f0febf1324e0433ec247c37b267af528f746",
+    "reason": "timing_not_closed",
+    "status": "NOT_ADOPTED",
+    "tools_ran": true,
+    "trial_flow_script": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-fir8-03\\fir8\\iter_001\\doctor_rtl_surgery_trial\\synth.tcl",
+      "sha256": "4ec88623de3424eb4b83f9d214ac156b65195b255530dc5a1c51a61c5c6d3d0c"
+    },
+    "trial_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-fir8-03\\fir8\\iter_001\\doctor_rtl_surgery_trial\\fir8.v",
+      "sha256": "4cf4dbcf139d0af3f5dfe45a204a01d02410f11091d56b58d58006503345a4e4"
+    }
+  },
+  "instruction": "Change only the `y_out` sum pattern: form four pairwise sums of `p0`\u2013`p7`, then two sums of those results, then a final sum, keeping every intermediate 32 bits so addition retains the existing modulo-2\u00b3\u00b2 behavior. Preserve the products, delay-line shifts, synchronous reset and registered `y_out` assignment, along with all ports and parameter semantics. Keep `// @latency 1`; do not add registers or alter the cycle at which each tap contributes. Check signed products, arbitrary supported coefficient values, overflow, and reset behavior through the fixed verification and routed timing gates.",
+  "is_best": true,
+  "iteration": 1,
+  "recommendation": "ACCEPT",
+  "schema_version": 1,
+  "selected_source_sha256": "8e372b3fd9caf05aea162cbed6673330628d42f452e1dbe3884de73492116083"
+}

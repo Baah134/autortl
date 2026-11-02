@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_2:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 2\n## Contract check\n- Interface and latency annotation: PASS \u2014 Top-level interface is preserved and `// @latency 1` matches the authoritative declared latency.\n- Behavior and simulation: PASS \u2014 Deterministic ladder is ALIVE; the unchanged testbench reports `TEST PASSED`.\n- Compilation and synthesis flow: PASS \u2014 xvlog, xelab, xsim, and Vivado exited successfully; synthesis completion marker is present.\n- Routed metrics and implementation evidence: PASS \u2014 Retained routed reports and metric evidence are available for the fixed device, clock, and constraints.\n- Timing progress: PASS \u2014 Setup WNS improved from -9.707 ns to -1.925 ns, and hold WHS improved from 0.107 ns to 0.178 ns. The candidate remains infeasible, but qualifies as timing progress over the infeasible previous best.\n- Improvement over previous best: PASS \u2014 Recorded `timing_progress` is supported by the metrics; higher LUTs and power do not disqualify this progress.\n## Summary\n- Passed: 6 of 6\n- Failed: 0 of 6\n- Improved over previous best: YES\n## Recommendation\nACCEPT\n## Reason\nThe candidate passes deterministic verification and the required tool and metric gates, and its setup and hold evidence establishes timing progress over the still-infeasible previous best. Timing is not yet closed, but the contract permits this verified `timing_progress` promotion; the resource and power increases do not invalidate it.",
+      "recommendation": "ACCEPT",
+      "passed": 6,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}

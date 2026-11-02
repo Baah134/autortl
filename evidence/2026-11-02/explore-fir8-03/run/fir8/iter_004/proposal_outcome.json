@@ -1,0 +1,77 @@
+{
+  "candidates": [
+    {
+      "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-fir8-03\\fir8\\iter_004\\cand_standard",
+      "cache_hit": false,
+      "final_code_hash": "9c50f1fb60707bb1",
+      "final_source_sha256": "1cde360a3fa5ffb2e64512512ea35c97d86c22179d1923c67f534c985500fe59",
+      "flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-fir8-03\\fir8\\iter_004\\cand_standard\\synth.tcl",
+        "sha256": "2d697235dbbdff94086d100eae72109aab49a473d4f710030023ade271230865"
+      },
+      "generated_code_hash": "9c50f1fb60707bb1",
+      "generated_source_sha256": "1cde360a3fa5ffb2e64512512ea35c97d86c22179d1923c67f534c985500fe59",
+      "instruction": "Keep the eight signed 32-bit products and the final `s4a + c4a` adder, but replace only the current `s1a`\u2013`c4a` compressor grouping with a balanced Wallace-style 3:2 reduction schedule; balance the paths from `p0`\u2013`p7` so no product traverses unnecessary compressor levels. Preserve modulo-2^32 sum semantics, parameter behavior, `// @latency 1`, the delay-line registers, reset behavior, and the registered `y_out`. Do not segment the final adder or add a multiplier register; the prior segmented-adder candidate regressed setup, and the advisor trial with an added register also regressed.",
+      "iteration": 4,
+      "metrics": {
+        "bram_used": 0.0,
+        "dsp_used": 2,
+        "dynamic_power_w": 0.021,
+        "ff_used": 192,
+        "lut_used": 335,
+        "sim_passed": true,
+        "timing_met": false,
+        "total_power_w": 0.089,
+        "whs_ns": 0.108,
+        "wns_ns": -1.924
+      },
+      "mutation": "standard",
+      "reason": "",
+      "rungs": 5,
+      "source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-fir8-03\\fir8\\iter_004\\cand_standard\\fir8.v",
+        "sha256": "01b294c20d6704761a34508e39a373c1e79a25e4957bf42eb1b8d728fee9e3f1"
+      },
+      "status": "measured"
+    }
+  ],
+  "doctor": {
+    "action": "rtl_surgery",
+    "adopted": true,
+    "identity_count": 3,
+    "input_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-fir8-03\\fir8\\iter_004\\cand_standard\\fir8.v",
+      "sha256": "01b294c20d6704761a34508e39a373c1e79a25e4957bf42eb1b8d728fee9e3f1"
+    },
+    "measured_metrics": {
+      "bram_used": 0.0,
+      "dsp_used": 7,
+      "dynamic_power_w": 0.021,
+      "ff_used": 91,
+      "lut_used": 212,
+      "sim_passed": true,
+      "timing_met": true,
+      "total_power_w": 0.089,
+      "whs_ns": 0.201,
+      "wns_ns": 0.267
+    },
+    "proposed_source_text_sha256": "4f8bd13c70a9c751560b9cdccaf2cc00ab99d4ecc37aa78d7f5aa89fdfefe4dd",
+    "reason": "policy_improvement",
+    "status": "ADOPTED",
+    "tools_ran": true,
+    "trial_flow_script": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-fir8-03\\fir8\\iter_004\\doctor_rtl_surgery_trial\\synth.tcl",
+      "sha256": "917467c7dc3b2752ef2aa7cf05abe15cad1e6b8bbe2fabaa04a7b52962d0363d"
+    },
+    "trial_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-fir8-03\\fir8\\iter_004\\doctor_rtl_surgery_trial\\fir8.v",
+      "sha256": "a17db158977bd2b9fc4300ad884907b5b28e93c7267ff98aea60469ce27014c1"
+    }
+  },
+  "instruction": "Keep the eight signed 32-bit products and the final `s4a + c4a` adder, but replace only the current `s1a`\u2013`c4a` compressor grouping with a balanced Wallace-style 3:2 reduction schedule; balance the paths from `p0`\u2013`p7` so no product traverses unnecessary compressor levels. Preserve modulo-2^32 sum semantics, parameter behavior, `// @latency 1`, the delay-line registers, reset behavior, and the registered `y_out`. Do not segment the final adder or add a multiplier register; the prior segmented-adder candidate regressed setup, and the advisor trial with an added register also regressed.",
+  "is_best": true,
+  "iteration": 4,
+  "recommendation": "ACCEPT",
+  "schema_version": 1,
+  "selected_source_sha256": "4f8bd13c70a9c751560b9cdccaf2cc00ab99d4ecc37aa78d7f5aa89fdfefe4dd"
+}

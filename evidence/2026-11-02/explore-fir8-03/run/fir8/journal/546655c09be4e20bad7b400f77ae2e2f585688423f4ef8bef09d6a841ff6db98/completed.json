@@ -1,0 +1,80 @@
+{
+  "stage": "iteration_5:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 5,
+    "instruction": "Keep the `// @latency 1` annotation and change only the product-register and `y_out` accumulation pattern: for each pair `(C0,C7)`, `(C1,C6)`, `(C2,C5)`, and `(C3,C4)`, use a generate-time equality check to register the 32-bit truncated product of the corresponding signed 17-bit sample sum and coefficient. For any unequal coefficient pair, retain the independent 32-bit product registers and equivalent accumulation so every supported parameter value preserves behavior. Keep synchronous reset, registered outputs, and the existing cycle alignment; compare routed register-to-register WNS and all m",
+    "candidates": [
+      {
+        "iteration": 5,
+        "mutation": "standard",
+        "instruction": "Keep the `// @latency 1` annotation and change only the product-register and `y_out` accumulation pattern: for each pair `(C0,C7)`, `(C1,C6)`, `(C2,C5)`, and `(C3,C4)`, use a generate-time equality check to register the 32-bit truncated product of the corresponding signed 17-bit sample sum and coefficient. For any unequal coefficient pair, retain the independent 32-bit product registers and equivalent accumulation so every supported parameter value preserves behavior. Keep synchronous reset, registered outputs, and the existing cycle alignment; compare routed register-to-register WNS and all m",
+        "generated_source_sha256": "272639ad2ab136312cb794956261dd25a1af0cca1fcf95b2437f43814e2e1347",
+        "final_source_sha256": "272639ad2ab136312cb794956261dd25a1af0cca1fcf95b2437f43814e2e1347",
+        "generated_code_hash": "a3ed2fbd201ccb71",
+        "final_code_hash": "a3ed2fbd201ccb71",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": false,
+          "wns_ns": -0.226,
+          "whs_ns": 0.021,
+          "lut_used": 235,
+          "ff_used": 237,
+          "dsp_used": 1,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.017,
+          "total_power_w": 0.085
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-fir8-03\\fir8\\iter_005\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-fir8-03\\fir8\\iter_005\\cand_standard\\synth.tcl",
+          "sha256": "3932cfe4f455f8496f2512bd7969f882f6e360ec49fc85eedcd996505d7be560"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-fir8-03\\fir8\\iter_005\\cand_standard\\fir8.v",
+          "sha256": "abe3bb4eccdd7974f8dcc8cee2ec9b62f0288764f2800f23ac10a33d51514865"
+        }
+      }
+    ],
+    "doctor": {
+      "status": "NOT_ADOPTED",
+      "action": "tool_knobs",
+      "reason": "timing_not_closed",
+      "tools_ran": true,
+      "measured_metrics": {
+        "sim_passed": true,
+        "timing_met": false,
+        "wns_ns": -0.218,
+        "whs_ns": 0.021,
+        "lut_used": 235,
+        "ff_used": 238,
+        "dsp_used": 1,
+        "bram_used": 0.0,
+        "dynamic_power_w": 0.017,
+        "total_power_w": 0.085
+      },
+      "adopted": false,
+      "input_source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-fir8-03\\fir8\\iter_005\\cand_standard\\fir8.v",
+        "sha256": "abe3bb4eccdd7974f8dcc8cee2ec9b62f0288764f2800f23ac10a33d51514865"
+      },
+      "trial_source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-fir8-03\\fir8\\iter_005\\doctor_tool_knobs_trial\\fir8.v",
+        "sha256": "abe3bb4eccdd7974f8dcc8cee2ec9b62f0288764f2800f23ac10a33d51514865"
+      },
+      "trial_flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-fir8-03\\fir8\\iter_005\\doctor_tool_knobs_trial\\synth.tcl",
+        "sha256": "f02d1d585ff258f3d837c20968b1fdfe9dd7646d5ee253720bf3261331e3d1a9"
+      },
+      "identity_count": 3
+    },
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": "272639ad2ab136312cb794956261dd25a1af0cca1fcf95b2437f43814e2e1347"
+  },
+  "artifacts": {}
+}

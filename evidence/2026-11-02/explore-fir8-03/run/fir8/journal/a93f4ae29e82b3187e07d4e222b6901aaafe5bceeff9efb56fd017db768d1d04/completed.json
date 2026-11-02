@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_3:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 3\n## Contract check\n- Interface and behavioral correctness: PASS \u2014 authoritative ladder reports 5 rungs ALIVE; simulation passed.\n- Top latency annotation: PASS \u2014 `// @latency 1` matches authoritative latency.\n- Compilation and elaboration: PASS \u2014 xvlog, xelab, and xsim exited successfully.\n- Routed metric integrity: PASS \u2014 retained routed reports and successful synthesis evidence are provided.\n- Timing feasibility: FAIL \u2014 WNS is \u22123.983 ns, so timing is not met; WHS is 0.010 ns.\n- Improvement over previous best: FAIL \u2014 setup WNS worsened from \u22121.925 ns to \u22123.983 ns; no valid timing progress or recovery is established.\n## Summary\n- Passed: 4 of 6\n- Failed: 2 of 6\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes deterministic verification and has the required latency annotation, but it remains timing-infeasible and regresses setup WNS from the previous best. The recorded improvement kind is null, and the measurements do not qualify as timing progress or timing recovery.",
+      "recommendation": "REJECT",
+      "passed": 4,
+      "failed": 2
+    }
+  },
+  "artifacts": {}
+}
