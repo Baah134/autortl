@@ -100,5 +100,56 @@
       "replace": "head <= tail_mem[tail_wr_ptr];",
       "occurrence": 2
     }
+  },
+  "aes128": {
+    "title": "Iterative AES-128 encryption core",
+    "overlap": false,
+    "module": "aes128_core",
+    "winner": "evidence/2026-11-02/tier6-aes128/run/aes128_core_best.v",
+    "sha256": "69316101be0e8d12cec4b45678e72851da18ae95663891c968beb0e65ba5ec3c",
+    "state": "evidence/2026-11-02/tier6-aes128/run/state.json",
+    "adapter": "adapters/aes128.v",
+    "in_bytes": 32,
+    "out_bytes": 16,
+    "fault": {
+      "name": "shiftrows_rotates_right",
+      "find": "sub_state[127 - 8*(row + 4*((col + row) % 4)) -: 8];",
+      "replace": "sub_state[127 - 8*(row + 4*((col - row + 4) % 4)) -: 8];",
+      "occurrence": 1
+    }
+  },
+  "cordic": {
+    "title": "Iterative CORDIC sine and cosine",
+    "overlap": false,
+    "module": "cordic_sincos",
+    "winner": "evidence/2026-11-02/tier6-cordic/run/cordic_sincos_best.v",
+    "sha256": "aa5fd82e8329371da619a451846fce9d38a19f2334772c350849be9448d6deff",
+    "state": "evidence/2026-11-02/tier6-cordic/run/state.json",
+    "adapter": "adapters/cordic.v",
+    "in_bytes": 2,
+    "out_bytes": 4,
+    "fault": {
+      "name": "cos_rounding_adds_one_not_two",
+      "find": "assign x_next_rounded = x_next_extended + 19'sd2;",
+      "replace": "assign x_next_rounded = x_next_extended + 19'sd1;",
+      "occurrence": 1
+    }
+  },
+  "fir16_sym": {
+    "title": "Symmetric 16-tap FIR filter (150 MHz winner)",
+    "overlap": true,
+    "module": "fir16_sym",
+    "winner": "evidence/2026-11-02/fir16-ooc-02/run/fir16_sym_best.v",
+    "sha256": "0099ea011cf11ef1277dedf99d4382f28c02d8403b8d2d0176f19c4bdca767d1",
+    "state": "evidence/2026-11-02/fir16-ooc-02/run/state.json",
+    "adapter": "adapters/fir16_sym.v",
+    "in_bytes": 2,
+    "out_bytes": 2,
+    "fault": {
+      "name": "tap_pair3_coefficient_sign_flipped",
+      "find": "wire signed [26:0] p3 = $signed(pair1[3]) * 27'sd18;",
+      "replace": "wire signed [26:0] p3 = $signed(pair1[3]) * -27'sd18;",
+      "occurrence": 1
+    }
   }
 }

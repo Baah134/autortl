@@ -5,14 +5,37 @@ and byte-identical to the archived winner, on a Digilent Basys 3. It checks
 every result against an independent reference model, and it stresses each
 design's valid/ready handshake far harder than UART traffic alone could.
 
-| Design | Winner (archived, read in place) | Transaction |
-|---|---|---|
-| Signed stateful FIR filter | `generated-signed-fir4-attempt-01` | 1 byte in, 2 out |
-| Elastic unsigned dot product | `generated-elastic-dot4-attempt-02` | 8 in, 3 out |
-| Pipelined unsigned dot product | `generated-dot4-attempt-01` | 8 in, 3 out |
-| Iterative unsigned divider | `generated-divider-attempt-01` | 2 in, 2 out |
-| Packet-tagged FIFO | `generated-packet-attempt-01` | 2 in, 2 out |
-| Synchronous FIFO (timing-recovered) | `generated-fifo-attempt-05` | 1 in, 1 out |
+| Design | Winner (archived, read in place) | Transaction | Status |
+|---|---|---|---|
+| Signed stateful FIR filter | `generated-signed-fir4-attempt-01` | 1 byte in, 2 out | verified on board |
+| Elastic unsigned dot product | `generated-elastic-dot4-attempt-02` | 8 in, 3 out | verified on board |
+| Pipelined unsigned dot product | `generated-dot4-attempt-01` | 8 in, 3 out | verified on board |
+| Iterative unsigned divider | `generated-divider-attempt-01` | 2 in, 2 out | verified on board |
+| Packet-tagged FIFO | `generated-packet-attempt-01` | 2 in, 2 out | verified on board |
+| Synchronous FIFO (timing-recovered) | `generated-fifo-attempt-05` | 1 in, 1 out | verified on board |
+| Iterative AES-128 encryption (`aes128`) | `2026-11-02/tier6-aes128` | 32 in, 16 out | added, board run pending |
+| Iterative CORDIC sine and cosine (`cordic`) | `2026-11-02/tier6-cordic` | 2 in, 4 out | added, board run pending |
+| Symmetric 16-tap FIR, built for 150 MHz (`fir16_sym`) | `2026-11-02/fir16-ooc-02` | 2 in, 2 out | added, board run pending |
+
+The three added designs pass simulation, and their injected faults fail it.
+They have not yet been built or run on the board. Their transactions:
+
+- **aes128**: bytes 0 to 15 are the key and bytes 16 to 31 the plaintext, each
+  in FIPS-197 byte order (byte 0 is the spec's most significant byte, bits
+  [127:120]). The 16 result bytes are the ciphertext in the same order. For
+  example, FIPS-197 C.1 is sent as `000102...0f` then `00112233...ff`, and
+  `69c4e0d8...c55a` comes back.
+- **cordic**: a 16-bit binary angle (one turn = 2^16). The result is sin_out
+  in bytes 0 and 1, then cos_out in bytes 2 and 3, both Q2.14.
+- **fir16_sym**: one signed 16-bit sample in and one output out. Like the
+  4-tap FIR, it keeps its history across transactions, and a restart clears
+  it. The harness built this winner for 150 MHz; the board runs it at the
+  shell's 100 MHz.
+
+All three have full valid/ready handshakes, so their adapters only map ports
+and bytes. The AES and CORDIC contracts accept a new input only after the
+result transfers, so like the divider they are not required to overlap.
+Transactions may be up to 32 bytes on either side.
 
 ## Verified results (October 28, 2026)
 

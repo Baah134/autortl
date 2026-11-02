@@ -9,6 +9,10 @@ from pathlib import Path
 
 SUITE = Path(__file__).resolve().parents[1]
 REPO = SUITE.parents[2]
+# Widest transaction side (AES-128 takes a 16-byte key and a 16-byte block).
+# stream_shell counts bytes in 8 bits; scripts/build.tcl and the bench's
+# MAX_BYTES use the same bound.
+MAX_BYTES = 32
 
 
 class DesignError(RuntimeError):
@@ -64,8 +68,8 @@ def load(path: Path = SUITE / "designs.json") -> dict[str, Design]:
     for name, entry in raw.items():
         for key in ("in_bytes", "out_bytes"):
             value = entry[key]
-            if not isinstance(value, int) or isinstance(value, bool) or not 1 <= value <= 8:
-                raise DesignError(f"{name}: {key} must be an integer 1..8")
+            if not isinstance(value, int) or isinstance(value, bool) or not 1 <= value <= MAX_BYTES:
+                raise DesignError(f"{name}: {key} must be an integer 1..{MAX_BYTES}")
         if not isinstance(entry.get("overlap"), bool):
             raise DesignError(f"{name}: overlap must be true or false")
         designs[name] = Design(
