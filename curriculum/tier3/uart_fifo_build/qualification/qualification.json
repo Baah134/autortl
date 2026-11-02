@@ -1,0 +1,107 @@
+{
+  "entry": "curriculum\\tier3\\uart_fifo_build",
+  "top": "uart_fifo_tb",
+  "testbench_sha256": "cd7c825de98f18e6d1cd9d30fd6e7b892c259d1f0d225d28110f0a311051db9a",
+  "runs": [
+    {
+      "case": "reference",
+      "why": "control",
+      "expect_pass": true,
+      "verdict": "TEST PASSED",
+      "assertion_detected": false,
+      "as_required": true,
+      "source_sha256": "f9ac7da83c619aa4b86ca81f34aea1246b34481d7bf31b73bca0e4c45e577faa"
+    },
+    {
+      "case": "msb_first",
+      "why": "data bits are sent most significant first instead of least significant first",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 40671 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "75baca8b443f8508672937f9f224eb2cd57ca389afa7d7e9cadf24788e0a1288"
+    },
+    {
+      "case": "stop_bit_low",
+      "why": "the stop bit is driven low (framing error), the line only returns high at frame end",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 13912 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "ee5acc17490198ee5d55545c8d5cd2ac25d90d7390110f4932aa2803d89518eb"
+    },
+    {
+      "case": "bit_period_one_long",
+      "why": "every bit lasts CLKS_PER_BIT+1 clk cycles",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 65384 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "2cc0d2f882f9b7332dc88511fee518be26f1304412d478513397b4b177ca2677"
+    },
+    {
+      "case": "parameter_ignored",
+      "why": "hard-codes the default bit period of 16 cycles",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 23702 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "68707f909aecf2f0945692d482a1a56e579aaa463f6f38b5d91921e122e4cc46"
+    },
+    {
+      "case": "idle_cycle_between_frames",
+      "why": "tx_ready only when idle, so back-to-back frames gain one idle cycle",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 33208 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "66c799894fd700963014aa2a5348ae013fc648d7b63788cbb3e9e02ba94f2830"
+    },
+    {
+      "case": "full_one_early",
+      "why": "in_ready drops with DEPTH-1 bytes waiting, so the FIFO holds one byte too few",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 17600 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "28d2001bcef4f0c7a45a6a39f1bb8ee9c757a5da303a60de4543cec236550557"
+    },
+    {
+      "case": "push_ignores_full",
+      "why": "a byte offered while full is written anyway and overwrites the oldest waiting byte",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 58266 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "0bf6274d63f27d039822578999c237f895f229726e28cb9289925cf7be95f62f"
+    },
+    {
+      "case": "pop_ignores_tx_ready",
+      "why": "the FIFO pops whenever it is not empty, dropping bytes while a frame is in progress",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 88795 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "904a65c541382a27bbb705bd9317fa612dc59879179bab9c7edd4186c30149b6"
+    },
+    {
+      "case": "reset_keeps_waiting_bytes",
+      "why": "reset clears the pointers but not the waiting count, so stale bytes survive a reset",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 124167 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "df1cef51dca996054e085fe8ecc45a5f566a851a73171ced084d8420a7df8b7d"
+    },
+    {
+      "case": "asynchronous_reset",
+      "why": "an off-edge reset pulse aborts the frame in progress",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 1288 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "e350118c4dd8ea01d406ef5255479a6c1745bf8e849b510e02b9680645e320ff"
+    }
+  ],
+  "qualified": true
+}
