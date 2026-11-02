@@ -16,9 +16,9 @@ design's valid/ready handshake far harder than UART traffic alone could.
 | Iterative AES-128 encryption (`aes128`) | `2026-11-02/tier6-aes128` | 32 in, 16 out | verified on board |
 | Iterative CORDIC sine and cosine (`cordic`) | `2026-11-02/tier6-cordic` | 2 in, 4 out | verified on board |
 | Symmetric 16-tap FIR, built for 150 MHz (`fir16_sym`) | `2026-11-02/fir16-ooc-02` | 2 in, 2 out | verified on board |
-| Streaming CRC-16/CCITT-FALSE (`crc16_stream`) | `2026-10-30/explore-tier4-02` | 2 in, 3 out | added, board run pending |
-| SPI master, mode 0, with an in-fabric slave (`spi_master`) | `2026-10-30/explore-tier4-02` | 2 in, 2 out | added, board run pending |
-| Multi-cycle RV32I core (`rv32i_core`) | `2026-11-02/tier6-rv32i/explore-tier6-06`, iteration 1 | 32 in, 32 out | added, board run pending |
+| Streaming CRC-16/CCITT-FALSE (`crc16_stream`) | `2026-10-30/explore-tier4-02` | 2 in, 3 out | verified on board |
+| SPI master, mode 0, with an in-fabric slave (`spi_master`) | `2026-10-30/explore-tier4-02` | 2 in, 2 out | verified on board |
+| Multi-cycle RV32I core (`rv32i_core`) | `2026-11-02/tier6-rv32i/explore-tier6-06`, iteration 1 | 32 in, 32 out | verified on board |
 
 The three designs added on November 2 also pass on the board: 50,000 / 50,000 transactions each with 0 mismatches, 10 restarts, and the wrong-model control failing as required (AES-128 build WNS +2.442 ns, CORDIC +1.955 ns, FIR16 +3.066 ns at 100 MHz). Record: [evidence/2026-11-02/basys3-tier56-board-01](../../../evidence/2026-11-02/basys3-tier56-board-01/README.md).
 Their transactions:
@@ -40,11 +40,16 @@ and bytes. The AES and CORDIC contracts accept a new input only after the
 result transfers, so like the divider they are not required to overlap.
 Transactions may be up to 32 bytes on either side.
 
-## Added, board run pending: CRC-16, SPI master, RV32I
+## Added November 2: CRC-16, SPI master, RV32I
 
-Three more winners are wired in and pass `python -m hwsuite sim` (the winner
-matches the model on 1,200 transactions and the injected fault fails). They
-have not been built, programmed or run on the board yet.
+Three more winners pass `python -m hwsuite sim` (the winner matches the model
+on 1,200 transactions and the injected fault fails) and pass on the board:
+50,000 / 50,000 transactions each with 0 mismatches and 10 restarts, the
+wrong-model control failing as required (RV32I build WNS +0.815 ns, CRC-16
++4.052 ns, SPI master +4.131 ns at 100 MHz). The RV32I core ran 50,000
+random 8-instruction programs, each checked against an independent ISA
+interpreter. Record:
+[evidence/2026-11-02/basys3-tier46-board-01](../../../evidence/2026-11-02/basys3-tier46-board-01/README.md).
 
 | Design | Winner file (SHA-256 prefix) | Harness-measured | Simulation | Fault caught |
 |---|---|---|---|---|

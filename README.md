@@ -26,11 +26,13 @@ board. Every number links to an archived run.
   ([evidence](evidence/2026-11-01/basys3-harness-echo-01/README.md)). An
   earlier harness-built transmitter streamed a million bytes the same way
   ([evidence](evidence/2026-10-29/harness-uart-tx-v2-01/README.md)).
-- **Nine optimized designs, all verified on hardware.** An AES-128 core, a
-  CORDIC sine/cosine unit, a 16-tap FIR built for 150 MHz, a signed FIR
-  filter, two dot products, a divider and two FIFOs. Each ran unedited on the
-  board and passed 50,000 transactions against an independent model under
-  randomized backpressure, with 0 mismatches.
+- **Twelve optimized designs, all verified on hardware.** A RISC-V RV32I
+  core (50,000 random programs checked against an ISA model), an AES-128
+  core, a CORDIC sine/cosine unit, a 16-tap FIR built for 150 MHz, an SPI
+  master, a CRC-16 stream, a signed FIR filter, two dot products, a divider
+  and two FIFOs. Each ran unedited on the board and passed 50,000
+  transactions against an independent model under randomized backpressure,
+  with 0 mismatches.
 - **Real optimization, not just passing tests.** The FIR went from failing
   timing at 78 LUTs to 52 LUTs with positive slack, and a dot product from
   328 to 20 LUTs by moving arithmetic into DSP slices.
@@ -157,11 +159,11 @@ and [winner](evidence/2026-10-26/generated-signed-fir4-attempt-01/run/signed_fir
 | UART transmitter + FIFO from a prose request (tier 3) | Setup −1.188 → +0.179 ns · 170 → 36 LUTs / 117 → 27 FFs | Independent fault-qualified test · 1,000,000-byte echo on the board |
 | AXI4-Lite register block (tier 5, out of context) | Built from specification: 95 LUTs · setup +5.441 ns | Independent fault-qualified test |
 | 16-tap symmetric FIR at 150 MHz (tier 5, out of context) | 394 → 148 LUTs · 9 DSPs · setup −10.25 → +0.751 ns | Independent fault-qualified test · 50,000 transactions on the board |
-| RISC-V RV32I core, 6 modules (tier 6, out of context) | 2,093 → 1,530 LUTs / 4,356 → 3,325 FFs · setup +0.916 ns | ISA-level checker, 44 programs, fault-qualified |
+| RISC-V RV32I core, 6 modules (tier 6, out of context) | 2,093 → 1,530 LUTs / 4,356 → 3,325 FFs · setup +0.916 ns | ISA-level checker, fault-qualified · 50,000 programs run on the board |
 | AES-128 encryption core (tier 6, out of context) | 9,108 → 614 LUTs · setup −9.76 → +2.216 ns | 15 FIPS-197/AESAVS known answers · 50,000 blocks encrypted on the board |
 | CORDIC sin/cos, 4 modules (tier 6) | Setup −1.757 → +0.076 ns · 194 LUTs | Bit-exact model · 50,000 angles on the board |
-| SPI master (tier 4) | 25 → 19 LUTs / 37 → 33 FFs · setup +0.354 ns | Independent fault-qualified test |
-| CRC-16 stream, arbiter + register file (tier 4) | Built from specification: 16 and 42 LUTs, timing met | Independent fault-qualified test |
+| SPI master (tier 4) | 25 → 19 LUTs / 37 → 33 FFs · setup +0.354 ns | Independent fault-qualified test · 50,000 exchanges on the board |
+| CRC-16 stream, arbiter + register file (tier 4) | Built from specification: 16 and 42 LUTs, timing met | Independent fault-qualified test · CRC-16 on the board |
 | Curriculum tier 0 (counter, mux4) | Held: 3 consecutive qualifying runs · counter 55 → 31 LUTs | All mandatory gates |
 
 All at 100 MHz with ideal zero I/O delays; the dot products map their
