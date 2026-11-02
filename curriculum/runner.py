@@ -79,6 +79,14 @@ def _runtime_identity(run_dir):
 
 
 def _accepted(summary, criteria):
+    if summary.get("status") == "target_infeasible":
+        # io_overutilization_sent_to_fixer: deterministic for the entry's configuration
+        # (top ports, part, implementation flow), so a FAIL of that configuration with
+        # this reason; not infrastructure (no verdict) and not a model failure.
+        capacity = summary.get("target_capacity") or {}
+        return False, (f"target_infeasible: the entry configuration does not fit the target "
+                       f"({capacity.get('io_ports')} I/O ports, {capacity.get('available_user_io')} "
+                       f"available user I/O on {capacity.get('part')}); not a model or infrastructure outcome")
     if summary.get("status") != "done":
         return False, "run did not complete successfully"
     try:

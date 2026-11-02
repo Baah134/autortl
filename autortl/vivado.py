@@ -18,7 +18,7 @@ from pathlib import Path
 from .config import RunConfig
 from .state import atomic_write_text
 from .report_parser import VivadoMetrics, parse_sim_log, parse_all, extract_message_ids
-from .triage import classify, FailureKind
+from .triage import classify, FailureKind, target_capacity, describe_target
 
 
 def _tcl_path(p: Path) -> str:
@@ -284,6 +284,11 @@ def run_synthesis(design_files: list[Path], top: str, cfg: RunConfig,
     kind = classify(out)
     if rc != 0 and kind == FailureKind.INFRA:
         return False, _error_lines(out), kind
+    if kind == FailureKind.TARGET:
+        # io_overutilization_sent_to_fixer: the summary first, then Vivado's own
+        # two-line message, so target_capacity() can read the error text back.
+        capacity = target_capacity(out)
+        return False, describe_target(capacity) + "\n" + capacity["excerpt"], kind
     duplicate = _duplicate_module_error(out)
     if duplicate:
         return False, duplicate, FailureKind.DESIGN
