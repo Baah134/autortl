@@ -1,0 +1,9 @@
+# PLAN — iteration 5
+## Current state assessment
+The verified incumbent uses 7 LUTs and 9 FFs and already meets timing (WNS 0.553 ns, WHS 0.135 ns), so iteration 5 must improve the LUT/FF objective; timing gains alone are insufficient. Four recent candidates were rejected, including an 8-bit counter with an unconditional wrapping increment, and the unchanged source seed has 32-bit counter storage with a terminal clear branch. Top numeric latency is unknown, so no numeric annotation is required; preserve the registered `pwm_out` update, synchronous reset, and all observable cycles.
+
+## Hypothesis
+Narrowing only the counter storage to 8 bits while retaining its explicit `counter == 8'hff` clear branch may reduce counter logic or FF use without changing post-reset behavior.
+
+## Instruction for generator
+Change `reg [31:0] counter` to an 8-bit counter and adjust its reset value, terminal comparison, and increment widths to match. Keep the terminal clear branch explicit; do not use the previously tried unconditional wrapping increment. Preserve the synchronous reset priority and the registered `pwm_out <= (counter < duty)` update exactly, then retain the candidate only if all verification and routed metric gates pass and its `(lut_used, ff_used)` is strictly better than the incumbent.

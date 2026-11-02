@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_2:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 2\n## Contract check\n- Interface and observable behavior: PASS \u2014 ports and reset behavior are preserved; the low-byte comparison with an upper-bit zero check is equivalent to the original 32-bit comparison.\n- Top latency annotation: PASS \u2014 authoritative latency is unknown, so no numeric annotation is required.\n- Compile, elaboration, and simulation: PASS \u2014 required tools exited successfully and the fixed testbench reported `TEST PASSED`.\n- Routed metrics and evidence integrity: PASS \u2014 retained routed reports and metric evidence are provided.\n- Timing closure: PASS \u2014 timing is feasible with WNS 0.553 ns and WHS 0.135 ns.\n- Objective improvement: FAIL \u2014 LUTs and FFs are unchanged from the timing-feasible previous best, so the required strict `minimize_luts` improvement is absent.\n\n## Summary\n- Passed: 5 of 6\n- Failed: 1 of 6\n- Improved over previous best: NO\n\n## Recommendation\nREJECT\n\n## Reason\nThe candidate preserves behavior and passes verification and timing gates, but both designs are timing-feasible and the candidate has the same LUT and FF counts as the previous best. It therefore does not meet the required strict objective improvement.",
+      "recommendation": "REJECT",
+      "passed": 5,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

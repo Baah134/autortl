@@ -1,0 +1,45 @@
+{
+  "candidates": [
+    {
+      "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff-t1-03\\tier1_b9ba9ss_\\pwm\\iter_002\\cand_standard",
+      "cache_hit": false,
+      "final_code_hash": "a5b8aa91cdaa49b9",
+      "final_source_sha256": "44b7e0e369fcec10995831beaeaf632c898c775c613f231e4e789cfa2aafaeb8",
+      "flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff-t1-03\\tier1_b9ba9ss_\\pwm\\iter_002\\cand_standard\\synth.tcl",
+        "sha256": "947572fd7f210285e7240f03f5315cdd3f1df2432dd235bfcccf9e6464d6369a"
+      },
+      "generated_code_hash": "a5b8aa91cdaa49b9",
+      "generated_source_sha256": "44b7e0e369fcec10995831beaeaf632c898c775c613f231e4e789cfa2aafaeb8",
+      "instruction": "Use an 8-bit `counter`, but restore an explicit `if (counter == 8'd255) counter <= 8'd0; else counter <= counter + 8'd1;` update instead of iteration 1\u2019s unconditional increment. Narrow the PWM comparison to `counter < duty`, keeping `pwm_out` registered from the pre-update counter and preserving synchronous reset behavior. Retain this candidate only if the unchanged verification and routed metric gates pass and it strictly improves the incumbent\u2019s LUT/FF objective.",
+      "iteration": 2,
+      "metrics": {
+        "bram_used": 0.0,
+        "dsp_used": 0,
+        "dynamic_power_w": 0.01,
+        "ff_used": 9,
+        "lut_used": 10,
+        "sim_passed": true,
+        "timing_met": true,
+        "total_power_w": 0.081,
+        "whs_ns": 0.227,
+        "wns_ns": 0.463
+      },
+      "mutation": "standard",
+      "reason": "",
+      "rungs": 5,
+      "source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff-t1-03\\tier1_b9ba9ss_\\pwm\\iter_002\\cand_standard\\pwm.v",
+        "sha256": "19cd12408fa468ed78761f20b1efaaf74c532e6903f6619c2ff484de536b184e"
+      },
+      "status": "measured"
+    }
+  ],
+  "doctor": null,
+  "instruction": "Use an 8-bit `counter`, but restore an explicit `if (counter == 8'd255) counter <= 8'd0; else counter <= counter + 8'd1;` update instead of iteration 1\u2019s unconditional increment. Narrow the PWM comparison to `counter < duty`, keeping `pwm_out` registered from the pre-update counter and preserving synchronous reset behavior. Retain this candidate only if the unchanged verification and routed metric gates pass and it strictly improves the incumbent\u2019s LUT/FF objective.",
+  "is_best": false,
+  "iteration": 2,
+  "recommendation": "REJECT",
+  "schema_version": 1,
+  "selected_source_sha256": "44b7e0e369fcec10995831beaeaf632c898c775c613f231e4e789cfa2aafaeb8"
+}

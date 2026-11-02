@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_4:decision:instruction:0",
+  "result": "Keep `clean_reg` as the registered output and replace the binary `stability_count` progression with a 3-bit LFSR: use `000` as the matching/idle state, seed the first mismatching sample at `001`, and advance through `011, 111, 110, 101, 010, 100`. On a mismatch while in `100`, update `clean_reg` to `noisy` and return the state to `000`; when `noisy == clean_reg`, return the state to `000`. Preserve synchronous active-high reset, the update on the eighth consecutive mismatching sample, all ports, and `// @latency 0`; the expected LUT reduction is a hypothesis to verify against routed metrics.",
+  "artifacts": {}
+}

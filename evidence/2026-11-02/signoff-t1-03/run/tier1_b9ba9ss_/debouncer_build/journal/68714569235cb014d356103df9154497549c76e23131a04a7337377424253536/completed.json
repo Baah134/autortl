@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Interface and edit scope: PASS \u2014 only `debouncer_top` is replaced; its ports match the contract.\n- Defined behavior, reset, and cycle timing: PASS \u2014 the LFSR qualifies a sustained mismatch for 8 cycles and resets synchronously, consistent with the specified behavior.\n- Top latency annotation: PASS \u2014 `// @latency 0` matches the authoritative value.\n- Deterministic verification: PASS \u2014 ladder is ALIVE and simulation reports `TEST PASSED`.\n- Tool and synthesis gates: PASS \u2014 required tools exited successfully and synthesis recorded `SYNTH_COMPLETE`.\n- Routed metrics and timing: PASS \u2014 routed evidence reports 3 LUTs, 4 FFs, WNS 0.557 ns, WHS 0.067 ns, and `timing_met=true`.\n- Objective improvement: FAIL \u2014 both designs are timing-feasible and have equal LUTs (3) and FFs (4), so the candidate does not strictly improve `minimize_luts`; `improvement_kind` is null.\n## Summary\n- Passed: 6 of 7\n- Failed: 1 of 7\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes the behavioral, deterministic verification, tool, and timing gates, but the incumbent is already timing-feasible and the candidate has identical LUT and FF counts. With no strict improvement to the selected objective, the mandatory promotion criterion is not met.",
+      "recommendation": "REJECT",
+      "passed": 6,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

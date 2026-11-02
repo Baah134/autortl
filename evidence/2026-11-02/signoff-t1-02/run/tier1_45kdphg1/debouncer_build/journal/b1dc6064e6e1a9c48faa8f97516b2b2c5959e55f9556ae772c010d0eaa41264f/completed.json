@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_3:decision:instruction:0",
+  "result": "In `debouncer_top`, replace the saturating up-counter with a 3-bit down-counter: synchronously reset it to `3'b111`, reload it to `3'b111` whenever `noisy == clean_reg`, and decrement it on each differing cycle. When the prior count is zero and `noisy != clean_reg`, update `clean_reg` to `noisy` on that edge; preserve the `// @latency 0` annotation, synchronous active-high reset, ports, and exact 8-consecutive-cycle behavior. Check the transition where `noisy` returns to `clean_reg` on the terminal cycle, and retain the candidate only if all deterministic gates pass and routed LUT count is strictly below the incumbent\u2019s 3 LUTs.",
+  "artifacts": {}
+}

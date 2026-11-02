@@ -1,0 +1,12 @@
+# PLAN — iteration 1
+## Current state assessment
+
+The verified incumbent is timing-feasible at 55 LUTs and 37 FFs, with routed WNS 0.494 ns and WHS 0.113 ns; the objective is strictly fewer LUTs, or fewer FFs only as a tie-break. The seed’s count update conditionally selects zero at all ones, although a WIDTH-bit increment already wraps to zero. The unused `prev_count` and `count_next` are source-level redundancies, but synthesis may already remove their cost. Top numeric latency is unknown, so no numeric annotation is required; the registered flag behavior must remain unchanged.
+
+## Hypothesis
+
+Using the natural modulo-WIDTH increment for `count` and keeping the all-ones test only for `overflow` may remove counter datapath mux logic and reduce LUT use while preserving timing feasibility.
+
+## Instruction for generator
+
+Remove the unused `prev_count` and `count_next` declarations and assignments, then update `count` with a WIDTH-bit `count + 1` on enabled cycles without a separate all-ones branch. Keep the all-ones comparison to set `overflow` on an enabled wrap, and preserve its hold behavior when disabled plus its reset and load clearing behavior. Preserve reset-over-load-over-enable priority, all registered threshold flags and their existing one-cycle relationship to `count`, the exact interface and parameter behavior, and do not add a numeric latency annotation.

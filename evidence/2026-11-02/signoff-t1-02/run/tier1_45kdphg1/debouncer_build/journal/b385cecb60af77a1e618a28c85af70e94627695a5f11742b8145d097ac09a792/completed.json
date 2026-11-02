@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_4:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 4,
+    "instruction": "In `debouncer_top`, replace the binary `count` increment/equality logic with a 3-bit Johnson sequence register that advances only while `noisy != clean_reg` and returns to its initial state when `noisy == clean_reg` or `rst` is asserted. Decode the sequence state corresponding to the eighth consecutive differing sample to update `clean_reg` on the same clock edge as the current implementation; preserve the output register and its reset behavior. Keep the interface, clock, cycle behavior, and `// @latency 0` unchanged, and retain this candidate only if it passes every deterministic gate and str",
+    "candidates": [
+      {
+        "iteration": 4,
+        "mutation": "standard",
+        "instruction": "In `debouncer_top`, replace the binary `count` increment/equality logic with a 3-bit Johnson sequence register that advances only while `noisy != clean_reg` and returns to its initial state when `noisy == clean_reg` or `rst` is asserted. Decode the sequence state corresponding to the eighth consecutive differing sample to update `clean_reg` on the same clock edge as the current implementation; preserve the output register and its reset behavior. Keep the interface, clock, cycle behavior, and `// @latency 0` unchanged, and retain this candidate only if it passes every deterministic gate and str",
+        "generated_source_sha256": "da0f72ad165d50b3ff2657e859c071b660cfa0d0f7cff696c02555dbeab5e25f",
+        "final_source_sha256": "ed5e30dfa5b4a42bf6a170164ba449c07c56667b69b68f1015293ca58c4fbb78",
+        "generated_code_hash": "82d673ea592de00b",
+        "final_code_hash": "7f1408ccc6b2b89b",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.57,
+          "whs_ns": 0.057,
+          "lut_used": 3,
+          "ff_used": 4,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.003,
+          "total_power_w": 0.073
+        },
+        "cache_hit": true,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff-t1-02\\tier1_45kdphg1\\debouncer_build\\iter_002\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff-t1-02\\tier1_45kdphg1\\debouncer_build\\iter_002\\cand_standard\\synth.tcl",
+          "sha256": "a3a460f13d81d3064e86e70b92269c0d07389cca1249b35ffd2b11421c141af9"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff-t1-02\\tier1_45kdphg1\\debouncer_build\\iter_002\\cand_standard\\debouncer_top.v",
+          "sha256": "1d652ce8dc9c6ec354109344f54509fa37bd8847a58045e8487164ec5c4c9916"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": "ed5e30dfa5b4a42bf6a170164ba449c07c56667b69b68f1015293ca58c4fbb78"
+  },
+  "artifacts": {}
+}

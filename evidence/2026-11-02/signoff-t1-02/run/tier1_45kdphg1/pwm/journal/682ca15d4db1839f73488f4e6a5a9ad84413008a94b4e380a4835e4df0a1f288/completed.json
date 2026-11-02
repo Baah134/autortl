@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_4:decision:instruction:0",
+  "result": "Keep the 32-bit counter, its synchronous active-high reset, and its existing conditional increment/wrap unchanged. Replace only `counter < {24'd0, duty}` with the equivalent condition `(counter[31:8] == 24'd0) && (counter[7:0] < duty)`. Preserve the registered `pwm_out` update and its reset behavior; the expected benefit is fewer LUTs, to be confirmed by routed utilization against the 7-LUT incumbent.",
+  "artifacts": {}
+}

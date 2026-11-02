@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_1:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 1,
+    "instruction": "Replace the `case (sel)` data-selection branch with an indexed 8-bit slice of the packed `{d, c, b, a}` bus, using `sel` to select the slice; keep the existing clocked process and synchronous active-high reset unchanged. Preserve the exact one-cycle registered output behavior for all four select values. This is a low-confidence resource hypothesis: compare routed LUT and FF counts against 8 and 8, and retain only if all gates pass and LUT count decreases (or LUTs tie and FF count decreases).",
+    "candidates": [
+      {
+        "iteration": 1,
+        "mutation": "standard",
+        "instruction": "Replace the `case (sel)` data-selection branch with an indexed 8-bit slice of the packed `{d, c, b, a}` bus, using `sel` to select the slice; keep the existing clocked process and synchronous active-high reset unchanged. Preserve the exact one-cycle registered output behavior for all four select values. This is a low-confidence resource hypothesis: compare routed LUT and FF counts against 8 and 8, and retain only if all gates pass and LUT count decreases (or LUTs tie and FF count decreases).",
+        "generated_source_sha256": "86cd9a081febaa4a0c1e91f5ca35537c85b2cb8b59412431c6729516f0296699",
+        "final_source_sha256": "86cd9a081febaa4a0c1e91f5ca35537c85b2cb8b59412431c6729516f0296699",
+        "generated_code_hash": "83093a3da33881e5",
+        "final_code_hash": "83093a3da33881e5",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.579,
+          "whs_ns": 0.046,
+          "lut_used": 8,
+          "ff_used": 8,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.04,
+          "total_power_w": 0.111
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff-t0-03\\tier0_e3l7kgsf\\mux4\\iter_001\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff-t0-03\\tier0_e3l7kgsf\\mux4\\iter_001\\cand_standard\\synth.tcl",
+          "sha256": "2c79b18cb3df64aa5c38308399c346643f8239a07737a58a73c34080c9ddf000"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff-t0-03\\tier0_e3l7kgsf\\mux4\\iter_001\\cand_standard\\mux4.v",
+          "sha256": "7696abce1afb5e5b4ecbb4c69f5837ead3a78304dc1ae72b60129b7dc96ac296"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": "86cd9a081febaa4a0c1e91f5ca35537c85b2cb8b59412431c6729516f0296699"
+  },
+  "artifacts": {}
+}

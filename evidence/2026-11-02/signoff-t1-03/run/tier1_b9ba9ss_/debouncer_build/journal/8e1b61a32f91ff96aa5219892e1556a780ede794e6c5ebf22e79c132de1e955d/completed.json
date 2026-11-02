@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_3:model:planner.plan:0",
+  "result": "# PLAN \u2014 iteration 3\n## Current state assessment\nThe incumbent is timing-feasible at 3 LUTs and 4 FFs, so this iteration needs a strict LUT reduction or an equal LUT count with fewer FFs to improve `minimize_luts`. Iterations 1 and 2 both passed verification and timing but were rejected with unchanged resource counts after trying an LFSR and a down-counter. The top wrapper is editable, while the child is frozen; the known top latency requires `// @latency 0`.\n\n## Hypothesis\nInlining the debouncer and letting the 3-bit counter wrap naturally on the eighth mismatch may remove terminal-count selection logic and reduce LUT use while preserving the qualification cycle.\n\n## Instruction for generator\nReplace the wrapper with equivalent logic inside `debouncer_top`, keeping the registered `clean` state and a 3-bit up-counter. Clear the counter when `noisy == clean`; otherwise increment it modulo 8, and update `clean` when the pre-edge counter is 7 and `noisy != clean`. Preserve synchronous active-high reset, exact cycle behavior, and the `// @latency 0` annotation.",
+  "artifacts": {}
+}

@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_3:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 3,
+    "instruction": "Replace the 32-bit counter with an 8-bit counter and replace the terminal-count branch and `counter + 1` update with explicit toggle equations: bit 0 toggles every enabled cycle, and each higher bit toggles when all lower bits are one. Preserve synchronous reset of the counter and `pwm_out`, and keep the registered comparison `pwm_out <= (counter < duty)` using the pre-update counter value. This is a new RTL coding pattern, but the behavior is still modulo-256 counting; retain it only if all gates pass and routed LUT use is strictly below 7.",
+    "candidates": [
+      {
+        "iteration": 3,
+        "mutation": "standard",
+        "instruction": "Replace the 32-bit counter with an 8-bit counter and replace the terminal-count branch and `counter + 1` update with explicit toggle equations: bit 0 toggles every enabled cycle, and each higher bit toggles when all lower bits are one. Preserve synchronous reset of the counter and `pwm_out`, and keep the registered comparison `pwm_out <= (counter < duty)` using the pre-update counter value. This is a new RTL coding pattern, but the behavior is still modulo-256 counting; retain it only if all gates pass and routed LUT use is strictly below 7.",
+        "generated_source_sha256": "2602e2f64a77616bbf6f9dd26b0fa0ca0cac831c9557449ccbc1b2a7d3fb4358",
+        "final_source_sha256": "2602e2f64a77616bbf6f9dd26b0fa0ca0cac831c9557449ccbc1b2a7d3fb4358",
+        "generated_code_hash": "bb122341781f9cbf",
+        "final_code_hash": "bb122341781f9cbf",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.404,
+          "whs_ns": 0.186,
+          "lut_used": 11,
+          "ff_used": 9,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.01,
+          "total_power_w": 0.081
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff-t1-03\\tier1_b9ba9ss_\\pwm\\iter_003\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff-t1-03\\tier1_b9ba9ss_\\pwm\\iter_003\\cand_standard\\synth.tcl",
+          "sha256": "f6664e7ea2e636f87c1a2025870ab2ebcf6af71eee5938a951aaa48a1ab56bb4"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff-t1-03\\tier1_b9ba9ss_\\pwm\\iter_003\\cand_standard\\pwm.v",
+          "sha256": "16159bf6b5dffa33f070e7930436118fda228f0f0d2d80bac36babb6fad2a6c1"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": "2602e2f64a77616bbf6f9dd26b0fa0ca0cac831c9557449ccbc1b2a7d3fb4358"
+  },
+  "artifacts": {}
+}

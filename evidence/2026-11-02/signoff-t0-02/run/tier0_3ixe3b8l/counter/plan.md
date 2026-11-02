@@ -1,0 +1,9 @@
+# PLAN — iteration 1
+## Current state assessment
+The incumbent is timing-feasible at 0.494 ns routed WNS and 0.113 ns WHS, using 55 LUTs and 37 FFs on the xc7a35tcpg236-1 at 10 ns; the objective is therefore a strict LUT reduction, with FFs as the tie-breaker. The seed has a dead 32-bit `prev_count`, redundant `count_next` logic, and registered flags that must continue to reflect the pre-edge count and update on disabled cycles. Numeric top latency is unknown, so no numeric annotation is required. Baseline simulation and routed reports are recorded as passing.
+
+## Hypothesis
+Removing dead state and expressing the increment and wrap directly should reduce LUT/FF use while preserving the incumbent timing feasibility.
+
+## Instruction for generator
+Remove the unused `prev_count` register and all of its assignments. Remove `count_next` and its blocking assignment; in the enabled, non-load branch, retain the all-ones wrap test and assign the increment result directly to `count`, preserving overflow set/clear and hold behavior exactly. Leave the registered threshold flag logic and reset behavior unchanged, including pre-edge flag semantics; preserve parameterized widths and threshold comparisons.

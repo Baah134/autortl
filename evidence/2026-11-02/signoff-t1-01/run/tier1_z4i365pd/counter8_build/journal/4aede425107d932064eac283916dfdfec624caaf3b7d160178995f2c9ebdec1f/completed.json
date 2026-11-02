@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_1:decision:instruction:0",
+  "result": "In `counter8_core`, replace the `else if (enable)` hold/update branch with an unconditional `count_reg <= count_reg + {7'b0, enable};` in the non-reset case, keeping synchronous active-high reset priority and the existing 8-bit state. Preserve the top interface, registered output, modulo-256 wraparound, and `// @latency 1` annotation. This is a LUT-reduction hypothesis, not an assumed gain: retain it only if the unchanged verification gates pass and routed LUT use is strictly below 6.",
+  "artifacts": {}
+}

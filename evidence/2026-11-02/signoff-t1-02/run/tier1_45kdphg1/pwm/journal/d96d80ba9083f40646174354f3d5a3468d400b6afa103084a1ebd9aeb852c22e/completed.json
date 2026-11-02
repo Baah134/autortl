@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_3:model:generator.generate:0",
+  "result": "`timescale 1ns/1ps\nmodule pwm (\n    input  wire       clk,\n    input  wire       rst,\n    input  wire [7:0] duty,\n    output reg        pwm_out\n);\n    reg [31:0] counter;\n    wire [31:0] incremented_counter;\n\n    assign incremented_counter = counter + 32'd1;\n\n    always @(posedge clk) begin\n        if (rst) begin\n            counter <= 32'd0;\n            pwm_out <= 1'b0;\n        end else begin\n            counter <= {\n                incremented_counter[31:9],\n                incremented_counter[8] & (counter != 32'd255),\n                incremented_counter[7:0]\n            };\n            pwm_out <= (counter < {24'd0, duty});\n        end\n    end\nendmodule",
+  "artifacts": {}
+}

@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_3:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 3\n## Contract check\n- Defined behavior: PASS \u2014 authoritative ladder result is ALIVE across all 5 rungs.\n- Interface and edit scope: PASS \u2014 candidate preserves the top ports and edits only `debouncer_top`.\n- Top latency annotation: PASS \u2014 `// @latency 0` matches the authoritative known latency.\n- Compile, elaboration, and simulation: PASS \u2014 required tools exited successfully and simulation reported `TEST PASSED`.\n- Synthesis completion: PASS \u2014 Vivado exited successfully and emitted `SYNTH_COMPLETE`.\n- Routed report and metric integrity: PASS \u2014 retained routed reports are identified and metrics are consistent.\n- Timing closure: PASS \u2014 timing is met, WNS is 0.57 ns, and WHS is 0.167 ns.\n- Objective improvement: FAIL \u2014 the previous best was already timing-feasible, and LUTs and FFs are unchanged at 3 and 4; `improvement_kind` is null.\n\n## Summary\n- Passed: 7 of 8\n- Failed: 1 of 8\n- Improved over previous best: NO\n\n## Recommendation\nREJECT\n\n## Reason\nThe candidate passes the behavior and implementation gates and meets timing, but the previous best was already timing-feasible. Under `minimize_luts`, the candidate must strictly improve the `(LUTs, FFs)` objective; its counts are unchanged, so it cannot replace the previous best.",
+      "recommendation": "REJECT",
+      "passed": 7,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

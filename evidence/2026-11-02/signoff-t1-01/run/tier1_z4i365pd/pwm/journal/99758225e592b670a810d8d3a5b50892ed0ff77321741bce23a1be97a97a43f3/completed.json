@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_5:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 5\n## Contract check\n- Interface and behavior: PASS \u2014 ladder is ALIVE; candidate retains the top interface, reset behavior, and registered output behavior.\n- Top latency annotation: PASS \u2014 authoritative `declared_latency.known=false`; no numeric annotation is required.\n- Compile and elaboration: PASS \u2014 xvlog and xelab exited successfully.\n- Simulation: PASS \u2014 unchanged testbench reports `TEST PASSED`.\n- Routed metrics and receipt integrity: PASS \u2014 retained routed reports and successful tool receipts are provided.\n- Timing closure: PASS \u2014 timing is feasible, with WNS 0.463 ns and WHS 0.227 ns.\n- Objective improvement: FAIL \u2014 both designs are timing-feasible; LUTs increased from 7 to 10 while FFs remained 9, so the minimize_luts objective did not improve.\n## Summary\n- Passed: 6 of 7\n- Failed: 1 of 7\n- Improved over previous best: NO\n## Recommendation\nRESTART\n## Reason\nThe candidate passes behavioral, simulation, implementation, and timing gates, but it does not improve the chosen objective over the timing-feasible previous best. The stall count is 4, meeting the restart threshold.",
+      "recommendation": "REJECT",
+      "passed": 6,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

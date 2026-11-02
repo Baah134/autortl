@@ -1,0 +1,13 @@
+# PLAN — iteration 4
+
+## Current state assessment
+
+Iterations 1 and 2 were accepted, and the verified incumbent is timing-feasible at 3 LUTs and 4 FFs; iteration 3 was rejected because it matched those counts. Its down-counter proposal is already tried, so iteration 4 should target a distinct state encoding while preserving the 8-consecutive-cycle debounce behavior, synchronous active-high reset, fixed-latency-0 output, and `// @latency 0`. The objective is a strict LUT improvement, or equal LUTs with fewer FFs; all simulation, routed-report integrity, setup, and hold gates still apply.
+
+## Hypothesis
+
+A 3-bit Johnson counter can encode the eight debounce phases with simple shift/invert next-state logic and terminal detection, potentially reducing LUTs versus the incumbent binary counter without adding state or changing when `clean` updates.
+
+## Instruction for generator
+
+In `debouncer_top`, replace the binary `count` increment/equality logic with a 3-bit Johnson sequence register that advances only while `noisy != clean_reg` and returns to its initial state when `noisy == clean_reg` or `rst` is asserted. Decode the sequence state corresponding to the eighth consecutive differing sample to update `clean_reg` on the same clock edge as the current implementation; preserve the output register and its reset behavior. Keep the interface, clock, cycle behavior, and `// @latency 0` unchanged, and retain this candidate only if it passes every deterministic gate and strictly improves the objective over the verified incumbent.

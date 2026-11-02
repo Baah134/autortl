@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_2:decision:instruction:0",
+  "result": "Keep `counter` 32 bits and retain the synchronous reset and registered `pwm_out` update. Replace the conditional 32-bit increment/wrap with a low-byte increment and a high-part increment enabled when the low byte is `8'hFF` and the high part is nonzero; this preserves the special wrap at 255 and normal 32-bit increment behavior elsewhere. Preserve the comparison against the full counter so states above 255 still produce the same output. Check reset, arbitrary high counter values, and transitions at 254, 255, and 256; retain the candidate only if the unchanged verification gates pass and routed `(LUTs, FFs)` improves on the incumbent.",
+  "artifacts": {}
+}

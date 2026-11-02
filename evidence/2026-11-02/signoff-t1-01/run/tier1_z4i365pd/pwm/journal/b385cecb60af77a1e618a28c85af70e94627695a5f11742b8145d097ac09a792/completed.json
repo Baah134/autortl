@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_4:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 4,
+    "instruction": "Keep the synchronous reset and registered `pwm_out` comparison unchanged. Replace the counter\u2019s `counter == 255` clear branch and `counter + 1` update with bitwise toggle equations for `counter[7:0]`: bit 0 toggles every cycle, and each higher bit toggles when all lower bits are 1; keep `counter[31:8]` zero on each nonreset cycle. This implements modulo-256 counting from the reset state; retain the exact observable cycles and accept the candidate only if the unchanged simulation, routed metric integrity, setup and hold gates pass and LUT usage strictly improves over the incumbent.",
+    "candidates": [
+      {
+        "iteration": 4,
+        "mutation": "standard",
+        "instruction": "Keep the synchronous reset and registered `pwm_out` comparison unchanged. Replace the counter\u2019s `counter == 255` clear branch and `counter + 1` update with bitwise toggle equations for `counter[7:0]`: bit 0 toggles every cycle, and each higher bit toggles when all lower bits are 1; keep `counter[31:8]` zero on each nonreset cycle. This implements modulo-256 counting from the reset state; retain the exact observable cycles and accept the candidate only if the unchanged simulation, routed metric integrity, setup and hold gates pass and LUT usage strictly improves over the incumbent.",
+        "generated_source_sha256": "3505397e13210b9862e6911b54d239e7146d55901860e3ea59056fd90ebf2c77",
+        "final_source_sha256": "3505397e13210b9862e6911b54d239e7146d55901860e3ea59056fd90ebf2c77",
+        "generated_code_hash": "7035934a13ef1943",
+        "final_code_hash": "7035934a13ef1943",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.404,
+          "whs_ns": 0.186,
+          "lut_used": 11,
+          "ff_used": 9,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.01,
+          "total_power_w": 0.081
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff-t1-01\\tier1_z4i365pd\\pwm\\iter_004\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff-t1-01\\tier1_z4i365pd\\pwm\\iter_004\\cand_standard\\synth.tcl",
+          "sha256": "d0724a76e9b66d2dbf03d04c173435dc473e62b5f0e137b16058c9d973ee1642"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff-t1-01\\tier1_z4i365pd\\pwm\\iter_004\\cand_standard\\pwm.v",
+          "sha256": "e2e84a21ca3a832d5e7584a7490be231f2b350fcdd48c8fa6f8cddeccd921eab"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": "3505397e13210b9862e6911b54d239e7146d55901860e3ea59056fd90ebf2c77"
+  },
+  "artifacts": {}
+}

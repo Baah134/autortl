@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Defined counter behavior and cycle semantics: PASS \u2014 the toggle equations implement modulo-256 increment when enabled, hold when disabled, and synchronous reset to zero with reset priority; the unchanged testbench passes.\n- Top interface and latency annotation: PASS \u2014 ports are preserved and the top declares `// @latency 1`, matching authoritative latency.\n- Deterministic verification and tool exits: PASS \u2014 ladder is ALIVE; simulation passes, and required tool exits are successful.\n- Routed metric integrity: PASS \u2014 retained routed reports and metric evidence are present.\n- Timing closure: PASS \u2014 timing is met with WNS 0.554 ns and WHS 0.238 ns.\n- Objective improvement (`minimize_luts`): FAIL \u2014 LUTs and FFs are unchanged at 6 and 8, so the candidate does not strictly improve the objective; `improvement_kind` is null.\n## Summary\n- Passed: 5 of 6\n- Failed: 1 of 6\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate preserves the specified behavior and meets timing, but both incumbent and candidate are timing-feasible and the candidate has the same LUT and FF counts. The required strict objective improvement is absent, so the mandatory criteria are not all satisfied.",
+      "recommendation": "REJECT",
+      "passed": 5,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

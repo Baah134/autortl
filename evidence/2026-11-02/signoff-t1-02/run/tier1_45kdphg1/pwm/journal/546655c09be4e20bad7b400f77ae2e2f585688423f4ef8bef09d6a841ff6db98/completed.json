@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_5:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 5,
+    "instruction": "Keep the 32-bit `counter`, synchronous active-high reset, and registered `pwm_out` comparison unchanged. Change only the counter next-state expression: derive a 32-bit increment enable from `counter != 32'd255`, then form the next value so the counter is zero at 255 and otherwise advances by one. Preserve the exact 32-bit wrap behavior and verify that the mapped design strictly improves LUTs (or ties LUTs with fewer FFs) against the incumbent; otherwise retain the incumbent.",
+    "candidates": [
+      {
+        "iteration": 5,
+        "mutation": "standard",
+        "instruction": "Keep the 32-bit `counter`, synchronous active-high reset, and registered `pwm_out` comparison unchanged. Change only the counter next-state expression: derive a 32-bit increment enable from `counter != 32'd255`, then form the next value so the counter is zero at 255 and otherwise advances by one. Preserve the exact 32-bit wrap behavior and verify that the mapped design strictly improves LUTs (or ties LUTs with fewer FFs) against the incumbent; otherwise retain the incumbent.",
+        "generated_source_sha256": "2b7cf16146bd7604fa701a0341ad4ce93ac43cce829c768b7476c4bce291723a",
+        "final_source_sha256": "2b7cf16146bd7604fa701a0341ad4ce93ac43cce829c768b7476c4bce291723a",
+        "generated_code_hash": "11c657035696228b",
+        "final_code_hash": "11c657035696228b",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.458,
+          "whs_ns": 0.135,
+          "lut_used": 57,
+          "ff_used": 33,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.01,
+          "total_power_w": 0.08
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff-t1-02\\tier1_45kdphg1\\pwm\\iter_005\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff-t1-02\\tier1_45kdphg1\\pwm\\iter_005\\cand_standard\\synth.tcl",
+          "sha256": "2f74b4eda9f8b1984159cd1a2aa27c6a42a2baf8a6b4d42038a40c56978d244f"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff-t1-02\\tier1_45kdphg1\\pwm\\iter_005\\cand_standard\\pwm.v",
+          "sha256": "9cd80ab25422c2c270c90b9659bb9d25fbb67b646bf1fe21fd535b914d894110"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": "2b7cf16146bd7604fa701a0341ad4ce93ac43cce829c768b7476c4bce291723a"
+  },
+  "artifacts": {}
+}

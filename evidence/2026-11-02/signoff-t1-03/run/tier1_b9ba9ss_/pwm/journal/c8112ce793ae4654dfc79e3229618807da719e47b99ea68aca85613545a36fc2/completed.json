@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_2:model:planner.plan:0",
+  "result": "# PLAN \u2014 iteration 2\n## Current state assessment\nThe verified incumbent is already timing-feasible at 7 LUTs and 9 FFs. Iteration 1 preserved behavior and timing but increased LUT use to 10, so it did not improve the `minimize_luts` objective. The top\u2019s numeric latency is unknown; no numeric latency annotation is required.\n\n## Hypothesis\nAn 8-bit counter with an explicit terminal-count clear may map more compactly than iteration 1\u2019s unconditional increment while preserving the same 0\u2013255 sequence.\n\n## Instruction for generator\nUse an 8-bit `counter`, but restore an explicit `if (counter == 8'd255) counter <= 8'd0; else counter <= counter + 8'd1;` update instead of iteration 1\u2019s unconditional increment. Narrow the PWM comparison to `counter < duty`, keeping `pwm_out` registered from the pre-update counter and preserving synchronous reset behavior. Retain this candidate only if the unchanged verification and routed metric gates pass and it strictly improves the incumbent\u2019s LUT/FF objective.",
+  "artifacts": {}
+}

@@ -1,0 +1,47 @@
+{"source_files": 334, "freeze": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff-t1-01-source-freeze.json"}
+{"exit_code": 0, "seconds": 445.8439999999973, "summary": "2021 passed in 444.15s (0:07:24)", "source_unchanged": true, "source_files": 334, "source_freeze_sha256": "4bc8ef96dc2a5d8a8298c4943cd7564ecd38e2a821b81c55f65f5201f9a41059"}
+{"prelaunch": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff-t1-01-prelaunch.json", "budgets_per_entry": {"iterations": null, "best_of_n": 1, "model_calls": 30, "tool_minutes": 40, "wall_minutes": 60, "infra_retries": 1}}
+[module counter8_core] golden model + testbench...
+[module priority_encoder8_core] golden model + testbench...
+[module debouncer] golden model + testbench...
+[build] integrated design compiles; entering optimize loop as baseline
+[build] editable unit: counter8_core + counter8; verified by the trusted integration testbench
+[build] integrated design compiles; entering optimize loop as baseline
+[build] editable unit: priority_encoder8_core + priority_encoder8; verified by the trusted integration testbench
+[module debouncer] tb qualification: detected flip == to !=
+[build] integrated design compiles; entering optimize loop as baseline
+[iter 0] baseline LUTs=6 FFs=8 WNS=0.424
+[iter 0] baseline LUTs=6 FFs=4 WNS=0.528
+[iter 0] baseline LUTs=4 FFs=5 WNS=0.731
+[iter 1] REJECT LUTs=6 (best iter 0, stall 1)
+
+DONE — best from iter 0: LUTs=6 FFs=8 WNS=0.424
+[bench] counter8_build: finished (1/4)
+[iter 1] *** NEW BEST *** LUTs=5 FFs=4 WNS=0.547
+
+DONE — best from iter 1: LUTs=5 FFs=4 WNS=0.547
+[bench] encoder8_build: finished (2/4)
+[iter 1] REJECT LUTs=4 (best iter 0, stall 1)
+[iter 0] baseline LUTs=7 FFs=9 WNS=0.553
+[iter 2] *** NEW BEST *** LUTs=3 FFs=4 WNS=0.57
+[iter 1] REJECT LUTs=10 (best iter 0, stall 1)
+[iter 3] REJECT LUTs=3 (best iter 2, stall 1)
+[iter 2] REJECT LUTs=7 (best iter 0, stall 2)
+[iter 4] *** NEW BEST *** LUTs=1 FFs=9 WNS=0.579
+
+DONE — best from iter 4: LUTs=1 FFs=9 WNS=0.579
+[bench] debouncer_build: finished (3/4)
+[iter 3] REJECT LUTs=8 (best iter 0, stall 3)
+[watchdog] STAGNATION: 3 consecutive iterations without improvement
+[iter 4] REJECT LUTs=11 (best iter 0, stall 4)
+[watchdog] STAGNATION: 3 consecutive iterations without improvement
+[iter 5] REJECT LUTs=10 (best iter 0, stall 5)
+
+DONE — best from iter 0: LUTs=7 FFs=9 WNS=0.553
+[bench] pwm: finished (4/4)
+[bench] counter8_build: PASS (mandatory gates passed)
+[bench] debouncer_build: PASS (mandatory gates passed)
+[bench] encoder8_build: PASS (mandatory gates passed)
+[bench] pwm: PASS (mandatory gates passed)
+[bench] tier 1: 4/4; held=False; streak=1
+{"exit_code": 0, "wall_seconds": 1023.6719999999914, "source_unchanged": true, "router_stats_prefix_unchanged": true, "history_prefix_unchanged": true, "ended_utc": "2026-11-02T20:41:25.105816+00:00"}

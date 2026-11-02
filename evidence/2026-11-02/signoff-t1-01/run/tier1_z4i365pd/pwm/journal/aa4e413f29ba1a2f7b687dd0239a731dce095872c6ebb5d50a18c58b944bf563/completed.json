@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_1:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 1,
+    "instruction": "Change the 32-bit `counter` to 8 bits and replace the `counter == 255` clear branch with an unconditional 8-bit increment, which wraps naturally at 255. Keep synchronous active-high reset clearing both `counter` and `pwm_out`, and keep `pwm_out` registered from the pre-edge counter comparison against `duty`. Preserve the existing ports and verify exact cycle behavior; do not add a numeric latency annotation.",
+    "candidates": [
+      {
+        "iteration": 1,
+        "mutation": "standard",
+        "instruction": "Change the 32-bit `counter` to 8 bits and replace the `counter == 255` clear branch with an unconditional 8-bit increment, which wraps naturally at 255. Keep synchronous active-high reset clearing both `counter` and `pwm_out`, and keep `pwm_out` registered from the pre-edge counter comparison against `duty`. Preserve the existing ports and verify exact cycle behavior; do not add a numeric latency annotation.",
+        "generated_source_sha256": "f1427f9eff9f100c50c6e3a7204758269365521266d02756b4ea82c84265c0a0",
+        "final_source_sha256": "f1427f9eff9f100c50c6e3a7204758269365521266d02756b4ea82c84265c0a0",
+        "generated_code_hash": "d1d33b8316ff1e30",
+        "final_code_hash": "d1d33b8316ff1e30",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.412,
+          "whs_ns": 0.196,
+          "lut_used": 10,
+          "ff_used": 9,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.01,
+          "total_power_w": 0.081
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff-t1-01\\tier1_z4i365pd\\pwm\\iter_001\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff-t1-01\\tier1_z4i365pd\\pwm\\iter_001\\cand_standard\\synth.tcl",
+          "sha256": "e42c971ecd6ff26132d4b2ddaa308a8a8bb185d7028b741d15b97810eec788ca"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff-t1-01\\tier1_z4i365pd\\pwm\\iter_001\\cand_standard\\pwm.v",
+          "sha256": "7f0aa38744a5d7d486664a2a36862e5f20fbce1951dd3d2fe61b971013c51c8d"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": "f1427f9eff9f100c50c6e3a7204758269365521266d02756b4ea82c84265c0a0"
+  },
+  "artifacts": {}
+}
