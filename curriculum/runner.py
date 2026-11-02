@@ -5,6 +5,7 @@ from dataclasses import asdict
 from datetime import datetime, timezone
 import hashlib
 import json
+import math
 import os
 import re
 from pathlib import Path
@@ -24,6 +25,24 @@ OVERRIDES = {"proposal_feedback", "vivado_bin", "xvlog_bin", "xelab_bin", "xsim_
              "max_llm_calls", "max_vivado_minutes", "max_wall_minutes", "max_infra_retries", "model"}
 EXECUTOR = ProcessPoolExecutor  # for --jobs > 1; separate processes keep per-tool timing apart
 STALE_LOCK_SECONDS = 600
+# meta.yaml `budgets` keys and the run settings they set for that entry only
+# (entry_budgets_ignored_by_bench).
+ENTRY_BUDGETS = {"model_calls": "max_llm_calls", "tool_minutes": "max_vivado_minutes",
+                 "wall_minutes": "max_wall_minutes"}
+
+
+def entry_settings(meta) -> dict:
+    """Run settings an entry declares for itself in meta.yaml (already validated).
+
+    They win over the bench's tier-wide values, which apply only to entries that
+    declare none (gate_frequency_overrides_entry_meta, entry_budgets_ignored_by_bench).
+    """
+    settings = {}
+    if "target_freq_mhz" in meta:
+        settings["target_freq_mhz"] = float(meta["target_freq_mhz"])
+    for key, value in (meta.get("budgets") or {}).items():
+        settings[ENTRY_BUDGETS[key]] = value if key == "model_calls" else float(value)
+    return settings
 
 
 def _run_entry(cfg, run_dir):
@@ -120,6 +139,21 @@ def _metadata(entry):
     if "synthesis_timeout_minutes" in meta and (type(meta["synthesis_timeout_minutes"]) not in (int, float)
                                                 or not 1 <= meta["synthesis_timeout_minutes"] <= 240):
         raise ValueError(f"{entry.name}: synthesis_timeout_minutes must be between 1 and 240")
+    if "target_freq_mhz" in meta and (type(meta["target_freq_mhz"]) not in (int, float)
+                                      or not math.isfinite(meta["target_freq_mhz"]) or meta["target_freq_mhz"] <= 0):
+        raise ValueError(f"{entry.name}: target_freq_mhz must be a positive number")
+    if "explore_budgets" in meta:
+        raise ValueError(f"{entry.name}: explore_budgets was renamed budgets")
+    if "budgets" in meta:
+        budgets = meta["budgets"]
+        if not isinstance(budgets, dict) or not budgets or set(budgets) - set(ENTRY_BUDGETS):
+            raise ValueError(f"{entry.name}: budgets may set only " + ", ".join(ENTRY_BUDGETS))
+        for key, value in budgets.items():
+            integer = key == "model_calls"
+            if (type(value) not in ((int,) if integer else (int, float)) or not math.isfinite(value)
+                    or value <= 0):
+                raise ValueError(f"{entry.name}: budgets.{key} must be a positive "
+                                 + ("integer" if integer else "number"))
     if "implementation" in meta and meta["implementation"] not in IMPLEMENTATIONS:
         raise ValueError(f"{entry.name}: implementation must be one of: " + ", ".join(IMPLEMENTATIONS))
     for name in ("design", "tb", "spec"):
@@ -371,6 +405,14 @@ def run_tier(tier: int, **overrides) -> int:
             if meta.get(key):
                 config[field] = (entry / meta[key]).resolve()
         config.update(overrides)
+        # The entry's own frequency and budgets win over the bench's tier-wide values;
+        # the effective values are in the snapshot and so in the cohort.
+        declared = entry_settings(meta)
+        for field, value in declared.items():
+            if field in overrides and overrides[field] != value:
+                print(f"[bench] {entry.name}: meta.yaml sets {field} = {value}; "
+                      f"the bench value {overrides[field]} does not apply to it", flush=True)
+        config.update(declared)
         cfg = RunConfig(**config)
         cfg.validate()
         snapshot = json.loads(json.dumps(asdict(cfg), default=str))
