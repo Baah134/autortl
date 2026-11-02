@@ -103,19 +103,25 @@ def bench_command(python, out, tier=0, model=None, jobs=1, vivado=None):
     return args
 
 
-def held_higher_tiers(history, tier):
+def held_higher_tiers(history, tier, governance_sha256=None):
     """Tiers above tier whose latest full-tier record is held.
 
     Held is a state, not an event (stale_held_record_blocks_lower_gates): a tier
     that was held and later lost it, or that was re-gated on a changed harness,
     no longer blocks the lower tiers. A subset record never changes it. In the
     bottom-up sign-off pass every tier above the one being gated is not yet held.
+    With governance_sha256 given, a hold recorded under other governance code is
+    a hold of another cohort and does not block either (held_under_old_governance_blocks).
     """
     latest = {}
     for record in history:
         if record.get("full_tier") is True:
             latest[record["tier"]] = record
-    return sorted(t for t, record in latest.items() if t > tier and record.get("held") is True)
+    def current(record):
+        recorded = (record.get("runtime_identity") or {}).get("governance_sha256")
+        return governance_sha256 is None or recorded == governance_sha256
+    return sorted(t for t, record in latest.items()
+                  if t > tier and record.get("held") is True and current(record))
 
 
 def entry_settings(tier, root=None):
@@ -159,8 +165,8 @@ def main(argv=None):
         if path.exists():
             raise SystemExit(f"{path} exists: an earlier attempt is never overwritten")
     sys.path.insert(0, str(ROOT))
-    from curriculum.runner import _history
-    held_above = held_higher_tiers(_history(), args.tier)
+    from curriculum import runner
+    held_above = held_higher_tiers(runner._history(), args.tier, sha(runner.__file__))
     if held_above:
         raise SystemExit("a higher held tier requires its own gate: tier "
                          + ", ".join(str(t) for t in held_above) + " is held")

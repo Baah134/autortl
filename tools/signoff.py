@@ -26,12 +26,18 @@ SKIP_DIRS = {"xsim.dir", ".Xil"}
 JOBS = {0: 2, 1: 3}  # every other tier: 2 (heavy Vivado runs share one laptop)
 
 
+def full_records(tier, history=None):
+    """Every full-tier history record of tier, oldest first."""
+    history = HISTORY if history is None else history  # looked up at call time
+    if not history.exists():
+        return []
+    records = [json.loads(line) for line in history.read_text(encoding="utf-8").splitlines() if line.strip()]
+    return [r for r in records if r.get("tier") == tier and r.get("full_tier") is True]
+
+
 def latest_full_record(tier, history=None):
     """The tier's latest full-tier history record, or None."""
-    history = HISTORY if history is None else history  # looked up at call time
-    records = [json.loads(line) for line in history.read_text(encoding="utf-8").splitlines() if line.strip()] \
-        if history.exists() else []
-    full = [r for r in records if r.get("tier") == tier and r.get("full_tier") is True]
+    full = full_records(tier, history)
     return full[-1] if full else None
 
 
@@ -92,10 +98,20 @@ def main(argv=None):
             if args.model:
                 cmd += ["--model", args.model]
             console = ROOT / "logs" / f"{name}.console.txt"
+            before = len(full_records(tier))
             print(f"[signoff] {name}: running", flush=True)
             with console.open("w", encoding="utf-8", errors="replace") as out:
                 code = subprocess.run(cmd, cwd=ROOT, stdout=out, stderr=subprocess.STDOUT).returncode
             files = archive(name, dest, python=args.python)
+            # Trust only a verdict this campaign recorded: a gate that refused to run or
+            # an infrastructure no-verdict adds no record (a stale one must not count).
+            if len(full_records(tier)) == before:
+                print("[signoff] " + json.dumps({"tier": tier, "campaign": name, "gate_exit": code,
+                                                 "archived_files": files, "verdict": None}), flush=True)
+                if code not in (0, 3):  # 3 = infrastructure no-verdict; anything else is a refusal
+                    print(f"[signoff] {name}: the gate recorded no verdict (exit {code}); stopping", flush=True)
+                    return 2
+                continue
             record = latest_full_record(tier)
             held = bool(record and record.get("held"))
             row = {"tier": tier, "campaign": name, "gate_exit": code, "archived_files": files,

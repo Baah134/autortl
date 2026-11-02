@@ -1,6 +1,7 @@
 """Measured curriculum runs and promotion of matching, consecutive cohorts."""
 from __future__ import annotations
 from concurrent.futures import ProcessPoolExecutor, as_completed
+from concurrent.futures.process import BrokenProcessPool
 from dataclasses import asdict
 from datetime import datetime, timezone
 import hashlib
@@ -432,6 +433,11 @@ def run_tier(tier: int, **overrides) -> int:
             for future in as_completed(futures):
                 try:
                     summaries[futures[future]] = future.result()
+                except BrokenProcessPool as exc:
+                    # dead_worker_pool_recorded_as_fail: a worker killed by the host (a stop,
+                    # out of memory) judged nothing, so the campaign gets no verdict.
+                    summaries[futures[future]] = {"status": "infra_blocked", "failure_kind": "infra",
+                                                  "error": "worker process terminated: " + str(exc)[:400]}
                 except BaseException as exc:  # a dead worker process still yields a record
                     summaries[futures[future]] = {"status": "exception", "error": type(exc).__name__ + ": " + str(exc)[:500]}
                 print(f"[bench] {futures[future]}: finished ({len(summaries)}/{len(prepared)})", flush=True)

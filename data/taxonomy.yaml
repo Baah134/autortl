@@ -615,6 +615,15 @@ harness_failures:
   entry_budgets_ignored_by_bench:
     meaning: "A heavy entry could raise its budgets only for exploration (meta.yaml explore_budgets, read by tools/explore.py alone), so a gate or bench would run AES-128 and RV32I at the default 40 tool minutes and 60 wall minutes that explore-tier6-05 and explore-tier6-06 had already shown are too short"
     repair: "Rename explore_budgets to budgets (keys model_calls, tool_minutes, wall_minutes; positive numbers; model_calls an integer), validated in the runner's metadata check; both tools/explore.py and the bench apply them to that entry only, over the tier defaults, and the effective limits are in the entry's recorded config and cohort"
+  held_under_old_governance_blocks:
+    meaning: "After the governance code (curriculum/runner.py) changed, tier 1's hold from sign-off pass 1 belonged to another cohort, yet the gate's higher-held-tier rule would still refuse to re-gate tier 0 beneath it"
+    repair: "A higher tier blocks only while its latest full-tier record is held under the current governance hash"
+  dead_worker_pool_recorded_as_fail:
+    meaning: "When the bench's worker processes died (sign-off pass 1 was stopped by hand mid tier 2), every entry's future raised BrokenProcessPool, each became an ordinary FAIL, and the campaign entered the history as a real 0/4 verdict although no design was judged"
+    repair: "A worker process that terminates abruptly is infrastructure: record the entry as infra_blocked so the campaign gets no verdict and nothing enters the history"
+  stale_held_record_trusted_by_signoff:
+    meaning: "Sign-off pass 2's tier 0 gate refused to run (a higher tier was held) and recorded nothing, but the driver read tier 0's older held record as that campaign's verdict and moved on"
+    repair: "The sign-off driver trusts a verdict only when its campaign added a new full-tier history record; a refusal stops the pass and an infrastructure no-verdict is retried"
   stale_held_record_blocks_lower_gates:
     meaning: "The gate refused a tier whenever any earlier history record of a higher tier was ever held, so once a higher tier had been held (or held and then lost), the lower tiers could never be gated again, even after that higher tier was re-gated on the changed harness and was no longer held"
     repair: "Held is a state, not an event: a higher tier blocks the gate only while its latest full-tier record is held. Re-gating that higher tier on the changed harness (its own gate) starts its new cohort and releases the lower tiers; a subset run never does"

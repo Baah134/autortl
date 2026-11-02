@@ -108,9 +108,20 @@ def test_a_held_higher_tier_blocks_the_gate(tmp_path, monkeypatch):
     import curriculum.runner as runner
     monkeypatch.setattr(gate, "ROOT", tmp_path)
     (tmp_path / "logs").mkdir()
-    monkeypatch.setattr(runner, "_history", lambda: [{"tier": 2, "held": True, "full_tier": True}])
+    current = gate.sha(runner.__file__)
+    monkeypatch.setattr(runner, "_history", lambda: [{"tier": 2, "held": True, "full_tier": True,
+                                                      "runtime_identity": {"governance_sha256": current}}])
     with pytest.raises(SystemExit, match="higher held tier"):
         gate.main(["--name", "gate-02", "--tier", "1"])
+
+
+def test_a_hold_under_old_governance_does_not_block():
+    # held_under_old_governance_blocks: sign-off pass 2 changed runner.py, so pass 1's
+    # tier 1 hold belongs to another cohort.
+    old = {"tier": 1, "held": True, "full_tier": True, "runtime_identity": {"governance_sha256": "old"}}
+    assert gate.held_higher_tiers([old], 0, "new") == []
+    assert gate.held_higher_tiers([old], 0, "old") == [1]
+    assert gate.held_higher_tiers([old], 0) == [1]  # no governance given: as before
 
 
 def test_a_pinned_model_is_passed_to_the_bench(tmp_path):

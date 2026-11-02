@@ -113,3 +113,40 @@ def test_prefix_names_a_new_pass(tmp_path, monkeypatch):
     monkeypatch.setattr(signoff, "archive", lambda name, dest, **k: dest.mkdir(parents=True) or 1)
     assert signoff.main(["--tiers", "0", "--date", "d", "--prefix", "signoff2"]) == 0
     assert names == ["signoff2-t0-01"]
+
+
+def test_a_refused_gate_never_counts_a_stale_held_record(tmp_path, monkeypatch):
+    # pass 2 on November 2: tier 0's gate refused (a higher tier was held) and the
+    # driver read tier 0's old held record as its own verdict.
+    monkeypatch.setattr(signoff, "ROOT", tmp_path)
+    (tmp_path / "logs").mkdir()
+    history = tmp_path / "results.jsonl"
+    monkeypatch.setattr(signoff, "HISTORY", history)
+    write_history(history, [{"tier": 0, "full_tier": True, "qualified": True, "held": True}])
+    names = []
+    def refuse(cmd, **kwargs):
+        names.append(cmd[cmd.index("--name") + 1])
+        return subprocess.CompletedProcess(cmd, 1)  # no new history record
+    monkeypatch.setattr(signoff.subprocess, "run", refuse)
+    monkeypatch.setattr(signoff, "archive", lambda name, dest, **k: dest.mkdir(parents=True) or 1)
+    assert signoff.main(["--tiers", "0", "1", "--date", "d", "--prefix", "p"]) == 2
+    assert names == ["p-t0-01"]  # stopped; tier 1 never started
+
+
+def test_an_infrastructure_no_verdict_is_retried(tmp_path, monkeypatch):
+    monkeypatch.setattr(signoff, "ROOT", tmp_path)
+    (tmp_path / "logs").mkdir()
+    history = tmp_path / "results.jsonl"
+    monkeypatch.setattr(signoff, "HISTORY", history)
+    write_history(history, [])
+    calls = []
+    def run(cmd, **kwargs):
+        calls.append(cmd[cmd.index("--name") + 1])
+        if len(calls) == 1:
+            return subprocess.CompletedProcess(cmd, 3)  # infra: no verdict, no record
+        write_history(history, [{"tier": 0, "full_tier": True, "qualified": True, "held": True}])
+        return subprocess.CompletedProcess(cmd, 0)
+    monkeypatch.setattr(signoff.subprocess, "run", run)
+    monkeypatch.setattr(signoff, "archive", lambda name, dest, **k: dest.mkdir(parents=True) or 1)
+    assert signoff.main(["--tiers", "0", "--date", "d", "--prefix", "p"]) == 0
+    assert calls == ["p-t0-01", "p-t0-02"]
