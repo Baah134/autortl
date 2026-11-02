@@ -870,3 +870,25 @@ entries), not only to rr_regfile_build's two-child spec.
 Remaining acceptance: controlled pytest only so far. Before relying on it,
 rerun tier4 exploration and the held-tier gates (the tier1-3 build entries
 now optimize the whole unit), and record whether any candidate changes LUTs.
+
+## October30 (Claude Code): equal-LUT flip-flop savings were discarded
+
+explore-tier4-01 crc16_stream_build iteration 3 (16 LUT, 34 to 18 FF, timing
+met) and explore-tier4-02 iteration 2 (16 LUT, 34 to 19 FF) verified and were
+rejected: under minimize_luts an equal LUT count was never an improvement, so a
+real saving was lost once LUTs sat at their floor (taxonomy
+`equal_lut_ff_saving_discarded`).
+
+**Decided and implemented (branch objective-ff-tiebreak):** between two
+verified timing-feasible designs, minimize_luts compares (lut_used, ff_used) and
+minimize_ffs compares (ff_used, lut_used) lexicographically; a missing or
+non-finite secondary gives no tie-break; maximize_freq and minimize_power are
+unchanged. Applied in `objectives.improvement_kind` (via `tie_break_field`),
+best-of-N `select`, the fixed contract and its saved objective policy, and the
+planner and evaluator prompts (DESIGN.md, resource objective tie-break).
+Checkpoints saved before the change do not resume, because the objective policy
+is contract evidence.
+
+Remaining acceptance: controlled pytest only. Rerun tier4 exploration and the
+held-tier gates, and record whether crc16_stream_build now promotes an
+equal-LUT, fewer-FF candidate and whether the evaluator accepts it.
