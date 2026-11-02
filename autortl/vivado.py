@@ -400,4 +400,8 @@ def advisor_digest(work_dir: Path, taxonomy=None, max_items: int = 8) -> str:
     if qor:
         parts.append("Vivado QoR suggestions (advisory):\n"
                      + "\n".join(f"- {q}" for q in qor))
+    from .timing_doctor import path_summary  # critical_path_hidden_from_planner
+    worst = path_summary(work_dir)
+    if worst:
+        parts.insert(0, "Critical path (advisory):\n- " + worst)
     return "\n\n".join(parts)

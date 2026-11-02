@@ -105,3 +105,28 @@ def test_hold_violation_takes_priority_over_setup_surgery(tmp_path):
     result = diagnose(tmp_path, False)
     assert result.category == TimingCategory.HOLD
     assert result.action == "tool_knobs"
+
+
+def test_output_port_path_is_named_and_sent_to_surgery(tmp_path):
+    # critical_path_hidden_from_planner (explore-tier6-03 cordic_build: register -> sin_out[15])
+    from autortl.timing_doctor import path_summary
+    from autortl.vivado import advisor_digest
+    shutil.copyfile(Path(__file__).parent / "fixtures" / "timing_output_port_path.rpt",
+                    tmp_path / "timing_routed.rpt")
+    result = diagnose(tmp_path, False)
+    assert result.category == TimingCategory.PORT_PATH and result.action == "rtl_surgery"
+    assert "output port sin_out[15]" in result.instruction and "same observable cycles" in result.instruction
+    summary = path_summary(tmp_path)
+    assert summary.startswith("Worst violated setup path: u_cordic_engine/y_reg_reg[1]/C -> sin_out[15]")
+    assert "slack -1.757 ns" in summary and "output port sin_out[15]" in summary
+    assert advisor_digest(tmp_path).startswith("Critical path (advisory):")
+
+
+def test_internal_path_is_not_a_port_path(tmp_path):
+    from autortl.timing_doctor import path_summary
+    text = (Path(__file__).parent / "fixtures" / "timing_output_port_path.rpt").read_text(encoding="utf-8")
+    text = text.replace("sin_out[15]\n", "u_out/sin_reg[15]/D\n").replace(
+        "(output port clocked by", "(rising edge-triggered cell FDRE clocked by")
+    (tmp_path / "timing_routed.rpt").write_text(text, encoding="utf-8")
+    assert diagnose(tmp_path, False).category != TimingCategory.PORT_PATH
+    assert "port" not in path_summary(tmp_path)

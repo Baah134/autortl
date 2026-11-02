@@ -140,6 +140,12 @@ harness_failures:
   golden_table_setup_exhausts_step_budget:
     meaning: "The AES round oracle ran out of the sandbox's single 200,000-line budget (setup, init and every step shared it), then a second attempt computed a wrong ciphertext, so tier6 aes128_core_build ended module_failed with two oracle attempts and a supplied spec that cannot be replanned (explore-tier6-01)"
     repair: "Give module setup and init() their own larger budget, name the phase in the budget error, and tell the oracle prompt to derive constant tables once in init() with an efficient loop rather than per step or from memory"
+  fixed_synthesis_timeout_blocks_heavy_designs:
+    meaning: "The AES-128 baseline passed its independent testbench, then synthesis hit the fixed 900 s per-call timeout twice (about 20 S-box ROMs, 4 GB peak, ten minutes before timing optimization); infrastructure classification was correct but no entry could ask for more (explore-tier6-05)"
+    repair: "Make the synthesis timeout a run setting (synthesis_timeout_minutes; default 15, still capped by the remaining tool budget) that meta.yaml and run.py can raise, and let an entry raise its exploration tool and wall budgets"
+  critical_path_hidden_from_planner:
+    meaning: "CORDIC met timing internally (register-to-register +0.585 ns) but its worst path ran from the engine register through the output rounding adder to the sin_out pin (WNS -1.757 ns); the planner never saw the path and twice rewrote the adder's form, which cannot beat pad and clock-insertion delay, and the timing doctor had no port-path category (explore-tier6-03 cordic_build)"
+    repair: "Name the worst violated setup path (source, destination, slack, levels, port endpoints from Vivado's labels) in the planner's advisory evidence, and give the timing doctor a port_path category whose surgery drives the port from a register at the same latency"
   editable_unit_inventory_overflow:
     meaning: "The RV32I core's editable unit (six modules + top) built and met timing, then the run crashed with a traceback because the advisory module inventory, pretty-printed, exceeded the 16,000-character candidate context; the complete unit text is the generation seed, so nothing required failing (explore-tier6-03 rv32i_core_build)"
     repair: "Compact the inventory JSON, then list child modules by port names, then by name, always keeping the top's full interface; fail only when even names do not fit"
