@@ -1,0 +1,5 @@
+{
+  "stage": "module_cordic_atan:model:generator.generate:0",
+  "result": "`timescale 1ns/1ps\n// @latency 0\nmodule cordic_atan (\n    input  wire [3:0]  idx,\n    output wire [19:0] atan\n);\n\n    reg [19:0] atan_value;\n\n    always @(*) begin\n        atan_value = 20'd0;\n        case (idx)\n            4'd0:  atan_value = 20'd131072;\n            4'd1:  atan_value = 20'd77376;\n            4'd2:  atan_value = 20'd40884;\n            4'd3:  atan_value = 20'd20753;\n            4'd4:  atan_value = 20'd10417;\n            4'd5:  atan_value = 20'd5213;\n            4'd6:  atan_value = 20'd2607;\n            4'd7:  atan_value = 20'd1304;\n            4'd8:  atan_value = 20'd652;\n            4'd9:  atan_value = 20'd326;\n            4'd10: atan_value = 20'd163;\n            4'd11: atan_value = 20'd81;\n            4'd12: atan_value = 20'd41;\n            4'd13: atan_value = 20'd20;\n            4'd14: atan_value = 20'd10;\n            4'd15: atan_value = 20'd5;\n        endcase\n    end\n\n    assign atan = atan_value;\n\nendmodule",
+  "artifacts": {}
+}

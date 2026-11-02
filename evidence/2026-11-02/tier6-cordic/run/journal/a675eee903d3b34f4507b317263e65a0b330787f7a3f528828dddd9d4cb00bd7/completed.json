@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_4:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 4\n## Contract check\n- Top interface and defined behavior: PASS \u2014 the candidate defines `cordic_sincos` with the contracted ports, and the unchanged integration testbench passed.\n- Top latency annotation: PASS \u2014 authoritative latency is unknown, so no numeric top annotation is required.\n- Compilation and simulation gates: PASS \u2014 `xvlog`, `xelab`, and `xsim` exited successfully; simulation reported `TEST PASSED`.\n- Routed metrics and evidence: PASS \u2014 required tool exits and retained routed reports are present.\n- Timing closure: PASS \u2014 timing is met, with WNS 0.155 ns and WHS 0.130 ns.\n- Improvement over previous best: FAIL \u2014 both designs are timing-feasible, but LUTs and FFs are unchanged (194, 95), so the objective did not strictly improve.\n## Summary\n- Passed: 5 of 6\n- Failed: 1 of 6\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes the deterministic verification and timing gates, and the missing top latency annotation is allowed because authoritative top latency is unknown. The previous best was already timing-feasible, so promotion requires a strict objective improvement; the candidate\u2019s LUT and FF counts are equal to the previous best.",
+      "recommendation": "REJECT",
+      "passed": 5,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_3:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 3\n## Contract check\n- Top interface and defined cycle behavior: PASS \u2014 top ports and handshake behavior are preserved; the unchanged integration testbench passed.\n- Top latency annotation: PASS \u2014 authoritative top latency is unknown, so no numeric annotation is required.\n- Compile, elaboration, and simulation: PASS \u2014 required tool exits succeeded and the simulation reported `TEST PASSED`.\n- Routed metrics and integrity: PASS \u2014 retained routed reports and metric evidence are present and consistent.\n- Timing closure: PASS \u2014 timing_met=true, WNS=0.245 ns, and WHS=0.011 ns.\n- Objective improvement: FAIL \u2014 previous best is timing-feasible; LUTs increased from 194 to 197 and FFs remained at 95, so the minimize_luts objective did not improve.\n## Summary\n- Passed: 5 of 6\n- Failed: 1 of 6\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes behavioral verification and timing closure, but the previous best was already timing-feasible and the candidate uses more LUTs with no FF reduction. The required strict objective improvement is absent.",
+      "recommendation": "REJECT",
+      "passed": 5,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

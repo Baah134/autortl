@@ -1,0 +1,26 @@
+[module cordic_prerot] golden model + testbench...
+[module cordic_prerot] tb qualification: detected stuck-zero outputs
+[module cordic_atan] golden model + testbench...
+[module cordic_atan] tb qualification: detected stuck-zero outputs
+[module cordic_engine] golden model + testbench...
+[module cordic_engine] tb qualification: detected flip == to !=
+[module cordic_out] golden model + testbench...
+[module cordic_out] tb qualification: detected stuck-zero outputs
+[build] integrated design compiles; entering optimize loop as baseline
+[build] editable unit: cordic_prerot, cordic_atan, cordic_engine, cordic_out + cordic_sincos; verified by the trusted integration testbench
+[iter 0] baseline LUTs=155 FFs=62 WNS=-1.757
+[doctor] wns=-0.279 category=port_path action=rtl_surgery
+[iter 1] *** NEW BEST *** LUTs=194 FFs=95 WNS=0.076
+[iter 2] REJECT LUTs=195 (best iter 1, stall 1)
+[iter 3] REJECT LUTs=197 (best iter 1, stall 2)
+[doctor] wns=-0.279 category=port_path action=rtl_surgery
+[iter 4] REJECT LUTs=194 (best iter 1, stall 3)
+
+DONE — best from iter 1: LUTs=194 FFs=95 WNS=0.076
+{
+  "status": "done",
+  "best_iteration": 1,
+  "timing_closed": true,
+  "improvement_kind": "timing_recovery",
+  "run_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-09\\cordic_build"
+}

@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_4:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 4,
+    "instruction": "In `aes_sbox_lookup`, replace the flat 256-entry `case(value)` with a two-level 4-bit decomposition: use `value[7:4]` to select a bank and `value[3:0]` to address that bank\u2019s 16-entry truth table, sharing the bank-select logic across all eight output bits. Preserve the exact S-box mapping for all 256 inputs and leave the round, key schedule, controller, and top cycle behavior unchanged. Compare routed LUTs, setup WNS, and hold WHS against the 614-LUT incumbent; retain the candidate only if all gates pass and LUT count strictly decreases.",
+    "candidates": [
+      {
+        "iteration": 4,
+        "mutation": "standard",
+        "instruction": "In `aes_sbox_lookup`, replace the flat 256-entry `case(value)` with a two-level 4-bit decomposition: use `value[7:4]` to select a bank and `value[3:0]` to address that bank\u2019s 16-entry truth table, sharing the bank-select logic across all eight output bits. Preserve the exact S-box mapping for all 256 inputs and leave the round, key schedule, controller, and top cycle behavior unchanged. Compare routed LUTs, setup WNS, and hold WHS against the 614-LUT incumbent; retain the candidate only if all gates pass and LUT count strictly decreases.",
+        "generated_source_sha256": "208779e3ecfffdb5d32e1dd103092ef77657bb20b61e108ddd5d34ac15c31bcd",
+        "final_source_sha256": "208779e3ecfffdb5d32e1dd103092ef77657bb20b61e108ddd5d34ac15c31bcd",
+        "generated_code_hash": "073ed6548d77664f",
+        "final_code_hash": "073ed6548d77664f",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 2.493,
+          "whs_ns": 0.233,
+          "lut_used": 1105,
+          "ff_used": 262,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.035,
+          "total_power_w": 0.103
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-07\\aes128_core_build\\iter_004\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-07\\aes128_core_build\\iter_004\\cand_standard\\synth.tcl",
+          "sha256": "85da8f854367f7c5a1734b11438ca8bcd76c91363e4f4975fc320f9cbadbbd82"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-07\\aes128_core_build\\iter_004\\cand_standard\\aes128_core.v",
+          "sha256": "223f26d290430d1879a035d7c3a0d9b3359979ca38fcf49d0af17bc10e9eabe4"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": "208779e3ecfffdb5d32e1dd103092ef77657bb20b61e108ddd5d34ac15c31bcd"
+  },
+  "artifacts": {}
+}

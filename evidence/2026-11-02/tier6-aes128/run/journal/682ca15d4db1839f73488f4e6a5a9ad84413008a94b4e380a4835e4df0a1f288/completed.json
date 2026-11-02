@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_4:decision:instruction:0",
+  "result": "In `aes_sbox_lookup`, replace the flat 256-entry `case(value)` with a two-level 4-bit decomposition: use `value[7:4]` to select a bank and `value[3:0]` to address that bank\u2019s 16-entry truth table, sharing the bank-select logic across all eight output bits. Preserve the exact S-box mapping for all 256 inputs and leave the round, key schedule, controller, and top cycle behavior unchanged. Compare routed LUTs, setup WNS, and hold WHS against the 614-LUT incumbent; retain the candidate only if all gates pass and LUT count strictly decreases.",
+  "artifacts": {}
+}

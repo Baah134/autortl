@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_1:decision:instruction:0",
+  "result": "In `aes_round`, replace the `gf_mul` based exponentiation inside `aes_sbox` with a complete 256-entry case lookup matching the existing `aes_key_step` S-box table, preserving the current byte ordering, ShiftRows, MixColumns, final-round selection, and round-key XOR. Keep the controller and its reset and handshake behavior unchanged, and do not add pipeline stages or infer a numeric latency annotation for the top. Check the full integration testbench and all compile, routed metric integrity, setup, and hold gates; the expected benefit is fewer logic levels on the `ct_reg` feedback path, with LUT reduction to be confirmed by routed reports.",
+  "artifacts": {}
+}

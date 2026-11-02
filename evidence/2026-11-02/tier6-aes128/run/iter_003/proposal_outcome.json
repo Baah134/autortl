@@ -1,0 +1,45 @@
+{
+  "candidates": [
+    {
+      "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-07\\aes128_core_build\\iter_003\\cand_standard",
+      "cache_hit": false,
+      "final_code_hash": "0a7ebeaebc984e43",
+      "final_source_sha256": "2cb78704d4de6676be3e26c908ba2d143bd09c1b6fa47478a6fdb34bcdd9c3bd",
+      "flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-07\\aes128_core_build\\iter_003\\cand_standard\\synth.tcl",
+        "sha256": "f9a9260fa018071898657991ac995d66eead9d1878c14be6b0afc772329a6303"
+      },
+      "generated_code_hash": "0a7ebeaebc984e43",
+      "generated_source_sha256": "2cb78704d4de6676be3e26c908ba2d143bd09c1b6fa47478a6fdb34bcdd9c3bd",
+      "instruction": "In `aes_round`, replace the `mixed_state = shifted_state` plus `if (!final_round)` whole-column selection with the shared-total correction form: each output byte is its shifted byte XOR the corresponding MixColumns correction, masked by `!final_round`. XOR `round_key` with that result, preserving the existing byte order and final-round behavior. Keep the controller, registers, handshakes, reset behavior, and cycle timing unchanged; evaluate against the same routed LUT, WNS, and WHS gates.",
+      "iteration": 3,
+      "metrics": {
+        "bram_used": 0.0,
+        "dsp_used": 0,
+        "dynamic_power_w": 0.05,
+        "ff_used": 262,
+        "lut_used": 1329,
+        "sim_passed": true,
+        "timing_met": true,
+        "total_power_w": 0.118,
+        "whs_ns": 0.112,
+        "wns_ns": 3.152
+      },
+      "mutation": "standard",
+      "reason": "",
+      "rungs": 5,
+      "source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-07\\aes128_core_build\\iter_003\\cand_standard\\aes128_core.v",
+        "sha256": "9c81ca0be0c45db8151fe02d326de458da43d3ee8eaf2af83911e6c5aa03ca50"
+      },
+      "status": "measured"
+    }
+  ],
+  "doctor": null,
+  "instruction": "In `aes_round`, replace the `mixed_state = shifted_state` plus `if (!final_round)` whole-column selection with the shared-total correction form: each output byte is its shifted byte XOR the corresponding MixColumns correction, masked by `!final_round`. XOR `round_key` with that result, preserving the existing byte order and final-round behavior. Keep the controller, registers, handshakes, reset behavior, and cycle timing unchanged; evaluate against the same routed LUT, WNS, and WHS gates.",
+  "is_best": false,
+  "iteration": 3,
+  "recommendation": "REJECT",
+  "schema_version": 1,
+  "selected_source_sha256": "2cb78704d4de6676be3e26c908ba2d143bd09c1b6fa47478a6fdb34bcdd9c3bd"
+}

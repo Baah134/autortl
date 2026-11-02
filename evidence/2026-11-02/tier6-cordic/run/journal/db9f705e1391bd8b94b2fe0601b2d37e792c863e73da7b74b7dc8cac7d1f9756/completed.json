@@ -1,0 +1,5 @@
+{
+  "stage": "module_cordic_out:model:generator.generate:0",
+  "result": "`timescale 1ns/1ps\n// @latency 0\nmodule cordic_out (\n    input  wire [17:0] x_in,\n    input  wire [17:0] y_in,\n    output wire [15:0] cos_out,\n    output wire [15:0] sin_out\n);\n\n    wire signed [18:0] x_extended = {x_in[17], x_in};\n    wire signed [18:0] y_extended = {y_in[17], y_in};\n    wire signed [18:0] x_rounded = x_extended + 19'sd2;\n    wire signed [18:0] y_rounded = y_extended + 19'sd2;\n\n    assign cos_out = x_rounded >>> 2;\n    assign sin_out = y_rounded >>> 2;\n\nendmodule",
+  "artifacts": {}
+}

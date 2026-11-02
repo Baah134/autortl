@@ -1,0 +1,398 @@
+`timescale 1ns/1ps
+// @latency 1
+module aes_ctrl (
+    input wire clk,
+    input wire rst,
+    input wire in_valid,
+    output wire in_ready,
+    input wire [127:0] key,
+    input wire [127:0] pt,
+    output wire out_valid,
+    input wire out_ready,
+    output wire [127:0] ct,
+    output wire [127:0] rk,
+    output wire [7:0] rcon,
+    output wire last,
+    input wire [127:0] round_out,
+    input wire [127:0] key_next
+);
+
+    reg busy;
+    reg out_valid_reg;
+    reg [3:0] rnd;
+    reg [127:0] ct_reg;
+    reg [127:0] rk_reg;
+
+    assign in_ready = !busy && !out_valid_reg;
+    assign out_valid = out_valid_reg;
+    assign ct = ct_reg;
+    assign rk = rk_reg;
+    assign last = (rnd == 4'd10);
+
+    reg [7:0] rcon_value;
+    always @(*) begin
+        rcon_value = 8'h00;
+        case (rnd)
+            4'd0: rcon_value = 8'h01;
+            4'd1: rcon_value = 8'h02;
+            4'd2: rcon_value = 8'h04;
+            4'd3: rcon_value = 8'h08;
+            4'd4: rcon_value = 8'h10;
+            4'd5: rcon_value = 8'h20;
+            4'd6: rcon_value = 8'h40;
+            4'd7: rcon_value = 8'h80;
+            4'd8: rcon_value = 8'h1b;
+            4'd9: rcon_value = 8'h36;
+            default: rcon_value = 8'h00;
+        endcase
+    end
+    assign rcon = rcon_value;
+
+    always @(posedge clk) begin
+        if (rst) begin
+            busy <= 1'b0;
+            out_valid_reg <= 1'b0;
+            rnd <= 4'd0;
+            ct_reg <= 128'd0;
+            rk_reg <= 128'd0;
+        end else if (busy) begin
+            rk_reg <= key_next;
+            if (rnd == 4'd0) begin
+                rnd <= 4'd1;
+            end else begin
+                ct_reg <= round_out;
+                if (rnd == 4'd10) begin
+                    busy <= 1'b0;
+                    out_valid_reg <= 1'b1;
+                    rnd <= 4'd0;
+                end else begin
+                    rnd <= rnd + 1'b1;
+                end
+            end
+        end else if (out_valid_reg) begin
+            if (out_ready)
+                out_valid_reg <= 1'b0;
+        end else if (in_valid) begin
+            ct_reg <= pt ^ key;
+            rk_reg <= key;
+            rnd <= 4'd0;
+            busy <= 1'b1;
+        end
+    end
+
+endmodule
+
+module aes_sbox_lookup (
+    input wire [7:0] value,
+    output reg [7:0] result
+);
+    always @(*) begin
+        result = 8'h00;
+        case (value)
+            8'h00: result = 8'h63; 8'h01: result = 8'h7c;
+            8'h02: result = 8'h77; 8'h03: result = 8'h7b;
+            8'h04: result = 8'hf2; 8'h05: result = 8'h6b;
+            8'h06: result = 8'h6f; 8'h07: result = 8'hc5;
+            8'h08: result = 8'h30; 8'h09: result = 8'h01;
+            8'h0a: result = 8'h67; 8'h0b: result = 8'h2b;
+            8'h0c: result = 8'hfe; 8'h0d: result = 8'hd7;
+            8'h0e: result = 8'hab; 8'h0f: result = 8'h76;
+            8'h10: result = 8'hca; 8'h11: result = 8'h82;
+            8'h12: result = 8'hc9; 8'h13: result = 8'h7d;
+            8'h14: result = 8'hfa; 8'h15: result = 8'h59;
+            8'h16: result = 8'h47; 8'h17: result = 8'hf0;
+            8'h18: result = 8'had; 8'h19: result = 8'hd4;
+            8'h1a: result = 8'ha2; 8'h1b: result = 8'haf;
+            8'h1c: result = 8'h9c; 8'h1d: result = 8'ha4;
+            8'h1e: result = 8'h72; 8'h1f: result = 8'hc0;
+            8'h20: result = 8'hb7; 8'h21: result = 8'hfd;
+            8'h22: result = 8'h93; 8'h23: result = 8'h26;
+            8'h24: result = 8'h36; 8'h25: result = 8'h3f;
+            8'h26: result = 8'hf7; 8'h27: result = 8'hcc;
+            8'h28: result = 8'h34; 8'h29: result = 8'ha5;
+            8'h2a: result = 8'he5; 8'h2b: result = 8'hf1;
+            8'h2c: result = 8'h71; 8'h2d: result = 8'hd8;
+            8'h2e: result = 8'h31; 8'h2f: result = 8'h15;
+            8'h30: result = 8'h04; 8'h31: result = 8'hc7;
+            8'h32: result = 8'h23; 8'h33: result = 8'hc3;
+            8'h34: result = 8'h18; 8'h35: result = 8'h96;
+            8'h36: result = 8'h05; 8'h37: result = 8'h9a;
+            8'h38: result = 8'h07; 8'h39: result = 8'h12;
+            8'h3a: result = 8'h80; 8'h3b: result = 8'he2;
+            8'h3c: result = 8'heb; 8'h3d: result = 8'h27;
+            8'h3e: result = 8'hb2; 8'h3f: result = 8'h75;
+            8'h40: result = 8'h09; 8'h41: result = 8'h83;
+            8'h42: result = 8'h2c; 8'h43: result = 8'h1a;
+            8'h44: result = 8'h1b; 8'h45: result = 8'h6e;
+            8'h46: result = 8'h5a; 8'h47: result = 8'ha0;
+            8'h48: result = 8'h52; 8'h49: result = 8'h3b;
+            8'h4a: result = 8'hd6; 8'h4b: result = 8'hb3;
+            8'h4c: result = 8'h29; 8'h4d: result = 8'he3;
+            8'h4e: result = 8'h2f; 8'h4f: result = 8'h84;
+            8'h50: result = 8'h53; 8'h51: result = 8'hd1;
+            8'h52: result = 8'h00; 8'h53: result = 8'hed;
+            8'h54: result = 8'h20; 8'h55: result = 8'hfc;
+            8'h56: result = 8'hb1; 8'h57: result = 8'h5b;
+            8'h58: result = 8'h6a; 8'h59: result = 8'hcb;
+            8'h5a: result = 8'hbe; 8'h5b: result = 8'h39;
+            8'h5c: result = 8'h4a; 8'h5d: result = 8'h4c;
+            8'h5e: result = 8'h58; 8'h5f: result = 8'hcf;
+            8'h60: result = 8'hd0; 8'h61: result = 8'hef;
+            8'h62: result = 8'haa; 8'h63: result = 8'hfb;
+            8'h64: result = 8'h43; 8'h65: result = 8'h4d;
+            8'h66: result = 8'h33; 8'h67: result = 8'h85;
+            8'h68: result = 8'h45; 8'h69: result = 8'hf9;
+            8'h6a: result = 8'h02; 8'h6b: result = 8'h7f;
+            8'h6c: result = 8'h50; 8'h6d: result = 8'h3c;
+            8'h6e: result = 8'h9f; 8'h6f: result = 8'ha8;
+            8'h70: result = 8'h51; 8'h71: result = 8'ha3;
+            8'h72: result = 8'h40; 8'h73: result = 8'h8f;
+            8'h74: result = 8'h92; 8'h75: result = 8'h9d;
+            8'h76: result = 8'h38; 8'h77: result = 8'hf5;
+            8'h78: result = 8'hbc; 8'h79: result = 8'hb6;
+            8'h7a: result = 8'hda; 8'h7b: result = 8'h21;
+            8'h7c: result = 8'h10; 8'h7d: result = 8'hff;
+            8'h7e: result = 8'hf3; 8'h7f: result = 8'hd2;
+            8'h80: result = 8'hcd; 8'h81: result = 8'h0c;
+            8'h82: result = 8'h13; 8'h83: result = 8'hec;
+            8'h84: result = 8'h5f; 8'h85: result = 8'h97;
+            8'h86: result = 8'h44; 8'h87: result = 8'h17;
+            8'h88: result = 8'hc4; 8'h89: result = 8'ha7;
+            8'h8a: result = 8'h7e; 8'h8b: result = 8'h3d;
+            8'h8c: result = 8'h64; 8'h8d: result = 8'h5d;
+            8'h8e: result = 8'h19; 8'h8f: result = 8'h73;
+            8'h90: result = 8'h60; 8'h91: result = 8'h81;
+            8'h92: result = 8'h4f; 8'h93: result = 8'hdc;
+            8'h94: result = 8'h22; 8'h95: result = 8'h2a;
+            8'h96: result = 8'h90; 8'h97: result = 8'h88;
+            8'h98: result = 8'h46; 8'h99: result = 8'hee;
+            8'h9a: result = 8'hb8; 8'h9b: result = 8'h14;
+            8'h9c: result = 8'hde; 8'h9d: result = 8'h5e;
+            8'h9e: result = 8'h0b; 8'h9f: result = 8'hdb;
+            8'ha0: result = 8'he0; 8'ha1: result = 8'h32;
+            8'ha2: result = 8'h3a; 8'ha3: result = 8'h0a;
+            8'ha4: result = 8'h49; 8'ha5: result = 8'h06;
+            8'ha6: result = 8'h24; 8'ha7: result = 8'h5c;
+            8'ha8: result = 8'hc2; 8'ha9: result = 8'hd3;
+            8'haa: result = 8'hac; 8'hab: result = 8'h62;
+            8'hac: result = 8'h91; 8'had: result = 8'h95;
+            8'hae: result = 8'he4; 8'haf: result = 8'h79;
+            8'hb0: result = 8'he7; 8'hb1: result = 8'hc8;
+            8'hb2: result = 8'h37; 8'hb3: result = 8'h6d;
+            8'hb4: result = 8'h8d; 8'hb5: result = 8'hd5;
+            8'hb6: result = 8'h4e; 8'hb7: result = 8'ha9;
+            8'hb8: result = 8'h6c; 8'hb9: result = 8'h56;
+            8'hba: result = 8'hf4; 8'hbb: result = 8'hea;
+            8'hbc: result = 8'h65; 8'hbd: result = 8'h7a;
+            8'hbe: result = 8'hae; 8'hbf: result = 8'h08;
+            8'hc0: result = 8'hba; 8'hc1: result = 8'h78;
+            8'hc2: result = 8'h25; 8'hc3: result = 8'h2e;
+            8'hc4: result = 8'h1c; 8'hc5: result = 8'ha6;
+            8'hc6: result = 8'hb4; 8'hc7: result = 8'hc6;
+            8'hc8: result = 8'he8; 8'hc9: result = 8'hdd;
+            8'hca: result = 8'h74; 8'hcb: result = 8'h1f;
+            8'hcc: result = 8'h4b; 8'hcd: result = 8'hbd;
+            8'hce: result = 8'h8b; 8'hcf: result = 8'h8a;
+            8'hd0: result = 8'h70; 8'hd1: result = 8'h3e;
+            8'hd2: result = 8'hb5; 8'hd3: result = 8'h66;
+            8'hd4: result = 8'h48; 8'hd5: result = 8'h03;
+            8'hd6: result = 8'hf6; 8'hd7: result = 8'h0e;
+            8'hd8: result = 8'h61; 8'hd9: result = 8'h35;
+            8'hda: result = 8'h57; 8'hdb: result = 8'hb9;
+            8'hdc: result = 8'h86; 8'hdd: result = 8'hc1;
+            8'hde: result = 8'h1d; 8'hdf: result = 8'h9e;
+            8'he0: result = 8'he1; 8'he1: result = 8'hf8;
+            8'he2: result = 8'h98; 8'he3: result = 8'h11;
+            8'he4: result = 8'h69; 8'he5: result = 8'hd9;
+            8'he6: result = 8'h8e; 8'he7: result = 8'h94;
+            8'he8: result = 8'h9b; 8'he9: result = 8'h1e;
+            8'hea: result = 8'h87; 8'heb: result = 8'he9;
+            8'hec: result = 8'hce; 8'hed: result = 8'h55;
+            8'hee: result = 8'h28; 8'hef: result = 8'hdf;
+            8'hf0: result = 8'h8c; 8'hf1: result = 8'ha1;
+            8'hf2: result = 8'h89; 8'hf3: result = 8'h0d;
+            8'hf4: result = 8'hbf; 8'hf5: result = 8'he6;
+            8'hf6: result = 8'h42; 8'hf7: result = 8'h68;
+            8'hf8: result = 8'h41; 8'hf9: result = 8'h99;
+            8'hfa: result = 8'h2d; 8'hfb: result = 8'h0f;
+            8'hfc: result = 8'hb0; 8'hfd: result = 8'h54;
+            8'hfe: result = 8'hbb; 8'hff: result = 8'h16;
+            default: result = 8'h00;
+        endcase
+    end
+endmodule
+
+`timescale 1ns/1ps
+// @latency 0
+module aes_round (
+    input  wire [127:0] state_in,
+    input  wire [127:0] round_key,
+    input  wire         final_round,
+    output wire [127:0] state_out
+);
+
+    wire [127:0] sub_state;
+    reg [127:0] shifted_state;
+    reg [127:0] mixed_state;
+    integer row;
+    integer col;
+    genvar byte_index;
+
+    generate
+        for (byte_index = 0; byte_index < 16; byte_index = byte_index + 1) begin : gen_sbox
+            aes_sbox_lookup u_sbox (
+                .value(state_in[127 - 8*byte_index -: 8]),
+                .result(sub_state[127 - 8*byte_index -: 8])
+            );
+        end
+    endgenerate
+
+    function [7:0] xtime;
+        input [7:0] value;
+        begin
+            if (value[7])
+                xtime = (value << 1) ^ 8'h1b;
+            else
+                xtime = value << 1;
+        end
+    endfunction
+
+    function [31:0] mix_column;
+        input [31:0] column_in;
+        reg [7:0] a0;
+        reg [7:0] a1;
+        reg [7:0] a2;
+        reg [7:0] a3;
+        reg [7:0] t;
+        begin
+            a0 = column_in[31:24];
+            a1 = column_in[23:16];
+            a2 = column_in[15:8];
+            a3 = column_in[7:0];
+
+            t = a0 ^ a1 ^ a2 ^ a3;
+            mix_column[31:24] = a0 ^ t ^ xtime(a0 ^ a1);
+            mix_column[23:16] = a1 ^ t ^ xtime(a1 ^ a2);
+            mix_column[15:8]  = a2 ^ t ^ xtime(a2 ^ a3);
+            mix_column[7:0]   = a3 ^ t ^ xtime(a3 ^ a0);
+        end
+    endfunction
+
+    always @(*) begin
+        shifted_state = 128'b0;
+        mixed_state = 128'b0;
+
+        for (row = 0; row < 4; row = row + 1) begin
+            for (col = 0; col < 4; col = col + 1) begin
+                shifted_state[127 - 8*(row + 4*col) -: 8] =
+                    sub_state[127 - 8*(row + 4*((col + row) % 4)) -: 8];
+            end
+        end
+
+        mixed_state = shifted_state;
+        if (!final_round) begin
+            for (col = 0; col < 4; col = col + 1) begin
+                mixed_state[127 - 32*col -: 32] =
+                    mix_column(shifted_state[127 - 32*col -: 32]);
+            end
+        end
+    end
+
+    assign state_out = mixed_state ^ round_key;
+
+endmodule
+
+`timescale 1ns/1ps
+// @latency 0
+module aes_key_step (
+    input  wire [127:0] key_in,
+    input  wire [7:0]   rcon,
+    output wire [127:0] key_out
+);
+
+    wire [31:0] w0;
+    wire [31:0] w1;
+    wire [31:0] w2;
+    wire [31:0] w3;
+    wire [31:0] temp;
+    wire [31:0] w4;
+    wire [31:0] w5;
+    wire [31:0] w6;
+    wire [31:0] w7;
+    wire [7:0] sb0;
+    wire [7:0] sb1;
+    wire [7:0] sb2;
+    wire [7:0] sb3;
+
+    assign w0 = key_in[127:96];
+    assign w1 = key_in[95:64];
+    assign w2 = key_in[63:32];
+    assign w3 = key_in[31:0];
+
+    aes_sbox_lookup u_sbox0 (.value(w3[23:16]), .result(sb0));
+    aes_sbox_lookup u_sbox1 (.value(w3[15:8]),  .result(sb1));
+    aes_sbox_lookup u_sbox2 (.value(w3[7:0]),   .result(sb2));
+    aes_sbox_lookup u_sbox3 (.value(w3[31:24]), .result(sb3));
+
+    assign temp = {sb0, sb1, sb2, sb3} ^ {rcon, 24'b0};
+
+    assign w4 = w0 ^ temp;
+    assign w5 = w1 ^ w4;
+    assign w6 = w2 ^ w5;
+    assign w7 = w3 ^ w6;
+
+    assign key_out = {w4, w5, w6, w7};
+
+endmodule
+
+`timescale 1ns/1ps
+module aes128_core (
+    input wire clk,
+    input wire rst,
+    input wire in_valid,
+    output wire in_ready,
+    input wire [127:0] key,
+    input wire [127:0] pt,
+    output wire out_valid,
+    input wire out_ready,
+    output wire [127:0] ct
+);
+    wire [127:0] w_aes_ctrl_ct;
+    wire [127:0] w_aes_ctrl_rk;
+    wire w_aes_ctrl_last;
+    wire [127:0] w_aes_round_state_out;
+    wire [7:0] w_aes_ctrl_rcon;
+    wire [127:0] w_aes_key_step_key_out;
+
+    assign ct = w_aes_ctrl_ct;
+
+    aes_ctrl u_aes_ctrl (
+        .clk(clk),
+        .rst(rst),
+        .in_valid(in_valid),
+        .in_ready(in_ready),
+        .key(key),
+        .pt(pt),
+        .out_valid(out_valid),
+        .out_ready(out_ready),
+        .ct(w_aes_ctrl_ct),
+        .rk(w_aes_ctrl_rk),
+        .rcon(w_aes_ctrl_rcon),
+        .last(w_aes_ctrl_last),
+        .round_out(w_aes_round_state_out),
+        .key_next(w_aes_key_step_key_out)
+    );
+
+    aes_round u_aes_round (
+        .state_in(w_aes_ctrl_ct),
+        .round_key(w_aes_ctrl_rk),
+        .final_round(w_aes_ctrl_last),
+        .state_out(w_aes_round_state_out)
+    );
+
+    aes_key_step u_aes_key_step (
+        .key_in(w_aes_ctrl_rk),
+        .rcon(w_aes_ctrl_rcon),
+        .key_out(w_aes_key_step_key_out)
+    );
+endmodule

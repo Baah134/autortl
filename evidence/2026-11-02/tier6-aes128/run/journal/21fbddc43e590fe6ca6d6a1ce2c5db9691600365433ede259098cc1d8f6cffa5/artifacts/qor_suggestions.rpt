@@ -1,0 +1,174 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025
+| Date         : Mon Nov  2 11:02:10 2026
+| Host         : Baah running 64-bit major release  (build 9200)
+| Command      : report_qor_suggestions -file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-07/aes128_core_build/iter_000/qor_suggestions.rpt
+| Design       : aes128_core
+| Device       : xc7a35t
+| Design State : Routed
+| ML Models    : v2021.2.0
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Report QoR Suggestions
+
+Table of Contents
+-----------------
+1. QoR Suggestions Report Summary
+2. ML Strategies
+3. QoR Suggestions - Timing
+
+1. QoR Suggestions Report Summary
+---------------------------------
+
++-----------------+---------------+-----------+--------------+----------------+-----------+-------------+----------------------+------------------------------------------------------------------------------------------+-------------+
+|       Name      |       Id      |   Status  | Generated At | Applicable For | Automatic |    Scope    | Incremental Friendly |                                        Description                                       |    Source   |
++-----------------+---------------+-----------+--------------+----------------+-----------+-------------+----------------------+------------------------------------------------------------------------------------------+-------------+
+| RQS_TIMING-59-1 | RQS_TIMING-59 | Generated | route_design | place_design   | Yes       | GLOBALSCOPE | No                   | Replicate the nets driven by LUTs in setup critical paths can improve timing             | Current Run |
++-----------------+---------------+-----------+--------------+----------------+-----------+-------------+----------------------+------------------------------------------------------------------------------------------+-------------+
+* No Issues Found
+** By default the number of failing paths is limited to 100. Use the -max_paths options to override.
+
+
+2. ML Strategies
+----------------
+
++---+----+---------+---------+
+| # | Id | Command | Options |
++---+----+---------+---------+
+
+
+3. QoR Suggestions - Timing
+---------------------------
+
++-----------------+-------------+--------------+--------+--------+--------+--------+--------+----------------+-------+--------+--------------+-------------------+------------------------------+------------------------------+
+|       Name      | No of Paths | Logic Levels | Routes |  Slack |  Req.  |  Skew  | Fanout | Datapath Delay | Cell% | Route% | Source Clock | Destination Clock |          Startpoint          |           Endpoint           |
++-----------------+-------------+--------------+--------+--------+--------+--------+--------+----------------+-------+--------+--------------+-------------------+------------------------------+------------------------------+
+| RQS_TIMING-59-1 | 125         | 19           | 20     | -8.791 | 10.000 | -0.116 | -      | 18.670         | 15.10 | 84.90  | clk          | clk               | u_aes_ctrl/ct_reg_reg[7]/C   | u_aes_ctrl/ct_reg_reg[126]/D |
+|                 | 125         | 19           | 20     | -8.791 | 10.000 | -0.116 | -      | 18.670         | 15.10 | 84.90  | clk          | clk               | u_aes_ctrl/ct_reg_reg[7]/C   | u_aes_ctrl/ct_reg_reg[126]/D |
+|                 | 125         | 19           | 20     | -8.791 | 10.000 | -0.116 | -      | 18.670         | 15.10 | 84.90  | clk          | clk               | u_aes_ctrl/ct_reg_reg[7]/C   | u_aes_ctrl/ct_reg_reg[126]/D |
+|                 | 125         | 18           | 19     | -8.747 | 10.000 | -0.031 | -      | 18.710         | 14.40 | 85.60  | clk          | clk               | u_aes_ctrl/ct_reg_reg[46]/C  | u_aes_ctrl/ct_reg_reg[127]/D |
+|                 | 125         | 18           | 19     | -8.747 | 10.000 | -0.031 | -      | 18.710         | 14.40 | 85.60  | clk          | clk               | u_aes_ctrl/ct_reg_reg[46]/C  | u_aes_ctrl/ct_reg_reg[127]/D |
+|                 | 125         | 19           | 20     | -8.737 | 10.000 | -0.104 | -      | 18.627         | 16.30 | 83.70  | clk          | clk               | u_aes_ctrl/ct_reg_reg[81]/C  | u_aes_ctrl/ct_reg_reg[120]/D |
+|                 | 125         | 18           | 19     | -8.747 | 10.000 | -0.031 | -      | 18.710         | 14.40 | 85.60  | clk          | clk               | u_aes_ctrl/ct_reg_reg[46]/C  | u_aes_ctrl/ct_reg_reg[127]/D |
+|                 | 125         | 19           | 20     | -8.737 | 10.000 | -0.104 | -      | 18.627         | 16.30 | 83.70  | clk          | clk               | u_aes_ctrl/ct_reg_reg[81]/C  | u_aes_ctrl/ct_reg_reg[120]/D |
+|                 | 125         | 19           | 20     | -8.982 | 10.000 | -0.099 | -      | 18.876         | 16.10 | 83.90  | clk          | clk               | u_aes_ctrl/ct_reg_reg[81]/C  | u_aes_ctrl/ct_reg_reg[122]/D |
+|                 | 125         | 19           | 20     | -8.737 | 10.000 | -0.104 | -      | 18.627         | 16.30 | 83.70  | clk          | clk               | u_aes_ctrl/ct_reg_reg[81]/C  | u_aes_ctrl/ct_reg_reg[120]/D |
+|                 | 125         | 19           | 20     | -8.898 | 10.000 | -0.101 | -      | 18.839         | 16.20 | 83.80  | clk          | clk               | u_aes_ctrl/ct_reg_reg[81]/C  | u_aes_ctrl/ct_reg_reg[125]/D |
+|                 | 125         | 19           | 20     | -8.982 | 10.000 | -0.099 | -      | 18.876         | 16.10 | 83.90  | clk          | clk               | u_aes_ctrl/ct_reg_reg[81]/C  | u_aes_ctrl/ct_reg_reg[122]/D |
+|                 | 125         | 19           | 20     | -8.737 | 10.000 | -0.104 | -      | 18.627         | 16.30 | 83.70  | clk          | clk               | u_aes_ctrl/ct_reg_reg[81]/C  | u_aes_ctrl/ct_reg_reg[120]/D |
+|                 | 125         | 19           | 20     | -8.898 | 10.000 | -0.101 | -      | 18.839         | 16.20 | 83.80  | clk          | clk               | u_aes_ctrl/ct_reg_reg[81]/C  | u_aes_ctrl/ct_reg_reg[125]/D |
+|                 | 125         | 19           | 20     | -8.762 | 10.000 | -0.032 | -      | 18.726         | 15.00 | 85.00  | clk          | clk               | u_aes_ctrl/ct_reg_reg[75]/C  | u_aes_ctrl/ct_reg_reg[28]/D  |
+|                 | 125         | 19           | 20     | -8.985 | 10.000 | -0.051 | -      | 18.928         | 14.90 | 85.10  | clk          | clk               | u_aes_ctrl/ct_reg_reg[124]/C | u_aes_ctrl/ct_reg_reg[112]/D |
+|                 | 125         | 19           | 20     | -9.005 | 10.000 | -0.098 | -      | 18.904         | 16.10 | 83.90  | clk          | clk               | u_aes_ctrl/ct_reg_reg[81]/C  | u_aes_ctrl/ct_reg_reg[124]/D |
+|                 | 125         | 19           | 20     | -8.710 | 10.000 | -0.044 | -      | 18.662         | 15.10 | 84.90  | clk          | clk               | u_aes_ctrl/ct_reg_reg[124]/C | u_aes_ctrl/ct_reg_reg[108]/D |
+|                 | 125         | 19           | 20     | -8.710 | 10.000 | -0.044 | -      | 18.662         | 15.10 | 84.90  | clk          | clk               | u_aes_ctrl/ct_reg_reg[124]/C | u_aes_ctrl/ct_reg_reg[108]/D |
+|                 | 125         | 19           | 20     | -8.710 | 10.000 | -0.044 | -      | 18.662         | 15.10 | 84.90  | clk          | clk               | u_aes_ctrl/ct_reg_reg[124]/C | u_aes_ctrl/ct_reg_reg[108]/D |
+|                 | 125         | 19           | 20     | -9.147 | 10.000 | -0.051 | -      | 19.090         | 14.70 | 85.30  | clk          | clk               | u_aes_ctrl/ct_reg_reg[124]/C | u_aes_ctrl/ct_reg_reg[114]/D |
+|                 | 125         | 19           | 20     | -8.710 | 10.000 | -0.044 | -      | 18.662         | 15.10 | 84.90  | clk          | clk               | u_aes_ctrl/ct_reg_reg[124]/C | u_aes_ctrl/ct_reg_reg[108]/D |
+|                 | 125         | 19           | 20     | -8.985 | 10.000 | -0.051 | -      | 18.928         | 14.90 | 85.10  | clk          | clk               | u_aes_ctrl/ct_reg_reg[124]/C | u_aes_ctrl/ct_reg_reg[112]/D |
+|                 | 125         | 19           | 20     | -8.779 | 10.000 | -0.044 | -      | 18.729         | 15.00 | 85.00  | clk          | clk               | u_aes_ctrl/ct_reg_reg[124]/C | u_aes_ctrl/ct_reg_reg[105]/D |
+|                 | 125         | 19           | 20     | -9.306 | 10.000 | -0.051 | -      | 19.252         | 14.60 | 85.40  | clk          | clk               | u_aes_ctrl/ct_reg_reg[124]/C | u_aes_ctrl/ct_reg_reg[116]/D |
+|                 | 125         | 19           | 20     | -9.184 | 10.000 | -0.116 | -      | 19.065         | 14.70 | 85.30  | clk          | clk               | u_aes_ctrl/ct_reg_reg[124]/C | u_aes_ctrl/ct_reg_reg[102]/D |
+|                 | 125         | 19           | 20     | -8.791 | 10.000 | -0.116 | -      | 18.670         | 15.10 | 84.90  | clk          | clk               | u_aes_ctrl/ct_reg_reg[7]/C   | u_aes_ctrl/ct_reg_reg[126]/D |
+|                 | 125         | 19           | 20     | -8.737 | 10.000 | -0.104 | -      | 18.627         | 16.30 | 83.70  | clk          | clk               | u_aes_ctrl/ct_reg_reg[81]/C  | u_aes_ctrl/ct_reg_reg[120]/D |
+|                 | 125         | 19           | 20     | -9.226 | 10.000 | -0.051 | -      | 19.170         | 14.70 | 85.30  | clk          | clk               | u_aes_ctrl/ct_reg_reg[124]/C | u_aes_ctrl/ct_reg_reg[118]/D |
+|                 | 125         | 18           | 19     | -8.747 | 10.000 | -0.031 | -      | 18.710         | 14.40 | 85.60  | clk          | clk               | u_aes_ctrl/ct_reg_reg[46]/C  | u_aes_ctrl/ct_reg_reg[127]/D |
+|                 | 125         | 19           | 20     | -8.848 | 10.000 | -0.090 | -      | 18.754         | 16.30 | 83.70  | clk          | clk               | u_aes_ctrl/ct_reg_reg[119]/C | u_aes_ctrl/ct_reg_reg[9]/D   |
+|                 | 125         | 19           | 20     | -8.762 | 10.000 | -0.032 | -      | 18.726         | 15.00 | 85.00  | clk          | clk               | u_aes_ctrl/ct_reg_reg[75]/C  | u_aes_ctrl/ct_reg_reg[28]/D  |
+|                 | 125         | 19           | 20     | -8.848 | 10.000 | -0.090 | -      | 18.754         | 16.30 | 83.70  | clk          | clk               | u_aes_ctrl/ct_reg_reg[119]/C | u_aes_ctrl/ct_reg_reg[9]/D   |
+|                 | 125         | 19           | 20     | -8.724 | 10.000 | -0.093 | -      | 18.627         | 15.10 | 84.90  | clk          | clk               | u_aes_ctrl/ct_reg_reg[119]/C | u_aes_ctrl/ct_reg_reg[6]/D   |
+|                 | 125         | 19           | 20     | -8.861 | 10.000 | -0.092 | -      | 18.762         | 15.30 | 84.70  | clk          | clk               | u_aes_ctrl/ct_reg_reg[117]/C | u_aes_ctrl/ct_reg_reg[12]/D  |
+|                 | 125         | 19           | 20     | -8.724 | 10.000 | -0.093 | -      | 18.627         | 15.10 | 84.90  | clk          | clk               | u_aes_ctrl/ct_reg_reg[119]/C | u_aes_ctrl/ct_reg_reg[6]/D   |
+|                 | 125         | 19           | 20     | -8.848 | 10.000 | -0.090 | -      | 18.754         | 16.30 | 83.70  | clk          | clk               | u_aes_ctrl/ct_reg_reg[119]/C | u_aes_ctrl/ct_reg_reg[9]/D   |
+|                 | 125         | 19           | 20     | -8.861 | 10.000 | -0.092 | -      | 18.762         | 15.30 | 84.70  | clk          | clk               | u_aes_ctrl/ct_reg_reg[117]/C | u_aes_ctrl/ct_reg_reg[12]/D  |
+|                 | 125         | 19           | 20     | -8.944 | 10.000 | -0.095 | -      | 18.843         | 15.30 | 84.70  | clk          | clk               | u_aes_ctrl/ct_reg_reg[117]/C | u_aes_ctrl/ct_reg_reg[7]/D   |
+|                 | 125         | 19           | 20     | -8.861 | 10.000 | -0.092 | -      | 18.762         | 15.30 | 84.70  | clk          | clk               | u_aes_ctrl/ct_reg_reg[117]/C | u_aes_ctrl/ct_reg_reg[12]/D  |
+|                 | 125         | 19           | 20     | -8.711 | 10.000 | -0.091 | -      | 18.613         | 15.10 | 84.90  | clk          | clk               | u_aes_ctrl/ct_reg_reg[119]/C | u_aes_ctrl/ct_reg_reg[2]/D   |
+|                 | 125         | 19           | 20     | -8.861 | 10.000 | -0.092 | -      | 18.762         | 15.30 | 84.70  | clk          | clk               | u_aes_ctrl/ct_reg_reg[117]/C | u_aes_ctrl/ct_reg_reg[12]/D  |
+|                 | 125         | 19           | 20     | -8.861 | 10.000 | -0.092 | -      | 18.762         | 15.30 | 84.70  | clk          | clk               | u_aes_ctrl/ct_reg_reg[117]/C | u_aes_ctrl/ct_reg_reg[12]/D  |
+|                 | 125         | 19           | 20     | -8.848 | 10.000 | -0.090 | -      | 18.754         | 16.30 | 83.70  | clk          | clk               | u_aes_ctrl/ct_reg_reg[119]/C | u_aes_ctrl/ct_reg_reg[9]/D   |
+|                 | 125         | 19           | 20     | -8.711 | 10.000 | -0.091 | -      | 18.613         | 15.10 | 84.90  | clk          | clk               | u_aes_ctrl/ct_reg_reg[119]/C | u_aes_ctrl/ct_reg_reg[2]/D   |
+|                 | 125         | 19           | 20     | -8.944 | 10.000 | -0.095 | -      | 18.843         | 15.30 | 84.70  | clk          | clk               | u_aes_ctrl/ct_reg_reg[117]/C | u_aes_ctrl/ct_reg_reg[7]/D   |
+|                 | 125         | 19           | 20     | -8.711 | 10.000 | -0.091 | -      | 18.613         | 15.10 | 84.90  | clk          | clk               | u_aes_ctrl/ct_reg_reg[119]/C | u_aes_ctrl/ct_reg_reg[2]/D   |
+|                 | 125         | 19           | 20     | -8.972 | 10.000 | -0.110 | -      | 18.856         | 14.90 | 85.10  | clk          | clk               | u_aes_ctrl/ct_reg_reg[28]/C  | u_aes_ctrl/ct_reg_reg[17]/D  |
+|                 | 125         | 19           | 20     | -8.799 | 10.000 | -0.110 | -      | 18.685         | 17.70 | 82.30  | clk          | clk               | u_aes_ctrl/ct_reg_reg[28]/C  | u_aes_ctrl/ct_reg_reg[30]/D  |
+|                 | 125         | 19           | 20     | -8.799 | 10.000 | -0.110 | -      | 18.685         | 17.70 | 82.30  | clk          | clk               | u_aes_ctrl/ct_reg_reg[28]/C  | u_aes_ctrl/ct_reg_reg[30]/D  |
+|                 | 125         | 19           | 20     | -8.762 | 10.000 | -0.032 | -      | 18.726         | 15.00 | 85.00  | clk          | clk               | u_aes_ctrl/ct_reg_reg[75]/C  | u_aes_ctrl/ct_reg_reg[28]/D  |
+|                 | 125         | 19           | 20     | -8.972 | 10.000 | -0.110 | -      | 18.856         | 14.90 | 85.10  | clk          | clk               | u_aes_ctrl/ct_reg_reg[28]/C  | u_aes_ctrl/ct_reg_reg[17]/D  |
+|                 | 125         | 19           | 20     | -8.799 | 10.000 | -0.110 | -      | 18.685         | 17.70 | 82.30  | clk          | clk               | u_aes_ctrl/ct_reg_reg[28]/C  | u_aes_ctrl/ct_reg_reg[30]/D  |
+|                 | 125         | 19           | 20     | -8.746 | 10.000 | -0.123 | -      | 18.617         | 15.40 | 84.60  | clk          | clk               | u_aes_ctrl/ct_reg_reg[71]/C  | u_aes_ctrl/ct_reg_reg[32]/D  |
+|                 | 125         | 19           | 20     | -8.746 | 10.000 | -0.123 | -      | 18.617         | 15.40 | 84.60  | clk          | clk               | u_aes_ctrl/ct_reg_reg[71]/C  | u_aes_ctrl/ct_reg_reg[32]/D  |
+|                 | 125         | 19           | 20     | -8.746 | 10.000 | -0.123 | -      | 18.617         | 15.40 | 84.60  | clk          | clk               | u_aes_ctrl/ct_reg_reg[71]/C  | u_aes_ctrl/ct_reg_reg[32]/D  |
+|                 | 125         | 19           | 20     | -8.746 | 10.000 | -0.123 | -      | 18.617         | 15.40 | 84.60  | clk          | clk               | u_aes_ctrl/ct_reg_reg[71]/C  | u_aes_ctrl/ct_reg_reg[32]/D  |
+|                 | 125         | 19           | 20     | -8.895 | 10.000 | -0.051 | -      | 18.838         | 15.30 | 84.70  | clk          | clk               | u_aes_ctrl/ct_reg_reg[18]/C  | u_aes_ctrl/ct_reg_reg[40]/D  |
+|                 | 125         | 19           | 20     | -9.406 | 10.000 | -0.126 | -      | 19.277         | 14.90 | 85.10  | clk          | clk               | u_aes_ctrl/ct_reg_reg[18]/C  | u_aes_ctrl/ct_reg_reg[57]/D  |
+|                 | 125         | 19           | 20     | -9.018 | 10.000 | -0.120 | -      | 18.943         | 15.20 | 84.80  | clk          | clk               | u_aes_ctrl/ct_reg_reg[18]/C  | u_aes_ctrl/ct_reg_reg[51]/D  |
+|                 | 125         | 19           | 20     | -9.079 | 10.000 | -0.050 | -      | 19.071         | 15.10 | 84.90  | clk          | clk               | u_aes_ctrl/ct_reg_reg[18]/C  | u_aes_ctrl/ct_reg_reg[43]/D  |
+|                 | 125         | 19           | 20     | -9.018 | 10.000 | -0.120 | -      | 18.943         | 15.20 | 84.80  | clk          | clk               | u_aes_ctrl/ct_reg_reg[18]/C  | u_aes_ctrl/ct_reg_reg[51]/D  |
+|                 | 125         | 19           | 20     | -9.151 | 10.000 | -0.129 | -      | 19.064         | 15.10 | 84.90  | clk          | clk               | u_aes_ctrl/ct_reg_reg[18]/C  | u_aes_ctrl/ct_reg_reg[33]/D  |
+|                 | 125         | 19           | 20     | -9.096 | 10.000 | -0.051 | -      | 19.041         | 15.10 | 84.90  | clk          | clk               | u_aes_ctrl/ct_reg_reg[18]/C  | u_aes_ctrl/ct_reg_reg[44]/D  |
+|                 | 125         | 19           | 20     | -8.841 | 10.000 | -0.124 | -      | 18.710         | 15.40 | 84.60  | clk          | clk               | u_aes_ctrl/ct_reg_reg[18]/C  | u_aes_ctrl/ct_reg_reg[37]/D  |
+|                 | 125         | 19           | 20     | -9.188 | 10.000 | -0.051 | -      | 19.133         | 15.00 | 85.00  | clk          | clk               | u_aes_ctrl/ct_reg_reg[18]/C  | u_aes_ctrl/ct_reg_reg[46]/D  |
+|                 | 125         | 19           | 20     | -9.133 | 10.000 | -0.119 | -      | 19.007         | 15.10 | 84.90  | clk          | clk               | u_aes_ctrl/ct_reg_reg[18]/C  | u_aes_ctrl/ct_reg_reg[48]/D  |
+|                 | 125         | 19           | 20     | -8.895 | 10.000 | -0.051 | -      | 18.838         | 15.30 | 84.70  | clk          | clk               | u_aes_ctrl/ct_reg_reg[18]/C  | u_aes_ctrl/ct_reg_reg[40]/D  |
+|                 | 125         | 19           | 20     | -9.285 | 10.000 | -0.101 | -      | 19.178         | 14.70 | 85.30  | clk          | clk               | u_aes_ctrl/ct_reg_reg[62]/C  | u_aes_ctrl/ct_reg_reg[41]/D  |
+|                 | 125         | 19           | 20     | -9.268 | 10.000 | -0.100 | -      | 19.162         | 14.70 | 85.30  | clk          | clk               | u_aes_ctrl/ct_reg_reg[59]/C  | u_aes_ctrl/ct_reg_reg[50]/D  |
+|                 | 125         | 19           | 20     | -9.471 | 10.000 | -0.116 | -      | 19.351         | 14.90 | 85.10  | clk          | clk               | u_aes_ctrl/ct_reg_reg[18]/C  | u_aes_ctrl/ct_reg_reg[53]/D  |
+|                 | 125         | 19           | 20     | -9.306 | 10.000 | -0.056 | -      | 19.244         | 14.90 | 85.10  | clk          | clk               | u_aes_ctrl/ct_reg_reg[18]/C  | u_aes_ctrl/ct_reg_reg[59]/D  |
+|                 | 125         | 19           | 20     | -9.306 | 10.000 | -0.056 | -      | 19.244         | 14.90 | 85.10  | clk          | clk               | u_aes_ctrl/ct_reg_reg[18]/C  | u_aes_ctrl/ct_reg_reg[59]/D  |
+|                 | 125         | 19           | 20     | -9.052 | 10.000 | -0.052 | -      | 18.994         | 15.10 | 84.90  | clk          | clk               | u_aes_ctrl/ct_reg_reg[18]/C  | u_aes_ctrl/ct_reg_reg[36]/D  |
+|                 | 125         | 19           | 20     | -9.052 | 10.000 | -0.052 | -      | 18.994         | 15.10 | 84.90  | clk          | clk               | u_aes_ctrl/ct_reg_reg[18]/C  | u_aes_ctrl/ct_reg_reg[36]/D  |
+|                 | 125         | 19           | 20     | -9.052 | 10.000 | -0.052 | -      | 18.994         | 15.10 | 84.90  | clk          | clk               | u_aes_ctrl/ct_reg_reg[18]/C  | u_aes_ctrl/ct_reg_reg[36]/D  |
+|                 | 125         | 19           | 20     | -8.841 | 10.000 | -0.124 | -      | 18.710         | 15.40 | 84.60  | clk          | clk               | u_aes_ctrl/ct_reg_reg[18]/C  | u_aes_ctrl/ct_reg_reg[37]/D  |
+|                 | 125         | 19           | 20     | -9.306 | 10.000 | -0.056 | -      | 19.244         | 14.90 | 85.10  | clk          | clk               | u_aes_ctrl/ct_reg_reg[18]/C  | u_aes_ctrl/ct_reg_reg[59]/D  |
+|                 | 125         | 19           | 20     | -9.151 | 10.000 | -0.129 | -      | 19.064         | 15.10 | 84.90  | clk          | clk               | u_aes_ctrl/ct_reg_reg[18]/C  | u_aes_ctrl/ct_reg_reg[33]/D  |
+|                 | 125         | 19           | 20     | -9.018 | 10.000 | -0.120 | -      | 18.943         | 15.20 | 84.80  | clk          | clk               | u_aes_ctrl/ct_reg_reg[18]/C  | u_aes_ctrl/ct_reg_reg[51]/D  |
+|                 | 125         | 19           | 20     | -9.188 | 10.000 | -0.051 | -      | 19.133         | 15.00 | 85.00  | clk          | clk               | u_aes_ctrl/ct_reg_reg[18]/C  | u_aes_ctrl/ct_reg_reg[46]/D  |
+|                 | 125         | 19           | 20     | -8.841 | 10.000 | -0.124 | -      | 18.710         | 15.40 | 84.60  | clk          | clk               | u_aes_ctrl/ct_reg_reg[18]/C  | u_aes_ctrl/ct_reg_reg[37]/D  |
+|                 | 125         | 19           | 20     | -9.120 | 10.000 | -0.108 | -      | 19.005         | 14.80 | 85.20  | clk          | clk               | u_aes_ctrl/ct_reg_reg[62]/C  | u_aes_ctrl/ct_reg_reg[39]/D  |
+|                 | 125         | 19           | 20     | -8.798 | 10.000 | -0.107 | -      | 18.685         | 15.00 | 85.00  | clk          | clk               | u_aes_ctrl/ct_reg_reg[59]/C  | u_aes_ctrl/ct_reg_reg[34]/D  |
+|                 | 125         | 19           | 20     | -8.798 | 10.000 | -0.107 | -      | 18.685         | 15.00 | 85.00  | clk          | clk               | u_aes_ctrl/ct_reg_reg[59]/C  | u_aes_ctrl/ct_reg_reg[34]/D  |
+|                 | 125         | 19           | 20     | -8.818 | 10.000 | -0.101 | -      | 18.713         | 15.00 | 85.00  | clk          | clk               | u_aes_ctrl/ct_reg_reg[62]/C  | u_aes_ctrl/ct_reg_reg[47]/D  |
+|                 | 125         | 19           | 20     | -8.818 | 10.000 | -0.101 | -      | 18.713         | 15.00 | 85.00  | clk          | clk               | u_aes_ctrl/ct_reg_reg[62]/C  | u_aes_ctrl/ct_reg_reg[47]/D  |
+|                 | 125         | 19           | 20     | -8.798 | 10.000 | -0.107 | -      | 18.685         | 15.00 | 85.00  | clk          | clk               | u_aes_ctrl/ct_reg_reg[59]/C  | u_aes_ctrl/ct_reg_reg[34]/D  |
+|                 | 125         | 19           | 20     | -8.798 | 10.000 | -0.107 | -      | 18.685         | 15.00 | 85.00  | clk          | clk               | u_aes_ctrl/ct_reg_reg[59]/C  | u_aes_ctrl/ct_reg_reg[34]/D  |
+|                 | 125         | 19           | 20     | -9.133 | 10.000 | -0.119 | -      | 19.007         | 15.10 | 84.90  | clk          | clk               | u_aes_ctrl/ct_reg_reg[18]/C  | u_aes_ctrl/ct_reg_reg[48]/D  |
+|                 | 125         | 19           | 20     | -8.818 | 10.000 | -0.101 | -      | 18.713         | 15.00 | 85.00  | clk          | clk               | u_aes_ctrl/ct_reg_reg[62]/C  | u_aes_ctrl/ct_reg_reg[47]/D  |
+|                 | 125         | 19           | 20     | -8.798 | 10.000 | -0.107 | -      | 18.685         | 15.00 | 85.00  | clk          | clk               | u_aes_ctrl/ct_reg_reg[59]/C  | u_aes_ctrl/ct_reg_reg[34]/D  |
+|                 | 125         | 19           | 20     | -8.750 | 10.000 | -0.043 | -      | 18.701         | 16.30 | 83.70  | clk          | clk               | u_aes_ctrl/ct_reg_reg[98]/C  | u_aes_ctrl/ct_reg_reg[80]/D  |
+|                 | 125         | 19           | 20     | -8.856 | 10.000 | -0.037 | -      | 18.814         | 14.90 | 85.10  | clk          | clk               | u_aes_ctrl/ct_reg_reg[98]/C  | u_aes_ctrl/ct_reg_reg[75]/D  |
+|                 | 125         | 19           | 20     | -8.750 | 10.000 | -0.043 | -      | 18.701         | 16.30 | 83.70  | clk          | clk               | u_aes_ctrl/ct_reg_reg[98]/C  | u_aes_ctrl/ct_reg_reg[80]/D  |
+|                 | 125         | 19           | 20     | -8.882 | 10.000 | -0.031 | -      | 18.897         | 14.90 | 85.10  | clk          | clk               | u_aes_ctrl/ct_reg_reg[98]/C  | u_aes_ctrl/ct_reg_reg[76]/D  |
+|                 | 125         | 19           | 20     | -8.770 | 10.000 | -0.040 | -      | 18.725         | 15.00 | 85.00  | clk          | clk               | u_aes_ctrl/ct_reg_reg[98]/C  | u_aes_ctrl/ct_reg_reg[82]/D  |
+|                 | 125         | 19           | 20     | -8.750 | 10.000 | -0.043 | -      | 18.701         | 16.30 | 83.70  | clk          | clk               | u_aes_ctrl/ct_reg_reg[98]/C  | u_aes_ctrl/ct_reg_reg[80]/D  |
+|                 | 125         | 19           | 20     | -8.750 | 10.000 | -0.043 | -      | 18.701         | 16.30 | 83.70  | clk          | clk               | u_aes_ctrl/ct_reg_reg[98]/C  | u_aes_ctrl/ct_reg_reg[80]/D  |
+|                 | 125         | 19           | 20     | -8.957 | 10.000 | -0.033 | -      | 18.969         | 14.80 | 85.20  | clk          | clk               | u_aes_ctrl/ct_reg_reg[98]/C  | u_aes_ctrl/ct_reg_reg[79]/D  |
+|                 | 125         | 19           | 20     | -8.770 | 10.000 | -0.040 | -      | 18.725         | 15.00 | 85.00  | clk          | clk               | u_aes_ctrl/ct_reg_reg[98]/C  | u_aes_ctrl/ct_reg_reg[82]/D  |
+|                 | 125         | 19           | 20     | -8.750 | 10.000 | -0.043 | -      | 18.701         | 16.30 | 83.70  | clk          | clk               | u_aes_ctrl/ct_reg_reg[98]/C  | u_aes_ctrl/ct_reg_reg[80]/D  |
+|                 | 125         | 19           | 20     | -8.856 | 10.000 | -0.037 | -      | 18.814         | 14.90 | 85.10  | clk          | clk               | u_aes_ctrl/ct_reg_reg[98]/C  | u_aes_ctrl/ct_reg_reg[75]/D  |
+|                 | 125         | 19           | 20     | -8.912 | 10.000 | 0.014  | -      | 18.922         | 14.90 | 85.10  | clk          | clk               | u_aes_ctrl/ct_reg_reg[14]/C  | u_aes_ctrl/ct_reg_reg[91]/D  |
+|                 | 125         | 19           | 19     | -8.827 | 10.000 | -0.022 | -      | 18.799         | 15.00 | 85.00  | clk          | clk               | u_aes_ctrl/ct_reg_reg[94]/C  | u_aes_ctrl/ct_reg_reg[94]/D  |
+|                 | 125         | 19           | 20     | -8.896 | 10.000 | -0.022 | -      | 18.870         | 16.10 | 83.90  | clk          | clk               | u_aes_ctrl/ct_reg_reg[94]/C  | u_aes_ctrl/ct_reg_reg[89]/D  |
+|                 | 125         | 19           | 20     | -9.295 | 10.000 | -0.053 | -      | 19.238         | 14.60 | 85.40  | clk          | clk               | u_aes_ctrl/ct_reg_reg[14]/C  | u_aes_ctrl/ct_reg_reg[85]/D  |
+|                 | 125         | 19           | 20     | -9.201 | 10.000 | -0.092 | -      | 19.152         | 14.70 | 85.30  | clk          | clk               | u_aes_ctrl/ct_reg_reg[94]/C  | u_aes_ctrl/ct_reg_reg[68]/D  |
+|                 | 125         | 19           | 20     | -8.896 | 10.000 | -0.022 | -      | 18.870         | 16.10 | 83.90  | clk          | clk               | u_aes_ctrl/ct_reg_reg[94]/C  | u_aes_ctrl/ct_reg_reg[89]/D  |
+|                 | 125         | 19           | 20     | -8.896 | 10.000 | -0.022 | -      | 18.870         | 16.10 | 83.90  | clk          | clk               | u_aes_ctrl/ct_reg_reg[94]/C  | u_aes_ctrl/ct_reg_reg[89]/D  |
+|                 | 125         | 19           | 20     | -8.817 | 10.000 | -0.051 | -      | 18.809         | 14.90 | 85.00  | clk          | clk               | u_aes_ctrl/ct_reg_reg[14]/C  | u_aes_ctrl/ct_reg_reg[86]/D  |
+|                 | 125         | 19           | 20     | -8.817 | 10.000 | -0.051 | -      | 18.809         | 14.90 | 85.00  | clk          | clk               | u_aes_ctrl/ct_reg_reg[14]/C  | u_aes_ctrl/ct_reg_reg[86]/D  |
+|                 | 125         | 19           | 20     | -8.966 | 10.000 | -0.094 | -      | 18.866         | 14.90 | 85.10  | clk          | clk               | u_aes_ctrl/ct_reg_reg[94]/C  | u_aes_ctrl/ct_reg_reg[77]/D  |
+|                 | 125         | 19           | 20     | -8.976 | 10.000 | -0.041 | -      | 18.928         | 15.20 | 84.80  | clk          | clk               | u_aes_ctrl/ct_reg_reg[51]/C  | u_aes_ctrl/ct_reg_reg[87]/D  |
+|                 | 125         | 19           | 20     | -9.211 | 10.000 | -0.091 | -      | 19.116         | 15.90 | 84.10  | clk          | clk               | u_aes_ctrl/ct_reg_reg[94]/C  | u_aes_ctrl/ct_reg_reg[65]/D  |
+|                 | 125         | 19           | 20     | -8.998 | 10.000 | -0.029 | -      | 19.013         | 15.10 | 84.90  | clk          | clk               | u_aes_ctrl/ct_reg_reg[51]/C  | u_aes_ctrl/ct_reg_reg[67]/D  |
+|                 | 125         | 19           | 20     | -9.201 | 10.000 | -0.092 | -      | 19.152         | 14.70 | 85.30  | clk          | clk               | u_aes_ctrl/ct_reg_reg[94]/C  | u_aes_ctrl/ct_reg_reg[68]/D  |
+|                 | 125         | 19           | 20     | -9.017 | 10.000 | -0.033 | -      | 18.977         | 14.80 | 85.20  | clk          | clk               | u_aes_ctrl/ct_reg_reg[98]/C  | u_aes_ctrl/ct_reg_reg[78]/D  |
+|                 | 125         | 19           | 20     | -8.978 | 10.000 | -0.022 | -      | 18.998         | 14.80 | 85.20  | clk          | clk               | u_aes_ctrl/ct_reg_reg[94]/C  | u_aes_ctrl/ct_reg_reg[90]/D  |
+|                 | 125         | 19           | 20     | -9.201 | 10.000 | -0.092 | -      | 19.152         | 14.70 | 85.30  | clk          | clk               | u_aes_ctrl/ct_reg_reg[94]/C  | u_aes_ctrl/ct_reg_reg[68]/D  |
+|                 | 125         | 19           | 20     | -8.976 | 10.000 | -0.041 | -      | 18.928         | 15.20 | 84.80  | clk          | clk               | u_aes_ctrl/ct_reg_reg[51]/C  | u_aes_ctrl/ct_reg_reg[87]/D  |
+|                 | 125         | 19           | 20     | -8.976 | 10.000 | -0.041 | -      | 18.928         | 15.20 | 84.80  | clk          | clk               | u_aes_ctrl/ct_reg_reg[51]/C  | u_aes_ctrl/ct_reg_reg[87]/D  |
+|                 | 125         | 19           | 20     | -8.957 | 10.000 | -0.033 | -      | 18.969         | 14.80 | 85.20  | clk          | clk               | u_aes_ctrl/ct_reg_reg[98]/C  | u_aes_ctrl/ct_reg_reg[79]/D  |
+|                 | 125         | 19           | 19     | -8.827 | 10.000 | -0.022 | -      | 18.799         | 15.00 | 85.00  | clk          | clk               | u_aes_ctrl/ct_reg_reg[94]/C  | u_aes_ctrl/ct_reg_reg[94]/D  |
+|                 | 125         | 19           | 20     | -9.013 | 10.000 | 0.028  | -      | 19.034         | 15.10 | 84.90  | clk          | clk               | u_aes_ctrl/ct_reg_reg[51]/C  | u_aes_ctrl/ct_reg_reg[92]/D  |
++-----------------+-------------+--------------+--------+--------+--------+--------+--------+----------------+-------+--------+--------------+-------------------+------------------------------+------------------------------+
+
+
