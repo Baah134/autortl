@@ -17,10 +17,10 @@ NO_TOKENS = {'input_tokens': 0, 'cached_input_tokens': 0, 'output_tokens': 0}
 
 @pytest.fixture
 def clock(monkeypatch):
-    # Replace only budget.py's module binding, never the shared time module.
+    # Replace only budget.py's clock binding (the awake clock), never a shared module.
     value = SimpleNamespace(now=1000.0)
     value.advance = lambda seconds: setattr(value, 'now', value.now + seconds)
-    monkeypatch.setattr(budget_module, 'time', SimpleNamespace(time=lambda: value.now))
+    monkeypatch.setattr(budget_module, 'awake_seconds', lambda: value.now)
     return value
 
 

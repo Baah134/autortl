@@ -19,6 +19,7 @@ from dataclasses import asdict
 from datetime import datetime
 from pathlib import Path
 
+from .awake_clock import awake_seconds
 from .config import RunConfig
 from .contract_context import run_evidence, file_evidence, flow_evidence, save_evidence, render_fixed_optimize_contract, tool_exit_evidence
 from .spec import DesignSpec, ModuleSpec, Port, ResetSpec
@@ -409,7 +410,7 @@ class Orchestrator:
                                 self.budget.max_vivado_minutes * 60 - self.budget.vivado_seconds)
                 default = {"xvlog_check": 120, "xsim_run": 300, "run_synthesis": 900}[name]
                 kwargs["timeout"] = min(kwargs.get("timeout", default), remaining)
-            started = time.monotonic()
+            started = awake_seconds()
             try:
                 result = getattr(vivado, name)(*args, **kwargs)
                 if name == "xsim_run" and result[0]:
@@ -421,7 +422,7 @@ class Orchestrator:
                 return result
             finally:
                 if name != "full_metrics":
-                    self.budget.charge_vivado(max(time.monotonic() - started, vivado.vivado_seconds()))
+                    self.budget.charge_vivado(max(awake_seconds() - started, vivado.vivado_seconds()))
         result = self._stage("tool", name, execute, args, kwargs, work,
                              attempts=1 if name == "full_metrics" else self.cfg.max_infra_retries + 1)
         if name == "xsim_run" and result[0]:

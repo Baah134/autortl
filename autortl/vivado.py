@@ -15,6 +15,7 @@ import signal
 import subprocess
 import time
 from pathlib import Path
+from .awake_clock import awake_seconds
 from .config import RunConfig
 from .state import atomic_write_text
 from .report_parser import VivadoMetrics, parse_sim_log, parse_all, extract_message_ids
@@ -91,7 +92,7 @@ def _append_tool_exit_record(cwd: Path, record: dict) -> None:
 
 
 def _run(cmd: list[str], cwd: Path, timeout: int, log_path: Path) -> tuple[int, str]:
-    t0 = time.monotonic()
+    t0 = awake_seconds()
     process, primary_error = None, None
     status, driver_rc, log_written = "launch_failed", None, False
     try:
@@ -136,7 +137,7 @@ def _run(cmd: list[str], cwd: Path, timeout: int, log_path: Path) -> tuple[int, 
         primary_error = exc
         raise
     finally:
-        _run.last_seconds = max(0.0, time.monotonic() - t0)
+        _run.last_seconds = max(0.0, awake_seconds() - t0)
         try:
             actual_rc = getattr(process, "returncode", None)
             pid = getattr(process, "pid", None)

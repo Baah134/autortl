@@ -134,6 +134,9 @@ harness_failures:
   spec_prompt_omits_example_budget:
     meaning: "The planner's spec prompt never stated the golden sandbox's per-example budget, so a prose request for a long-period design (tier3 uart_fifo_build: UART at DIV=868, a 8,680-cycle frame) invites full-frame examples the oracle cannot run (predicted by an offline pre-flight of tier2/tier3, not yet observed)"
     repair: "State the limit in the spec prompt (after_cycles at or below 2000) and tell the planner to check an early part of long-period behavior in examples, leaving full frames to the generated and independent testbenches"
+  host_sleep_charged_to_run_budget:
+    meaning: "The laptop slept on battery at 00:28 and hibernated until 09:25; the wall budget used time.time() and Vivado charges used time.monotonic(), both of which include suspended time on Windows, so fir16-ooc-01, explore-tier6-01 rv32i_core_build and explore-tier6-02 aes128_core_build all ended budget_exhausted after about 32,000 s, an infrastructure event charged as design budget"
+    repair: "Measure run budgets with an awake clock that excludes suspend (QueryUnbiasedInterruptTime on Windows, CLOCK_MONOTONIC elsewhere); tool timeouts may stay on wall time because a timeout is already infrastructure"
   golden_table_setup_exhausts_step_budget:
     meaning: "The AES round oracle ran out of the sandbox's single 200,000-line budget (setup, init and every step shared it), then a second attempt computed a wrong ciphertext, so tier6 aes128_core_build ended module_failed with two oracle attempts and a supplied spec that cannot be replanned (explore-tier6-01)"
     repair: "Give module setup and init() their own larger budget, keep the step budget, name the phase in the budget error, and tell the oracle prompt to derive constant tables once in init() with an efficient loop rather than per step or from memory"

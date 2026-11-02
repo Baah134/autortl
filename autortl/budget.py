@@ -8,6 +8,7 @@ import json
 import time
 import math
 from pathlib import Path
+from .awake_clock import awake_seconds
 from .state import atomic_write_text
 
 TOKEN_KEYS = ("input_tokens", "cached_input_tokens", "output_tokens")
@@ -30,7 +31,7 @@ class Budget:
         # Successful calls whose backend reported no usage (command endpoints never do), so
         # zero tokens is not read as zero use (command_endpoint_tokens_reported_as_zero).
         self.calls_without_token_usage = 0
-        self.start = time.time()
+        self.start = awake_seconds()
         self.state_path = Path(state_path) if state_path else None
         if self.state_path and self.state_path.exists():
             d = json.loads(self.state_path.read_text(encoding="utf-8"))
@@ -42,7 +43,7 @@ class Budget:
             for value in (self.vivado_seconds, elapsed):
                 if type(value) not in (int, float) or not math.isfinite(value) or value < 0:
                     raise ValueError("invalid saved budget time")
-            self.start = time.time() - elapsed
+            self.start = awake_seconds() - elapsed
             saved = d.get("tokens", {})  # absent in budgets saved before token accounting
             if not isinstance(saved, dict):
                 raise ValueError("invalid saved token counts")
@@ -92,7 +93,7 @@ class Budget:
 
     @property
     def wall_minutes(self) -> float:
-        return max(0.0, time.time() - self.start) / 60.0
+        return max(0.0, awake_seconds() - self.start) / 60.0
 
     def fraction_left(self) -> float:
         if min(self.max_llm_calls, self.max_vivado_minutes, self.max_wall_minutes) <= 0:
