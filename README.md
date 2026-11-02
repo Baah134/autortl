@@ -17,10 +17,14 @@ board. Every number links to an archived run.
 
 ## Highlights
 
-- **Harness-built logic drives a real pin.** From a typed specification, the
-  harness generated and optimized a UART transmitter (40 → 24 LUTs). That
-  exact file drives the Basys 3's USB-UART pin and **streamed 1,000,000 of
-  1,000,000 bytes at full line rate with 0 errors**
+- **A UART link built entirely by the agents, running on the board.** The
+  roles built a 16x-oversampling UART receiver with a FIFO from a typed
+  specification and a FIFO-buffered transmitter from a plain-English request,
+  then optimized both (70 → 55 and 170 → 36 LUTs, each after recovering timing).
+  Wired together unchanged on a Basys 3, they **echoed 1,000,000 of 1,000,000
+  bytes at full line rate with 0 errors**
+  ([evidence](evidence/2026-11-01/basys3-harness-echo-01/README.md)). An
+  earlier harness-built transmitter streamed a million bytes the same way
   ([evidence](evidence/2026-10-29/harness-uart-tx-v2-01/README.md)).
 - **Six optimized designs, all verified on hardware.** A signed FIR filter,
   two dot products, a divider and two FIFOs. Each ran unedited on the board
@@ -46,7 +50,7 @@ board. Every number links to an archived run.
   line you name in a local config file. The same tier0 bench passed on four
   different models, and the role parsers read each model's own output format
   ([model matrix](evidence/2026-10-29/model-matrix-01/README.md)).
-- **Reproducible by construction.** 1,966 regression tests, crash-safe
+- **Reproducible by construction.** 2,022 regression tests, crash-safe
   resumable runs, fixed model-call and tool-time budgets, per-run token
   accounting, and a CI audit that checks over 34,000 recorded SHA-256 claims
   against the committed bytes. Curriculum tier 0 is held: three consecutive
@@ -146,7 +150,9 @@ and [winner](evidence/2026-10-26/generated-signed-fir4-attempt-01/run/signed_fir
 | Packet-tagged FIFO | 23 LUTs / 31 FFs · setup +0.078 ns · hold +0.106 ns | Independent test of the saved winner |
 | UART transmitter (harness-built) | 40 → 24 LUTs | 1,000,000-byte line-rate stream on the board |
 | Fault-qualified verification | 27 FIR, 18 elastic dot-product and 20 divider faults detected | Correct controls passed |
-| UART receiver + FIFO + error counters (4 modules, tier 5) | Setup −1.166 → +0.443 ns · 70 → 55 LUTs after timing recovery | Independent fault-qualified test |
+| UART receiver + FIFO + error counters (4 modules, tier 5) | Setup −1.166 → +0.443 ns · 70 → 55 LUTs after timing recovery | Independent fault-qualified test · 1,000,000-byte echo on the board |
+| UART transmitter + FIFO from a prose request (tier 3) | Setup −1.188 → +0.179 ns · 170 → 36 LUTs / 117 → 27 FFs | Independent fault-qualified test · 1,000,000-byte echo on the board |
+| AXI4-Lite register block (tier 5, out of context) | Built from specification: 95 LUTs · setup +5.441 ns | Independent fault-qualified test |
 | SPI master (tier 4) | 25 → 19 LUTs / 37 → 33 FFs · setup +0.354 ns | Independent fault-qualified test |
 | CRC-16 stream, arbiter + register file (tier 4) | Built from specification: 16 and 42 LUTs, timing met | Independent fault-qualified test |
 | Curriculum tier 0 (counter, mux4) | Held: 3 consecutive qualifying runs · counter 55 → 31 LUTs | All mandatory gates |
