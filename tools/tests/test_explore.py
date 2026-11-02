@@ -28,6 +28,14 @@ def test_generate_golden_is_passed_when_meta_asks(tmp_path):
     assert "--generate-golden" in cmd
 
 
+def test_out_of_context_implementation_is_passed_when_meta_asks(tmp_path):
+    # chip_top_flow_for_soc_block: the AXI4-Lite slave is an SoC block.
+    cmd = explore.entry_command("PY", ROOT / "curriculum/tier5/axil_regs_build", tmp_path / "o")
+    assert cmd[cmd.index("--implementation") + 1] == "out_of_context"
+    chip_top = explore.entry_command("PY", ROOT / "curriculum/tier2/fir8", tmp_path / "o")
+    assert "--implementation" not in chip_top  # run.py's default is chip_top
+
+
 def test_an_existing_exploration_is_never_overwritten(tmp_path, monkeypatch):
     import pytest
     monkeypatch.setattr(explore, "ROOT", tmp_path)

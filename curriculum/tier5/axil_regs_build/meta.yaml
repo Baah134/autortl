@@ -6,6 +6,9 @@ generate_golden: true
 iterations: 3
 objective: minimize_luts
 target_freq_mhz: 100.0
+# An AXI4-Lite slave is an SoC block, not a chip top: its 169 port bits exceed the
+# 106 user I/O of xc7a35tcpg236-1 (chip_top_flow_for_soc_block).
+implementation: out_of_context
 stresses: "AXI4-Lite slave split into write engine, register bank and read engine; five internal connections including a 256-bit bus; independent AW/W/B and AR/R handshakes; SLVERR decode; byte strobes; write-1-to-clear with set priority; read-only registers; write lands with its response"
 pass_criteria:
   timing_met: true

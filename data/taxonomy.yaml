@@ -78,6 +78,10 @@ messages:
     meaning: "Simulation step failed; see the referenced log for the true cause"
     repair: "Read compile.log/elaborate.log message IDs and repair those; this ID is only a wrapper"
     severity_override: null
+  "Place 30-415":
+    meaning: "The top has more I/O ports than the target package has user I/O pins (target capacity, not an RTL bug); the Place 30-68 not-placed and Place 30-99 lines that follow are its consequences"
+    repair: "Not a design repair: the contract fixes the ports. The harness stops the run as target_infeasible (failure_kind target); use a block's out-of-context implementation or a larger package"
+    severity_override: null
 
 # Methodology violations (report_methodology, UG1292 IDs). ADVISORY ONLY:
 # these never kill candidates; they are digested into the planner's context.
@@ -566,6 +570,12 @@ harness_failures:
   evaluator_requires_child_latency_annotation:
     meaning: "In the whole-design edit scope the evaluator failed a verified, timing-met candidate (spi_master 19 -> 17 LUT) for a missing // @latency annotation on the child spi_master_core, a criterion the contract never states; only the top carries an annotation rule (explore-tier4-02 iteration 3)"
     repair: "State in the edit-boundary contract that child latency fields and annotations bind nothing on their own and a missing or changed child annotation is never a failed criterion"
+  io_overutilization_sent_to_fixer:
+    meaning: "The tier5 AXI4-Lite top axil_regs passed its independent testbench, then place_design failed with ERROR [Place 30-415] IO overutilization (165 I/O ports, 106 user I/O on xc7a35tcpg236-1) and one [Place 30-68] not-placed line per buffer; triage called it a design failure, so the baseline fix loop sent a correct design to the generator three times and the repairs broke it (the final unit failed five testbench rules) (explore-tier5-01 and explore-tier5-02 axil_regs_build)"
+    repair: "Classify a log with ERROR [Place 30-415] (its Place 30-68 and 30-99 consequences included) as failure_kind target, after host failures: never the generator fix loop or the Timing Doctor, never a design mutation, retry or fix attempt; commit it like a design outcome, stop the run as target_infeasible with the port count and package capacity, and count the curriculum entry as a FAIL of its configuration with that reason, not as infrastructure"
+  chip_top_flow_for_soc_block:
+    meaning: "The only implementation flow treated every top as a chip top, placing each port bit on a package pin through an I/O buffer, so a block meant to sit inside an SoC (the AXI4-Lite slave axil_regs, 169 port bits) could never be implemented on the 106-I/O Basys 3 package, and its slack would mostly measure pad delay (explore-tier5-01 and explore-tier5-02 axil_regs_build)"
+    repair: "Let an entry opt in with implementation: out_of_context (run.py --implementation out_of_context, a harness choice, never model text): synth_design -mode out_of_context with no I/O buffers, the clock created at the target period on a global buffer (HD.CLK_SRC), opt/place/route out of context, I/O ports left unconstrained so WNS and WHS cover the routed internal paths; record the mode in the run config, checkpoint, cache context and contract evidence"
 
 methodology:
   "TIMING-6":

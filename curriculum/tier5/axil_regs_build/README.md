@@ -32,6 +32,27 @@ edge, so a master that reads after B always sees the new value. Read side:
 its edge (a read accepted at the write edge returns the old value); `rdata` and
 `rresp` hold under backpressure.
 
+## Implemented out of context
+
+An AXI4-Lite slave is a block inside an SoC, not a chip top. Its ports add up
+to 169 bits, and the Basys 3 part (xc7a35tcpg236-1) has 106 user I/O, so the
+chip-top flow can never place it: explore-tier5-01 and explore-tier5-02 passed
+the independent testbench, then failed placement with `[Place 30-415]`
+(Vivado counted 165 I/O ports), and the fix loop broke the correct design
+(taxonomy `io_overutilization_sent_to_fixer`; that failure now stops the run
+as `target_infeasible`).
+
+`meta.yaml` therefore sets `implementation: out_of_context`
+(`run.py build --implementation out_of_context`; taxonomy
+`chip_top_flow_for_soc_block`). Synthesis runs with
+`synth_design -mode out_of_context`, so no I/O buffers are inserted and the
+utilization has no IOBs. `clk` is constrained at the target period (100 MHz)
+and modeled as driven by a global clock buffer. The data ports have no input or
+output delay and no pad delay: setup WNS and hold WHS, which the acceptance
+gate requires to be at least 0, cover the routed internal clocked paths only.
+The combinational logic between a port and its first or last register is not
+timed. That flow has not run on this entry yet.
+
 ## Why the handshake ports are tagged `protocol: none`
 
 A multi-module build sends every child through the generated golden path. An

@@ -99,7 +99,8 @@ supported schema and limits.
    FAIL a sabotaged design before it grades anything.
 8. Reset/X discipline — reset per spec + 2-cycle settle before comparing.
 9. Infra-vs-design triage (triage.py) — infra failures never mutate the
-   design or enter history.
+   design or enter history. A third kind, target, covers an interface that
+   cannot fit the configured device (see target capacity failures).
 10. Metrics integrity gates (metrics_gate.py) — the lut_total:0 class of bug
     is fatal, never a silent score.
 11. TCL injection boundary — LLM output only in .v files; paths sanitised.
@@ -339,7 +340,8 @@ run.
 
 ## Register-to-register slack
 Acceptance timing is unchanged. The routed WNS and WHS of the full design, with
-zero input and output delay on every data port, decide timing_met, timing
+zero input and output delay on every data port (chip_top flow; the
+out_of_context flow leaves data ports unconstrained), decide timing_met, timing
 feasibility, the ranking of timing-infeasible candidates, timing_progress, the
 Timing Doctor and curriculum acceptance. With I/O buffers in the path, those
 numbers mostly measure pad delay (io_dominated_timing_metric).
@@ -377,6 +379,70 @@ unchanged. The saved objective policy is contract evidence, so checkpoints
 saved before this rule do not resume (equal_lut_ff_saving_discarded;
 crc16_stream_build in explore-tier4-01 and -02: 16 LUT, 34 to 18 or 19 FF,
 timing met, rejected).
+
+## Implementation flow
+`RunConfig.implementation` chooses one of two harness templates in
+`autortl/vivado.py`; models never choose or write it. A curriculum entry sets
+it with `implementation:` in meta.yaml and `run.py optimize|build` with
+`--implementation` (`chip_top` by default; a bench takes it from each entry,
+never from a flag). It is saved in config.json (resume refuses a change; a
+config saved before it existed loads as `chip_top`), part of the cohort
+configuration, the metrics-cache context (with the template's hash), the Doctor's
+no-op flow proof and the fixed contract evidence, whose contract text names the
+mode (taxonomy chip_top_flow_for_soc_block).
+
+- **chip_top** (default, `SYNTH_TCL`, unchanged). The top is the whole FPGA
+  design: every port bit gets an I/O buffer on a package pin, data ports get
+  zero input and output delay to `clk`, and WNS/WHS include pad delay
+  (see register-to-register slack below).
+- **out_of_context** (`OOC_SYNTH_TCL`), for a block that sits inside a larger
+  design, such as tier5 axil_regs_build (an AXI4-Lite slave, 169 port bits
+  against 106 user I/O). The XDC creates `clk` at the target period and sets
+  `HD.CLK_SRC BUFGCTRL_X0Y0` on it, so the clock is modeled as driven by a
+  global buffer. `synth_design -mode out_of_context` inserts no I/O buffers;
+  `opt_design`, `place_design`, the optional Doctor `phys_opt_design` and
+  `route_design` then run on that netlist in the same batch session, with the
+  same reports, metrics parsing and SYNTH_COMPLETE marker. Data ports get no
+  input or output delay: there are no pads, and without partition-pin
+  locations Vivado cannot route or time them accurately (Route 35-198). They
+  are unconstrained I/O, so the routed WNS and WHS, which still decide
+  timing_met and curriculum acceptance, cover the internal clocked paths only
+  (register to register, RAM and DSP registers included). Combinational logic
+  between a port and its first or last register is not timed; behavior there
+  is still checked by the testbench. Utilization excludes I/O buffers (Bonded
+  IOB 0). `reg2reg_wns_ns` is the same register-to-register report. A design
+  with no internal clocked path reports no numeric WNS and fails the metrics
+  gate, as it would with missing reports. The clock and synthesis lines are
+  the same as `hardware/basys3/fmax/fmax.py`'s ooc mode, which closed timing
+  live on Vivado 2025.2; the complete harness script has not yet run live.
+
+## Target capacity failures
+A `[Place 30-415]` ERROR line means the top has more I/O ports than the
+package has user I/O. The contract fixes the ports, so no RTL repair can help.
+`triage.classify` returns FailureKind.TARGET (value `target`) for such a log,
+after host failures and before any design ID; the `[Place 30-68]` not-placed
+and `[Place 30-99]` lines that follow are its consequences, while a 30-68 line
+alone stays a design failure. Every FailureKind branch treats it this way:
+
+- The stage journal settles it like a design outcome (`triage.SETTLED_KINDS`):
+  committed, replayed on resume, never retried as infrastructure.
+- Baseline: `_fix_loop` only repairs DESIGN, so the generator never sees it
+  and no fix attempt is charged; the run stops as `target_infeasible` with
+  `failure_kind: target` and `target_capacity` (Vivado's port count, available
+  user I/O, device and package, plus the configured part and implementation).
+  A part the message does not state stays null, never guessed.
+- Candidate synthesis: the same stop, keeping the verified incumbent as
+  best_iteration; the Doctor runs only after a candidate's synthesis passed.
+- Curriculum: the entry is a FAIL with reason `target_infeasible: ...`, which
+  enters the history like any failed entry. It is not infrastructure: rerunning
+  on a healthy host gives the same result, so withholding a verdict would block
+  the tier forever and hide a misconfigured entry. It is not a model failure:
+  the reason names the entry configuration. Counting it as a FAIL can only
+  lower a pass rate, so it cannot help a tier qualify.
+
+Severities are unchanged: nothing is demoted. Taxonomy
+io_overutilization_sent_to_fixer (explore-tier5-01 and -02 axil_regs_build: a
+testbench-passing top was "repaired" three times and broken).
 
 ## Curriculum governance
 Tier held = 3 consecutive runs ≥80%. Regressions on held tiers block harness

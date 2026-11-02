@@ -28,7 +28,7 @@ from .state import RunState, atomic_write_text
 from .roles import Planner, Generator, Evaluator, TimingDoctor, Evaluation, default_timescale
 from .budget import Budget
 from .cache import MetricsCache, code_hash
-from .triage import FailureKind, classify
+from .triage import FailureKind, SETTLED_KINDS, classify, target_capacity
 from .metrics_gate import validate as gate_metrics, MetricsGateError
 from .watchdog import inspect as watchdog_inspect
 from .taxonomy import Taxonomy
@@ -343,7 +343,9 @@ class Orchestrator:
             self.state.append_event({"stage": identity, "attempt": count, "outcome": "RUNNING"},
                                     event_id=f"stage:{identity}:{count}:start")
             result = function()
-            blocked = isinstance(result, tuple) and len(result) == 3 and result[0] is False and result[2] != FailureKind.DESIGN
+            # A target-capacity failure is settled like a design outcome: committed,
+            # never retried as infrastructure (io_overutilization_sent_to_fixer).
+            blocked = isinstance(result, tuple) and len(result) == 3 and result[0] is False and result[2] not in SETTLED_KINDS
             self.state.append_event({"stage": identity, "attempt": count,
                                      "outcome": "INFRA_FAIL" if blocked else "COMPLETE"},
                                     event_id=f"stage:{identity}:{count}:end")
@@ -356,7 +358,7 @@ class Orchestrator:
                     if path.is_file() and (path.suffix == ".log" or path.name in ("sim_log.txt", "qualification.json")):
                         shutil.copyfile(path, evidence / path.name)
         # Infrastructure outcomes stay uncommitted, so a later resume can retry.
-        if isinstance(result, tuple) and len(result) == 3 and result[0] is False and result[2] != FailureKind.DESIGN:
+        if isinstance(result, tuple) and len(result) == 3 and result[0] is False and result[2] not in SETTLED_KINDS:
             return result
         artifacts = {}
         if work:
@@ -914,6 +916,9 @@ class Orchestrator:
                 original = v
         if not baseline.sim_passed or baseline.synth_error:
             kind = self._flow_failure_kind(baseline)
+            if kind == FailureKind.TARGET:
+                # _fix_loop never ran the generator: a target failure is not a design bug.
+                return self._target_stop(baseline.synth_error)
             return self._baseline_stop(
                 "baseline_failed" if kind == FailureKind.DESIGN else "baseline_blocked",
                 baseline.sim_error or baseline.synth_error or "Baseline verification incomplete",
@@ -1067,6 +1072,10 @@ class Orchestrator:
                     [cv] + extra_sources, cfg.top_module, self.cfg, cdir,
                     promotions=self.taxonomy.promotions())
                 if not ok:
+                    if kind == FailureKind.TARGET:
+                        # The ports are contract-fixed, so no candidate can fit; stop
+                        # with the verified incumbent kept (io_overutilization_sent_to_fixer).
+                        return self._target_stop(err)
                     if kind != FailureKind.DESIGN:
                         c.fail_reason = "infra: " + err[:100]
                         continue
@@ -1441,12 +1450,8 @@ class Orchestrator:
             manifest = origin / "verification_inputs.log"
             if json.loads(manifest.read_text(encoding="utf-8")) != _verification_inputs([vfile, *extra], tb):
                 return False
-            expected = vivado.SYNTH_TCL.format(
-                promotions=vivado.promotion_tcl(self.taxonomy.promotions()),
-                part=self.cfg.target_part,
-                sources=" ".join(f'"{vivado._tcl_path(path)}"' for path in [vfile, *extra]),
-                workdir=vivado._tcl_path(origin), period=f"{self.cfg.target_period_ns:.3f}",
-                top=self.cfg.top_module, extra_synth="", phys_opt="")
+            expected = vivado.synthesis_tcl([vfile, *extra], self.cfg.top_module, self.cfg, origin,
+                                            promotions=self.taxonomy.promotions())
             return script.read_text(encoding="utf-8") == expected
         except (OSError, UnicodeError, ValueError, TypeError, KeyError):
             return False
@@ -1587,16 +1592,32 @@ class Orchestrator:
         return (self.state.load_fsm() or {}).get("best_iteration")
 
     def _baseline_stop(self, status: str, error: str,
-                       kind: FailureKind | None = None) -> dict:
+                       kind: FailureKind | None = None, **details) -> dict:
         """Persist a non-success outcome without promoting or scoring a design."""
         best = self._verified_best_iteration()
         summary = {"status": status, "error": error, "best_iteration": best,
                    "run_dir": str(self.state.run_dir)}
         if kind is not None:
             summary["failure_kind"] = kind.value
+        summary.update(details)
         self._snapshot(phase=status.upper(), best_iteration=best, error=error)
         atomic_write_text(self.state.run_dir / "run_summary.json", json.dumps(summary, indent=2))
         return summary
+
+    def _target_stop(self, error: str) -> dict:
+        """End the run: the configured target cannot hold the contract's interface.
+
+        Never a fix attempt, Doctor input, design mutation or infrastructure retry
+        (io_overutilization_sent_to_fixer). The summary carries the measured port
+        count and package capacity and the configured part and implementation flow.
+        """
+        capacity = target_capacity(error) or {}
+        details = {key: capacity.get(key) for key in ("message_id", "io_ports", "available_user_io",
+                                                      "device", "package")}
+        details.update(part=self.cfg.target_part, implementation=self.cfg.implementation)
+        print(f"[target] {str(error).splitlines()[0] if error else 'target_infeasible'}")
+        return self._baseline_stop("target_infeasible", error, FailureKind.TARGET,
+                                   target_capacity=details)
 
     def _flow_failure_kind(self, metrics: VivadoMetrics) -> FailureKind:
         return getattr(self, "_last_flow_failure_kind", None) or classify(
@@ -1680,4 +1701,5 @@ class Orchestrator:
                 "tools": {name: identity(shutil.which(getattr(self.cfg, name)) or getattr(self.cfg, name))
                           for name in ("vivado_bin", "xvlog_bin", "xelab_bin", "xsim_bin")},
                 "promotions": self.taxonomy.promotions(),
-                "synthesis_template": hashlib.sha256(vivado.SYNTH_TCL.encode()).hexdigest()}
+                "implementation": self.cfg.implementation,
+                "synthesis_template": hashlib.sha256(vivado.synthesis_template(self.cfg).encode()).hexdigest()}

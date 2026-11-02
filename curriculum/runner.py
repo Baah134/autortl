@@ -11,7 +11,7 @@ from pathlib import Path
 import tempfile
 import time
 import yaml
-from autortl.config import RunConfig
+from autortl.config import IMPLEMENTATIONS, RunConfig
 from autortl.fsm import Orchestrator
 from autortl.metrics_gate import validate, MetricsGateError
 from autortl.report_parser import VivadoMetrics
@@ -79,6 +79,14 @@ def _runtime_identity(run_dir):
 
 
 def _accepted(summary, criteria):
+    if summary.get("status") == "target_infeasible":
+        # io_overutilization_sent_to_fixer: deterministic for the entry's configuration
+        # (top ports, part, implementation flow), so a FAIL of that configuration with
+        # this reason; not infrastructure (no verdict) and not a model failure.
+        capacity = summary.get("target_capacity") or {}
+        return False, (f"target_infeasible: the entry configuration does not fit the target "
+                       f"({capacity.get('io_ports')} I/O ports, {capacity.get('available_user_io')} "
+                       f"available user I/O on {capacity.get('part')}); not a model or infrastructure outcome")
     if summary.get("status") != "done":
         return False, "run did not complete successfully"
     try:
@@ -109,6 +117,8 @@ def _metadata(entry):
             raise ValueError(f"{entry.name}: generate_golden must be boolean")
         if meta["generate_golden"] and mode != "build":
             raise ValueError(f"{entry.name}: generate_golden=True requires build mode")
+    if "implementation" in meta and meta["implementation"] not in IMPLEMENTATIONS:
+        raise ValueError(f"{entry.name}: implementation must be one of: " + ", ".join(IMPLEMENTATIONS))
     for name in ("design", "tb", "spec"):
         if name in meta:
             if not isinstance(meta[name], str):
@@ -350,7 +360,9 @@ def run_tier(tier: int, **overrides) -> int:
                   "objective": meta.get("objective", "minimize_luts"),
                   "target_freq_mhz": meta.get("target_freq_mhz", 100.0),
                   "max_iterations": meta.get("iterations", 5),
-                  "generate_golden": meta.get("generate_golden", False)}
+                  "generate_golden": meta.get("generate_golden", False),
+                  # chip_top_flow_for_soc_block: part of the entry configuration and the cohort.
+                  "implementation": meta.get("implementation", "chip_top")}
         for key, field in (("design", "design_path"), ("tb", "testbench_path"), ("spec", "spec_path")):
             if meta.get(key):
                 config[field] = (entry / meta[key]).resolve()

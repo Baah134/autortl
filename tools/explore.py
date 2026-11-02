@@ -48,6 +48,9 @@ def entry_command(python, entry: Path, out: Path, model=None, vivado=None):
             args += ["--top", meta["top"]]
         if meta.get("generate_golden"):
             args += ["--generate-golden"]
+    if meta.get("implementation"):
+        # chip_top_flow_for_soc_block; run.py checks it against its fixed choices.
+        args += ["--implementation", meta["implementation"]]
     args += ["--iterations", str(meta.get("iterations", 5)), "--best-of-n", str(BUDGETS["best_of_n"]),
              "--objective", meta.get("objective", "minimize_luts"),
              "--max-llm-calls", str(BUDGETS["model_calls"]), "--max-vivado-minutes", str(BUDGETS["tool_minutes"]),

@@ -920,3 +920,35 @@ case to `max_fix_attempts` planner calls.
 Remaining acceptance: controlled pytest only. Rerun tier3 exploration
 (uart_fifo_build) and the held-tier gates, and record whether the replanned
 uart_tx spec builds.
+
+## November1 (Claude Code): an SoC block cannot be a chip top on Basys 3
+
+explore-tier5-01 and explore-tier5-02 axil_regs_build: the generated baseline
+passed the independent testbench, then place_design failed with
+`[Place 30-415]` (165 I/O ports, 106 user I/O on xc7a35tcpg236-1). Triage
+called it a design failure, so `_fix_loop` sent a correct design to the
+generator three times and the repairs broke it (five testbench rules failed).
+
+**Decided and implemented (branch ooc-flow):**
+
+1. Taxonomy `io_overutilization_sent_to_fixer`: FailureKind.TARGET for a
+   30-415 log (30-68 and 30-99 lines are its consequences). Settled like a
+   design outcome (journaled, no infra retry), never the fixer or Doctor,
+   stops the run as `target_infeasible` with port count and capacity. The
+   bench counts it as a FAIL of the entry configuration with that reason, not
+   an infrastructure no-verdict (DESIGN.md, target capacity failures).
+2. Taxonomy `chip_top_flow_for_soc_block`: `implementation: out_of_context`
+   in meta.yaml / `run.py --implementation out_of_context`. No I/O buffers,
+   clock at the target period on a modeled global buffer, data ports
+   unconstrained, so WNS/WHS cover the routed internal clocked paths only
+   (DESIGN.md, implementation flow). Set for axil_regs_build only.
+
+Top port bits per entry (clk included) against the package's 106 user I/O:
+only tier5 axil_regs_build exceeds it (169). The largest others are
+tier3 elastic_dot4_build 88, dot4_pipeline_build 84 and tier0 counter 73.
+
+Remaining acceptance: controlled pytest only; no Vivado ran. Run the
+out-of-context flow once live (`tools/explore.py --tier 5 --entries
+axil_regs_build`) and confirm SYNTH_COMPLETE, a routed `timing_routed.rpt`
+with numeric WNS/WHS, Bonded IOB 0 and that `report_power` and
+`report_design_analysis` succeed out of context.
