@@ -1,0 +1,45 @@
+{
+  "candidates": [
+    {
+      "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-03\\axil_regs_build\\iter_003\\cand_standard",
+      "cache_hit": false,
+      "final_code_hash": "35106f0aac22fbd3",
+      "final_source_sha256": "3fb30d4e0df3e4f1f16452495f9da0e5cfe919eb5e5338e8f21bbd6ec7891fc8",
+      "flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-03\\axil_regs_build\\iter_003\\cand_standard\\synth.tcl",
+        "sha256": "1be6128e130d6125f7f425a32a1c93941ae84f1b5b633c1d0bde8acd514e5f92"
+      },
+      "generated_code_hash": "35106f0aac22fbd3",
+      "generated_source_sha256": "3fb30d4e0df3e4f1f16452495f9da0e5cfe919eb5e5338e8f21bbd6ec7891fc8",
+      "instruction": "In `axil_regbank`, replace the nested `case (wr_idx)` and per-byte `if (wr_strb[b])` updates for `ctrl_reg`, `scratch_reg`, and `config_reg` with explicit shared enables per register and byte, formed from `wr_en`, the matching index, and `wr_strb[b]`. Use those enables to update only the selected byte from `wr_data`; retain the existing IRQ mask, IRQ status, status snapshot, and write-count behavior. Preserve synchronous reset and all observable cycles, and measure whether routed LUTs fall below 95 with FFs at or below 254.",
+      "iteration": 3,
+      "metrics": {
+        "bram_used": 0.0,
+        "dsp_used": 0,
+        "dynamic_power_w": 0.002,
+        "ff_used": 254,
+        "lut_used": 95,
+        "sim_passed": true,
+        "timing_met": true,
+        "total_power_w": 0.071,
+        "whs_ns": 0.168,
+        "wns_ns": 5.716
+      },
+      "mutation": "standard",
+      "reason": "",
+      "rungs": 5,
+      "source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-03\\axil_regs_build\\iter_003\\cand_standard\\axil_regs.v",
+        "sha256": "97b62fca62052116f26c3f18e06bc1ab6a2b0b67f27bec1a556fc1d4e1f6de2e"
+      },
+      "status": "measured"
+    }
+  ],
+  "doctor": null,
+  "instruction": "In `axil_regbank`, replace the nested `case (wr_idx)` and per-byte `if (wr_strb[b])` updates for `ctrl_reg`, `scratch_reg`, and `config_reg` with explicit shared enables per register and byte, formed from `wr_en`, the matching index, and `wr_strb[b]`. Use those enables to update only the selected byte from `wr_data`; retain the existing IRQ mask, IRQ status, status snapshot, and write-count behavior. Preserve synchronous reset and all observable cycles, and measure whether routed LUTs fall below 95 with FFs at or below 254.",
+  "is_best": false,
+  "iteration": 3,
+  "recommendation": "REJECT",
+  "schema_version": 1,
+  "selected_source_sha256": "3fb30d4e0df3e4f1f16452495f9da0e5cfe919eb5e5338e8f21bbd6ec7891fc8"
+}

@@ -1,0 +1,1160 @@
+{
+  "allowed_flow_variations": "The harness may enable retiming or physical optimization. The candidate's retained synthesis script is authoritative for its actual settings.",
+  "authority": "Harness evidence is fixed. Proposed architectural goals cannot redefine it.",
+  "baseline_metrics": {
+    "bram_total": 50.0,
+    "bram_used": 0.0,
+    "dsp_total": 90,
+    "dsp_used": 0,
+    "dynamic_power_w": 0.002,
+    "ff_pct": 0.6105769230769231,
+    "ff_total": 41600,
+    "ff_used": 254,
+    "lut_pct": 0.4567307692307692,
+    "lut_total": 20800,
+    "lut_used": 95,
+    "reg2reg_wns_ns": 5.441,
+    "sim_error": "",
+    "sim_passed": true,
+    "synth_error": "",
+    "timing_met": true,
+    "total_power_w": 0.071,
+    "whs_ns": 0.134,
+    "wns_ns": 5.441
+  },
+  "build_spec": {
+    "authority": "Complete resolved typed build contract. Defined behavior is mandatory; explicitly unspecified cases remain unspecified. Frozen implementation identities do not turn incidental values in unspecified cases into requirements.",
+    "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-03\\axil_regs_build\\design_spec.json",
+    "resolved_spec": {
+      "connections": [
+        {
+          "dst_module": "axil_regbank",
+          "dst_port": "wr_en",
+          "src_module": "axil_wr_if",
+          "src_port": "wr_en"
+        },
+        {
+          "dst_module": "axil_regbank",
+          "dst_port": "wr_idx",
+          "src_module": "axil_wr_if",
+          "src_port": "wr_idx"
+        },
+        {
+          "dst_module": "axil_regbank",
+          "dst_port": "wr_data",
+          "src_module": "axil_wr_if",
+          "src_port": "wr_data"
+        },
+        {
+          "dst_module": "axil_regbank",
+          "dst_port": "wr_strb",
+          "src_module": "axil_wr_if",
+          "src_port": "wr_strb"
+        },
+        {
+          "dst_module": "axil_rd_if",
+          "dst_port": "regs_flat",
+          "src_module": "axil_regbank",
+          "src_port": "regs_flat"
+        }
+      ],
+      "external_ports": [
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "clk",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "rst",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "awvalid",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "output",
+          "name": "awready",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "awaddr",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 6
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "wvalid",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "output",
+          "name": "wready",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "wdata",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 32
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "wstrb",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 4
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "output",
+          "name": "bvalid",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "bready",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "output",
+          "name": "bresp",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 2
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "arvalid",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "output",
+          "name": "arready",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "araddr",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 6
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "output",
+          "name": "rvalid",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "rready",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "output",
+          "name": "rdata",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 32
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "output",
+          "name": "rresp",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 2
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "irq_set",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 8
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "status_in",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 32
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "output",
+          "name": "ctrl",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 32
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "output",
+          "name": "irq",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 1
+        }
+      ],
+      "modules": [
+        {
+          "behavior": "AXI4-Lite slave write side: AW, W and B channels driving a register-bank write port. Byte addresses are 6 bits; awaddr[5] = 1 (0x20..0x3F) is out of range, awaddr[1:0] are ignored and the register index is awaddr[4:2]. State: aw_full with aw_addr[5:0]; w_full with w_data[31:0] and w_strb[3:0]; bvalid with bresp[1:0]; all reset to 0. Every output is a view of that state with no combinational path from any input: awready = !aw_full and wready = !w_full (the channels are independent; neither ready waits for the other channel's valid); bvalid and bresp are the registers; with do_write = aw_full && w_full && !bvalid, wr_en = do_write && !aw_addr[5]; wr_idx = aw_addr[4:2], wr_data = w_data and wr_strb = w_strb are shown whatever wr_en is. At each rising edge with rst low, using the state and inputs before the edge: if do_write then aw_full = 0, w_full = 0, bvalid = 1 and bresp = 2 (SLVERR) when aw_addr[5] = 1, else 0 (OKAY); the bank writes at this same edge, so the register update and the response become visible together, and an out-of-range write changes no register. Otherwise, if bvalid && bready then bvalid = 0. Independently, if awvalid && awready then aw_full = 1 and aw_addr = awaddr; if wvalid && wready then w_full = 1, w_data = wdata and w_strb = wstrb. So AW and W may arrive in either order or together, one of each may be held while a response is pending, and a held pair is written only at an edge where bvalid was 0 before the edge (not at the edge where a stalled response retires). A write costs at least two edges, so one write per two cycles is the peak rate. bresp keeps its value after the B transfer. Synchronous active-high rst at a rising edge returns every register to its reset value; reset has no effect between edges. Python oracle: cycle-level model, one step per rising edge; keep the registers in state and return every output as it is after that edge. The driver applies the fixed latency of 1; do not add a delay queue. init() is the reset state and a supplied rst must be handled.",
+          "clock_domains": [
+            "clk"
+          ],
+          "compare_mode": "fixed_latency",
+          "examples": [
+            {
+              "after_cycles": 1,
+              "expected": {
+                "awready": 0,
+                "bresp": 0,
+                "bvalid": 0,
+                "wr_data": 305419896,
+                "wr_en": 1,
+                "wr_idx": 1,
+                "wr_strb": 15,
+                "wready": 0
+              },
+              "inputs": {
+                "awaddr": 4,
+                "awvalid": 1,
+                "bready": 0,
+                "rst": 0,
+                "wdata": 305419896,
+                "wstrb": 15,
+                "wvalid": 1
+              }
+            },
+            {
+              "after_cycles": 2,
+              "expected": {
+                "awready": 1,
+                "bresp": 2,
+                "bvalid": 1,
+                "wr_data": 4294967295,
+                "wr_en": 0,
+                "wr_idx": 1,
+                "wr_strb": 15,
+                "wready": 1
+              },
+              "inputs": {
+                "awaddr": 36,
+                "awvalid": 1,
+                "bready": 0,
+                "rst": 0,
+                "wdata": 4294967295,
+                "wstrb": 15,
+                "wvalid": 1
+              }
+            },
+            {
+              "after_cycles": 3,
+              "expected": {
+                "awready": 0,
+                "bresp": 0,
+                "bvalid": 0,
+                "wr_data": 0,
+                "wr_en": 0,
+                "wr_idx": 2,
+                "wr_strb": 0,
+                "wready": 1
+              },
+              "inputs": {
+                "awaddr": 8,
+                "awvalid": 1,
+                "bready": 1,
+                "rst": 0,
+                "wdata": 4294967295,
+                "wstrb": 15,
+                "wvalid": 0
+              }
+            }
+          ],
+          "golden_model": "",
+          "interface_signature": null,
+          "latency": 1,
+          "latency_known": true,
+          "name": "axil_wr_if",
+          "parameters": {},
+          "ports": [
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "clk",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "rst",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "awvalid",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "awready",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "awaddr",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 6
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "wvalid",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "wready",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "wdata",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 32
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "wstrb",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 4
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "bvalid",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "bready",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "bresp",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 2
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "wr_en",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "wr_idx",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 3
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "wr_data",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 32
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "wr_strb",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 4
+            }
+          ],
+          "reset": {
+            "active_high": true,
+            "duration_cycles": 3,
+            "kind": "sync",
+            "signal": "rst"
+          }
+        },
+        {
+          "behavior": "Bank of eight 32-bit registers behind one write port, exposed as a flat 256-bit view. Map by index (byte address 4*index): 0 CTRL read/write, reset 0, also driven on output ctrl; 1 SCRATCH read/write, reset 0; 2 CONFIG read/write, reset 0x00000100; 3 IRQ_MASK: bits 7:0 read/write, written only when wr_strb[0] = 1, bits 31:8 read 0, reset 0; 4 IRQ_STATUS: bits 7:0 pending flags, write-1-to-clear, bits 31:8 read 0, reset 0; 5 STATUS read-only: status_in as sampled at the previous rising edge (registered every cycle), reset 0; 6 ID read-only constant 0x52544C35; 7 WRITE_COUNT read-only: the number of edges with wr_en = 1 since reset (any index, any strobes), modulo 2^32, reset 0. regs_flat[32*i+31:32*i] = register i, ctrl = CTRL and irq = OR of the bits of (IRQ_STATUS[7:0] & IRQ_MASK[7:0]); all three depend only on registered state. At each rising edge with rst low, using pre-edge values: STATUS = status_in; IRQ_STATUS[7:0] = (IRQ_STATUS[7:0] & ~clear) | irq_set, where clear = wr_data[7:0] if wr_en && wr_idx == 4 && wr_strb[0], else 0, so a flag that is set and cleared at the same edge stays set; if wr_en then WRITE_COUNT increments, for index 0, 1 or 2 each byte lane b with wr_strb[b] = 1 takes byte b of wr_data and the other lanes keep their value, and for index 3 IRQ_MASK[7:0] = wr_data[7:0] when wr_strb[0] = 1; writes to indexes 5, 6 and 7 change nothing but still count. When wr_en = 0, wr_idx, wr_data and wr_strb are ignored. Synchronous active-high rst at a rising edge returns every register to its reset value; reset has no effect between edges. Python oracle: cycle-level model, one step per rising edge; keep the registers in state and return every output as it is after that edge. The driver applies the fixed latency of 1; do not add a delay queue. init() is the reset state and a supplied rst must be handled.",
+          "clock_domains": [
+            "clk"
+          ],
+          "compare_mode": "fixed_latency",
+          "examples": [
+            {
+              "after_cycles": 1,
+              "expected": {
+                "ctrl": 0,
+                "irq": 0,
+                "regs_flat": 35630232639653906037930654921732627050046000695818909790155757846528
+              },
+              "inputs": {
+                "irq_set": 5,
+                "rst": 0,
+                "status_in": 51966,
+                "wr_data": 255,
+                "wr_en": 1,
+                "wr_idx": 4,
+                "wr_strb": 1
+              }
+            },
+            {
+              "after_cycles": 2,
+              "expected": {
+                "ctrl": 10813605,
+                "irq": 0,
+                "regs_flat": 62590179306804469884203584469349798516392435866679209793910009561253
+              },
+              "inputs": {
+                "irq_set": 0,
+                "rst": 0,
+                "status_in": 0,
+                "wr_data": 2779096485,
+                "wr_en": 1,
+                "wr_idx": 0,
+                "wr_strb": 5
+              }
+            },
+            {
+              "after_cycles": 2,
+              "expected": {
+                "ctrl": 0,
+                "irq": 1,
+                "regs_flat": 62590179306804469894434095974562544296822472923605921376553333161984
+              },
+              "inputs": {
+                "irq_set": 129,
+                "rst": 0,
+                "status_in": 7,
+                "wr_data": 4294967295,
+                "wr_en": 1,
+                "wr_idx": 3,
+                "wr_strb": 15
+              }
+            }
+          ],
+          "golden_model": "",
+          "interface_signature": null,
+          "latency": 1,
+          "latency_known": true,
+          "name": "axil_regbank",
+          "parameters": {},
+          "ports": [
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "clk",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "rst",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "wr_en",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "wr_idx",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 3
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "wr_data",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 32
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "wr_strb",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 4
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "irq_set",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 8
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "status_in",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 32
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "regs_flat",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 256
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "ctrl",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 32
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "irq",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            }
+          ],
+          "reset": {
+            "active_high": true,
+            "duration_cycles": 3,
+            "kind": "sync",
+            "signal": "rst"
+          }
+        },
+        {
+          "behavior": "AXI4-Lite slave read side: AR and R channels reading a flat view of eight 32-bit registers, where regs_flat[32*i+31:32*i] is register i. Byte addresses are 6 bits; araddr[5] = 1 (0x20..0x3F) is out of range, araddr[1:0] are ignored and the index is araddr[4:2]. State rvalid, rdata[31:0] and rresp[1:0], all reset to 0; arready = !rvalid, from registered state only. At each rising edge with rst low: if arvalid && !rvalid the read is accepted: rvalid = 1 and, when araddr[5] = 1, rdata = 0 and rresp = 2 (SLVERR), else rdata = register araddr[4:2] of regs_flat as it was before this edge and rresp = 0 (OKAY); otherwise, if rvalid && rready then rvalid = 0. While rvalid && !rready, rvalid, rdata and rresp hold whatever arvalid, araddr or regs_flat do, and rdata and rresp keep their values after the R transfer. The next read can be accepted at the edge after an R transfer at the earliest. Synchronous active-high rst at a rising edge returns every register to its reset value; reset has no effect between edges. Python oracle: cycle-level model, one step per rising edge; keep the registers in state and return every output as it is after that edge. The driver applies the fixed latency of 1; do not add a delay queue. init() is the reset state and a supplied rst must be handled.",
+          "clock_domains": [
+            "clk"
+          ],
+          "compare_mode": "fixed_latency",
+          "examples": [
+            {
+              "after_cycles": 1,
+              "expected": {
+                "arready": 0,
+                "rdata": 2734883587,
+                "rresp": 0,
+                "rvalid": 1
+              },
+              "inputs": {
+                "araddr": 8,
+                "arvalid": 1,
+                "regs_flat": 76002748785747371621271812474050423447790058081543318813521012657984242778369,
+                "rready": 0,
+                "rst": 0
+              }
+            },
+            {
+              "after_cycles": 2,
+              "expected": {
+                "arready": 0,
+                "rdata": 0,
+                "rresp": 2,
+                "rvalid": 1
+              },
+              "inputs": {
+                "araddr": 48,
+                "arvalid": 1,
+                "regs_flat": 76002748785747371621271812474050423447790058081543318813521012657984242778369,
+                "rready": 0,
+                "rst": 0
+              }
+            },
+            {
+              "after_cycles": 2,
+              "expected": {
+                "arready": 1,
+                "rdata": 2819098632,
+                "rresp": 0,
+                "rvalid": 0
+              },
+              "inputs": {
+                "araddr": 31,
+                "arvalid": 1,
+                "regs_flat": 76002748785747371621271812474050423447790058081543318813521012657984242778369,
+                "rready": 1,
+                "rst": 0
+              }
+            }
+          ],
+          "golden_model": "",
+          "interface_signature": null,
+          "latency": 1,
+          "latency_known": true,
+          "name": "axil_rd_if",
+          "parameters": {},
+          "ports": [
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "clk",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "rst",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "arvalid",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "arready",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "araddr",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 6
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "rvalid",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "rready",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "rdata",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 32
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "rresp",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 2
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "regs_flat",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 256
+            }
+          ],
+          "reset": {
+            "active_high": true,
+            "duration_cycles": 3,
+            "kind": "sync",
+            "signal": "rst"
+          }
+        }
+      ],
+      "top_name": "axil_regs"
+    },
+    "sha256": "c5c678b7e163143a7183967cbb1395ef291866c9484c98333d6d8c7f93efba85",
+    "truncated": false
+  },
+  "clock_period_ns": 10.0,
+  "declared_latency": {
+    "cycles": null,
+    "known": false,
+    "meaning": "A source annotation declares numeric latency only when present. This known/cycles pair is authoritative for the current top module's annotation requirement. Only known=true requires a matching numeric top annotation. Child typed-module latency does not invent a top annotation for arbitrary aggregate wrappers. When known=false, absence of a top annotation is not a failed or unverifiable criterion. Unannotated numeric latency is UNKNOWN, not zero. Preserve the source's exact observable cycles and registered behavior. Annotation presence or absence alone is not independent proof of behavioral correctness; use the fixed source contract, all defined typed latency/minimum transfer age and deterministic verification, without inventing a numeric requirement.",
+    "source_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-03\\axil_regs_build\\iter_000\\axil_regs.v",
+    "source_sha256": "177dbc96050fe3a91548b5cbb154579ed53545e691ff28d03242c68dcffc7c82"
+  },
+  "edit_scope": {
+    "children": [
+      "axil_wr_if",
+      "axil_regbank",
+      "axil_rd_if"
+    ],
+    "mode": "whole_design",
+    "reason": "The supplied testbench instantiates the top axil_regs and is the trusted integration authority, so every generated child module and the mechanical top form one editable unit verified through the top. Per-child generated oracles and testbenches verified the baseline children only and are not evidence for changed children.",
+    "testbench_modules": [],
+    "top": "axil_regs"
+  },
+  "execution_context": {
+    "dependencies": [],
+    "implementation": "out_of_context",
+    "part": "xc7a35tcpg236-1",
+    "period_ns": 10.0,
+    "promotions": {
+      "Designutils 20-1307": "ERROR",
+      "Synth 8-327": "ERROR",
+      "Synth 8-3352": "ERROR",
+      "Synth 8-9873": "ERROR",
+      "VRFC 10-3609": "ERROR"
+    },
+    "synthesis_template": "61e44d95134130552d86e050a4db65035952d348028dc942b327b8aced90b3d1",
+    "tb": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-03\\axil_regs_build\\inputs\\testbench_path.v",
+      "sha256": "e2d993581d56e24d9111541f82e3d2a5f12dee802409a47ecfd52bf4d0e9eb74"
+    },
+    "tools": {
+      "vivado_bin": {
+        "path": "C:\\AMDDesignTools\\2025.2\\Vivado\\bin\\vivado.bat",
+        "sha256": "4f9c05aea82a71c7086a9e5edf01ba16ea70255f69cf3420c58b805ec113e994"
+      },
+      "xelab_bin": {
+        "path": "C:\\AMDDesignTools\\2025.2\\Vivado\\bin\\xelab.bat",
+        "sha256": "512a29ace988992d7fab14ca84f20f0b4515bb69ef1d5fef0a57c5f28b72c9b1"
+      },
+      "xsim_bin": {
+        "path": "C:\\AMDDesignTools\\2025.2\\Vivado\\bin\\xsim.bat",
+        "sha256": "8819fbb54fdf9cbcaaf24c2bf72801b403d5c93e0990ba32408b56c666761d21"
+      },
+      "xvlog_bin": {
+        "path": "C:\\AMDDesignTools\\2025.2\\Vivado\\bin\\xvlog.bat",
+        "sha256": "512a29ace988992d7fab14ca84f20f0b4515bb69ef1d5fef0a57c5f28b72c9b1"
+      }
+    },
+    "top": "axil_regs"
+  },
+  "first_violated_path_excerpt": null,
+  "flow_and_constraints": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-03\\axil_regs_build\\iter_000\\synth.tcl",
+      "sha256": "d84cecbe36e607ff8f7ae181d509e00e37cc7d41e7f5f6ca12ffbc48bce7403e",
+      "text": "set_msg_config -id {VRFC 10-3609} -new_severity ERROR\r\nset_msg_config -id {Synth 8-9873} -new_severity ERROR\r\nset_msg_config -id {Designutils 20-1307} -new_severity ERROR\r\nset_msg_config -id {Synth 8-327} -new_severity ERROR\r\nset_msg_config -id {Synth 8-3352} -new_severity ERROR\r\nset_part xc7a35tcpg236-1\r\nread_verilog \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-03/axil_regs_build/iter_000/axil_regs.v\"\r\nset fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-03/axil_regs_build/iter_000/timing.xdc\" w]\r\nputs $fp {create_clock -period 10.000 -name clk [get_ports clk]}\r\nputs $fp {set_property HD.CLK_SRC BUFGCTRL_X0Y0 [get_ports clk]}\r\nclose $fp\r\nread_xdc \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-03/axil_regs_build/iter_000/timing.xdc\"\r\nsynth_design -top axil_regs -flatten_hierarchy rebuilt -mode out_of_context \r\nreport_utilization -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-03/axil_regs_build/iter_000/utilization.rpt\"\r\nreport_timing_summary -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-03/axil_regs_build/iter_000/timing.rpt\"\r\nopt_design\r\nplace_design\r\n\r\nroute_design\r\nreport_utilization -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-03/axil_regs_build/iter_000/utilization_routed.rpt\"\r\nreport_timing_summary -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-03/axil_regs_build/iter_000/timing_routed.rpt\"\r\ncatch { if {[llength [all_registers]] > 0} { report_timing -from [all_registers] -to [all_registers] -max_paths 1 -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-03/axil_regs_build/iter_000/timing_reg2reg.rpt\" } }\r\nreport_design_analysis -logic_level_distribution -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-03/axil_regs_build/iter_000/design_analysis.rpt\"\r\nreport_power -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-03/axil_regs_build/iter_000/power.rpt\"\r\ncatch { report_methodology -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-03/axil_regs_build/iter_000/methodology.rpt\" }\r\ncatch { report_qor_suggestions -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-03/axil_regs_build/iter_000/qor_suggestions.rpt\" }\r\nputs \"SYNTH_COMPLETE\"\r\n",
+      "truncated": false
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-03\\axil_regs_build\\iter_000\\timing.xdc",
+      "sha256": "64b6a06a567f5142e3b71c9ec44440c46d1ff02057a9207ab3820113a8e3e958",
+      "text": "create_clock -period 10.000 -name clk [get_ports clk]\r\nset_property HD.CLK_SRC BUFGCTRL_X0Y0 [get_ports clk]\r\n",
+      "truncated": false
+    }
+  ],
+  "hard_gates": [
+    "Preserve typed build spec defined behavior, ports, parameter defaults, reset and observable cycles; explicitly unspecified cases remain unspecified.",
+    "Use the fixed provided testbench, tools, device and constraints without modification.",
+    "Static/interface checks, compile, simulation and real routed metric integrity must pass.",
+    "Timing closure requires setup slack >= 0 and hold slack >= 0.",
+    "Unknown or absent evidence cannot count as success."
+  ],
+  "implementation": {
+    "meaning": "Out-of-context implementation (chip_top_flow_for_soc_block): the top is a block inside a larger design, synthesized with synth_design -mode out_of_context and placed and routed without I/O buffers or package pins. clk is constrained at the target period and modeled as driven by a global clock buffer (HD.CLK_SRC). Data ports have no input or output delay and no pad delay, so they are unconstrained I/O; the routed WNS and WHS, and timing acceptance, cover the internal clocked paths only, and combinational logic between a port and its first or last register is not timed. Utilization excludes I/O buffers.",
+    "mode": "out_of_context"
+  },
+  "metric_provenance": "Structured metrics are parsed from retained reports; routed utilization/timing reports take precedence when present. The manifest identifies complete files by hash. Header excerpts are bounded previews, not complete reports or an independent metric source.",
+  "objective": "minimize_luts",
+  "objective_policy": "First establish timing feasibility. A verified timing-feasible candidate may replace a known timing-infeasible previous best even with higher area or power; classify this as timing_recovery, not objective savings. While the previous best is timing-infeasible, a verified still-infeasible candidate with strictly better setup WNS and hold not worse beyond a small tolerance may replace it as timing_progress, which is not closure; a feasible candidate always outranks it. Once both are timing-feasible, require strict improvement of the chosen objective; for maximize_freq that is register-to-register setup slack (reg2reg_wns_ns) when both designs report it, otherwise full setup WNS for both, while feasibility stays on full WNS and WHS. minimize_luts compares (lut_used, ff_used) and minimize_ffs compares (ff_used, lut_used) lexicographically: an equal primary metric with a strictly lower secondary is an objective improvement, a higher primary never is, and a secondary missing from either design gives no tie-break. Unknown or contradictory incumbent timing evidence cannot establish recovery. A completed experiment may find no improvement. Do not invent mandatory savings, slack margins, tool versions, timing corners, new tests, thresholds, code-style quotas or external environment requirements.",
+  "part": "xc7a35tcpg236-1",
+  "report_headers": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-03\\axil_regs_build\\iter_000\\power.rpt",
+      "sha256": "d06c9e23c538782d50bfbb966b5b22d6e0ff37d623637e791240b92f07b3e79a",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n-----------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version     : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date             : Sun Nov  1 21:49:16 2026\r\n| Host             : Baah running 64-bit major release  (build 9200)\r\n| Command          : report_power -file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-03/axil_regs_build/iter_000/power.rpt\r\n| Design           : axil_regs\r\n| Device           : xc7a35tcpg236-1\r\n| Design State     : routed\r\n| Grade            : commercial\r\n| Process          : typical\r\n| Characterization : Production\r\n-----------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nPower Report\r\n\r\nTable of Contents\r\n-----------------\r\n1. Summary\r\n1.1 On-Chip Components\r\n1.2 Power Supply Summary\r\n1.3 Confidence Level\r\n2. Settings\r\n2.1 Environment\r\n2.2 Clock Constraints\r\n3. Detailed Reports\r\n3.1 By Hierarchy\r\n\r\n1. Summary\r\n----------\r\n\r\n+--------------------------+--------------+\r\n| Total On-Chip Power (W)  | 0.071        |\r\n| Design Power Budget (W)  | Unspecified* |\r\n| Power Budget Margin (W)  | NA           |\r\n| Dynamic (W)              | 0.002        |\r\n| Device Static (W)        | 0.068        |\r\n| Effective TJA (C/W)      | 5.0          |\r\n| Max Ambient (C)          | 84.6         |\r\n| Junction Temperature (C) | 25.4         |\r\n| Confidence Level         | Medium       |\r\n| Setting File             | ---          |\r\n| Simulation Activity File | ---          |\r\n| Design Nets Matched      | N",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-03\\axil_regs_build\\iter_000\\timing.rpt",
+      "sha256": "9e8e5e92eaaefdd1579a7e5b93e3f3b337a6a25f87881558be34f3de0776e54b",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n---------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date         : Sun Nov  1 21:48:45 2026\r\n| Host         : Baah running 64-bit major release  (build 9200)\r\n| Command      : report_timing_summary -file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-03/axil_regs_build/iter_000/timing.rpt\r\n| Design       : axil_regs\r\n| Device       : 7a35t-cpg236\r\n| Speed File   : -1  PRODUCTION 1.23 2018-06-13\r\n| Design State : Synthesized\r\n---------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nTiming Summary Report\r\n\r\n------------------------------------------------------------------------------------------------\r\n| Timer Settings\r\n| --------------\r\n------------------------------------------------------------------------------------------------\r\n\r\n  Enable Multi Corner Analysis               :  Yes\r\n  Enable Pessimism Removal                   :  Yes\r\n  Pessimism Removal Resolution               :  Nearest Common Node\r\n  Enable Input Delay Default Clock           :  No\r\n  Enable Preset / Clear Arcs                 :  No\r\n  Disable Flight Delays                      :  No\r\n  Ignore I/O Paths                           :  No\r\n  Timing Early Launch at Borrowing Latches   :  No\r\n  Borrow Time for Max Delay Exceptions       :  Yes\r\n  Merge Timing Exceptions                    :  Yes\r\n  Inter-SLR Compensation                     :  Conservative\r\n\r\n  Corner  Analyze    Analyze   ",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-03\\axil_regs_build\\iter_000\\timing_reg2reg.rpt",
+      "sha256": "cc81c163c66b23303e7f063630af2c5805d4261f0e595e0e1b889d1af0824195",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date         : Sun Nov  1 21:49:16 2026\r\n| Host         : Baah running 64-bit major release  (build 9200)\r\n| Command      : report_timing -from [all_registers] -to [all_registers] -max_paths 1 -file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-03/axil_regs_build/iter_000/timing_reg2reg.rpt\r\n| Design       : axil_regs\r\n| Device       : 7a35t-cpg236\r\n| Speed File   : -1  PRODUCTION 1.23 2018-06-13\r\n| Design State : Routed\r\n----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nTiming Report\r\n\r\nSlack (MET) :             5.441ns  (required time - arrival time)\r\n  Source:                 u_axil_wr_if/w_full_reg/C\r\n                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@5.000ns period=10.000ns})\r\n  Destination:            u_axil_regbank/irq_mask_reg_reg[0]/CE\r\n                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@5.000ns period=10.000ns})\r\n  Path Group:             clk\r\n  Path Type:              Setup (Max at Slow Process Corner)\r\n  Requirement:            10.000ns  (clk rise@10.000ns - clk rise@0.000ns)\r\n  Data Path Delay:        4.079ns  (logic 0.867ns (21.256%)  route 3.212ns (78.744%))\r\n  Logic Levels:           2  (L",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-03\\axil_regs_build\\iter_000\\timing_routed.rpt",
+      "sha256": "4baa7459a9df3367d199e37e81532a9dcf68d0af8b2ddb2f9658c50776cee71c",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n----------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date         : Sun Nov  1 21:49:16 2026\r\n| Host         : Baah running 64-bit major release  (build 9200)\r\n| Command      : report_timing_summary -file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-03/axil_regs_build/iter_000/timing_routed.rpt\r\n| Design       : axil_regs\r\n| Device       : 7a35t-cpg236\r\n| Speed File   : -1  PRODUCTION 1.23 2018-06-13\r\n| Design State : Routed\r\n----------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nTiming Summary Report\r\n\r\n------------------------------------------------------------------------------------------------\r\n| Timer Settings\r\n| --------------\r\n------------------------------------------------------------------------------------------------\r\n\r\n  Enable Multi Corner Analysis               :  Yes\r\n  Enable Pessimism Removal                   :  Yes\r\n  Pessimism Removal Resolution               :  Nearest Common Node\r\n  Enable Input Delay Default Clock           :  No\r\n  Enable Preset / Clear Arcs                 :  No\r\n  Disable Flight Delays                      :  No\r\n  Ignore I/O Paths                           :  No\r\n  Timing Early Launch at Borrowing Latches   :  No\r\n  Borrow Time for Max Delay Exceptions       :  Yes\r\n  Merge Timing Exceptions                    :  Yes\r\n  Inter-SLR Compensation                     :  Conservative\r\n\r\n  Corner  Analy",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-03\\axil_regs_build\\iter_000\\utilization.rpt",
+      "sha256": "c1a565fe3ef8368751a2263bf8281a13e7565f1c1a71f617e5cadef2c9a95ef1",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\n-----------------------------------------------------------------------------------------------------------------------------------------------------\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\n| Date         : Sun Nov  1 21:48:37 2026\n| Host         : Baah running 64-bit major release  (build 9200)\n| Command      : report_utilization -file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-03/axil_regs_build/iter_000/utilization.rpt\n| Design       : axil_regs\n| Device       : xc7a35tcpg236-1\n| Speed File   : -1\n| Design State : Synthesized\n-----------------------------------------------------------------------------------------------------------------------------------------------------\n\nUtilization Design Information\n\nTable of Contents\n-----------------\n1. Slice Logic\n1.1 Summary of Registers by Type\n2. Memory\n3. DSP\n4. IO and GT Specific\n5. Clocking\n6. Specific Feature\n7. Primitives\n8. Black Boxes\n9. Instantiated Netlists\n\n1. Slice Logic\n--------------\n\n+-------------------------+------+-------+------------+-----------+-------+\n|        Site Type        | Used | Fixed | Prohibited | Available | Util% |\n+-------------------------+------+-------+------------+-----------+-------+\n| Slice LUTs*             |   97 |     0 |          0 |     20800 |  0.47 |\n|   LUT as Logic          |   97 |     0 |          0 |     20800 |  0.47 |\n|   LUT as Memory         |    0 |     0 |          0 |      9600 |  0.00 |\n| Slice Registers         |  254 |     0 |          0 |     41600 |  0.61 |\n|   Register as Flip Flop |  254 |     0 |          0 |     41600 |  0.61 |\n|   Register as Latch     |    0 |     0 |   ",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-03\\axil_regs_build\\iter_000\\utilization_routed.rpt",
+      "sha256": "6df4bfa684e67cb5ff6af6e5f89556d36b1ecdb1a610b0fbedf09ea37361434e",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\n------------------------------------------------------------------------------------------------------------------------------------------------------------\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\n| Date         : Sun Nov  1 21:49:16 2026\n| Host         : Baah running 64-bit major release  (build 9200)\n| Command      : report_utilization -file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-03/axil_regs_build/iter_000/utilization_routed.rpt\n| Design       : axil_regs\n| Device       : xc7a35tcpg236-1\n| Speed File   : -1\n| Design State : Routed\n------------------------------------------------------------------------------------------------------------------------------------------------------------\n\nUtilization Design Information\n\nTable of Contents\n-----------------\n1. Slice Logic\n1.1 Summary of Registers by Type\n2. Slice Logic Distribution\n3. Memory\n4. DSP\n5. IO and GT Specific\n6. Clocking\n7. Specific Feature\n8. Primitives\n9. Black Boxes\n10. Instantiated Netlists\n\n1. Slice Logic\n--------------\n\n+-------------------------+------+-------+------------+-----------+-------+\n|        Site Type        | Used | Fixed | Prohibited | Available | Util% |\n+-------------------------+------+-------+------------+-----------+-------+\n| Slice LUTs              |   95 |     0 |          0 |     20800 |  0.46 |\n|   LUT as Logic          |   95 |     0 |          0 |     20800 |  0.46 |\n|   LUT as Memory         |    0 |     0 |          0 |      9600 |  0.00 |\n| Slice Registers         |  254 |     0 |          0 |     41600 |  0.61 |\n|   Register as Flip Flop |  254 |     0 |          0 |     41600 |  0.61 |\n",
+      "truncated": true
+    }
+  ],
+  "report_manifest": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-03\\axil_regs_build\\iter_000\\power.rpt",
+      "sha256": "d06c9e23c538782d50bfbb966b5b22d6e0ff37d623637e791240b92f07b3e79a"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-03\\axil_regs_build\\iter_000\\timing.rpt",
+      "sha256": "9e8e5e92eaaefdd1579a7e5b93e3f3b337a6a25f87881558be34f3de0776e54b"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-03\\axil_regs_build\\iter_000\\timing_reg2reg.rpt",
+      "sha256": "cc81c163c66b23303e7f063630af2c5805d4261f0e595e0e1b889d1af0824195"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-03\\axil_regs_build\\iter_000\\timing_routed.rpt",
+      "sha256": "4baa7459a9df3367d199e37e81532a9dcf68d0af8b2ddb2f9658c50776cee71c"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-03\\axil_regs_build\\iter_000\\utilization.rpt",
+      "sha256": "c1a565fe3ef8368751a2263bf8281a13e7565f1c1a71f617e5cadef2c9a95ef1"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-03\\axil_regs_build\\iter_000\\utilization_routed.rpt",
+      "sha256": "6df4bfa684e67cb5ff6af6e5f89556d36b1ecdb1a610b0fbedf09ea37361434e"
+    }
+  ],
+  "schema_version": 1,
+  "simulation": {
+    "failure_verdict": "TEST FAILED",
+    "required_verdict": "TEST PASSED",
+    "scope": "Provided testbench checks; not a formal equivalence proof.",
+    "tools": [
+      "xvlog",
+      "xelab",
+      "xsim -runall"
+    ]
+  },
+  "sources": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-03\\axil_regs_build\\iter_000\\axil_regs.v",
+      "sha256": "177dbc96050fe3a91548b5cbb154579ed53545e691ff28d03242c68dcffc7c82",
+      "text": "`timescale 1ns/1ps\r\n// @latency 1\r\nmodule axil_wr_if (\r\n    input wire clk,\r\n    input wire rst,\r\n    input wire awvalid,\r\n    output wire awready,\r\n    input wire [5:0] awaddr,\r\n    input wire wvalid,\r\n    output wire wready,\r\n    input wire [31:0] wdata,\r\n    input wire [3:0] wstrb,\r\n    output wire bvalid,\r\n    input wire bready,\r\n    output wire [1:0] bresp,\r\n    output wire wr_en,\r\n    output wire [2:0] wr_idx,\r\n    output wire [31:0] wr_data,\r\n    output wire [3:0] wr_strb\r\n);\r\n\r\n    reg aw_full;\r\n    reg [5:0] aw_addr;\r\n    reg w_full;\r\n    reg [31:0] w_data;\r\n    reg [3:0] w_strb;\r\n    reg bvalid_reg;\r\n    reg [1:0] bresp_reg;\r\n\r\n    wire do_write;\r\n\r\n    assign awready = !aw_full;\r\n    assign wready = !w_full;\r\n    assign bvalid = bvalid_reg;\r\n    assign bresp = bresp_reg;\r\n\r\n    assign do_write = aw_full && w_full && !bvalid_reg;\r\n    assign wr_en = do_write && !aw_addr[5];\r\n    assign wr_idx = aw_addr[4:2];\r\n    assign wr_data = w_data;\r\n    assign wr_strb = w_strb;\r\n\r\n    always @(posedge clk) begin\r\n        if (rst) begin\r\n            aw_full <= 1'b0;\r\n            aw_addr <= 6'b0;\r\n            w_full <= 1'b0;\r\n            w_data <= 32'b0;\r\n            w_strb <= 4'b0;\r\n            bvalid_reg <= 1'b0;\r\n            bresp_reg <= 2'b0;\r\n        end else begin\r\n            if (do_write) begin\r\n                aw_full <= 1'b0;\r\n                w_full <= 1'b0;\r\n                bvalid_reg <= 1'b1;\r\n                if (aw_addr[5])\r\n                    bresp_reg <= 2'b10;\r\n                else\r\n                    bresp_reg <= 2'b00;\r\n            end else if (bvalid_reg && bready) begin\r\n                bvalid_reg <= 1'b0;\r\n            end\r\n\r\n            if (awvalid && awready) begin\r\n                aw_full <= 1'b1;\r\n                aw_addr <= awaddr;\r\n            end\r\n\r\n            if (wvalid && wready) begin\r\n                w_full <= 1'b1;\r\n                w_data <= wdata;\r\n                w_strb <= wstrb;\r\n            end\r\n        end\r\n    end\r\n\r\nendmodule\r\n`timescale 1ns/1ps\r\n// @latency 1\r\nmodule axil_regbank (\r\n    input wire clk,\r\n    input wire rst,\r\n    input wire wr_en,\r\n    input wire [2:0] wr_idx,\r\n    input wire [31:0] wr_data,\r\n    input wire [3:0] wr_strb,\r\n    input wire [7:0] irq_set,\r\n    input wire [31:0] status_in,\r\n    output wire [255:0] regs_flat,\r\n    output wire [31:0] ctrl,\r\n    output wire irq\r\n);\r\n\r\n    reg [31:0] ctrl_reg;\r\n    reg [31:0] scratch_reg;\r\n    reg [31:0] config_reg;\r\n    reg [7:0] irq_mask_reg;\r\n    reg [7:0] irq_status_reg;\r\n    reg [31:0] status_reg;\r\n    reg [31:0] write_count_reg;\r\n\r\n    always @(posedge clk) begin\r\n        if (rst) begin\r\n            ctrl_reg       <= 32'h00000000;\r\n            scratch_reg    <= 32'h00000000;\r\n            config_reg     <= 32'h00000100;\r\n            irq_mask_reg   <= 8'h00;\r\n            irq_status_reg <= 8'h00;\r\n            status_reg     <= 32'h00000000;\r\n            write_count_reg <= 32'h00000000;\r\n        end else begin\r\n            status_reg <= status_in;\r\n\r\n            irq_status_reg <= (irq_status_reg & ~((wr_en && (wr_idx == 3'd4) && wr_strb[0]) ? wr_data[7:0] : 8'h00)) | irq_set;\r\n\r\n            if (wr_en) begin\r\n                write_count_reg <= write_count_reg + 32'd1;\r\n\r\n                case (wr_idx)\r\n                    3'd0: begin\r\n                        if (wr_strb[0]) ctrl_reg[7:0]   <= wr_data[7:0];\r\n                        if (wr_strb[1]) ctrl_reg[15:8]  <= wr_data[15:8];\r\n                        if (wr_strb[2]) ctrl_reg[23:16] <= wr_data[23:16];\r\n                        if (wr_strb[3]) ctrl_reg[31:24] <= wr_data[31:24];\r\n                    end\r\n                    3'd1: begin\r\n                        if (wr_strb[0]) scratch_reg[7:0]   <= wr_data[7:0];\r\n                        if (wr_strb[1]) scratch_reg[15:8]  <= wr_data[15:8];\r\n                        if (wr_strb[2]) scratch_reg[23:16] <= wr_data[23:16];\r\n                        if (wr_strb[3]) scratch_reg[31:24] <= wr_data[31:24];\r\n                    end\r\n                    3'd2: begin\r\n                        if (wr_strb[0]) config_reg[7:0]   <= wr_data[7:0];\r\n                        if (wr_strb[1]) config_reg[15:8]  <= wr_data[15:8];\r\n                        if (wr_strb[2]) config_reg[23:16] <= wr_data[23:16];\r\n                        if (wr_strb[3]) config_reg[31:24] <= wr_data[31:24];\r\n                    end\r\n                    3'd3: begin\r\n                        if (wr_strb[0]) irq_mask_reg <= wr_data[7:0];\r\n                    end\r\n                    default: begin\r\n                    end\r\n                endcase\r\n            end\r\n        end\r\n    end\r\n\r\n    assign regs_flat[31:0]    = ctrl_reg;\r\n    assign regs_flat[63:32]   = scratch_reg;\r\n    assign regs_flat[95:64]   = config_reg;\r\n    assign regs_flat[127:96]  = {24'h000000, irq_mask_reg};\r\n    assign regs_flat[159:128] = {24'h000000, irq_status_reg};\r\n    assign regs_flat[191:160] = status_reg;\r\n    assign regs_flat[223:192] = 32'h52544C35;\r\n    assign regs_flat[255:224] = write_count_reg;\r\n\r\n    assign ctrl = ctrl_reg;\r\n    assign irq = |(irq_status_reg & irq_mask_reg);\r\n\r\nendmodule\r\n`timescale 1ns/1ps\r\n// @latency 1\r\nmodule axil_rd_if (\r\n    input wire clk,\r\n    input wire rst,\r\n    input wire arvalid,\r\n    output wire arready,\r\n    input wire [5:0] araddr,\r\n    output wire rvalid,\r\n    input wire rready,\r\n    output wire [31:0] rdata,\r\n    output wire [1:0] rresp,\r\n    input wire [255:0] regs_flat\r\n);\r\n\r\nreg rvalid_reg;\r\nreg [31:0] rdata_reg;\r\nreg [1:0] rresp_reg;\r\n\r\nassign arready = !rvalid_reg;\r\nassign rvalid = rvalid_reg;\r\nassign rdata = rdata_reg;\r\nassign rresp = rresp_reg;\r\n\r\nalways @(posedge clk) begin\r\n    if (rst) begin\r\n        rvalid_reg <= 1'b0;\r\n        rdata_reg <= 32'b0;\r\n        rresp_reg <= 2'b0;\r\n    end else begin\r\n        if (arvalid && !rvalid_reg) begin\r\n            rvalid_reg <= 1'b1;\r\n            if (araddr[5]) begin\r\n                rdata_reg <= 32'b0;\r\n                rresp_reg <= 2'b10;\r\n            end else begin\r\n                case (araddr[4:2])\r\n                    3'd0: rdata_reg <= regs_flat[31:0];\r\n                    3'd1: rdata_reg <= regs_flat[63:32];\r\n                    3'd2: rdata_reg <= regs_flat[95:64];\r\n                    3'd3: rdata_reg <= regs_flat[127:96];\r\n                    3'd4: rdata_reg <= regs_flat[159:128];\r\n                    3'd5: rdata_reg <= regs_flat[191:160];\r\n                    3'd6: rdata_reg <= regs_flat[223:192];\r\n                    3'd7: rdata_reg <= regs_flat[255:224];\r\n                    default: rdata_reg <= 32'b0;\r\n                endcase\r\n                rresp_reg <= 2'b00;\r\n            end\r\n        end else if (rvalid_reg && rready) begin\r\n            rvalid_reg <= 1'b0;\r\n        end\r\n    end\r\nend\r\n\r\nendmodule\r\n`timescale 1ns/1ps\r\nmodule axil_regs (\r\n    input wire clk,\r\n    input wire rst,\r\n    input wire awvalid,\r\n    output wire awready,\r\n    input wire [5:0] awaddr,\r\n    input wire wvalid,\r\n    output wire wready,\r\n    input wire [31:0] wdata,\r\n    input wire [3:0] wstrb,\r\n    output wire bvalid,\r\n    input wire bready,\r\n    output wire [1:0] bresp,\r\n    input wire arvalid,\r\n    output wire arready,\r\n    input wire [5:0] araddr,\r\n    output wire rvalid,\r\n    input wire rready,\r\n    output wire [31:0] rdata,\r\n    output wire [1:0] rresp,\r\n    input wire [7:0] irq_set,\r\n    input wire [31:0] status_in,\r\n    output wire [31:0] ctrl,\r\n    output wire irq\r\n);\r\n    wire w_axil_wr_if_wr_en;\r\n    wire [2:0] w_axil_wr_if_wr_idx;\r\n    wire [31:0] w_axil_wr_if_wr_data;\r\n    wire [3:0] w_axil_wr_if_wr_strb;\r\n    wire [255:0] w_axil_regbank_regs_flat;\r\n    axil_wr_if u_axil_wr_if (\r\n        .clk(clk),\r\n        .rst(rst),\r\n        .awvalid(awvalid),\r\n        .awready(awready),\r\n        .awaddr(awaddr),\r\n        .wvalid(wvalid),\r\n        .wready(wready),\r\n        .wdata(wdata),\r\n        .wstrb(wstrb),\r\n        .bvalid(bvalid),\r\n        .bready(bready),\r\n        .bresp(bresp),\r\n        .wr_en(w_axil_wr_if_wr_en),\r\n        .wr_idx(w_axil_wr_if_wr_idx),\r\n        .wr_data(w_axil_wr_if_wr_data),\r\n        .wr_strb(w_axil_wr_if_wr_strb)\r\n    );\r\n    axil_regbank u_axil_regbank (\r\n        .clk(clk),\r\n        .rst(rst),\r\n        .wr_en(w_axil_wr_if_wr_en),\r\n        .wr_idx(w_axil_wr_if_wr_idx),\r\n        .wr_data(w_axil_wr_if_wr_data),\r\n        .wr_strb(w_axil_wr_if_wr_strb),\r\n        .irq_set(irq_set),\r\n        .status_in(status_in),\r\n        .regs_flat(w_axil_regbank_regs_flat),\r\n        .ctrl(ctrl),\r\n        .irq(irq)\r\n    );\r\n    axil_rd_if u_axil_rd_if (\r\n        .clk(clk),\r\n        .rst(rst),\r\n        .arvalid(arvalid),\r\n        .arready(arready),\r\n        .araddr(araddr),\r\n        .rvalid(rvalid),\r\n        .rready(rready),\r\n        .rdata(rdata),\r\n        .rresp(rresp),\r\n        .regs_flat(w_axil_regbank_regs_flat)\r\n    );\r\nendmodule\r\n",
+      "truncated": false
+    }
+  ],
+  "testbench": {
+    "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-03\\axil_regs_build\\inputs\\testbench_path.v",
+    "sha256": "e2d993581d56e24d9111541f82e3d2a5f12dee802409a47ecfd52bf4d0e9eb74",
+    "text": "`timescale 1ns/1ps\r\n// Independent cycle-exact checker for the AXI4-Lite register slave. It models\r\n// the held AW and W halves, the B and R responses and all eight registers,\r\n// acts as an AXI master that keeps every offered VALID and payload stable until\r\n// the model accepts it, checks every output port before and after each rising\r\n// edge, and never reads DUT internals or the internal bank port.\r\nmodule axil_regs_tb;\r\n    reg clk=0, rst=1;\r\n    reg awvalid=0, wvalid=0, bready=0, arvalid=0, rready=0;\r\n    reg [5:0] awaddr=0, araddr=0;\r\n    reg [31:0] wdata=0, status_in=0;\r\n    reg [3:0] wstrb=0;\r\n    reg [7:0] irq_set=0;\r\n    wire awready, wready, bvalid, arready, rvalid, irq;\r\n    wire [1:0] bresp, rresp;\r\n    wire [31:0] rdata, ctrl;\r\n    axil_regs dut(.clk(clk),.rst(rst),.awvalid(awvalid),.awready(awready),.awaddr(awaddr),\r\n        .wvalid(wvalid),.wready(wready),.wdata(wdata),.wstrb(wstrb),.bvalid(bvalid),.bready(bready),\r\n        .bresp(bresp),.arvalid(arvalid),.arready(arready),.araddr(araddr),.rvalid(rvalid),\r\n        .rready(rready),.rdata(rdata),.rresp(rresp),.irq_set(irq_set),.status_in(status_in),\r\n        .ctrl(ctrl),.irq(irq));\r\n    always #5 clk=~clk;\r\n\r\n    localparam [31:0] ID_VALUE = 32'h52544c35;\r\n    // Reference state.\r\n    reg m_awf=0, m_wf=0, m_bv=0, m_rv=0;\r\n    reg [5:0] m_awa=0;\r\n    reg [31:0] m_wd=0, m_rd=0;\r\n    reg [3:0] m_ws=0;\r\n    reg [1:0] m_br=0, m_rr=0;\r\n    reg [31:0] m_reg [0:7];\r\n    reg [31:0] lanes=0, clear=0;\r\n    reg do_write=0, in_range=0, aw_hs=0, w_hs=0, b_hs=0, ar_hs=0, r_hs=0;\r\n    // Master: a VALID offered and not accepted is held with its payload.\r\n    reg aw_hold=0, w_hold=0, ar_hold=0, started=0;\r\n    reg [5:0] aw_held=0, ar_held=0;\r\n    reg [31:0] wd_held=0, irq_drive=0, status_drive=0, value=0;\r\n    reg [3:0] ws_held=0;\r\n    reg [7:0] irq_at_write=0;\r\n    integer cycle=0, errors=0, i, j, t, s;\r\n    integer writes_ok=0, writes_err=0, reads_ok=0, reads_err=0, w_first=0, aw_first=0, b_stalls=0;\r\n    integer r_stalls=0, ar_waiting=0, held_pair_waiting=0, set_and_clear=0, irq_cycles=0, strobe_seen=0;\r\n    integer busy_resets=0, pulses=0, ro_writes=0;\r\n    reg [15:0] strobes_written=0;\r\n    reg [31:0] seed=32'h2f6b9a1d;\r\n    reg aw_done, w_done;\r\n\r\n    task fail;\r\n        input [511:0] rule;\r\n        begin\r\n            errors=errors+1;\r\n            if(errors<=40) $display(\"FAIL BEHAVIOR rule=%0s cycle=%0d\",rule,cycle);\r\n        end\r\n    endtask\r\n    task checker_fail;\r\n        input [511:0] rule;\r\n        begin errors=errors+1; $display(\"CHECKER_FAIL rule=%0s cycle=%0d\",rule,cycle); end\r\n    endtask\r\n    task coverage_fail;\r\n        input [511:0] rule;\r\n        begin errors=errors+1; $display(\"COVERAGE_FAIL rule=%0s\",rule); end\r\n    endtask\r\n\r\n    function [31:0] advance;\r\n        input [31:0] v;\r\n        reg [31:0] x;\r\n        begin x=v^(v<<13); x=x^(x>>17); advance=x^(x<<5); end\r\n    endfunction\r\n\r\n    task model_reset;\r\n        begin\r\n            m_awf=0; m_wf=0; m_bv=0; m_rv=0; m_awa=0; m_wd=0; m_ws=0; m_br=0; m_rd=0; m_rr=0;\r\n            m_reg[0]=0; m_reg[1]=0; m_reg[2]=32'h00000100; m_reg[3]=0;\r\n            m_reg[4]=0; m_reg[5]=0; m_reg[6]=ID_VALUE; m_reg[7]=0;\r\n        end\r\n    endtask\r\n\r\n    task check_ports;\r\n        begin\r\n            if(awready !== !m_awf) fail(\"awready_independent_of_w_channel\");\r\n            if(wready !== !m_wf) fail(\"wready_independent_of_aw_channel\");\r\n            if(bvalid !== m_bv) fail(\"bvalid_with_the_register_update\");\r\n            if(bresp !== m_br) fail(\"bresp_okay_or_slverr\");\r\n            if(arready !== !m_rv) fail(\"arready_one_read_outstanding\");\r\n            if(rvalid !== m_rv) fail(\"rvalid\");\r\n            if(rdata !== m_rd) fail(\"rdata_register_value_or_stall_hold\");\r\n            if(rresp !== m_rr) fail(\"rresp_okay_or_slverr\");\r\n            if(ctrl !== m_reg[0]) fail(\"ctrl_register_output\");\r\n            if(irq !== ((m_reg[3] & m_reg[4] & 32'hff) != 0)) fail(\"irq_masked_pending\");\r\n        end\r\n    endtask\r\n\r\n    // One clock cycle: inputs change at the falling edge, ports are checked\r\n    // before the rising edge and after its updates. A held channel keeps\r\n    // VALID and payload; reset abandons every held request.\r\n    task step;\r\n        input reset_now, awv;\r\n        input [5:0] awa;\r\n        input wv;\r\n        input [31:0] wd;\r\n        input [3:0] ws;\r\n        input br, arv;\r\n        input [5:0] ara;\r\n        input rr;\r\n        begin\r\n            @(negedge clk);\r\n            rst=reset_now; bready=br; rready=rr;\r\n            if(aw_hold && !reset_now) begin awvalid=1; awaddr=aw_held; end\r\n            else begin awvalid=awv; awaddr=awa; end\r\n            if(w_hold && !reset_now) begin wvalid=1; wdata=wd_held; wstrb=ws_held; end\r\n            else begin wvalid=wv; wdata=wd; wstrb=ws; end\r\n            if(ar_hold && !reset_now) begin arvalid=1; araddr=ar_held; end\r\n            else begin arvalid=arv; araddr=ara; end\r\n            // irq_at_write lands on the edge where the model performs a write.\r\n            irq_set=(m_awf && m_wf && !m_bv && irq_at_write!=0) ? irq_at_write : irq_drive[7:0];\r\n            status_in=status_drive;\r\n            #1; if(started) check_ports;\r\n            @(posedge clk);\r\n            cycle=cycle+1;\r\n            do_write=m_awf && m_wf && !m_bv;\r\n            in_range=!m_awa[5];\r\n            aw_hs=!rst && awvalid && !m_awf;\r\n            w_hs=!rst && wvalid && !m_wf;\r\n            b_hs=!rst && m_bv && bready;\r\n            ar_hs=!rst && arvalid && !m_rv;\r\n            r_hs=!rst && m_rv && rready;\r\n            aw_hold=!rst && awvalid && !aw_hs; aw_held=awaddr;\r\n            w_hold=!rst && wvalid && !w_hs; wd_held=wdata; ws_held=wstrb;\r\n            ar_hold=!rst && arvalid && !ar_hs; ar_held=araddr;\r\n            if(rst) begin\r\n                if(m_awf || m_wf || m_bv || m_rv) busy_resets=busy_resets+1;\r\n                model_reset;\r\n            end else begin\r\n                if(m_bv && !bready) b_stalls=b_stalls+1;\r\n                if(m_rv && !rready) r_stalls=r_stalls+1;\r\n                if(m_rv && arvalid) ar_waiting=ar_waiting+1;\r\n                if(m_awf && m_wf && m_bv) held_pair_waiting=held_pair_waiting+1;\r\n                if(m_wf && !m_awf && !awvalid) w_first=w_first+1;\r\n                if(m_awf && !m_wf && !wvalid) aw_first=aw_first+1;\r\n                if((m_reg[3] & m_reg[4] & 32'hff)!=0) irq_cycles=irq_cycles+1;\r\n                // Read channel samples the registers as they were before the edge.\r\n                if(ar_hs) begin\r\n                    m_rv=1;\r\n                    if(araddr[5]) begin m_rd=0; m_rr=2'b10; reads_err=reads_err+1; end\r\n                    else begin m_rd=m_reg[araddr[4:2]]; m_rr=2'b00; reads_ok=reads_ok+1; end\r\n                end else if(r_hs) m_rv=0;\r\n                // Register bank.\r\n                clear=(do_write && in_range && m_awa[4:2]==3'd4 && m_ws[0]) ? (m_wd & 32'hff) : 32'd0;\r\n                if((clear & irq_set)!=0) set_and_clear=set_and_clear+1;\r\n                m_reg[4]=(m_reg[4] & ~clear) | irq_set;\r\n                m_reg[5]=status_in;\r\n                if(do_write && in_range) begin\r\n                    m_reg[7]=m_reg[7]+1;\r\n                    lanes={{8{m_ws[3]}},{8{m_ws[2]}},{8{m_ws[1]}},{8{m_ws[0]}}};\r\n                    if(m_awa[4:2]<=3'd2) begin\r\n                        m_reg[m_awa[4:2]]=(m_reg[m_awa[4:2]] & ~lanes) | (m_wd & lanes);\r\n                        strobes_written[m_ws]=1'b1;\r\n                    end\r\n                    if(m_awa[4:2]==3'd3 && m_ws[0]) m_reg[3]=m_wd & 32'hff;\r\n                    if(m_awa[4:2]>=3'd5) ro_writes=ro_writes+1;\r\n                    writes_ok=writes_ok+1;\r\n                end\r\n                // Write channel.\r\n                if(do_write) begin\r\n                    m_awf=0; m_wf=0; m_bv=1; m_br=in_range ? 2'b00 : 2'b10;\r\n                    if(!in_range) writes_err=writes_err+1;\r\n                end else if(b_hs) m_bv=0;\r\n                if(aw_hs) begin m_awf=1; m_awa=awaddr; end\r\n                if(w_hs) begin m_wf=1; m_wd=wdata; m_ws=wstrb; end\r\n            end\r\n            #1; started=1; check_ports;\r\n        end\r\n    endtask\r\n\r\n    // Called one ns after a rising edge: the pulse ends before the next one.\r\n    task pulse_reset;\r\n        begin\r\n            #1 rst=1;\r\n            #1 check_ports;\r\n            #1 rst=0;\r\n            #0.5 check_ports;\r\n            pulses=pulses+1;\r\n        end\r\n    endtask\r\n\r\n    task idle;\r\n        input integer count;\r\n        integer k;\r\n        begin\r\n            for(k=0;k<count;k=k+1) begin\r\n                seed=advance(seed);\r\n                step(0,0,seed[5:0],0,seed,seed[11:8],1,0,seed[17:12],1); // payload noise\r\n            end\r\n        end\r\n    endtask\r\n\r\n    // A complete write: AW offered from cycle aw_at and W from cycle w_at\r\n    // (relative), then B accepted after b_wait stalled cycles.\r\n    task axi_write;\r\n        input [5:0] addr;\r\n        input [31:0] data;\r\n        input [3:0] strb;\r\n        input integer aw_at, w_at, b_wait;\r\n        begin\r\n            aw_done=0; w_done=0; t=0;\r\n            while(!aw_done || !w_done) begin\r\n                step(0,!aw_done && t>=aw_at,addr,!w_done && t>=w_at,data,strb,0,0,6'd0,1);\r\n                if(aw_hs) aw_done=1;\r\n                if(w_hs) w_done=1;\r\n                t=t+1;\r\n            end\r\n            while(!m_bv) step(0,0,6'd0,0,32'd0,4'd0,0,0,6'd0,1);\r\n            s=0;\r\n            while(m_bv) begin step(0,0,6'd0,0,32'd0,4'd0,s>=b_wait,0,6'd0,1); s=s+1; end\r\n        end\r\n    endtask\r\n\r\n    // A complete read: AR offered at once, R accepted after r_wait stalled\r\n    // cycles. The model's data is returned for the checker's own sanity checks.\r\n    task axi_read;\r\n        input [5:0] addr;\r\n        input integer r_wait;\r\n        begin\r\n            step(0,0,6'd0,0,32'd0,4'd0,1,1,addr,0);\r\n            while(!m_rv) step(0,0,6'd0,0,32'd0,4'd0,1,1,addr,0);\r\n            value=m_rd;\r\n            s=0;\r\n            while(m_rv) begin step(0,0,6'd0,0,32'd0,4'd0,1,0,6'd0,s>=r_wait); s=s+1; end\r\n        end\r\n    endtask\r\n\r\n    initial begin\r\n        model_reset;\r\n        status_drive=32'h0badf00d;\r\n        step(1,0,6'd0,0,32'd0,4'd0,0,0,6'd0,0);\r\n        step(1,1,6'h00,1,32'hffffffff,4'hf,1,1,6'h00,1); // reset dominates every channel\r\n        // 1: reset values of all eight registers.\r\n        for(i=0;i<8;i=i+1) begin\r\n            axi_read(i*4,i%3);\r\n            if(i==2 && value!==32'h100) checker_fail(\"config_reset_value\");\r\n            if(i==5 && value!==32'h0badf00d) checker_fail(\"status_snapshot\");\r\n            if(i==6 && value!==ID_VALUE) checker_fail(\"id_value\");\r\n        end\r\n        // 2: every writable register with AW and W together, then read back.\r\n        axi_write(6'h00,32'h11223344,4'hf,0,0,0); axi_write(6'h04,32'h55667788,4'hf,0,0,1);\r\n        axi_write(6'h08,32'h99aabbcc,4'hf,0,0,0); axi_write(6'h0c,32'hffffff3c,4'hf,0,0,2);\r\n        for(i=0;i<5;i=i+1) axi_read(i*4,1);\r\n        // 3: W ahead of AW, AW ahead of W, and stalled responses.\r\n        axi_write(6'h04,32'hdeadbeef,4'hf,3,0,0);\r\n        axi_write(6'h08,32'hcafef00d,4'hf,0,4,5);\r\n        axi_write(6'h00,32'h0f0f0f0f,4'hf,7,1,3);\r\n        axi_read(6'h04,0); axi_read(6'h08,2); axi_read(6'h00,0);\r\n        // 4: a second AW/W pair is captured while the first response is\r\n        // stalled; it is written only after that response retires.\r\n        step(0,1,6'h04,1,32'h01010101,4'hf,0,0,6'd0,1);\r\n        step(0,0,6'd0,0,32'd0,4'd0,0,0,6'd0,1);\r\n        if(!m_bv) checker_fail(\"pending_response_setup\");\r\n        for(i=0;i<6;i=i+1) step(0,1,6'h08,1,32'h02020202,4'hf,0,0,6'd0,1);\r\n        if(!(m_awf && m_wf && m_bv)) checker_fail(\"held_pair_setup\");\r\n        for(i=0;i<4;i=i+1) step(0,0,6'd0,0,32'd0,4'd0,1,0,6'd0,1);\r\n        axi_read(6'h04,0); axi_read(6'h08,0);\r\n        // 5: all sixteen byte-strobe patterns on SCRATCH, each read back.\r\n        for(i=0;i<16;i=i+1) begin\r\n            seed=advance(seed);\r\n            axi_write(6'h04,seed,i,i%2,(i/2)%2,i%3);\r\n            axi_read(6'h04,i%2);\r\n        end\r\n        // 6: out-of-range writes (aliases of every index) and reads: SLVERR,\r\n        // no register change, no write count.\r\n        for(i=0;i<8;i=i+1) axi_write(6'h20+i*4+(i%4),32'hffffffff,4'hf,i%2,0,0);\r\n        for(i=0;i<8;i=i+1) axi_read(i*4,0);\r\n        axi_read(6'h20,1); axi_read(6'h33,0); axi_read(6'h3f,2);\r\n        // 7: unaligned addresses select by bits 4:2 only.\r\n        axi_write(6'h01,32'h13572468,4'hf,0,0,0); axi_write(6'h06,32'h24681357,4'h3,1,0,0);\r\n        axi_read(6'h03,0); axi_read(6'h05,0); axi_read(6'h0b,0);\r\n        // 8: interrupts: set pulses, mask, write-1-to-clear, clear with lane 0\r\n        // disabled, upper-lane noise, and set and clear of one flag at one edge.\r\n        irq_drive=8'h5a; step(0,0,6'd0,0,32'd0,4'd0,1,0,6'd0,1); irq_drive=0;\r\n        axi_write(6'h0c,32'h000000f0,4'hf,0,0,0);\r\n        axi_read(6'h10,0);\r\n        axi_write(6'h10,32'h00000050,4'hf,0,0,1);\r\n        axi_write(6'h10,32'h0000000a,4'he,0,0,0);\r\n        axi_write(6'h10,32'hffffff00,4'hf,0,0,0);\r\n        axi_read(6'h10,0);\r\n        irq_at_write=8'h22; axi_write(6'h10,32'h000000ff,4'h1,0,0,0); irq_at_write=0;\r\n        axi_read(6'h10,0);\r\n        axi_write(6'h0c,32'h00000000,4'he,0,0,0);\r\n        axi_write(6'h0c,32'h00000000,4'h1,0,0,0);\r\n        irq_drive=8'h81; step(0,0,6'd0,0,32'd0,4'd0,1,0,6'd0,1); irq_drive=0;\r\n        axi_write(6'h0c,32'h00000080,4'h1,0,0,0);\r\n        axi_write(6'h10,32'h00000081,4'h1,0,0,0);\r\n        // 9: read-only registers ignore writes but count them.\r\n        axi_write(6'h14,32'h11111111,4'hf,0,0,0); axi_write(6'h18,32'h22222222,4'hf,0,0,0);\r\n        axi_write(6'h1c,32'h33333333,4'hf,0,0,0);\r\n        status_drive=32'h600df00d; idle(1);\r\n        axi_read(6'h14,0); axi_read(6'h18,0); axi_read(6'h1c,0);\r\n        // 10: read at the very edge a write lands returns the old value; the\r\n        // next read returns the new value.\r\n        step(0,1,6'h00,1,32'habcdef01,4'hf,0,0,6'd0,1);\r\n        step(0,0,6'd0,0,32'd0,4'd0,0,1,6'h00,1);\r\n        step(0,0,6'd0,0,32'd0,4'd0,1,0,6'd0,1);\r\n        axi_read(6'h00,0);\r\n        idle(2);\r\n        // 11: R stalled while the next AR is held high: the second read is\r\n        // accepted only after the first R transfer.\r\n        step(0,0,6'd0,0,32'd0,4'd0,1,1,6'h08,0);\r\n        for(i=0;i<5;i=i+1) step(0,0,6'd0,0,32'd0,4'd0,1,1,6'h18,0);\r\n        step(0,0,6'd0,0,32'd0,4'd0,1,0,6'd0,1);\r\n        for(i=0;i<3;i=i+1) step(0,0,6'd0,0,32'd0,4'd0,1,1,6'h04,(i==2));\r\n        idle(3);\r\n        // 12: synchronous reset with a held pair behind a stalled response, a\r\n        // stalled read and nonzero registers; then everything restarts.\r\n        step(0,1,6'h04,1,32'h77777777,4'hf,0,1,6'h00,0);\r\n        step(0,1,6'h08,1,32'h88888888,4'hf,0,0,6'd0,0);\r\n        step(0,0,6'd0,0,32'd0,4'd0,0,0,6'd0,0);\r\n        if(!(m_bv && m_awf && m_wf && m_rv)) checker_fail(\"reset_setup\");\r\n        step(1,1,6'h0c,1,32'hffffffff,4'hf,0,1,6'h1c,0);\r\n        for(i=0;i<8;i=i+1) axi_read(i*4,0);\r\n        // 13: off-edge reset pulses with every channel busy and nonzero state.\r\n        axi_write(6'h00,32'h5a5a5a5a,4'hf,0,0,0);\r\n        irq_drive=8'h0f; step(0,0,6'd0,0,32'd0,4'd0,1,0,6'd0,1); irq_drive=0;\r\n        axi_write(6'h0c,32'h0000000f,4'h1,0,0,0);\r\n        step(0,1,6'h04,1,32'h66666666,4'hf,0,1,6'h00,0);\r\n        step(0,1,6'h08,1,32'h99999999,4'hf,0,0,6'd0,0);\r\n        pulse_reset;\r\n        step(0,0,6'd0,0,32'd0,4'd0,0,0,6'd0,0);\r\n        pulse_reset;\r\n        for(i=0;i<6;i=i+1) step(0,0,6'd0,0,32'd0,4'd0,1,0,6'd0,1);\r\n        // 14: seeded random master traffic with three synchronous resets.\r\n        for(i=0;i<3000;i=i+1) begin\r\n            seed=advance(seed);\r\n            status_drive=advance(seed^32'h85ebca6b);\r\n            irq_drive=(seed[30:28]==3'b000) ? {24'd0,seed[27:20]} : 32'd0;\r\n            value=advance(status_drive);\r\n            step(i==900 || i==1800 || i==2600,\r\n                 seed[0], {seed[1] & seed[2], seed[5:3], value[1:0]},\r\n                 seed[6], value, seed[10:7],\r\n                 (i%5",
+    "truncated": true
+  },
+  "testbench_top": "axil_regs_tb",
+  "tool_exit_evidence": {
+    "history_count": 4,
+    "latest_by_tool": {
+      "vivado": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-03\\axil_regs_build\\iter_000\\vivado_synth_output.log",
+        "output_log_sha256": "67f423f2f35c85ca112643a0ab59dfc1779290b2a1d319654940dcf1e86ecdf3",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xelab": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-03\\axil_regs_build\\iter_000\\xelab.log",
+        "output_log_sha256": "23aa7ea287cb07b85caa10a5df59f01432ebb338690d391476ce217d42b4a711",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xsim": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-03\\axil_regs_build\\iter_000\\xsim.log",
+        "output_log_sha256": "a2958b57c4a0ff2850120961ed15be2b55dc4267c788297607d0338c9943f191",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xvlog": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-03\\axil_regs_build\\iter_000\\xvlog.log",
+        "output_log_sha256": "fb46faadaf6bbe8bac9a788933faabee2690d77d11d7c0b6ddd7d6677c4ba1a3",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      }
+    },
+    "missing_required_tools": [],
+    "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-03\\axil_regs_build\\iter_000\\tool_exit_records.log",
+    "records": [
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-03\\axil_regs_build\\iter_000",
+        "driver_returncode": 0,
+        "elapsed_seconds": 1.5619999999998981,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xvlog.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-03\\axil_regs_build\\iter_000\\xvlog.log",
+        "output_log_sha256": "fb46faadaf6bbe8bac9a788933faabee2690d77d11d7c0b6ddd7d6677c4ba1a3",
+        "pid": 12372,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xvlog"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-03\\axil_regs_build\\iter_000",
+        "driver_returncode": 0,
+        "elapsed_seconds": 3.7039999999997235,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xelab.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-03\\axil_regs_build\\iter_000\\xelab.log",
+        "output_log_sha256": "23aa7ea287cb07b85caa10a5df59f01432ebb338690d391476ce217d42b4a711",
+        "pid": 13048,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xelab"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-03\\axil_regs_build\\iter_000",
+        "driver_returncode": 0,
+        "elapsed_seconds": 3.311999999999898,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xsim.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-03\\axil_regs_build\\iter_000\\xsim.log",
+        "output_log_sha256": "a2958b57c4a0ff2850120961ed15be2b55dc4267c788297607d0338c9943f191",
+        "pid": 24148,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xsim"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-03\\axil_regs_build\\iter_000",
+        "driver_returncode": 0,
+        "elapsed_seconds": 105.21799999999985,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/vivado.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-03\\axil_regs_build\\iter_000\\vivado_synth_output.log",
+        "output_log_sha256": "67f423f2f35c85ca112643a0ab59dfc1779290b2a1d319654940dcf1e86ecdf3",
+        "pid": 18948,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "vivado"
+      }
+    ],
+    "schema_valid": true,
+    "sha256": "22732898a6872c921a171e97e7c0363cabee42d48f5e553ca39663cefcbf846b",
+    "status": "recorded",
+    "truncated": false
+  },
+  "top_module": "axil_regs",
+  "verification_logs": [
+    {
+      "head": "INFO: [VRFC 10-2263] Analyzing Verilog file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-03/axil_regs_build/iter_000/axil_regs.v\" into library work\r\nINFO: [VRFC 10-311] analyzing module axil_wr_if\r\nINFO: [VRFC 10-311] analyzing module axil_regbank\r\nINFO: [VRFC 10-311] analyzing module axil_rd_if\r\nINFO: [VRFC 10-311] analyzing module axil_regs\r\nINFO: [VRFC 10-2263] Analyzing Verilog file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-03/axil_regs_build/inputs/testbench_path.v\" into library work\r\nINFO: [VRFC 10-311] analyzing module axil_regs_tb\r\n\r\n",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-03\\axil_regs_build\\iter_000\\xvlog.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "fb46faadaf6bbe8bac9a788933faabee2690d77d11d7c0b6ddd7d6677c4ba1a3",
+      "tail": "",
+      "truncated": false
+    },
+    {
+      "head": "Vivado Simulator v2025.2\r\nCopyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\nCopyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\nRunning: C:/AMDDesignTools/2025.2/Vivado/bin/unwrapped/win64.o/xelab.exe axil_regs_tb -s axil_regs_tb_snap --debug off \r\nMulti-threading is on. Using 10 slave threads.\r\nStarting static elaboration\r\nPass Through NonSizing Optimizer\r\nCompleted static elaboration\r\nStarting simulation data flow analysis\r\nCompleted simulation data flow analysis\r\nTime Resolution for simulation is 1ps\r\nCompiling module work.axil_wr_if\r\nCompiling module work.axil_regbank\r\nCompiling module work.axil_rd_if\r\nCompiling module work.axil_regs\r\nCompiling module work.axil_regs_tb\r\nBuilt simulation snapshot axil_regs_tb_snap\r\n\r\n",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-03\\axil_regs_build\\iter_000\\xelab.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "23aa7ea287cb07b85caa10a5df59f01432ebb338690d391476ce217d42b4a711",
+      "tail": "",
+      "truncated": false
+    },
+    {
+      "head": "\r\n****** xsim v2025.2 (64-bit)\r\n  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025\r\n  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025\r\n  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025\r\n  **** Start of session at: Sun Nov  1 21:47:30 2026\r\n    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\n    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n\r\nsource xsim.dir/axil_regs_tb_snap/xsim_script.tcl\r\n# xsim {axil_regs_tb_snap} -autoloadwcfg -runall\r\nTime resolution is 1 ps\r\nrun -all\r\nCOVERAGE cycles=3407 writes_ok=688 writes_err=224 reads_ok=769 reads_err=218 w_first=156 aw_first=107 b_stalls=887 r_stalls=851 ar_waiting=1188 held_pair=751 set_and_clear=7 irq_cycles=2756 ro_writes=222 busy_resets=4 pulses=2\r\nTEST PASSED\r\n$finish called at time : 34076 ns : File \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-03/axil_regs_build/inputs/testbench_path.v\" Line 356\r\nexit\r\nINFO: [Common 17-206] Exiting xsim at Sun Nov  1 21:47:33 2026...\r\n\r\n",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-03\\axil_regs_build\\iter_000\\sim_log.txt",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "a2958b57c4a0ff2850120961ed15be2b55dc4267c788297607d0338c9943f191",
+      "tail": "",
+      "truncated": false
+    },
+    {
+      "head": "\r\n****** Vivado v2025.2 (64-bit)\r\n  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025\r\n  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025\r\n  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025\r\n  **** Start of session at: Sun Nov  1 21:47:34 2026\r\n    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\n    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n\r\nsource C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-03/axil_regs_build/iter_000/synth.tcl\r\n# set_msg_config -id {VRFC 10-3609} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-9873} -new_severity ERROR\r\n# set_msg_config -id {Designutils 20-1307} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-327} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-3352} -new_severity ERROR\r\n# set_part xc7a35tcpg236-1\r\nINFO: [Coretcl 2-1500] The part has been set to 'xc7a35tcpg236-1' for the current project only. Run set_part -help for more details. To evaluate different speed grades in the current design, use the set_speed_grade command, or use the open_checkpoint -part command to change the part used by an existing checkpoint design.\r\nset_part: Time (s): cpu = 00:00:14 ; elapsed = 00:00:10 . Memory (MB): peak = 531.258 ; gain = 225.070\r\n# read_verilog \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-03/axil_regs_build/iter_000/axil_regs.v\"\r\n# set fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-03/axil_regs_build/iter_000/timing.xdc\" w]\r\n# puts $fp {create_clock -period 10.000 -name clk [get_ports clk]}\r\n# puts $fp {set_property HD.CLK_SRC BUFGCTRL_X0Y0 [get_ports clk]}\r\n# close $fp\r\n# read_xdc \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-03/axil_regs_build/iter_000/timing.xdc\"\r\n# synth_design -top axil_r",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-03\\axil_regs_build\\iter_000\\vivado_synth_output.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "67f423f2f35c85ca112643a0ab59dfc1779290b2a1d319654940dcf1e86ecdf3",
+      "tail": "ning Vector-less Activity Propagation...\r\n\r\nFinished Running Vector-less Activity Propagation\r\n0 Infos, 0 Warnings, 0 Critical Warnings and 0 Errors encountered.\r\nreport_power completed successfully\r\n# catch { report_methodology -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-03/axil_regs_build/iter_000/methodology.rpt\" }\r\nCommand: report_methodology -file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-03/axil_regs_build/iter_000/methodology.rpt\r\nINFO: [Timing 38-35] Done setting XDC timing constraints.\r\nINFO: [DRC 23-133] Running Methodology with 2 threads\r\nWARNING: [DRC 23-814] Not all possible (connectivity based) DRCs may have been run because this design is seen as Out of Context.\r\nINFO: [Vivado_Tcl 2-1520] The results of Report Methodology are in file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-03/axil_regs_build/iter_000/methodology.rpt.\r\nreport_methodology completed successfully\r\n# catch { report_qor_suggestions -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-03/axil_regs_build/iter_000/qor_suggestions.rpt\" }\r\nCommand: report_qor_suggestions -file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-03/axil_regs_build/iter_000/qor_suggestions.rpt\r\nCongestion Prediction Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.018 . Memory (MB): peak = 1998.160 ; gain = 0.000\r\nINFO: [Implflow 47-1309] PredResultString: 1:40.95:59.05\r\nfeatureProvider Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.028 . Memory (MB): peak = 1998.160 ; gain = 0.000\r\nINFO: [Implflow 47-1274] ML strategy prediction is not supported for 7-series devices.\r\nreport_qor_suggestions completed successfully\r\n# puts \"SYNTH_COMPLETE\"\r\nSYNTH_COMPLETE\r\nINFO: [Common 17-206] Exiting Vivado at Sun Nov  1 21:49:18 2026...\r\n\r\n",
+      "truncated": true
+    }
+  ]
+}

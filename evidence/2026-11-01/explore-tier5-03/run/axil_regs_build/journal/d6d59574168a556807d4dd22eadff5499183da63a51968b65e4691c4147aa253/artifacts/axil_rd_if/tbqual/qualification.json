@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "status": "qualified",
+  "qualified": true,
+  "testbench_sha256": "e63519d0f772be232704bcd0506f5992830dcade1401cde6b092a09086568315",
+  "attempts": [
+    {
+      "label": "control",
+      "description": "unmodified control",
+      "passed": true,
+      "failure_kind": "design",
+      "error": "",
+      "assertion_detected": false,
+      "proof_reason": "simulation passed",
+      "source_sha256": "fa53dabab9131644e1ecda19edbcd6569f47c6bb46035ee0d858073aac1875f0",
+      "raw_log_sha256": "ef09cf6e202e0da650c1d502e88d77e749c0d8c090305c3e3c2b06ddbd52ab65"
+    },
+    {
+      "label": "mutant",
+      "description": "flip && to ||",
+      "passed": false,
+      "failure_kind": "design",
+      "error": "Testbench failures:\nFAIL index=0 signal=arready  (x31)\nFAIL index=0 signal=rvalid  (x31)\nFAIL index=16 signal=rdata  (x30)\nFAIL index=24 signal=rresp  (x19)",
+      "assertion_detected": true,
+      "proof_reason": "raw assertion detail and failure verdict retained",
+      "source_sha256": "1a76651f05678d71d2107107508579c362f4ea1ecb5859b6d501ba9b5e588966",
+      "raw_log_sha256": "ba5a6f28efa9c5f5e06412a67042861361e392ee5d5b9e5cf71d5dd8dce213a2"
+    }
+  ],
+  "missed": [],
+  "scope": "Minimum assertion sensitivity; missed faults remain coverage limits."
+}

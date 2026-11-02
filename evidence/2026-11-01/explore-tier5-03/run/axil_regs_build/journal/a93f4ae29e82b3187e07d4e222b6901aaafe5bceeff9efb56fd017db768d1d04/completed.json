@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_3:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 3\n## Contract check\n- Top interface and defined behavior: PASS \u2014 the candidate preserves the top interface and behavior; the authoritative ladder is ALIVE and simulation passed.\n- Top latency annotation: PASS \u2014 top latency is unknown, so no numeric annotation is required.\n- Compile, elaboration and simulation gates: PASS \u2014 all required tools exited successfully and simulation reported `TEST PASSED`.\n- Synthesis and metric integrity: PASS \u2014 successful synthesis marker and retained routed reports are recorded.\n- Timing closure: PASS \u2014 `timing_met=true`, WNS is 5.716 ns and WHS is 0.168 ns.\n- Objective improvement: FAIL \u2014 with both designs timing-feasible, `minimize_luts` requires a strict lexicographic gain; LUTs and FFs are unchanged at 95 and 254.\n## Summary\n- Passed: 5 of 6\n- Failed: 1 of 6\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes the behavioral, tool, metric and timing gates, and its missing top latency annotation is permitted because authoritative top latency is unknown. However, the previous best was already timing-feasible, and the candidate has identical LUT and FF counts, so it does not strictly improve the required `minimize_luts` objective.",
+      "recommendation": "REJECT",
+      "passed": 5,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

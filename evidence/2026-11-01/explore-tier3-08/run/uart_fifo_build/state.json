@@ -1,0 +1,27 @@
+{
+ "phase": "BUDGET_EXHAUSTED",
+ "spec_repairs": 2,
+ "spec_revisions": [
+  {
+   "revision": 0,
+   "spec_sha256": "63e8c8b973e17c507e23052200e93f94e361968b68b4189c576689408f68c5d9",
+   "spec_repairs": 2
+  }
+ ],
+ "edit_scope": {
+  "mode": "whole_design",
+  "top": "uart_fifo",
+  "children": [
+   "byte_fifo",
+   "uart_tx"
+  ],
+  "testbench_modules": [
+   "uart_tx"
+  ],
+  "reason": "The supplied testbench instantiates the top uart_fifo and is the trusted integration authority, so every generated child module and the mechanical top form one editable unit verified through the top. Per-child generated oracles and testbenches verified the baseline children only and are not evidence for changed children."
+ },
+ "contract_sha256": "a43bdbdf51ee636a7621b47082984c7f1f1fb71ce26ecc9ad100315d19b90f5e",
+ "iteration": 7,
+ "best_iteration": 4,
+ "error": "TOOL_BUDGET: tool or wall-time budget exhausted"
+}

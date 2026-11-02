@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_2:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 2\n## Contract check\n- Typed behavior and interface: PASS \u2014 the trusted integration simulation passed; the candidate preserves the top interface and defined behavior.\n- Top latency annotation: PASS \u2014 authoritative `declared_latency.known=false`, so no numeric top annotation is required.\n- Tool and verification gates: PASS \u2014 compile, elaboration, simulation, and synthesis exits succeeded; simulation reported `TEST PASSED`.\n- Routed metrics and timing: PASS \u2014 retained routed evidence reports 95 LUTs, 254 FFs, WNS 5.441 ns, WHS 0.134 ns, and `timing_met=true`.\n- Improvement over previous best: FAIL \u2014 both designs are timing-feasible, but LUTs and FFs are unchanged under `minimize_luts`; no strict objective improvement is recorded.\n\n## Summary\n- Passed: 4 of 5\n- Failed: 1 of 5\n- Improved over previous best: NO\n\n## Recommendation\nREJECT\n\n## Reason\nThe candidate passes the behavioral, verification, and timing gates, and its missing top latency annotation is permitted because authoritative latency is unknown. The previous best is already timing-feasible, and the candidate has identical LUT and FF counts, so it does not meet the required strict objective improvement for promotion.",
+      "recommendation": "REJECT",
+      "passed": 4,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}
