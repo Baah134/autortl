@@ -1,0 +1,66 @@
+{
+  "stage": "iteration_2:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 2,
+    "instruction": "In `fir16_sym_core`, add a synchronous `full_q` flag that remains equal to `&valid_slots`: clear it on reset and update it each cycle from the next valid-slot vector computed with the existing elastic ready and hold rules. Drive `in_ready` as `!full_q || out_ready`, while preserving the existing slot transfers, accepted-sample history update, and registered data behavior. Keep the top annotation at `// @latency 5`; check that the auxiliary flag exactly tracks slot fullness through stalls, bubbles, simultaneous push/pop, and reset.",
+    "candidates": [
+      {
+        "iteration": 2,
+        "mutation": "standard",
+        "instruction": "In `fir16_sym_core`, add a synchronous `full_q` flag that remains equal to `&valid_slots`: clear it on reset and update it each cycle from the next valid-slot vector computed with the existing elastic ready and hold rules. Drive `in_ready` as `!full_q || out_ready`, while preserving the existing slot transfers, accepted-sample history update, and registered data behavior. Keep the top annotation at `// @latency 5`; check that the auxiliary flag exactly tracks slot fullness through stalls, bubbles, simultaneous push/pop, and reset.",
+        "generated_source_sha256": "857823c7861ac7a6e48d6402681ed49e25793548c937d8230039c88cc69f27bc",
+        "final_source_sha256": "857823c7861ac7a6e48d6402681ed49e25793548c937d8230039c88cc69f27bc",
+        "generated_code_hash": "1cb6cfcd7858b880",
+        "final_code_hash": "1cb6cfcd7858b880",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": false,
+          "wns_ns": -3.024,
+          "whs_ns": 0.128,
+          "lut_used": 165,
+          "ff_used": 262,
+          "dsp_used": 11,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.054,
+          "total_power_w": 0.124
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\fir16_sym_build\\iter_002\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\fir16_sym_build\\iter_002\\cand_standard\\synth.tcl",
+          "sha256": "57e56e6ee38e3b061a89cda334a9aa2d750d3f2f0625e2c8191c787601fb449a"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\fir16_sym_build\\iter_002\\cand_standard\\fir16_sym.v",
+          "sha256": "7ae79643f911629252acd580ad9034db760fa90af09c1d3d4da7cf06f2b44eb8"
+        }
+      }
+    ],
+    "doctor": {
+      "status": "NOT_ADOPTED",
+      "action": "rtl_surgery",
+      "reason": "simulation_not_verified",
+      "tools_ran": true,
+      "measured_metrics": {},
+      "adopted": false,
+      "input_source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\fir16_sym_build\\iter_002\\cand_standard\\fir16_sym.v",
+        "sha256": "7ae79643f911629252acd580ad9034db760fa90af09c1d3d4da7cf06f2b44eb8"
+      },
+      "trial_source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\fir16_sym_build\\iter_002\\doctor_rtl_surgery_trial\\fir16_sym.v",
+        "sha256": "d8b2b49dc529b256e818ac0c5217d948cc70141aab7423b9daf687f1c257dd32"
+      },
+      "identity_count": 2,
+      "proposed_source_text_sha256": "8dcf510bcfba76adfab925bf258ebe3e45e0d9be9a59a09646a634090a457f7d"
+    },
+    "recommendation": "ACCEPT",
+    "is_best": true,
+    "selected_source_sha256": "857823c7861ac7a6e48d6402681ed49e25793548c937d8230039c88cc69f27bc"
+  },
+  "artifacts": {}
+}

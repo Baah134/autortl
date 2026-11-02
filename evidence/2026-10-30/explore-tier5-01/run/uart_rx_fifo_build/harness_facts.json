@@ -1,0 +1,845 @@
+{
+  "allowed_flow_variations": "The harness may enable retiming or physical optimization. The candidate's retained synthesis script is authoritative for its actual settings.",
+  "authority": "Harness evidence is fixed. Proposed architectural goals cannot redefine it.",
+  "baseline_metrics": {
+    "bram_total": 50.0,
+    "bram_used": 0.0,
+    "dsp_total": 90,
+    "dsp_used": 0,
+    "dynamic_power_w": 0.004,
+    "ff_pct": 0.13221153846153846,
+    "ff_total": 41600,
+    "ff_used": 55,
+    "lut_pct": 0.3125,
+    "lut_total": 20800,
+    "lut_used": 65,
+    "reg2reg_wns_ns": 4.274,
+    "sim_error": "",
+    "sim_passed": true,
+    "synth_error": "",
+    "timing_met": false,
+    "total_power_w": 0.074,
+    "whs_ns": 0.077,
+    "wns_ns": -1.166
+  },
+  "build_spec": {
+    "authority": "Complete resolved typed build contract. Defined behavior is mandatory; explicitly unspecified cases remain unspecified. Frozen implementation identities do not turn incidental values in unspecified cases into requirements.",
+    "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\design_spec.json",
+    "resolved_spec": {
+      "connections": [
+        {
+          "dst_module": "rx_fifo",
+          "dst_port": "wr_en",
+          "src_module": "uart_rx_core",
+          "src_port": "rx_strobe"
+        },
+        {
+          "dst_module": "rx_fifo",
+          "dst_port": "wr_data",
+          "src_module": "uart_rx_core",
+          "src_port": "rx_data"
+        },
+        {
+          "dst_module": "rx_err_count",
+          "dst_port": "ferr_in",
+          "src_module": "uart_rx_core",
+          "src_port": "frame_err"
+        },
+        {
+          "dst_module": "rx_err_count",
+          "dst_port": "ovf_in",
+          "src_module": "rx_fifo",
+          "src_port": "overflow"
+        }
+      ],
+      "external_ports": [
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "clk",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "rst",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "rx",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "output",
+          "name": "out_data",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 8
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "output",
+          "name": "out_valid",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "out_ready",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "output",
+          "name": "frame_err",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "output",
+          "name": "ferr_count",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 4
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "output",
+          "name": "ovf_count",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 4
+        }
+      ],
+      "modules": [
+        {
+          "behavior": "UART 8N1 receiver with 16x oversampling, a two-flop input synchronizer, a three-sample majority vote, start-bit validation and framing-error detection. Public parameter OVERSAMPLE_DIV=2 is the number of clk cycles per oversample tick; supported domain integer 1..64. Preserve the actual OVERSAMPLE_DIV-dependent timing, not only the default. Let D = OVERSAMPLE_DIV and B = 16*D (clk cycles per bit). Synchronizer: registers sync1 <= rx and sync2 <= sync1 at every rising edge, both reset to 1; the line sample L used at edge i is sync2 before edge i, i.e. rx as it was before edge i-2. States IDLE, BUSY and WAIT_IDLE; reset state IDLE. In IDLE the first edge with L = 0 is the detection edge e0 and enters BUSY. In BUSY, at edge e0 + m (m >= 1) the frame offset is m, the bit index is b = m div B (0 start bit, 1..8 data bits LSB first, 9 stop bit) and the phase is p = m mod B. At p = 7D, p = 8D and p = 9D the receiver takes L as three votes for bit b; at the p = 9D edge the bit value is the majority of the three votes and is decided at that edge. L at every other BUSY edge is ignored, so the line may carry anything there. Start bit (b = 0): majority 1 is a false start: return to IDLE at that edge with no output (the next edge may detect again); majority 0 continues the frame. Data bit b in 1..8 becomes received bit b-1 (LSB first). Stop bit (b = 9, decided at edge e0 + 153D): return to IDLE at that edge; majority 1 registers rx_data = the 8 received bits and pulses rx_strobe = 1 for exactly one cycle; majority 0 pulses frame_err = 1 for exactly one cycle, leaves rx_data unchanged and enters WAIT_IDLE. In WAIT_IDLE the first edge with L = 1 returns to IDLE without detecting, so a line held low produces exactly one framing error and a new frame can be detected at the following edge. Outputs are registers that change only at rising edges: rx_strobe and frame_err are 0 except for their one-cycle pulses, rx_data holds the last good byte (0 after reset). Synchronous active-high rst at a rising edge returns to IDLE and sets sync1 = sync2 = 1, rx_data = 0, rx_strobe = 0 and frame_err = 0; reset has no effect between edges. Python oracle: cycle-level model, one step per rising edge given the rx value present before that edge; keep sync1, sync2, the state, the frame offset, the votes and the received bits in state and return rx_data, rx_strobe and frame_err as registered by that edge. The driver applies the fixed latency of 1; do not add a delay queue. init() is the reset state and a supplied rst must be handled. The examples hold rx constant from the reset state: with rx = 0 the detection edge is edge 3 (L lags rx by two edges), so with D = 2 the all-zero frame's stop bit is decided at edge 3 + 153*2 = 309, where frame_err pulses; frame_err is 0 again after edge 310 and the still-low line never re-triggers.",
+          "clock_domains": [
+            "clk"
+          ],
+          "compare_mode": "fixed_latency",
+          "examples": [
+            {
+              "after_cycles": 40,
+              "expected": {
+                "frame_err": 0,
+                "rx_data": 0,
+                "rx_strobe": 0
+              },
+              "inputs": {
+                "rst": 0,
+                "rx": 1
+              }
+            },
+            {
+              "after_cycles": 309,
+              "expected": {
+                "frame_err": 1,
+                "rx_data": 0,
+                "rx_strobe": 0
+              },
+              "inputs": {
+                "rst": 0,
+                "rx": 0
+              }
+            },
+            {
+              "after_cycles": 310,
+              "expected": {
+                "frame_err": 0,
+                "rx_data": 0,
+                "rx_strobe": 0
+              },
+              "inputs": {
+                "rst": 0,
+                "rx": 0
+              }
+            }
+          ],
+          "golden_model": "",
+          "interface_signature": null,
+          "latency": 1,
+          "latency_known": true,
+          "name": "uart_rx_core",
+          "parameters": {
+            "OVERSAMPLE_DIV": 2
+          },
+          "ports": [
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "clk",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "rst",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "rx",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "rx_data",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 8
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "rx_strobe",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "frame_err",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            }
+          ],
+          "reset": {
+            "active_high": true,
+            "duration_cycles": 3,
+            "kind": "sync",
+            "signal": "rst"
+          }
+        },
+        {
+          "behavior": "Synchronous first-word-fall-through byte FIFO with registered occupancy and an overflow pulse. Public parameter ADDR_BITS=2 sets the capacity DEPTH = 2^ADDR_BITS entries; supported domain integer 1..4; preserve the parameter. count is the number of stored bytes, 0..DEPTH. out_valid = (count != 0); out_data = the oldest stored byte when out_valid = 1 and 0 when out_valid = 0. Both depend only on registered state: there is no combinational path from wr_en, wr_data, out_ready or rst to any output. At each rising edge with rst low, using the inputs present before the edge: pop = out_ready && count != 0 removes the head byte; push = wr_en && (count < DEPTH || pop) stores wr_data behind all remaining bytes, so a full FIFO accepts a write at an edge where it also pops; a push and a pop at the same edge keep order and leave count unchanged. A byte written into an empty FIFO is visible after that edge, never in the same cycle (no bypass). overflow is a register: after an edge where wr_en = 1 and push = 0 (the byte is dropped) it is 1 for one cycle, otherwise 0. Synchronous active-high rst at a rising edge empties the FIFO and clears overflow; reset has no effect between edges. Python oracle: cycle-level model, one step per rising edge; keep the queue in state and return out_data, out_valid and overflow as they are after that edge. The driver applies the fixed latency of 1; do not add a delay queue. init() is the reset state (empty) and a supplied rst must be handled.",
+          "clock_domains": [
+            "clk"
+          ],
+          "compare_mode": "fixed_latency",
+          "examples": [
+            {
+              "after_cycles": 1,
+              "expected": {
+                "out_data": 60,
+                "out_valid": 1,
+                "overflow": 0
+              },
+              "inputs": {
+                "out_ready": 0,
+                "rst": 0,
+                "wr_data": 60,
+                "wr_en": 1
+              }
+            },
+            {
+              "after_cycles": 5,
+              "expected": {
+                "out_data": 60,
+                "out_valid": 1,
+                "overflow": 1
+              },
+              "inputs": {
+                "out_ready": 0,
+                "rst": 0,
+                "wr_data": 60,
+                "wr_en": 1
+              }
+            },
+            {
+              "after_cycles": 3,
+              "expected": {
+                "out_data": 167,
+                "out_valid": 1,
+                "overflow": 0
+              },
+              "inputs": {
+                "out_ready": 1,
+                "rst": 0,
+                "wr_data": 167,
+                "wr_en": 1
+              }
+            }
+          ],
+          "golden_model": "",
+          "interface_signature": null,
+          "latency": 1,
+          "latency_known": true,
+          "name": "rx_fifo",
+          "parameters": {
+            "ADDR_BITS": 2
+          },
+          "ports": [
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "clk",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "rst",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "wr_en",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "wr_data",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 8
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "out_data",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 8
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "out_valid",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "out_ready",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "overflow",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            }
+          ],
+          "reset": {
+            "active_high": true,
+            "duration_cycles": 3,
+            "kind": "sync",
+            "signal": "rst"
+          }
+        },
+        {
+          "behavior": "Two 4-bit saturating event counters. At each rising edge with rst low: if ferr_in = 1 and ferr_count < 15 then ferr_count increments by 1; if ovf_in = 1 and ovf_count < 15 then ovf_count increments by 1; a counter at 15 stays 15 (saturates, never wraps). Inputs are sampled only at rising edges and both outputs are registers. Synchronous active-high rst at a rising edge clears both counters; reset has no effect between edges. Python oracle: cycle-level model, one step per rising edge; keep both counts in state and return ferr_count and ovf_count as registered by that edge. The driver applies the fixed latency of 1; do not add a delay queue. init() is the reset state and a supplied rst must be handled.",
+          "clock_domains": [
+            "clk"
+          ],
+          "compare_mode": "fixed_latency",
+          "examples": [
+            {
+              "after_cycles": 3,
+              "expected": {
+                "ferr_count": 3,
+                "ovf_count": 0
+              },
+              "inputs": {
+                "ferr_in": 1,
+                "ovf_in": 0,
+                "rst": 0
+              }
+            },
+            {
+              "after_cycles": 20,
+              "expected": {
+                "ferr_count": 15,
+                "ovf_count": 15
+              },
+              "inputs": {
+                "ferr_in": 1,
+                "ovf_in": 1,
+                "rst": 0
+              }
+            },
+            {
+              "after_cycles": 16,
+              "expected": {
+                "ferr_count": 0,
+                "ovf_count": 15
+              },
+              "inputs": {
+                "ferr_in": 0,
+                "ovf_in": 1,
+                "rst": 0
+              }
+            }
+          ],
+          "golden_model": "",
+          "interface_signature": null,
+          "latency": 1,
+          "latency_known": true,
+          "name": "rx_err_count",
+          "parameters": {},
+          "ports": [
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "clk",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "rst",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "ferr_in",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "ovf_in",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "ferr_count",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 4
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "ovf_count",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 4
+            }
+          ],
+          "reset": {
+            "active_high": true,
+            "duration_cycles": 3,
+            "kind": "sync",
+            "signal": "rst"
+          }
+        }
+      ],
+      "top_name": "uart_rx_fifo"
+    },
+    "sha256": "64104e59b86927c238c5c776568af418d1e04b462969b9bc226e5df662133946",
+    "truncated": false
+  },
+  "clock_period_ns": 10.0,
+  "declared_latency": {
+    "cycles": null,
+    "known": false,
+    "meaning": "A source annotation declares numeric latency only when present. This known/cycles pair is authoritative for the current top module's annotation requirement. Only known=true requires a matching numeric top annotation. Child typed-module latency does not invent a top annotation for arbitrary aggregate wrappers. When known=false, absence of a top annotation is not a failed or unverifiable criterion. Unannotated numeric latency is UNKNOWN, not zero. Preserve the source's exact observable cycles and registered behavior. Annotation presence or absence alone is not independent proof of behavioral correctness; use the fixed source contract, all defined typed latency/minimum transfer age and deterministic verification, without inventing a numeric requirement.",
+    "source_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_000\\uart_rx_fifo.v",
+    "source_sha256": "c8c910364d7d100b681811a57993d90520a7e14d941e955fb6284de345558cc6"
+  },
+  "edit_scope": {
+    "children": [
+      "uart_rx_core",
+      "rx_fifo",
+      "rx_err_count"
+    ],
+    "mode": "whole_design",
+    "reason": "The supplied testbench instantiates the top uart_rx_fifo and is the trusted integration authority, so every generated child module and the mechanical top form one editable unit verified through the top. Per-child generated oracles and testbenches verified the baseline children only and are not evidence for changed children.",
+    "testbench_modules": [
+      "rx_err_count",
+      "rx_fifo",
+      "uart_rx_core"
+    ],
+    "top": "uart_rx_fifo"
+  },
+  "execution_context": {
+    "dependencies": [],
+    "part": "xc7a35tcpg236-1",
+    "period_ns": 10.0,
+    "promotions": {
+      "Designutils 20-1307": "ERROR",
+      "Synth 8-327": "ERROR",
+      "Synth 8-3352": "ERROR",
+      "Synth 8-9873": "ERROR",
+      "VRFC 10-3609": "ERROR"
+    },
+    "synthesis_template": "82fa3469b365c54e445b50a587f2dfd2ca06256e842bb05a2596faac46249cd4",
+    "tb": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\inputs\\testbench_path.v",
+      "sha256": "10f48bb3b8f77557a56f7825251e581d0054c067470ac9f48e823ac251f6008d"
+    },
+    "tools": {
+      "vivado_bin": {
+        "path": "C:\\AMDDesignTools\\2025.2\\Vivado\\bin\\vivado.bat",
+        "sha256": "4f9c05aea82a71c7086a9e5edf01ba16ea70255f69cf3420c58b805ec113e994"
+      },
+      "xelab_bin": {
+        "path": "C:\\AMDDesignTools\\2025.2\\Vivado\\bin\\xelab.bat",
+        "sha256": "512a29ace988992d7fab14ca84f20f0b4515bb69ef1d5fef0a57c5f28b72c9b1"
+      },
+      "xsim_bin": {
+        "path": "C:\\AMDDesignTools\\2025.2\\Vivado\\bin\\xsim.bat",
+        "sha256": "8819fbb54fdf9cbcaaf24c2bf72801b403d5c93e0990ba32408b56c666761d21"
+      },
+      "xvlog_bin": {
+        "path": "C:\\AMDDesignTools\\2025.2\\Vivado\\bin\\xvlog.bat",
+        "sha256": "512a29ace988992d7fab14ca84f20f0b4515bb69ef1d5fef0a57c5f28b72c9b1"
+      }
+    },
+    "top": "uart_rx_fifo"
+  },
+  "first_violated_path_excerpt": {
+    "category": "setup",
+    "destination": "out_data[4]",
+    "fanout": 67,
+    "logic_levels": 3,
+    "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_000\\timing_routed.rpt",
+    "preview_policy": "First complete identifiable violated path in report order, at most 6000 characters. Slack, endpoints, levels and fanout describe this path only, not global WNS/WHS. Resource text is retained verbatim; absent fields are unknown.",
+    "sha256": "db18413ecb6e4b9a37724a7f079384df0d60ef3cfd625cb138c4827fcef78677",
+    "slack_ns": -1.166,
+    "source": "u_rx_fifo/rd_ptr_reg[0]/C",
+    "text": "Slack (VIOLATED) :        -1.166ns  (required time - arrival time)\r\n  Source:                 u_rx_fifo/rd_ptr_reg[0]/C\r\n                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@5.000ns period=10.000ns})\r\n  Destination:            out_data[4]\r\n                            (output port clocked by clk  {rise@0.000ns fall@5.000ns period=10.000ns})\r\n  Path Group:             clk\r\n  Path Type:              Max at Slow Process Corner\r\n  Requirement:            10.000ns  (clk rise@10.000ns - clk rise@0.000ns)\r\n  Data Path Delay:        6.487ns  (logic 3.547ns (54.686%)  route 2.940ns (45.314%))\r\n  Logic Levels:           3  (LUT4=1 OBUF=1 RAMD32=1)\r\n  Output Delay:           0.000ns\r\n  Clock Path Skew:        -4.644ns (DCD - SCD + CPR)\r\n    Destination Clock Delay (DCD):    0.000ns = ( 10.000 - 10.000 ) \r\n    Source Clock Delay      (SCD):    4.644ns\r\n    Clock Pessimism Removal (CPR):    0.000ns\r\n  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE\r\n    Total System Jitter     (TSJ):    0.071ns\r\n    Total Input Jitter      (TIJ):    0.000ns\r\n    Discrete Jitter          (DJ):    0.000ns\r\n    Phase Error              (PE):    0.000ns\r\n\r\n    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)\r\n  -------------------------------------------------------------------    -------------------\r\n                         (clock clk rise edge)        0.000     0.000 r  \r\n    M18                                               0.000     0.000 r  clk (IN)\r\n                         net (fo=0)                   0.000     0.000    clk\r\n    M18                  IBUF (Prop_ibuf_I_O)         0.938     0.938 r  clk_IBUF_inst/O\r\n                         net (fo=1, routed)           1.972     2.910    clk_IBUF\r\n    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.096     3.006 r  clk_IBUF_BUFG_inst/O\r\n                         net (fo=67, routed)          1.638     4.644    u_rx_fifo/clk_IBUF_BUFG\r\n    SLICE_X3Y4           FDRE                                         r  u_rx_fifo/rd_ptr_reg[0]/C\r\n  -------------------------------------------------------------------    -------------------\r\n    SLICE_X3Y4           FDRE (Prop_fdre_C_Q)         0.456     5.100 r  u_rx_fifo/rd_ptr_reg[0]/Q\r\n                         net (fo=10, routed)          0.985     6.085    u_rx_fifo/mem_reg_0_3_0_5/ADDRC0\r\n    SLICE_X2Y3           RAMD32 (Prop_ramd32_RADR0_O)\r\n                                                      0.153     6.238 r  u_rx_fifo/mem_reg_0_3_0_5/RAMC/O\r\n                         net (fo=1, routed)           0.292     6.530    u_rx_fifo/out_data0[4]\r\n    SLICE_X1Y3           LUT4 (Prop_lut4_I3_O)        0.331     6.861 r  u_rx_fifo/out_data_OBUF[4]_inst_i_1/O\r\n                         net (fo=1, routed)           1.663     8.523    out_data_OBUF[4]\r\n    U15                  OBUF (Prop_obuf_I_O)         2.607    11.131 r  out_data_OBUF[4]_inst/O\r\n                         net (fo=0)                   0.000    11.131    out_data[4]\r\n    U15                                                               r  out_data[4] (OUT)\r\n  -------------------------------------------------------------------    -------------------\r\n\r\n                         (clock clk rise edge)       10.000    10.000 r  \r\n                         clock pessimism              0.000    10.000    \r\n                         clock uncertainty           -0.035     9.965    \r\n                         output delay                -0.000     9.965    \r\n  -------------------------------------------------------------------\r\n                         required time                          9.965    \r\n                         arrival time                         -11.131    \r\n  -------------------------------------------------------------------\r\n                         slack                                 -1.166    ",
+    "truncated": false
+  },
+  "flow_and_constraints": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_000\\synth.tcl",
+      "sha256": "d30a7f1a4ec63ea0d11683abfc9a0d0d9fb7d31e63924cf4d573715dbf39d38b",
+      "text": "set_msg_config -id {VRFC 10-3609} -new_severity ERROR\r\nset_msg_config -id {Synth 8-9873} -new_severity ERROR\r\nset_msg_config -id {Designutils 20-1307} -new_severity ERROR\r\nset_msg_config -id {Synth 8-327} -new_severity ERROR\r\nset_msg_config -id {Synth 8-3352} -new_severity ERROR\r\nset_part xc7a35tcpg236-1\r\nread_verilog \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-01/uart_rx_fifo_build/iter_000/uart_rx_fifo.v\"\r\nset fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-01/uart_rx_fifo_build/iter_000/timing.xdc\" w]\r\nputs $fp {create_clock -period 10.000 -name clk [get_ports clk]}\r\nclose $fp\r\nread_xdc \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-01/uart_rx_fifo_build/iter_000/timing.xdc\"\r\nsynth_design -top uart_rx_fifo -flatten_hierarchy rebuilt \r\nset fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-01/uart_rx_fifo_build/iter_000/timing_io.tcl\" w]\r\nputs $fp {set data_inputs [get_ports -filter {DIRECTION == IN && NAME != clk}]}\r\nputs $fp {if {[llength $data_inputs] > 0} {set_input_delay -clock clk -max 0.000 $data_inputs; set_input_delay -clock clk -min 0.000 $data_inputs}}\r\nputs $fp {if {[llength [all_outputs]] > 0} {set_output_delay -clock clk -max 0.000 [all_outputs]; set_output_delay -clock clk -min 0.000 [all_outputs]}}\r\nclose $fp\r\nsource \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-01/uart_rx_fifo_build/iter_000/timing_io.tcl\"\r\nreport_utilization -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-01/uart_rx_fifo_build/iter_000/utilization.rpt\"\r\nreport_timing_summary -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-01/uart_rx_fifo_build/iter_000/timing.rpt\"\r\nopt_design\r\nplace_design\r\n\r\nroute_design\r\nreport_utilization -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-01/uart_rx_fifo_build/iter_000/utilization_routed.rpt\"\r\nreport_timing_summary -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-01/uart_rx_fifo_build/iter_000/timing_routed.rpt\"\r\ncatch { if {[llength [all_registers]] > 0} { report_timing -from [all_registers] -to [all_registers] -max_paths 1 -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-01/uart_rx_fifo_build/iter_000/timing_reg2reg.rpt\" } }\r\nreport_design_analysis -logic_level_distribution -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-01/uart_rx_fifo_build/iter_000/design_analysis.rpt\"\r\nreport_power -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-01/uart_rx_fifo_build/iter_000/power.rpt\"\r\ncatch { report_methodology -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-01/uart_rx_fifo_build/iter_000/methodology.rpt\" }\r\ncatch { report_qor_suggestions -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-01/uart_rx_fifo_build/iter_000/qor_suggestions.rpt\" }\r\nputs \"SYNTH_COMPLETE\"\r\n",
+      "truncated": false
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_000\\timing.xdc",
+      "sha256": "fa142c09f0fadb5e303ca9fea08c02bc353451533e44aeee9cd9a0231cc8bede",
+      "text": "create_clock -period 10.000 -name clk [get_ports clk]\r\n",
+      "truncated": false
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_000\\timing_io.tcl",
+      "sha256": "6b38098841a48bbb3ab15de49d2bf2baf7e4384f599259ff5f3afa2c2b1daf00",
+      "text": "set data_inputs [get_ports -filter {DIRECTION == IN && NAME != clk}]\r\nif {[llength $data_inputs] > 0} {set_input_delay -clock clk -max 0.000 $data_inputs; set_input_delay -clock clk -min 0.000 $data_inputs}\r\nif {[llength [all_outputs]] > 0} {set_output_delay -clock clk -max 0.000 [all_outputs]; set_output_delay -clock clk -min 0.000 [all_outputs]}\r\n",
+      "truncated": false
+    }
+  ],
+  "hard_gates": [
+    "Preserve typed build spec defined behavior, ports, parameter defaults, reset and observable cycles; explicitly unspecified cases remain unspecified.",
+    "Use the fixed provided testbench, tools, device and constraints without modification.",
+    "Static/interface checks, compile, simulation and real routed metric integrity must pass.",
+    "Timing closure requires setup slack >= 0 and hold slack >= 0.",
+    "Unknown or absent evidence cannot count as success."
+  ],
+  "metric_provenance": "Structured metrics are parsed from retained reports; routed utilization/timing reports take precedence when present. The manifest identifies complete files by hash. Header excerpts are bounded previews, not complete reports or an independent metric source.",
+  "objective": "minimize_luts",
+  "objective_policy": "First establish timing feasibility. A verified timing-feasible candidate may replace a known timing-infeasible previous best even with higher area or power; classify this as timing_recovery, not objective savings. While the previous best is timing-infeasible, a verified still-infeasible candidate with strictly better setup WNS and hold not worse beyond a small tolerance may replace it as timing_progress, which is not closure; a feasible candidate always outranks it. Once both are timing-feasible, require strict improvement of the chosen objective; for maximize_freq that is register-to-register setup slack (reg2reg_wns_ns) when both designs report it, otherwise full setup WNS for both, while feasibility stays on full WNS and WHS. Unknown or contradictory incumbent timing evidence cannot establish recovery. A completed experiment may find no improvement. Do not invent mandatory savings, slack margins, tool versions, timing corners, new tests, thresholds, code-style quotas or external environment requirements.",
+  "part": "xc7a35tcpg236-1",
+  "report_headers": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_000\\power.rpt",
+      "sha256": "7f697e997e660b9ff22a0354a7e4505678821e553db9d70059cf774355393786",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n--------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version     : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date             : Fri Oct 30 20:07:16 2026\r\n| Host             : Baah running 64-bit major release  (build 9200)\r\n| Command          : report_power -file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-01/uart_rx_fifo_build/iter_000/power.rpt\r\n| Design           : uart_rx_fifo\r\n| Device           : xc7a35tcpg236-1\r\n| Design State     : routed\r\n| Grade            : commercial\r\n| Process          : typical\r\n| Characterization : Production\r\n--------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nPower Report\r\n\r\nTable of Contents\r\n-----------------\r\n1. Summary\r\n1.1 On-Chip Components\r\n1.2 Power Supply Summary\r\n1.3 Confidence Level\r\n2. Settings\r\n2.1 Environment\r\n2.2 Clock Constraints\r\n3. Detailed Reports\r\n3.1 By Hierarchy\r\n\r\n1. Summary\r\n----------\r\n\r\n+--------------------------+--------------+\r\n| Total On-Chip Power (W)  | 0.074        |\r\n| Design Power Budget (W)  | Unspecified* |\r\n| Power Budget Margin (W)  | NA           |\r\n| Dynamic (W)              | 0.004        |\r\n| Device Static (W)        | 0.070        |\r\n| Effective TJA (C/W)      | 5.0          |\r\n| Max Ambient (C)          | 84.6         |\r\n| Junction Temperature (C) | 25.4         |\r\n| Confidence Level         | Medium       |\r\n| Setting File             | ---          |\r\n| Simulation Activity File | ---          |\r\n| Design Nets Matc",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_000\\timing.rpt",
+      "sha256": "c60ca6ba3c01df3633a4899f838376b0ee4a9f8b64ad9d79a6295d48e18f39cb",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date         : Fri Oct 30 20:05:43 2026\r\n| Host         : Baah running 64-bit major release  (build 9200)\r\n| Command      : report_timing_summary -file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-01/uart_rx_fifo_build/iter_000/timing.rpt\r\n| Design       : uart_rx_fifo\r\n| Device       : 7a35t-cpg236\r\n| Speed File   : -1  PRODUCTION 1.23 2018-06-13\r\n| Design State : Synthesized\r\n------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nTiming Summary Report\r\n\r\n------------------------------------------------------------------------------------------------\r\n| Timer Settings\r\n| --------------\r\n------------------------------------------------------------------------------------------------\r\n\r\n  Enable Multi Corner Analysis               :  Yes\r\n  Enable Pessimism Removal                   :  Yes\r\n  Pessimism Removal Resolution               :  Nearest Common Node\r\n  Enable Input Delay Default Clock           :  No\r\n  Enable Preset / Clear Arcs                 :  No\r\n  Disable Flight Delays                      :  No\r\n  Ignore I/O Paths                           :  No\r\n  Timing Early Launch at Borrowing Latches   :  No\r\n  Borrow Time for Max Delay Exceptions       :  Yes\r\n  Merge Timing Exceptions                    :  Yes\r\n  Inter-SLR Compensation                     :  Conservative\r\n\r\n  Corner  Analyze  ",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_000\\timing_reg2reg.rpt",
+      "sha256": "3785f1d5424b20663d42222bc6e261090d5844370b3ef89dd559d54d6e3e22e4",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date         : Fri Oct 30 20:07:15 2026\r\n| Host         : Baah running 64-bit major release  (build 9200)\r\n| Command      : report_timing -from [all_registers] -to [all_registers] -max_paths 1 -file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-01/uart_rx_fifo_build/iter_000/timing_reg2reg.rpt\r\n| Design       : uart_rx_fifo\r\n| Device       : 7a35t-cpg236\r\n| Speed File   : -1  PRODUCTION 1.23 2018-06-13\r\n| Design State : Routed\r\n-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nTiming Report\r\n\r\nSlack (MET) :             4.274ns  (required time - arrival time)\r\n  Source:                 u_uart_rx_core/frame_count_reg[1]/C\r\n                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@5.000ns period=10.000ns})\r\n  Destination:            u_uart_rx_core/rx_data_reg_reg[0]/CE\r\n                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@5.000ns period=10.000ns})\r\n  Path Group:             clk\r\n  Path Type:              Setup (Max at Slow Process Corner)\r\n  Requirement:            10.000ns  (clk rise@10.000ns - clk rise@0.000ns)\r\n  Data Path Delay:        5.258ns  (logic 1.947ns (37.030%)  route 3.311ns (62.970%))\r\n  Logic Le",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_000\\timing_routed.rpt",
+      "sha256": "db18413ecb6e4b9a37724a7f079384df0d60ef3cfd625cb138c4827fcef78677",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n-------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date         : Fri Oct 30 20:07:15 2026\r\n| Host         : Baah running 64-bit major release  (build 9200)\r\n| Command      : report_timing_summary -file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-01/uart_rx_fifo_build/iter_000/timing_routed.rpt\r\n| Design       : uart_rx_fifo\r\n| Device       : 7a35t-cpg236\r\n| Speed File   : -1  PRODUCTION 1.23 2018-06-13\r\n| Design State : Routed\r\n-------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nTiming Summary Report\r\n\r\n------------------------------------------------------------------------------------------------\r\n| Timer Settings\r\n| --------------\r\n------------------------------------------------------------------------------------------------\r\n\r\n  Enable Multi Corner Analysis               :  Yes\r\n  Enable Pessimism Removal                   :  Yes\r\n  Pessimism Removal Resolution               :  Nearest Common Node\r\n  Enable Input Delay Default Clock           :  No\r\n  Enable Preset / Clear Arcs                 :  No\r\n  Disable Flight Delays                      :  No\r\n  Ignore I/O Paths                           :  No\r\n  Timing Early Launch at Borrowing Latches   :  No\r\n  Borrow Time for Max Delay Exceptions       :  Yes\r\n  Merge Timing Exceptions                    :  Yes\r\n  Inter-SLR Compensation                     :  Conservative\r\n\r\n  C",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_000\\utilization.rpt",
+      "sha256": "2253f323f9c8134375f25dd78464e71afc4316fee939e18b8729a2cb67cf6bcc",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\n--------------------------------------------------------------------------------------------------------------------------------------------------------\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\n| Date         : Fri Oct 30 20:05:42 2026\n| Host         : Baah running 64-bit major release  (build 9200)\n| Command      : report_utilization -file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-01/uart_rx_fifo_build/iter_000/utilization.rpt\n| Design       : uart_rx_fifo\n| Device       : xc7a35tcpg236-1\n| Speed File   : -1\n| Design State : Synthesized\n--------------------------------------------------------------------------------------------------------------------------------------------------------\n\nUtilization Design Information\n\nTable of Contents\n-----------------\n1. Slice Logic\n1.1 Summary of Registers by Type\n2. Memory\n3. DSP\n4. IO and GT Specific\n5. Clocking\n6. Specific Feature\n7. Primitives\n8. Black Boxes\n9. Instantiated Netlists\n\n1. Slice Logic\n--------------\n\n+----------------------------+------+-------+------------+-----------+-------+\n|          Site Type         | Used | Fixed | Prohibited | Available | Util% |\n+----------------------------+------+-------+------------+-----------+-------+\n| Slice LUTs*                |   63 |     0 |          0 |     20800 |  0.30 |\n|   LUT as Logic             |   55 |     0 |          0 |     20800 |  0.26 |\n|   LUT as Memory            |    8 |     0 |          0 |      9600 |  0.08 |\n|     LUT as Distributed RAM |    8 |     0 |            |           |       |\n|     LUT as Shift Register  |    0 |     0 |            |           |       |\n| Slice R",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_000\\utilization_routed.rpt",
+      "sha256": "655cae6a940bc6e4cda2b134a19a25b9ffbc480ca6fb8a2903fe107389661187",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\n---------------------------------------------------------------------------------------------------------------------------------------------------------------\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\n| Date         : Fri Oct 30 20:07:15 2026\n| Host         : Baah running 64-bit major release  (build 9200)\n| Command      : report_utilization -file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-01/uart_rx_fifo_build/iter_000/utilization_routed.rpt\n| Design       : uart_rx_fifo\n| Device       : xc7a35tcpg236-1\n| Speed File   : -1\n| Design State : Routed\n---------------------------------------------------------------------------------------------------------------------------------------------------------------\n\nUtilization Design Information\n\nTable of Contents\n-----------------\n1. Slice Logic\n1.1 Summary of Registers by Type\n2. Slice Logic Distribution\n3. Memory\n4. DSP\n5. IO and GT Specific\n6. Clocking\n7. Specific Feature\n8. Primitives\n9. Black Boxes\n10. Instantiated Netlists\n\n1. Slice Logic\n--------------\n\n+----------------------------+------+-------+------------+-----------+-------+\n|          Site Type         | Used | Fixed | Prohibited | Available | Util% |\n+----------------------------+------+-------+------------+-----------+-------+\n| Slice LUTs                 |   65 |     0 |          0 |     20800 |  0.31 |\n|   LUT as Logic             |   59 |     0 |          0 |     20800 |  0.28 |\n|   LUT as Memory            |    6 |     0 |          0 |      9600 |  0.06 |\n|     LUT as Distributed RAM |    6 |     0 |            |           |       |\n|     LUT as Shift Register  |    0 |     0",
+      "truncated": true
+    }
+  ],
+  "report_manifest": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_000\\power.rpt",
+      "sha256": "7f697e997e660b9ff22a0354a7e4505678821e553db9d70059cf774355393786"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_000\\timing.rpt",
+      "sha256": "c60ca6ba3c01df3633a4899f838376b0ee4a9f8b64ad9d79a6295d48e18f39cb"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_000\\timing_reg2reg.rpt",
+      "sha256": "3785f1d5424b20663d42222bc6e261090d5844370b3ef89dd559d54d6e3e22e4"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_000\\timing_routed.rpt",
+      "sha256": "db18413ecb6e4b9a37724a7f079384df0d60ef3cfd625cb138c4827fcef78677"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_000\\utilization.rpt",
+      "sha256": "2253f323f9c8134375f25dd78464e71afc4316fee939e18b8729a2cb67cf6bcc"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_000\\utilization_routed.rpt",
+      "sha256": "655cae6a940bc6e4cda2b134a19a25b9ffbc480ca6fb8a2903fe107389661187"
+    }
+  ],
+  "schema_version": 1,
+  "simulation": {
+    "failure_verdict": "TEST FAILED",
+    "required_verdict": "TEST PASSED",
+    "scope": "Provided testbench checks; not a formal equivalence proof.",
+    "tools": [
+      "xvlog",
+      "xelab",
+      "xsim -runall"
+    ]
+  },
+  "sources": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_000\\uart_rx_fifo.v",
+      "sha256": "c8c910364d7d100b681811a57993d90520a7e14d941e955fb6284de345558cc6",
+      "text": "`timescale 1ns/1ps\r\n// @latency 1\r\nmodule uart_rx_core #(\r\n    parameter OVERSAMPLE_DIV = 2\r\n) (\r\n    input wire clk,\r\n    input wire rst,\r\n    input wire rx,\r\n    output wire [7:0] rx_data,\r\n    output wire rx_strobe,\r\n    output wire frame_err\r\n);\r\n\r\n    localparam integer BIT_TICKS = 16 * OVERSAMPLE_DIV;\r\n    localparam [1:0] IDLE      = 2'd0,\r\n                     BUSY      = 2'd1,\r\n                     WAIT_IDLE = 2'd2;\r\n\r\n    reg sync1;\r\n    reg sync2;\r\n\r\n    reg [1:0] state;\r\n    reg [13:0] frame_count;\r\n    reg vote1;\r\n    reg vote2;\r\n    reg [7:0] rx_shift;\r\n    reg [7:0] rx_data_reg;\r\n    reg rx_strobe_reg;\r\n    reg frame_err_reg;\r\n\r\n    wire [13:0] next_offset = frame_count + 14'd1;\r\n    wire [13:0] bit_index = next_offset / BIT_TICKS;\r\n    wire [13:0] bit_phase = next_offset % BIT_TICKS;\r\n    wire majority_vote = (vote1 & vote2) |\r\n                         (vote1 & sync2) |\r\n                         (vote2 & sync2);\r\n\r\n    assign rx_data = rx_data_reg;\r\n    assign rx_strobe = rx_strobe_reg;\r\n    assign frame_err = frame_err_reg;\r\n\r\n    always @(posedge clk) begin\r\n        if (rst) begin\r\n            sync1 <= 1'b1;\r\n            sync2 <= 1'b1;\r\n        end else begin\r\n            sync1 <= rx;\r\n            sync2 <= sync1;\r\n        end\r\n    end\r\n\r\n    always @(posedge clk) begin\r\n        if (rst) begin\r\n            state         <= IDLE;\r\n            frame_count   <= 14'd0;\r\n            vote1         <= 1'b0;\r\n            vote2         <= 1'b0;\r\n            rx_shift      <= 8'd0;\r\n            rx_data_reg   <= 8'd0;\r\n            rx_strobe_reg <= 1'b0;\r\n            frame_err_reg <= 1'b0;\r\n        end else begin\r\n            rx_strobe_reg <= 1'b0;\r\n            frame_err_reg <= 1'b0;\r\n\r\n            case (state)\r\n                IDLE: begin\r\n                    frame_count <= 14'd0;\r\n                    if (!sync2) begin\r\n                        state       <= BUSY;\r\n                        frame_count <= 14'd0;\r\n                        rx_shift    <= 8'd0;\r\n                    end\r\n                end\r\n\r\n                BUSY: begin\r\n                    frame_count <= next_offset;\r\n\r\n                    if (bit_phase == (7 * OVERSAMPLE_DIV))\r\n                        vote1 <= sync2;\r\n\r\n                    if (bit_phase == (8 * OVERSAMPLE_DIV))\r\n                        vote2 <= sync2;\r\n\r\n                    if (bit_phase == (9 * OVERSAMPLE_DIV)) begin\r\n                        if (bit_index == 14'd0) begin\r\n                            if (majority_vote)\r\n                                state <= IDLE;\r\n                        end else if (bit_index <= 14'd8) begin\r\n                            rx_shift[bit_index - 1'b1] <= majority_vote;\r\n                        end else if (bit_index == 14'd9) begin\r\n                            if (majority_vote) begin\r\n                                rx_data_reg   <= rx_shift;\r\n                                rx_strobe_reg <= 1'b1;\r\n                                state         <= IDLE;\r\n                            end else begin\r\n                                frame_err_reg <= 1'b1;\r\n                                state         <= WAIT_IDLE;\r\n                            end\r\n                        end\r\n                    end\r\n                end\r\n\r\n                WAIT_IDLE: begin\r\n                    if (sync2)\r\n                        state <= IDLE;\r\n                end\r\n\r\n                default: begin\r\n                    state <= IDLE;\r\n                end\r\n            endcase\r\n        end\r\n    end\r\n\r\nendmodule\r\n`timescale 1ns/1ps\r\n// @latency 1\r\nmodule rx_fifo #(\r\n    parameter ADDR_BITS = 2\r\n) (\r\n    input wire clk,\r\n    input wire rst,\r\n    input wire wr_en,\r\n    input wire [7:0] wr_data,\r\n    output wire [7:0] out_data,\r\n    output wire out_valid,\r\n    input wire out_ready,\r\n    output wire overflow\r\n);\r\n\r\n    localparam DEPTH = (1 << ADDR_BITS);\r\n\r\n    reg [7:0] mem [0:DEPTH-1];\r\n    reg [ADDR_BITS-1:0] rd_ptr;\r\n    reg [ADDR_BITS-1:0] wr_ptr;\r\n    reg [ADDR_BITS:0] count;\r\n    reg overflow_reg;\r\n\r\n    wire pop;\r\n    wire push;\r\n\r\n    assign out_valid = (count != 0);\r\n    assign out_data = out_valid ? mem[rd_ptr] : 8'b0;\r\n    assign overflow = overflow_reg;\r\n\r\n    assign pop = out_ready && (count != 0);\r\n    assign push = wr_en && ((count < DEPTH) || pop);\r\n\r\n    always @(posedge clk) begin\r\n        if (rst) begin\r\n            rd_ptr <= {ADDR_BITS{1'b0}};\r\n            wr_ptr <= {ADDR_BITS{1'b0}};\r\n            count <= {(ADDR_BITS+1){1'b0}};\r\n            overflow_reg <= 1'b0;\r\n        end else begin\r\n            overflow_reg <= wr_en && !push;\r\n\r\n            if (pop)\r\n                rd_ptr <= rd_ptr + 1'b1;\r\n\r\n            if (push) begin\r\n                mem[wr_ptr] <= wr_data;\r\n                wr_ptr <= wr_ptr + 1'b1;\r\n            end\r\n\r\n            case ({push, pop})\r\n                2'b10: count <= count + 1'b1;\r\n                2'b01: count <= count - 1'b1;\r\n                default: count <= count;\r\n            endcase\r\n        end\r\n    end\r\n\r\nendmodule\r\n`timescale 1ns/1ps\r\n// @latency 1\r\nmodule rx_err_count (\r\n    input wire clk,\r\n    input wire rst,\r\n    input wire ferr_in,\r\n    input wire ovf_in,\r\n    output wire [3:0] ferr_count,\r\n    output wire [3:0] ovf_count\r\n);\r\n\r\nreg [3:0] ferr_count_reg;\r\nreg [3:0] ovf_count_reg;\r\n\r\nassign ferr_count = ferr_count_reg;\r\nassign ovf_count = ovf_count_reg;\r\n\r\nalways @(posedge clk) begin\r\n    if (rst) begin\r\n        ferr_count_reg <= 4'd0;\r\n        ovf_count_reg  <= 4'd0;\r\n    end else begin\r\n        if (ferr_in && (ferr_count_reg < 4'd15))\r\n            ferr_count_reg <= ferr_count_reg + 4'd1;\r\n\r\n        if (ovf_in && (ovf_count_reg < 4'd15))\r\n            ovf_count_reg <= ovf_count_reg + 4'd1;\r\n    end\r\nend\r\n\r\nendmodule\r\n`timescale 1ns/1ps\r\nmodule uart_rx_fifo (\r\n    input wire clk,\r\n    input wire rst,\r\n    input wire rx,\r\n    output wire [7:0] out_data,\r\n    output wire out_valid,\r\n    input wire out_ready,\r\n    output wire frame_err,\r\n    output wire [3:0] ferr_count,\r\n    output wire [3:0] ovf_count\r\n);\r\n    wire w_uart_rx_core_rx_strobe;\r\n    wire [7:0] w_uart_rx_core_rx_data;\r\n    wire w_uart_rx_core_frame_err;\r\n    wire w_rx_fifo_overflow;\r\n    assign frame_err = w_uart_rx_core_frame_err;\r\n    uart_rx_core #( .OVERSAMPLE_DIV(2) ) u_uart_rx_core (\r\n        .clk(clk),\r\n        .rst(rst),\r\n        .rx(rx),\r\n        .rx_data(w_uart_rx_core_rx_data),\r\n        .rx_strobe(w_uart_rx_core_rx_strobe),\r\n        .frame_err(w_uart_rx_core_frame_err)\r\n    );\r\n    rx_fifo #( .ADDR_BITS(2) ) u_rx_fifo (\r\n        .clk(clk),\r\n        .rst(rst),\r\n        .wr_en(w_uart_rx_core_rx_strobe),\r\n        .wr_data(w_uart_rx_core_rx_data),\r\n        .out_data(out_data),\r\n        .out_valid(out_valid),\r\n        .out_ready(out_ready),\r\n        .overflow(w_rx_fifo_overflow)\r\n    );\r\n    rx_err_count u_rx_err_count (\r\n        .clk(clk),\r\n        .rst(rst),\r\n        .ferr_in(w_uart_rx_core_frame_err),\r\n        .ovf_in(w_rx_fifo_overflow),\r\n        .ferr_count(ferr_count),\r\n        .ovf_count(ovf_count)\r\n    );\r\nendmodule\r\n",
+      "truncated": false
+    }
+  ],
+  "testbench": {
+    "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\inputs\\testbench_path.v",
+    "sha256": "10f48bb3b8f77557a56f7825251e581d0054c067470ac9f48e823ac251f6008d",
+    "text": "`timescale 1ns/1ps\r\n// Independent cycle-exact checker for the UART receiver + FIFO + error counter\r\n// hierarchy. Each case keeps its own model of the synchronized line, the frame\r\n// offsets and votes, the FIFO queue and the saturating counters, drives rx and\r\n// out_ready from its own schedule (never from DUT outputs) and checks every\r\n// output port before and after each rising edge. No DUT internals are read.\r\nmodule uart_rx_fifo_case #(parameter D=2, parameter A=2, parameter USE_TOP=0, parameter CASE_ID=0)(\r\n    input clk, output reg finished=0, output reg failed=0, output reg [31:0] error_count=0);\r\n    localparam BITC = 16*D;        // clk cycles per bit\r\n    localparam DECIDE = 153*D;     // frame offset of the stop-bit decision\r\n    localparam DEPTH = 1<<A;\r\n    reg rst=1, rx=1, out_ready=0;\r\n    wire [7:0] out_data;\r\n    wire out_valid, frame_err;\r\n    wire [3:0] ferr_count, ovf_count;\r\n    generate\r\n        if (USE_TOP) begin: default_top\r\n            uart_rx_fifo dut(.clk(clk),.rst(rst),.rx(rx),.out_data(out_data),.out_valid(out_valid),\r\n                .out_ready(out_ready),.frame_err(frame_err),.ferr_count(ferr_count),.ovf_count(ovf_count));\r\n        end else begin: parameter_children\r\n            wire strobe, overflow;\r\n            wire [7:0] received;\r\n            uart_rx_core #(.OVERSAMPLE_DIV(D)) rx_unit(.clk(clk),.rst(rst),.rx(rx),.rx_data(received),\r\n                .rx_strobe(strobe),.frame_err(frame_err));\r\n            rx_fifo #(.ADDR_BITS(A)) fifo_unit(.clk(clk),.rst(rst),.wr_en(strobe),.wr_data(received),\r\n                .out_data(out_data),.out_valid(out_valid),.out_ready(out_ready),.overflow(overflow));\r\n            rx_err_count count_unit(.clk(clk),.rst(rst),.ferr_in(frame_err),.ovf_in(overflow),\r\n                .ferr_count(ferr_count),.ovf_count(ovf_count));\r\n        end\r\n    endgenerate\r\n\r\n    // Reference model. line1/line2 hold rx as driven one and two edges back.\r\n    reg line1=1, line2=1, line=1, vote=0;\r\n    reg m_busy=0, m_wait=0, m_strobe=0, m_ferr=0, m_ovf=0;\r\n    reg new_strobe=0, new_ferr=0, pop=0, push=0;\r\n    reg [7:0] m_byte=0, m_bits=0;\r\n    reg [2:0] m_votes=0;\r\n    reg [3:0] m_fcnt=0, m_ocnt=0;\r\n    reg [7:0] fifo_q [0:15];\r\n    integer head=0, tail=0, m_e0=0, off=0, bitn=0, ph=0;\r\n    // Frames the stimulus intends, checked when the model decides them.\r\n    reg [9:0] expect_q [0:63];\r\n    integer exp_head=0, exp_tail=0;\r\n    reg started=0;\r\n    integer ready_mode=0, cycle=0, errors=0;\r\n    integer good=0, framing=0, false_starts=0, overflows=0, full_replace=0, ferr_saturated=0;\r\n    integer ovf_saturated=0, noisy_frames=0, tight_frames=0, sync_resets=0, busy_resets=0, pulses=0;\r\n    integer i, n, guard;\r\n    reg [31:0] seed=32'h6b8b4567 ^ (CASE_ID*32'h9e3779b9);\r\n\r\n    task fail;\r\n        input [511:0] rule;\r\n        begin\r\n            errors=errors+1;\r\n            if(errors<=12) $display(\"FAIL BEHAVIOR case=%0d D=%0d A=%0d cycle=%0d rule=%0s\",CASE_ID,D,A,cycle,rule);\r\n        end\r\n    endtask\r\n    task checker_fail;\r\n        input [511:0] rule;\r\n        begin errors=errors+1; $display(\"CHECKER_FAIL case=%0d D=%0d cycle=%0d rule=%0s\",CASE_ID,D,cycle,rule); end\r\n    endtask\r\n    task coverage_fail;\r\n        input [511:0] rule;\r\n        begin errors=errors+1; $display(\"COVERAGE_FAIL case=%0d D=%0d A=%0d rule=%0s\",CASE_ID,D,A,rule); end\r\n    endtask\r\n\r\n    function [31:0] advance;\r\n        input [31:0] value;\r\n        reg [31:0] x;\r\n        begin x=value^(value<<13); x=x^(x>>17); advance=x^(x<<5); end\r\n    endfunction\r\n\r\n    task check_outputs;\r\n        begin\r\n            if(out_valid !== (tail!=head)) fail(\"fifo_out_valid_occupancy\");\r\n            if(out_data !== ((tail!=head) ? fifo_q[head%16] : 8'd0)) fail(\"fifo_head_byte_or_zero_when_empty\");\r\n            if(frame_err !== m_ferr) fail(\"frame_err_one_cycle_pulse\");\r\n            if(ferr_count !== m_fcnt) fail(\"saturating_frame_error_count\");\r\n            if(ovf_count !== m_ocnt) fail(\"saturating_overflow_count\");\r\n        end\r\n    endtask\r\n\r\n    task expect_frame;\r\n        input [1:0] kind;    // 1 good byte, 2 framing error\r\n        input [7:0] value;\r\n        begin expect_q[exp_tail%64]={kind,value}; exp_tail=exp_tail+1; end\r\n    endtask\r\n\r\n    task decided;\r\n        input [1:0] kind;\r\n        input [7:0] value;\r\n        begin\r\n            if(exp_head==exp_tail) checker_fail(\"unexpected_frame_decision\");\r\n            else begin\r\n                if(expect_q[exp_head%64] !== {kind,value}) checker_fail(\"frame_decision_model\");\r\n                exp_head=exp_head+1;\r\n            end\r\n        end\r\n    endtask\r\n\r\n    // One clock cycle: inputs change at the falling edge; ports are checked\r\n    // before the rising edge and after its updates.\r\n    task step;\r\n        input reset_value, rx_value;\r\n        begin\r\n            @(negedge clk);\r\n            rst=reset_value; rx=rx_value;\r\n            seed=advance(seed);\r\n            if(ready_mode==0) out_ready=1;\r\n            else if(ready_mode==1) out_ready=0;\r\n            else if(ready_mode==2) out_ready=seed[7]^seed[19];\r\n            else out_ready=m_strobe; // pop exactly when a received byte is being written\r\n            #1; if(started) check_outputs;\r\n            @(posedge clk);\r\n            cycle=cycle+1;\r\n            if(rst) begin\r\n                if(m_busy) busy_resets=busy_resets+1;\r\n                sync_resets=sync_resets+1;\r\n                line1=1; line2=1; m_busy=0; m_wait=0; m_strobe=0; m_ferr=0; m_ovf=0;\r\n                m_byte=0; head=tail; m_fcnt=0; m_ocnt=0; exp_head=exp_tail;\r\n            end else begin\r\n                // Counters take the pulses registered at the previous edge.\r\n                if(m_ferr && m_fcnt==15) ferr_saturated=ferr_saturated+1;\r\n                if(m_ovf && m_ocnt==15) ovf_saturated=ovf_saturated+1;\r\n                if(m_ferr && m_fcnt!=15) m_fcnt=m_fcnt+1;\r\n                if(m_ovf && m_ocnt!=15) m_ocnt=m_ocnt+1;\r\n                // FIFO: the receiver's previous-edge strobe is the write request.\r\n                pop=out_ready && (tail!=head);\r\n                push=m_strobe && ((tail-head)<DEPTH || pop);\r\n                if(push && pop && (tail-head)==DEPTH) full_replace=full_replace+1;\r\n                if(pop) head=head+1;\r\n                if(push) begin fifo_q[tail%16]=m_byte; tail=tail+1; end\r\n                m_ovf=m_strobe && !push;\r\n                if(m_ovf) overflows=overflows+1;\r\n                // Receiver: line is rx as driven two edges before this one.\r\n                line=line2; new_strobe=0; new_ferr=0;\r\n                if(!m_busy) begin\r\n                    if(m_wait) begin\r\n                        if(line) m_wait=0;\r\n                    end else if(!line) begin\r\n                        m_busy=1; m_e0=cycle;\r\n                    end\r\n                end else begin\r\n                    off=cycle-m_e0; bitn=off/BITC; ph=off%BITC;\r\n                    if(ph==7*D) m_votes[0]=line;\r\n                    if(ph==8*D) m_votes[1]=line;\r\n                    if(ph==9*D) begin\r\n                        m_votes[2]=line;\r\n                        vote=(m_votes[0]+m_votes[1]+m_votes[2])>=2;\r\n                        if(bitn==0) begin\r\n                            if(vote) begin m_busy=0; false_starts=false_starts+1; end\r\n                        end else if(bitn<=8) begin\r\n                            m_bits[bitn-1]=vote;\r\n                        end else begin\r\n                            m_busy=0;\r\n                            if(vote) begin\r\n                                new_strobe=1; m_byte=m_bits; good=good+1; decided(1,m_bits);\r\n                            end else begin\r\n                                new_ferr=1; m_wait=1; framing=framing+1; decided(2,8'h00);\r\n                            end\r\n                        end\r\n                    end\r\n                end\r\n                m_strobe=new_strobe; m_ferr=new_ferr;\r\n                line2=line1; line1=rx;\r\n            end\r\n            #1; started=1; check_outputs;\r\n        end\r\n    endtask\r\n\r\n    // Called one ns after a rising edge: the pulse ends before the next one.\r\n    task pulse_reset;\r\n        begin\r\n            #1 rst=1;\r\n            #1 check_outputs;\r\n            #1 rst=0;\r\n            #0.5 check_outputs;\r\n            pulses=pulses+1;\r\n        end\r\n    endtask\r\n\r\n    task idle;\r\n        input integer count;\r\n        integer k;\r\n        begin for(k=0;k<count;k=k+1) step(0,1); end\r\n    endtask\r\n\r\n    // Drive one 8N1 frame from offset 0 (the first low cycle); the model must\r\n    // be able to detect it. Noisy frames carry random values at every offset\r\n    // the receiver ignores (1..DECIDE except the vote offsets) and invert at\r\n    // most one of the three votes of each bit. After the stop decision a good\r\n    // frame idles high; a framing error stays low to the end of the stop bit.\r\n    // gap: high cycles afterwards. event_at: frame offset of an off-edge reset\r\n    // pulse (kind 0) or of a synchronous reset that aborts the frame (kind 1).\r\n    task send_frame;\r\n        input [7:0] value;\r\n        input stop_value, noisy;\r\n        input integer gap, event_at, event_kind;\r\n        integer q, b, p;\r\n        reg nominal, v, aborted;\r\n        reg [1:0] corrupt;\r\n        begin\r\n            expect_frame(stop_value ? 2'd1 : 2'd2, stop_value ? value : 8'h00);\r\n            if(noisy) noisy_frames=noisy_frames+1;\r\n            if(gap==0) tight_frames=tight_frames+1;\r\n            aborted=0; corrupt=3; q=0;\r\n            while(q<=DECIDE && !aborted) begin\r\n                b=q/BITC; p=q%BITC;\r\n                if(b==0) nominal=0; else if(b<=8) nominal=value[b-1]; else nominal=stop_value;\r\n                if(p==0) begin seed=advance(seed); corrupt=seed[13:12]; end // 3: no vote inverted\r\n                v=nominal;\r\n                if(noisy && q>0) begin\r\n                    if(p==7*D) begin if(corrupt==0) v=!nominal; end\r\n                    else if(p==8*D) begin if(corrupt==1) v=!nominal; end\r\n                    else if(p==9*D) begin if(corrupt==2) v=!nominal; end\r\n                    else begin seed=advance(seed); v=seed[3]; end\r\n                end\r\n                if(q==event_at && event_kind==1) begin\r\n                    step(1,1); aborted=1;\r\n                end else begin\r\n                    step(0,v);\r\n                    if(q==event_at && event_kind==0) pulse_reset;\r\n                end\r\n                q=q+1;\r\n            end\r\n            if(aborted) idle(gap);\r\n            else begin\r\n                if(!stop_value) for(q=DECIDE+1;q<10*BITC;q=q+1) step(0,0);\r\n                idle(gap);\r\n            end\r\n        end\r\n    endtask\r\n\r\n    // Low for len cycles, then high for after cycles. The caller states the\r\n    // decision the receiver must reach (0 none, 1 byte 0xFF, 2 framing error).\r\n    task low_pulse;\r\n        input integer len, after;\r\n        input [1:0] outcome;\r\n        integer k;\r\n        begin\r\n            if(outcome!=0) expect_frame(outcome, outcome==1 ? 8'hff : 8'h00);\r\n            for(k=0;k<len;k=k+1) step(0,0);\r\n            idle(after);\r\n        end\r\n    endtask\r\n\r\n    initial begin\r\n        step(1,1);\r\n        step(1,0); // reset dominates; the synchronizer restarts high\r\n        idle(5);\r\n        // 1: clean frames with a full stop bit.\r\n        ready_mode=0;\r\n        send_frame(8'h00,1,0,7*D-1,-1,0); send_frame(8'hff,1,0,7*D-1,-1,0);\r\n        send_frame(8'h01,1,0,7*D-1,-1,0); send_frame(8'h80,1,0,7*D-1,-1,0);\r\n        send_frame(8'h5a,1,0,7*D-1,-1,0); send_frame(8'hc3,1,0,7*D+3,-1,0);\r\n        // 2: back-to-back frames at the minimum spacing (start right after the\r\n        // stop decision), consumer stalled for part of it.\r\n        ready_mode=2;\r\n        for(i=0;i<4;i=i+1) send_frame(8'h96+i*8'h11,1,0,0,-1,0);\r\n        ready_mode=0; idle(3);\r\n        // 3: noisy frames: anything at ignored offsets, one bad vote per bit.\r\n        for(i=0;i<10;i=i+1) begin seed=advance(seed); send_frame(seed[27:20],1,1,i%3,-1,0); end\r\n        // 4: start-bit validation: glitches with at most one low vote, each\r\n        // followed by the earliest legal restart; then a start with two low\r\n        // votes, which is a real frame of all ones.\r\n        low_pulse(1,9*D,0); send_frame(8'h3c,1,0,2,-1,0);\r\n        low_pulse(7*D,2*D+1,0); send_frame(8'hc5,1,1,2,-1,0);\r\n        low_pulse(8*D,D+1,0); send_frame(8'h69,1,0,2,-1,0);\r\n        low_pulse(8*D+1,DECIDE-8*D,1);\r\n        low_pulse(2,40,0);\r\n        // 5: framing errors: stop bit low, earliest restart after the line\r\n        // returns high, and two long breaks that report exactly one error.\r\n        send_frame(8'h55,0,0,1,-1,0); send_frame(8'h0f,1,0,3,-1,0);\r\n        send_frame(8'hf0,0,1,1,-1,0); send_frame(8'he1,1,0,3,-1,0);\r\n        low_pulse(3*BITC*10+5,1,2); send_frame(8'h2d,1,0,3,-1,0);\r\n        low_pulse(DECIDE+1,BITC,2);\r\n        // 6: FIFO: fill with the consumer stalled, then pop exactly at the\r\n        // write edges of a full FIFO (no overflow), then overflow, then drain.\r\n        ready_mode=1;\r\n        for(i=0;i<DEPTH;i=i+1) send_frame(8'h10+i,1,0,0,-1,0);\r\n        idle(4);\r\n        ready_mode=3;\r\n        for(i=0;i<3;i=i+1) send_frame(8'h40+i,1,0,0,-1,0);\r\n        idle(4);\r\n        ready_mode=1;\r\n        for(i=0;i<3;i=i+1) send_frame(8'h70+i,1,0,0,-1,0);\r\n        idle(4);\r\n        ready_mode=2; idle(6);\r\n        ready_mode=0; idle(DEPTH+2);\r\n        // 7: synchronous resets: mid-frame with a nonempty FIFO and nonzero\r\n        // counters, then while waiting for the line after a framing error.\r\n        ready_mode=1;\r\n        send_frame(8'h21,1,0,0,-1,0);\r\n        send_frame(8'h55,0,0,1,-1,0);\r\n        send_frame(8'h42,1,0,0,5*BITC+3,1);\r\n        idle(4);\r\n        if(m_busy || tail!=head || m_fcnt!=0) checker_fail(\"reset_setup\");\r\n        send_frame(8'h24,1,0,0,-1,0);\r\n        low_pulse(DECIDE+20,0,2);\r\n        step(1,0);\r\n        idle(3);\r\n        send_frame(8'h81,1,0,3,-1,0);\r\n        // 8: off-edge reset pulses mid-frame and with a held FIFO entry.\r\n        send_frame(8'h99,1,0,2,3*BITC+5,0);\r\n        send_frame(8'h18,1,1,2,DECIDE-1,0);\r\n        idle(2); pulse_reset; idle(2);\r\n        ready_mode=0; idle(4);\r\n        // 9: saturate both counters (16 or more events each).\r\n        for(i=0;i<18;i=i+1) send_frame(8'h00,0,i%2,1,-1,0);\r\n        ready_mode=1;\r\n        for(i=0;i<DEPTH+20;i=i+1) send_frame(8'hc0+i,1,0,0,-1,0);\r\n        ready_mode=0; idle(DEPTH+2);\r\n        // 10: seeded random traffic: frames, noise, framing errors, glitches.\r\n        ready_mode=2;\r\n        guard=0;\r\n        for(i=0;i<36;i=i+1) begin\r\n            seed=advance(seed);\r\n            n=seed[2:0];\r\n            if(n==7) low_pulse(1+seed[10:8],9*D+seed[14:12],0);\r\n            else if(n==6) send_frame(seed[23:16],0,seed[5],1+seed[7:6],-1,0);\r\n            else send_frame(seed[23:16],1,seed[5],(seed[4] ? 0 : 7*D-1),-1,0);\r\n        end\r\n        ready_mode=0; idle(DEPTH+4);\r\n        if(m_busy || m_wait || tail!=head || exp_head!=exp_tail) checker_fail(\"final_drain\");\r\n        if(good<70 || framing<24 || false_starts<4 || noisy_frames<12 || tight_frames<30)\r\n            coverage_fail(\"frame_shapes\");\r\n        if(overflows<20 || full_replace<3 || ferr_saturated<2 || ovf_saturated<2)\r\n            coverage_fail(\"fifo_and_counter_saturation\");\r\n        if(busy_resets<1 || sync_resets<4 || pulses<3) coverage_fail(\"resets\");\r\n        $display(\"COVERAGE case=%0d D=%0d A=%0d cycles=%0d good=%0d framing=%0d false_starts=%0d noisy=%0d tight=%0d overflows=%0d full_replace=%0d ferr_sat=%0d ovf_sat=%0d busy_resets=%0d resets=%0d pulses=%0d\",\r\n            CASE_ID,D,A,cycle,good,framing,false_starts,noisy_frames,tight_frames,overflows,full_replace,\r\n            ferr_saturated,ovf_saturated,busy_resets,sync_resets,pulses);\r\n        error_count=errors;\r\n        failed=(errors!=0);\r\n        finished=1;\r\n    end\r\nendmodule\r\n\r\nmodule uart_rx_fifo_tb;\r\n    reg clk=0;\r\n    wire [2:0] finished, failed;\r\n    wire [31:0] errors0, errors1, errors2;\r\n    always #5 clk=~clk;\r\n    uart_rx_fifo_case #(.D(2),.A(2),.USE_TOP(1),.CASE_ID(0)) default_case(clk,finish",
+    "truncated": true
+  },
+  "testbench_top": "uart_rx_fifo_tb",
+  "tool_exit_evidence": {
+    "history_count": 4,
+    "latest_by_tool": {
+      "vivado": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_000\\vivado_synth_output.log",
+        "output_log_sha256": "355fa9535651d46c1d82e19218e9099cac69fec93936e50e3993efe86a115169",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xelab": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_000\\xelab.log",
+        "output_log_sha256": "1bdac668e43db21238d208a7dcf7e315abc63ac8e3d36241870cd5f1e24922c9",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xsim": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_000\\xsim.log",
+        "output_log_sha256": "620103ad46f38dc25f01dd78ea33f471a881ff81887b3bb93dbe29de34936abe",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xvlog": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_000\\xvlog.log",
+        "output_log_sha256": "0cd993be61b67d044da89f5bd47d5cf091a16f10a80a587a9f391d52344aa793",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      }
+    },
+    "missing_required_tools": [],
+    "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_000\\tool_exit_records.log",
+    "records": [
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_000",
+        "driver_returncode": 0,
+        "elapsed_seconds": 2.905999999959022,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xvlog.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_000\\xvlog.log",
+        "output_log_sha256": "0cd993be61b67d044da89f5bd47d5cf091a16f10a80a587a9f391d52344aa793",
+        "pid": 13084,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xvlog"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_000",
+        "driver_returncode": 0,
+        "elapsed_seconds": 11.030999999959022,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xelab.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_000\\xelab.log",
+        "output_log_sha256": "1bdac668e43db21238d208a7dcf7e315abc63ac8e3d36241870cd5f1e24922c9",
+        "pid": 15952,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xelab"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_000",
+        "driver_returncode": 0,
+        "elapsed_seconds": 5.702999999979511,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xsim.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_000\\xsim.log",
+        "output_log_sha256": "620103ad46f38dc25f01dd78ea33f471a881ff81887b3bb93dbe29de34936abe",
+        "pid": 13676,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xsim"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_000",
+        "driver_returncode": 0,
+        "elapsed_seconds": 262.094000000041,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/vivado.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_000\\vivado_synth_output.log",
+        "output_log_sha256": "355fa9535651d46c1d82e19218e9099cac69fec93936e50e3993efe86a115169",
+        "pid": 25080,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "vivado"
+      }
+    ],
+    "schema_valid": true,
+    "sha256": "d2294d17688dea84afc644c1b5e31cf910c403986fc4a25552030f76ce630577",
+    "status": "recorded",
+    "truncated": false
+  },
+  "top_module": "uart_rx_fifo",
+  "verification_logs": [
+    {
+      "head": "INFO: [VRFC 10-2263] Analyzing Verilog file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-01/uart_rx_fifo_build/iter_000/uart_rx_fifo.v\" into library work\r\nINFO: [VRFC 10-311] analyzing module uart_rx_core\r\nINFO: [VRFC 10-311] analyzing module rx_fifo\r\nINFO: [VRFC 10-311] analyzing module rx_err_count\r\nINFO: [VRFC 10-311] analyzing module uart_rx_fifo\r\nINFO: [VRFC 10-2263] Analyzing Verilog file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-01/uart_rx_fifo_build/inputs/testbench_path.v\" into library work\r\nINFO: [VRFC 10-311] analyzing module uart_rx_fifo_case\r\nINFO: [VRFC 10-311] analyzing module uart_rx_fifo_tb\r\n\r\n",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_000\\xvlog.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "0cd993be61b67d044da89f5bd47d5cf091a16f10a80a587a9f391d52344aa793",
+      "tail": "",
+      "truncated": false
+    },
+    {
+      "head": "Vivado Simulator v2025.2\r\nCopyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\nCopyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\nRunning: C:/AMDDesignTools/2025.2/Vivado/bin/unwrapped/win64.o/xelab.exe uart_rx_fifo_tb -s uart_rx_fifo_tb_snap --debug off \r\nMulti-threading is on. Using 10 slave threads.\r\nStarting static elaboration\r\nPass Through NonSizing Optimizer\r\nCompleted static elaboration\r\nStarting simulation data flow analysis\r\nCompleted simulation data flow analysis\r\nTime Resolution for simulation is 1ps\r\nCompiling module work.uart_rx_core_default\r\nCompiling module work.rx_fifo_default\r\nCompiling module work.rx_err_count\r\nCompiling module work.uart_rx_fifo\r\nCompiling module work.uart_rx_fifo_case(USE_TOP=1)\r\nCompiling module work.uart_rx_core(OVERSAMPLE_DIV=1)\r\nCompiling module work.rx_fifo(ADDR_BITS=3)\r\nCompiling module work.uart_rx_fifo_case(D=1,A=3)\r\nCompiling module work.uart_rx_core(OVERSAMPLE_DIV=3)\r\nCompiling module work.rx_fifo(ADDR_BITS=1)\r\nCompiling module work.uart_rx_fifo_case(D=3,A=1)\r\nCompiling module work.uart_rx_fifo_tb\r\nBuilt simulation snapshot uart_rx_fifo_tb_snap\r\n\r\n",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_000\\xelab.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "1bdac668e43db21238d208a7dcf7e315abc63ac8e3d36241870cd5f1e24922c9",
+      "tail": "",
+      "truncated": false
+    },
+    {
+      "head": "\r\n****** xsim v2025.2 (64-bit)\r\n  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025\r\n  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025\r\n  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025\r\n  **** Start of session at: Fri Oct 30 20:02:53 2026\r\n    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\n    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n\r\nsource xsim.dir/uart_rx_fifo_tb_snap/xsim_script.tcl\r\n# xsim {uart_rx_fifo_tb_snap} -autoloadwcfg -runall\r\nTime resolution is 1 ps\r\nrun -all\r\nCOVERAGE case=1 D=1 A=3 cycles=20316 good=100 framing=25 false_starts=13 noisy=35 tight=67 overflows=22 full_replace=3 ferr_sat=4 ovf_sat=4 busy_resets=1 resets=4 pulses=3\r\nCOVERAGE case=0 D=2 A=2 cycles=38959 good=94 framing=27 false_starts=9 noisy=40 tight=59 overflows=22 full_replace=3 ferr_sat=6 ovf_sat=4 busy_resets=1 resets=4 pulses=3\r\nCOVERAGE case=2 D=3 A=1 cycles=57771 good=92 framing=28 false_starts=6 noisy=35 tight=54 overflows=23 full_replace=3 ferr_sat=7 ovf_sat=5 busy_resets=1 resets=4 pulses=3\r\nTEST PASSED\r\n$finish called at time : 577717 ns : File \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-01/uart_rx_fifo_build/inputs/testbench_path.v\" Line 352\r\nexit\r\nINFO: [Common 17-206] Exiting xsim at Fri Oct 30 20:02:56 2026...\r\n\r\n",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_000\\sim_log.txt",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "620103ad46f38dc25f01dd78ea33f471a881ff81887b3bb93dbe29de34936abe",
+      "tail": "",
+      "truncated": false
+    },
+    {
+      "head": "\r\n****** Vivado v2025.2 (64-bit)\r\n  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025\r\n  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025\r\n  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025\r\n  **** Start of session at: Fri Oct 30 20:02:59 2026\r\n    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\n    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n\r\nsource C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-01/uart_rx_fifo_build/iter_000/synth.tcl\r\n# set_msg_config -id {VRFC 10-3609} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-9873} -new_severity ERROR\r\n# set_msg_config -id {Designutils 20-1307} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-327} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-3352} -new_severity ERROR\r\n# set_part xc7a35tcpg236-1\r\nINFO: [Coretcl 2-1500] The part has been set to 'xc7a35tcpg236-1' for the current project only. Run set_part -help for more details. To evaluate different speed grades in the current design, use the set_speed_grade command, or use the open_checkpoint -part command to change the part used by an existing checkpoint design.\r\nset_part: Time (s): cpu = 00:00:27 ; elapsed = 00:00:21 . Memory (MB): peak = 530.250 ; gain = 224.773\r\n# read_verilog \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-01/uart_rx_fifo_build/iter_000/uart_rx_fifo.v\"\r\n# set fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-01/uart_rx_fifo_build/iter_000/timing.xdc\" w]\r\n# puts $fp {create_clock -period 10.000 -name clk [get_ports clk]}\r\n# close $fp\r\n# read_xdc \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-01/uart_rx_fifo_build/iter_000/timing.xdc\"\r\n# synth_design -top uart_rx_fifo -flatten_hierarchy rebuilt \r\nCommand: synth_de",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_000\\vivado_synth_output.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "355fa9535651d46c1d82e19218e9099cac69fec93936e50e3993efe86a115169",
+      "tail": "r -file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-01/uart_rx_fifo_build/iter_000/power.rpt\r\nRunning Vector-less Activity Propagation...\r\n\r\nFinished Running Vector-less Activity Propagation\r\n0 Infos, 0 Warnings, 0 Critical Warnings and 0 Errors encountered.\r\nreport_power completed successfully\r\n# catch { report_methodology -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-01/uart_rx_fifo_build/iter_000/methodology.rpt\" }\r\nCommand: report_methodology -file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-01/uart_rx_fifo_build/iter_000/methodology.rpt\r\nINFO: [Timing 38-35] Done setting XDC timing constraints.\r\nINFO: [DRC 23-133] Running Methodology with 2 threads\r\nINFO: [Vivado_Tcl 2-1520] The results of Report Methodology are in file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-01/uart_rx_fifo_build/iter_000/methodology.rpt.\r\nreport_methodology completed successfully\r\n# catch { report_qor_suggestions -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-01/uart_rx_fifo_build/iter_000/qor_suggestions.rpt\" }\r\nCommand: report_qor_suggestions -file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-01/uart_rx_fifo_build/iter_000/qor_suggestions.rpt\r\nCongestion Prediction Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.021 . Memory (MB): peak = 2015.270 ; gain = 0.000\r\nINFO: [Implflow 47-1309] PredResultString: 1:47.30:52.70\r\nfeatureProvider Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.060 . Memory (MB): peak = 2015.270 ; gain = 0.000\r\nINFO: [Implflow 47-1274] ML strategy prediction is not supported for 7-series devices.\r\nreport_qor_suggestions completed successfully\r\n# puts \"SYNTH_COMPLETE\"\r\nSYNTH_COMPLETE\r\nINFO: [Common 17-206] Exiting Vivado at Fri Oct 30 20:07:18 2026...\r\n\r\n",
+      "truncated": true
+    }
+  ]
+}

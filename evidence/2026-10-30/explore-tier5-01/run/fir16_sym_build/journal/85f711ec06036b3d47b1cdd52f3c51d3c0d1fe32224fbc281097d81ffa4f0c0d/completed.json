@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_2:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 2\n## Contract check\n- Top interface and latency annotation: PASS \u2014 `fir16_sym` preserves the specified ports and declares `// @latency 5`.\n- Deterministic behavior: PASS \u2014 ladder remains ALIVE through all 5 rungs, and the unchanged integration testbench reports `TEST PASSED`.\n- Tool gates: PASS \u2014 xvlog, xelab, xsim, and Vivado exited successfully; synthesis includes `SYNTH_COMPLETE`.\n- Routed metrics and receipts: PASS \u2014 retained routed reports and metric evidence are present.\n- Timing progress: PASS \u2014 while both designs remain infeasible, setup WNS improves from -3.700 ns to -3.024 ns and hold slack improves from 0.107 ns to 0.128 ns; this qualifies as `timing_progress`.\n- Improvement classification: PASS \u2014 `timing_progress` is valid despite the LUT increase from 160 to 165; strict LUT reduction applies once both designs are timing-feasible.\n## Summary\n- Passed: 6 of 6\n- Failed: 0 of 6\n- Improved over previous best: YES\n## Recommendation\nACCEPT\n## Reason\nThe candidate preserves the required interface and declared latency, passes deterministic behavior and tool gates, and has valid routed metric evidence. It remains timing-infeasible, but its strictly better setup WNS with improved hold slack qualifies as timing progress over the still-infeasible previous best, so the LUT increase does not fail this comparison.",
+      "recommendation": "ACCEPT",
+      "passed": 6,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}

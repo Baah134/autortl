@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Top interface and required annotation: PASS \u2014 top `spi_master` retains the specified ports and has `// @latency 33`, matching authoritative latency.\n- Defined behavior and parameter coverage: PASS \u2014 trusted cycle-exact testbench passed for the top and `spi_master_core` at HALF_PERIOD 1, 2, 3, and 8.\n- Verification gates: PASS \u2014 xvlog, xelab, xsim, and Vivado exited successfully; simulation reported `TEST PASSED` and synthesis reported `SYNTH_COMPLETE`.\n- Routed metric integrity: PASS \u2014 retained routed reports and structured metrics are available and consistent with the reported candidate results.\n- Timing feasibility: PASS \u2014 timing_met is true, setup WNS is 0.354 ns, and hold WHS is 0.015 ns.\n- Objective improvement: PASS \u2014 LUT use fell from 25 to 20 with both candidate and previous best timing-feasible; `improvement_kind=objective` is consistent.\n- Required child live-reach and source boundary: PASS \u2014 `spi_master_core` is defined and instantiated unconditionally by `spi_master` in the complete editable unit.\n## Summary\n- Passed: 7 of 7\n- Failed: 0\n- Improved over previous best: YES\n## Recommendation\nACCEPT\n## Reason\nThe candidate passes the deterministic verification and promotion gates, preserves the required top latency annotation and behavior across the tested parameter values, meets setup and hold timing, and strictly reduces LUT use from the timing-feasible previous best.",
+      "recommendation": "ACCEPT",
+      "passed": 7,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}

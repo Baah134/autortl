@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Interface and defined behavior: PASS \u2014 ladder results are ALIVE and the unchanged integration testbench reports `TEST PASSED`.\n- Top latency annotation: PASS \u2014 `fir16_sym` declares `// @latency 5`, matching the authoritative latency.\n- Compile, elaboration and simulation: PASS \u2014 required tools exited successfully; simulation produced the exact pass verdict.\n- Routed metrics and evidence integrity: PASS \u2014 retained routed reports are present, and the process exit gate passed.\n- Timing closure or permitted progress: PASS \u2014 timing remains infeasible, but setup WNS improved from -10.77 ns to -3.7 ns and hold WHS improved from 0.057 ns to 0.107 ns, meeting the recorded `timing_progress` rule.\n- Promotion comparison: PASS \u2014 the verified candidate qualifies as timing progress over the still-infeasible previous best; its 160 LUTs versus 394 are favorable but not required for this classification.\n## Summary\n- Passed: 6 of 6\n- Failed: 0\n- Improved over previous best: YES\n## Recommendation\nACCEPT\n## Reason\nThe candidate passes the deterministic behavioral and tool gates and qualifies for promotion under the timing-progress rule because setup slack strictly improved while hold slack also improved. Timing is not closed, but that does not fail this comparison; the recorded improvement is progress, not closure.",
+      "recommendation": "ACCEPT",
+      "passed": 6,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}

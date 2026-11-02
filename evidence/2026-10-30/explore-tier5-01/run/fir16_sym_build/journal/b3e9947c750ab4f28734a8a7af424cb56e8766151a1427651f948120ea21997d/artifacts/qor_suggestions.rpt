@@ -1,0 +1,63 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025
+| Date         : Fri Oct 30 19:52:05 2026
+| Host         : Baah running 64-bit major release  (build 9200)
+| Command      : report_qor_suggestions -file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-01/fir16_sym_build/iter_003/cand_standard/repair_001/qor_suggestions.rpt
+| Design       : fir16_sym
+| Device       : xc7a35t
+| Design State : Routed
+| ML Models    : v2021.2.0
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Report QoR Suggestions
+
+Table of Contents
+-----------------
+1. QoR Suggestions Report Summary
+2. ML Strategies
+3. QoR Suggestions - Timing
+4. QoR Suggestions - XDC
+
+1. QoR Suggestions Report Summary
+---------------------------------
+
++----------------+--------------+-----------+--------------+----------------+-----------+-------------+----------------------+------------------------------------------------------------------------------------------+-------------+
+|      Name      |      Id      |   Status  | Generated At | Applicable For | Automatic |    Scope    | Incremental Friendly |                                        Description                                       |    Source   |
++----------------+--------------+-----------+--------------+----------------+-----------+-------------+----------------------+------------------------------------------------------------------------------------------+-------------+
+| RQS_TIMING-3-1 | RQS_TIMING-3 | Generated | route_design | place_design   | Yes       | GLOBALSCOPE | No                   | Critical nets with loads placed far apart. Apply FORCE_MAX_FANOUT to the critical nets   | Current Run |
+|                |              |           |              |                |           |             |                      | after synthesis to replicate drivers and improve timing.                                 |             |
+| RQS_XDC-1-1    | RQS_XDC-1    | Generated | route_design | synth_design   | No        | GLOBALSCOPE | No                   | Paths above Max Net/LUT budgeting. Review paths and either reduce logic delays, add      | Current Run |
+|                |              |           |              |                |           |             |                      | pipelining or increase path requirements.                                                |             |
++----------------+--------------+-----------+--------------+----------------+-----------+-------------+----------------------+------------------------------------------------------------------------------------------+-------------+
+* By default the number of failing paths is limited to 100. Use the -max_paths options to override.
+
+
+2. ML Strategies
+----------------
+
++---+----+---------+---------+
+| # | Id | Command | Options |
++---+----+---------+---------+
+
+
+3. QoR Suggestions - Timing
+---------------------------
+
++----------------+-------------+--------------+--------+--------+-------+--------+--------+----------------+-------+--------+--------------+-------------------+---------------------------------------+-----------+
+|      Name      | No of Paths | Logic Levels | Routes |  Slack |  Req. |  Skew  | Fanout | Datapath Delay | Cell% | Route% | Source Clock | Destination Clock |               Startpoint              |  Endpoint |
++----------------+-------------+--------------+--------+--------+-------+--------+--------+----------------+-------+--------+--------------+-------------------+---------------------------------------+-----------+
+| RQS_TIMING-3-1 | 2           | 1            | 1      | -2.917 | 6.667 | -4.635 | 10     | 4.914          | 64.90 | 35.10  | clk          | clk               | u_fir16_sym_core/valid_slots_reg[4]/C | out_valid |
++----------------+-------------+--------------+--------+--------+-------+--------+--------+----------------+-------+--------+--------------+-------------------+---------------------------------------+-----------+
+
+
+4. QoR Suggestions - XDC
+------------------------
+
++-------------+-------------+--------------+--------+---------+-------+--------+----------------+-------+--------+--------------+-------------------+--------------------------------------+----------------------------------+---------------------------+---------------------------+-----------------+-----------------+
+|     Name    | No of Paths | Logic Levels | Routes |  Slack  |  Req. |  Skew  | Datapath Delay | Cell% | Route% | Source Clock | Destination Clock |              Startpoint              |             Endpoint             | Path budget for Net check | Path budget for Lut check | Net check slack | LUT check slack |
++-------------+-------------+--------------+--------+---------+-------+--------+----------------+-------+--------+--------------+-------------------+--------------------------------------+----------------------------------+---------------------------+---------------------------+-----------------+-----------------+
+| RQS_XDC-1-1 | 33          | 23           | 24     | -10.770 | 6.667 | -0.030 | 16.848         | 58.20 | 41.80  | clk          | clk               | u_fir16_sym_core/history_reg[9][1]/C | u_fir16_sym_core/data1_reg[13]/S | -7                        | 11                        | -6.945          | 1.478           |
++-------------+-------------+--------------+--------+---------+-------+--------+----------------+-------+--------+--------------+-------------------+--------------------------------------+----------------------------------+---------------------------+---------------------------+-----------------+-----------------+
+
+

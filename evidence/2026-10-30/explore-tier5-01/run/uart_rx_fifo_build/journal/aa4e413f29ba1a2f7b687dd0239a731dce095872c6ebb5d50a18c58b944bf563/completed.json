@@ -1,0 +1,80 @@
+{
+  "stage": "iteration_1:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 1,
+    "instruction": "In `rx_fifo`, replace the combinational `mem[rd_ptr]` output read with a resettable registered head-data value that directly drives `out_data` and is zero whenever the FIFO is empty. Update it on the existing push/pop transitions so an empty push exposes the new byte after that edge, a pop with remaining entries exposes the next oldest byte, and a simultaneous pop/push at occupancy one exposes the pushed byte; preserve FIFO order and full replacement behavior for every supported `ADDR_BITS` value. Keep `out_valid`, overflow, reset priority, and all observable cycles unchanged; do not add a pip",
+    "candidates": [
+      {
+        "iteration": 1,
+        "mutation": "standard",
+        "instruction": "In `rx_fifo`, replace the combinational `mem[rd_ptr]` output read with a resettable registered head-data value that directly drives `out_data` and is zero whenever the FIFO is empty. Update it on the existing push/pop transitions so an empty push exposes the new byte after that edge, a pop with remaining entries exposes the next oldest byte, and a simultaneous pop/push at occupancy one exposes the pushed byte; preserve FIFO order and full replacement behavior for every supported `ADDR_BITS` value. Keep `out_valid`, overflow, reset priority, and all observable cycles unchanged; do not add a pip",
+        "generated_source_sha256": "9037c85bfd1b5b2fe64b2f124b588cb1d57ddc7a04cd372447296e63bfaeedc0",
+        "final_source_sha256": "9037c85bfd1b5b2fe64b2f124b588cb1d57ddc7a04cd372447296e63bfaeedc0",
+        "generated_code_hash": "fba5efcc02932207",
+        "final_code_hash": "fba5efcc02932207",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": false,
+          "wns_ns": -0.298,
+          "whs_ns": 0.116,
+          "lut_used": 67,
+          "ff_used": 63,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.004,
+          "total_power_w": 0.075
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_001\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_001\\cand_standard\\synth.tcl",
+          "sha256": "7771dcc34071ece14c024704cd5ea22ce10e2fbaecbc94e7b95e06513f0c1c20"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_001\\cand_standard\\uart_rx_fifo.v",
+          "sha256": "44f128cf9ebbd14c918ad59ac49d372a17d4d6dd402031a2b51edb11e4df6fd6"
+        }
+      }
+    ],
+    "doctor": {
+      "status": "ADOPTED",
+      "action": "tool_knobs",
+      "reason": "policy_improvement",
+      "tools_ran": true,
+      "measured_metrics": {
+        "sim_passed": true,
+        "timing_met": true,
+        "wns_ns": 0.042,
+        "whs_ns": 0.065,
+        "lut_used": 70,
+        "ff_used": 78,
+        "dsp_used": 0,
+        "bram_used": 0.0,
+        "dynamic_power_w": 0.005,
+        "total_power_w": 0.076
+      },
+      "adopted": true,
+      "input_source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_001\\cand_standard\\uart_rx_fifo.v",
+        "sha256": "44f128cf9ebbd14c918ad59ac49d372a17d4d6dd402031a2b51edb11e4df6fd6"
+      },
+      "trial_source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_001\\doctor_tool_knobs_trial\\uart_rx_fifo.v",
+        "sha256": "44f128cf9ebbd14c918ad59ac49d372a17d4d6dd402031a2b51edb11e4df6fd6"
+      },
+      "trial_flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_001\\doctor_tool_knobs_trial\\synth.tcl",
+        "sha256": "b71630a2607c522afe0cb3bb99317ba7549f0419720882c75e22be0ab8fc06ee"
+      },
+      "identity_count": 3
+    },
+    "recommendation": "ACCEPT",
+    "is_best": true,
+    "selected_source_sha256": "9037c85bfd1b5b2fe64b2f124b588cb1d57ddc7a04cd372447296e63bfaeedc0"
+  },
+  "artifacts": {}
+}

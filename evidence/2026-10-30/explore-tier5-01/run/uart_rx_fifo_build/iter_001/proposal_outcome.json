@@ -1,0 +1,76 @@
+{
+  "candidates": [
+    {
+      "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_001\\cand_standard",
+      "cache_hit": false,
+      "final_code_hash": "fba5efcc02932207",
+      "final_source_sha256": "9037c85bfd1b5b2fe64b2f124b588cb1d57ddc7a04cd372447296e63bfaeedc0",
+      "flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_001\\cand_standard\\synth.tcl",
+        "sha256": "7771dcc34071ece14c024704cd5ea22ce10e2fbaecbc94e7b95e06513f0c1c20"
+      },
+      "generated_code_hash": "fba5efcc02932207",
+      "generated_source_sha256": "9037c85bfd1b5b2fe64b2f124b588cb1d57ddc7a04cd372447296e63bfaeedc0",
+      "instruction": "In `rx_fifo`, replace the combinational `mem[rd_ptr]` output read with a resettable registered head-data value that directly drives `out_data` and is zero whenever the FIFO is empty. Update it on the existing push/pop transitions so an empty push exposes the new byte after that edge, a pop with remaining entries exposes the next oldest byte, and a simultaneous pop/push at occupancy one exposes the pushed byte; preserve FIFO order and full replacement behavior for every supported `ADDR_BITS` value. Keep `out_valid`, overflow, reset priority, and all observable cycles unchanged; do not add a pip",
+      "iteration": 1,
+      "metrics": {
+        "bram_used": 0.0,
+        "dsp_used": 0,
+        "dynamic_power_w": 0.004,
+        "ff_used": 63,
+        "lut_used": 67,
+        "sim_passed": true,
+        "timing_met": false,
+        "total_power_w": 0.075,
+        "whs_ns": 0.116,
+        "wns_ns": -0.298
+      },
+      "mutation": "standard",
+      "reason": "",
+      "rungs": 5,
+      "source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_001\\cand_standard\\uart_rx_fifo.v",
+        "sha256": "44f128cf9ebbd14c918ad59ac49d372a17d4d6dd402031a2b51edb11e4df6fd6"
+      },
+      "status": "measured"
+    }
+  ],
+  "doctor": {
+    "action": "tool_knobs",
+    "adopted": true,
+    "identity_count": 3,
+    "input_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_001\\cand_standard\\uart_rx_fifo.v",
+      "sha256": "44f128cf9ebbd14c918ad59ac49d372a17d4d6dd402031a2b51edb11e4df6fd6"
+    },
+    "measured_metrics": {
+      "bram_used": 0.0,
+      "dsp_used": 0,
+      "dynamic_power_w": 0.005,
+      "ff_used": 78,
+      "lut_used": 70,
+      "sim_passed": true,
+      "timing_met": true,
+      "total_power_w": 0.076,
+      "whs_ns": 0.065,
+      "wns_ns": 0.042
+    },
+    "reason": "policy_improvement",
+    "status": "ADOPTED",
+    "tools_ran": true,
+    "trial_flow_script": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_001\\doctor_tool_knobs_trial\\synth.tcl",
+      "sha256": "b71630a2607c522afe0cb3bb99317ba7549f0419720882c75e22be0ab8fc06ee"
+    },
+    "trial_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_001\\doctor_tool_knobs_trial\\uart_rx_fifo.v",
+      "sha256": "44f128cf9ebbd14c918ad59ac49d372a17d4d6dd402031a2b51edb11e4df6fd6"
+    }
+  },
+  "instruction": "In `rx_fifo`, replace the combinational `mem[rd_ptr]` output read with a resettable registered head-data value that directly drives `out_data` and is zero whenever the FIFO is empty. Update it on the existing push/pop transitions so an empty push exposes the new byte after that edge, a pop with remaining entries exposes the next oldest byte, and a simultaneous pop/push at occupancy one exposes the pushed byte; preserve FIFO order and full replacement behavior for every supported `ADDR_BITS` value. Keep `out_valid`, overflow, reset priority, and all observable cycles unchanged; do not add a pip",
+  "is_best": true,
+  "iteration": 1,
+  "recommendation": "ACCEPT",
+  "schema_version": 1,
+  "selected_source_sha256": "9037c85bfd1b5b2fe64b2f124b588cb1d57ddc7a04cd372447296e63bfaeedc0"
+}

@@ -1,0 +1,10 @@
+# PLAN — iteration 3
+
+## Current state assessment
+The verified incumbent remains timing-infeasible: WNS is -3.024 ns and WHS is 0.128 ns, so iteration 3 should seek closure or further timing progress; LUT reduction is not yet the promotion requirement. The generation seed registers each symmetric pair’s constant product in stage 1, leaving pair addition and multiplication on that stage’s input path. The advisor’s `full_history_q` trial was not adopted because simulation was unverified; do not repeat that proposal.
+
+## Hypothesis
+Registering the eight 17-bit symmetric pair sums before multiplication should shorten the history-to-register path and improve setup slack, at the cost of moving the multiplier bank to stage 2 and potentially increasing FF use.
+
+## Instruction for generator
+In `fir16_sym_core`, change stage 1 to register `pair0` through `pair7` when `ready1` and `in_valid`, and form the eight constant products from those registers in stage 2 when `ready2` and `valid_slots[0]`. Rebalance the existing arithmetic stages so the four product-pair sums, two grouped sums, final accumulation, and rounding/saturation still produce the same result through the same five elastic slots and preserve the `// @latency 5` top annotation. Preserve accepted-sample history updates, stall holds, reset behavior, registered outputs, and all signed widths needed for exact arithmetic; evaluate routed WNS and WHS against the incumbent before judging LUT impact.

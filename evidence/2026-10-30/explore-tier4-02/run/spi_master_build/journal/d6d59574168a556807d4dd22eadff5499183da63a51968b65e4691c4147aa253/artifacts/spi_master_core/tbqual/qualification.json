@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "status": "qualified",
+  "qualified": true,
+  "testbench_sha256": "c21eaf6f39de52d6b54c8591a86bef5f7c5e0039372a3ba61db7738307db95c4",
+  "attempts": [
+    {
+      "label": "control",
+      "description": "unmodified control",
+      "passed": true,
+      "failure_kind": "design",
+      "error": "",
+      "assertion_detected": false,
+      "proof_reason": "simulation passed",
+      "source_sha256": "77813dc42b312ce4ab795d6a316b2131153bf3fbf086eeeaa2a2d6e8eb512f09",
+      "raw_log_sha256": "8ce62a4e469e5d200d7ce0a1141a5f7c6e4afe25f09f93b78064eec91379f1e6"
+    },
+    {
+      "label": "mutant",
+      "description": "flip == to !=",
+      "passed": false,
+      "failure_kind": "design",
+      "error": "Testbench failures:\nFAIL BEHAVIOR case=3 HALF=8 step=3 t=1 rule=sclk_mode0_half_period  (x23)\nFAIL BEHAVIOR case=3 HALF=8 step=4 t=2 rule=mosi_msb_first_falling_edge  (x25)",
+      "assertion_detected": true,
+      "proof_reason": "raw assertion detail and failure verdict retained",
+      "source_sha256": "6a52641ae6bdb99063d57ab42bdfd5d78740cdd153472d406ca66e26b91fd510",
+      "raw_log_sha256": "f6663e19ffb6a8002be8b61874d1d7fe2f6b9475e98045796159a1b3e20621a6"
+    }
+  ],
+  "missed": [],
+  "scope": "Minimum assertion sensitivity; missed faults remain coverage limits."
+}

@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_1:decision:instruction:0",
+  "result": "In `spi_master_core`, remove `rx_shift` and shift sampled `miso` bits directly into `rsp_data_reg` on the existing odd-toggle sample edges; at completion, assert `rsp_valid_reg` without copying a separate receive register. Keep `rsp_data_reg` reset behavior and ensure its value is stable from response assertion through retirement; its intermediate value while `rsp_valid` is low is unspecified by the contract. Preserve the existing toggle schedule, `HALF_PERIOD` behavior, handshakes, reset priority, output registration, top interface, and top `// @latency 33` annotation. Expect fewer LUTs from removing the receive-to-response copy logic; retain the candidate only if all deterministic gates pass and routed LUT use is strictly below the incumbent.",
+  "artifacts": {}
+}

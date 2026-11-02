@@ -1,0 +1,45 @@
+{
+  "candidates": [
+    {
+      "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier4-02\\spi_master_build\\iter_002\\cand_standard",
+      "cache_hit": false,
+      "final_code_hash": "3f9b0c01b075b550",
+      "final_source_sha256": "2f2b7fee87791434f402adf4f7eab3354adc405214e2a24e4397b461dcf13dd4",
+      "flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier4-02\\spi_master_build\\iter_002\\cand_standard\\synth.tcl",
+        "sha256": "1f57c26d57b8a96b54bddc7fc819e3f3528d85a41935964c0a4010d484c7c8d8"
+      },
+      "generated_code_hash": "3f9b0c01b075b550",
+      "generated_source_sha256": "2f2b7fee87791434f402adf4f7eab3354adc405214e2a24e4397b461dcf13dd4",
+      "instruction": "In `spi_master_core`, replace the fixed 4 bit `phase_count` with a parameter sized counter using `$clog2(HALF_PERIOD)`, with a minimum width of one bit for `HALF_PERIOD=1`. Keep the existing count, terminal comparison, and reset/accept behavior so SCLK still toggles exactly every `HALF_PERIOD` cycles for all supported values. Preserve the top\u2019s `// @latency 33` annotation and all other cycle behavior; verify the complete unit through the fixed integration testbench and compare routed LUTs and timing against the iteration 1 incumbent.",
+      "iteration": 2,
+      "metrics": {
+        "bram_used": 0.0,
+        "dsp_used": 0,
+        "dynamic_power_w": 0.014,
+        "ff_used": 33,
+        "lut_used": 19,
+        "sim_passed": true,
+        "timing_met": true,
+        "total_power_w": 0.085,
+        "whs_ns": 0.024,
+        "wns_ns": 0.354
+      },
+      "mutation": "standard",
+      "reason": "",
+      "rungs": 5,
+      "source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier4-02\\spi_master_build\\iter_002\\cand_standard\\spi_master.v",
+        "sha256": "927dd1ab4ce0652cce74ee7e630e79c369d724768215d2dda4e828aeff8eb581"
+      },
+      "status": "measured"
+    }
+  ],
+  "doctor": null,
+  "instruction": "In `spi_master_core`, replace the fixed 4 bit `phase_count` with a parameter sized counter using `$clog2(HALF_PERIOD)`, with a minimum width of one bit for `HALF_PERIOD=1`. Keep the existing count, terminal comparison, and reset/accept behavior so SCLK still toggles exactly every `HALF_PERIOD` cycles for all supported values. Preserve the top\u2019s `// @latency 33` annotation and all other cycle behavior; verify the complete unit through the fixed integration testbench and compare routed LUTs and timing against the iteration 1 incumbent.",
+  "is_best": true,
+  "iteration": 2,
+  "recommendation": "ACCEPT",
+  "schema_version": 1,
+  "selected_source_sha256": "2f2b7fee87791434f402adf4f7eab3354adc405214e2a24e4397b461dcf13dd4"
+}

@@ -1,0 +1,77 @@
+{
+  "candidates": [
+    {
+      "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_002\\cand_standard",
+      "cache_hit": false,
+      "final_code_hash": "ba90603eac852db4",
+      "final_source_sha256": "997979273705b248042fa94eecd7ba01f5cf41dd271d69030331ff2edbe44685",
+      "flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_002\\cand_standard\\synth.tcl",
+        "sha256": "2c88853ac71fa89f806a3ff3c1b24b9c2dcdb5b7eda5dbcdd5ad425b1b347662"
+      },
+      "generated_code_hash": "ba90603eac852db4",
+      "generated_source_sha256": "997979273705b248042fa94eecd7ba01f5cf41dd271d69030331ff2edbe44685",
+      "instruction": "In `uart_rx_core`, replace `next_offset / BIT_TICKS` and `next_offset % BIT_TICKS` with counters for the current bit index and phase, initialized on start detection and advanced on each BUSY edge. Preserve the exact vote offsets, start-bit validation, stop decision edge, frame outputs, reset behavior, and timing for every supported `OVERSAMPLE_DIV` from 1 through 64. Keep the iteration 1 registered FIFO head-data implementation and all required module interfaces and child latency declarations; do not add a top latency annotation.",
+      "iteration": 2,
+      "metrics": {
+        "bram_used": 0.0,
+        "dsp_used": 0,
+        "dynamic_power_w": 0.004,
+        "ff_used": 58,
+        "lut_used": 66,
+        "sim_passed": true,
+        "timing_met": false,
+        "total_power_w": 0.074,
+        "whs_ns": 0.065,
+        "wns_ns": -0.123
+      },
+      "mutation": "standard",
+      "reason": "",
+      "rungs": 5,
+      "source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_002\\cand_standard\\uart_rx_fifo.v",
+        "sha256": "cd20933d45202a2c11e6d84d7b027e2a0dce40bd4247b82f2de8c203c10b37fb"
+      },
+      "status": "measured"
+    }
+  ],
+  "doctor": {
+    "action": "rtl_surgery",
+    "adopted": true,
+    "identity_count": 3,
+    "input_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_002\\cand_standard\\uart_rx_fifo.v",
+      "sha256": "cd20933d45202a2c11e6d84d7b027e2a0dce40bd4247b82f2de8c203c10b37fb"
+    },
+    "measured_metrics": {
+      "bram_used": 0.0,
+      "dsp_used": 0,
+      "dynamic_power_w": 0.004,
+      "ff_used": 59,
+      "lut_used": 66,
+      "sim_passed": true,
+      "timing_met": true,
+      "total_power_w": 0.074,
+      "whs_ns": 0.051,
+      "wns_ns": 0.548
+    },
+    "proposed_source_text_sha256": "11f02b096ae7e9ed978b7733a4c3eb40fe835869be09626ba6dde10ffeb0a237",
+    "reason": "policy_improvement",
+    "status": "ADOPTED",
+    "tools_ran": true,
+    "trial_flow_script": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_002\\doctor_rtl_surgery_trial\\synth.tcl",
+      "sha256": "75abc495881b9ddf318bc94a644df4fca82d81ebb63c725a2a8bb29354b39ec8"
+    },
+    "trial_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_002\\doctor_rtl_surgery_trial\\uart_rx_fifo.v",
+      "sha256": "2f4e8a971cbac9e124020ba2415fbd79c8cb01865cf57aab6c326fd8e0aefee8"
+    }
+  },
+  "instruction": "In `uart_rx_core`, replace `next_offset / BIT_TICKS` and `next_offset % BIT_TICKS` with counters for the current bit index and phase, initialized on start detection and advanced on each BUSY edge. Preserve the exact vote offsets, start-bit validation, stop decision edge, frame outputs, reset behavior, and timing for every supported `OVERSAMPLE_DIV` from 1 through 64. Keep the iteration 1 registered FIFO head-data implementation and all required module interfaces and child latency declarations; do not add a top latency annotation.",
+  "is_best": true,
+  "iteration": 2,
+  "recommendation": "ACCEPT",
+  "schema_version": 1,
+  "selected_source_sha256": "11f02b096ae7e9ed978b7733a4c3eb40fe835869be09626ba6dde10ffeb0a237"
+}

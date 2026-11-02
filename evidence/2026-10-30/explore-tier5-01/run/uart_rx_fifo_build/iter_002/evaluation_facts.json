@@ -1,0 +1,359 @@
+{
+  "candidate_metrics": {
+    "bram_total": 50.0,
+    "bram_used": 0.0,
+    "dsp_total": 90,
+    "dsp_used": 0,
+    "dynamic_power_w": 0.004,
+    "ff_pct": 0.14182692307692307,
+    "ff_total": 41600,
+    "ff_used": 59,
+    "lut_pct": 0.3173076923076923,
+    "lut_total": 20800,
+    "lut_used": 66,
+    "reg2reg_wns_ns": 5.647,
+    "sim_error": "",
+    "sim_passed": true,
+    "synth_error": "",
+    "timing_met": true,
+    "total_power_w": 0.074,
+    "whs_ns": 0.051,
+    "wns_ns": 0.548
+  },
+  "candidate_source": {
+    "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_002\\doctor_rtl_surgery_trial\\uart_rx_fifo.v",
+    "sha256": "2f4e8a971cbac9e124020ba2415fbd79c8cb01865cf57aab6c326fd8e0aefee8",
+    "text": "`timescale 1ns/1ps\r\n// @latency 1\r\nmodule uart_rx_core #(\r\n    parameter OVERSAMPLE_DIV = 2\r\n) (\r\n    input wire clk,\r\n    input wire rst,\r\n    input wire rx,\r\n    output wire [7:0] rx_data,\r\n    output wire rx_strobe,\r\n    output wire frame_err\r\n);\r\n\r\n    localparam integer BIT_TICKS = 16 * OVERSAMPLE_DIV;\r\n    localparam [1:0] IDLE      = 2'd0,\r\n                     BUSY      = 2'd1,\r\n                     WAIT_IDLE = 2'd2;\r\n\r\n    reg sync1;\r\n    reg sync2;\r\n\r\n    reg [1:0] state;\r\n    reg [3:0] bit_index;\r\n    reg [9:0] bit_phase;\r\n    reg vote1;\r\n    reg vote2;\r\n    reg [7:0] rx_shift;\r\n    reg [7:0] rx_data_reg;\r\n    reg rx_strobe_reg;\r\n    reg frame_err_reg;\r\n\r\n    wire [10:0] next_phase = {1'b0, bit_phase} + 11'd1;\r\n    wire majority_vote = (vote1 & vote2) |\r\n                         (vote1 & sync2) |\r\n                         (vote2 & sync2);\r\n\r\n    assign rx_data = rx_data_reg;\r\n    assign rx_strobe = rx_strobe_reg;\r\n    assign frame_err = frame_err_reg;\r\n\r\n    always @(posedge clk) begin\r\n        if (rst) begin\r\n            sync1 <= 1'b1;\r\n            sync2 <= 1'b1;\r\n        end else begin\r\n            sync1 <= rx;\r\n            sync2 <= sync1;\r\n        end\r\n    end\r\n\r\n    always @(posedge clk) begin\r\n        if (rst) begin\r\n            state         <= IDLE;\r\n            bit_index     <= 4'd0;\r\n            bit_phase     <= 10'd0;\r\n            vote1         <= 1'b0;\r\n            vote2         <= 1'b0;\r\n            rx_shift      <= 8'd0;\r\n            rx_data_reg   <= 8'd0;\r\n            rx_strobe_reg <= 1'b0;\r\n            frame_err_reg <= 1'b0;\r\n        end else begin\r\n            rx_strobe_reg <= 1'b0;\r\n            frame_err_reg <= 1'b0;\r\n\r\n            case (state)\r\n                IDLE: begin\r\n                    bit_index <= 4'd0;\r\n                    bit_phase <= 10'd0;\r\n                    if (!sync2) begin\r\n                        state     <= BUSY;\r\n                        bit_index <= 4'd0;\r\n                        bit_phase <= 10'd0;\r\n                        rx_shift  <= 8'd0;\r\n                    end\r\n                end\r\n\r\n                BUSY: begin\r\n                    if (next_phase == (7 * OVERSAMPLE_DIV))\r\n                        vote1 <= sync2;\r\n\r\n                    if (next_phase == (8 * OVERSAMPLE_DIV))\r\n                        vote2 <= sync2;\r\n\r\n                    if (next_phase == (9 * OVERSAMPLE_DIV)) begin\r\n                        if (bit_index == 4'd0) begin\r\n                            if (majority_vote)\r\n                                state <= IDLE;\r\n                        end else if (bit_index <= 4'd8) begin\r\n                            rx_shift[bit_index - 1'b1] <= majority_vote;\r\n                        end else if (bit_index == 4'd9) begin\r\n                            if (majority_vote) begin\r\n                                rx_data_reg   <= rx_shift;\r\n                                rx_strobe_reg <= 1'b1;\r\n                                state         <= IDLE;\r\n                            end else begin\r\n                                frame_err_reg <= 1'b1;\r\n                                state         <= WAIT_IDLE;\r\n                            end\r\n                        end\r\n                    end\r\n\r\n                    if (bit_phase == (BIT_TICKS - 1)) begin\r\n                        bit_phase <= 10'd0;\r\n                        bit_index <= bit_index + 1'b1;\r\n                    end else begin\r\n                        bit_phase <= bit_phase + 1'b1;\r\n                    end\r\n                end\r\n\r\n                WAIT_IDLE: begin\r\n                    if (sync2)\r\n                        state <= IDLE;\r\n                end\r\n\r\n                default: begin\r\n                    state <= IDLE;\r\n                end\r\n            endcase\r\n        end\r\n    end\r\n\r\nendmodule\r\n\r\n`timescale 1ns/1ps\r\n// @latency 1\r\nmodule rx_fifo #(\r\n    parameter ADDR_BITS = 2\r\n) (\r\n    input wire clk,\r\n    input wire rst,\r\n    input wire wr_en,\r\n    input wire [7:0] wr_data,\r\n    output wire [7:0] out_data,\r\n    output wire out_valid,\r\n    input wire out_ready,\r\n    output wire overflow\r\n);\r\n\r\n    localparam DEPTH = (1 << ADDR_BITS);\r\n\r\n    reg [7:0] mem [0:DEPTH-1];\r\n    reg [ADDR_BITS-1:0] rd_ptr;\r\n    reg [ADDR_BITS-1:0] wr_ptr;\r\n    reg [ADDR_BITS:0] count;\r\n    reg [7:0] head_data_reg;\r\n    reg out_valid_reg;\r\n    reg overflow_reg;\r\n\r\n    wire pop;\r\n    wire push;\r\n    wire [ADDR_BITS-1:0] next_rd_ptr = rd_ptr + 1'b1;\r\n\r\n    assign out_valid = out_valid_reg;\r\n    assign out_data = head_data_reg;\r\n    assign overflow = overflow_reg;\r\n\r\n    assign pop = out_ready && (count != 0);\r\n    assign push = wr_en && ((count < DEPTH) || pop);\r\n\r\n    always @(posedge clk) begin\r\n        if (rst) begin\r\n            rd_ptr       <= {ADDR_BITS{1'b0}};\r\n            wr_ptr       <= {ADDR_BITS{1'b0}};\r\n            count        <= {(ADDR_BITS+1){1'b0}};\r\n            head_data_reg <= 8'b0;\r\n            out_valid_reg <= 1'b0;\r\n            overflow_reg <= 1'b0;\r\n        end else begin\r\n            overflow_reg <= wr_en && !push;\r\n\r\n            if (pop)\r\n                rd_ptr <= next_rd_ptr;\r\n\r\n            if (push) begin\r\n                mem[wr_ptr] <= wr_data;\r\n                wr_ptr <= wr_ptr + 1'b1;\r\n            end\r\n\r\n            if (push && !pop) begin\r\n                if (count == 0)\r\n                    head_data_reg <= wr_data;\r\n            end else if (pop) begin\r\n                if (count == 1) begin\r\n                    if (push)\r\n                        head_data_reg <= wr_data;\r\n                    else\r\n                        head_data_reg <= 8'b0;\r\n                end else begin\r\n                    head_data_reg <= mem[next_rd_ptr];\r\n                end\r\n            end\r\n\r\n            case ({push, pop})\r\n                2'b10: begin\r\n                    count <= count + 1'b1;\r\n                    out_valid_reg <= 1'b1;\r\n                end\r\n                2'b01: begin\r\n                    count <= count - 1'b1;\r\n                    out_valid_reg <= (count != 1);\r\n                end\r\n                default: begin\r\n                    count <= count;\r\n                    out_valid_reg <= out_valid_reg;\r\n                end\r\n            endcase\r\n        end\r\n    end\r\n\r\nendmodule\r\n\r\n`timescale 1ns/1ps\r\n// @latency 1\r\nmodule rx_err_count (\r\n    input wire clk,\r\n    input wire rst,\r\n    input wire ferr_in,\r\n    input wire ovf_in,\r\n    output wire [3:0] ferr_count,\r\n    output wire [3:0] ovf_count\r\n);\r\n\r\n    reg [3:0] ferr_count_reg;\r\n    reg [3:0] ovf_count_reg;\r\n\r\n    assign ferr_count = ferr_count_reg;\r\n    assign ovf_count = ovf_count_reg;\r\n\r\n    always @(posedge clk) begin\r\n        if (rst) begin\r\n            ferr_count_reg <= 4'd0;\r\n            ovf_count_reg  <= 4'd0;\r\n        end else begin\r\n            if (ferr_in && (ferr_count_reg < 4'd15))\r\n                ferr_count_reg <= ferr_count_reg + 4'd1;\r\n\r\n            if (ovf_in && (ovf_count_reg < 4'd15))\r\n                ovf_count_reg <= ovf_count_reg + 4'd1;\r\n        end\r\n    end\r\n\r\nendmodule\r\n\r\n`timescale 1ns/1ps\r\nmodule uart_rx_fifo (\r\n    input wire clk,\r\n    input wire rst,\r\n    input wire rx,\r\n    output wire [7:0] out_data,\r\n    output wire out_valid,\r\n    input wire out_ready,\r\n    output wire frame_err,\r\n    output wire [3:0] ferr_count,\r\n    output wire [3:0] ovf_count\r\n);\r\n    wire w_uart_rx_core_rx_strobe;\r\n    wire [7:0] w_uart_rx_core_rx_data;\r\n    wire w_uart_rx_core_frame_err;\r\n    wire w_rx_fifo_overflow;\r\n\r\n    assign frame_err = w_uart_rx_core_frame_err;\r\n\r\n    uart_rx_core #(.OVERSAMPLE_DIV(2)) u_uart_rx_core (\r\n        .clk(clk),\r\n        .rst(rst),\r\n        .rx(rx),\r\n        .rx_data(w_uart_rx_core_rx_data),\r\n        .rx_strobe(w_uart_rx_core_rx_strobe),\r\n        .frame_err(w_uart_rx_core_frame_err)\r\n    );\r\n\r\n    rx_fifo #(.ADDR_BITS(2)) u_rx_fifo (\r\n        .clk(clk),\r\n        .rst(rst),\r\n        .wr_en(w_uart_rx_core_rx_strobe),\r\n        .wr_data(w_uart_rx_core_rx_data),\r\n        .out_data(out_data),\r\n        .out_valid(out_valid),\r\n        .out_ready(out_ready),\r\n        .overflow(w_rx_fifo_overflow)\r\n    );\r\n\r\n    rx_err_count u_rx_err_count (\r\n        .clk(clk),\r\n        .rst(rst),\r\n        .ferr_in(w_uart_rx_core_frame_err),\r\n        .ovf_in(w_rx_fifo_overflow),\r\n        .ferr_count(ferr_count),\r\n        .ovf_count(ovf_count)\r\n    );\r\nendmodule",
+    "truncated": false
+  },
+  "candidate_timing_feasible": true,
+  "doctor_trial": {
+    "action": "rtl_surgery",
+    "input_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_002\\cand_standard\\uart_rx_fifo.v",
+      "sha256": "cd20933d45202a2c11e6d84d7b027e2a0dce40bd4247b82f2de8c203c10b37fb",
+      "text": "",
+      "truncated": true
+    },
+    "measured_metrics": {
+      "bram_total": 50.0,
+      "bram_used": 0.0,
+      "dsp_total": 90,
+      "dsp_used": 0,
+      "dynamic_power_w": 0.004,
+      "ff_pct": 0.14182692307692307,
+      "ff_total": 41600,
+      "ff_used": 59,
+      "lut_pct": 0.3173076923076923,
+      "lut_total": 20800,
+      "lut_used": 66,
+      "reg2reg_wns_ns": 5.647,
+      "sim_error": "",
+      "sim_passed": true,
+      "synth_error": "",
+      "timing_met": true,
+      "total_power_w": 0.074,
+      "whs_ns": 0.051,
+      "wns_ns": 0.548
+    },
+    "proposed_source_text_sha256": "11f02b096ae7e9ed978b7733a4c3eb40fe835869be09626ba6dde10ffeb0a237",
+    "reason": "policy_improvement",
+    "reports": [
+      {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_002\\doctor_rtl_surgery_trial\\power.rpt",
+        "sha256": "710cd486b1aacf04adf96b2a8f3a96b1ed808d29ba21dd7dba0e01fd2ff534dc"
+      },
+      {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_002\\doctor_rtl_surgery_trial\\timing.rpt",
+        "sha256": "283de8f6ba042b53077a6c6a9b911ed0378a6f96036cc4251f075cf64d9bed4e"
+      },
+      {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_002\\doctor_rtl_surgery_trial\\timing_reg2reg.rpt",
+        "sha256": "8f975d5ffbcc8d72774963c6788b8b47fa3c1dfebce8f3503a4e4001360eb591"
+      },
+      {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_002\\doctor_rtl_surgery_trial\\timing_routed.rpt",
+        "sha256": "ed381634c4464033556fbaae22208470e9d9e527a3278816e56e1e2483e1ed48"
+      },
+      {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_002\\doctor_rtl_surgery_trial\\utilization.rpt",
+        "sha256": "61d0cad95a873792ea8b080c665a693c0ea34866468a31bf84de4c8efac4e161"
+      },
+      {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_002\\doctor_rtl_surgery_trial\\utilization_routed.rpt",
+        "sha256": "d61440d80f96bda9d6dcda356dbbdf66148eea072f7bc8499aa45eefc0b6619e"
+      }
+    ],
+    "reports_truncated": false,
+    "scope": "Trial observations only; these do not replace candidate or incumbent metrics.",
+    "status": "ADOPTED",
+    "tools_ran": true,
+    "trial_flow_script": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_002\\doctor_rtl_surgery_trial\\synth.tcl",
+      "sha256": "75abc495881b9ddf318bc94a644df4fca82d81ebb63c725a2a8bb29354b39ec8",
+      "text": "",
+      "truncated": true
+    },
+    "trial_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_002\\doctor_rtl_surgery_trial\\uart_rx_fifo.v",
+      "sha256": "2f4e8a971cbac9e124020ba2415fbd79c8cb01865cf57aab6c326fd8e0aefee8",
+      "text": "`timescale 1ns/1ps\r\n// @latency 1\r\nmodule uart_rx_core #(\r\n    parameter OVERSAMPLE_DIV = 2\r\n) (\r\n    input wire clk,\r\n    input wire rst,\r\n    input wire rx,\r\n    output wire [7:0] rx_data,\r\n    output wire rx_strobe,\r\n    output wire frame_err\r\n);\r\n\r\n    localparam integer BIT_TICKS = 16 * OVERSAMPLE_DIV;\r\n    localparam [1:0] IDLE      = 2'd0,\r\n                     BUSY      = 2'd1,\r\n                     WAIT_IDLE = 2'd2;\r\n\r\n    reg sync1;\r\n    reg sync2;\r\n\r\n    reg [1:0] state;\r\n    reg [3:0] bit_index;\r\n    reg [9:0] bit_phase;\r\n    reg vote1;\r\n    reg vote2;\r\n    reg [7:0] rx_shift;\r\n    reg [7:0] rx_data_reg;\r\n    reg rx_strobe_reg;\r\n    reg frame_err_reg;\r\n\r\n    wire [10:0] next_phase = {1'b0, bit_phase} + 11'd1;\r\n    wire majority_vote = (vote1 & vote2) |\r\n                         (vote1 & sync2) |\r\n                         (vote2 & sync2);\r\n\r\n    assign rx_data = rx_data_reg;\r\n    assign rx_strobe = rx_strobe_reg;\r\n    assign frame_err = frame_err_reg;\r\n\r\n    always @(posedge",
+      "truncated": true
+    }
+  },
+  "first_violated_path_excerpt": null,
+  "flow_and_constraints": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_002\\doctor_rtl_surgery_trial\\synth.tcl",
+      "sha256": "75abc495881b9ddf318bc94a644df4fca82d81ebb63c725a2a8bb29354b39ec8",
+      "text": "set_msg_config -id {VRFC 10-3609} -new_severity ERROR\r\nset_msg_config -id {Synth 8-9873} -new_severity ERROR\r\nset_msg_config -id {Designutils 20-1307} -new_severity ERROR\r\nset_msg_config -id {Synth 8-327} -new_severity ERROR\r\nset_msg_config -id {Synth 8-3352} -new_severity ERROR\r\nset_part xc7a35tcpg236-1\r\nread_verilog \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-01/uart_rx_fifo_build/iter_002/doctor_rtl_surgery_trial/uart_rx_fifo.v\"\r\nset fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-01/uart_rx_fifo_build/iter_002/doctor_rtl_surgery_trial/timing.xdc\" w]\r\nputs $fp {create_clock -period 10.000 -name clk [get_ports clk]}\r\nclose $fp\r\nread_xdc \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-01/uart_rx_fifo_build/iter_002/doctor_rtl_surgery_trial/timing.xdc\"\r\nsynth_design -top uart_rx_fifo -flatten_hierarchy rebuilt \r\nset fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-01/uart_rx_fifo_build/iter_002/doctor_rtl_surgery_trial/timing_io.tcl\" w]\r\nputs $fp {set data_inputs [get_ports -filter {DIRECTION == IN && NAME != clk}]}\r\nputs $fp {if {[llength $data_inputs] > 0} {set_input_delay -clock clk -max 0.000 $data_inputs; set_input_delay -clock clk -min 0.000 $data_inputs}}\r\nputs $fp {if {[llength [all_outputs]] > 0} {set_output_delay -clock clk -max 0.000 [all_outputs]; set_output_delay -clock clk -min 0.000 [all_outputs]}}\r\nclose $fp\r\nsource \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-01/uart_rx_fifo_build/iter_002/doctor_rtl_surgery_trial/timing_io.tcl\"\r\nreport_utilization -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-01/uart_rx_fifo_build/iter_002/doctor_rtl_surgery_trial/utilization.rpt\"\r\nreport_timing_summary -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-01/uart_rx_fifo_build/iter_002/doctor_rtl_surgery_trial/timing.rpt\"\r\nopt_design\r\nplace_design\r\n\r\nroute_design\r\nreport_utilization -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-01/uart_rx_fifo_build/iter_002/doctor_rtl_surgery_trial/utilization_routed.rpt\"\r\nreport_timing_summary -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-01/uart_rx_fifo_build/iter_002/doctor_rtl_surgery_trial/timing_routed.rpt\"\r\ncatch { if {[llength [all_registers]] > 0} { report_timing -from [all_registers] -to [all_registers] -max_paths 1 -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-01/uart_rx_fifo_build/iter_002/doctor_rtl_surgery_trial/timing_reg2reg.rpt\" } }\r\nreport_design_analysis -logic_level_distribution -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-01/uart_rx_fifo_build/iter_002/doctor_rtl_surgery_trial/design_analysis.rpt\"\r\nreport_power -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-01/uart_rx_fifo_build/iter_002/doctor_rtl_surgery_trial/power.rpt\"\r\ncatch { report_methodology -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-01/uart_rx_fifo_build/iter_002/doctor_rtl_surgery_trial/methodology.rpt\" }\r\ncatch { report_qor_suggestions -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-01/uart_rx_fifo_build/iter_002/doctor_rtl_surgery_trial/qor_suggestions.rpt\" }\r\nputs \"SYNTH_COMPLETE\"\r\n",
+      "truncated": false
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_002\\doctor_rtl_surgery_trial\\timing.xdc",
+      "sha256": "fa142c09f0fadb5e303ca9fea08c02bc353451533e44aeee9cd9a0231cc8bede",
+      "text": "create_clock -period 10.000 -name clk [get_ports clk]\r\n",
+      "truncated": false
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_002\\doctor_rtl_surgery_trial\\timing_io.tcl",
+      "sha256": "6b38098841a48bbb3ab15de49d2bf2baf7e4384f599259ff5f3afa2c2b1daf00",
+      "text": "set data_inputs [get_ports -filter {DIRECTION == IN && NAME != clk}]\r\nif {[llength $data_inputs] > 0} {set_input_delay -clock clk -max 0.000 $data_inputs; set_input_delay -clock clk -min 0.000 $data_inputs}\r\nif {[llength [all_outputs]] > 0} {set_output_delay -clock clk -max 0.000 [all_outputs]; set_output_delay -clock clk -min 0.000 [all_outputs]}\r\n",
+      "truncated": false
+    }
+  ],
+  "improvement_kind": "objective",
+  "measured_improvement": true,
+  "metric_provenance": "Structured metrics are parsed from retained reports; routed utilization/timing reports take precedence when present. The manifest identifies complete files by hash. Header excerpts are bounded previews, not complete reports or an independent metric source.",
+  "objective": "minimize_luts",
+  "previous_best_metrics": {
+    "bram_total": 50.0,
+    "bram_used": 0.0,
+    "dsp_total": 90,
+    "dsp_used": 0,
+    "dynamic_power_w": 0.005,
+    "ff_pct": 0.1875,
+    "ff_total": 41600,
+    "ff_used": 78,
+    "lut_pct": 0.33653846153846156,
+    "lut_total": 20800,
+    "lut_used": 70,
+    "reg2reg_wns_ns": 4.327,
+    "sim_error": "",
+    "sim_passed": true,
+    "synth_error": "",
+    "timing_met": true,
+    "total_power_w": 0.076,
+    "whs_ns": 0.065,
+    "wns_ns": 0.042
+  },
+  "previous_best_timing_feasible": true,
+  "process_exit_gate": {
+    "passed": true,
+    "policy": "Every required tool's latest actual process exit must be zero with retained matching output; physical-only Doctor may reuse source-bound prior compile/simulation.",
+    "reasons": []
+  },
+  "report_headers": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_002\\doctor_rtl_surgery_trial\\power.rpt",
+      "sha256": "710cd486b1aacf04adf96b2a8f3a96b1ed808d29ba21dd7dba0e01fd2ff534dc",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version     : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date             : Fri Oct 30 20:23:48 2026\r\n| Host             : Baah running 64-bit major release  (build 9200)\r\n| Command          : report_power -file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-01/uart_rx_fifo_build/iter_002/doctor_rtl_surgery_trial/power.rpt\r\n| Design           : uart_rx_fifo\r\n| Device           : xc7a35tcpg236-1\r\n| Design State     : routed\r\n| Grade            : commercial\r\n| Process          : typical\r\n| Characterization : Production\r\n---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nPower Report\r\n\r\nTable of Contents\r\n-----------------\r\n1. Summary\r\n1.1 On-Chip Components\r\n1.2 Power Supply Summary\r\n1.3 Confidence Level\r\n2. Settings\r\n2.1 Environment\r\n2.2 Clock Constraints\r\n3. Detailed Reports\r\n3.1 By Hierarchy\r\n\r\n1. Summary\r\n----------\r\n\r\n+--------------------------+--------------+\r\n| Total On-Chip Power (W)  | 0.074        |\r\n| Design Power Budget (W)  | Unspecified* |\r\n| Power Budget Margin (W)  | NA           |\r\n| Dynamic (W)              | 0.004        |\r\n| Device Static (W)        | 0.070        |\r\n| Effective TJA (C/W)      | 5.0          |\r\n| Max Ambient (C)          | 84.6         |\r\n| Junction Temperature (C) | 25.4         |\r\n| Confidence Level         | Medium       |\r\n| Setting File             | --- ",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_002\\doctor_rtl_surgery_trial\\timing.rpt",
+      "sha256": "283de8f6ba042b53077a6c6a9b911ed0378a6f96036cc4251f075cf64d9bed4e",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date         : Fri Oct 30 20:22:39 2026\r\n| Host         : Baah running 64-bit major release  (build 9200)\r\n| Command      : report_timing_summary -file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-01/uart_rx_fifo_build/iter_002/doctor_rtl_surgery_trial/timing.rpt\r\n| Design       : uart_rx_fifo\r\n| Device       : 7a35t-cpg236\r\n| Speed File   : -1  PRODUCTION 1.23 2018-06-13\r\n| Design State : Synthesized\r\n-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nTiming Summary Report\r\n\r\n------------------------------------------------------------------------------------------------\r\n| Timer Settings\r\n| --------------\r\n------------------------------------------------------------------------------------------------\r\n\r\n  Enable Multi Corner Analysis               :  Yes\r\n  Enable Pessimism Removal                   :  Yes\r\n  Pessimism Removal Resolution               :  Nearest Common Node\r\n  Enable Input Delay Default Clock           :  No\r\n  Enable Preset / Clear Arcs                 :  No\r\n  Disable Flight Delays                      :  No\r\n  Ignore I/O Paths                           :  No\r\n  Timing Early Launch at Borrowing Latches   :  No\r\n  Borrow Time for Max Delay Exceptions       :  Yes\r\n  Merge Timing Exceptions                    :  Yes\r\n  Inter-",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_002\\doctor_rtl_surgery_trial\\timing_reg2reg.rpt",
+      "sha256": "8f975d5ffbcc8d72774963c6788b8b47fa3c1dfebce8f3503a4e4001360eb591",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date         : Fri Oct 30 20:23:48 2026\r\n| Host         : Baah running 64-bit major release  (build 9200)\r\n| Command      : report_timing -from [all_registers] -to [all_registers] -max_paths 1 -file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-01/uart_rx_fifo_build/iter_002/doctor_rtl_surgery_trial/timing_reg2reg.rpt\r\n| Design       : uart_rx_fifo\r\n| Device       : 7a35t-cpg236\r\n| Speed File   : -1  PRODUCTION 1.23 2018-06-13\r\n| Design State : Routed\r\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nTiming Report\r\n\r\nSlack (MET) :             5.647ns  (required time - arrival time)\r\n  Source:                 u_rx_fifo/count_reg[2]/C\r\n                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@5.000ns period=10.000ns})\r\n  Destination:            u_rx_fifo/head_data_reg_reg[0]/D\r\n                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@5.000ns period=10.000ns})\r\n  Path Group:             clk\r\n  Path Type:              Setup (Max at Slow Process Corner)\r\n  Requirement:            10.000ns  (clk rise@10.000ns - clk rise@0.000ns)\r\n  Data Path Delay:        4.324ns  (l",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_002\\doctor_rtl_surgery_trial\\timing_routed.rpt",
+      "sha256": "ed381634c4464033556fbaae22208470e9d9e527a3278816e56e1e2483e1ed48",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date         : Fri Oct 30 20:23:48 2026\r\n| Host         : Baah running 64-bit major release  (build 9200)\r\n| Command      : report_timing_summary -file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-01/uart_rx_fifo_build/iter_002/doctor_rtl_surgery_trial/timing_routed.rpt\r\n| Design       : uart_rx_fifo\r\n| Device       : 7a35t-cpg236\r\n| Speed File   : -1  PRODUCTION 1.23 2018-06-13\r\n| Design State : Routed\r\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nTiming Summary Report\r\n\r\n------------------------------------------------------------------------------------------------\r\n| Timer Settings\r\n| --------------\r\n------------------------------------------------------------------------------------------------\r\n\r\n  Enable Multi Corner Analysis               :  Yes\r\n  Enable Pessimism Removal                   :  Yes\r\n  Pessimism Removal Resolution               :  Nearest Common Node\r\n  Enable Input Delay Default Clock           :  No\r\n  Enable Preset / Clear Arcs                 :  No\r\n  Disable Flight Delays                      :  No\r\n  Ignore I/O Paths                           :  No\r\n  Timing Early Launch at Borrowing Latches   :  No\r\n  Borrow Time for Max Delay Exceptions       :  Yes\r\n  Merge Timing Exceptions                    ",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_002\\doctor_rtl_surgery_trial\\utilization.rpt",
+      "sha256": "61d0cad95a873792ea8b080c665a693c0ea34866468a31bf84de4c8efac4e161",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\n---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\n| Date         : Fri Oct 30 20:22:39 2026\n| Host         : Baah running 64-bit major release  (build 9200)\n| Command      : report_utilization -file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-01/uart_rx_fifo_build/iter_002/doctor_rtl_surgery_trial/utilization.rpt\n| Design       : uart_rx_fifo\n| Device       : xc7a35tcpg236-1\n| Speed File   : -1\n| Design State : Synthesized\n---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n\nUtilization Design Information\n\nTable of Contents\n-----------------\n1. Slice Logic\n1.1 Summary of Registers by Type\n2. Memory\n3. DSP\n4. IO and GT Specific\n5. Clocking\n6. Specific Feature\n7. Primitives\n8. Black Boxes\n9. Instantiated Netlists\n\n1. Slice Logic\n--------------\n\n+----------------------------+------+-------+------------+-----------+-------+\n|          Site Type         | Used | Fixed | Prohibited | Available | Util% |\n+----------------------------+------+-------+------------+-----------+-------+\n| Slice LUTs*                |   71 |     0 |          0 |     20800 |  0.34 |\n|   LUT as Logic             |   63 |     0 |          0 |     20800 |  0.30 |\n|   LUT as Memory            |    8 |     0 |          0 |      9600 |  0.08 |\n|     LUT as Distributed RAM |    8 |     0 |            |           |       |\n|     LUT as ",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_002\\doctor_rtl_surgery_trial\\utilization_routed.rpt",
+      "sha256": "d61440d80f96bda9d6dcda356dbbdf66148eea072f7bc8499aa45eefc0b6619e",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\n----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\n| Date         : Fri Oct 30 20:23:47 2026\n| Host         : Baah running 64-bit major release  (build 9200)\n| Command      : report_utilization -file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-01/uart_rx_fifo_build/iter_002/doctor_rtl_surgery_trial/utilization_routed.rpt\n| Design       : uart_rx_fifo\n| Device       : xc7a35tcpg236-1\n| Speed File   : -1\n| Design State : Routed\n----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n\nUtilization Design Information\n\nTable of Contents\n-----------------\n1. Slice Logic\n1.1 Summary of Registers by Type\n2. Slice Logic Distribution\n3. Memory\n4. DSP\n5. IO and GT Specific\n6. Clocking\n7. Specific Feature\n8. Primitives\n9. Black Boxes\n10. Instantiated Netlists\n\n1. Slice Logic\n--------------\n\n+----------------------------+------+-------+------------+-----------+-------+\n|          Site Type         | Used | Fixed | Prohibited | Available | Util% |\n+----------------------------+------+-------+------------+-----------+-------+\n| Slice LUTs                 |   66 |     0 |          0 |     20800 |  0.32 |\n|   LUT as Logic             |   60 |     0 |          0 |     20800 |  0.29 |\n|   LUT as Memory            |    6 |     0 |          0 |      9600 |  0.06 |\n|     LUT as Distributed RAM |    6 |     0 |  ",
+      "truncated": true
+    }
+  ],
+  "report_manifest": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_002\\doctor_rtl_surgery_trial\\power.rpt",
+      "sha256": "710cd486b1aacf04adf96b2a8f3a96b1ed808d29ba21dd7dba0e01fd2ff534dc"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_002\\doctor_rtl_surgery_trial\\timing.rpt",
+      "sha256": "283de8f6ba042b53077a6c6a9b911ed0378a6f96036cc4251f075cf64d9bed4e"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_002\\doctor_rtl_surgery_trial\\timing_reg2reg.rpt",
+      "sha256": "8f975d5ffbcc8d72774963c6788b8b47fa3c1dfebce8f3503a4e4001360eb591"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_002\\doctor_rtl_surgery_trial\\timing_routed.rpt",
+      "sha256": "ed381634c4464033556fbaae22208470e9d9e527a3278816e56e1e2483e1ed48"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_002\\doctor_rtl_surgery_trial\\utilization.rpt",
+      "sha256": "61d0cad95a873792ea8b080c665a693c0ea34866468a31bf84de4c8efac4e161"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_002\\doctor_rtl_surgery_trial\\utilization_routed.rpt",
+      "sha256": "d61440d80f96bda9d6dcda356dbbdf66148eea072f7bc8499aa45eefc0b6619e"
+    }
+  ],
+  "tool_exit_evidence": {
+    "history_count": 4,
+    "latest_by_tool": {
+      "vivado": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_002\\doctor_rtl_surgery_trial\\vivado_synth_output.log",
+        "output_log_sha256": "a562ddb589a0aab09840a1868e2e8ca42e03adea31fec8847d4b8e4665ef2a82",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xelab": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_002\\doctor_rtl_surgery_trial\\xelab.log",
+        "output_log_sha256": "1bdac668e43db21238d208a7dcf7e315abc63ac8e3d36241870cd5f1e24922c9",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xsim": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_002\\doctor_rtl_surgery_trial\\xsim.log",
+        "output_log_sha256": "a20c861ebc1f9931b4f9cb652ad175541a5e1ddd5f0edca2fcaad3812f598582",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xvlog": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_002\\doctor_rtl_surgery_trial\\xvlog.log",
+        "output_log_sha256": "563cda044c2b100638306fe2bb22e610426df7ba08bcd41d5343f0aba8d3834b",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      }
+    },
+    "missing_required_tools": [],
+    "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_002\\doctor_rtl_surgery_trial\\tool_exit_records.log",
+    "records": [
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_002\\doctor_rtl_surgery_trial",
+        "driver_returncode": 0,
+        "elapsed_seconds": 2.422000000020489,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xvlog.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_002\\doctor_rtl_surgery_trial\\xvlog.log",
+        "output_log_sha256": "563cda044c2b100638306fe2bb22e610426df7ba08bcd41d5343f0aba8d3834b",
+        "pid": 33712,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xvlog"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_002\\doctor_rtl_surgery_trial",
+        "driver_returncode": 0,
+        "elapsed_seconds": 8.71799999999348,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xelab.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_002\\doctor_rtl_surgery_trial\\xelab.log",
+        "output_log_sha256": "1bdac668e43db21238d208a7dcf7e315abc63ac8e3d36241870cd5f1e24922c9",
+        "pid": 22260,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xelab"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_002\\doctor_rtl_surgery_trial",
+        "driver_returncode": 0,
+        "elapsed_seconds": 4.98499999998603,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xsim.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_002\\doctor_rtl_surgery_trial\\xsim.log",
+        "output_log_sha256": "a20c861ebc1f9931b4f9cb652ad175541a5e1ddd5f0edca2fcaad3812f598582",
+        "pid": 12528,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xsim"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_002\\doctor_rtl_surgery_trial",
+        "driver_returncode": 0,
+        "elapsed_seconds": 198.03099999995902,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/vivado.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_002\\doctor_rtl_surgery_trial\\vivado_synth_output.log",
+        "output_log_sha256": "a562ddb589a0aab09840a1868e2e8ca42e03adea31fec8847d4b8e4665ef2a82",
+        "pid": 18576,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "vivado"
+      }
+    ],
+    "schema_valid": true,
+    "sha256": "10dcf77364a8f38d4dcb1dddcd7a0ac9629e5ab1995a2596ac5e31b9728b765e",
+    "status": "recorded",
+    "truncated": false
+  },
+  "verification_logs": [
+    {
+      "head": "INFO: [VRFC 10-2263] Analyzing Verilog file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-01/uart_rx_fifo_build/iter_002/doctor_rtl_surgery_trial/uart_rx_fifo.v\" into library work\r\nINFO: [VRFC 10-311] analyzing module uart_rx_core\r\nINFO: [VRFC 10-311] analyzing module rx_fifo\r\nINFO: [VRFC 10-311] analyzing module rx_err_count\r\nINFO: [VRFC 10-311] analyzing module uart_rx_fifo\r\nINFO: [VRFC 10-2263] Analyzing Verilog file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-01/uart_rx_fifo_build/inputs/testbench_path.v\" into library work\r\nINFO: [VRFC 10-311] analyzing module uart_rx_fifo_case\r\nINFO: [VRFC 10-311] analyzing module uart_rx_fifo_tb\r\n\r\n",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_002\\doctor_rtl_surgery_trial\\xvlog.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "563cda044c2b100638306fe2bb22e610426df7ba08bcd41d5343f0aba8d3834b",
+      "tail": "",
+      "truncated": false
+    },
+    {
+      "head": "Vivado Simulator v2025.2\r\nCopyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\nCopyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\nRunning: C:/AMDDesignTools/2025.2/Vivado/bin/unwrapped/win64.o/xelab.exe uart_rx_fifo_tb -s uart_rx_fifo_tb_snap --debug off \r\nMulti-threading is on. Using 10 slave threads.\r\nStarting static elaboration\r\nPass Through NonSizing Optimizer\r\nCompleted static elaboration\r\nStarting simulation data flow analysis\r\nCompleted simulation data flow analysis\r\nTime Resolution for simulation is 1ps\r\nCompiling module work.uart_rx_core_default\r\nCompiling module work.rx_fifo_default\r\nCompiling module work.rx_err_count\r\nCompiling module work.uart_rx_fifo\r\nCompiling module work.uart_rx_fifo_case(USE_TOP=1)\r\nCompiling module work.uart_rx_core(OVERSAMPLE_DIV=1)\r\nCompiling module work.rx_fifo(ADDR_BITS=3)\r\nCompiling module work.uart_rx_fifo_case(D=1,A=3)\r\nCompiling module work.uart_rx_core(OVERSAMPLE_DIV=3)\r\nCompiling module work.rx_fifo(ADDR_BITS=1)\r\nCompiling module work.uart_rx_fifo_case(D=3,A=1)\r\nCompiling module work.uart_rx_fifo_tb\r\nBuilt simulation snapshot uart_rx_fifo_tb_snap\r\n\r\n",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_002\\doctor_rtl_surgery_trial\\xelab.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "1bdac668e43db21238d208a7dcf7e315abc63ac8e3d36241870cd5f1e24922c9",
+      "tail": "",
+      "truncated": false
+    },
+    {
+      "head": "\r\n****** xsim v2025.2 (64-bit)\r\n  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025\r\n  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025\r\n  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025\r\n  **** Start of session at: Fri Oct 30 20:20:30 2026\r\n    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\n    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n\r\nsource xsim.dir/uart_rx_fifo_tb_snap/xsim_script.tcl\r\n# xsim {uart_rx_fifo_tb_snap} -autoloadwcfg -runall\r\nTime resolution is 1 ps\r\nrun -all\r\nCOVERAGE case=1 D=1 A=3 cycles=20316 good=100 framing=25 false_starts=13 noisy=35 tight=67 overflows=22 full_replace=3 ferr_sat=4 ovf_sat=4 busy_resets=1 resets=4 pulses=3\r\nCOVERAGE case=0 D=2 A=2 cycles=38959 good=94 framing=27 false_starts=9 noisy=40 tight=59 overflows=22 full_replace=3 ferr_sat=6 ovf_sat=4 busy_resets=1 resets=4 pulses=3\r\nCOVERAGE case=2 D=3 A=1 cycles=57771 good=92 framing=28 false_starts=6 noisy=35 tight=54 overflows=23 full_replace=3 ferr_sat=7 ovf_sat=5 busy_resets=1 resets=4 pulses=3\r\nTEST PASSED\r\n$finish called at time : 577717 ns : File \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-01/uart_rx_fifo_build/inputs/testbench_path.v\" Line 352\r\nexit\r\nINFO: [Common 17-206] Exiting xsim at Fri Oct 30 20:20:33 2026...\r\n\r\n",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_002\\doctor_rtl_surgery_trial\\sim_log.txt",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "a20c861ebc1f9931b4f9cb652ad175541a5e1ddd5f0edca2fcaad3812f598582",
+      "tail": "",
+      "truncated": false
+    },
+    {
+      "head": "\r\n****** Vivado v2025.2 (64-bit)\r\n  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025\r\n  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025\r\n  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025\r\n  **** Start of session at: Fri Oct 30 20:20:35 2026\r\n    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\n    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n\r\nsource C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-01/uart_rx_fifo_build/iter_002/doctor_rtl_surgery_trial/synth.tcl\r\n# set_msg_config -id {VRFC 10-3609} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-9873} -new_severity ERROR\r\n# set_msg_config -id {Designutils 20-1307} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-327} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-3352} -new_severity ERROR\r\n# set_part xc7a35tcpg236-1\r\nINFO: [Coretcl 2-1500] The part has been set to 'xc7a35tcpg236-1' for the current project only. Run set_part -help for more details. To evaluate different speed grades in the current design, use the set_speed_grade command, or use the open_checkpoint -part command to change the part used by an existing checkpoint design.\r\nset_part: Time (s): cpu = 00:00:29 ; elapsed = 00:00:21 . Memory (MB): peak = 534.660 ; gain = 228.355\r\n# read_verilog \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-01/uart_rx_fifo_build/iter_002/doctor_rtl_surgery_trial/uart_rx_fifo.v\"\r\n# set fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-01/uart_rx_fifo_build/iter_002/doctor_rtl_surgery_trial/timing.xdc\" w]\r\n# puts $fp {create_clock -period 10.000 -name clk [get_ports clk]}\r\n# close $fp\r\n# read_xdc \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-01/uart_rx_fifo_build/iter_002/doctor_rtl_surger",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_002\\doctor_rtl_surgery_trial\\vivado_synth_output.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "a562ddb589a0aab09840a1868e2e8ca42e03adea31fec8847d4b8e4665ef2a82",
+      "tail": "or-less Activity Propagation...\r\n\r\nFinished Running Vector-less Activity Propagation\r\n0 Infos, 0 Warnings, 0 Critical Warnings and 0 Errors encountered.\r\nreport_power completed successfully\r\n# catch { report_methodology -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-01/uart_rx_fifo_build/iter_002/doctor_rtl_surgery_trial/methodology.rpt\" }\r\nCommand: report_methodology -file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-01/uart_rx_fifo_build/iter_002/doctor_rtl_surgery_trial/methodology.rpt\r\nINFO: [Timing 38-35] Done setting XDC timing constraints.\r\nINFO: [DRC 23-133] Running Methodology with 2 threads\r\nINFO: [Vivado_Tcl 2-1520] The results of Report Methodology are in file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-01/uart_rx_fifo_build/iter_002/doctor_rtl_surgery_trial/methodology.rpt.\r\nreport_methodology completed successfully\r\n# catch { report_qor_suggestions -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-01/uart_rx_fifo_build/iter_002/doctor_rtl_surgery_trial/qor_suggestions.rpt\" }\r\nCommand: report_qor_suggestions -file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-01/uart_rx_fifo_build/iter_002/doctor_rtl_surgery_trial/qor_suggestions.rpt\r\nCongestion Prediction Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.017 . Memory (MB): peak = 1999.523 ; gain = 0.000\r\nINFO: [Implflow 47-1309] PredResultString: 1:47.04:52.96\r\nfeatureProvider Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.063 . Memory (MB): peak = 1999.523 ; gain = 0.000\r\nINFO: [Implflow 47-1274] ML strategy prediction is not supported for 7-series devices.\r\nreport_qor_suggestions completed successfully\r\n# puts \"SYNTH_COMPLETE\"\r\nSYNTH_COMPLETE\r\nINFO: [Common 17-206] Exiting Vivado at Fri Oct 30 20:23:50 2026...\r\n\r\n",
+      "truncated": true
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_1:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 1,
+    "instruction": "In `spi_master_core`, remove `rx_shift` and shift sampled `miso` bits directly into `rsp_data_reg` on the existing odd-toggle sample edges; at completion, assert `rsp_valid_reg` without copying a separate receive register. Keep `rsp_data_reg` reset behavior and ensure its value is stable from response assertion through retirement; its intermediate value while `rsp_valid` is low is unspecified by the contract. Preserve the existing toggle schedule, `HALF_PERIOD` behavior, handshakes, reset priority, output registration, top interface, and top `// @latency 33` annotation. Expect fewer LUTs from ",
+    "candidates": [
+      {
+        "iteration": 1,
+        "mutation": "standard",
+        "instruction": "In `spi_master_core`, remove `rx_shift` and shift sampled `miso` bits directly into `rsp_data_reg` on the existing odd-toggle sample edges; at completion, assert `rsp_valid_reg` without copying a separate receive register. Keep `rsp_data_reg` reset behavior and ensure its value is stable from response assertion through retirement; its intermediate value while `rsp_valid` is low is unspecified by the contract. Preserve the existing toggle schedule, `HALF_PERIOD` behavior, handshakes, reset priority, output registration, top interface, and top `// @latency 33` annotation. Expect fewer LUTs from ",
+        "generated_source_sha256": "317b92377367b0d214588eacd8a3607502e2a538c05d883812b035eed683447a",
+        "final_source_sha256": "317b92377367b0d214588eacd8a3607502e2a538c05d883812b035eed683447a",
+        "generated_code_hash": "7c875b331a5a8a21",
+        "final_code_hash": "7c875b331a5a8a21",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.354,
+          "whs_ns": 0.015,
+          "lut_used": 20,
+          "ff_used": 35,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.014,
+          "total_power_w": 0.084
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier4-02\\spi_master_build\\iter_001\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier4-02\\spi_master_build\\iter_001\\cand_standard\\synth.tcl",
+          "sha256": "c4cb08f2a792dd74df235591e17a7d71da9cb07163f92e9d1b639a712a8cdb1d"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier4-02\\spi_master_build\\iter_001\\cand_standard\\spi_master.v",
+          "sha256": "193bd72f7ed697be36d41291cd447d69b8844e7a1755d531793827a963c79582"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "ACCEPT",
+    "is_best": true,
+    "selected_source_sha256": "317b92377367b0d214588eacd8a3607502e2a538c05d883812b035eed683447a"
+  },
+  "artifacts": {}
+}

@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_3:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 3\n## Contract check\n- Top interface and latency annotation: PASS \u2014 top ports are preserved and `// @latency 1` matches the authoritative known latency.\n- Defined behavior: PASS \u2014 the trusted integration simulation passes, covering CRC values, handshakes, stalls, resets, registered outputs, and transfer timing.\n- Verification tools and deterministic gates: PASS \u2014 ladder reports 5 rungs ALIVE; xvlog, xelab, xsim, and Vivado exits are successful, with the exact `TEST PASSED` verdict and `SYNTH_COMPLETE` marker.\n- Routed metric integrity: PASS \u2014 retained routed reports and hashes are present; candidate metrics are consistent with the reported device and constraints.\n- Timing closure: PASS \u2014 timing_met is true, setup WNS is 0.445 ns, and hold WHS is 0.208 ns.\n- Strict objective improvement: FAIL \u2014 both candidate and previous best use 16 LUTs; with both timing-feasible, minimize_luts requires a strict LUT reduction. `improvement_kind` is null and `measured_improvement` is false.\n\n## Summary\n- Passed: 5 of 6\n- Failed: 1 of 6\n- Improved over previous best: NO\n\n## Recommendation\nREJECT\n\n## Reason\nThe candidate passes the behavioral, tool, metric-integrity, and timing gates, but it does not reduce LUT usage from the timing-feasible previous best. The required strict objective improvement is absent, so the candidate cannot be accepted.",
+      "recommendation": "REJECT",
+      "passed": 5,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

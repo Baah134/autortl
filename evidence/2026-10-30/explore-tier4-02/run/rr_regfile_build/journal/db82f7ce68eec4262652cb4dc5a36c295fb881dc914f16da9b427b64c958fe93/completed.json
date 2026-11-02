@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_1:model:planner.plan:0",
+  "result": "# PLAN \u2014 iteration 1\n## Current state assessment\nThe incumbent is timing-feasible at 42 LUTs, 90 FFs, WNS 0.554 ns, and WHS 0.063 ns. The objective is strictly fewer LUTs while preserving timing feasibility and all defined behavior. The top\u2019s numeric latency is unknown, so do not add a numeric top annotation.\n\n## Hypothesis\nReplacing the arbiter\u2019s binary-winner path with shared one-hot winner terms may reduce LUTs by reusing selection logic for the registered grant and write payload.\n\n## Instruction for generator\nIn `rr_arbiter4`, replace the `case (last)` priority chains, binary `winner` selection, and subsequent winner-based payload `case` with explicit one-hot winner terms for each cyclic priority state. Use those terms to select `addr` and `data` with masked ORs, and to register the matching one-hot grant and winning `last` value. Preserve registered outputs, reset behavior, idle-cycle zeroing, and round-robin behavior; keep the top unannotated and judge the candidate on routed LUTs plus setup and hold slack.",
+  "artifacts": {}
+}

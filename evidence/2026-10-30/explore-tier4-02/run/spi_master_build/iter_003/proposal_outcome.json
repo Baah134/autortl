@@ -1,0 +1,45 @@
+{
+  "candidates": [
+    {
+      "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier4-02\\spi_master_build\\iter_003\\cand_standard",
+      "cache_hit": false,
+      "final_code_hash": "4301c787e2982828",
+      "final_source_sha256": "2f283b8326c4cc853553b456890fd92a3eb44ab96ce8c04fa956d1373574df61",
+      "flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier4-02\\spi_master_build\\iter_003\\cand_standard\\synth.tcl",
+        "sha256": "c528a97b15a905e293713a2f332ad37e419df240a213bfb315a684064f328213"
+      },
+      "generated_code_hash": "4301c787e2982828",
+      "generated_source_sha256": "2f283b8326c4cc853553b456890fd92a3eb44ab96ce8c04fa956d1373574df61",
+      "instruction": "In `spi_master_core`, replace the separate `tx_shift`, `rx_shift`, and `rsp_data_reg` storage with one 8-bit shift register: load `cmd_data` on acceptance, shift left and append `miso` only on the existing rising-SCLK sample edges, and expose that register as `rsp_data`. Keep `mosi` registered and update it only on falling-SCLK edges from the next unsent bit in the shared register; on the final falling edge, retain the completed received byte unchanged through any response stall. Preserve reset, handshakes, all `HALF_PERIOD` timing, and the top\u2019s `// @latency 33` annotation; verify the expecte",
+      "iteration": 3,
+      "metrics": {
+        "bram_used": 0.0,
+        "dsp_used": 0,
+        "dynamic_power_w": 0.016,
+        "ff_used": 26,
+        "lut_used": 17,
+        "sim_passed": true,
+        "timing_met": true,
+        "total_power_w": 0.086,
+        "whs_ns": 0.106,
+        "wns_ns": 0.342
+      },
+      "mutation": "standard",
+      "reason": "",
+      "rungs": 5,
+      "source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier4-02\\spi_master_build\\iter_003\\cand_standard\\spi_master.v",
+        "sha256": "09383dc7ab7f3a2a8f2496a5e8c07d55dfb5a49040202da0bcadffa1f1165a1e"
+      },
+      "status": "measured"
+    }
+  ],
+  "doctor": null,
+  "instruction": "In `spi_master_core`, replace the separate `tx_shift`, `rx_shift`, and `rsp_data_reg` storage with one 8-bit shift register: load `cmd_data` on acceptance, shift left and append `miso` only on the existing rising-SCLK sample edges, and expose that register as `rsp_data`. Keep `mosi` registered and update it only on falling-SCLK edges from the next unsent bit in the shared register; on the final falling edge, retain the completed received byte unchanged through any response stall. Preserve reset, handshakes, all `HALF_PERIOD` timing, and the top\u2019s `// @latency 33` annotation; verify the expecte",
+  "is_best": false,
+  "iteration": 3,
+  "recommendation": "REJECT",
+  "schema_version": 1,
+  "selected_source_sha256": "2f283b8326c4cc853553b456890fd92a3eb44ab96ce8c04fa956d1373574df61"
+}
