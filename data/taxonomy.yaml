@@ -139,7 +139,10 @@ harness_failures:
     repair: "Measure run budgets with an awake clock that excludes suspend (QueryUnbiasedInterruptTime on Windows, CLOCK_MONOTONIC elsewhere); tool timeouts may stay on wall time because a timeout is already infrastructure"
   golden_table_setup_exhausts_step_budget:
     meaning: "The AES round oracle ran out of the sandbox's single 200,000-line budget (setup, init and every step shared it), then a second attempt computed a wrong ciphertext, so tier6 aes128_core_build ended module_failed with two oracle attempts and a supplied spec that cannot be replanned (explore-tier6-01)"
-    repair: "Give module setup and init() their own larger budget, keep the step budget, name the phase in the budget error, and tell the oracle prompt to derive constant tables once in init() with an efficient loop rather than per step or from memory"
+    repair: "Give module setup and init() their own larger budget, name the phase in the budget error, and tell the oracle prompt to derive constant tables once in init() with an efficient loop rather than per step or from memory"
+  golden_step_budget_below_wall_timeout:
+    meaning: "With setup fixed, the AES round oracle exhausted the 200,000-line step budget: it needs about 5,600 traced lines per cycle (670,000 for 120 cycles) yet runs them in 0.28 s, so the line budget, not the worker's 5 s wall timeout, rejected a correct-sized model (explore-tier6-03)"
+    repair: "Size the step budget from measured cost against the wall timeout (2,000,000 lines, about 1 s); the timeout remains the infrastructure bound"
   incomplete_block_preferred:
     meaning: "A generated candidate reached the ladder as an unclosed draft (fir16_sym_core ending in '// placeholder', no endmodule) and was rejected before any tool ran (fir16-long-01 iteration 2); when a reply holds a draft and then a complete version of the same module, the first-block rule would pick the draft. The raw reply was not retained (Codex runs ephemeral), so which case occurred is unknown"
     repair: "Never extract a block whose module/endmodule count does not balance when a complete block exists; keep first-wins among complete blocks; retain raw replies for diagnosis (TASKS)"

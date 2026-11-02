@@ -307,3 +307,9 @@ def test_setup_and_steps_have_separate_instruction_budgets(monkeypatch):
 def test_golden_prompt_asks_for_tables_built_once_in_init():
     from autortl import prompts
     assert "once in init() from their definition" in prompts.GOLDEN_MODEL
+
+
+def test_step_budget_fits_an_aes_round_per_cycle_under_the_wall_timeout():
+    # golden_step_budget_below_wall_timeout (explore-tier6-03: ~5,600 lines per cycle)
+    from autortl import golden_worker
+    assert golden_worker.STEP_INSTRUCTION_BUDGET >= 150 * 5600

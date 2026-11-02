@@ -12,7 +12,10 @@ import sys
 
 _allocation_left = 100000
 INIT_INSTRUCTION_BUDGET = 2000000  # module body + init(): constant tables are built here
-STEP_INSTRUCTION_BUDGET = 200000   # every step() of one run together, as before
+# Every step() of one run together. An AES round oracle needs ~5,600 traced lines
+# per step (670,000 for 120 steps in 0.28 s), so 200,000 was the binding limit while
+# the worker's 5 s wall timeout allows ~10M; 2M keeps a wide margin under it.
+STEP_INSTRUCTION_BUDGET = 2000000
 
 
 def reserve_allocation(count):
