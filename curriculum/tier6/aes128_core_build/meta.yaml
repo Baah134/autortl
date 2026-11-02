@@ -13,7 +13,8 @@ implementation: out_of_context
 # One synthesis of the baseline (about 20 S-box ROMs, 4 GB peak) passed 900 s
 # twice (fixed_synthesis_timeout_blocks_heavy_designs).
 synthesis_timeout_minutes: 45
-explore_budgets:
+# budgets apply to this entry in explorations and benches (entry_budgets_ignored_by_bench).
+budgets:
   tool_minutes: 150
   wall_minutes: 240
 stresses: "iterative AES-128 split into a sequencer, a combinational round and a combinational key-schedule step; 128-bit internal buses; S-box, ShiftRows, MixColumns and on-the-fly key expansion; one key-preparation edge plus ten round edges; FIPS-197 and AESAVS known answers plus back-to-back random blocks under backpressure"

@@ -8,8 +8,9 @@ at a time, each in its own output folder:
 
     python tools/explore.py --tier 2 --name explore-tier2-01 --jobs 2 --model gpt-6-luna
 
-Budgets match the tier gate for that tier (tools/tier0_gate.py TIER_BUDGETS,
-with iterations from each entry's meta.yaml). Output: logs/<name>/<entry>/,
+Budgets match the tier gate for tiers 1 to 6 (tools/tier0_gate.py TIER_BUDGETS,
+with iterations from each entry's meta.yaml), and an entry's meta.yaml `budgets`
+replace them for that entry, as they do in a bench. Output: logs/<name>/<entry>/,
 plus logs/<name>/explore.json summarizing every entry. Nothing here is a
 curriculum verdict.
 """
@@ -29,7 +30,9 @@ import yaml
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
 sys.path.insert(0, str(HERE))
+sys.path.insert(0, str(ROOT))
 import tier0_gate  # noqa: E402
+from curriculum import runner  # noqa: E402
 
 BUDGETS = {"best_of_n": 1, "model_calls": 30, "tool_minutes": 40, "wall_minutes": 60, "infra_retries": 1}
 
@@ -53,9 +56,10 @@ def entry_command(python, entry: Path, out: Path, model=None, vivado=None):
         args += ["--implementation", meta["implementation"]]
     if meta.get("synthesis_timeout_minutes"):
         args += ["--synthesis-timeout-minutes", str(meta["synthesis_timeout_minutes"])]
-    # fixed_synthesis_timeout_blocks_heavy_designs: a heavy entry may raise its exploration budgets.
-    budgets = dict(BUDGETS, **{k: v for k, v in (meta.get("explore_budgets") or {}).items()
-                               if k in ("model_calls", "tool_minutes", "wall_minutes")})
+    # entry_budgets_ignored_by_bench: an entry's own budgets (validated as the bench
+    # validates them) replace the defaults for that entry, as they do in a bench.
+    runner._metadata(entry)
+    budgets = dict(BUDGETS, **(meta.get("budgets") or {}))
     args += ["--iterations", str(meta.get("iterations", 5)), "--best-of-n", str(budgets["best_of_n"]),
              "--objective", meta.get("objective", "minimize_luts"),
              "--max-llm-calls", str(budgets["model_calls"]), "--max-vivado-minutes", str(budgets["tool_minutes"]),

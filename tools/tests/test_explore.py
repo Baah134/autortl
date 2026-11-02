@@ -61,6 +61,41 @@ def test_a_failing_doctor_stops_the_exploration_before_any_entry(tmp_path, monke
     assert not (tmp_path / "logs" / "x").exists()
 
 
+def _entry(tmp_path, extra):
+    entry = tmp_path / "e1"
+    entry.mkdir()
+    (entry / "spec.json").write_text("{}", encoding="utf-8")
+    (entry / "meta.yaml").write_text("mode: build\nspec: spec.json\ntarget_freq_mhz: 150.0\n" + extra, encoding="utf-8")
+    return entry
+
+
+def test_entry_budgets_raise_or_lower_that_entry_only(tmp_path):
+    # entry_budgets_ignored_by_bench: the key is `budgets`, as in a bench.
+    cmd = explore.entry_command("PY", _entry(tmp_path, "budgets:\n  model_calls: 12\n  wall_minutes: 90\n"),
+                                tmp_path / "o")
+    assert cmd[cmd.index("--max-llm-calls") + 1] == "12"
+    assert cmd[cmd.index("--max-wall-minutes") + 1] == "90"
+    assert cmd[cmd.index("--max-vivado-minutes") + 1] == str(explore.BUDGETS["tool_minutes"])
+    assert cmd[cmd.index("--target-freq-mhz") + 1] == "150.0"
+    plain = explore.entry_command("PY", ROOT / "curriculum/tier2/sync_fifo_build", tmp_path / "o")
+    assert plain[plain.index("--max-llm-calls") + 1] == str(explore.BUDGETS["model_calls"])
+
+
+def test_the_old_explore_budgets_key_and_bad_budgets_are_refused(tmp_path):
+    import pytest
+    with pytest.raises(ValueError, match="renamed budgets"):
+        explore.entry_command("PY", _entry(tmp_path, "explore_budgets:\n  tool_minutes: 90\n"), tmp_path / "o")
+    other = tmp_path / "other"
+    other.mkdir()
+    with pytest.raises(ValueError, match="budgets may set only"):
+        explore.entry_command("PY", _entry(other, "budgets:\n  best_of_n: 4\n"), tmp_path / "o")
+
+
+def test_no_curriculum_entry_uses_the_old_key():
+    for meta in (ROOT / "curriculum").glob("tier*/*/meta.yaml"):
+        assert "explore_budgets" not in meta.read_text(encoding="utf-8"), meta
+
+
 def test_jobs_zero_is_a_usage_error(tmp_path, monkeypatch, capsys):
     # backend_configuration_rough_edges, gate_jobs_zero_silently_serial
     import pytest
