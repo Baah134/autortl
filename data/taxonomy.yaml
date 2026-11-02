@@ -140,6 +140,9 @@ harness_failures:
   golden_table_setup_exhausts_step_budget:
     meaning: "The AES round oracle ran out of the sandbox's single 200,000-line budget (setup, init and every step shared it), then a second attempt computed a wrong ciphertext, so tier6 aes128_core_build ended module_failed with two oracle attempts and a supplied spec that cannot be replanned (explore-tier6-01)"
     repair: "Give module setup and init() their own larger budget, name the phase in the budget error, and tell the oracle prompt to derive constant tables once in init() with an efficient loop rather than per step or from memory"
+  met_hold_counted_as_regression:
+    meaning: "A CORDIC candidate registered its rounded outputs (setup WNS -1.757 -> -0.279 ns, testbench passed) but its hold slack fell from +0.086 to +0.020 ns, more than the 0.05 ns progress tolerance, so it was not timing progress although hold was still met (explore-tier6-07 cordic_build iteration 1)"
+    repair: "A candidate whose hold slack is non-negative meets the hold condition of timing progress; the tolerance only limits trading setup for failing hold"
   fixed_synthesis_timeout_blocks_heavy_designs:
     meaning: "The AES-128 baseline passed its independent testbench, then synthesis hit the fixed 900 s per-call timeout twice (about 20 S-box ROMs, 4 GB peak, ten minutes before timing optimization); infrastructure classification was correct but no entry could ask for more (explore-tier6-05)"
     repair: "Make the synthesis timeout a run setting (synthesis_timeout_minutes; default 15, still capped by the remaining tool budget) that meta.yaml and run.py can raise, and let an entry raise its exploration tool and wall budgets"

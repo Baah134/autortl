@@ -65,7 +65,7 @@ supported schema and limits.
    metric, resource tie-break, brevity). A verified timing recovery can use more resources; it is
    recorded separately from objective savings. While the incumbent is still
    timing-infeasible, a verified infeasible candidate with strictly better setup
-   WNS (hold no worse than 0.05 ns) replaces it as `timing_progress`, and
+   WNS (hold still met, or no worse than 0.05 ns) replaces it as `timing_progress`, and
    infeasible candidates rank by setup WNS; a feasible design always outranks an
    infeasible one, and progress is never closure (`timing_closed` stays false and
    curriculum acceptance still fails; taxonomy `infeasible_progress_discarded`).

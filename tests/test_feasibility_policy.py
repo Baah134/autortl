@@ -149,6 +149,15 @@ def test_progress_hold_tolerance(whs,expected):
     assert improvement_kind(candidate,metric(**FIR8_SEED),"minimize_luts",progress=True)==expected
 
 
+def test_met_hold_is_never_a_progress_regression():
+    # met_hold_counted_as_regression (explore-tier6-07 cordic_build iteration 1)
+    best = metric(timing_met=False, wns_ns=-1.757, whs_ns=.086)
+    assert improvement_kind(metric(timing_met=False, wns_ns=-.279, whs_ns=.020), best,
+                            "minimize_luts", progress=True) == "timing_progress"
+    assert improvement_kind(metric(timing_met=False, wns_ns=-.279, whs_ns=-.010), best,
+                            "minimize_luts", progress=True) is None
+
+
 def test_hold_only_failure_is_not_setup_progress():
     hold_failing=metric(timing_met=False,wns_ns=.2,whs_ns=-.02)
     assert improvement_kind(metric(timing_met=False,wns_ns=.4,whs_ns=-.02),hold_failing,

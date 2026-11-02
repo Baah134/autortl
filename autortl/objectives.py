@@ -57,7 +57,7 @@ HOLD_PROGRESS_TOLERANCE_NS = 0.05
 
 def timing_progress(new, best) -> bool:
     """True when both verified designs are known setup-failing and infeasible,
-    new has strictly better setup WNS, and hold is not worse beyond tolerance.
+    new has strictly better setup WNS, and hold is met or not worse beyond tolerance.
 
     Progress is not closure: it never applies once the incumbent is feasible,
     and a feasible candidate is a timing_recovery instead.
@@ -68,8 +68,10 @@ def timing_progress(new, best) -> bool:
         return False
     new_setup, best_setup = _get(new,"wns_ns"), _get(best,"wns_ns")
     new_hold, best_hold = _get(new,"whs_ns"), _get(best,"whs_ns")
+    # met_hold_counted_as_regression: a candidate whose hold still passes (WHS >= 0)
+    # meets the hold condition; the tolerance only limits trading setup for failing hold.
     return (best_setup < 0 and new_setup > best_setup
-            and new_hold >= best_hold - HOLD_PROGRESS_TOLERANCE_NS)
+            and (new_hold >= 0 or new_hold >= best_hold - HOLD_PROGRESS_TOLERANCE_NS))
 
 
 REG2REG_FIELD = "reg2reg_wns_ns"
