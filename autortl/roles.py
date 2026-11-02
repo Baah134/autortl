@@ -79,8 +79,9 @@ class Planner:
                                        target_freq_mhz=cfg.target_freq_mhz,
                                        objective=cfg.objective)
         if feedback:
-            p += ("\n\nYour previous design_spec failed the harness's structural check. Fix exactly "
-                  "these errors and output the complete corrected JSON only:\n" + str(feedback)[:8000])
+            p += ("\n\nYour previous design_spec failed a harness check (structural lint, or reference "
+                  "models that disagree with its examples). Fix exactly these errors and output the "
+                  "complete corrected JSON only:\n" + str(feedback)[:8000])
         return _ask(self, "planner", evidence_prompt(self, p), system=role_system(prompts.PLANNER_SYSTEM),
                    budget=budget)
 

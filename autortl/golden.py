@@ -7,6 +7,7 @@ so a wrong oracle is caught at spec time, not after it grades everything.
 from __future__ import annotations
 import json
 import os
+import re
 import subprocess
 import sys
 import tempfile
@@ -124,3 +125,18 @@ def qualify_against_examples(gm: GoldenModel, spec: ModuleSpec) -> list[str]:
                 errs.append(f"example {i}: expected {k}={v}, golden model gave "
                             f"{final.get(k)}")
     return errs
+
+
+_MISMATCH = re.compile(r"example \d+: expected [A-Za-z_][A-Za-z0-9_$]*=\d+, golden model gave .{0,200}")
+
+
+def only_example_mismatches(errors: list[str], spec: ModuleSpec) -> bool:
+    """True when qualify_against_examples rejected a runnable oracle only on example values.
+
+    The spec's examples must be valid (so no line is a validation error) and every
+    line must be a mismatch in the exact format above. Sandbox, validation and
+    timeout failures raise instead and never reach this check
+    (oracle_example_dispute_ends_build).
+    """
+    return (bool(errors) and not validate_examples(spec)
+            and all(isinstance(line, str) and _MISMATCH.fullmatch(line) for line in errors))
