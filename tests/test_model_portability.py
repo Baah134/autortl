@@ -180,6 +180,14 @@ def test_modules_in_separate_fences_are_joined_when_names_are_distinct():
     assert extract_verilog(f"Top:\n```verilog\n{a}\n```\nChild:\n```Verilog\n{b}\n```") == TWO
 
 
+def test_an_unclosed_draft_never_wins_over_a_complete_version():
+    # incomplete_block_preferred (fir16-long-01 iteration 2: '// placeholder', no endmodule)
+    a = TWO.split("\n\n")[0]
+    draft = a.split("endmodule")[0] + "  // placeholder"
+    assert extract_verilog(f"Draft:\n```verilog\n{draft}\n```\nFull:\n```verilog\n{a}\n```") == a.strip()
+    assert extract_verilog(f"```verilog\n{draft}\n```") == draft.strip()  # nothing better: unchanged
+
+
 def test_repeated_module_names_across_fences_keep_the_first_block():
     a = TWO.split("\n\n")[0]
     later = a.replace("b u(", "b v(")

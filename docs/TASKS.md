@@ -956,3 +956,7 @@ with numeric WNS/WHS, Bonded IOB 0 and that `report_power` and
 ## November 1 (user directive): no re-holding finished tiers mid-project
 
 **User directive (November 1): finished tiers are not re-held during the project.** After a harness change, run pytest and explorations of the current and harder tiers only; do not launch tier0_gate.py for tiers already done, and do not fast-forward `main`, until the end-of-project re-hold pass. A tier still in progress may be gated until it is done. (tier0 campaign 31 and tier1 campaign 05 were stopped after their test receipts for this reason; they recorded no bench verdict.)
+
+## November 2 (Claude Code): open observability gap
+
+- Raw model replies are not retained: the Codex backend runs `--ephemeral` and the journal stores only the extracted RTL, so an extraction fault cannot be told apart from a model that stopped early (fir16-long-01 iteration 2, taxonomy `incomplete_block_preferred`). Keep each role reply, bounded, beside its journal entry.

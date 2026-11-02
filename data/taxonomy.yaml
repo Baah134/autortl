@@ -134,6 +134,9 @@ harness_failures:
   spec_prompt_omits_example_budget:
     meaning: "The planner's spec prompt never stated the golden sandbox's per-example budget, so a prose request for a long-period design (tier3 uart_fifo_build: UART at DIV=868, a 8,680-cycle frame) invites full-frame examples the oracle cannot run (predicted by an offline pre-flight of tier2/tier3, not yet observed)"
     repair: "State the limit in the spec prompt (after_cycles at or below 2000) and tell the planner to check an early part of long-period behavior in examples, leaving full frames to the generated and independent testbenches"
+  incomplete_block_preferred:
+    meaning: "A generated candidate reached the ladder as an unclosed draft (fir16_sym_core ending in '// placeholder', no endmodule) and was rejected before any tool ran (fir16-long-01 iteration 2); when a reply holds a draft and then a complete version of the same module, the first-block rule would pick the draft. The raw reply was not retained (Codex runs ephemeral), so which case occurred is unknown"
+    repair: "Never extract a block whose module/endmodule count does not balance when a complete block exists; keep first-wins among complete blocks; retain raw replies for diagnosis (TASKS)"
   fence_tag_drops_generated_modules:
     meaning: "A model fenced its Verilog with a tag other than lowercase verilog/systemverilog/sv (Verilog, v, SystemVerilog), so extraction fell back to the first module...endmodule span and silently dropped every later module of a multi-module answer"
     repair: "Match fence tags case-insensitively and accept v; then accept any fenced block that starts a module before falling back to raw spans; never return a partial multi-module answer as if complete"

@@ -191,6 +191,15 @@ def extract_verilog(response_text: str) -> str:
     names = [n for b in designs for n in re.findall(r"(?m)^\s*module\s+(\w+)", b)]
     if len(designs) > 1 and len(names) == len(set(names)):
         return "\n\n".join(designs)
+    # incomplete_block_preferred: a draft that never closes its modules (a model
+    # leaving a placeholder, then writing the full version) never wins over a
+    # complete block; complete blocks keep the first-wins rule above.
+    complete = lambda s: (len(re.findall(r"(?m)^\s*module\s+\w+", s))
+                          == len(re.findall(r"(?m)^\s*endmodule\b", s)) > 0)
+    whole = [b.strip() for b in blocks if complete(b.strip())]
+    if whole and not complete(next((b.strip() for b in blocks
+                                    if re.search(r"^\s*module\s+\w+", b, re.MULTILINE)), "")):
+        return whole[0]
     for b in blocks:
         s = b.strip()
         if re.search(r"^\s*module\s+\w+", s, re.MULTILINE):
