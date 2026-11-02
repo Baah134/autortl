@@ -1,0 +1,22 @@
+[
+  {"name": "atan_entry_3_off_by_one", "why": "one arctangent table entry is rounded the wrong way (20754 instead of 20753)",
+   "find": "4'd3: atan = 20'd20753;", "replace": "4'd3: atan = 20'd20754;"},
+  {"name": "atan_entry_1_digits_swapped", "why": "a transcription error in the second table entry (77736 instead of 77376)",
+   "find": "4'd1: atan = 20'd77376;", "replace": "4'd1: atan = 20'd77736;"},
+  {"name": "logical_shift_of_y", "why": "y is shifted logically, so negative y feeds a huge positive term into x",
+   "find": "wire [17:0] ys = $signed(y) >>> i;", "replace": "wire [17:0] ys = y >> i;"},
+  {"name": "zero_residual_rotates_down", "why": "the direction test uses z > 0, so a zero residual angle rotates the wrong way",
+   "find": "wire rotate_up = !z[19]; // z >= 0", "replace": "wire rotate_up = !z[19] && z != 20'd0; // z >= 0"},
+  {"name": "fold_on_sign_not_quadrant", "why": "the half-turn fold is chosen by the sign bit instead of quadrants 01 and 10",
+   "find": "wire flip = angle[15] ^ angle[14];", "replace": "wire flip = angle[15];"},
+  {"name": "gain_constant_off_by_one", "why": "the CORDIC gain compensation K is truncated (39796) instead of rounded (39797)",
+   "find": "localparam [17:0] K_GAIN = 18'd39797;", "replace": "localparam [17:0] K_GAIN = 18'd39796;"},
+  {"name": "z0_not_scaled", "why": "the 16-bit angle is sign-extended into z instead of scaled by 16 to 2^-20 turn units",
+   "find": "assign z0 = {reduced, 4'd0};", "replace": "assign z0 = {{4{reduced[15]}}, reduced};"},
+  {"name": "cos_truncates_instead_of_rounding", "why": "cos_out drops the round-half-up offset and truncates",
+   "find": "wire [18:0] x_sum = {x_in[17], x_in} + 19'd2;", "replace": "wire [18:0] x_sum = {x_in[17], x_in} + 19'd0;"},
+  {"name": "fifteen_iterations", "why": "the engine stops after fifteen micro-rotations and raises out_valid one edge early",
+   "find": "if (i == 4'd15) begin", "replace": "if (i == 4'd14) begin"},
+  {"name": "y_update_sign_flipped", "why": "a positive residual rotates y the wrong way",
+   "find": "y <= y + xs;", "replace": "y <= y - xs;"}
+]

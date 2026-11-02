@@ -1,0 +1,11 @@
+mode: build
+top: cordic_sincos
+spec: design_spec.json
+tb: cordic_sincos_tb.v
+generate_golden: true
+iterations: 4
+objective: minimize_luts
+target_freq_mhz: 100.0
+stresses: "iterative 16-step CORDIC sine/cosine split into quadrant pre-rotation, arctangent table, rotation engine and rounding stage; exact fixed-point formats (binary angle, Q2.16, 2^-20 turn, Q2.14); arithmetic shifts, direction on z >= 0, gain constant and round half up; bit-exact against a contract model and within 4 LSB of true sin and cos"
+pass_criteria:
+  timing_met: true
