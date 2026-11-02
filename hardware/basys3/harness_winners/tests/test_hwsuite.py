@@ -3,7 +3,9 @@ agree with every I/O example in the frozen specifications, every winner is
 byte-identical to its run's recorded best design, each fault changes exactly
 one place, vectors restart correctly, and the negative-control models really
 differ."""
+import hashlib
 import json
+import math
 from pathlib import Path
 import random
 import sys
@@ -19,7 +21,19 @@ from hwsuite.cli import main as cli_main               # noqa: E402
 REPO = designs.REPO
 SPECS = {"fir4": "tier3/signed_fir4_build", "elastic_dot4": "tier3/elastic_dot4_build",
          "dot4_pipeline": "tier3/dot4_pipeline_build", "iterative_divider": "tier3/iterative_divider_build",
-         "packet_fifo": "tier2/packet_fifo_build", "sync_fifo": "tier2/sync_fifo_build"}
+         "packet_fifo": "tier2/packet_fifo_build", "sync_fifo": "tier2/sync_fifo_build",
+         "aes128": "tier6/aes128_core_build", "cordic": "tier6/cordic_build",
+         "fir16_sym": "tier5/fir16_sym_build"}
+# The archived winners as of this suite's last edit, pinned here so a
+# designs.json edit cannot silently swap a winner and its hash together.
+PINNED_SHA256 = {
+    "aes128": ("evidence/2026-11-02/tier6-aes128/run/aes128_core_best.v",
+               "69316101be0e8d12cec4b45678e72851da18ae95663891c968beb0e65ba5ec3c"),
+    "cordic": ("evidence/2026-11-02/tier6-cordic/run/cordic_sincos_best.v",
+               "aa5fd82e8329371da619a451846fce9d38a19f2334772c350849be9448d6deff"),
+    "fir16_sym": ("evidence/2026-11-02/fir16-ooc-02/run/fir16_sym_best.v",
+                  "0099ea011cf11ef1277dedf99d4382f28c02d8403b8d2d0176f19c4bdca767d1"),
+}
 TABLE = designs.load()
 
 
@@ -68,11 +82,43 @@ def test_fault_changes_exactly_one_place(name):
     assert sum(a != b for a, b in zip(before, after)) == 1
 
 
-def test_only_the_divider_contract_forbids_overlapping_transfers():
-    # Its spec: in_ready = !busy && !out_valid, so it never accepts while retiring.
-    assert {name for name, d in TABLE.items() if not d.overlap} == {"iterative_divider"}
+def test_only_iterative_contracts_forbid_overlapping_transfers():
+    # Their specs: in_ready = !busy && !out_valid, so they never accept while retiring.
+    assert {name for name, d in TABLE.items() if not d.overlap} == {"iterative_divider", "aes128", "cordic"}
     spec = (REPO / "curriculum" / SPECS["iterative_divider"] / "design_spec.json").read_text(encoding="utf-8")
     assert "in_ready equals !busy && !out_valid" in spec
+    for name in ("aes128", "cordic"):
+        spec = (REPO / "curriculum" / SPECS[name] / "design_spec.json").read_text(encoding="utf-8")
+        assert "in_ready = !busy && !out_valid" in spec
+
+
+@pytest.mark.parametrize("name", sorted(PINNED_SHA256))
+def test_new_winners_are_pinned_and_match_their_run_state(name):
+    path, digest = PINNED_SHA256[name]
+    design = TABLE[name]
+    assert design.winner == REPO / path and design.sha256 == digest
+    assert hashlib.sha256(design.winner.read_bytes()).hexdigest() == digest
+    state = json.loads(design.state.read_text(encoding="utf-8"))
+    assert state["best_sha256"] == digest
+    summary = json.loads((design.state.parent / "run_summary.json").read_text(encoding="utf-8"))
+    assert summary["top_module"] == design.module and summary["status"] == "done"
+
+
+def test_transaction_widths_are_bounded_by_the_shell():
+    assert max(max(d.in_bytes, d.out_bytes) for d in TABLE.values()) == designs.MAX_BYTES == 32
+    tcl = (SUITE / "scripts" / "build.tcl").read_text(encoding="utf-8")
+    assert "$value > 32" in tcl
+    bench = (SUITE / "sim" / "tb_stream_shell.v").read_text(encoding="utf-8")
+    assert "MAX_BYTES = 32 * 4096" in bench
+
+
+def test_width_above_the_bound_is_rejected(tmp_path):
+    raw = json.loads((SUITE / "designs.json").read_text(encoding="utf-8"))
+    raw = {"aes128": {**raw["aes128"], "in_bytes": 33}}
+    path = tmp_path / "designs.json"
+    path.write_text(json.dumps(raw), encoding="utf-8")
+    with pytest.raises(designs.DesignError, match="1..32"):
+        designs.load(path)
 
 
 def test_unknown_fault_anchor_is_rejected(tmp_path):
@@ -146,6 +192,164 @@ def test_fifo_models_match_spec_examples():
         assert (result & 0xFF, result >> 8) == (e["expected"]["out_data"], e["expected"]["out_last"])
     for _, e in spec_examples("sync_fifo"):
         assert run_from_reset("sync_fifo", [e["inputs"]["in_data"]]) == e["expected"]["out_data"]
+
+
+def _block(value: int) -> bytes:
+    return value.to_bytes(16, "big")                 # spec ports are big-endian: byte 0 = [127:120]
+
+
+def test_aes_sbox_is_computed_and_has_the_published_properties():
+    sbox = models.AES_SBOX
+    assert (sbox[0x00], sbox[0x01], sbox[0x53], sbox[0xFF]) == (0x63, 0x7C, 0xED, 0x16)
+    assert sorted(sbox) == list(range(256))                       # a permutation
+    assert all(sbox[v] != v and sbox[v] != v ^ 0xFF for v in range(256))   # no (opposite) fixed points
+    assert all(models._gf_mul(v, models._gf_inverse(v)) == 1 for v in range(1, 256))
+
+
+# FIPS-197 Appendix C.1 and Appendix B, then AESAVS (GFSbox, KeySbox, VarTxt,
+# VarKey) known answers: (key, plaintext, ciphertext).
+AES_KNOWN_ANSWERS = [
+    ("000102030405060708090a0b0c0d0e0f", "00112233445566778899aabbccddeeff", "69c4e0d86a7b0430d8cdb78070b4c55a"),
+    ("2b7e151628aed2a6abf7158809cf4f3c", "3243f6a8885a308d313198a2e0370734", "3925841d02dc09fbdc118597196a0b32"),
+    ("00" * 16, "f34481ec3cc627bacd5dc3fb08f273e6", "0336763e966d92595a567cc9ce537f5e"),
+    ("00" * 16, "9798c4640bad75c7c3227db910174e72", "a9a1631bf4996954ebc093957b234589"),
+    ("10a58869d74be5a374cf867cfb473859", "00" * 16, "6d251e6944b051e04eaa6fb4dbf78465"),
+    ("00" * 16, "80" + "00" * 15, "3ad78e726c1ec02b7ebfe92b23d9ec34"),
+    ("80" + "00" * 15, "00" * 16, "0edd33d3c621e546455bd8ba1418bec8"),
+    ("00" * 16, "00" * 16, "66e94bd4ef8a2c3b884cfa59ca342b2e"),
+]
+
+
+@pytest.mark.parametrize("key,pt,ct", AES_KNOWN_ANSWERS)
+def test_aes_model_matches_published_known_answers(key, pt, ct):
+    # The transaction is the key then the plaintext in FIPS byte order, and
+    # the result is the ciphertext in the same order, byte 0 first.
+    tx = bytes.fromhex(key) + bytes.fromhex(pt)
+    assert models.model_for("aes128").step(tx) == bytes.fromhex(ct)
+
+
+def test_aes_key_schedule_matches_fips197_appendix_a1():
+    key, rcon = bytes.fromhex("2b7e151628aed2a6abf7158809cf4f3c"), 1
+    for _ in range(10):
+        key = models.aes_key_step(key, rcon)
+        rcon = models._gf_mul(rcon, 2)
+    assert key.hex() == "d014f9a8c9ee2589e13f0cc8b6630ca6"     # w[40..43]
+
+
+def test_aes_model_matches_spec_module_examples():
+    examples = spec_examples("aes128")
+    for module, e in examples:
+        i, x = e["inputs"], e["expected"]
+        if module == "aes_round":
+            got = models.aes_round(_block(i["state_in"]), _block(i["round_key"]), bool(i["final_round"]))
+            assert got == _block(x["state_out"])
+        elif module == "aes_key_step":
+            assert models.aes_key_step(_block(i["key_in"]), i["rcon"]) == _block(x["key_out"])
+        elif e["after_cycles"] == 1:                 # aes_ctrl: the accepting edge applies AddRoundKey
+            assert x["ct"] == i["pt"] ^ i["key"] and x["rk"] == i["key"]
+            ct = models.aes128_encrypt(_block(i["key"]), _block(i["pt"]))
+            assert ct.hex() == "69c4e0d86a7b0430d8cdb78070b4c55a"
+    assert {m for m, _ in examples} == {"aes_ctrl", "aes_round", "aes_key_step"}
+
+
+def test_aes_wrong_twin_only_errs_where_the_exchanged_sbox_entries_are_used():
+    good, bad = models.model_for("aes128"), models.model_for("aes128", wrong=True)
+    assert models.AES_SBOX[0x52] != models.AES_SBOX[0x53]
+    # FIPS C.1 never looks up 0x52 or 0x53, so the twin still gets it right;
+    # a block whose first SubBytes looks up 0x52 must differ.
+    c1 = bytes.fromhex(AES_KNOWN_ANSWERS[0][0] + AES_KNOWN_ANSWERS[0][1])
+    assert bad.step(c1) == good.step(c1)
+    hits = bytes(16) + bytes([0x52] * 16)
+    assert bad.step(hits) != good.step(hits)
+
+
+def test_cordic_tables_are_computed_from_their_definitions():
+    spec = json.loads((REPO / "curriculum" / SPECS["cordic"] / "design_spec.json").read_text(encoding="utf-8"))
+    atan = next(m for m in spec["modules"] if m["name"] == "cordic_atan")["behavior"]
+    listed = [int(v) for v in atan.split("for idx 0..15: ")[1].split(". Python")[0].split(", ")]
+    assert models.CORDIC_ATAN == listed
+    assert models.CORDIC_K == 39797
+
+
+def test_cordic_model_matches_spec_module_examples():
+    for module, e in spec_examples("cordic"):
+        i, x = e["inputs"], e["expected"]
+        if module == "cordic_prerot":
+            assert models.cordic_prerot(i["angle"]) == (x["x0"], x["z0"])
+        elif module == "cordic_atan":
+            assert models.CORDIC_ATAN[i["idx"]] == x["atan"]
+        elif module == "cordic_out":
+            assert models.cordic_out(i["x_in"], i["y_in"]) == (x["cos_out"], x["sin_out"])
+        elif module == "cordic_engine":
+            # The examples hold atan_val constant. One accept edge, then busy edges;
+            # 17 edges from reset = accept + 16 rotations; 20 with out_ready = a
+            # result transfer, a new accept and one rotation; 2 = one rotation.
+            rotations = {2: 1, 17: 16, 20: 1}[e["after_cycles"]]
+            table = [i["atan_val"]] * 16
+            assert models.cordic_rotate(i["x0"], i["z0"], table, rotations) == (x["x"], x["y"])
+
+
+def _s16(value):
+    return value - 65536 if value & 0x8000 else value
+
+
+def test_cordic_model_is_within_4_lsb_of_true_sine_and_cosine_over_the_circle():
+    # The entry testbench's loose check, on every angle.
+    worst = 0.0
+    for angle in range(65536):
+        cos_out, sin_out = models.cordic_sincos(angle)
+        theta = _s16(angle) * 2 * math.pi / 65536
+        worst = max(worst, abs(_s16(cos_out) - 16384 * math.cos(theta)),
+                    abs(_s16(sin_out) - 16384 * math.sin(theta)))
+    assert worst <= 4.0
+
+
+def test_cordic_transaction_byte_order():
+    model = models.model_for("cordic")
+    result = model.step((0x4000).to_bytes(2, "little"))      # a quarter turn: sin 1, cos 0
+    sin_out, cos_out = (_s16(int.from_bytes(result[k:k + 2], "little")) for k in (0, 2))
+    assert abs(sin_out - 16384) <= 4 and abs(cos_out) <= 4
+    wrong = models.model_for("cordic", wrong=True)
+    assert models.CORDIC_ATAN[3] == 20753
+    assert sum(model.step(tx) != wrong.step(tx) for tx in model.leading()) > 0
+
+
+def test_fir16_matches_spec_examples():
+    examples = spec_examples("fir16_sym")
+    assert len(examples) == 3
+    for _, e in examples:
+        model = models.model_for("fir16_sym")
+        sample = (e["inputs"]["in_sample"] & 0xFFFF).to_bytes(2, "little")
+        for _ in range(e["after_cycles"]):
+            y = int.from_bytes(model.step(sample), "little")
+        assert y == e["expected"]["out_sample"]
+
+
+def test_fir16_equals_the_pre_adder_form_and_resets():
+    # Independent evaluation: the spec's pre-adder form over a kept window.
+    h = models.FIR16_COEFFICIENTS
+    assert h == tuple(reversed(h)) and sum(h) == 2048
+    rng = random.Random(16)
+    model = models.model_for("fir16_sym")
+    window = [0] * 16
+    for n in range(3000):
+        if n == 1500:
+            model.reset()
+            window = [0] * 16
+        x = rng.choice((32767, -32768)) if rng.randrange(4) == 0 else rng.randrange(-32768, 32768)
+        window = [x] + window[:15]
+        acc = sum(h[k] * (window[k] + window[15 - k]) for k in range(8))
+        r = max(-32768, min(32767, (acc + 1024) // 2048))
+        assert model.step((x & 0xFFFF).to_bytes(2, "little")) == (r & 0xFFFF).to_bytes(2, "little")
+
+
+def test_fir16_leading_cases_reach_saturation_and_rounding_ties():
+    model = models.model_for("fir16_sym")
+    outs = [int.from_bytes(model.step(tx), "little", signed=True) for tx in model.leading()]
+    assert 32767 in outs and -32768 in outs
+    # The 512 impulse starts at index 34: acc = 512 * -6, so acc / 2048 = -1.5,
+    # an exact tie that rounds half up to -1 (round half away would give -2).
+    assert outs[34] == -1
 
 
 @pytest.mark.parametrize("name", sorted(TABLE))
