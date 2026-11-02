@@ -1,8 +1,11 @@
 mode: build
+top: uart_fifo
 spec: spec.md
+tb: uart_fifo_tb.v
+generate_golden: false
 objective: minimize_luts
 target_freq_mhz: 100.0
 iterations: 8
-stresses: "multi-module decomposition; scoreboard tb; mechanical integration"
+stresses: "multi-module decomposition from prose; fixed top and uart_tx interfaces; cycle-exact 8N1 framing; FIFO full/back-to-back; reset mid-frame; parameterized bit period; trusted integration testbench"
 pass_criteria:
   timing_met: true
