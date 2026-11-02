@@ -870,3 +870,31 @@ entries), not only to rr_regfile_build's two-child spec.
 Remaining acceptance: controlled pytest only so far. Before relying on it,
 rerun tier4 exploration and the held-tier gates (the tier1-3 build entries
 now optimize the whole unit), and record whether any candidate changes LUTs.
+
+## November1 (Claude Code): disputed spec examples go back to the planner
+
+explore-tier3-05 uart_fifo_build: the planner's uart_tx text accepts each
+presented byte and transmits at once, while its own examples expect idle tx=1
+after 1 and 2 cycles. Both generated oracles followed the text and failed
+`qualify_against_examples` identically, and the run ended as module_failed
+although the spec was planner-written (taxonomy
+`oracle_example_dispute_ends_build`).
+
+**Decided and implemented (branch spec-example-dispute):** for a planner-written
+spec only, two exhausted oracle attempts that both failed only with example
+mismatches send the spec back to the planner with the module, the bounded
+mismatch lines and an instruction to make the text and the examples agree; the
+new spec is relinted and every module rebuilt in `modules_rev<N>`. Lint repairs
+and disputes share one `max_fix_attempts` counter; a supplied JSON spec and any
+infra failure keep today's behavior (DESIGN.md, Planner spec repair). Resume
+replays to the same revisions and refuses a divergent one.
+
+Known limits: `tools/run_view.py` still lists only `modules/` (revision 0), so a
+replanned build's final modules are not shown there yet; golden attempt logs now
+carry `example_mismatch_only` for every build, supplied specs included. A
+dispute can also mean both oracles misread correct text; the bound keeps that
+case to `max_fix_attempts` planner calls.
+
+Remaining acceptance: controlled pytest only. Rerun tier3 exploration
+(uart_fifo_build) and the held-tier gates, and record whether the replanned
+uart_tx spec builds.

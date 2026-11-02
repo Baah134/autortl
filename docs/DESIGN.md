@@ -289,6 +289,37 @@ spec_lint_failed with the errors in the checkpoint. The spec prompt also states
 the structural rules, such as a top_name that differs from every module name
 (spec_lint_failure_skips_planner_repair).
 
+**Disputed examples.** A planner-written spec can pass lint while its behavior
+text and its own examples disagree; both generated oracles then follow the text
+and fail the examples (oracle_example_dispute_ends_build, explore-tier3-05
+uart_tx). When a module's oracle attempts are exhausted and the last two both
+ran and failed only with example mismatches from `qualify_against_examples`
+(`golden.only_example_mismatches`: the spec's examples are valid and every
+line is a mismatch line), the spec is disputed. A sandbox, validation or
+generate_tb error in either attempt is not a dispute. Infrastructure is never
+a dispute: a GoldenTimeoutError ends the build as build_blocked and a provider
+failure as model_blocked, and neither replans. A disputed spec goes back to the
+planner with the module name, at most 10 distinct mismatch lines (1,500
+characters), the previous spec and the instruction to make the behavior text
+and the examples agree, keeping every other module unchanged unless it must
+change. The new spec is relinted and every module is rebuilt from it in
+`modules_rev<N>` and `stubs_rev<N>` (revision 0 keeps `modules` and `stubs`); no
+module verified against an earlier spec is reused. Lint repairs and disputes
+share one counter of at most `max_fix_attempts` journaled planner repairs
+charged to the budget. When it is spent, the run ends as module_failed with the
+dispute under `spec_dispute`. A supplied JSON spec is law: the same failure ends
+as module_failed with no planner call, exactly as before.
+
+Each accepted planner spec is saved as `spec_revisions/rev<N>.json`; state.json
+keeps `spec_revisions` (hash per revision), `spec_disputes` (also written to
+`spec_disputes/rev<N>.json`) and the shared counter `spec_repairs`. A resume
+replays the journaled planner and oracle calls in order, so it reaches the same
+revisions. It ends as infra_blocked when a replayed revision or dispute differs
+from the checkpoint, or when it would integrate, or fail a module of, an earlier
+revision than the checkpoint records, so a resumed run never silently uses a
+pre-dispute spec. A replayed oracle timeout stays build_blocked (infra) and is
+retried by the next resume.
+
 ## Per-run token accounting
 Backends report usage as `input_tokens`, `cached_input_tokens` and
 `output_tokens` when they can. After a successful call the client adds them to
