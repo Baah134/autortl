@@ -192,6 +192,24 @@ def _build_spec_evidence(path, top_module):
                         "do not turn incidental values in unspecified cases into requirements."}
 
 
+IMPLEMENTATION_MEANING = {
+    "chip_top": "Chip-top implementation: the top is the whole FPGA design. Every port bit gets an I/O buffer "
+                "on a package pin, and data ports have zero input and output delay to clk, so the routed WNS "
+                "and WHS include pad delay. Utilization includes the I/O buffers.",
+    "out_of_context": "Out-of-context implementation (chip_top_flow_for_soc_block): the top is a block inside a "
+                      "larger design, synthesized with synth_design -mode out_of_context and placed and routed "
+                      "without I/O buffers or package pins. clk is constrained at the target period and modeled "
+                      "as driven by a global clock buffer (HD.CLK_SRC). Data ports have no input or output delay "
+                      "and no pad delay, so they are unconstrained I/O; the routed WNS and WHS, and timing "
+                      "acceptance, cover the internal clocked paths only, and combinational logic between a port "
+                      "and its first or last register is not timed. Utilization excludes I/O buffers.",
+}
+
+
+def implementation_fact(mode: str) -> dict:
+    return {"mode": mode, "meaning": IMPLEMENTATION_MEANING[mode]}
+
+
 def run_evidence(cfg, baseline, sources, tb, directory, execution_context, *, build_spec_path=None,
                  edit_scope=None) -> dict:
     from .verilog_interface import infer_module
@@ -229,6 +247,7 @@ def run_evidence(cfg, baseline, sources, tb, directory, execution_context, *, bu
         "schema_version": 1,
         "authority": "Harness evidence is fixed. Proposed architectural goals cannot redefine it.",
         "top_module": cfg.top_module, "part": cfg.target_part,
+        "implementation": implementation_fact(cfg.implementation),
         "objective": cfg.objective, "clock_period_ns": cfg.target_period_ns,
         "baseline_metrics": baseline.to_dict(),
         "sources": source_facts, "declared_latency": declared_latency,
@@ -315,6 +334,12 @@ def render_fixed_optimize_contract(evidence: dict) -> str:
         "report_manifest": evidence["report_manifest"],
         "build_spec": evidence.get("build_spec"),
     }
+    implementation = evidence.get("implementation")
+    flow_text = ""
+    if implementation is not None:
+        fixed["implementation"] = implementation
+        flow_text = ("## Implementation flow\n\n"
+                     f"Mode {implementation['mode']}, fixed by the harness. " + implementation["meaning"] + "\n\n")
     scope = evidence.get("edit_scope")
     boundary = ""
     if scope is not None:
@@ -380,6 +405,7 @@ def render_fixed_optimize_contract(evidence: dict) -> str:
         "## Behavioral obligations\n\n"
         + obligations + "\n\n"
         + boundary
+        + flow_text
         + "## Verification gates\n\n"
         + annotation_rule + "\n\n"
         + "Use the frozen testbench unchanged. Pass static/interface and declared "

@@ -92,7 +92,8 @@ def test_baseline_target_failure_never_reaches_the_fixer_or_retries(harness):  #
     assert result["failure_kind"] == "target"
     assert result["target_capacity"] == {"message_id": "Place 30-415", "io_ports": 165,
                                          "available_user_io": 106, "device": "7a35t",
-                                         "package": "cpg236", "part": "xc7a35tcpg236-1"}
+                                         "package": "cpg236", "part": "xc7a35tcpg236-1",
+                                         "implementation": "chip_top"}
     assert_no_winner(o, result)
     o.generator.fix.assert_not_called()   # never a fix attempt
     o.doctor.surgery.assert_not_called()  # never the Timing Doctor

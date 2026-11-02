@@ -1335,12 +1335,8 @@ class Orchestrator:
             manifest = origin / "verification_inputs.log"
             if json.loads(manifest.read_text(encoding="utf-8")) != _verification_inputs([vfile, *extra], tb):
                 return False
-            expected = vivado.SYNTH_TCL.format(
-                promotions=vivado.promotion_tcl(self.taxonomy.promotions()),
-                part=self.cfg.target_part,
-                sources=" ".join(f'"{vivado._tcl_path(path)}"' for path in [vfile, *extra]),
-                workdir=vivado._tcl_path(origin), period=f"{self.cfg.target_period_ns:.3f}",
-                top=self.cfg.top_module, extra_synth="", phys_opt="")
+            expected = vivado.synthesis_tcl([vfile, *extra], self.cfg.top_module, self.cfg, origin,
+                                            promotions=self.taxonomy.promotions())
             return script.read_text(encoding="utf-8") == expected
         except (OSError, UnicodeError, ValueError, TypeError, KeyError):
             return False
@@ -1503,7 +1499,7 @@ class Orchestrator:
         capacity = target_capacity(error) or {}
         details = {key: capacity.get(key) for key in ("message_id", "io_ports", "available_user_io",
                                                       "device", "package")}
-        details.update(part=self.cfg.target_part)
+        details.update(part=self.cfg.target_part, implementation=self.cfg.implementation)
         print(f"[target] {str(error).splitlines()[0] if error else 'target_infeasible'}")
         return self._baseline_stop("target_infeasible", error, FailureKind.TARGET,
                                    target_capacity=details)
@@ -1590,4 +1586,5 @@ class Orchestrator:
                 "tools": {name: identity(shutil.which(getattr(self.cfg, name)) or getattr(self.cfg, name))
                           for name in ("vivado_bin", "xvlog_bin", "xelab_bin", "xsim_bin")},
                 "promotions": self.taxonomy.promotions(),
-                "synthesis_template": hashlib.sha256(vivado.SYNTH_TCL.encode()).hexdigest()}
+                "implementation": self.cfg.implementation,
+                "synthesis_template": hashlib.sha256(vivado.synthesis_template(self.cfg).encode()).hexdigest()}

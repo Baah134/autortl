@@ -16,6 +16,11 @@ depend only on registered state, with their handshake ports tagged
 single integer inputs constant for `after_cycles` steps from reset, with
 `after_cycles` at most 310.
 
+`axil_regs_build` is implemented out of context (`implementation:
+out_of_context` in its meta.yaml): an AXI4-Lite slave is an SoC block, and its
+169 port bits exceed the 106 user I/O of xc7a35tcpg236-1. The other two entries
+(38 and 22 port bits) are chip tops. See that entry's README.
+
 Each entry's `qualification/reference.v` holds the reference children plus the
 mechanical top (byte-identical to `top_verilog(spec)`), and
 `qualification/mutants.json` holds ten single-site `find`/`replace` faults.

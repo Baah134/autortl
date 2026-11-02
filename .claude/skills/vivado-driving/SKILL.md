@@ -12,7 +12,10 @@ Do not delete a project or shared directory as an automatic cache workaround.
 
 Compile/elaborate/simulate using configured xvlog/xelab/xsim executables; preserve
 all logs and require the independent TB verdict. Synthesize/place/route with the
-configured device and clock/I/O assumptions. Parse post-route utilization, setup
+configured device and clock/I/O assumptions. The harness picks the flow: chip_top
+puts every port on a package pin; out_of_context implements an SoC block without
+I/O buffers, timing only its internal clocked paths. An interface wider than the
+package is a target failure, never an RTL repair. Parse post-route utilization, setup
 WNS and hold WHS; retain actual timing, utilization and power reports.
 Promote dangerous diagnostics; never demote/suppress them. Missing reports are
 unknown/failing evidence, never zero-resource successes. Tool versions and option

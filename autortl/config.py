@@ -6,6 +6,8 @@ import re
 from pathlib import Path
 from .state import atomic_write_text
 
+IMPLEMENTATIONS = ("chip_top", "out_of_context")
+
 
 @dataclass
 class RunConfig:
@@ -35,10 +37,15 @@ class RunConfig:
     generate_golden: bool = False             # build: also generate/qualify a unit oracle with --tb
     proposal_feedback: bool = False           # experimental prior-proposal context; journal always retained
     model: str | None = None                  # model alias for every role; None = the backend's own default
+    # Harness-chosen implementation flow (chip_top_flow_for_soc_block): chip_top places
+    # every port on a package pin; out_of_context implements a block without I/O buffers.
+    implementation: str = "chip_top"
 
     def validate(self) -> None:
         if self.mode not in ("build", "optimize"):
             raise ValueError("invalid run mode")
+        if self.implementation not in IMPLEMENTATIONS:
+            raise ValueError("implementation must be one of: " + ", ".join(IMPLEMENTATIONS))
         if type(self.proposal_feedback) is not bool:
             raise ValueError("proposal_feedback must be boolean")
         if type(self.generate_golden) is not bool:
@@ -96,6 +103,8 @@ class RunConfig:
         data.setdefault("proposal_feedback", False)
         # Runs saved before model pinning used the backend default model.
         data.setdefault("model", None)
+        # Runs saved before the out-of-context flow implemented a chip top.
+        data.setdefault("implementation", "chip_top")
         allowed = {item.name for item in fields(cls)}
         if set(data) - allowed:
             raise ValueError("unknown run config fields: " + ", ".join(sorted(set(data) - allowed)))
