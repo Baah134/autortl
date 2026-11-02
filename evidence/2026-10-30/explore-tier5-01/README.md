@@ -25,14 +25,20 @@ ten planted faults (`tier5-qualification-01`).
 - **The 150 MHz FIR is the hardest target so far.** Two timing-progress steps
   cut the deficit from -10.770 to -3.024 ns (and LUTs from 394 to 165 by moving
   products into DSP slices), but timing is not closed within the budget.
-- **AXI exposed a repair-feedback gap.** All three AXI children passed their
-  own generated oracles, but the integrated design failed the independent
-  testbench on five protocol rules. One rule (read data) repeated 32 times and
-  filled the 15-line failure window, so the fixer never saw the four handshake
-  rules and three repairs failed (taxonomy
-  `repeated_failure_hides_other_rules`; failures are now reported once per
-  kind with a count). The independent testbench did its job: no wrong design
-  was accepted.
+- **AXI exposed a flow gap, not a design bug.** All three AXI children passed
+  their own generated oracles and the integrated baseline **passed the
+  independent testbench** (journal stage `baseline:tool:xsim_run:0`). The
+  routed flow then failed because the 165-port top does not fit the package's
+  106 user I/O pins (`Place 30-415`). Triage called that a design error, so a
+  correct design went to the fixer three times and the "repairs" broke it;
+  the five failing testbench rules seen later belong to those repairs
+  (taxonomy `io_overutilization_sent_to_fixer`; an AXI4-Lite slave is an SoC
+  block and needs an out-of-context flow, `chip_top_flow_for_soc_block`).
+  The same review found that one repeated rule could fill the fixer's 15-line
+  failure window (`repeated_failure_hides_other_rules`; failures are now
+  reported once per kind with a count). No wrong design was accepted.
+  *Corrected on 2026-11-01: an earlier version of this note said the baseline
+  failed the testbench.*
 
 Per-entry role reports: `role-report-<entry>.md` (tools/role_report.py).
 Simulator snapshots (xsim.dir) and Vivado scratch (.Xil) are not copied.

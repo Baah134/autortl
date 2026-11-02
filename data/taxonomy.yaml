@@ -149,7 +149,7 @@ harness_failures:
     meaning: "A planner-written spec paired compare_mode fixed_latency with valid_ready ports; the generated-testbench shape rule refused it only when the oracle ran, costing one of the module's two oracle attempts (explore-tier3-03 uart_fifo_build, uart_tx)"
     repair: "Check every generated-oracle module against the testbench generator's shape rules in the planner spec-repair loop, with a hint naming the two valid shapes"
   repeated_failure_hides_other_rules:
-    meaning: "The fixer receives the first 15 testbench FAIL lines; in tier5 axil_regs_build one rule (rdata value) filled all 15, so the three violated AXI handshake rules (awready/wready independence, bvalid with the update) never reached it and three baseline repairs failed (explore-tier5-01)"
+    meaning: "The fixer receives the first 15 testbench FAIL lines; in tier5 axil_regs_build, after a repair broke the design, one rule (rdata value) filled all 15 and hid four other violated AXI rules (awready/wready independence, bvalid with the update, ctrl) from the next repair (explore-tier5-01; the repair loop itself was wrongly entered, see io_overutilization_sent_to_fixer)"
     repair: "Report each distinct failure kind once (digits ignored) with its count, up to 15 kinds, so every violated rule reaches the repair prompt"
   port_attribute_rejected:
     meaning: "A candidate put a legal Verilog attribute instance on a port declaration ((* IOB = \"TRUE\" *) on fir8's registered output, to pack it into the I/O block against pad-dominated timing); the interface parser refused it as an unsupported port declaration before any tool ran (explore-fir8-02, three iterations)"
