@@ -41,12 +41,20 @@ from . import vivado
 from . import companions
 from .vivado import advisor_digest
 from .report_parser import VivadoMetrics, extract_message_ids
-from .golden import GoldenModel, GoldenTimeoutError, qualify_against_examples, validate_examples
+from .golden import (GoldenModel, GoldenTimeoutError, qualify_against_examples, validate_examples,
+                     only_example_mismatches)
 from .tbgen import generate as generate_tb, shape_errors as tb_shape_errors
 from .tbqual import qualify as qualify_tb, assertion_failure_proof, qualification_mutations
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from llm.client import declared_latency, ModelCallError
+
+
+# oracle_example_dispute_ends_build: the planner's instruction for a disputed module.
+SPEC_DISPUTE_INSTRUCTION = (
+    "Two independent reference models written from this module's behavior text disagree with its "
+    "examples. Make the behavior text and the examples agree (fix whichever is wrong) and keep every "
+    "other module unchanged unless it must change.")
 
 
 class VerificationEvidenceError(ValueError):
@@ -505,72 +513,129 @@ class Orchestrator:
         except (ValueError, KeyError, TypeError):
             raw, generated = self._model("planner", "make_spec", intent, self.cfg, self.budget), True
         # PHASE: LINT + STUB ELABORATION (Pothole 1)
-        # A supplied JSON spec is law and fails at once. A planner-written spec gets
-        # the lint errors back for a bounded repair (spec_lint_failure_skips_planner_repair).
-        attempt = 0
-        while True:
-            raw = raw[raw.find("{"): raw.rfind("}") + 1]
-            self.state.spec_path.write_text(raw, encoding="utf-8")
-            try:
-                spec = DesignSpec.load(self.state.spec_path)
-                errs = lint_spec(spec)
-                if generated:  # spec_example_values_skip_planner_repair
-                    errs += [f"module {m.name}: {e}" for m in spec.modules
-                             for e in validate_examples(m, require_anchors=True)]
-                    # fixed_latency_handshake_found_at_oracle: modules that get a generated
-                    # oracle and testbench must have a shape tbgen supports.
-                    if not (len(spec.modules) == 1 and self.cfg.testbench_path and not self.cfg.generate_golden):
-                        errs += [f"module {m.name}: {e}" for m in spec.modules for e in tb_shape_errors(m)]
-            except (ValueError, KeyError, TypeError, AttributeError) as exc:
-                if not generated:
-                    raise
-                errs = [f"spec JSON does not load: {type(exc).__name__}: {str(exc)[:300]}"]
-            if not errs or not generated or attempt >= self.cfg.max_fix_attempts:
-                break
-            attempt += 1
-            print(f"[lint] planner spec repair {attempt}: " + "; ".join(errs)[:300])
-            raw = self._model("planner", "make_spec", intent, self.cfg, self.budget,
-                              feedback=f"Repair attempt {attempt}.\n" + "\n".join(errs)
-                              + "\nYour previous design_spec was:\n" + raw[:6000])
-        if errs:
-            self._snapshot(phase="PLANNING", lint_errors=errs)
-            print("[lint] spec failed structural lint:")
-            for e in errs:
-                print("   -", e)
-            return {"status": "spec_lint_failed", "errors": errs}
-        stub_dir = self.state.run_dir / "stubs"
-        stub_files = write_stub_project(spec, stub_dir)
-        ok, err, kind = self._tool("xvlog_check", stub_files, self.cfg, stub_dir)
-        if not ok:
-            return {"status": "stub_elaboration_failed" if kind == FailureKind.DESIGN else "build_blocked",
-                    "failure_kind": kind.value, "error": err}
+        # A supplied JSON spec is law and fails at once. A planner-written spec gets its
+        # lint errors (spec_lint_failure_skips_planner_repair) and any oracle-example
+        # dispute (oracle_example_dispute_ends_build) back for repair; both share one
+        # counter of at most max_fix_attempts journaled planner repairs.
+        recorded = saved or {}
+        revisions = list(recorded.get("spec_revisions", []))
+        disputes = list(recorded.get("spec_disputes", []))
+        repairs = revision = 0
+        while True:  # one pass per accepted spec revision
+            while True:
+                raw = raw[raw.find("{"): raw.rfind("}") + 1]
+                self.state.spec_path.write_text(raw, encoding="utf-8")
+                try:
+                    spec = DesignSpec.load(self.state.spec_path)
+                    errs = lint_spec(spec)
+                    if generated:  # spec_example_values_skip_planner_repair
+                        errs += [f"module {m.name}: {e}" for m in spec.modules
+                                 for e in validate_examples(m, require_anchors=True)]
+                        # fixed_latency_handshake_found_at_oracle: modules that get a generated
+                        # oracle and testbench must have a shape tbgen supports.
+                        if not (len(spec.modules) == 1 and self.cfg.testbench_path and not self.cfg.generate_golden):
+                            errs += [f"module {m.name}: {e}" for m in spec.modules for e in tb_shape_errors(m)]
+                except (ValueError, KeyError, TypeError, AttributeError) as exc:
+                    if not generated:
+                        raise
+                    errs = [f"spec JSON does not load: {type(exc).__name__}: {str(exc)[:300]}"]
+                if not errs or not generated or repairs >= self.cfg.max_fix_attempts:
+                    break
+                repairs += 1
+                self._record_spec_repairs(repairs)
+                print(f"[lint] planner spec repair {repairs}: " + "; ".join(errs)[:300])
+                raw = self._model("planner", "make_spec", intent, self.cfg, self.budget,
+                                  feedback=f"Repair attempt {repairs}.\n" + "\n".join(errs)
+                                  + "\nYour previous design_spec was:\n" + raw[:6000])
+            if errs:
+                self._snapshot(phase="PLANNING", lint_errors=errs)
+                print("[lint] spec failed structural lint:")
+                for e in errs:
+                    print("   -", e)
+                return {"status": "spec_lint_failed", "errors": errs}
+            spec_sha = hashlib.sha256(raw.encode("utf-8")).hexdigest()
+            if generated:
+                # A resume replays the journaled planner calls; it must reach the same
+                # accepted specs, never silently fall back to a pre-dispute one.
+                if revision < len(revisions):
+                    if revisions[revision].get("spec_sha256") != spec_sha:
+                        raise VerificationEvidenceError(
+                            f"Replayed spec revision {revision} differs from the checkpoint")
+                else:
+                    atomic_write_text(self.state.run_dir / "spec_revisions" / f"rev{revision}.json", raw)
+                    revisions.append({"revision": revision, "spec_sha256": spec_sha, "spec_repairs": repairs})
+                    self._snapshot(spec_revisions=revisions)
+            # Revision 0 keeps the historical layout; a replanned spec builds afresh.
+            suffix = "" if revision == 0 else f"_rev{revision}"
+            modules_root = self.state.run_dir / ("modules" + suffix)
+            stub_dir = self.state.run_dir / ("stubs" + suffix)
+            stub_files = write_stub_project(spec, stub_dir)
+            ok, err, kind = self._tool("xvlog_check", stub_files, self.cfg, stub_dir)
+            if not ok:
+                return {"status": "stub_elaboration_failed" if kind == FailureKind.DESIGN else "build_blocked",
+                        "failure_kind": kind.value, "error": err}
 
-        # PHASE: PER-MODULE GENERATE + VERIFY (journal-backed evidence)
-        module_files: dict[str, Path] = {}
-        for m in spec.modules:
-            self._scope = "module_" + m.name
-            mdir = self.state.run_dir / "modules" / m.name
-            mdir.mkdir(parents=True, exist_ok=True)
-            vfile = mdir / f"{m.name}.v"
-            self._build_single = len(spec.modules) == 1
-            self._build_top = spec.top_name
-            result = self._build_module(m, mdir)
-            if result is None:
-                blocker = getattr(self, "_build_blocker", None)
-                if blocker:
-                    return {"status": "build_blocked", "module": m.name, **blocker}
+            # PHASE: PER-MODULE GENERATE + VERIFY (journal-backed evidence)
+            # Every module is rebuilt for a new revision: a module verified against an
+            # earlier spec is never reused.
+            module_files: dict[str, Path] = {}
+            dispute = None
+            for m in spec.modules:
+                self._scope = "module_" + m.name + ("" if revision == 0 else f"@rev{revision}")
+                mdir = modules_root / m.name
+                mdir.mkdir(parents=True, exist_ok=True)
+                vfile = mdir / f"{m.name}.v"
+                self._build_single = len(spec.modules) == 1
+                self._build_top = spec.top_name
+                result = self._build_module(m, mdir)
+                if result is None:
+                    blocker = getattr(self, "_build_blocker", None)
+                    if blocker:
+                        return {"status": "build_blocked", "module": m.name, **blocker}
+                    dispute = getattr(self, "_oracle_dispute", None) if generated else None
+                    if dispute is None:
+                        self._check_spec_revision_reached(generated, revision, revisions)
+                        return {"status": "module_failed", "module": m.name,
+                                "error": getattr(self, "_build_failure", "module verification did not complete")}
+                    break
+                vfile.write_text(result, encoding="utf-8")
+                module_files[m.name] = vfile
+            if dispute is None:
+                self._check_spec_revision_reached(generated, revision, revisions)
+                break
+            # oracle_example_dispute_ends_build: the planner wrote behavior text and
+            # examples that two runnable reference models could not both satisfy.
+            exhausted = repairs >= self.cfg.max_fix_attempts
+            if not exhausted:
+                repairs += 1
+                self._record_spec_repairs(repairs)
+            record = {"revision": revision, "module": m.name, "spec_sha256": spec_sha,
+                      "attempts": dispute["attempts"],
+                      "outcome": "repairs_exhausted" if exhausted else "replanned",
+                      "spec_repair": None if exhausted else repairs}
+            self._record_spec_dispute(disputes, revision, record)
+            if exhausted:
                 return {"status": "module_failed", "module": m.name,
-                        "error": getattr(self, "_build_failure", "module verification did not complete")}
-            vfile.write_text(result, encoding="utf-8")
-            module_files[m.name] = vfile
+                        "error": getattr(self, "_build_failure", "module verification did not complete"),
+                        "spec_dispute": record}
+            lines = []
+            for attempt_lines in dispute["attempts"]:
+                lines += [line for line in attempt_lines if line not in lines]
+            print(f"[spec] planner spec repair {repairs}: module {m.name} examples disputed by two oracles")
+            self._scope = "build_spec"
+            raw = self._model("planner", "make_spec", intent, self.cfg, self.budget,
+                              feedback=f"Repair attempt {repairs}.\nmodule {m.name}: " + SPEC_DISPUTE_INSTRUCTION
+                              + "\nExample mismatches (expected by the spec, given by the reference models):\n"
+                              + "\n".join(lines[:10])[:1500]
+                              + "\nYour previous design_spec was:\n" + raw[:6000])
+            revision += 1
 
         # PHASE: MECHANICAL INTEGRATION (zero LLM)
         self._scope = "build_integration"
-        top_file = self.state.run_dir / "modules" / f"{spec.top_name}.v"
+        top_file = modules_root / f"{spec.top_name}.v"
         top_file.write_text(top_verilog(spec), encoding="utf-8")
         all_files = list(module_files.values()) + [top_file]
-        ok, err, kind = self._tool("xvlog_check", all_files, self.cfg,
-                                           self.state.run_dir / "modules")
+        ok, err, kind = self._tool("xvlog_check", all_files, self.cfg, modules_root)
         if not ok:
             return {"status": "integration_failed", "failure_kind": kind.value, "error": err}
         print("[build] integrated design compiles; entering optimize loop as baseline")
@@ -584,7 +649,7 @@ class Orchestrator:
             if len(spec.modules) != 1:
                 return {"status": "build_blocked", "error": "Multi-module build requires trusted integration testbench"}
             child = spec.modules[0]
-            child_tb = self.state.run_dir / "modules" / child.name / f"{child.name}_tb.v"
+            child_tb = modules_root / child.name / f"{child.name}_tb.v"
             adapted = re.sub(r"\b" + re.escape(child.name) + r"\b", spec.top_name, child_tb.read_text(encoding="utf-8"))
             adapted = re.sub(r"\b" + re.escape(child.name + "_tb") + r"\b", spec.top_name + "_tb", adapted)
             integration_tb = self.state.run_dir / f"{spec.top_name}_tb.v"
@@ -600,7 +665,7 @@ class Orchestrator:
             return self._run_optimize(None, extra_sources=list(module_files.values()))
         # frozen_children_block_build_optimization: one editable unit holding the
         # verified children (first) and the mechanical top (last); no companions.
-        unit = self.state.run_dir / "modules" / f"{spec.top_name}_unit.v"
+        unit = modules_root / f"{spec.top_name}_unit.v"
         parts = [path.read_text(encoding="utf-8") for path in [*module_files.values(), top_file]]
         unit.write_text("".join(part if part.endswith("\n") else part + "\n" for part in parts),
                         encoding="utf-8")
@@ -611,6 +676,34 @@ class Orchestrator:
         print(f"[build] editable unit: {', '.join(module_files)} + {spec.top_name}; "
               f"verified by the trusted integration testbench")
         return self._run_optimize(None, extra_sources=[])
+
+    @staticmethod
+    def _check_spec_revision_reached(generated: bool, revision: int, revisions: list) -> None:
+        """A design verdict on a spec the checkpoint already replaced is a divergent replay."""
+        if generated and revision < len(revisions) - 1:
+            raise VerificationEvidenceError(
+                f"Replay reached a verdict on spec revision {revision}, but the checkpoint records "
+                f"revision {len(revisions) - 1}")
+
+    def _record_spec_repairs(self, repairs: int) -> None:
+        """The shared planner-repair counter in state.json; a replay never lowers it."""
+        if repairs > (self.state.load_fsm() or {}).get("spec_repairs", 0):
+            self._snapshot(spec_repairs=repairs)
+
+    def _record_spec_dispute(self, disputes: list, revision: int, record: dict) -> None:
+        """Record a revision's dispute in state.json and spec_disputes/; a replay must match it.
+
+        At most one dispute ends each revision, so the revision indexes the list.
+        """
+        keys = ("revision", "module", "spec_sha256", "outcome")
+        if revision < len(disputes):
+            if {k: disputes[revision].get(k) for k in keys} != {k: record[k] for k in keys}:
+                raise VerificationEvidenceError(f"Replayed spec dispute {revision} differs from the checkpoint")
+            return
+        disputes.append(record)
+        atomic_write_text(self.state.run_dir / "spec_disputes" / f"rev{revision}.json",
+                          json.dumps(record, indent=2))
+        self._snapshot(spec_disputes=disputes)
 
     def _build_edit_scope(self, spec: DesignSpec, supplied_tb: Path | None, children: list[str]) -> dict:
         """Decide what the post-build optimizer may edit; recorded in harness facts.
@@ -649,6 +742,7 @@ class Orchestrator:
     def _build_module(self, m: ModuleSpec, mdir: Path) -> str | None:
         """Generate one module through the ladder with best-of-N. Returns verilog."""
         self._build_blocker = None
+        self._oracle_dispute = None
         self._build_failure = "module verification did not complete"
         print(f"[module {m.name}] golden model + testbench...")
         independent_tb = None
@@ -676,6 +770,9 @@ class Orchestrator:
         golden_path = mdir / "golden.py"
         feedback = ""
         tb = None
+        # Per rejected attempt: its example-mismatch lines, or None for any other error
+        # (oracle_example_dispute_ends_build).
+        mismatch_attempts = []
         for attempt in range(1, 3):
             # Provider and storage failures propagate; only generated-program errors
             # enter this bounded oracle repair loop.
@@ -685,10 +782,13 @@ class Orchestrator:
                 golden_src = self._model("generator", "golden_model", m, self.budget, feedback=feedback)
             golden_path.write_text(golden_src, encoding="utf-8")
             digest = hashlib.sha256(golden_path.read_bytes()).hexdigest()
+            mismatches = None
             try:
                 gm = GoldenModel(golden_path)
                 errors = qualify_against_examples(gm, m)
                 if errors:
+                    if only_example_mismatches(errors, m):
+                        mismatches = [line[:300] for line in errors[:10]]
                     raise ValueError("; ".join(errors[:10]))
                 tb = generate_tb(m, gm, mdir)
             except GoldenTimeoutError as exc:
@@ -697,8 +797,10 @@ class Orchestrator:
                 return None
             except (SyntaxError, ValueError, KeyError, TypeError) as exc:
                 feedback = f"{type(exc).__name__}: {str(exc)[:2000]}"
+                mismatch_attempts.append(mismatches)
                 atomic_write_text(mdir / f"golden_attempt_{attempt}.log", json.dumps({
                     "attempt": attempt, "source_sha256": digest, "status": "oracle_rejected",
+                    "example_mismatch_only": mismatches is not None,
                     "diagnostic": feedback}, indent=2))
                 continue
             atomic_write_text(mdir / f"golden_attempt_{attempt}.log", json.dumps({
@@ -707,6 +809,10 @@ class Orchestrator:
             break
         else:
             self._build_failure = feedback
+            if len(mismatch_attempts) >= 2 and all(mismatch_attempts[-2:]):
+                # Two oracles written from the behavior text both ran and disagreed only
+                # with the examples: the specification disputes itself.
+                self._oracle_dispute = {"module": m.name, "attempts": mismatch_attempts[-2:]}
             return None
         verilog = self._generate_verified(m, "(initial implementation)",
                                           "", tb, mdir, independent_tb=independent_tb)
