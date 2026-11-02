@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_1:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 1,
+    "instruction": "In `rv_alu`, replace the separate `a + b` and `a - b` expressions and result mux in the `op[2:0] == 3'b000` branch with one 32-bit add/sub operation: conditionally invert every bit of `b` using `op[3]` and use `op[3]` as the carry-in. Preserve modulo-2\u00b3\u00b2 results and leave the shift, comparison, and logical operation branches unchanged. Preserve all ports, registered behavior, reset behavior, and instruction-cycle timing; do not add a top latency annotation based on child metadata. The expected benefit is fewer LUTs with no extra registers or DSP48 use; compare routed LUTs and confirm WNS and W",
+    "candidates": [
+      {
+        "iteration": 1,
+        "mutation": "standard",
+        "instruction": "In `rv_alu`, replace the separate `a + b` and `a - b` expressions and result mux in the `op[2:0] == 3'b000` branch with one 32-bit add/sub operation: conditionally invert every bit of `b` using `op[3]` and use `op[3]` as the carry-in. Preserve modulo-2\u00b3\u00b2 results and leave the shift, comparison, and logical operation branches unchanged. Preserve all ports, registered behavior, reset behavior, and instruction-cycle timing; do not add a top latency annotation based on child metadata. The expected benefit is fewer LUTs with no extra registers or DSP48 use; compare routed LUTs and confirm WNS and W",
+        "generated_source_sha256": "042d5d49b99349b5c2341a05bd2daf7fea794f3502cb31aeb06206e0b3be0fe6",
+        "final_source_sha256": "042d5d49b99349b5c2341a05bd2daf7fea794f3502cb31aeb06206e0b3be0fe6",
+        "generated_code_hash": "6f281fa75bb6ffc7",
+        "final_code_hash": "6f281fa75bb6ffc7",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.591,
+          "whs_ns": 0.027,
+          "lut_used": 2138,
+          "ff_used": 4354,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.036,
+          "total_power_w": 0.105
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-08\\rv32i_core_build\\iter_001\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-08\\rv32i_core_build\\iter_001\\cand_standard\\synth.tcl",
+          "sha256": "b4c31e4b7e2d12fa371da822c554e6ddc4b24ffd4d550e3f1d108f31cb17a6a2"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-08\\rv32i_core_build\\iter_001\\cand_standard\\rv32i_core.v",
+          "sha256": "79e189c0c639ad807729a09e115455f528d08273848f771a2ed4a58c1f1d03f0"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "ACCEPT",
+    "is_best": true,
+    "selected_source_sha256": "042d5d49b99349b5c2341a05bd2daf7fea794f3502cb31aeb06206e0b3be0fe6"
+  },
+  "artifacts": {}
+}

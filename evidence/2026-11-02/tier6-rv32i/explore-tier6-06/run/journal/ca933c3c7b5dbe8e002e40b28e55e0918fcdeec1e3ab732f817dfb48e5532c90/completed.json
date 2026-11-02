@@ -1,0 +1,80 @@
+{
+  "stage": "iteration_2:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 2,
+    "instruction": "In `rv_imem` and `rv_dmem`, remove the reset loops that clear the data arrays and add per-word valid bits that reset to zero; leave the wide arrays unreset. On reads, register zero for an invalid address and otherwise register the addressed word, using pre-edge validity so same-edge reads and writes remain read-first; on writes, update the addressed word and set its valid bit. Keep each registered output\u2019s synchronous reset-to-zero behavior, ignore writes during reset, and preserve the existing address, latency, and top-level cycle behavior.",
+    "candidates": [
+      {
+        "iteration": 2,
+        "mutation": "standard",
+        "instruction": "In `rv_imem` and `rv_dmem`, remove the reset loops that clear the data arrays and add per-word valid bits that reset to zero; leave the wide arrays unreset. On reads, register zero for an invalid address and otherwise register the addressed word, using pre-edge validity so same-edge reads and writes remain read-first; on writes, update the addressed word and set its valid bit. Keep each registered output\u2019s synchronous reset-to-zero behavior, ignore writes during reset, and preserve the existing address, latency, and top-level cycle behavior.",
+        "generated_source_sha256": "da8c61603c51468f168fc771f529b0ad82aca01c5a0ab659146e7a09bff6990e",
+        "final_source_sha256": "da8c61603c51468f168fc771f529b0ad82aca01c5a0ab659146e7a09bff6990e",
+        "generated_code_hash": "80b31dd869cb22f8",
+        "final_code_hash": "80b31dd869cb22f8",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": false,
+          "wns_ns": -0.269,
+          "whs_ns": 0.052,
+          "lut_used": 868,
+          "ff_used": 269,
+          "dsp_used": 0,
+          "bram_used": 2.0,
+          "dynamic_power_w": 0.02,
+          "total_power_w": 0.088
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-06\\rv32i_core_build\\iter_002\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-06\\rv32i_core_build\\iter_002\\cand_standard\\synth.tcl",
+          "sha256": "d1102d7db712df65c47601bee7124f819d2578d6606e1a3d9939f9ec338950cc"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-06\\rv32i_core_build\\iter_002\\cand_standard\\rv32i_core.v",
+          "sha256": "10e12d05f342d3c525ecc1fae9ffb8bc290fc2787f7b3aa593a86317a719fcce"
+        }
+      }
+    ],
+    "doctor": {
+      "status": "NOT_ADOPTED",
+      "action": "tool_knobs",
+      "reason": "timing_not_closed",
+      "tools_ran": true,
+      "measured_metrics": {
+        "sim_passed": true,
+        "timing_met": false,
+        "wns_ns": -0.269,
+        "whs_ns": 0.052,
+        "lut_used": 868,
+        "ff_used": 269,
+        "dsp_used": 0,
+        "bram_used": 2.0,
+        "dynamic_power_w": 0.02,
+        "total_power_w": 0.088
+      },
+      "adopted": false,
+      "input_source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-06\\rv32i_core_build\\iter_002\\cand_standard\\rv32i_core.v",
+        "sha256": "10e12d05f342d3c525ecc1fae9ffb8bc290fc2787f7b3aa593a86317a719fcce"
+      },
+      "trial_source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-06\\rv32i_core_build\\iter_002\\doctor_tool_knobs_trial\\rv32i_core.v",
+        "sha256": "10e12d05f342d3c525ecc1fae9ffb8bc290fc2787f7b3aa593a86317a719fcce"
+      },
+      "trial_flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-06\\rv32i_core_build\\iter_002\\doctor_tool_knobs_trial\\synth.tcl",
+        "sha256": "b61acd329d442a3ba6903ebf116d0658a5835d9609e0316869d9e149282e52e8"
+      },
+      "identity_count": 3
+    },
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": "da8c61603c51468f168fc771f529b0ad82aca01c5a0ab659146e7a09bff6990e"
+  },
+  "artifacts": {}
+}

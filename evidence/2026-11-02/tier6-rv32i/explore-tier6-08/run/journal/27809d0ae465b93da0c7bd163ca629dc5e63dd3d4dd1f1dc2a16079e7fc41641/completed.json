@@ -1,0 +1,5 @@
+{
+  "stage": "module_rv_regfile:model:generator.golden_model:0",
+  "result": "def init():\n    return dict(x=[0] * 32, rdata1=0, rdata2=0)\n\ndef step(state, inputs):\n    if inputs.get(\"rst\", 0):\n        state[\"x\"] = [0] * 32\n        state[\"rdata1\"] = 0\n        state[\"rdata2\"] = 0\n    else:\n        x = state[\"x\"]\n        raddr1 = int(inputs.get(\"raddr1\", 0)) & 31\n        raddr2 = int(inputs.get(\"raddr2\", 0)) & 31\n        state[\"rdata1\"] = x[raddr1] & 4294967295\n        state[\"rdata2\"] = x[raddr2] & 4294967295\n        if inputs.get(\"we\", 0) and (int(inputs.get(\"waddr\", 0)) & 31) != 0:\n            waddr = int(inputs.get(\"waddr\", 0)) & 31\n            state[\"x\"][waddr] = int(inputs.get(\"wdata\", 0)) & 4294967295\n\n    outputs = dict(rdata1=state[\"rdata1\"], rdata2=state[\"rdata2\"])\n    return state, outputs",
+  "artifacts": {}
+}

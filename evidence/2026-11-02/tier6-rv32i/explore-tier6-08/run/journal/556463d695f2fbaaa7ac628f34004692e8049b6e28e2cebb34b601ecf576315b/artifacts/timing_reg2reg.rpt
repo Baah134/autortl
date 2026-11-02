@@ -1,0 +1,102 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025
+| Date         : Mon Nov  2 11:19:48 2026
+| Host         : Baah running 64-bit major release  (build 9200)
+| Command      : report_timing -from [all_registers] -to [all_registers] -max_paths 1 -file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-08/rv32i_core_build/iter_002/cand_standard/timing_reg2reg.rpt
+| Design       : rv32i_core
+| Device       : 7a35t-cpg236
+| Speed File   : -1  PRODUCTION 1.23 2018-06-13
+| Design State : Routed
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Timing Report
+
+Slack (MET) :             0.630ns  (required time - arrival time)
+  Source:                 u_rv_imem/imem_rdata_reg_reg[1]/C
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            u_rv_ctrl/npc_reg[30]/D
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            10.000ns  (clk rise@10.000ns - clk rise@0.000ns)
+  Data Path Delay:        9.329ns  (logic 3.427ns (36.733%)  route 5.902ns (63.267%))
+  Logic Levels:           16  (CARRY4=8 LUT2=2 LUT3=1 LUT4=1 LUT5=1 LUT6=3)
+  Clock Path Skew:        -0.037ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    1.450ns = ( 11.450 - 10.000 ) 
+    Source Clock Delay      (SCD):    1.566ns
+    Clock Pessimism Removal (CPR):    0.079ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=4352, unset)         1.566     1.566    u_rv_imem/clk
+    SLICE_X50Y34         FDRE                                         r  u_rv_imem/imem_rdata_reg_reg[1]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X50Y34         FDRE (Prop_fdre_C_Q)         0.518     2.084 r  u_rv_imem/imem_rdata_reg_reg[1]/Q
+                         net (fo=7, routed)           0.706     2.790    u_rv_imem/w_rv_imem_imem_rdata[1]
+    SLICE_X50Y36         LUT2 (Prop_lut2_I0_O)        0.124     2.914 f  u_rv_imem/FSM_sequential_state[2]_i_5/O
+                         net (fo=8, routed)           0.485     3.399    u_rv_imem/FSM_sequential_state[2]_i_5_n_0
+    SLICE_X50Y37         LUT6 (Prop_lut6_I2_O)        0.124     3.523 r  u_rv_imem/res[31]_i_31/O
+                         net (fo=32, routed)          0.784     4.307    u_rv_imem/res[31]_i_31_n_0
+    SLICE_X51Y37         LUT5 (Prop_lut5_I1_O)        0.124     4.431 r  u_rv_imem/res[31]_i_45/O
+                         net (fo=1, routed)           0.803     5.234    u_rv_imem/w_rv_decode_imm[0]
+    SLICE_X50Y37         LUT3 (Prop_lut3_I0_O)        0.124     5.358 r  u_rv_imem/res[31]_i_19/O
+                         net (fo=37, routed)          0.609     5.967    u_rv_imem/u_rv_alu/p_0_in[0]
+    SLICE_X51Y37         LUT2 (Prop_lut2_I1_O)        0.124     6.091 r  u_rv_imem/res[3]_i_8/O
+                         net (fo=1, routed)           0.598     6.688    u_rv_imem/u_rv_alu/b_addsub[0]
+    SLICE_X43Y37         CARRY4 (Prop_carry4_CYINIT_CO[3])
+                                                      0.580     7.268 r  u_rv_imem/res_reg[3]_i_5/CO[3]
+                         net (fo=1, routed)           0.000     7.268    u_rv_imem/res_reg[3]_i_5_n_0
+    SLICE_X43Y38         CARRY4 (Prop_carry4_CI_CO[3])
+                                                      0.114     7.382 r  u_rv_imem/res_reg[7]_i_5/CO[3]
+                         net (fo=1, routed)           0.000     7.382    u_rv_imem/res_reg[7]_i_5_n_0
+    SLICE_X43Y39         CARRY4 (Prop_carry4_CI_CO[3])
+                                                      0.114     7.496 r  u_rv_imem/res_reg[11]_i_5/CO[3]
+                         net (fo=1, routed)           0.000     7.496    u_rv_imem/res_reg[11]_i_5_n_0
+    SLICE_X43Y40         CARRY4 (Prop_carry4_CI_CO[3])
+                                                      0.114     7.610 r  u_rv_imem/res_reg[15]_i_5/CO[3]
+                         net (fo=1, routed)           0.000     7.610    u_rv_imem/res_reg[15]_i_5_n_0
+    SLICE_X43Y41         CARRY4 (Prop_carry4_CI_CO[3])
+                                                      0.114     7.724 r  u_rv_imem/res_reg[19]_i_7/CO[3]
+                         net (fo=1, routed)           0.000     7.724    u_rv_imem/res_reg[19]_i_7_n_0
+    SLICE_X43Y42         CARRY4 (Prop_carry4_CI_CO[3])
+                                                      0.114     7.838 r  u_rv_imem/res_reg[23]_i_7/CO[3]
+                         net (fo=1, routed)           0.000     7.838    u_rv_imem/res_reg[23]_i_7_n_0
+    SLICE_X43Y43         CARRY4 (Prop_carry4_CI_CO[3])
+                                                      0.114     7.952 r  u_rv_imem/res_reg[27]_i_7/CO[3]
+                         net (fo=1, routed)           0.000     7.952    u_rv_imem/res_reg[27]_i_7_n_0
+    SLICE_X43Y44         CARRY4 (Prop_carry4_CI_O[2])
+                                                      0.239     8.191 r  u_rv_imem/res_reg[31]_i_14/O[2]
+                         net (fo=1, routed)           0.784     8.975    u_rv_imem/u_rv_alu/data0[30]
+    SLICE_X42Y44         LUT4 (Prop_lut4_I3_O)        0.331     9.306 r  u_rv_imem/res[30]_i_3/O
+                         net (fo=1, routed)           0.692     9.998    u_rv_imem/res[30]_i_3_n_0
+    SLICE_X42Y44         LUT6 (Prop_lut6_I0_O)        0.331    10.329 r  u_rv_imem/res[30]_i_2/O
+                         net (fo=2, routed)           0.442    10.771    u_rv_imem/w_rv_alu_y[30]
+    SLICE_X41Y44         LUT6 (Prop_lut6_I4_O)        0.124    10.895 r  u_rv_imem/npc[30]_i_1/O
+                         net (fo=1, routed)           0.000    10.895    u_rv_ctrl/D[30]
+    SLICE_X41Y44         FDRE                                         r  u_rv_ctrl/npc_reg[30]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)       10.000    10.000 r  
+                                                      0.000    10.000 r  clk (IN)
+                         net (fo=4352, unset)         1.450    11.450    u_rv_ctrl/clk
+    SLICE_X41Y44         FDRE                                         r  u_rv_ctrl/npc_reg[30]/C
+                         clock pessimism              0.079    11.529    
+                         clock uncertainty           -0.035    11.494    
+    SLICE_X41Y44         FDRE (Setup_fdre_C_D)        0.032    11.526    u_rv_ctrl/npc_reg[30]
+  -------------------------------------------------------------------
+                         required time                         11.526    
+                         arrival time                         -10.895    
+  -------------------------------------------------------------------
+                         slack                                  0.630    
+
+
+
+

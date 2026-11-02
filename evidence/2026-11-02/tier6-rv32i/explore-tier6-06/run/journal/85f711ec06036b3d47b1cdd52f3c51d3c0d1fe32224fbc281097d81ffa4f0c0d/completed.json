@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_2:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 2\n## Contract check\n- Defined behavior and cycle behavior: PASS \u2014 deterministic ladder is ALIVE, and the integration testbench reports TEST PASSED.\n- Top interface and tool verification: PASS \u2014 compilation, elaboration, simulation, and required tool exits succeeded.\n- Top latency annotation: PASS \u2014 authoritative top latency is unknown, so no numeric annotation is required.\n- Routed metric integrity: PASS \u2014 routed reports are retained and metrics are reported.\n- Timing closure: FAIL \u2014 setup WNS is -0.269 ns and `timing_met=false`; hold WHS is 0.052 ns.\n- Improvement over previous best: FAIL \u2014 the previous best is timing-feasible, so this infeasible candidate cannot replace it despite lower LUT and FF counts.\n\n## Summary\n- Passed: 4 of 6\n- Failed: 2 of 6\n- Improved over previous best: NO\n\n## Recommendation\nREJECT\n\n## Reason\nThe candidate passes deterministic behavioral verification and substantially reduces LUTs and FFs, but it fails timing closure. Because the previous best is timing-feasible, this timing-infeasible candidate is not an eligible improvement under the contract.",
+      "recommendation": "REJECT",
+      "passed": 4,
+      "failed": 2
+    }
+  },
+  "artifacts": {}
+}

@@ -1,0 +1,189 @@
+
+****** Vivado v2025.2 (64-bit)
+  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025
+  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025
+  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025
+  **** Start of session at: Mon Nov  2 10:38:48 2026
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+
+source C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-06/rv32i_core_build/iter_003/cand_standard/synth.tcl
+# set_msg_config -id {VRFC 10-3609} -new_severity ERROR
+# set_msg_config -id {Synth 8-9873} -new_severity ERROR
+# set_msg_config -id {Designutils 20-1307} -new_severity ERROR
+# set_msg_config -id {Synth 8-327} -new_severity ERROR
+# set_msg_config -id {Synth 8-3352} -new_severity ERROR
+# set_part xc7a35tcpg236-1
+INFO: [Coretcl 2-1500] The part has been set to 'xc7a35tcpg236-1' for the current project only. Run set_part -help for more details. To evaluate different speed grades in the current design, use the set_speed_grade command, or use the open_checkpoint -part command to change the part used by an existing checkpoint design.
+set_part: Time (s): cpu = 00:00:22 ; elapsed = 00:00:17 . Memory (MB): peak = 531.203 ; gain = 226.031
+# read_verilog "C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-06/rv32i_core_build/iter_003/cand_standard/rv32i_core.v"
+# set fp [open "C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-06/rv32i_core_build/iter_003/cand_standard/timing.xdc" w]
+# puts $fp {create_clock -period 10.000 -name clk [get_ports clk]}
+# puts $fp {set_property HD.CLK_SRC BUFGCTRL_X0Y0 [get_ports clk]}
+# close $fp
+# read_xdc "C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-06/rv32i_core_build/iter_003/cand_standard/timing.xdc"
+# synth_design -top rv32i_core -flatten_hierarchy rebuilt -mode out_of_context 
+Command: synth_design -top rv32i_core -flatten_hierarchy rebuilt -mode out_of_context
+Starting synth_design
+Using part: xc7a35tcpg236-1
+Attempting to get a license for feature 'Synthesis' and/or device 'xc7a35t'
+INFO: [Common 17-349] Got license for feature 'Synthesis' and/or device 'xc7a35t'
+INFO: [Device 21-403] Loading part xc7a35tcpg236-1
+INFO: [Synth 8-7079] Multithreading enabled for synth_design using a maximum of 2 processes.
+INFO: [Synth 8-7078] Launching helper process for spawning children vivado processes
+INFO: [Synth 8-7075] Helper process launched with PID 31152
+---------------------------------------------------------------------------------
+Starting RTL Elaboration : Time (s): cpu = 00:00:12 ; elapsed = 00:00:14 . Memory (MB): peak = 1257.723 ; gain = 540.770
+---------------------------------------------------------------------------------
+INFO: [Synth 8-6157] synthesizing module 'rv32i_core' [C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-06/rv32i_core_build/iter_003/cand_standard/rv32i_core.v:396]
+INFO: [Synth 8-6157] synthesizing module 'rv_imem' [C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-06/rv32i_core_build/iter_003/cand_standard/rv32i_core.v:3]
+INFO: [Synth 8-6155] done synthesizing module 'rv_imem' (0#1) [C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-06/rv32i_core_build/iter_003/cand_standard/rv32i_core.v:3]
+INFO: [Synth 8-6157] synthesizing module 'rv_decode' [C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-06/rv32i_core_build/iter_003/cand_standard/rv32i_core.v:42]
+INFO: [Synth 8-6155] done synthesizing module 'rv_decode' (0#1) [C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-06/rv32i_core_build/iter_003/cand_standard/rv32i_core.v:42]
+INFO: [Synth 8-6157] synthesizing module 'rv_regfile' [C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-06/rv32i_core_build/iter_003/cand_standard/rv32i_core.v:117]
+INFO: [Synth 8-6155] done synthesizing module 'rv_regfile' (0#1) [C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-06/rv32i_core_build/iter_003/cand_standard/rv32i_core.v:117]
+INFO: [Synth 8-6157] synthesizing module 'rv_alu' [C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-06/rv32i_core_build/iter_003/cand_standard/rv32i_core.v:166]
+INFO: [Synth 8-226] default block is never used [C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-06/rv32i_core_build/iter_003/cand_standard/rv32i_core.v:194]
+INFO: [Synth 8-6155] done synthesizing module 'rv_alu' (0#1) [C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-06/rv32i_core_build/iter_003/cand_standard/rv32i_core.v:166]
+INFO: [Synth 8-6157] synthesizing module 'rv_dmem' [C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-06/rv32i_core_build/iter_003/cand_standard/rv32i_core.v:216]
+INFO: [Synth 8-6155] done synthesizing module 'rv_dmem' (0#1) [C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-06/rv32i_core_build/iter_003/cand_standard/rv32i_core.v:216]
+INFO: [Synth 8-6157] synthesizing module 'rv_ctrl' [C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-06/rv32i_core_build/iter_003/cand_standard/rv32i_core.v:254]
+INFO: [Synth 8-6155] done synthesizing module 'rv_ctrl' (0#1) [C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-06/rv32i_core_build/iter_003/cand_standard/rv32i_core.v:254]
+INFO: [Synth 8-6155] done synthesizing module 'rv32i_core' (0#1) [C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-06/rv32i_core_build/iter_003/cand_standard/rv32i_core.v:396]
+---------------------------------------------------------------------------------
+Finished RTL Elaboration : Time (s): cpu = 00:00:15 ; elapsed = 00:00:17 . Memory (MB): peak = 1378.746 ; gain = 661.793
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Handling Custom Attributes
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Handling Custom Attributes : Time (s): cpu = 00:00:15 ; elapsed = 00:00:18 . Memory (MB): peak = 1378.746 ; gain = 661.793
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished RTL Optimization Phase 1 : Time (s): cpu = 00:00:15 ; elapsed = 00:00:18 . Memory (MB): peak = 1378.746 ; gain = 661.793
+---------------------------------------------------------------------------------
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.042 . Memory (MB): peak = 1378.746 ; gain = 0.000
+INFO: [Project 1-570] Preparing netlist for logic optimization
+
+Processing XDC Constraints
+Initializing timing engine
+Parsing XDC File [C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-06/rv32i_core_build/iter_003/cand_standard/timing.xdc]
+Finished Parsing XDC File [C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-06/rv32i_core_build/iter_003/cand_standard/timing.xdc]
+Completed Processing XDC Constraints
+
+Netlist sorting complete. Time (s): cpu = 00:00:00 ; elapsed = 00:00:00 . Memory (MB): peak = 1453.883 ; gain = 0.000
+INFO: [Project 1-111] Unisim Transformation Summary:
+No Unisim elements were transformed.
+
+Constraint Validation Runtime : Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.110 . Memory (MB): peak = 1453.883 ; gain = 0.000
+---------------------------------------------------------------------------------
+Finished Constraint Validation : Time (s): cpu = 00:00:29 ; elapsed = 00:00:33 . Memory (MB): peak = 1453.883 ; gain = 736.930
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Loading Part and Timing Information
+---------------------------------------------------------------------------------
+Loading part: xc7a35tcpg236-1
+---------------------------------------------------------------------------------
+Finished Loading Part and Timing Information : Time (s): cpu = 00:00:29 ; elapsed = 00:00:33 . Memory (MB): peak = 1453.883 ; gain = 736.930
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Applying 'set_property' XDC Constraints
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished applying 'set_property' XDC Constraints : Time (s): cpu = 00:00:29 ; elapsed = 00:00:33 . Memory (MB): peak = 1453.883 ; gain = 736.930
+---------------------------------------------------------------------------------
+INFO: [Synth 8-802] inferred FSM for state register 'state_reg' in module 'rv_ctrl'
+INFO: [Synth 8-3971] The signal "rv_regfile:/x_reg" was recognized as a true dual port RAM template.
+---------------------------------------------------------------------------------------------------
+                   State |                     New Encoding |                Previous Encoding 
+---------------------------------------------------------------------------------------------------
+                       F |                           000001 |                              000
+                       D |                           000010 |                              001
+                       E |                           000100 |                              010
+                       M |                           001000 |                              011
+                       L |                           010000 |                              100
+                       W |                           100000 |                              101
+---------------------------------------------------------------------------------------------------
+INFO: [Synth 8-3354] encoded FSM with state register 'state_reg' using encoding 'one-hot' in module 'rv_ctrl'
+---------------------------------------------------------------------------------
+Finished RTL Optimization Phase 2 : Time (s): cpu = 00:00:30 ; elapsed = 00:00:34 . Memory (MB): peak = 1453.883 ; gain = 736.930
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start RTL Component Statistics 
+---------------------------------------------------------------------------------
+Detailed RTL Component Info : 
++---Adders : 
+	   3 Input   32 Bit       Adders := 1     
+	   2 Input   32 Bit       Adders := 1     
+	   2 Input    6 Bit       Adders := 1     
+	   2 Input    5 Bit       Adders := 2     
++---XORs : 
+	   2 Input     32 Bit         XORs := 1     
++---Registers : 
+	               64 Bit    Registers := 1     
+	               32 Bit    Registers := 9     
+	               31 Bit    Registers := 1     
+	                5 Bit    Registers := 1     
+	                1 Bit    Registers := 3     
++---RAMs : 
+	               2K Bit	(64 X 32 bit)          RAMs := 1     
+	             1024 Bit	(32 X 32 bit)          RAMs := 1     
+	              992 Bit	(31 X 32 bit)          RAMs := 1     
++---Muxes : 
+	   2 Input   64 Bit        Muxes := 1     
+	   2 Input   32 Bit        Muxes := 11    
+	   6 Input   32 Bit        Muxes := 1     
+	   2 Input   31 Bit        Muxes := 1     
+	   6 Input    6 Bit        Muxes := 1     
+	   2 Input    6 Bit        Muxes := 3     
+	   2 Input    4 Bit        Muxes := 2     
+	   2 Input    1 Bit        Muxes := 4     
+	   6 Input    1 Bit        Muxes := 1     
+---------------------------------------------------------------------------------
+Finished RTL Component Statistics 
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Part Resource Summary
+---------------------------------------------------------------------------------
+Part Resources:
+DSPs: 90 (col length:60)
+BRAMs: 100 (col length: RAMB18 60 RAMB36 30)
+---------------------------------------------------------------------------------
+Finished Part Resource Summary
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Cross Boundary and Area Optimization
+---------------------------------------------------------------------------------
+INFO: [Synth 8-3971] The signal "rv32i_core/u_rv_regfile/x_reg" was recognized as a true dual port RAM template.
+---------------------------------------------------------------------------------
+Finished Cross Boundary and Area Optimization : Time (s): cpu = 00:00:45 ; elapsed = 00:00:49 . Memory (MB): peak = 1565.266 ; gain = 848.312
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start ROM, RAM, DSP, Shift Register and Retiming Reporting
+---------------------------------------------------------------------------------
+
+Block RAM: Preliminary Mapping Report (see note below)
++------------+-------------------+------------------------+---+---+------------------------+---+---+------------------+--------+--------+
+|Module Name | RTL Object        | PORT A (Depth x Width) | W | R | PORT B (Depth x Width) | W | R | Ports driving FF | RAMB18 | RAMB36 | 
++------------+-------------------+------------------------+---+---+------------------------+---+---+------------------+--------+--------+
+|rv32i_core  | u_rv_imem/mem_reg | 64 x 32(READ_FIRST)    | W |   | 64 x 32(WRITE_FIRST)   |   | R | Port A and B     | 1      | 0      | 
+|rv32i_core  | u_rv_dmem/mem_reg | 32 x 32(READ_FIRST)    | W | R |                        |   |   | Port A           | 1      | 0      | 
++------------+-------------------+------------------------+---+---+------------------------+---+---+------------------+--------+--------+
+
+Note: The table above is a preliminary report that shows the Block RAMs at the current stage of the synthesis flow. Some Block RAMs may be reimplemented as non Block RAM primitives later in the synthesis flow. Multiple instantiated Block RAMs are reported only once. 
+---------------------------------------------------------------------------------
+Finished ROM, RAM, DSP, Shift Register and Retiming Reporting
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Applying XDC Timing Constraints
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Finished Applying XDC Timing Constraints : Time (s): cpu = 00:00:56 ; elapsed = 00:01:00 . Memory (MB): peak = 1587.184 ; gain = 870.230
+---------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
+Start Timing Optimization
+---------------------------------------------------------------------------------
+
+
+
+timed out after 111.06750109999484s

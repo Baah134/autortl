@@ -1,0 +1,13 @@
+# PLAN — iteration 3
+
+## Current state assessment
+
+Iterations 1 and 2 were accepted, reducing LUTs to the verified incumbent’s 2,030 while keeping 4,353 FFs; routed setup and hold slack are 0.63 ns and 0.075 ns. The objective is now a strict LUT reduction against that timing-feasible best. The previous changes already combined add/sub and left/right shifts in `rv_alu`. The out-of-context flow leaves data I/O unconstrained, so timing gates cover internal clocked paths.
+
+## Hypothesis
+
+Reuse the ALU’s add/sub datapath for its signed and unsigned result comparisons to reduce LUT use, while checking that the shared carry path preserves timing closure.
+
+## Instruction for generator
+
+In `rv_alu`, extend the existing `add_sub_result` path to subtract for `op[2:0] == 3'b010` and `3'b011` as well as for arithmetic subtraction; use the difference sign and carry/borrow to produce the signed and unsigned comparison results. Preserve the defined `op[3]` behavior and keep `eq`, `lt`, and `ltu` comparing the raw `rs1_val` and `rs2_val`, independently of operand selection and the result-comparison path. Preserve all other ALU results and the top’s cycle behavior; retain the candidate only if simulation, routed setup and hold, and metric integrity pass and routed LUTs strictly improve on the incumbent.

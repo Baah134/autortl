@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_1:decision:instruction:0",
+  "result": "In `rv_alu`, replace the separate `a + b` and `a - b` expressions and result mux in the `op[2:0] == 3'b000` branch with one 32-bit add/sub operation: conditionally invert every bit of `b` using `op[3]` and use `op[3]` as the carry-in. Preserve modulo-2\u00b3\u00b2 results and leave the shift, comparison, and logical operation branches unchanged. Preserve all ports, registered behavior, reset behavior, and instruction-cycle timing; do not add a top latency annotation based on child metadata. The expected benefit is fewer LUTs with no extra registers or DSP48 use; compare routed LUTs and confirm WNS and WHS remain nonnegative.",
+  "artifacts": {}
+}

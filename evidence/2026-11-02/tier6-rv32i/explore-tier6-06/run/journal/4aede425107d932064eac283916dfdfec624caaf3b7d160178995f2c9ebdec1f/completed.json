@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_1:decision:instruction:0",
+  "result": "Change only `rv_regfile`: remove the reset loop that clears `x[1:31]`, retain the storage array, and add per-register valid bits that reset to zero and become valid on writes to nonzero addresses. Keep both registered reads, returning zero for x0 or an invalid entry; preserve read-first behavior on a same-edge read and write, and clear the read output registers on synchronous active-high reset. Preserve the existing write semantics and all top-level cycles, handshakes, and reset behavior; do not add a numeric top latency annotation.",
+  "artifacts": {}
+}
