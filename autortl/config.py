@@ -40,6 +40,9 @@ class RunConfig:
     # Harness-chosen implementation flow (chip_top_flow_for_soc_block): chip_top places
     # every port on a package pin; out_of_context implements a block without I/O buffers.
     implementation: str = "chip_top"
+    # fixed_synthesis_timeout_blocks_heavy_designs: one synthesis/implementation call's
+    # limit; the remaining tool budget still caps it.
+    synthesis_timeout_minutes: float = 15.0
 
     def validate(self) -> None:
         if self.mode not in ("build", "optimize"):
@@ -67,6 +70,9 @@ class RunConfig:
                 raise ValueError(f"{name} must be a finite nonnegative number")
         if self.target_freq_mhz == 0:
             raise ValueError("target_freq_mhz must be positive")
+        timeout = self.synthesis_timeout_minutes
+        if type(timeout) not in (int, float) or not math.isfinite(timeout) or not 1 <= timeout <= 240:
+            raise ValueError("synthesis_timeout_minutes must be between 1 and 240")
         if type(self.parallel_candidates) is not bool:
             raise ValueError("parallel_candidates must be boolean")
         if self.parallel_candidates:
@@ -105,6 +111,8 @@ class RunConfig:
         data.setdefault("model", None)
         # Runs saved before the out-of-context flow implemented a chip top.
         data.setdefault("implementation", "chip_top")
+        # Runs saved before the setting used the fixed 900 s synthesis limit.
+        data.setdefault("synthesis_timeout_minutes", 15.0)
         allowed = {item.name for item in fields(cls)}
         if set(data) - allowed:
             raise ValueError("unknown run config fields: " + ", ".join(sorted(set(data) - allowed)))

@@ -56,6 +56,9 @@ def main(argv=None):
                       help="chip_top (default): every port on a package pin through an I/O buffer; "
                            "out_of_context: implement a block of a larger design without I/O buffers, "
                            "timing its internal clocked paths only")
+    flow.add_argument("--synthesis-timeout-minutes", type=float, default=15.0,
+                      help="limit for one synthesis/implementation call (default 15); the remaining "
+                           "tool budget still caps it (fixed_synthesis_timeout_blocks_heavy_designs)")
 
     p_opt = sub.add_parser("optimize", parents=[common, flow])
     p_opt.add_argument("--design", required=True, type=Path)
@@ -138,12 +141,14 @@ def main(argv=None):
 
     if a.cmd == "optimize":
         cfg = RunConfig(mode="optimize", top_module=a.top, design_path=a.design,
-                        testbench_path=a.tb, implementation=a.implementation, **kw)
+                        testbench_path=a.tb, implementation=a.implementation,
+                        synthesis_timeout_minutes=a.synthesis_timeout_minutes, **kw)
         orch = Orchestrator(cfg, run_dir=a.output_dir.resolve() if hasattr(a, "output_dir") else None)
     elif a.cmd == "build":
         cfg = RunConfig(mode="build", spec_path=a.spec, testbench_path=a.tb,
                         top_module=a.top, generate_golden=a.generate_golden,
-                        implementation=a.implementation, **kw)
+                        implementation=a.implementation,
+                        synthesis_timeout_minutes=a.synthesis_timeout_minutes, **kw)
         orch = Orchestrator(cfg, run_dir=a.output_dir.resolve() if hasattr(a, "output_dir") else None)
 
     try:

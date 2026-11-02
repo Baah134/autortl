@@ -412,7 +412,8 @@ class Orchestrator:
                     raise RuntimeError("TOOL_BUDGET: tool or wall-time budget exhausted")
                 remaining = min((self.budget.max_wall_minutes - self.budget.wall_minutes) * 60,
                                 self.budget.max_vivado_minutes * 60 - self.budget.vivado_seconds)
-                default = {"xvlog_check": 120, "xsim_run": 300, "run_synthesis": 900}[name]
+                default = {"xvlog_check": 120, "xsim_run": 300,
+                           "run_synthesis": self.cfg.synthesis_timeout_minutes * 60}[name]
                 kwargs["timeout"] = min(kwargs.get("timeout", default), remaining)
             started = awake_seconds()
             try:

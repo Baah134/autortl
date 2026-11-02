@@ -10,6 +10,12 @@ target_freq_mhz: 100.0
 # not a chip top: its 390 port bits exceed the 106 user I/O of xc7a35tcpg236-1
 # (chip_top_flow_for_soc_block).
 implementation: out_of_context
+# One synthesis of the baseline (about 20 S-box ROMs, 4 GB peak) passed 900 s
+# twice (fixed_synthesis_timeout_blocks_heavy_designs).
+synthesis_timeout_minutes: 45
+explore_budgets:
+  tool_minutes: 150
+  wall_minutes: 240
 stresses: "iterative AES-128 split into a sequencer, a combinational round and a combinational key-schedule step; 128-bit internal buses; S-box, ShiftRows, MixColumns and on-the-fly key expansion; one key-preparation edge plus ten round edges; FIPS-197 and AESAVS known answers plus back-to-back random blocks under backpressure"
 pass_criteria:
   timing_met: true

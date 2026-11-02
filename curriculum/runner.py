@@ -117,6 +117,9 @@ def _metadata(entry):
             raise ValueError(f"{entry.name}: generate_golden must be boolean")
         if meta["generate_golden"] and mode != "build":
             raise ValueError(f"{entry.name}: generate_golden=True requires build mode")
+    if "synthesis_timeout_minutes" in meta and (type(meta["synthesis_timeout_minutes"]) not in (int, float)
+                                                or not 1 <= meta["synthesis_timeout_minutes"] <= 240):
+        raise ValueError(f"{entry.name}: synthesis_timeout_minutes must be between 1 and 240")
     if "implementation" in meta and meta["implementation"] not in IMPLEMENTATIONS:
         raise ValueError(f"{entry.name}: implementation must be one of: " + ", ".join(IMPLEMENTATIONS))
     for name in ("design", "tb", "spec"):
@@ -362,7 +365,8 @@ def run_tier(tier: int, **overrides) -> int:
                   "max_iterations": meta.get("iterations", 5),
                   "generate_golden": meta.get("generate_golden", False),
                   # chip_top_flow_for_soc_block: part of the entry configuration and the cohort.
-                  "implementation": meta.get("implementation", "chip_top")}
+                  "implementation": meta.get("implementation", "chip_top"),
+                  "synthesis_timeout_minutes": meta.get("synthesis_timeout_minutes", 15.0)}
         for key, field in (("design", "design_path"), ("tb", "testbench_path"), ("spec", "spec_path")):
             if meta.get(key):
                 config[field] = (entry / meta[key]).resolve()

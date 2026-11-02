@@ -51,10 +51,15 @@ def entry_command(python, entry: Path, out: Path, model=None, vivado=None):
     if meta.get("implementation"):
         # chip_top_flow_for_soc_block; run.py checks it against its fixed choices.
         args += ["--implementation", meta["implementation"]]
-    args += ["--iterations", str(meta.get("iterations", 5)), "--best-of-n", str(BUDGETS["best_of_n"]),
+    if meta.get("synthesis_timeout_minutes"):
+        args += ["--synthesis-timeout-minutes", str(meta["synthesis_timeout_minutes"])]
+    # fixed_synthesis_timeout_blocks_heavy_designs: a heavy entry may raise its exploration budgets.
+    budgets = dict(BUDGETS, **{k: v for k, v in (meta.get("explore_budgets") or {}).items()
+                               if k in ("model_calls", "tool_minutes", "wall_minutes")})
+    args += ["--iterations", str(meta.get("iterations", 5)), "--best-of-n", str(budgets["best_of_n"]),
              "--objective", meta.get("objective", "minimize_luts"),
-             "--max-llm-calls", str(BUDGETS["model_calls"]), "--max-vivado-minutes", str(BUDGETS["tool_minutes"]),
-             "--max-wall-minutes", str(BUDGETS["wall_minutes"]), "--max-infra-retries", str(BUDGETS["infra_retries"]),
+             "--max-llm-calls", str(budgets["model_calls"]), "--max-vivado-minutes", str(budgets["tool_minutes"]),
+             "--max-wall-minutes", str(budgets["wall_minutes"]), "--max-infra-retries", str(budgets["infra_retries"]),
              "--target-part", "xc7a35tcpg236-1", "--target-freq-mhz", str(meta.get("target_freq_mhz", 100)),
              "--output-dir", str(out)]
     folder = tier0_gate.vivado_bin(vivado)
