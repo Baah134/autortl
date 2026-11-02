@@ -1,0 +1,23 @@
+[
+  {"name": "msb_first", "why": "data bits are sent most significant first instead of least significant first",
+   "find": "tx <= shift[0]; shift <= {1'b0, shift[7:1]}; // next_data_bit",
+   "replace": "tx <= shift[7]; shift <= {shift[6:0], 1'b0}; // next_data_bit"},
+  {"name": "stop_bit_low", "why": "the stop bit is driven low (framing error), the line only returns high at frame end",
+   "find": "tx <= 1'b1; // stop bit", "replace": "tx <= 1'b0; // stop bit"},
+  {"name": "bit_period_one_long", "why": "every bit lasts CLKS_PER_BIT+1 clk cycles",
+   "find": "wire bit_done = (tick == CLKS_PER_BIT - 1);", "replace": "wire bit_done = (tick == CLKS_PER_BIT);"},
+  {"name": "parameter_ignored", "why": "hard-codes the default bit period of 16 cycles",
+   "find": "wire bit_done = (tick == CLKS_PER_BIT - 1);", "replace": "wire bit_done = (tick == 16 - 1);"},
+  {"name": "idle_cycle_between_frames", "why": "tx_ready only when idle, so back-to-back frames gain one idle cycle",
+   "find": "assign tx_ready = !busy || last_cycle;", "replace": "assign tx_ready = !busy;"},
+  {"name": "full_one_early", "why": "in_ready drops with DEPTH-1 bytes waiting, so the FIFO holds one byte too few",
+   "find": "assign in_ready = (count < DEPTH);", "replace": "assign in_ready = (count < DEPTH - 1);"},
+  {"name": "push_ignores_full", "why": "a byte offered while full is written anyway and overwrites the oldest waiting byte",
+   "find": "wire push = in_valid && in_ready;", "replace": "wire push = in_valid;"},
+  {"name": "pop_ignores_tx_ready", "why": "the FIFO pops whenever it is not empty, dropping bytes while a frame is in progress",
+   "find": "wire pop = out_valid && out_ready;", "replace": "wire pop = out_valid;"},
+  {"name": "reset_keeps_waiting_bytes", "why": "reset clears the pointers but not the waiting count, so stale bytes survive a reset",
+   "find": "count <= 0; // reset_count", "replace": "count <= count; // reset_count"},
+  {"name": "asynchronous_reset", "why": "an off-edge reset pulse aborts the frame in progress",
+   "find": "always @(posedge clk) begin // tx_fsm", "replace": "always @(posedge clk or posedge rst) begin // tx_fsm"}
+]
