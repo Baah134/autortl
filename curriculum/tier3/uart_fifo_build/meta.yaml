@@ -6,6 +6,11 @@ generate_golden: false
 objective: minimize_luts
 target_freq_mhz: 100.0
 iterations: 8
+# Eight iterations need more than the default 40 tool minutes (explore-tier3-08
+# ended on its tool budget after six); a bench passes only a finished run.
+budgets:
+  tool_minutes: 90
+  wall_minutes: 150
 stresses: "multi-module decomposition from prose; fixed top and uart_tx interfaces; cycle-exact 8N1 framing; FIFO full/back-to-back; reset mid-frame; parameterized bit period; trusted integration testbench"
 pass_criteria:
   timing_met: true

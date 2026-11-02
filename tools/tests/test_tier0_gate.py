@@ -144,6 +144,8 @@ def test_agent_worktrees_are_not_part_of_the_identity(tmp_path):
 
 def test_a_failing_doctor_stops_the_gate_before_any_freeze(tmp_path, monkeypatch):
     monkeypatch.setattr(gate, "ROOT", tmp_path)
+    from curriculum import runner
+    monkeypatch.setattr(runner, "_history", lambda: [])  # independent of the real curriculum history
     (tmp_path / "logs").mkdir()
     calls = []
     def run(cmd, **kwargs):
@@ -248,7 +250,8 @@ def test_entry_settings_name_each_entry_s_own_frequency_and_budgets():
     tier2 = gate.entry_settings(2)
     assert tier2["fir8"] == {"target_freq_mhz": 150.0}
     assert tier2["sync_fifo_build"] == {"target_freq_mhz": 100.0}
-    assert gate.entry_settings(5)["fir16_sym_build"] == {"target_freq_mhz": 150.0}
+    assert gate.entry_settings(5)["fir16_sym_build"] == {"target_freq_mhz": 150.0, "max_vivado_minutes": 60.0,
+                                                         "max_wall_minutes": 90.0}
     tier6 = gate.entry_settings(6)
     assert tier6["aes128_core_build"] == {"target_freq_mhz": 100.0, "max_vivado_minutes": 150.0,
                                           "max_wall_minutes": 240.0}

@@ -4,6 +4,11 @@ design: fir8.v
 tb: fir8_tb.v
 objective: maximize_freq
 target_freq_mhz: 150.0
+# At 150 MHz on xc7a35tcpg236-1 a register driving an output pin alone exceeds the
+# 6.67 ns period (explore-fir8-02: y_out_reg[26] -> y_out[26], one logic level,
+# -2.766 ns), so a chip top can never close; run it as the DSP block it is
+# (chip_top_pad_floor_exceeds_period).
+implementation: out_of_context
 iterations: 6
 stresses: "DSP48 inference vs LUT fabric; pipeline mutation; timing doctor"
 pass_criteria:
