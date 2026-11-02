@@ -468,9 +468,8 @@ def _assemble_evidence(out: Path, args, table):
         tested = {r.get("bitstream_payload_sha256") for r in hw_runs.values()}
         if tested != {payload}:
             raise SuiteError(f"{design.name}: archived bitstream payload differs from the one tested on hardware")
-        run_summary = json.loads((design.state.parent / "run_summary.json").read_text(encoding="utf-8"))
-        best = run_summary["best_metrics"]
-        harness = {"source": (design.state.parent / "run_summary.json").relative_to(design_table.REPO).as_posix(),
+        source, best = design.measurement()
+        harness = {"source": source.relative_to(design_table.REPO).as_posix(),
                    **{k: best[k] for k in ("lut_used", "ff_used", "dsp_used", "wns_ns", "whs_ns")}}
         summary[design.name] = {
             "title": design.title, "winner": design.winner.relative_to(design_table.REPO).as_posix(),
