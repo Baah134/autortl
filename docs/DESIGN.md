@@ -456,6 +456,17 @@ model included), the frozen runtime identity of every entry, the governance code
 hash and the model identity described under provider architecture. `--jobs` is
 not part of it.
 
+**Entry settings.** The bench's flags are tier-wide values. An entry's own
+meta.yaml `target_freq_mhz` and `budgets` (keys `model_calls`, `tool_minutes`,
+`wall_minutes`; positive numbers, `model_calls` an integer; validated with the
+rest of the metadata) are applied after them and win for that entry, raising or
+lowering its limits; the bench prints a line when one replaces a bench value.
+Iterations, best-of-n, part and the other flags still follow the bench. The
+effective values are in each entry's recorded configuration, so they are part
+of the cohort (gate_frequency_overrides_entry_meta,
+entry_budgets_ignored_by_bench). `synthesis_timeout_minutes` comes only from
+meta.yaml on the bench path. tools/explore.py applies the same `budgets`.
+
 **Parallel entries.** Entries run one at a time by default. `bench --jobs N`
 runs up to N entries at once as separate processes. Each entry keeps its own run
 folder, budget and journal. Records are still assembled in entry order. A worker
@@ -489,12 +500,24 @@ the bench exits 3. Resume or rerun it on a host that stays awake
 raised a Python exception is a failed entry, not infrastructure. Otherwise the
 bench exits 0 when the campaign qualifies and 1 when it does not.
 
-**Gate runner.** `tools/tier0_gate.py` runs the merge gate for tier 0 or 1. It
+**Gate runner.** `tools/tier0_gate.py` runs the merge gate for tiers 0 to 6. It
 freezes the runtime source identities, requires a full pytest receipt with the
 source unchanged, then runs the bench with fixed per-tier budgets. Afterwards it
 requires the source, the router statistics prefix and the history prefix to be
-unchanged. It refuses to run when a higher tier is held and never overwrites an
-earlier attempt. `--model` and `--jobs` pass through to the bench.
+unchanged. It never overwrites an earlier attempt. `--model` and `--jobs` pass
+through to the bench. Tier 0 keeps campaign14's budgets (one iteration, 16 model
+calls, 20 tool and 30 wall minutes); tiers 1 to 6 take 30 model calls, 40 tool
+and 60 wall minutes with iterations from meta.yaml, the defaults
+tools/explore.py also uses (gate_limited_to_tiers_zero_and_one). The gate passes
+no target frequency, so each entry runs at its own (entry settings above), and
+its prelaunch record lists every entry's own settings.
+
+The gate refuses to run while a higher tier is held. Held is a state: a tier
+blocks only while its latest full-tier record is held, so a higher tier
+re-gated on the changed harness (its own gate) releases the lower ones, and a
+subset run never does (stale_held_record_blocks_lower_gates). The final sign-off
+pass holds tiers bottom-up, 0 to 6, so no tier above the one being gated is
+held yet.
 
 ## Conventions (enforced by autortl-conventions skill + code)
 Spec is law (latency, interfaces). Promote never demote. One driver per

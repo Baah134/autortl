@@ -323,7 +323,7 @@ Format: Anthropic SKILL.md (YAML frontmatter description + markdown body + `snip
 ## 6. Curriculum | `curriculum/`
 
 ### runner.py
-`run_tier(N, **overrides)`: iterate entry folders, build a RunConfig from each `meta.yaml` plus the CLI overrides, run the orchestrator, check mandatory gates and `pass_criteria` (`max_luts`, `max_ffs`; `timing_met` cannot be disabled) against `best_metrics`, compute governance, and commit the campaign record to `curriculum/results.jsonl`. Accepted overrides: `proposal_feedback`, tool binaries, `target_part`, `target_freq_mhz`, `objective`, `max_iterations`, `best_of_n`, the three budget ceilings, `max_infra_retries` and `model`. Each campaign gets a fresh `tier<N>_*` folder under the output root (default `logs/curriculum`) with one run folder per entry, `entries.json` (rewritten after each entry) and `summary.json`.
+`run_tier(N, **overrides)`: iterate entry folders, build a RunConfig from each `meta.yaml` plus the CLI overrides, run the orchestrator, check mandatory gates and `pass_criteria` (`max_luts`, `max_ffs`; `timing_met` cannot be disabled) against `best_metrics`, compute governance, and commit the campaign record to `curriculum/results.jsonl`. Accepted overrides: `proposal_feedback`, tool binaries, `target_part`, `target_freq_mhz`, `objective`, `max_iterations`, `best_of_n`, the three budget ceilings, `max_infra_retries` and `model`. An entry's own `target_freq_mhz` and `budgets` (`model_calls`, `tool_minutes`, `wall_minutes`) are applied after the overrides and win over them for that entry (`entry_settings`); the effective values are in each entry's recorded config. Each campaign gets a fresh `tier<N>_*` folder under the output root (default `logs/curriculum`) with one run folder per entry, `entries.json` (rewritten after each entry) and `summary.json`.
 
 - **Design choice: meta.yaml per entry** | curriculum entries are data; adding one is a folder, never a code change.
 - **Design choice: exceptions become entry failures**, not runner crashes | one broken entry cannot hide the results of the rest. An escaped `CheckpointLockedError` is instead an `infra_blocked` entry with `failure_kind: infra`.
@@ -436,7 +436,7 @@ Budget ceilings and `--max-infra-retries` may be 0 but not negative; iterations,
 | `bench` | `--tier N` (required), `--entries NAME ...` (subset; never holds a tier), `--jobs N` (default 1; not part of the cohort) | 0 qualified; 1 not qualified; 3 no verdict |
 | `doctor` | `--vivado`, `--xvlog`, `--xelab`, `--xsim` | 0 ready; 1 a required check missing |
 
-`optimize`, `build` and `resume` print a JSON object with `status`, `best_iteration`, `timing_closed`, `improvement_kind` and `run_dir`. Argument errors exit 2. In `bench`, each entry's `meta.yaml` supplies mode, files, top, objective, frequency and iterations (default 5); CLI options override them.
+`optimize`, `build` and `resume` print a JSON object with `status`, `best_iteration`, `timing_closed`, `improvement_kind` and `run_dir`. Argument errors exit 2. In `bench`, each entry's `meta.yaml` supplies mode, files, top, objective, frequency and iterations (default 5); CLI options override them, except that an entry's own `target_freq_mhz` and `budgets` win over the CLI for that entry.
 
 ### Other entry points
 
@@ -444,7 +444,7 @@ Budget ceilings and `--max-infra-retries` may be 0 but not negative; iterations,
 |---|---|
 | `python scripts/demo.py [--output-dir DIR]` | Offline simulated walkthrough of one optimize run on `curriculum/tier0/mux4` (DIR must be new or empty; default a fresh temp folder). No Vivado, model or network; every number is made up. |
 | `python tools/role_report.py DIR... [--json]` | Per-run and per-role report from `events.jsonl`, `designs.jsonl`, `run_summary.json` and `budget.json`: completed, unfinished and retried calls per role method, repairs, evaluator verdicts, model calls and tokens in/out. Never reads model responses. DIR may be a run or any folder holding runs. |
-| `python tools/tier0_gate.py --name NAME [--python PY] [--tier 0\|1] [--jobs N] [--model M] [--vivado-bin DIR]` | Merge gate: freezes source identities, requires a full pytest receipt, runs `bench` with fixed per-tier budgets, then requires source, router-stats prefix and history prefix unchanged. Writes `logs/NAME*`; refuses to overwrite an earlier attempt or to run when a higher tier is held. |
+| `python tools/tier0_gate.py --name NAME [--python PY] [--tier 0..6] [--jobs N] [--model M] [--vivado-bin DIR]` | Merge gate: freezes source identities, requires a full pytest receipt, runs `bench` with fixed per-tier budgets and no global frequency (each entry's meta.yaml frequency and `budgets` apply), then requires source, router-stats prefix and history prefix unchanged. Writes `logs/NAME*`; refuses to overwrite an earlier attempt or to run while a higher tier's latest full-tier record is held. |
 
 ---
 

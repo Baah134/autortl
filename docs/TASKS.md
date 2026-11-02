@@ -960,3 +960,29 @@ with numeric WNS/WHS, Bonded IOB 0 and that `report_power` and
 ## November 2 (Claude Code): open observability gap
 
 - Raw model replies are not retained: the Codex backend runs `--ephemeral` and the journal stores only the extracted RTL, so an extraction fault cannot be told apart from a model that stopped early (fir16-long-01 iteration 2, taxonomy `incomplete_block_preferred`). Keep each role reply, bounded, beside its journal entry.
+
+## November 2 (Claude Code): curriculum gate ready for the tier 0-6 sign-off pass
+
+**Decided and implemented (branch gate-tiers-2-6):**
+
+1. `gate_limited_to_tiers_zero_and_one`: tools/tier0_gate.py accepts `--tier`
+   0 to 6. Tiers 2 to 6 take tier1's per-entry budgets (best_of_n 1, 30 model
+   calls, 40 tool minutes, 60 wall minutes, one infra retry, iterations from
+   meta.yaml), the explore.py defaults. Tier0 and tier1 dictionaries unchanged.
+2. `gate_frequency_overrides_entry_meta`: the gate passed `--target-freq-mhz
+   100` and the runner applied CLI overrides after meta, so fir8 and
+   fir16_sym_build (150 MHz) would have been gated at 100 MHz. The gate passes
+   no frequency, and an entry's meta frequency wins over any bench value.
+   Every tier0/tier1 entry declares 100.0 or nothing, so their effective
+   configuration is unchanged.
+3. `entry_budgets_ignored_by_bench`: `explore_budgets` renamed `budgets`,
+   validated in `_metadata`, applied by explore.py and by the bench to that
+   entry only; effective limits are in the entry config and cohort. AES-128:
+   150 tool / 240 wall minutes; RV32I: 180 / 300.
+4. `stale_held_record_blocks_lower_gates`: a higher tier blocks the gate only
+   while its latest full-tier record is held.
+
+Remaining acceptance: controlled pytest only; no Vivado ran. Any change to
+curriculum/runner.py changes the governance hash, so every tier starts a new
+cohort in the sign-off pass regardless. Tier1 has four entries, so it
+qualifies only at 4/4 (3/4 = 75%).
