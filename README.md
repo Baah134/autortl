@@ -29,6 +29,13 @@ board. Every number links to an archived run.
 - **Real optimization, not just passing tests.** The FIR went from failing
   timing at 78 LUTs to 52 LUTs with positive slack, and a dot product from
   328 to 20 LUTs by moving arithmetic into DSP slices.
+- **Multi-module designs, built and then optimized as a whole.** From typed
+  specifications the roles build designs of up to four modules (a UART
+  receiver with oversampling, a FIFO and error counters; an SPI master; a
+  CRC-16 stream; a round-robin arbiter with a register file), verify each one
+  against an independent testbench, then optimize inside every module: the
+  UART receiver went from missing 100 MHz to 55 LUTs with timing met, and the
+  SPI master from 25 to 19 LUTs.
 - **Verifiers that are tested themselves.** Before a testbench may grade
   anything, it must pass a correct design and fail deliberately broken ones.
   An audit injected 27 faults into the FIR: generated testbenches first caught
@@ -39,7 +46,7 @@ board. Every number links to an archived run.
   line you name in a local config file. The same tier0 bench passed on four
   different models, and the role parsers read each model's own output format
   ([model matrix](evidence/2026-10-29/model-matrix-01/README.md)).
-- **Reproducible by construction.** 1,742 regression tests, crash-safe
+- **Reproducible by construction.** 1,966 regression tests, crash-safe
   resumable runs, fixed model-call and tool-time budgets, per-run token
   accounting, and a CI audit that checks over 34,000 recorded SHA-256 claims
   against the committed bytes. Curriculum tier 0 is held: three consecutive
@@ -139,6 +146,9 @@ and [winner](evidence/2026-10-26/generated-signed-fir4-attempt-01/run/signed_fir
 | Packet-tagged FIFO | 23 LUTs / 31 FFs · setup +0.078 ns · hold +0.106 ns | Independent test of the saved winner |
 | UART transmitter (harness-built) | 40 → 24 LUTs | 1,000,000-byte line-rate stream on the board |
 | Fault-qualified verification | 27 FIR, 18 elastic dot-product and 20 divider faults detected | Correct controls passed |
+| UART receiver + FIFO + error counters (4 modules, tier 5) | Setup −1.166 → +0.443 ns · 70 → 55 LUTs after timing recovery | Independent fault-qualified test |
+| SPI master (tier 4) | 25 → 19 LUTs / 37 → 33 FFs · setup +0.354 ns | Independent fault-qualified test |
+| CRC-16 stream, arbiter + register file (tier 4) | Built from specification: 16 and 42 LUTs, timing met | Independent fault-qualified test |
 | Curriculum tier 0 (counter, mux4) | Held: 3 consecutive qualifying runs · counter 55 → 31 LUTs | All mandatory gates |
 
 All at 100 MHz with ideal zero I/O delays; the dot products map their
@@ -242,10 +252,19 @@ harness regenerated the transmitter from the revised spec, and it streamed
   reviewed by separate agents; each confirmed finding gets a taxonomy entry
   and a regression test before it is fixed.
 - **New tiers are qualified first.** Tier 4 (a CRC-16 stream, an SPI master
-  and a two-module arbiter with a register file) entered the curriculum only
-  after each independent testbench passed its reference design and caught all
-  ten planted faults
-  ([qualification](evidence/2026-10-29/tier4-qualification-01/README.md)).
+  and a two-module arbiter with a register file) and tier 5 (an AXI4-Lite
+  register block, a UART receiver with a FIFO, and a 16-tap symmetric FIR at
+  150 MHz) entered the curriculum only after each independent testbench passed
+  its reference design and caught all ten planted faults
+  ([tier 4](evidence/2026-10-29/tier4-qualification-01/README.md),
+  [tier 5](evidence/2026-10-30/tier5-qualification-01/README.md)).
+- **Each hard run teaches the roles something.** Runs on tiers 3 to 5 turned
+  into concrete harness rules: optimizing children and top as one unit when an
+  independent testbench guards the top, keeping partial timing progress,
+  reporting every violated testbench rule to the fixer, and routing spec
+  mistakes back to the planner with the exact ports to fix
+  ([tier 4](evidence/2026-10-30/explore-tier4-02/README.md),
+  [tier 5](evidence/2026-10-30/explore-tier5-01/README.md)).
 - **The evidence is audited.** CI checks every recorded SHA-256 claim, over
   34,000 of them, against the committed bytes
   ([audit](evidence/2026-10-28/evidence-integrity-01/README.md)).
