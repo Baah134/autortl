@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_1:decision:instruction:0",
+  "result": "Keep `axil_wr_if` and `axil_rd_if` as the write and read interfaces, but replace the `axil_regbank` instance with equivalent bank state and logic inside `axil_regs`. For `ctrl_q`, `scratch_q`, and `config_q`, replace the 32-bit merged-data expressions with four independently enabled byte assignments selected by `wr_en`, `wr_idx`, and the matching `wr_strb` bit; preserve all reset values, write-count behavior, W1C set priority, status sampling, read mapping, and `ctrl`/`irq` outputs. This should reduce LUT use if byte enables map to FF clock enables; compare routed LUTs and FFs against 137/254 and require simulation plus setup and hold closure before promotion.",
+  "artifacts": {}
+}
