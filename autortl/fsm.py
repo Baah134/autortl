@@ -538,7 +538,10 @@ class Orchestrator:
                 except (ValueError, KeyError, TypeError, AttributeError) as exc:
                     if not generated:
                         raise
-                    errs = [f"spec JSON does not load: {type(exc).__name__}: {str(exc)[:300]}"]
+                    # partial_spec_in_repair: a repair must return the whole design_spec.
+                    errs = [f"spec JSON does not load: {type(exc).__name__}: {str(exc)[:300]}"
+                            + " (return the complete design_spec JSON object with top_name, modules,"
+                              " connections and external_ports, not only the changed part)"]
                 if not errs or not generated or repairs >= self.cfg.max_fix_attempts:
                     break
                 repairs += 1

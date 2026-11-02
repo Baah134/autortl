@@ -163,6 +163,12 @@ harness_failures:
   spec_lint_failure_skips_planner_repair:
     meaning: "In build mode from a prose request, the planner named the top after its only module, which the prompt never forbade; structural lint rejected the spec and the run ended at once with spec_lint_failed, with no feedback round (tier1-campaign-01 debouncer_build)"
     repair: "State the structural rules (top_name differs from every module name, binding rules) in the spec prompt; give a planner-written spec its lint or load errors back for at most max_fix_attempts repairs; a supplied JSON spec stays law and fails at once"
+  unnamed_example_input_error:
+    meaning: "An example error said only that inputs must be declared non-clock input ports, without naming the stray keys, so planner repairs kept the wrong names (explore-tier3-06 uart_fifo_build, sync_fifo and uart_tx)"
+    repair: "Name the keys that are not inputs of the module and list the allowed input names"
+  partial_spec_in_repair:
+    meaning: "A planner repair returned JSON without a modules list (only part of the spec), which failed to load and spent the last repair (explore-tier3-05 and -06 uart_fifo_build)"
+    repair: "Tell the planner in the load error to return the complete design_spec object with top_name, modules, connections and external_ports"
   spec_example_values_skip_planner_repair:
     meaning: "The planner wrote spec examples as per-cycle lists instead of held integer values; structural lint did not check example values, so the run ended at golden qualification with invalid_spec_examples and no repair round (tier1-campaign-04 debouncer_build)"
     repair: "Check a planner-written spec's examples with the oracle's own validate_examples inside the spec-repair loop and return the errors to the planner; state in the spec prompt that every example value is a single integer held constant for after_cycles steps from the reset state"

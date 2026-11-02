@@ -152,3 +152,24 @@ def test_trusted_testbench_single_module_skips_oracle_shape_rules(tmp_path, monk
     monkeypatch.setattr(o.planner, "make_spec", Mock(return_value=GOOD))
     assert o.run()["status"] == "done"
     shapes.assert_not_called()
+
+
+def test_example_input_error_names_stray_and_allowed_ports():
+    # unnamed_example_input_error (explore-tier3-06 uart_fifo_build)
+    from autortl.golden import validate_examples
+    from autortl.spec import DesignSpec
+    module = DesignSpec.from_json(GOOD).modules[0]
+    module.examples[0].inputs = dict(module.examples[0].inputs, not_a_port=1)
+    allowed = sorted(p.name for p in module.ports if p.direction == "input" and p.name != "clk")
+    errors = validate_examples(module)
+    assert any("not inputs of this module: ['not_a_port']" in e and str(allowed) in e for e in errors)
+
+
+def test_load_error_asks_for_the_complete_spec(tmp_path, monkeypatch):
+    # partial_spec_in_repair (explore-tier3-05/-06 uart_fifo_build)
+    o, _ = create(tmp_path, monkeypatch)
+    prose(tmp_path, o)
+    planner = Mock(side_effect=['{"top_name": "counter8"}', GOOD])
+    monkeypatch.setattr(o.planner, "make_spec", planner)
+    assert o.run()["status"] == "done"
+    assert "return the complete design_spec JSON object" in planner.call_args_list[1].kwargs["feedback"]

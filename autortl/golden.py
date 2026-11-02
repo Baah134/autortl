@@ -95,7 +95,11 @@ def validate_examples(spec: ModuleSpec, *, require_anchors=False) -> list[str]:
             steps += cycles
         given, expected = getattr(example, "inputs", None), getattr(example, "expected", None)
         if not isinstance(given, dict) or not set(given).issubset(inputs):
-            errors.append(label + ": inputs must contain only declared non-clock input ports")
+            # unnamed_example_input_error: name the stray keys and the allowed ones.
+            stray = sorted(set(given) - set(inputs)) if isinstance(given, dict) else []
+            errors.append(label + ": inputs must contain only declared non-clock input ports"
+                          + (f" (not inputs of this module: {stray}; allowed: {sorted(inputs)})"
+                             if stray else ""))
         if not isinstance(expected, dict) or not expected or set(expected) != set(outputs):
             # payload_ports_tagged_valid_ready: name the ports so a planner can repair.
             errors.append(label + ": expected must cover exactly all data output ports and be nonempty"
