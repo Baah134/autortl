@@ -165,6 +165,28 @@ def test_example_input_error_names_stray_and_allowed_ports():
     assert any("not inputs of this module: ['not_a_port']" in e and str(allowed) in e for e in errors)
 
 
+def test_planner_must_use_the_requested_top_name(tmp_path, monkeypatch):
+    # requested_top_not_enforced: the trusted testbench instantiates the requested top
+    o, _ = create(tmp_path, monkeypatch)
+    prose(tmp_path, o)
+    o.cfg.top_module = "counter8"
+    renamed = json.loads(GOOD)
+    renamed["top_name"] = "counter8_wrapper"
+    planner = Mock(side_effect=[json.dumps(renamed), GOOD])
+    monkeypatch.setattr(o.planner, "make_spec", planner)
+    assert o.run()["status"] == "done"
+    assert "top_name must be 'counter8'" in planner.call_args_list[1].kwargs["feedback"]
+
+
+def test_single_module_build_may_name_its_module_after_the_request(tmp_path, monkeypatch):
+    o, _ = create(tmp_path, monkeypatch)
+    prose(tmp_path, o)
+    spec = json.loads(GOOD)
+    o.cfg.top_module = spec["modules"][0]["name"]
+    monkeypatch.setattr(o.planner, "make_spec", Mock(return_value=GOOD))
+    assert o.run()["status"] == "done"
+
+
 def test_load_error_asks_for_the_complete_spec(tmp_path, monkeypatch):
     # partial_spec_in_repair (explore-tier3-05/-06 uart_fifo_build)
     o, _ = create(tmp_path, monkeypatch)

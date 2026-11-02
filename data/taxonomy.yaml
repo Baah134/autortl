@@ -163,6 +163,9 @@ harness_failures:
   spec_lint_failure_skips_planner_repair:
     meaning: "In build mode from a prose request, the planner named the top after its only module, which the prompt never forbade; structural lint rejected the spec and the run ended at once with spec_lint_failed, with no feedback round (tier1-campaign-01 debouncer_build)"
     repair: "State the structural rules (top_name differs from every module name, binding rules) in the spec prompt; give a planner-written spec its lint or load errors back for at most max_fix_attempts repairs; a supplied JSON spec stays law and fails at once"
+  requested_top_not_enforced:
+    meaning: "A build request fixes the top module name (meta.yaml top, run.py --top) because its trusted testbench instantiates it, but a planner-written spec could choose another top_name and the mismatch surfaced only at elaboration (found while qualifying tier3 uart_fifo_build)"
+    repair: "In the planner spec-repair loop, require top_name to equal the requested top (or, for a single-module build, the only module's name) and say why"
   unnamed_example_input_error:
     meaning: "An example error said only that inputs must be declared non-clock input ports, without naming the stray keys, so planner repairs kept the wrong names (explore-tier3-06 uart_fifo_build, sync_fifo and uart_tx)"
     repair: "Name the keys that are not inputs of the module and list the allowed input names"

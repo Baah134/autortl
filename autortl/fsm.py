@@ -535,6 +535,12 @@ class Orchestrator:
                         # oracle and testbench must have a shape tbgen supports.
                         if not (len(spec.modules) == 1 and self.cfg.testbench_path and not self.cfg.generate_golden):
                             errs += [f"module {m.name}: {e}" for m in spec.modules for e in tb_shape_errors(m)]
+                        # requested_top_not_enforced: the request (and its testbench) fix the top name.
+                        # A single-module build may also name its only module after the request.
+                        if self.cfg.top_module and spec.top_name != self.cfg.top_module and not (
+                                len(spec.modules) == 1 and spec.modules[0].name == self.cfg.top_module):
+                            errs.append(f"top_name must be '{self.cfg.top_module}' as the request fixes it "
+                                        f"(the trusted testbench instantiates it), not '{spec.top_name}'")
                 except (ValueError, KeyError, TypeError, AttributeError) as exc:
                     if not generated:
                         raise
