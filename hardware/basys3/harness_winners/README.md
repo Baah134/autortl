@@ -16,9 +16,12 @@ design's valid/ready handshake far harder than UART traffic alone could.
 | Iterative AES-128 encryption (`aes128`) | `2026-11-02/tier6-aes128` | 32 in, 16 out | verified on board |
 | Iterative CORDIC sine and cosine (`cordic`) | `2026-11-02/tier6-cordic` | 2 in, 4 out | verified on board |
 | Symmetric 16-tap FIR, built for 150 MHz (`fir16_sym`) | `2026-11-02/fir16-ooc-02` | 2 in, 2 out | verified on board |
+| Streaming CRC-16/CCITT-FALSE (`crc16_stream`) | `2026-10-30/explore-tier4-02` | 2 in, 3 out | added, board run pending |
+| SPI master, mode 0, with an in-fabric slave (`spi_master`) | `2026-10-30/explore-tier4-02` | 2 in, 2 out | added, board run pending |
+| Multi-cycle RV32I core (`rv32i_core`) | `2026-11-02/tier6-rv32i/explore-tier6-06`, iteration 1 | 32 in, 32 out | added, board run pending |
 
 The three designs added on November 2 also pass on the board: 50,000 / 50,000 transactions each with 0 mismatches, 10 restarts, and the wrong-model control failing as required (AES-128 build WNS +2.442 ns, CORDIC +1.955 ns, FIR16 +3.066 ns at 100 MHz). Record: [evidence/2026-11-02/basys3-tier56-board-01](../../../evidence/2026-11-02/basys3-tier56-board-01/README.md).
-They have not yet been built or run on the board. Their transactions:
+Their transactions:
 
 - **aes128**: bytes 0 to 15 are the key and bytes 16 to 31 the plaintext, each
   in FIPS-197 byte order (byte 0 is the spec's most significant byte, bits
@@ -36,6 +39,73 @@ All three have full valid/ready handshakes, so their adapters only map ports
 and bytes. The AES and CORDIC contracts accept a new input only after the
 result transfers, so like the divider they are not required to overlap.
 Transactions may be up to 32 bytes on either side.
+
+## Added, board run pending: CRC-16, SPI master, RV32I
+
+Three more winners are wired in and pass `python -m hwsuite sim` (the winner
+matches the model on 1,200 transactions and the injected fault fails). They
+have not been built, programmed or run on the board yet.
+
+| Design | Winner file (SHA-256 prefix) | Harness-measured | Simulation | Fault caught |
+|---|---|---|---|---|
+| `crc16_stream` | `explore-tier4-02/run/crc16_stream_build/crc16_stream_best.v` (`8364cc20`) | 16 LUT / 34 FF | PASS, stalled 254,263, overlap 509 | polynomial 0x8005: 1,194/1,200 wrong |
+| `spi_master` | `explore-tier4-02/run/spi_master_build/spi_master_best.v` (`2f2b7fee`) | 19 LUT / 33 FF | PASS, stalled 240,947 | MISO shifted in LSB first: 1,121/1,200 wrong |
+| `rv32i_core` | `explore-tier6-06/run/iter_001/cand_standard/rv32i_core.v` (`73f2178b`) | 1,530 LUT / 3,325 FF | PASS, stalled 1,551,112 | BGE compares unsigned: 7/1,200 wrong |
+
+- **crc16_stream**: byte 0 is `in_data` and byte 1 is the last marker (any
+  nonzero value sets `in_last`). The result is `out_crc` in bytes 0 and 1 and
+  `out_last` (0 or 1) in byte 2. The winner emits one output per accepted
+  byte, so one transaction is one winner transfer and the adapter only maps
+  ports. Frames are formed by the marker, so, like the FIR filters, the
+  winner keeps its frame state across transactions and a restart clears it.
+  The model computes CRC-16/CCITT-FALSE (poly 0x1021, init 0xFFFF, no
+  reflection, no final XOR) from its definition; the stimulus starts with
+  the frame `123456789`, whose last output is 0x29B1. The wrong twin starts
+  frames from 0x0000.
+- **spi_master**: byte 0 is `cmd_data` and byte 1 is the byte the slave
+  returns. The result is `rsp_data` in byte 0 and the byte the slave captured
+  from MOSI in byte 1. The winner's SPI pins stay inside the FPGA and drive a
+  small hand-written mode-0 slave in the adapter: it loads its reply when
+  `cs_n` falls, shifts MISO after each falling SCLK edge and samples MOSI on
+  each rising edge, most significant bit first. It watches the winner's
+  registered `sclk` and `cs_n` with the same clock, so it reacts one clock
+  after each SCLK edge, which leaves a clock of margin at the winner's
+  HALF_PERIOD of 2. The wrong twin shifts least significant bit first. The
+  contract accepts a new command only after the response transfers, so it is
+  not required to overlap.
+- **rv32i_core**: bytes 4n to 4n+3 are instruction word n (n = 0 to 7). The
+  core has no handshake, so the adapter runs one program per transaction: it
+  resets the core (which clears both memories and the registers), writes the
+  8 words through the load port with `run` low (words 8 to 63 stay zero, a
+  no-operation), then raises `run` until 32 instructions retire. While the
+  program runs, it folds the trace into a signature, with
+  `fold(s, w) = rotl(s, 5) ^ w`: each store folds `dmem_addr` then
+  `dmem_wdata`, and each retirement folds `pc`, then `32 | rf_waddr` and
+  `rf_wdata` when `rf_we` (otherwise 0 and 0). The result is the signature
+  in bytes 0 to 3, the clock cycles from `run` to the 32nd retirement in
+  bytes 4 to 7, and x1 to x6 in bytes 8 to 31, each least significant byte
+  first. A core that never retires stops at 1,023 cycles, so a fault shows
+  up as a mismatch instead of a hung board. The model is an ISA-level RV32I
+  interpreter written from the spec, not the harness's oracles. The stimulus
+  starts with seven directed programs (arithmetic, a backward loop with a
+  store and a load, signed and unsigned branches with AUIPC, JALR and JAL,
+  address aliasing, shifts, and no-operations), then random 8-word programs
+  with forward-only control flow. The wrong twin treats SLT and SLTI as
+  unsigned. The fault (BGE compares unsigned) changes a result only when a
+  BGE's operands differ in sign and that changes the branch, so it shows on
+  few transactions: the directed branch program before and after the restart
+  and five random ones.
+
+**The RV32I winner is pinned to an iteration, not a best file.**
+`explore-tier6-06` ended on its tool budget (`budget_exhausted`) before it
+wrote `rv32i_core_best.v` or a `best_sha256`. Its `state.json` names
+`best_iteration` 1, and `designs.json` pins that iteration's candidate with a
+`best_pin` entry. Instead of comparing with `best_sha256`, `verify` requires
+that `state.json` `best_iteration` is 1, that `iter_001/evaluation_facts.json`
+records this file's SHA-256 with simulation passed and timing met, and that
+`designs.jsonl` marks iteration 1 accepted and best. Every other design is
+still checked against its run's `best_sha256`. The completed
+`explore-tier6-08` run (2,027 LUT) was not needed.
 
 ## Verified results (October 28, 2026)
 

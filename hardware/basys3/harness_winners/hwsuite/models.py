@@ -396,8 +396,333 @@ class Fir16Sym(Model):
         return bytes([rng.randrange(256), rng.randrange(256)])
 
 
+# ---------------------------------------------------------------- CRC-16 stream
+
+def crc16_update(state: int, byte: int, poly: int = 0x1021) -> int:
+    """One CRC-16 byte step, unreflected, most significant bit first: the
+    spec's S = S ^ (D << 8), then eight shift-and-conditional-XOR steps."""
+    state ^= byte << 8
+    for _ in range(8):
+        state = ((state << 1) ^ poly) if state & 0x8000 else (state << 1)
+        state &= 0xFFFF
+    return state
+
+
+def crc16_ccitt_false(data: bytes, init: int = 0xFFFF) -> int:
+    """CRC-16/CCITT-FALSE: width 16, poly 0x1021, init 0xFFFF, no reflection, no final XOR."""
+    state = init
+    for byte in data:
+        state = crc16_update(state, byte)
+    return state
+
+
+class Crc16Stream(Model):
+    """Streaming CRC-16/CCITT-FALSE, one output per accepted byte. Byte 0 = the
+    data byte; byte 1 = the last marker (any nonzero value sets in_last). Result bytes
+    0..1 = out_crc (least significant first), the CRC of the current frame up
+    to and including this byte; result byte 2 = out_last (0 or 1). The byte
+    after a last byte starts a new frame from 0xFFFF; reset restarts the frame.
+    The wrong twin starts every frame from 0x0000 instead."""
+    name, in_bytes, out_bytes = "crc16_stream", 2, 3
+
+    def reset(self):
+        self.frame = self._init()
+
+    def _init(self):
+        return 0x0000 if self.is_wrong else 0xFFFF
+
+    def _compute(self, tx):
+        last = 1 if tx[1] else 0
+        crc = crc16_update(self.frame, tx[0])
+        self.frame = self._init() if last else crc
+        return crc | last << 16
+
+    def leading(self):
+        frames = [b"123456789", b"\x00", b"\xff", bytes(12), b"\xff" * 12,
+                  bytes(range(1, 17)), b"\x80", b"\x01"]
+        out = []
+        for frame in frames:
+            out += [bytes([b, 0]) for b in frame[:-1]] + [bytes([frame[-1], 1])]
+        # every bit of the marker byte counts: frames ended by 0x80 and by 0x02
+        out += [bytes([0x31, 0x00]), bytes([0x32, 0x80]), bytes([0x33, 0x02])]
+        return out
+
+    def random_tx(self, rng):
+        marker = rng.randrange(1, 256) if rng.randrange(8) == 0 else 0
+        return bytes([rng.randrange(256), marker])
+
+
+# ---------------------------------------------------------------- SPI master
+
+def spi_exchange(master_byte: int, slave_byte: int, msb_first: bool = True) -> tuple[int, int]:
+    """One 8-bit full-duplex SPI transfer, bit by bit: on each of eight SCLK
+    pulses the master shifts out one bit of master_byte on MOSI and the slave one
+    bit of slave_byte on MISO; each side shifts what it samples into the bottom
+    of its receive register. Returns (what the master received, what the slave
+    received)."""
+    order = range(7, -1, -1) if msb_first else range(8)
+    master_rx = slave_rx = 0
+    for bit in order:
+        mosi, miso = (master_byte >> bit) & 1, (slave_byte >> bit) & 1
+        master_rx = (master_rx << 1) | miso
+        slave_rx = (slave_rx << 1) | mosi
+    return master_rx, slave_rx
+
+
+class SpiMaster(Model):
+    """SPI master, mode 0, 8 bits MSB first, against the adapter's mode-0 slave.
+    Byte 0 = cmd_data (sent on MOSI); byte 1 = the byte the slave returns on
+    MISO for this transfer. Result byte 0 = rsp_data (what the master
+    received), byte 1 = what the slave captured from MOSI. The wrong twin
+    shifts least significant bit first."""
+    name, in_bytes, out_bytes = "spi_master", 2, 2
+
+    def _compute(self, tx):
+        rsp, captured = spi_exchange(tx[0], tx[1], msb_first=not self.is_wrong)
+        return rsp | captured << 8
+
+    def leading(self):
+        cases = [(0x00, 0x00), (0xFF, 0xFF), (0xA5, 0xFF), (0x3C, 0x00), (0x80, 0x01), (0x01, 0x80),
+                 (0xAA, 0x55), (0x55, 0xAA), (0x0F, 0xF0), (0x12, 0x34), (0xC3, 0x96)]
+        return [bytes(case) for case in cases]
+
+
+# ---------------------------------------------------------------- RV32I core
+#
+# An ISA-level interpreter for the subset the spec names (curriculum/tier6/
+# rv32i_core_build), written from the RV32I definition plus the spec's resolved
+# choices: word-only LW/SW whose funct3 is ignored, instruction word pc[7:2] and
+# data word address[6:2] (higher bits alias, bits [1:0] ignored), branch funct3
+# 010/011 never taken, every other opcode (FENCE, SYSTEM, unknown) a
+# no-operation, and an rf write reported for every writing instruction even
+# when rd = 0. Cycles: 4 per instruction, 5 for a store, 6 for a load.
+
+RV_PROGRAM_WORDS = 8           # 32 input bytes
+RV_RETIRES = 32                # instructions retired per transaction
+RV_SHADOW = range(1, 7)        # x1..x6 are reported
+MASK32 = 0xFFFFFFFF
+
+
+def _sext(value: int, bits: int) -> int:
+    return _signed(value, bits) & MASK32
+
+
+def rv_fold(sig: int, word: int) -> int:
+    """The adapter's trace signature step: rotate left by 5, then XOR."""
+    return (((sig << 5) | (sig >> 27)) ^ word) & MASK32
+
+
+def rv_run(program, retires: int = RV_RETIRES, slt_unsigned: bool = False) -> dict:
+    """Run `program` (up to 64 words at word 0, zeros elsewhere) from reset for
+    `retires` instructions. Returns the final registers, data memory, cycle
+    count and the trace signature the adapter computes:
+      store (in M):  sig = fold(fold(sig, data word index), store data)
+      retire (in W): sig = fold(sig, pc); then if the instruction writes,
+                     fold(32 | rd) and fold(value), else fold(0) twice."""
+    imem = list(program) + [0] * (64 - len(program))
+    x, dmem = [0] * 32, [0] * 32
+    pc = sig = cycles = 0
+    for _ in range(retires):
+        instr = imem[(pc >> 2) & 63]
+        opcode, rd, f3 = instr & 0x7F, (instr >> 7) & 31, (instr >> 12) & 7
+        rs1, rs2, bit30 = x[(instr >> 15) & 31], x[(instr >> 20) & 31], (instr >> 30) & 1
+        imm_i = _sext(instr >> 20, 12)
+        imm_s = _sext(((instr >> 25) << 5) | ((instr >> 7) & 31), 12)
+        imm_b = _sext((((instr >> 31) & 1) << 12) | (((instr >> 7) & 1) << 11) |
+                      (((instr >> 25) & 63) << 5) | (((instr >> 8) & 15) << 1), 13)
+        imm_u = instr & 0xFFFFF000
+        imm_j = _sext((((instr >> 31) & 1) << 20) | (((instr >> 12) & 255) << 12) |
+                      (((instr >> 20) & 1) << 11) | (((instr >> 21) & 1023) << 1), 21)
+        link, next_pc, value, cost = (pc + 4) & MASK32, (pc + 4) & MASK32, None, 4
+        if opcode in (0x33, 0x13):                          # OP, OP-IMM
+            a, b = rs1, (rs2 if opcode == 0x33 else imm_i)
+            alt = bit30 and (opcode == 0x33 or f3 == 5)     # SUB / SRA / SRAI
+            shamt = b & 31
+            if f3 == 0:
+                value = a - b if (alt and opcode == 0x33) else a + b
+            elif f3 == 1:
+                value = a << shamt
+            elif f3 == 2:
+                value = int(a < b) if slt_unsigned else int(_signed(a, 32) < _signed(b, 32))
+            elif f3 == 3:
+                value = int(a < b)
+            elif f3 == 4:
+                value = a ^ b
+            elif f3 == 5:
+                value = (_signed(a, 32) >> shamt) if alt else (a >> shamt)
+            elif f3 == 6:
+                value = a | b
+            else:
+                value = a & b
+        elif opcode == 0x37:                                # LUI
+            value = imm_u
+        elif opcode == 0x17:                                # AUIPC
+            value = pc + imm_u
+        elif opcode == 0x6F:                                # JAL
+            value, next_pc = link, (pc + imm_j) & MASK32
+        elif opcode == 0x67:                                # JALR (funct3 ignored)
+            value, next_pc = link, (rs1 + imm_i) & MASK32 & ~1
+        elif opcode == 0x63:                                # BRANCH
+            s1, s2 = _signed(rs1, 32), _signed(rs2, 32)
+            taken = {0: rs1 == rs2, 1: rs1 != rs2, 4: s1 < s2, 5: s1 >= s2,
+                     6: rs1 < rs2, 7: rs1 >= rs2}.get(f3, False)
+            if taken:
+                next_pc = (pc + imm_b) & MASK32
+        elif opcode == 0x03:                                # LOAD: always a word
+            value, cost = dmem[(((rs1 + imm_i) & MASK32) >> 2) & 31], 6
+        elif opcode == 0x23:                                # STORE: always a word
+            index = (((rs1 + imm_s) & MASK32) >> 2) & 31
+            dmem[index], cost = rs2, 5
+            sig = rv_fold(rv_fold(sig, index), rs2)
+        sig = rv_fold(sig, pc)
+        if value is None:
+            sig = rv_fold(rv_fold(sig, 0), 0)
+        else:
+            value &= MASK32
+            sig = rv_fold(rv_fold(sig, 32 | rd), value)
+            if rd:
+                x[rd] = value
+        cycles += cost
+        pc = next_pc
+    return {"x": x, "dmem": dmem, "pc": pc, "cycles": cycles, "sig": sig}
+
+
+# A small RV32I encoder for the stimulus (registers are numbers 0..31).
+def rv_r(f7, rs2, rs1, f3, rd, op=0x33):
+    return (f7 << 25) | (rs2 << 20) | (rs1 << 15) | (f3 << 12) | (rd << 7) | op
+
+
+def rv_i(imm, rs1, f3, rd, op=0x13):
+    return ((imm & 0xFFF) << 20) | (rs1 << 15) | (f3 << 12) | (rd << 7) | op
+
+
+def rv_s(imm, rs2, rs1, f3=2, op=0x23):
+    imm &= 0xFFF
+    return ((imm >> 5) << 25) | (rs2 << 20) | (rs1 << 15) | (f3 << 12) | ((imm & 31) << 7) | op
+
+
+def rv_b(imm, rs2, rs1, f3, op=0x63):
+    imm &= 0x1FFF
+    return ((((imm >> 12) & 1) << 31) | (((imm >> 5) & 63) << 25) | (rs2 << 20) | (rs1 << 15) |
+            (f3 << 12) | (((imm >> 1) & 15) << 8) | (((imm >> 11) & 1) << 7) | op)
+
+
+def rv_u(imm20, rd, op=0x37):
+    return ((imm20 & 0xFFFFF) << 12) | (rd << 7) | op
+
+
+def rv_j(imm, rd, op=0x6F):
+    imm &= 0x1FFFFF
+    return ((((imm >> 20) & 1) << 31) | (((imm >> 1) & 1023) << 21) | (((imm >> 11) & 1) << 20) |
+            (((imm >> 12) & 255) << 12) | (rd << 7) | op)
+
+
+ADD, SUB, SLL, SLT, SLTU, XOR, SRL, SRA, OR, AND = (
+    (0, 0), (0x20, 0), (0, 1), (0, 2), (0, 3), (0, 4), (0, 5), (0x20, 5), (0, 6), (0, 7))
+BEQ, BNE, BLT, BGE, BLTU, BGEU = 0, 1, 4, 5, 6, 7
+
+
+def rv_op(kind, rd, rs1, rs2):
+    f7, f3 = kind
+    return rv_r(f7, rs2, rs1, f3, rd)
+
+
+RV_DIRECTED = {
+    # Signed and unsigned arithmetic and comparison; then 24 no-operations.
+    "arith": [rv_i(-5, 0, 0, 1), rv_i(3, 0, 0, 2), rv_op(ADD, 3, 1, 2), rv_op(SUB, 4, 2, 1),
+              rv_op(SLT, 5, 1, 2), rv_op(SLTU, 6, 1, 2), rv_i(0x400 | 1, 1, 5, 1),   # SRAI x1, x1, 1
+              rv_op(XOR, 2, 2, 4)],
+    # sum 5 + 4 + 3 + 2 + 1 in a backward loop, store, load it back, then JAL to itself.
+    "loop": [rv_i(0, 0, 0, 1), rv_i(5, 0, 0, 2), rv_op(ADD, 1, 1, 2), rv_i(-1, 2, 0, 2),
+             rv_b(-8, 0, 2, BNE), rv_s(8, 1, 0), rv_i(8, 0, 2, 3, op=0x03), rv_j(0, 4)],
+    # Signed branches on 0x80000000 vs 1, AUIPC, JALR forward, JAL to itself.
+    "branch": [rv_u(0x80000, 1), rv_i(1, 0, 0, 2), rv_b(8, 2, 1, BLT), rv_i(99, 0, 0, 3),
+               rv_b(8, 2, 1, BGE), rv_u(1, 3, op=0x17), rv_i(28, 0, 0, 4, op=0x67), rv_j(0, 5)],
+    # Word stores and loads with address aliasing and ignored low bits, then SLTI.
+    "memory": [rv_i(0x123, 0, 0, 1), rv_i(-1, 0, 0, 2), rv_s(4, 1, 0), rv_s(132, 2, 0),
+               rv_i(4, 0, 2, 3, op=0x03), rv_s(8, 1, 0), rv_i(11, 0, 2, 4, op=0x03), rv_i(0, 2, 2, 5)],
+    # Shifts by register and immediate, shift amounts above 31, SLTIU against -1.
+    "shift": [rv_u(0x80000, 1), rv_i(0x400 | 4, 1, 5, 2), rv_i(4, 1, 5, 3), rv_i(1, 2, 1, 4),
+              rv_i(33, 0, 0, 5), rv_op(SLL, 6, 5, 5), rv_op(SRA, 1, 1, 5), rv_i(-1, 5, 3, 5)],
+    # Unsigned branches on 0xFFFFFFFF vs 1 (BGEU skips word 4), a reserved
+    # branch encoding (never taken), FENCE and ECALL as no-operations.
+    "branch_u": [rv_i(-1, 0, 0, 1), rv_i(1, 0, 0, 2), rv_b(8, 2, 1, BLTU), rv_b(8, 2, 1, BGEU),
+                 rv_i(7, 0, 0, 3), rv_b(8, 2, 1, 2), 0x0FF0000F, 0x00000073],
+    "nops": [0] * 8,
+}
+
+
+def rv_random_program(rng: random.Random) -> list[int]:
+    """Eight valid words with forward-only control flow, so the program runs
+    off its end into the no-operations after word 7. Registers x0..x7; two
+    seeding writes first, then three signed comparisons (SLT or SLTI) among six
+    random instructions."""
+    reg = lambda: rng.randrange(8)
+    dst = lambda: rng.randrange(1, 8)
+    words = []
+    for _ in range(2):
+        words.append(rv_u(rng.randrange(1 << 20), dst()) if rng.randrange(2)
+                     else rv_i(rng.randrange(4096), reg(), 0, dst()))
+    compare_slots = set(rng.sample(range(2, RV_PROGRAM_WORDS), 3))
+    for index in range(2, RV_PROGRAM_WORDS):
+        forward = 4 * rng.randrange(1, RV_PROGRAM_WORDS + 1 - index)   # to a later word, at most word 8
+        if index in compare_slots:
+            words.append(rv_op(SLT, dst(), reg(), reg()) if rng.randrange(2)
+                         else rv_i(rng.randrange(4096), reg(), 2, dst()))
+            continue
+        kind = rng.randrange(10)
+        if kind < 3:
+            op = rng.choice((ADD, SUB, SLL, SLT, SLTU, XOR, SRL, SRA, OR, AND))
+            words.append(rv_op(op, dst(), reg(), reg()))
+        elif kind < 5:
+            f3 = rng.choice((0, 2, 3, 4, 6, 7, 1, 5))
+            if f3 == 1:                                                 # SLLI
+                imm = rng.randrange(32)
+            elif f3 == 5:                                               # SRLI or SRAI
+                imm = rng.randrange(32) | rng.choice((0, 0x400))
+            else:
+                imm = rng.randrange(4096)
+            words.append(rv_i(imm, reg(), f3, dst()))
+        elif kind == 5:
+            words.append(rv_u(rng.randrange(1 << 20), dst(), op=rng.choice((0x37, 0x17))))
+        elif kind == 6:
+            words.append(rv_s(4 * rng.randrange(-512, 512), reg(), 0))
+        elif kind == 7:
+            words.append(rv_i(4 * rng.randrange(-512, 512), 0, 2, dst(), op=0x03))
+        elif kind == 8:
+            words.append(rv_b(forward, reg(), reg(), rng.choice((BEQ, BNE, BLT, BGE, BLTU, BGEU))))
+        else:
+            words.append(rv_j(forward, reg()) if rng.randrange(2)
+                         else rv_i(4 * index + forward, 0, 0, reg(), op=0x67))   # JALR x0-based
+    return words
+
+
+class Rv32iCore(Model):
+    """RV32I subset core running one program per transaction. Bytes 4n..4n+3
+    = instruction word n (n = 0..7, least significant byte first), loaded at
+    word n after a reset of the core; words 8..63 stay zero (no-operations).
+    The core then runs until it retires 32 instructions. Result: bytes 0..3 =
+    the trace signature (see rv_run), bytes 4..7 = clock cycles from run to the
+    32nd retirement inclusive, bytes 8..31 = the final x1..x6, each least
+    significant byte first. The wrong twin treats SLT and SLTI as unsigned."""
+    name, in_bytes, out_bytes = "rv32i_core", 32, 32
+
+    def _compute(self, tx):
+        program = [int.from_bytes(tx[4 * n:4 * n + 4], "little") for n in range(RV_PROGRAM_WORDS)]
+        result = rv_run(program, slt_unsigned=self.is_wrong)
+        words = [result["sig"], result["cycles"]] + [result["x"][r] for r in RV_SHADOW]
+        return int.from_bytes(b"".join(w.to_bytes(4, "little") for w in words), "little")
+
+    def leading(self):
+        return [b"".join(w.to_bytes(4, "little") for w in program) for program in RV_DIRECTED.values()]
+
+    def random_tx(self, rng):
+        return b"".join(w.to_bytes(4, "little") for w in rv_random_program(rng))
+
+
 MODELS = {cls.name: cls for cls in (Fir4, ElasticDot4, Dot4Pipeline, IterativeDivider,
-                                     PacketFifo, SyncFifo, Aes128, Cordic, Fir16Sym)}
+                                     PacketFifo, SyncFifo, Aes128, Cordic, Fir16Sym,
+                                     Crc16Stream, SpiMaster, Rv32iCore)}
 
 
 def model_for(name: str, wrong: bool = False) -> Model:

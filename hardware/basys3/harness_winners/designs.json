@@ -151,5 +151,61 @@
       "replace": "wire signed [26:0] p3 = $signed(pair1[3]) * -27'sd18;",
       "occurrence": 1
     }
+  },
+  "crc16_stream": {
+    "title": "Streaming CRC-16/CCITT-FALSE",
+    "overlap": true,
+    "module": "crc16_stream",
+    "winner": "evidence/2026-10-30/explore-tier4-02/run/crc16_stream_build/crc16_stream_best.v",
+    "sha256": "8364cc20227c9461ff96e9e6a1b3e758d0daffb8f558868670e81f9e335e369d",
+    "state": "evidence/2026-10-30/explore-tier4-02/run/crc16_stream_build/state.json",
+    "adapter": "adapters/crc16_stream.v",
+    "in_bytes": 2,
+    "out_bytes": 3,
+    "fault": {
+      "name": "polynomial_0x8005_not_0x1021",
+      "find": "crc = (crc << 1) ^ 16'h1021;",
+      "replace": "crc = (crc << 1) ^ 16'h8005;",
+      "occurrence": 1
+    }
+  },
+  "spi_master": {
+    "title": "SPI master, mode 0, with an in-fabric slave",
+    "overlap": false,
+    "module": "spi_master",
+    "winner": "evidence/2026-10-30/explore-tier4-02/run/spi_master_build/spi_master_best.v",
+    "sha256": "2f2b7fee87791434f402adf4f7eab3354adc405214e2a24e4397b461dcf13dd4",
+    "state": "evidence/2026-10-30/explore-tier4-02/run/spi_master_build/state.json",
+    "adapter": "adapters/spi_master.v",
+    "in_bytes": 2,
+    "out_bytes": 2,
+    "fault": {
+      "name": "miso_shifted_in_lsb_first",
+      "find": "rx_shift <= {rx_shift[6:0], miso};",
+      "replace": "rx_shift <= {miso, rx_shift[7:1]};",
+      "occurrence": 1
+    }
+  },
+  "rv32i_core": {
+    "title": "Multi-cycle RV32I core",
+    "overlap": false,
+    "module": "rv32i_core",
+    "winner": "evidence/2026-11-02/tier6-rv32i/explore-tier6-06/run/iter_001/cand_standard/rv32i_core.v",
+    "sha256": "73f2178bb2bdbb8cf18ad2e14bd5b6d48220ba4ecd6d8ec59e85bbdff02c433e",
+    "state": "evidence/2026-11-02/tier6-rv32i/explore-tier6-06/run/state.json",
+    "best_pin": {
+      "iteration": 1,
+      "facts": "evidence/2026-11-02/tier6-rv32i/explore-tier6-06/run/iter_001/evaluation_facts.json",
+      "reason": "The run ended budget_exhausted, so it wrote neither rv32i_core_best.v nor best_sha256. Its state.json names best_iteration 1; that iteration's evaluation facts record this candidate's SHA-256 with simulation passed and timing met, and designs.jsonl marks it best and accepted."
+    },
+    "adapter": "adapters/rv32i_core.v",
+    "in_bytes": 32,
+    "out_bytes": 32,
+    "fault": {
+      "name": "bge_compares_unsigned",
+      "find": "3'b101: taken = ~lt;",
+      "replace": "3'b101: taken = ~ltu;",
+      "occurrence": 1
+    }
   }
 }
