@@ -114,3 +114,25 @@ def test_boundary_and_planner_say_inlining_alone_saves_nothing():
     from autortl import prompts
     assert "Inlining by itself saves nothing" in candidate_context._HEADER
     assert "synthesis flattens the hierarchy" in prompts.PLAN
+
+
+def _big_unit(tmp_path, children, ports):
+    body = []
+    for c in range(children):
+        decl = ",\n".join(f"  input wire [7:0] child{c}_long_port_name_{p}" for p in range(ports))
+        body.append(f"module child{c} (\n{decl},\n  output wire y\n);\n  assign y = 1'b0;\nendmodule\n")
+    body.append("module top (input wire clk, output wire done);\n  assign done = 1'b0;\nendmodule\n")
+    path = tmp_path / "unit.v"
+    path.write_text("\n".join(body), encoding="utf-8")
+    return path
+
+
+@pytest.mark.parametrize("children,ports,level", [(8, 30, "port names"), (40, 40, "name")])
+def test_large_editable_unit_inventory_is_summarized_not_fatal(tmp_path, children, ports, level):
+    # editable_unit_inventory_overflow (explore-tier6-03 rv32i_core_build crashed here)
+    text = candidate_context.candidate_scope("top", [], editable_unit={"source": str(_big_unit(tmp_path, children, ports))})
+    assert len(text) <= candidate_context.MAX_SCOPE_CHARS
+    assert f"child modules listed by {level} only" in text
+    scope = json.loads(text[text.index("{"):])
+    top = next(m for m in scope["editable_unit"]["modules"] if m["name"] == "top")
+    assert [p["name"] for p in top["ports"]] == ["clk", "done"]  # the top keeps its full interface

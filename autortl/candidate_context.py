@@ -91,10 +91,24 @@ def _unit_scope(top_module, editable_unit):
                    "or begin/end) with at least one output feeding logic that drives a top output port. "
                    "Otherwise those checks would test a module the top no longer uses, and the candidate is "
                    "rejected."}
-    text = _UNIT_HEADER + json.dumps(scope, sort_keys=True, indent=2)
-    if len(text) > MAX_SCOPE_CHARS:
-        raise ValueError("editable unit metadata exceeds candidate context budget; partition the compilation unit")
-    return text
+    # editable_unit_inventory_overflow: the inventory is advisory (the complete unit
+    # text is the generation seed), so a large unit is summarized step by step;
+    # the top's full interface is always kept.
+    def child(record, level):
+        if record["name"] == top_module or level == 0:
+            return record
+        if level == 1:
+            return {"name": record["name"], "ports": [p["name"] for p in record.get("ports", [])]}
+        return {"name": record["name"]}
+    for level, indent in ((0, 2), (0, None), (1, None), (2, None)):
+        unit = dict(scope["editable_unit"], modules=[child(m, level) for m in modules])
+        if level:
+            unit["inventory_summarized"] = ("child modules listed by " + ("port names" if level == 1 else "name")
+                                            + " only; read their full interfaces in the unit text")
+        text = _UNIT_HEADER + json.dumps(dict(scope, editable_unit=unit), sort_keys=True, indent=indent)
+        if len(text) <= MAX_SCOPE_CHARS:
+            return text
+    raise ValueError("editable unit metadata exceeds candidate context budget; partition the compilation unit")
 
 
 def candidate_scope(top_module, extra_sources, testbench_companions=(), *, editable_unit=None):
