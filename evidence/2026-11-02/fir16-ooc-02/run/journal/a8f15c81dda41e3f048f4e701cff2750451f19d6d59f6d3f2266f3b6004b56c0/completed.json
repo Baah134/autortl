@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_8:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 8,
+    "instruction": "In `fir16_sym_core`, change `acc3_lo` storage to signed `[23:0]`; the `p0` through `p3` coefficient magnitudes sum to 68, so the partial accumulator\u2019s absolute bound is below 4,456,448 and fits signed 24-bit range. Keep `acc3_hi` at 28 bits, and explicitly sign-extend `acc3_lo` to 28 bits when forming `total_acc`. Preserve all pipeline enables, valid movement, reset behavior, the top `// @latency 5` annotation, and the exact rounding and saturation behavior; promote only if the unchanged verification and routed metric gates pass and the LUT/FF objective improves over the incumbent.",
+    "candidates": [
+      {
+        "iteration": 8,
+        "mutation": "standard",
+        "instruction": "In `fir16_sym_core`, change `acc3_lo` storage to signed `[23:0]`; the `p0` through `p3` coefficient magnitudes sum to 68, so the partial accumulator\u2019s absolute bound is below 4,456,448 and fits signed 24-bit range. Keep `acc3_hi` at 28 bits, and explicitly sign-extend `acc3_lo` to 28 bits when forming `total_acc`. Preserve all pipeline enables, valid movement, reset behavior, the top `// @latency 5` annotation, and the exact rounding and saturation behavior; promote only if the unchanged verification and routed metric gates pass and the LUT/FF objective improves over the incumbent.",
+        "generated_source_sha256": "b96e055fd28226bd722ed3875a0c94dc6de090c3588fd43f33605f9777d6e22d",
+        "final_source_sha256": "b96e055fd28226bd722ed3875a0c94dc6de090c3588fd43f33605f9777d6e22d",
+        "generated_code_hash": "1ae324249548f30c",
+        "final_code_hash": "1ae324249548f30c",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 1.075,
+          "whs_ns": 0.152,
+          "lut_used": 149,
+          "ff_used": 261,
+          "dsp_used": 9,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.017,
+          "total_power_w": 0.085
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\fir16-ooc-02\\iter_008\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\fir16-ooc-02\\iter_008\\cand_standard\\synth.tcl",
+          "sha256": "cc7b9f6aa9f7281f339104c1715eba6a14800eb9be461cef77429edb7926350a"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\fir16-ooc-02\\iter_008\\cand_standard\\fir16_sym.v",
+          "sha256": "2001f16e60b517954932cab70892dda973844d1a1d7e212a18788bfb5d24f3b4"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": "b96e055fd28226bd722ed3875a0c94dc6de090c3588fd43f33605f9777d6e22d"
+  },
+  "artifacts": {}
+}

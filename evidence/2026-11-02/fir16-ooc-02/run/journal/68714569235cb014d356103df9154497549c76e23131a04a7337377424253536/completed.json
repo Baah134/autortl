@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Interface and defined behavior: PASS \u2014 candidate retains the specified top interface and cycle behavior; the trusted integration testbench passed.\n- Top latency annotation: PASS \u2014 top declares `// @latency 5`, matching the authoritative value.\n- Compile, elaboration and simulation: PASS \u2014 required tools exited successfully and the simulation reported `TEST PASSED`.\n- Routed metric and receipt integrity: PASS \u2014 retained routed metrics are available and the process exit gate passed.\n- Timing progress: PASS \u2014 WNS improved from -10.25 ns to -9.368 ns; WHS is 0.108 ns versus 0.122 ns, within the small tolerance. This is progress, not timing closure.\n- LUT objective: PASS \u2014 LUTs decreased from 394 to 161.\n## Summary\n- Passed: 6 of 6\n- Failed: 0 of 6\n- Improved over previous best: YES\n## Recommendation\nACCEPT\n## Reason\nThe candidate passes deterministic verification and the required tool and metric gates. It improves the still-infeasible incumbent\u2019s setup WNS with hold slack within tolerance, satisfying the recorded `timing_progress` rule; it also reduces LUT usage. Timing remains infeasible, but that does not fail this comparison because the candidate qualifies as timing progress.",
+      "recommendation": "ACCEPT",
+      "passed": 6,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}

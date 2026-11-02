@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_7:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 7\n## Contract check\n- Top interface and latency annotation: PASS \u2014 top `fir16_sym` has the required `// @latency 5` annotation and contract ports.\n- Defined behavior: PASS \u2014 the unchanged integration testbench reports `TEST PASSED`.\n- Tool and verification gates: PASS \u2014 required tools exited successfully; synthesis completed.\n- Routed metrics and timing feasibility: PASS \u2014 retained routed metrics show WNS 0.958 ns and WHS 0.141 ns.\n- Improvement over previous best: FAIL \u2014 both designs are timing-feasible, but LUTs increased from 149 to 300, so the `minimize_luts` objective did not improve.\n## Summary\n- Passed: 4 of 5\n- Failed: 1 of 5\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes behavioral, tool, metric integrity, latency annotation, and timing closure checks. Since the previous best is already timing-feasible, promotion requires strict improvement in the chosen objective; this candidate uses more LUTs (300 versus 149), so it does not qualify.",
+      "recommendation": "REJECT",
+      "passed": 4,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

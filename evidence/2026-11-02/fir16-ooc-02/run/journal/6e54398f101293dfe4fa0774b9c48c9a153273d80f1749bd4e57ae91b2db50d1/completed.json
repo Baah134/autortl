@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_8:decision:instruction:0",
+  "result": "In `fir16_sym_core`, change `acc3_lo` storage to signed `[23:0]`; the `p0` through `p3` coefficient magnitudes sum to 68, so the partial accumulator\u2019s absolute bound is below 4,456,448 and fits signed 24-bit range. Keep `acc3_hi` at 28 bits, and explicitly sign-extend `acc3_lo` to 28 bits when forming `total_acc`. Preserve all pipeline enables, valid movement, reset behavior, the top `// @latency 5` annotation, and the exact rounding and saturation behavior; promote only if the unchanged verification and routed metric gates pass and the LUT/FF objective improves over the incumbent.",
+  "artifacts": {}
+}

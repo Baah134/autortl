@@ -1,0 +1,45 @@
+{
+  "candidates": [
+    {
+      "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\fir16-ooc-02\\iter_006\\cand_standard",
+      "cache_hit": false,
+      "final_code_hash": "df986fc9599a2f06",
+      "final_source_sha256": "3b6b1716864dbee7d0f9e09dceabbcee00d104f9856c0c27a86b52669985562d",
+      "flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\fir16-ooc-02\\iter_006\\cand_standard\\synth.tcl",
+        "sha256": "6127ea4e1834001a98d9a9692b2f4faba9434f509b8518d3adbff1259b0d74c1"
+      },
+      "generated_code_hash": "df986fc9599a2f06",
+      "generated_source_sha256": "3b6b1716864dbee7d0f9e09dceabbcee00d104f9856c0c27a86b52669985562d",
+      "instruction": "In `fir16_sym_core`, change only the `result5` saturation logic: detect signed 17-bit overflow with `rounded4[16] != rounded4[15]`, select positive or negative saturation from the sign bit, and otherwise pass through `rounded4[15:0]`. Preserve the existing five-slot enables, registered output, reset behavior, and `// @latency 5`; do not change the arithmetic or handshake pipeline. Treat any LUT reduction as unproven until routed metrics show a strict LUT improvement over the incumbent, with all deterministic gates passing and WNS and WHS remaining nonnegative.",
+      "iteration": 6,
+      "metrics": {
+        "bram_used": 0.0,
+        "dsp_used": 9,
+        "dynamic_power_w": 0.017,
+        "ff_used": 261,
+        "lut_used": 149,
+        "sim_passed": true,
+        "timing_met": true,
+        "total_power_w": 0.086,
+        "whs_ns": 0.118,
+        "wns_ns": 1.075
+      },
+      "mutation": "standard",
+      "reason": "",
+      "rungs": 5,
+      "source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\fir16-ooc-02\\iter_006\\cand_standard\\fir16_sym.v",
+        "sha256": "c0de7c0bc07dc95336ac63b4b967ac74c18592df840faafa3abc72314ce4c69f"
+      },
+      "status": "measured"
+    }
+  ],
+  "doctor": null,
+  "instruction": "In `fir16_sym_core`, change only the `result5` saturation logic: detect signed 17-bit overflow with `rounded4[16] != rounded4[15]`, select positive or negative saturation from the sign bit, and otherwise pass through `rounded4[15:0]`. Preserve the existing five-slot enables, registered output, reset behavior, and `// @latency 5`; do not change the arithmetic or handshake pipeline. Treat any LUT reduction as unproven until routed metrics show a strict LUT improvement over the incumbent, with all deterministic gates passing and WNS and WHS remaining nonnegative.",
+  "is_best": true,
+  "iteration": 6,
+  "recommendation": "ACCEPT",
+  "schema_version": 1,
+  "selected_source_sha256": "3b6b1716864dbee7d0f9e09dceabbcee00d104f9856c0c27a86b52669985562d"
+}

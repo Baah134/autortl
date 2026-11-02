@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_6:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 6\n## Contract check\n- Top interface and latency annotation: PASS \u2014 top `fir16_sym` retains the required interface and declares `// @latency 5`.\n- Behavioral verification: PASS \u2014 the unchanged integration testbench reports `TEST PASSED`; the candidate preserves the specified arithmetic, handshakes, reset behavior, and minimum transfer age.\n- Tool gates: PASS \u2014 xvlog, xelab, xsim, and Vivado exited successfully; Vivado recorded `SYNTH_COMPLETE`.\n- Routed metrics and timing: PASS \u2014 retained routed metrics show 149 LUTs, 261 FFs, WNS 1.075 ns, and WHS 0.118 ns; timing is feasible.\n- Objective improvement: PASS \u2014 LUTs decreased from 150 to 149 with FFs unchanged, satisfying `minimize_luts`; the recorded improvement kind is `objective`.\n- Subjective residue: PASS \u2014 no additional contract issue is evident in the candidate source.\n## Summary\n- Passed: 6 of 6\n- Failed: 0 of 6\n- Improved over previous best: YES\n## Recommendation\nACCEPT\n## Reason\nThe candidate passes the deterministic verification and implementation gates, meets setup and hold timing, and strictly improves the chosen LUT objective over the previous best. No subjective contract violation remains.",
+      "recommendation": "ACCEPT",
+      "passed": 6,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}

@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_4:decision:instruction:0",
+  "result": "In `fir16_sym_core`, replace the single `acc3 <= total_acc` operation with two signed 28-bit stage-3 registers: one for `p0_reg` through `p3_reg`, and one for `p4_reg` through `p7_reg`, each using a balanced addition tree. In stage 4, add those registered partial sums, apply the existing +1024 and arithmetic shift by 11, and register the rounded result in `rounded4`; retain stage-5 saturation into `d5`. Keep each register\u2019s existing `ready3` or `ready4` hold behavior, the valid chain, history updates, reset behavior, top interface and `// @latency 5`; preserve signed widths sufficient for the exact 28-bit accumulator.",
+  "artifacts": {}
+}

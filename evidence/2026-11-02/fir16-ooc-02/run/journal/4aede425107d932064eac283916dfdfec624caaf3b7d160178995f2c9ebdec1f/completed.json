@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_1:decision:instruction:0",
+  "result": "Keep the history update and ready/valid behavior unchanged, but replace the full combinational FIR result feeding `d1` with arithmetic payloads carried through the existing elastic slots. Capture the eight signed 17-bit symmetric pair sums at acceptance, then compute fixed-coefficient product groups and accumulate them in later slots, finishing round-half-up and saturation in slot 5; preserve the payload whenever its slot is stalled. Add no pipeline stages, and retain the top `// @latency 5` annotation. Check signed widths, extreme pair sums, accumulator bounds, rounding ties, saturation, reset, bubbles, stalls, and output stability; judge the candidate with all required simulation, routed metric integrity, setup, and hold gates.",
+  "artifacts": {}
+}
