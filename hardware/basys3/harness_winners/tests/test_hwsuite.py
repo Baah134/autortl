@@ -23,7 +23,8 @@ SPECS = {"fir4": "tier3/signed_fir4_build", "elastic_dot4": "tier3/elastic_dot4_
          "dot4_pipeline": "tier3/dot4_pipeline_build", "iterative_divider": "tier3/iterative_divider_build",
          "packet_fifo": "tier2/packet_fifo_build", "sync_fifo": "tier2/sync_fifo_build",
          "aes128": "tier6/aes128_core_build", "cordic": "tier6/cordic_build",
-         "fir16_sym": "tier5/fir16_sym_build"}
+         "fir16_sym": "tier5/fir16_sym_build", "crc16_stream": "tier4/crc16_stream_build",
+         "spi_master": "tier4/spi_master_build", "rv32i_core": "tier6/rv32i_core_build"}
 # The archived winners as of this suite's last edit, pinned here so a
 # designs.json edit cannot silently swap a winner and its hash together.
 PINNED_SHA256 = {
@@ -33,6 +34,16 @@ PINNED_SHA256 = {
                "aa5fd82e8329371da619a451846fce9d38a19f2334772c350849be9448d6deff"),
     "fir16_sym": ("evidence/2026-11-02/fir16-ooc-02/run/fir16_sym_best.v",
                   "0099ea011cf11ef1277dedf99d4382f28c02d8403b8d2d0176f19c4bdca767d1"),
+    "crc16_stream": ("evidence/2026-10-30/explore-tier4-02/run/crc16_stream_build/crc16_stream_best.v",
+                     "8364cc20227c9461ff96e9e6a1b3e758d0daffb8f558868670e81f9e335e369d"),
+    "spi_master": ("evidence/2026-10-30/explore-tier4-02/run/spi_master_build/spi_master_best.v",
+                   "2f2b7fee87791434f402adf4f7eab3354adc405214e2a24e4397b461dcf13dd4"),
+}
+# explore-tier6-06 ended on its tool budget before writing rv32i_core_best.v or
+# best_sha256, so its winner is the best iteration's candidate, pinned here.
+PINNED_ITERATION = {
+    "rv32i_core": ("evidence/2026-11-02/tier6-rv32i/explore-tier6-06/run/iter_001/cand_standard/rv32i_core.v",
+                   "73f2178bb2bdbb8cf18ad2e14bd5b6d48220ba4ecd6d8ec59e85bbdff02c433e", 1),
 }
 TABLE = designs.load()
 
@@ -65,7 +76,7 @@ def test_harness_measurement_exists_for_the_same_winner(name):
     design = TABLE[name]
     summary = json.loads((design.state.parent / "run_summary.json").read_text(encoding="utf-8"))
     assert summary.get("best_sha256", design.sha256) == design.sha256
-    best = summary["best_metrics"]
+    _, best = design.measurement()
     assert best["sim_passed"] is True and best["lut_used"] > 0
     assert best["wns_ns"] >= 0 and best["whs_ns"] >= 0
 
@@ -84,12 +95,22 @@ def test_fault_changes_exactly_one_place(name):
 
 def test_only_iterative_contracts_forbid_overlapping_transfers():
     # Their specs: in_ready = !busy && !out_valid, so they never accept while retiring.
-    assert {name for name, d in TABLE.items() if not d.overlap} == {"iterative_divider", "aes128", "cordic"}
+    # The SPI master's cmd_ready = !busy && !rsp_valid likewise. The RV32I core
+    # has no handshake; its adapter runs one program at a time.
+    assert {name for name, d in TABLE.items() if not d.overlap} == {
+        "iterative_divider", "aes128", "cordic", "spi_master", "rv32i_core"}
     spec = (REPO / "curriculum" / SPECS["iterative_divider"] / "design_spec.json").read_text(encoding="utf-8")
     assert "in_ready equals !busy && !out_valid" in spec
     for name in ("aes128", "cordic"):
         spec = (REPO / "curriculum" / SPECS[name] / "design_spec.json").read_text(encoding="utf-8")
         assert "in_ready = !busy && !out_valid" in spec
+    spec = (REPO / "curriculum" / SPECS["spi_master"] / "design_spec.json").read_text(encoding="utf-8")
+    assert "cmd_ready = !busy && !rsp_valid" in spec
+    adapter = TABLE["rv32i_core"].adapter.read_text(encoding="utf-8")
+    assert "assign in_ready  = state == S_IDLE;" in adapter
+    # The CRC stream is a one-slot full-rate stage: it may accept while retiring.
+    spec = (REPO / "curriculum" / SPECS["crc16_stream"] / "design_spec.json").read_text(encoding="utf-8")
+    assert "in_ready = !out_valid || out_ready" in spec and TABLE["crc16_stream"].overlap
 
 
 @pytest.mark.parametrize("name", sorted(PINNED_SHA256))
@@ -102,6 +123,50 @@ def test_new_winners_are_pinned_and_match_their_run_state(name):
     assert state["best_sha256"] == digest
     summary = json.loads((design.state.parent / "run_summary.json").read_text(encoding="utf-8"))
     assert summary["top_module"] == design.module and summary["status"] == "done"
+
+
+@pytest.mark.parametrize("name", sorted(PINNED_ITERATION))
+def test_budget_ended_winner_is_pinned_to_its_best_iteration(name):
+    path, digest, iteration = PINNED_ITERATION[name]
+    design = TABLE[name]
+    assert design.winner == REPO / path and design.sha256 == digest
+    assert hashlib.sha256(design.winner.read_bytes()).hexdigest() == digest
+    state = json.loads(design.state.read_text(encoding="utf-8"))
+    assert "best_sha256" not in state and state["best_iteration"] == iteration
+    summary = json.loads((design.state.parent / "run_summary.json").read_text(encoding="utf-8"))
+    assert summary["status"] == "budget_exhausted" and summary["best_iteration"] == iteration
+    assert design.best_pin["iteration"] == iteration and "budget_exhausted" in design.best_pin["reason"]
+    facts = json.loads(design.facts().read_text(encoding="utf-8"))
+    assert facts["candidate_source"]["sha256"] == digest
+    # The harness's measurement of exactly this file (README: 1,530 LUT, timing met).
+    source, metrics = design.measurement()
+    assert source == design.facts()
+    assert (metrics["lut_used"], metrics["ff_used"], metrics["timing_met"]) == (1530, 3325, True)
+    # The text the evaluation recorded is this file, line endings included.
+    assert facts["candidate_source"]["text"].encode("utf-8") == design.winner.read_bytes()
+
+
+def _pinned(name, **changes):
+    design = TABLE[name]
+    return designs.Design(**{**design.__dict__, **changes})
+
+
+def test_pinned_iteration_must_be_the_runs_best(tmp_path):
+    design = TABLE["rv32i_core"]
+    with pytest.raises(designs.DesignError, match="best_iteration"):
+        _pinned("rv32i_core", best_pin={**design.best_pin, "iteration": 2}).verify()
+    with pytest.raises(designs.DesignError, match="reason"):
+        _pinned("rv32i_core", best_pin={"iteration": 1, "facts": design.best_pin["facts"]}).verify()
+    # Another iteration's candidate cannot borrow the pin.
+    other = design.state.parent / "iter_002" / "cand_standard" / "rv32i_core.v"
+    digest = hashlib.sha256(other.read_bytes()).hexdigest()
+    with pytest.raises(designs.DesignError, match="iter_001"):
+        _pinned("rv32i_core", winner=other, sha256=digest).verify()
+    # A run that did record best_sha256 must be checked against it, not pinned.
+    state = tmp_path / "state.json"
+    state.write_text(json.dumps({"best_iteration": 1, "best_sha256": "0" * 64}), encoding="utf-8")
+    with pytest.raises(designs.DesignError, match="use it"):
+        _pinned("rv32i_core", state=state).verify()
 
 
 def test_transaction_widths_are_bounded_by_the_shell():
@@ -350,6 +415,195 @@ def test_fir16_leading_cases_reach_saturation_and_rounding_ties():
     # The 512 impulse starts at index 34: acc = 512 * -6, so acc / 2048 = -1.5,
     # an exact tie that rounds half up to -1 (round half away would give -2).
     assert outs[34] == -1
+
+
+# ---------------------------------------------------------------- CRC-16 stream
+
+def _crc_frame(model, frame, marker=1):
+    """Send a frame (last marker on its final byte); return every output as (crc, last)."""
+    outs = []
+    for k, byte in enumerate(frame):
+        out = model.step(bytes([byte, marker if k == len(frame) - 1 else 0]))
+        outs.append((int.from_bytes(out[:2], "little"), out[2]))
+    return outs
+
+
+def test_crc16_matches_the_standard_check_value_and_its_definition():
+    # The spec's parameters are exactly CRC-16/CCITT-FALSE (also cataloged as
+    # CRC-16/IBM-3740): check value 0x29B1 over "123456789".
+    assert models.crc16_ccitt_false(b"123456789") == 0x29B1
+    spec = (REPO / "curriculum" / SPECS["crc16_stream"] / "design_spec.json").read_text(encoding="utf-8")
+    for fact in ("polynomial 0x1021", "initial value 0xFFFF", "NOT reflected", "no final XOR", "0x29B1"):
+        assert fact in spec
+    # Other published values for the same parameters.
+    assert models.crc16_ccitt_false(b"") == 0xFFFF
+    assert models.crc16_ccitt_false(b"A") == 0xB915
+    # Independent bit-serial formulation (one message bit at a time into the
+    # register's top bit) gives the same values as the byte-update form.
+    rng = random.Random(16)
+    for _ in range(200):
+        data = bytes(rng.randrange(256) for _ in range(rng.randrange(1, 20)))
+        reg = 0xFFFF
+        for byte in data:
+            for bit in range(7, -1, -1):
+                feedback = ((reg >> 15) & 1) ^ ((byte >> bit) & 1)
+                reg = ((reg << 1) & 0xFFFF) ^ (0x1021 if feedback else 0)
+        assert models.crc16_ccitt_false(data) == reg
+
+
+def test_crc16_stream_matches_spec_examples_and_frames_restart():
+    examples = spec_examples("crc16_stream")
+    assert len(examples) == 3
+    for _, e in examples:
+        model = models.model_for("crc16_stream")
+        tx = bytes([e["inputs"]["in_data"], e["inputs"]["in_last"]])
+        for _ in range(e["after_cycles"]):
+            out = model.step(tx)
+        assert (int.from_bytes(out[:2], "little"), out[2]) == (e["expected"]["out_crc"], e["expected"]["out_last"])
+    model = models.model_for("crc16_stream")
+    outs = _crc_frame(model, b"123456789")
+    assert outs[-1] == (0x29B1, 1) and all(last == 0 for _, last in outs[:-1])
+    assert _crc_frame(model, b"123456789", marker=0x80)[-1] == (0x29B1, 1)    # a new frame from 0xFFFF
+    _crc_frame(model, b"12345", marker=0)                                        # no last: frame stays open
+    assert _crc_frame(model, b"6789")[-1] == (0x29B1, 1)
+    model.step(bytes([0x55, 0]))
+    model.reset()                                                                # reset restarts the frame
+    assert _crc_frame(model, b"123456789")[-1] == (0x29B1, 1)
+
+
+def test_crc16_wrong_twin_starts_frames_from_zero():
+    bad = models.model_for("crc16_stream", wrong=True)
+    assert _crc_frame(bad, b"123456789")[-1] == (models.crc16_ccitt_false(b"123456789", init=0), 1)
+    assert models.crc16_ccitt_false(b"123456789", init=0) == 0x31C3     # CRC-16/XMODEM check value
+
+
+def test_crc16_leading_frames_start_with_the_check_string():
+    model = models.model_for("crc16_stream")
+    outs = [model.step(tx) for tx in model.leading()]
+    assert outs[8] == bytes([0xB1, 0x29, 1])
+    assert sum(out[2] for out in outs) == 10                              # ten frames end in the lead
+
+
+# ---------------------------------------------------------------- SPI master
+
+def test_spi_exchange_is_msb_first_full_duplex():
+    assert models.spi_exchange(0xA5, 0x3C) == (0x3C, 0xA5)
+    assert models.spi_exchange(0x80, 0x01) == (0x01, 0x80)
+    assert models.spi_exchange(0x80, 0x01, msb_first=False) == (0x80, 0x01)   # bit order reversed
+    model = models.model_for("spi_master")
+    assert model.step(bytes([0x12, 0x34])) == bytes([0x34, 0x12])
+
+
+def test_spi_matches_spec_examples_with_constant_miso():
+    # The spec's examples hold miso constant: the slave returns 0xFF or 0x00.
+    examples = spec_examples("spi_master")
+    assert len(examples) == 3
+    for _, e in examples:
+        slave = 0xFF if e["inputs"]["miso"] else 0x00
+        out = models.model_for("spi_master").step(bytes([e["inputs"]["cmd_data"], slave]))
+        assert out[0] == e["expected"]["rsp_data"] and out[1] == e["inputs"]["cmd_data"]
+
+
+def test_spi_wrong_twin_reverses_both_directions():
+    bad = models.model_for("spi_master", wrong=True)
+    assert bad.step(bytes([0x01, 0x80])) == bytes([0x01, 0x80])
+    assert bad.step(bytes([0x0F, 0xF0])) == bytes([0x0F, 0xF0])
+
+
+# ---------------------------------------------------------------- RV32I core
+
+def test_rv32i_encoder_matches_known_encodings():
+    assert models.rv_i(0, 0, 0, 0) == 0x00000013                   # nop = addi x0, x0, 0
+    assert models.rv_i(-5, 0, 0, 1) == 0xFFB00093                  # addi x1, x0, -5
+    assert models.rv_op(models.ADD, 3, 1, 2) == 0x002081B3         # add x3, x1, x2
+    assert models.rv_op(models.SUB, 4, 2, 1) == 0x40110233         # sub x4, x2, x1
+    assert models.rv_u(0x80000, 1) == 0x800000B7                   # lui x1, 0x80000
+    assert models.rv_s(8, 1, 0) == 0x00102423                      # sw x1, 8(x0)
+    assert models.rv_i(8, 0, 2, 3, op=0x03) == 0x00802183          # lw x3, 8(x0)
+    assert models.rv_b(-8, 0, 2, models.BNE) == 0xFE011CE3         # bne x2, x0, -8
+    assert models.rv_j(0, 4) == 0x0000026F                         # jal x4, 0
+
+
+def _rv_result(program, wrong=False):
+    program = list(program) + [0] * (models.RV_PROGRAM_WORDS - len(program))     # zero words are NOPs
+    tx = b"".join(w.to_bytes(4, "little") for w in program)
+    out = models.model_for("rv32i_core", wrong=wrong).step(tx)
+    words = [int.from_bytes(out[4 * n:4 * n + 4], "little") for n in range(8)]
+    return {"sig": words[0], "cycles": words[1], "x": words[2:]}
+
+
+def test_rv32i_directed_programs_give_hand_computed_results():
+    d = models.RV_DIRECTED
+    # arith: x1 = -5 >> 1 (arithmetic) = -3, x2 = 3 ^ 8, x3 = -5 + 3, x4 = 3 - (-5),
+    # x5 = (-5 < 3 signed), x6 = (0xFFFFFFFB < 3 unsigned); 32 instructions of 4 cycles.
+    r = _rv_result(d["arith"])
+    assert r["x"] == [0xFFFFFFFD, 11, 0xFFFFFFFE, 8, 1, 0] and r["cycles"] == 128
+    # loop: 2 + 5 * 3 instructions, SW (5 cycles), LW (6), then 13 JALs to itself.
+    r = _rv_result(d["loop"])
+    assert r["x"] == [15, 0, 15, 32, 0, 0] and r["cycles"] == 17 * 4 + 5 + 6 + 13 * 4
+    # branch: BLT taken (skips x3 = 99), BGE not taken, AUIPC at pc 20, JALR to 28 links 28,
+    # JAL at 28 links 32.
+    r = _rv_result(d["branch"])
+    assert r["x"] == [0x80000000, 1, 20 + 0x1000, 28, 32, 0] and r["cycles"] == 128
+    # memory: SW to 4 then 132 (same word: address[6:2] = 1), LW from 4; SW to 8, LW from 11
+    # (bits [1:0] ignored); SLTI -1 < 0. Three stores and two loads.
+    r = _rv_result(d["memory"])
+    assert r["x"] == [0x123, 0xFFFFFFFF, 0xFFFFFFFF, 0x123, 1, 0] and r["cycles"] == 128 + 3 + 2 * 2
+    r = _rv_result(d["shift"])
+    assert r["x"] == [0xC0000000, 0xF8000000, 0x08000000, 0xF0000000, 1, 66]
+    r = _rv_result(d["branch_u"])                       # BGEU taken skips x3 = 7
+    assert r["x"] == [0xFFFFFFFF, 1, 0, 0, 0, 0] and r["cycles"] == 128
+    # nops: 32 no-operation retirements, so the signature only folds pc, 0, 0.
+    sig = 0
+    for n in range(32):
+        for word in (4 * n, 0, 0):
+            sig = ((sig << 5 | sig >> 27) & 0xFFFFFFFF) ^ word
+    assert _rv_result(d["nops"]) == {"sig": sig, "cycles": 128, "x": [0] * 6}
+
+
+def test_rv32i_signature_folds_every_store_and_register_write():
+    fold = models.rv_fold
+    # addi x1, x0, 7; sw x1, 4(x0); then 30 no-operations.
+    program = [models.rv_i(7, 0, 0, 1), models.rv_s(4, 1, 0)]
+    sig = fold(fold(fold(0, 0), 32 | 1), 7)                       # retire pc 0, write x1 = 7
+    sig = fold(fold(sig, 1), 7)                                   # store word 1 = 7, in M
+    sig = fold(fold(fold(sig, 4), 0), 0)                          # retire pc 4, no write
+    for n in range(2, 32):
+        sig = fold(fold(fold(sig, 4 * n), 0), 0)
+    r = _rv_result(program)
+    assert r["sig"] == sig and r["cycles"] == 4 + 5 + 30 * 4 and r["x"][0] == 7
+    # A write to x0 is still reported (rf_we for every writing instruction).
+    r0 = _rv_result([models.rv_i(7, 0, 0, 0)])
+    assert r0["x"] == [0] * 6 and r0["sig"] != _rv_result([0])["sig"]
+
+
+def test_rv32i_wrong_twin_treats_slt_as_unsigned():
+    d = models.RV_DIRECTED
+    assert _rv_result(d["arith"], wrong=True)["x"][4] == 0          # SLT -5 < 3 becomes false
+    assert _rv_result(d["memory"], wrong=True)["x"][4] == 0         # SLTI -1 < 0 becomes false
+    assert _rv_result(d["loop"], wrong=True) == _rv_result(d["loop"])   # no SLT: identical
+
+
+def test_rv32i_random_programs_are_forward_only_and_terminate_in_budget():
+    rng = random.Random(32)
+    for _ in range(500):
+        program = models.rv_random_program(rng)
+        assert len(program) == models.RV_PROGRAM_WORDS
+        for index, word in enumerate(program):
+            opcode = word & 0x7F
+            assert opcode in (0x33, 0x13, 0x37, 0x17, 0x6F, 0x67, 0x63, 0x03, 0x23)
+            if opcode == 0x63:
+                offset = models._signed(((word >> 31) << 12) | (((word >> 7) & 1) << 11) |
+                                        (((word >> 25) & 63) << 5) | (((word >> 8) & 15) << 1), 13)
+                assert 4 <= offset and index + offset // 4 <= 8 and offset % 4 == 0
+            elif opcode == 0x6F:
+                offset = models._signed(((word >> 31) << 20) | (((word >> 12) & 255) << 12) |
+                                        (((word >> 20) & 1) << 11) | (((word >> 21) & 1023) << 1), 21)
+                assert 4 <= offset and index + offset // 4 <= 8 and offset % 4 == 0
+            elif opcode == 0x67:
+                assert (word >> 15) & 31 == 0 and 4 * index < word >> 20 <= 32
+        result = models.rv_run(program)
+        assert result["cycles"] <= 32 * 6 < 1023                 # well inside the adapter's CYCLE_LIMIT
 
 
 @pytest.mark.parametrize("name", sorted(TABLE))
