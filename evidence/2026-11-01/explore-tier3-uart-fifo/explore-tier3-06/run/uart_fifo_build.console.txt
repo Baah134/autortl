@@ -1,0 +1,14 @@
+[lint] planner spec repair 1: module sync_fifo: example 0: inputs must contain only declared non-clock input ports; module sync_fifo: example 0: expected must cover exactly all data output ports and be nonempty (data outputs are the protocol none outputs: ['out_data', 'out_valid']; tag only valid/ready handshake ports valid_read
+[lint] planner spec repair 2: protocol mismatch: uart_tx.ready (none) -> sync_fifo.out_ready (valid_ready)
+[lint] planner spec repair 3: spec JSON does not load: KeyError: 'modules'
+[lint] spec failed structural lint:
+   - protocol mismatch: sync_fifo.in_ready (valid_ready) -> uart_tx.load (none)
+   - module sync_fifo: example 0: inputs must contain only declared non-clock input ports
+   - module sync_fifo: example 0: expected must cover exactly all data output ports and be nonempty (data outputs are the protocol none outputs: ['out_data']; tag only valid/ready handshake ports valid_ready, payload ports none)
+   - module sync_fifo: example 1: inputs must contain only declared non-clock input ports
+   - module sync_fifo: example 1: expected must cover exactly all data output ports and be nonempty (data outputs are the protocol none outputs: ['out_data']; tag only valid/ready handshake ports valid_ready, payload ports none)
+   - module uart_tx: example 0: inputs must contain only declared non-clock input ports
+   - module uart_tx: example 1: inputs must contain only declared non-clock input ports
+{
+  "status": "spec_lint_failed"
+}

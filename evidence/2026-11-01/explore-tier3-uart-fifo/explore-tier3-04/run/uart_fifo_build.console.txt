@@ -1,0 +1,8 @@
+[lint] planner spec repair 1: external port in_ready has missing or multiple bindings; module uart_tx: fixed latency does not accept handshake ports (use compare_mode scoreboard for a valid/ready module, or tag every port none)
+[lint] planner spec repair 2: external port in_ready has missing or multiple bindings; module uart_tx: scoreboard needs exactly in_valid, in_ready, out_valid, out_ready tagged valid_ready and at least one protocol none data input
+[lint] planner spec repair 3: protocol mismatch: uart_sync_fifo.out_valid (valid_ready) -> uart_tx.tx_valid (none); protocol mismatch: uart_tx.tx_ready (none) -> uart_sync_fifo.out_ready (valid_ready); module uart_tx: example 0: expected must cover exactly all data output ports and be nonempty (data outputs are the protocol none
+[lint] spec failed structural lint:
+   - module uart_tx: fixed latency does not accept handshake ports (use compare_mode scoreboard for a valid/ready module, or tag every port none)
+{
+  "status": "spec_lint_failed"
+}
