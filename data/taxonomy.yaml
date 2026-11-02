@@ -140,6 +140,9 @@ harness_failures:
   golden_table_setup_exhausts_step_budget:
     meaning: "The AES round oracle ran out of the sandbox's single 200,000-line budget (setup, init and every step shared it), then a second attempt computed a wrong ciphertext, so tier6 aes128_core_build ended module_failed with two oracle attempts and a supplied spec that cannot be replanned (explore-tier6-01)"
     repair: "Give module setup and init() their own larger budget, name the phase in the budget error, and tell the oracle prompt to derive constant tables once in init() with an efficient loop rather than per step or from memory"
+  golden_attempts_too_few_for_table_math:
+    meaning: "With budgets fixed, the AES round oracle's first attempt built inverses as a^254 by 254 sequential multiplications (about 5 million traced lines) and the second built log tables with a slip (value ^ (value >> 1) instead of value ^ xtime(value)), giving S(01)=0x42; two attempts ended the build of a supplied spec that cannot be replanned (explore-tier6-04)"
+    repair: "Give each module's oracle three attempts (a disputed planner-written spec still returns to the planner after two), and name efficient table constructions in the oracle prompt"
   golden_step_budget_below_wall_timeout:
     meaning: "With setup fixed, the AES round oracle exhausted the 200,000-line step budget: it needs about 5,600 traced lines per cycle (670,000 for 120 cycles) yet runs them in 0.28 s, so the line budget, not the worker's 5 s wall timeout, rejected a correct-sized model (explore-tier6-03)"
     repair: "Size the step budget from measured cost against the wall timeout (2,000,000 lines, about 1 s); the timeout remains the infrastructure bound"

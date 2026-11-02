@@ -337,7 +337,10 @@ Execution is metered: init() has a large one-time budget, all step() calls of a
 run share a smaller one. Build constant tables (an S-box, coefficient or arctan
 table) once in init() from their definition with an efficient loop, keep them
 in state, and only look them up in step(); never rebuild them per step, and do
-not type long tables from memory.
+not type long tables from memory. A loop of hundreds of operations per table
+entry is too slow: for GF(2^8) inverses build log/antilog tables with one
+255-step loop or use square-and-multiply, and check the table against any
+values the behavior text states.
 Helper functions are allowed. No imports, classes, try/except, raise, lambda,
 f-strings, list/dict/set comprehensions, floats, decorators or default arguments.
 Generator expressions are supported. Do not use private names starting with '_'.

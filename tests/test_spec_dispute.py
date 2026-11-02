@@ -106,7 +106,7 @@ def test_supplied_json_spec_with_disputed_examples_fails_without_planner(tmp_pat
     assert result["status"] == "module_failed" and result["module"] == "counter8_core"
     assert set(result) == {"status", "module", "error"}
     assert MISMATCH in result["error"]
-    assert golden.call_count == 2
+    assert golden.call_count == fsm.ORACLE_ATTEMPTS  # a supplied spec cannot be replanned
     state = checkpoint(o)
     assert "spec_disputes" not in state and "spec_revisions" not in state
     assert not (o.state.run_dir / "modules_rev1").exists()
@@ -116,16 +116,16 @@ SANDBOX = 'def init(): return {}\ndef step(s,i): return s,{"count":i["missing"]}
 
 
 @pytest.mark.parametrize("oracles", [
-    ["def init(:", "def init(:"],               # validation error, twice
-    [SANDBOX, SANDBOX],                         # worker error while running the examples
-    [ORACLE, SANDBOX],                          # a mismatch then a sandbox error
-    [SANDBOX, ORACLE],                          # a sandbox error then a mismatch
+    ["def init(:", "def init(:", "def init(:"],  # validation error, three times
+    [SANDBOX, SANDBOX, SANDBOX],                # worker error while running the examples
+    [ORACLE, SANDBOX, "def init(:"],            # a mismatch then other errors
+    [SANDBOX, ORACLE, "def init(:"],            # a mismatch between other errors
 ])
 def test_non_mismatch_oracle_failure_is_not_a_dispute(tmp_path, monkeypatch, oracles):
     o, planner, golden, synthesis = generated_oracle_build(tmp_path, monkeypatch, [disputed(), GOOD], oracles)
     result = o.run()
     assert result["status"] == "module_failed" and "spec_dispute" not in result
-    assert planner.call_count == 1 and golden.call_count == 2
+    assert planner.call_count == 1 and golden.call_count == fsm.ORACLE_ATTEMPTS
     assert "spec_disputes" not in checkpoint(o)
     synthesis.assert_not_called()
 

@@ -51,6 +51,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from llm.client import declared_latency, ModelCallError
 
 
+# golden_attempts_too_few_for_table_math: a module's oracle gets three attempts
+# (a disputed planner-written spec still returns to the planner after two).
+ORACLE_ATTEMPTS = 3
+
 # oracle_example_dispute_ends_build: the planner's instruction for a disputed module.
 SPEC_DISPUTE_INSTRUCTION = (
     "Two independent reference models written from this module's behavior text disagree with its "
@@ -566,6 +570,7 @@ class Orchestrator:
                     print("   -", e)
                 return {"status": "spec_lint_failed", "errors": errs}
             spec_sha = hashlib.sha256(raw.encode("utf-8")).hexdigest()
+            self._spec_generated = generated
             if generated:
                 # A resume replays the journaled planner calls; it must reach the same
                 # accepted specs, never silently fall back to a pre-dispute one.
@@ -785,7 +790,8 @@ class Orchestrator:
         # Per rejected attempt: its example-mismatch lines, or None for any other error
         # (oracle_example_dispute_ends_build).
         mismatch_attempts = []
-        for attempt in range(1, 3):
+        qualified = False
+        for attempt in range(1, ORACLE_ATTEMPTS + 1):
             # Provider and storage failures propagate; only generated-program errors
             # enter this bounded oracle repair loop.
             if attempt == 1:
@@ -814,12 +820,19 @@ class Orchestrator:
                     "attempt": attempt, "source_sha256": digest, "status": "oracle_rejected",
                     "example_mismatch_only": mismatches is not None,
                     "diagnostic": feedback}, indent=2))
+                # A planner-written spec whose last two oracles both disagree only with
+                # its examples goes back to the planner at once; a third oracle would be
+                # written from the same disputed text.
+                if (getattr(self, "_spec_generated", False) and len(mismatch_attempts) >= 2
+                        and all(mismatch_attempts[-2:])):
+                    break
                 continue
             atomic_write_text(mdir / f"golden_attempt_{attempt}.log", json.dumps({
                 "attempt": attempt, "source_sha256": digest, "status": "oracle_qualified",
                 "scope": "Specification examples and generated stimulus; not formal equivalence or reset-kind proof."}, indent=2))
+            qualified = True
             break
-        else:
+        if not qualified:
             self._build_failure = feedback
             if len(mismatch_attempts) >= 2 and all(mismatch_attempts[-2:]):
                 # Two oracles written from the behavior text both ran and disagreed only
