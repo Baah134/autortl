@@ -1,0 +1,951 @@
+{
+  "tier2/packet_fifo_build": {
+    "qualified": true,
+    "cases": [
+      {
+        "case": "reference",
+        "verdict": "TEST PASSED",
+        "as_required": true,
+        "fail_lines": false
+      },
+      {
+        "case": "hardcoded_depth_three",
+        "verdict": "TEST FAILED: packet FIFO matrix failed mask=111110",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "payload_capture_truncated_eight",
+        "verdict": "TEST FAILED: packet FIFO matrix failed mask=110000",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "power_of_two_wrap",
+        "verdict": "TEST FAILED: packet FIFO matrix failed mask=010001",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "early_full",
+        "verdict": "TEST FAILED: packet FIFO matrix failed mask=111111",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "late_full",
+        "verdict": "TEST FAILED: packet FIFO matrix failed mask=111111",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "full_simultaneous_blocked",
+        "verdict": "TEST FAILED: packet FIFO matrix failed mask=111111",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "simultaneous_occupancy_lost",
+        "verdict": "TEST FAILED: packet FIFO matrix failed mask=111111",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "simultaneous_retirement_lost",
+        "verdict": "TEST FAILED: packet FIFO matrix failed mask=111101",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "output_truncated_eight",
+        "verdict": "TEST FAILED: packet FIFO matrix failed mask=110000",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "unstable_stalled_payload",
+        "verdict": "TEST FAILED: packet FIFO matrix failed mask=111111",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "incorrect_data_order",
+        "verdict": "TEST FAILED: packet FIFO matrix failed mask=111101",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "asynchronous_reset",
+        "verdict": "TEST FAILED: packet FIFO matrix failed mask=111111",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "last_stuck_zero",
+        "verdict": "TEST FAILED: packet FIFO matrix failed mask=111111",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "last_stuck_one",
+        "verdict": "TEST FAILED: packet FIFO matrix failed mask=111111",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "current_input_last_bypass",
+        "verdict": "TEST FAILED: packet FIFO matrix failed mask=111111",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "unaccepted_tag_write",
+        "verdict": "TEST FAILED: packet FIFO matrix failed mask=111111",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "displaced_tag_read",
+        "verdict": "TEST FAILED: packet FIFO matrix failed mask=111101",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "tag_only_stall_drift",
+        "verdict": "TEST FAILED: packet FIFO matrix failed mask=111111",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "combinational_bypass",
+        "verdict": "TEST FAILED: packet FIFO matrix failed mask=111111",
+        "as_required": true,
+        "fail_lines": true
+      }
+    ]
+  },
+  "tier2/skid_buffer_build": {
+    "qualified": true,
+    "cases": [
+      {
+        "case": "reference",
+        "verdict": "TEST PASSED",
+        "as_required": true,
+        "fail_lines": false
+      },
+      {
+        "case": "capacity_one",
+        "verdict": "TEST FAILED: 1074 errors",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "overrun_ready",
+        "verdict": "TEST FAILED: 1031 errors",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "payload_corruption",
+        "verdict": "TEST FAILED: 2439 errors",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "unstable_stall",
+        "verdict": "TEST FAILED: 409 errors",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "drop_valid_stall",
+        "verdict": "TEST FAILED: 428 errors",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "async_reset",
+        "verdict": "TEST FAILED: 8 errors",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "simultaneous_pop_lost",
+        "verdict": "TEST FAILED: 1230 errors",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "combinational_passthrough",
+        "verdict": "TEST FAILED: 2639 errors",
+        "as_required": true,
+        "fail_lines": true
+      }
+    ]
+  },
+  "tier2/sync_fifo_build": {
+    "qualified": true,
+    "cases": [
+      {
+        "case": "reference",
+        "verdict": "TEST PASSED",
+        "as_required": true,
+        "fail_lines": false
+      },
+      {
+        "case": "hardcoded_depth_three",
+        "verdict": "TEST FAILED: FIFO matrix failed mask=111110",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "hardcoded_memory_width_eight",
+        "verdict": "TEST FAILED: FIFO matrix failed mask=110000",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "power_of_two_wrap",
+        "verdict": "TEST FAILED: FIFO matrix failed mask=010001",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "early_full",
+        "verdict": "TEST FAILED: FIFO matrix failed mask=111111",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "late_full",
+        "verdict": "TEST FAILED: FIFO matrix failed mask=111111",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "full_simultaneous_blocked",
+        "verdict": "TEST FAILED: FIFO matrix failed mask=111111",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "simultaneous_occupancy_lost",
+        "verdict": "TEST FAILED: FIFO matrix failed mask=111111",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "simultaneous_retirement_lost",
+        "verdict": "TEST FAILED: FIFO matrix failed mask=111101",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "output_truncated_eight",
+        "verdict": "TEST FAILED: FIFO matrix failed mask=110000",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "unstable_stalled_payload",
+        "verdict": "TEST FAILED: FIFO matrix failed mask=111111",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "incorrect_data_order",
+        "verdict": "TEST FAILED: FIFO matrix failed mask=111101",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "asynchronous_reset",
+        "verdict": "TEST FAILED: FIFO matrix failed mask=111111",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "combinational_bypass",
+        "verdict": "TEST FAILED: FIFO matrix failed mask=111111",
+        "as_required": true,
+        "fail_lines": true
+      }
+    ]
+  },
+  "tier3/dot4_pipeline_build": {
+    "qualified": true,
+    "cases": [
+      {
+        "case": "reference",
+        "verdict": "TEST PASSED",
+        "as_required": true,
+        "fail_lines": false
+      },
+      {
+        "case": "drop_product",
+        "verdict": "TEST FAILED: 1324 assertions",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "truncate_pair_carry",
+        "verdict": "TEST FAILED: 246 assertions",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "truncate_final_carry",
+        "verdict": "TEST FAILED: 87 assertions",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "signed_operands",
+        "verdict": "TEST FAILED: 1132 assertions",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "duplicate_first_input_pair",
+        "verdict": "TEST FAILED: 1324 assertions",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "duplicate_partial_sum",
+        "verdict": "TEST FAILED: 1326 assertions",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "combinational_merge",
+        "verdict": "TEST FAILED: 1355 assertions",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "extra_merge_stage",
+        "verdict": "TEST FAILED: 1349 assertions",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "branch_cycle_misalignment",
+        "verdict": "TEST FAILED: 1334 assertions",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "asynchronous_pair_reset",
+        "verdict": "TEST FAILED: 2 assertions",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "merge_reset_ignored",
+        "verdict": "TEST FAILED: 12 assertions",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "interedge_input_leak",
+        "verdict": "TEST FAILED: 706 assertions",
+        "as_required": true,
+        "fail_lines": true
+      }
+    ]
+  },
+  "tier3/elastic_dot4_build": {
+    "qualified": true,
+    "cases": [
+      {
+        "case": "reference",
+        "verdict": "TEST PASSED",
+        "as_required": true,
+        "fail_lines": false
+      },
+      {
+        "case": "dropped_product",
+        "verdict": "TEST FAILED: 4180 assertions",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "signed_arithmetic",
+        "verdict": "TEST FAILED: 3532 assertions",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "pair_carry_truncation",
+        "verdict": "TEST FAILED: 772 assertions",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "final_carry_truncation",
+        "verdict": "TEST FAILED: 352 assertions",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "early_output",
+        "verdict": "TEST FAILED: 206 assertions",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "late_output",
+        "verdict": "TEST FAILED: 392 assertions",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "accept_full",
+        "verdict": "TEST FAILED: 844 assertions",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "overwrite_blocked_stage1",
+        "verdict": "TEST FAILED: 486 assertions",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "drop_blocked_stage1",
+        "verdict": "TEST FAILED: 773 assertions",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "clear_stalled_valid",
+        "verdict": "TEST FAILED: 771 assertions",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "corrupt_held_output",
+        "verdict": "TEST FAILED: 522 assertions",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "duplicate_retirement",
+        "verdict": "TEST FAILED: 572 assertions",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "lose_full_replacement",
+        "verdict": "TEST FAILED: 3215 assertions",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "throughput_bubble",
+        "verdict": "TEST FAILED: 6955 assertions",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "retained_stage1_reset",
+        "verdict": "TEST FAILED: 36 assertions",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "retained_stage2_reset",
+        "verdict": "TEST FAILED: 36 assertions",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "asynchronous_reset",
+        "verdict": "TEST FAILED: 77 assertions",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "incorrect_downstream_ready",
+        "verdict": "TEST FAILED: 2135 assertions",
+        "as_required": true,
+        "fail_lines": true
+      }
+    ]
+  },
+  "tier3/iterative_divider_build": {
+    "qualified": true,
+    "cases": [
+      {
+        "case": "reference",
+        "verdict": "TEST PASSED",
+        "as_required": true,
+        "fail_lines": false
+      },
+      {
+        "case": "strict_subtraction_compare",
+        "verdict": "TEST FAILED: iterative divider matrix failed mask=111111",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "addition_instead_of_subtraction",
+        "verdict": "TEST FAILED: iterative divider matrix failed mask=111101",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "quotient_shift_right",
+        "verdict": "TEST FAILED: iterative divider matrix failed mask=111101",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "wrong_dividend_shift_bit",
+        "verdict": "TEST FAILED: iterative divider matrix failed mask=111101",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "trial_data_msb_cleared",
+        "verdict": "TEST FAILED: iterative divider matrix failed mask=111111",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "zero_divisor_quotient_zero",
+        "verdict": "TEST FAILED: iterative divider matrix failed mask=111111",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "zero_divisor_remainder_zero",
+        "verdict": "TEST FAILED: iterative divider matrix failed mask=111111",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "captured_dividend_truncated_eight",
+        "verdict": "TEST FAILED: iterative divider matrix failed mask=110000",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "captured_divisor_truncated_eight",
+        "verdict": "TEST FAILED: iterative divider matrix failed mask=110000",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "hardcoded_eight_iterations",
+        "verdict": "TEST FAILED: iterative divider matrix failed mask=111110",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "early_completion",
+        "verdict": "TEST FAILED: iterative divider matrix failed mask=111101",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "trivial_operand_shortcut",
+        "verdict": "TEST FAILED: iterative divider matrix failed mask=111101",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "ready_while_busy",
+        "verdict": "TEST FAILED: iterative divider matrix failed mask=111111",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "ready_on_retirement_edge",
+        "verdict": "TEST FAILED: iterative divider matrix failed mask=111111",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "current_divisor_not_captured",
+        "verdict": "TEST FAILED: iterative divider matrix failed mask=111111",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "current_dividend_during_computation",
+        "verdict": "TEST FAILED: iterative divider matrix failed mask=111101",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "stalled_quotient_drift",
+        "verdict": "TEST FAILED: iterative divider matrix failed mask=111111",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "stalled_remainder_drift",
+        "verdict": "TEST FAILED: iterative divider matrix failed mask=111111",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "asynchronous_reset",
+        "verdict": "TEST FAILED: iterative divider matrix failed mask=111111",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "reset_preserves_held_result",
+        "verdict": "TEST FAILED: iterative divider matrix failed mask=111111",
+        "as_required": true,
+        "fail_lines": true
+      }
+    ]
+  },
+  "tier3/signed_fir4_build": {
+    "qualified": true,
+    "cases": [
+      {
+        "case": "reference",
+        "verdict": "TEST PASSED",
+        "as_required": true,
+        "fail_lines": false
+      },
+      {
+        "case": "current_coefficient",
+        "verdict": "TEST FAILED: errors=2544",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "history_coefficient",
+        "verdict": "TEST FAILED: errors=2428",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "swapped_taps",
+        "verdict": "TEST FAILED: errors=2432",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "unsigned_input",
+        "verdict": "TEST FAILED: errors=1196",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "unsigned_history",
+        "verdict": "TEST FAILED: errors=1696",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "truncate12",
+        "verdict": "TEST FAILED: errors=180",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "history_on_invalid",
+        "verdict": "TEST FAILED: errors=948",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "history_on_blocked",
+        "verdict": "TEST FAILED: errors=648",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "history_delay",
+        "verdict": "TEST FAILED: errors=2220",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "reverse_history_shift",
+        "verdict": "TEST FAILED: errors=2256",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "stale_history_reset",
+        "verdict": "TEST FAILED: errors=152",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "async_history_reset",
+        "verdict": "TEST FAILED: errors=16",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "early_output",
+        "verdict": "TEST FAILED: errors=160",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "late_output",
+        "verdict": "TEST FAILED: errors=296",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "accept_full",
+        "verdict": "TEST FAILED: errors=1133",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "overwrite_stage1",
+        "verdict": "TEST FAILED: errors=300",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "overwrite_stage2",
+        "verdict": "TEST FAILED: errors=364",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "clear_stalled_valid",
+        "verdict": "TEST FAILED: errors=988",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "corrupt_held_output",
+        "verdict": "TEST FAILED: errors=408",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "lose_full_replacement",
+        "verdict": "TEST FAILED: errors=2125",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "throughput_bubble",
+        "verdict": "TEST FAILED: errors=3847",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "retained_stage1_reset",
+        "verdict": "TEST FAILED: errors=52",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "retained_stage2_reset",
+        "verdict": "TEST FAILED: errors=16",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "retained_stage3_reset",
+        "verdict": "TEST FAILED: errors=14",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "async_valid_reset",
+        "verdict": "TEST FAILED: errors=82",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "incorrect_downstream_ready",
+        "verdict": "TEST FAILED: errors=2180",
+        "as_required": true,
+        "fail_lines": true
+      },
+      {
+        "case": "combinational_reset_gate",
+        "verdict": "TEST FAILED: errors=8",
+        "as_required": true,
+        "fail_lines": true
+      }
+    ]
+  },
+  "tier3/uart_fifo_build": {
+    "qualified": true,
+    "console": [
+      "reference                      ok  TEST PASSED",
+      "msb_first                      ok  TEST FAILED: 40671 errors",
+      "stop_bit_low                   ok  TEST FAILED: 13912 errors",
+      "bit_period_one_long            ok  TEST FAILED: 65384 errors",
+      "parameter_ignored              ok  TEST FAILED: 23702 errors",
+      "idle_cycle_between_frames      ok  TEST FAILED: 33208 errors",
+      "full_one_early                 ok  TEST FAILED: 17600 errors",
+      "push_ignores_full              ok  TEST FAILED: 58266 errors",
+      "pop_ignores_tx_ready           ok  TEST FAILED: 88795 errors",
+      "reset_keeps_waiting_bytes      ok  TEST FAILED: 124167 errors",
+      "asynchronous_reset             ok  TEST FAILED: 1288 errors",
+      "QUALIFIED"
+    ]
+  },
+  "tier4/crc16_stream_build": {
+    "qualified": true,
+    "console": [
+      "reference                      ok  TEST PASSED",
+      "wrong_polynomial               ok  TEST FAILED: 2856 errors",
+      "reset_init_zero                ok  TEST FAILED: 84 errors",
+      "reset_keeps_frame              ok  TEST FAILED: 84 errors",
+      "no_restart_after_last          ok  TEST FAILED: 2780 errors",
+      "reflected_input_bits           ok  TEST FAILED: 2826 errors",
+      "capture_while_blocked          ok  TEST FAILED: 2162 errors",
+      "throughput_bubble              ok  TEST FAILED: 5397 errors",
+      "dropped_last_flag              ok  TEST FAILED: 392 errors",
+      "valid_dropped_under_stall      ok  TEST FAILED: 2060 errors",
+      "asynchronous_reset             ok  TEST FAILED: 33 errors",
+      "QUALIFIED"
+    ]
+  },
+  "tier4/rr_regfile_build": {
+    "qualified": true,
+    "console": [
+      "reference                      ok  TEST PASSED",
+      "fixed_priority                 ok  TEST FAILED: 2902 errors",
+      "reset_pointer_zero             ok  TEST FAILED: 92 errors",
+      "regrant_same_requester         ok  TEST FAILED: 3341 errors",
+      "data_select_off_by_one         ok  TEST FAILED: 743 errors",
+      "binary_grant                   ok  TEST FAILED: 3048 errors",
+      "write_first_bypass             ok  TEST FAILED: 380 errors",
+      "write_ignores_enable           ok  TEST FAILED: 128 errors",
+      "reset_keeps_memory             ok  TEST FAILED: 94 errors",
+      "asynchronous_regfile_reset     ok  TEST FAILED: 44 errors",
+      "top_read_address_miswired      ok  TEST FAILED: 2815 errors",
+      "QUALIFIED"
+    ]
+  },
+  "tier4/spi_master_build": {
+    "qualified": true,
+    "console": [
+      "reference                      ok  TEST PASSED",
+      "rx_lsb_first                   ok  TEST FAILED: 262 errors",
+      "sample_on_falling_edge         ok  TEST FAILED: 390 errors",
+      "half_period_one_long           ok  TEST FAILED: 30228 errors",
+      "parameter_ignored              ok  TEST FAILED: 53726 errors",
+      "mosi_shift_on_rise             ok  TEST FAILED: 13486 errors",
+      "seven_bit_transfer             ok  TEST FAILED: 9164 errors",
+      "accept_while_response_held     ok  TEST FAILED: 5416 errors",
+      "response_dropped_under_stall   ok  TEST FAILED: 3402 errors",
+      "reset_keeps_transfer           ok  TEST FAILED: 39614 errors",
+      "asynchronous_reset             ok  TEST FAILED: 2384 errors",
+      "QUALIFIED"
+    ]
+  },
+  "tier5/axil_regs_build": {
+    "qualified": true,
+    "console": [
+      "reference                      ok  TEST PASSED",
+      "aw_ready_waits_for_w           ok  TEST FAILED: 8185 errors",
+      "write_while_response_pending   ok  TEST FAILED: 5768 errors",
+      "slverr_never_reported          ok  TEST FAILED: 1638 errors",
+      "out_of_range_write_aliases     ok  TEST FAILED: 4185 errors",
+      "index_from_low_address_bits    ok  TEST FAILED: 10012 errors",
+      "byte_strobes_ignored           ok  TEST FAILED: 6984 errors",
+      "w1c_clear_beats_set            ok  TEST FAILED: 86 errors",
+      "read_reaccept_while_stalled    ok  TEST FAILED: 5248 errors",
+      "out_of_range_read_aliases      ok  TEST FAILED: 1360 errors",
+      "irq_ignores_mask               ok  TEST FAILED: 576 errors",
+      "QUALIFIED"
+    ]
+  },
+  "tier5/fir16_sym_build": {
+    "qualified": true,
+    "console": [
+      "reference                      ok  TEST PASSED",
+      "preadd_16bit_wrap              ok  TEST FAILED: 3788 errors",
+      "truncate_not_round             ok  TEST FAILED: 2252 errors",
+      "positive_saturation_wraps      ok  TEST FAILED: 28 errors",
+      "wrong_preadd_pair              ok  TEST FAILED: 3630 errors",
+      "coefficient_sign_flip          ok  TEST FAILED: 3804 errors",
+      "history_shift_on_valid         ok  TEST FAILED: 2256 errors",
+      "bubble_not_collapsed           ok  TEST FAILED: 1157 errors",
+      "stall_overwrites_output        ok  TEST FAILED: 1546 errors",
+      "reset_keeps_history            ok  TEST FAILED: 168 errors",
+      "asynchronous_reset             ok  TEST FAILED: 32 errors",
+      "QUALIFIED"
+    ]
+  },
+  "tier5/uart_rx_fifo_build": {
+    "qualified": true,
+    "console": [
+      "reference                      ok  TEST PASSED",
+      "single_flop_sync               ok  TEST FAILED: 11156 errors",
+      "center_sample_only             ok  TEST FAILED: 147396 errors",
+      "msb_first                      ok  TEST FAILED: 61170 errors",
+      "stop_bit_ignored               ok  TEST FAILED: 251209 errors",
+      "no_false_start_reject          ok  TEST FAILED: 46566 errors",
+      "samples_one_tick_late          ok  TEST FAILED: 212941 errors",
+      "divider_ignored                ok  TEST FAILED: 258973 errors",
+      "fifo_full_rejects_simultaneous_pop ok  TEST FAILED: 9270 errors",
+      "frame_error_counter_wraps      ok  TEST FAILED: 108465 errors",
+      "top_overflow_counter_miswired  ok  TEST FAILED: 35550 errors",
+      "QUALIFIED"
+    ]
+  },
+  "tier6/aes128_core_build": {
+    "qualified": true,
+    "console": [
+      "reference                      ok  TEST PASSED",
+      "sbox_entry_53_wrong            ok  TEST FAILED: 443 errors",
+      "shift_rows_rotates_right       ok  TEST FAILED: 979 errors",
+      "mix_columns_row1_coefficient   ok  TEST FAILED: 979 errors",
+      "final_round_mixes_columns      ok  TEST FAILED: 979 errors",
+      "rcon_doubling_not_reduced      ok  TEST FAILED: 979 errors",
+      "key_step_without_rotword       ok  TEST FAILED: 979 errors",
+      "key_step_w7_from_w5            ok  TEST FAILED: 979 errors",
+      "initial_add_round_key_missing  ok  TEST FAILED: 954 errors",
+      "in_ready_while_busy            ok  TEST FAILED: 5767 errors",
+      "output_dropped_under_backpressure ok  TEST FAILED: 3234 errors",
+      "QUALIFIED"
+    ]
+  },
+  "tier6/cordic_build": {
+    "qualified": true,
+    "console": [
+      "reference                      ok  TEST PASSED",
+      "atan_entry_3_off_by_one        ok  TEST FAILED: 293 errors",
+      "atan_entry_1_digits_swapped    ok  TEST FAILED: 6724 errors",
+      "logical_shift_of_y             ok  TEST FAILED: 3596 errors",
+      "zero_residual_rotates_down     ok  TEST FAILED: 36 errors",
+      "fold_on_sign_not_quadrant      ok  TEST FAILED: 3264 errors",
+      "gain_constant_off_by_one       ok  TEST FAILED: 1568 errors",
+      "z0_not_scaled                  ok  TEST FAILED: 6743 errors",
+      "cos_truncates_instead_of_rounding ok  TEST FAILED: 1289 errors",
+      "fifteen_iterations             ok  TEST FAILED: 13549 errors",
+      "y_update_sign_flipped          ok  TEST FAILED: 6760 errors",
+      "QUALIFIED"
+    ]
+  },
+  "tier6/rv32i_core_build": {
+    "qualified": true,
+    "console": [
+      "reference                      ok  TEST PASSED",
+      "srai_decoded_as_srli           ok  TEST FAILED: 8 errors",
+      "store_offset_from_rs2_field    ok  TEST FAILED: 107 errors",
+      "slt_compares_unsigned          ok  TEST FAILED: 488 errors",
+      "shift_amount_not_masked        ok  TEST FAILED: 6 errors",
+      "x0_writable                    ok  TEST FAILED: 5237 errors",
+      "imem_write_address_truncated   ok  TEST FAILED: 19479 errors",
+      "data_address_not_word_aligned  ok  TEST FAILED: 174 errors",
+      "bge_not_taken_on_equal         ok  TEST FAILED: 1362 errors",
+      "jalr_keeps_bit0                ok  TEST FAILED: 2860 errors",
+      "load_skips_memory_wait         ok  TEST FAILED: 7150 errors",
+      "QUALIFIED"
+    ]
+  }
+}
