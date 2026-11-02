@@ -3,7 +3,12 @@
 `fir16_sym` transparently wraps one `fir16_sym_core`. Ports: `clk`, `rst`,
 signed `in_sample[15:0]`, `in_valid`/`in_ready`, signed `out_sample[15:0]`,
 `out_valid`/`out_ready`. No parameters. Latency 5 (minimum accepted-transfer
-age). Target 150 MHz.
+age). Target 150 MHz, implemented out of context: a 150 MHz stream filter is
+an SoC block, and on this part a register-to-pin path alone (about 4.6 ns of
+clock insertion plus about 3 ns of output buffer) exceeds the 6.67 ns period,
+so chip-top I/O timing could never close whatever the RTL (taxonomy
+`chip_top_pad_floor_exceeds_period`). Acceptance covers the routed internal
+paths.
 
 ## Contract
 
