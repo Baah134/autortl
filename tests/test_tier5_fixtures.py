@@ -55,7 +55,8 @@ def test_metadata_maps_to_a_valid_build_config(name):
     entry, meta, spec, *_ = load(name)
     assert REQUIRED_META <= set(meta)
     assert meta["mode"] == "build" and meta["objective"] == "minimize_luts"
-    assert meta["spec"] == "design_spec.json" and meta["iterations"] == 3
+    # fir16_sym_build needs eight: closing 150 MHz took four in fir16-ooc-02.
+    assert meta["spec"] == "design_spec.json" and meta["iterations"] == (8 if meta["top"] == "fir16_sym" else 3)
     assert meta["pass_criteria"] == {"timing_met": True}
     assert type(meta.get("generate_golden", False)) is bool
     assert runner._metadata(entry) == meta

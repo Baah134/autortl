@@ -3,15 +3,16 @@ top: fir16_sym
 spec: design_spec.json
 tb: fir16_sym_tb.v
 generate_golden: true
-iterations: 3
+iterations: 8
 objective: minimize_luts
 target_freq_mhz: 150.0
 implementation: out_of_context
-# Each out-of-context implementation takes several minutes (fir16-ooc-02 used
-# about 68 tool minutes for ten iterations); margin for its three.
+# Closing 150 MHz took four iterations in fir16-ooc-02 (timing progress, then
+# recovery); each out-of-context implementation takes several minutes, so the
+# entry gets eight iterations and the budget to finish them.
 budgets:
-  tool_minutes: 60
-  wall_minutes: 90
+  tool_minutes: 100
+  wall_minutes: 160
 stresses: "16-tap symmetric FIR with 17-bit pre-adder sums; round-half-up and saturation; five-slot elastic valid/ready pipeline with exact bubble collapse; latency 5; DSP/LUT trade and timing at 150 MHz"
 pass_criteria:
   timing_met: true

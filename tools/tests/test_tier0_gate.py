@@ -259,10 +259,10 @@ def test_held_is_the_latest_full_tier_state():
 
 def test_entry_settings_name_each_entry_s_own_frequency_and_budgets():
     tier2 = gate.entry_settings(2)
-    assert tier2["fir8"] == {"target_freq_mhz": 150.0}
+    assert tier2["fir8"] == {"target_freq_mhz": 150.0, "max_vivado_minutes": 70.0, "max_wall_minutes": 110.0}
     assert tier2["sync_fifo_build"] == {"target_freq_mhz": 100.0}
-    assert gate.entry_settings(5)["fir16_sym_build"] == {"target_freq_mhz": 150.0, "max_vivado_minutes": 60.0,
-                                                         "max_wall_minutes": 90.0}
+    assert gate.entry_settings(5)["fir16_sym_build"] == {"target_freq_mhz": 150.0, "max_vivado_minutes": 100.0,
+                                                         "max_wall_minutes": 160.0}
     tier6 = gate.entry_settings(6)
     assert tier6["aes128_core_build"] == {"target_freq_mhz": 100.0, "max_vivado_minutes": 150.0,
                                           "max_wall_minutes": 240.0}

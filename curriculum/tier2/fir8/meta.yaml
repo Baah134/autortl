@@ -9,6 +9,10 @@ target_freq_mhz: 150.0
 # -2.766 ns), so a chip top can never close; run it as the DSP block it is
 # (chip_top_pad_floor_exceeds_period).
 implementation: out_of_context
+# explore-fir8-03 used 33 of 40 tool minutes alone; a gate shares the machine.
+budgets:
+  tool_minutes: 70
+  wall_minutes: 110
 iterations: 6
 stresses: "DSP48 inference vs LUT fabric; pipeline mutation; timing doctor"
 pass_criteria:
