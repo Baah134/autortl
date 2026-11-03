@@ -615,6 +615,9 @@ harness_failures:
   gate_frequency_overrides_entry_meta:
     meaning: "The gate always passed --target-freq-mhz 100 to run.py bench, and the runner applied CLI overrides after each entry's meta.yaml, so tier2 fir8 and tier5 fir16_sym_build (meta target_freq_mhz 150.0) would have been gated at 100 MHz, a weaker contract than the entry states"
     repair: "The gate passes no frequency; an entry's own meta.yaml target_freq_mhz (validated as a positive finite number) wins over any bench --target-freq-mhz, which only applies to entries that declare none; the effective frequency is in each entry's recorded config and so in the cohort"
+  held_under_old_runtime_blocks:
+    meaning: "After a harness implementation file (data/taxonomy.yaml) changed, tier 1's hold from sign-off pass 3 belonged to another cohort, yet the gate's governance-only check would still refuse to re-gate tier 0 beneath it"
+    repair: "A higher tier also stops blocking when its held campaign's frozen implementation hashes (runtime.json) differ from the current harness files; an unreadable record still blocks"
   entry_budgets_ignored_by_bench:
     meaning: "A heavy entry could raise its budgets only for exploration (meta.yaml explore_budgets, read by tools/explore.py alone), so a gate or bench would run AES-128 and RV32I at the default 40 tool minutes and 60 wall minutes that explore-tier6-05 and explore-tier6-06 had already shown are too short"
     repair: "Rename explore_budgets to budgets (keys model_calls, tool_minutes, wall_minutes; positive numbers; model_calls an integer), validated in the runner's metadata check; both tools/explore.py and the bench apply them to that entry only, over the tier defaults, and the effective limits are in the entry's recorded config and cohort"

@@ -103,15 +103,38 @@ def bench_command(python, out, tier=0, model=None, jobs=1, vivado=None):
     return args
 
 
-def held_higher_tiers(history, tier, governance_sha256=None):
+def implementation_hashes(root=ROOT):
+    """The harness implementation files a run freezes into runtime.json (fsm._prepare_inputs)."""
+    result = {}
+    for directory in (root / "autortl", root / "llm", root / "data", root / ".claude" / "skills"):
+        for path in sorted(directory.rglob("*")):
+            if path.is_file() and path.suffix in (".py", ".yaml", ".md", ".v"):
+                result[path.relative_to(root).as_posix()] = sha(path)
+    return result
+
+
+def recorded_implementation(record):
+    """A history record's frozen implementation hashes, read from its first entry's runtime.json."""
+    for result in record.get("results") or []:
+        path = Path(str(result.get("evidence_dir") or "")) / "runtime.json"
+        try:
+            return json.loads(path.read_text(encoding="utf-8"))["implementation"]
+        except (OSError, ValueError, KeyError, TypeError):
+            continue
+    return None
+
+
+def held_higher_tiers(history, tier, governance_sha256=None, implementation=None):
     """Tiers above tier whose latest full-tier record is held.
 
     Held is a state, not an event (stale_held_record_blocks_lower_gates): a tier
     that was held and later lost it, or that was re-gated on a changed harness,
     no longer blocks the lower tiers. A subset record never changes it. In the
     bottom-up sign-off pass every tier above the one being gated is not yet held.
-    With governance_sha256 given, a hold recorded under other governance code is
-    a hold of another cohort and does not block either (held_under_old_governance_blocks).
+    A hold recorded under other governance code (held_under_old_governance_blocks)
+    or on other harness implementation files (held_under_old_runtime_blocks) is a
+    hold of another cohort and does not block; when the record's implementation
+    cannot be read it still blocks.
     """
     latest = {}
     for record in history:
@@ -119,7 +142,13 @@ def held_higher_tiers(history, tier, governance_sha256=None):
             latest[record["tier"]] = record
     def current(record):
         recorded = (record.get("runtime_identity") or {}).get("governance_sha256")
-        return governance_sha256 is None or recorded == governance_sha256
+        if governance_sha256 is not None and recorded != governance_sha256:
+            return False
+        if implementation is not None:
+            frozen = recorded_implementation(record)
+            if frozen is not None and frozen != implementation:
+                return False
+        return True
     return sorted(t for t, record in latest.items()
                   if t > tier and record.get("held") is True and current(record))
 
@@ -166,7 +195,7 @@ def main(argv=None):
             raise SystemExit(f"{path} exists: an earlier attempt is never overwritten")
     sys.path.insert(0, str(ROOT))
     from curriculum import runner
-    held_above = held_higher_tiers(runner._history(), args.tier, sha(runner.__file__))
+    held_above = held_higher_tiers(runner._history(), args.tier, sha(runner.__file__), implementation_hashes())
     if held_above:
         raise SystemExit("a higher held tier requires its own gate: tier "
                          + ", ".join(str(t) for t in held_above) + " is held")

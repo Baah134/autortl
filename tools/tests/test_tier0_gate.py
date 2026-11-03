@@ -1,4 +1,5 @@
 """The tier0 gate runner keeps campaign14's source selection, budgets and command."""
+import json
 from pathlib import Path
 import sys
 
@@ -122,6 +123,25 @@ def test_a_hold_under_old_governance_does_not_block():
     assert gate.held_higher_tiers([old], 0, "new") == []
     assert gate.held_higher_tiers([old], 0, "old") == [1]
     assert gate.held_higher_tiers([old], 0) == [1]  # no governance given: as before
+
+
+def test_a_hold_on_other_implementation_files_does_not_block(tmp_path):
+    # held_under_old_runtime_blocks: a taxonomy edit changed the runtime after pass 3's tier 1 hold.
+    run = tmp_path / "campaign" / "entry"
+    run.mkdir(parents=True)
+    (run / "runtime.json").write_text(json.dumps({"implementation": {"data/taxonomy.yaml": "old"}}), encoding="utf-8")
+    held = {"tier": 1, "held": True, "full_tier": True, "runtime_identity": {"governance_sha256": "g"},
+            "results": [{"evidence_dir": str(run)}]}
+    assert gate.held_higher_tiers([held], 0, "g", {"data/taxonomy.yaml": "new"}) == []
+    assert gate.held_higher_tiers([held], 0, "g", {"data/taxonomy.yaml": "old"}) == [1]
+    unreadable = dict(held, results=[{"evidence_dir": str(tmp_path / "gone")}])
+    assert gate.held_higher_tiers([unreadable], 0, "g", {"data/taxonomy.yaml": "new"}) == [1]  # still blocks
+
+
+def test_implementation_hashes_cover_the_files_a_run_freezes():
+    hashes = gate.implementation_hashes()
+    assert "autortl/fsm.py" in hashes and "data/taxonomy.yaml" in hashes and "llm/client.py" in hashes
+    assert not any(name.startswith(("tools/", "curriculum/")) for name in hashes)
 
 
 def test_a_pinned_model_is_passed_to_the_bench(tmp_path):
