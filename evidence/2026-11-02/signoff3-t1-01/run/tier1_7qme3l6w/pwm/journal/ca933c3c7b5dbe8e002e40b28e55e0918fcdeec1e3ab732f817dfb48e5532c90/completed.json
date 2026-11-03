@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_2:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 2,
+    "instruction": "Keep `counter` as an 8-bit register, but replace iteration 1\u2019s unconditional modulo increment with an explicit `counter == 8'hff` branch that sets it to zero; otherwise increment by one. Preserve the synchronous reset and `pwm_out <= (counter < {24'd0, duty})` update exactly. This is an area experiment: promote only if all gates pass and routed LUTs are strictly below 7; matching 7 LUTs is not an objective improvement.",
+    "candidates": [
+      {
+        "iteration": 2,
+        "mutation": "standard",
+        "instruction": "Keep `counter` as an 8-bit register, but replace iteration 1\u2019s unconditional modulo increment with an explicit `counter == 8'hff` branch that sets it to zero; otherwise increment by one. Preserve the synchronous reset and `pwm_out <= (counter < {24'd0, duty})` update exactly. This is an area experiment: promote only if all gates pass and routed LUTs are strictly below 7; matching 7 LUTs is not an objective improvement.",
+        "generated_source_sha256": "de095954080c66edf991389024fc80341f096a7c0b0842e70271b3cbffe9bb35",
+        "final_source_sha256": "de095954080c66edf991389024fc80341f096a7c0b0842e70271b3cbffe9bb35",
+        "generated_code_hash": "45ca6963fc5f1fd7",
+        "final_code_hash": "45ca6963fc5f1fd7",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.463,
+          "whs_ns": 0.227,
+          "lut_used": 10,
+          "ff_used": 9,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.01,
+          "total_power_w": 0.081
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff3-t1-01\\tier1_7qme3l6w\\pwm\\iter_002\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff3-t1-01\\tier1_7qme3l6w\\pwm\\iter_002\\cand_standard\\synth.tcl",
+          "sha256": "4c23ee939efc9b4519122ea2f802cab1860210b7c74ef847df3cecd032d3c4b4"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff3-t1-01\\tier1_7qme3l6w\\pwm\\iter_002\\cand_standard\\pwm.v",
+          "sha256": "dc27e2bd0140efa549dfdd935af5b920e4e61f5bcb6b40cf4cec698622c1cbda"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": "de095954080c66edf991389024fc80341f096a7c0b0842e70271b3cbffe9bb35"
+  },
+  "artifacts": {}
+}

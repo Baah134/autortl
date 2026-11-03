@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Interface and cycle behavior: PASS \u2014 ports, reset behavior, registered output, and PWM cycle behavior are preserved; the 8-bit counter wraps at 255 as the original 32-bit counter does.\n- Top latency annotation: PASS \u2014 authoritative latency is unknown, so no numeric annotation is required.\n- Deterministic ladder: PASS \u2014 standard ladder reports 5 rungs ALIVE.\n- Compile, elaboration, and simulation: PASS \u2014 tool exits succeeded and the unchanged testbench reports `TEST PASSED`.\n- Routed metric integrity: PASS \u2014 retained routed reports and metric evidence are present.\n- Timing feasibility: PASS \u2014 timing is met; WNS is 0.412 ns and WHS is 0.196 ns.\n- Objective improvement: FAIL \u2014 LUTs increased from 7 to 10 and FFs remained at 9, so the candidate does not improve `minimize_luts`.\n## Summary\n- Passed: 6 of 7\n- Failed: 1 of 7\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes behavioral and implementation gates and meets timing, but both candidate and previous best are timing-feasible, so promotion requires a strict objective improvement. The candidate uses more LUTs with no FF reduction, and the recorded improvement kind is null; therefore a mandatory promotion criterion fails.",
+      "recommendation": "REJECT",
+      "passed": 6,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

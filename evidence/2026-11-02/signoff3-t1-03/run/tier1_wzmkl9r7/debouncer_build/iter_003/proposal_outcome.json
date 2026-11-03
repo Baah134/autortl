@@ -1,0 +1,45 @@
+{
+  "candidates": [
+    {
+      "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff3-t1-03\\tier1_wzmkl9r7\\debouncer_build\\iter_003\\cand_standard",
+      "cache_hit": false,
+      "final_code_hash": "49c78272adcc7c33",
+      "final_source_sha256": "f9f66c3469c38e468643655500c41028491bc2904992d102fc277f54283bbacf",
+      "flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff3-t1-03\\tier1_wzmkl9r7\\debouncer_build\\iter_003\\cand_standard\\synth.tcl",
+        "sha256": "b5011cd9c8ab631acb357285e7de6e70ac31eb4b4d28f8efa0f5375d3317a7a4"
+      },
+      "generated_code_hash": "49c78272adcc7c33",
+      "generated_source_sha256": "f9f66c3469c38e468643655500c41028491bc2904992d102fc277f54283bbacf",
+      "instruction": "Keep the top interface and `// @latency 0` annotation, and retain the registered `clean_reg` and 3-bit `run_count`. Replace the terminal branch that explicitly clears `run_count` with an unconditional 3-bit increment on samples where `noisy != clean_reg`; the 3-bit overflow at count 7 wraps to zero, while `clean_reg` updates to `noisy` on that same terminal mismatch. Preserve synchronous active-high reset, clear the counter when `noisy == clean_reg`, and preserve the exact cycle behavior.",
+      "iteration": 3,
+      "metrics": {
+        "bram_used": 0.0,
+        "dsp_used": 0,
+        "dynamic_power_w": 0.003,
+        "ff_used": 4,
+        "lut_used": 3,
+        "sim_passed": true,
+        "timing_met": true,
+        "total_power_w": 0.073,
+        "whs_ns": 0.167,
+        "wns_ns": 0.57
+      },
+      "mutation": "standard",
+      "reason": "",
+      "rungs": 5,
+      "source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff3-t1-03\\tier1_wzmkl9r7\\debouncer_build\\iter_003\\cand_standard\\debouncer_top.v",
+        "sha256": "b0c7147782465dd631ee84bf4037eb9b61477f5f8ebe84e981c0e7860ab3c099"
+      },
+      "status": "measured"
+    }
+  ],
+  "doctor": null,
+  "instruction": "Keep the top interface and `// @latency 0` annotation, and retain the registered `clean_reg` and 3-bit `run_count`. Replace the terminal branch that explicitly clears `run_count` with an unconditional 3-bit increment on samples where `noisy != clean_reg`; the 3-bit overflow at count 7 wraps to zero, while `clean_reg` updates to `noisy` on that same terminal mismatch. Preserve synchronous active-high reset, clear the counter when `noisy == clean_reg`, and preserve the exact cycle behavior.",
+  "is_best": false,
+  "iteration": 3,
+  "recommendation": "REJECT",
+  "schema_version": 1,
+  "selected_source_sha256": "f9f66c3469c38e468643655500c41028491bc2904992d102fc277f54283bbacf"
+}

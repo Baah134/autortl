@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_5:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 5,
+    "instruction": "Keep the counter update, reset assignments, and registered `pwm_out` timing unchanged. Replace only `pwm_out <= (counter < {24'd0, duty});` with an unsigned 9-bit subtraction of zero-extended `counter` and `duty`, assigning the subtraction\u2019s most significant bit to `pwm_out`; retain the 32-bit counter declaration and wrap branch. Check reset, duty values 0 and 255, and counter values around the threshold and wrap, then require all fixed verification gates and a strict objective improvement over the 7-LUT, 9-FF incumbent.",
+    "candidates": [
+      {
+        "iteration": 5,
+        "mutation": "standard",
+        "instruction": "Keep the counter update, reset assignments, and registered `pwm_out` timing unchanged. Replace only `pwm_out <= (counter < {24'd0, duty});` with an unsigned 9-bit subtraction of zero-extended `counter` and `duty`, assigning the subtraction\u2019s most significant bit to `pwm_out`; retain the 32-bit counter declaration and wrap branch. Check reset, duty values 0 and 255, and counter values around the threshold and wrap, then require all fixed verification gates and a strict objective improvement over the 7-LUT, 9-FF incumbent.",
+        "generated_source_sha256": "cdcd9b660c183a0f7a31c08ed6e57b85cdde0f6d5aab43649c17232ad3930678",
+        "final_source_sha256": "cdcd9b660c183a0f7a31c08ed6e57b85cdde0f6d5aab43649c17232ad3930678",
+        "generated_code_hash": "88e19ac99eb7eae7",
+        "final_code_hash": "88e19ac99eb7eae7",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.737,
+          "whs_ns": 0.232,
+          "lut_used": 11,
+          "ff_used": 9,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.011,
+          "total_power_w": 0.081
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff3-t1-02\\tier1_jvz8t4lf\\pwm\\iter_005\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff3-t1-02\\tier1_jvz8t4lf\\pwm\\iter_005\\cand_standard\\synth.tcl",
+          "sha256": "d53fefe9111a9bca0fbcd1c00b2399c1a3186c5a7f4aed17937174ced3daad6a"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff3-t1-02\\tier1_jvz8t4lf\\pwm\\iter_005\\cand_standard\\pwm.v",
+          "sha256": "d1a571768e52b880169fbbdf4c951ab32c25a2aa12d82c9998f9d4ab6291ac3b"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": "cdcd9b660c183a0f7a31c08ed6e57b85cdde0f6d5aab43649c17232ad3930678"
+  },
+  "artifacts": {}
+}

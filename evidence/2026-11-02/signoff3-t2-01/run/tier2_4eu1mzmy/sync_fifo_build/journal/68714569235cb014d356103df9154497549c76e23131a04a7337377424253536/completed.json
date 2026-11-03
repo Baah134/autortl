@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Top interface and live child: PASS \u2014 `sync_fifo` keeps its required ports, and `sync_fifo_core` is defined and instantiated under the top.\n- Behavior and parameter semantics: PASS \u2014 FIFO ordering, handshakes, stall stability, synchronous reset, minimum transfer age, and supported parameter configurations are preserved; the trusted simulation passes.\n- Top latency annotation: PASS \u2014 `// @latency 1` matches the authoritative top latency.\n- Deterministic verification and tool exits: PASS \u2014 ladder is ALIVE; simulation passes, and required tool exits are zero.\n- Routed report and metric integrity: PASS \u2014 retained routed reports and successful synthesis evidence are present.\n- Timing closure and recovery: PASS \u2014 candidate setup WNS is 0.105 ns and hold WHS is 0.050 ns; the previous best was timing-infeasible.\n- Improvement classification: PASS \u2014 `timing_recovery` is valid. Higher LUT and FF counts do not disqualify recovery from a timing-infeasible incumbent.\n## Summary\n- Passed: 7 of 7\n- Failed: 0 of 7\n- Improved over previous best: YES\n## Recommendation\nACCEPT\n## Reason\nThe candidate passes the defined behavior and verification gates, has matching top latency annotation, and provides positive routed setup and hold slack against a timing-infeasible previous best. The recorded `timing_recovery` is supported by the metrics; increased area does not invalidate this recovery.",
+      "recommendation": "ACCEPT",
+      "passed": 7,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}

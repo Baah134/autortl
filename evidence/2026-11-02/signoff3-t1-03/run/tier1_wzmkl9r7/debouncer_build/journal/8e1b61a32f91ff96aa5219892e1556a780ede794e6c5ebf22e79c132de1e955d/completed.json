@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_3:model:planner.plan:0",
+  "result": "# PLAN \u2014 iteration 3\n## Current state assessment\nIteration 2 is the verified, timing-feasible best at 3 LUTs and 4 FFs, with WNS 0.57 ns and WHS 0.057 ns. Since both incumbent and candidate must remain timing-feasible, promotion requires a strict LUT reduction, or equal LUTs with fewer FFs.\n\n## Hypothesis\nLetting the 3-bit counter wrap naturally on the terminal mismatch may remove terminal-count selection from its next-state logic and reduce LUT use while preserving the 8-sample debounce behavior.\n\n## Instruction for generator\nKeep the top interface and `// @latency 0` annotation, and retain the registered `clean_reg` and 3-bit `run_count`. Replace the terminal branch that explicitly clears `run_count` with an unconditional 3-bit increment on samples where `noisy != clean_reg`; the 3-bit overflow at count 7 wraps to zero, while `clean_reg` updates to `noisy` on that same terminal mismatch. Preserve synchronous active-high reset, clear the counter when `noisy == clean_reg`, and preserve the exact cycle behavior.",
+  "artifacts": {}
+}

@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "status": "qualified",
+  "qualified": true,
+  "testbench_sha256": "d84ec4f3b6ea319fc97a99e531bd459b1a6f2f908bc5b6934ac3a4fc9542c68b",
+  "attempts": [
+    {
+      "label": "control",
+      "description": "unmodified control",
+      "passed": true,
+      "failure_kind": "design",
+      "error": "",
+      "assertion_detected": false,
+      "proof_reason": "simulation passed",
+      "source_sha256": "0e1e8fbf2acb54d7e62d593ea6b933a6d1f2d50023a519e476c294acf2255a70",
+      "raw_log_sha256": "8da0c803a8926521b190781280f7783b039711ad791f9a8ac37127a3c244248c"
+    },
+    {
+      "label": "mutant",
+      "description": "flip < to >",
+      "passed": false,
+      "failure_kind": "design",
+      "error": "Testbench failures:\nFAIL valid dropped under backpressure  (x18)\nFAIL index=4 signal=out_data  (x63)\nFAIL scoreboard did not drain",
+      "assertion_detected": true,
+      "proof_reason": "raw assertion detail and failure verdict retained",
+      "source_sha256": "3bdea385414fb3444183c65e14648ee1365f10cfaf4eac2e2a16b99147b79683",
+      "raw_log_sha256": "c238e496895131ef458fe17b21021f643b5705c771099b1ef47510c9d1ed7248"
+    }
+  ],
+  "missed": [],
+  "scope": "Minimum assertion sensitivity; missed faults remain coverage limits."
+}

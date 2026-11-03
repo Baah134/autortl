@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_3:decision:instruction:0",
+  "result": "Keep the 32-bit counter, its increment and `counter == 32'd255` wrap branch, reset assignments, and registered `pwm_out` timing unchanged. Replace only the PWM comparison with `(~|counter[31:8]) && (counter[7:0] < duty)`, which is equivalent to comparing the full counter against the zero-extended duty for all counter values. Do not add a latency annotation; retain all reset and cycle behavior.",
+  "artifacts": {}
+}

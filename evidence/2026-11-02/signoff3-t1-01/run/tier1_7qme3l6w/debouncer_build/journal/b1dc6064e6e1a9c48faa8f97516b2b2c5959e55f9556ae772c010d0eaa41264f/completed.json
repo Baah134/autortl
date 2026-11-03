@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_3:decision:instruction:0",
+  "result": "Keep the top interface, `// @latency 0`, registered `clean`, and the existing synchronous active-high reset. Replace the current `stable_count + 3'd1` wraparound pattern with a 3-bit decrementing count: load 6 when `noisy` differs from `previous_noisy`, decrement on stable samples, and update `clean` when the prior count is zero and the input is unchanged. Initialize the count to zero on reset, and preserve the 8-consecutive-sample threshold after any input change; verify reset, toggles near the terminal count, and both input polarities against the frozen testbench and all promotion gates.",
+  "artifacts": {}
+}

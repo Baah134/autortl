@@ -1,0 +1,81 @@
+{
+  "stage": "iteration_3:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 3,
+    "instruction": "In `packet_fifo_core`, replace `occupancy` with a `full` register: derive empty from `read_ptr == write_ptr` and `!full`, use `!full || out_ready` for `in_ready`, and use `!empty` for `out_valid`. Update `full` from accepted push/pop events, including full simultaneous pop/push, and keep explicit pointer wrap at `DEPTH-1` for every supported depth. Preserve the existing memory payload path and all top ports, reset behavior, stall stability, minimum transfer age, and the top\u2019s `// @latency 1`; retain this candidate only if routed reports show a strict objective improvement and all verification ",
+    "candidates": [
+      {
+        "iteration": 3,
+        "mutation": "standard",
+        "instruction": "In `packet_fifo_core`, replace `occupancy` with a `full` register: derive empty from `read_ptr == write_ptr` and `!full`, use `!full || out_ready` for `in_ready`, and use `!empty` for `out_valid`. Update `full` from accepted push/pop events, including full simultaneous pop/push, and keep explicit pointer wrap at `DEPTH-1` for every supported depth. Preserve the existing memory payload path and all top ports, reset behavior, stall stability, minimum transfer age, and the top\u2019s `// @latency 1`; retain this candidate only if routed reports show a strict objective improvement and all verification ",
+        "generated_source_sha256": "5ee63fc5c6515001d9d257bc3e43964c857cd8ba5a760e8422979ed8bc6ac670",
+        "final_source_sha256": "5ee63fc5c6515001d9d257bc3e43964c857cd8ba5a760e8422979ed8bc6ac670",
+        "generated_code_hash": "ea806c9dde32c0ee",
+        "final_code_hash": "ea806c9dde32c0ee",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": false,
+          "wns_ns": -0.418,
+          "whs_ns": 0.066,
+          "lut_used": 29,
+          "ff_used": 14,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.015,
+          "total_power_w": 0.085
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff3-t2-01\\tier2_4eu1mzmy\\packet_fifo_build\\iter_003\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff3-t2-01\\tier2_4eu1mzmy\\packet_fifo_build\\iter_003\\cand_standard\\synth.tcl",
+          "sha256": "3fccc3106df567e8f6db3db60a1e3c0b98eeef9596b2f9a300ed283eefef809a"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff3-t2-01\\tier2_4eu1mzmy\\packet_fifo_build\\iter_003\\cand_standard\\packet_fifo.v",
+          "sha256": "bb8f0840edbae5fc608535782bcaeba7cc61ba546d9b83e930324a55c9abcb8a"
+        }
+      }
+    ],
+    "doctor": {
+      "status": "ADOPTED",
+      "action": "rtl_surgery",
+      "reason": "policy_improvement",
+      "tools_ran": true,
+      "measured_metrics": {
+        "sim_passed": true,
+        "timing_met": true,
+        "wns_ns": 0.312,
+        "whs_ns": 0.056,
+        "lut_used": 27,
+        "ff_used": 15,
+        "dsp_used": 0,
+        "bram_used": 0.0,
+        "dynamic_power_w": 0.015,
+        "total_power_w": 0.085
+      },
+      "adopted": true,
+      "input_source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff3-t2-01\\tier2_4eu1mzmy\\packet_fifo_build\\iter_003\\cand_standard\\packet_fifo.v",
+        "sha256": "bb8f0840edbae5fc608535782bcaeba7cc61ba546d9b83e930324a55c9abcb8a"
+      },
+      "trial_source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff3-t2-01\\tier2_4eu1mzmy\\packet_fifo_build\\iter_003\\doctor_rtl_surgery_trial\\packet_fifo.v",
+        "sha256": "d2bbf493f64d4e34f1fe74ca0a37fd56e13cb89af33c03966aaeecb1d5ecd46d"
+      },
+      "trial_flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff3-t2-01\\tier2_4eu1mzmy\\packet_fifo_build\\iter_003\\doctor_rtl_surgery_trial\\synth.tcl",
+        "sha256": "73142f69a1d2080969da79d4e0f8e83e569ab13b17ec3d519a10ebb00b9499f4"
+      },
+      "identity_count": 3,
+      "proposed_source_text_sha256": "f03a1bc447e5b2a63be768296873824ce306858374a6166e7a0896303e583852"
+    },
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": "f03a1bc447e5b2a63be768296873824ce306858374a6166e7a0896303e583852"
+  },
+  "artifacts": {}
+}

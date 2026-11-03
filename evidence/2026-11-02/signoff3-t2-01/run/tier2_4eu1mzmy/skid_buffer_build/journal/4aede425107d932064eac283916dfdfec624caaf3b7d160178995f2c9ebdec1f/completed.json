@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_1:decision:instruction:0",
+  "result": "In `skid_buffer_core`, replace the combinational `out_valid = (occupancy != 0)` output with a dedicated register that is reset synchronously to zero and updated on each non-reset edge to match the FIFO\u2019s post-edge nonempty state. Keep the existing occupancy, payload storage, combinational `in_ready` rule, and handshake semantics; ensure the registered valid agrees with occupancy for empty, single-entry, full, simultaneous push/pop, stalled, and reset cases. Preserve the top module and its `// @latency 1` annotation, and verify the full unit against the frozen testbench and routed setup and hold gates.",
+  "artifacts": {}
+}

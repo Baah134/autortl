@@ -1,0 +1,5 @@
+{
+  "stage": "module_debouncer:model:generator.golden_model:0",
+  "result": "def init():\n    return dict(clean=0, count=0)\n\ndef step(state, inputs):\n    clean = int(state.get(\"clean\", 0)) & 1\n    count = int(state.get(\"count\", 0))\n\n    if int(inputs.get(\"rst\", 0)) & 1:\n        clean = 0\n        count = 0\n    else:\n        noisy = int(inputs.get(\"noisy\", 0)) & 1\n        if noisy == clean:\n            count = 0\n        else:\n            count = count + 1\n            if count >= 8:\n                clean = noisy\n                count = 0\n\n    state[\"clean\"] = clean\n    state[\"count\"] = count\n    outputs = dict(clean=clean)\n    return state, outputs",
+  "artifacts": {}
+}

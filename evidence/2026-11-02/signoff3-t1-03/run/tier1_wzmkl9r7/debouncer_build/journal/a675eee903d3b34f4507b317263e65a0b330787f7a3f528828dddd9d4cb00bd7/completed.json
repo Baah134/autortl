@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_4:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 4\n## Contract check\n- Defined behavior, interface and reset: PASS \u2014 top ports match; the candidate updates `clean` after 8 consecutive samples differing from its current value and resets synchronously to 0.\n- Top latency annotation: PASS \u2014 `// @latency 0` matches the authoritative value.\n- Deterministic verification: PASS \u2014 ladder is ALIVE; compilation, elaboration and simulation exited successfully, and simulation reported `TEST PASSED`.\n- Synthesis and metric integrity: PASS \u2014 synthesis completed successfully and retained routed reports are provided.\n- Timing feasibility: PASS \u2014 `timing_met=true`, WNS is 0.579 ns and WHS is 0.057 ns.\n- Objective improvement: PASS \u2014 LUTs decreased from 3 to 1, a strict improvement for `minimize_luts`; the FF increase does not negate it.\n- Improvement classification: PASS \u2014 `improvement_kind=objective` matches the measured improvement.\n## Summary\n- Passed: 7 of 7\n- Failed: 0 of 7\n- Improved over previous best: YES\n## Recommendation\nACCEPT\n## Reason\nThe candidate passes the deterministic checks and required annotation, preserves the specified debouncer behavior, meets setup and hold timing, and improves the selected LUT objective over the verified previous best.",
+      "recommendation": "ACCEPT",
+      "passed": 7,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}

@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_2:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 2\n## Contract check\n- Interface and defined behavior: PASS \u2014 Top ports and synchronous active-high reset behavior are preserved; the candidate\u2019s counter wrap changes only internal state, with no defined output-cycle difference.\n- Top latency annotation: PASS \u2014 `// @latency 0` matches the authoritative known latency.\n- Deterministic verification: PASS \u2014 Ladder reports ALIVE; simulation passed with the required verdict.\n- Tool stages: PASS \u2014 xvlog, xelab, xsim, and Vivado exited successfully; synthesis reported `SYNTH_COMPLETE`.\n- Routed metrics and timing: PASS \u2014 Retained routed metrics are present; WNS is 0.731 ns and WHS is 0.067 ns, both nonnegative.\n- Objective and improvement: PASS \u2014 LUTs decreased from 4 to 3 with FFs unchanged at 5; this is a strict `minimize_luts` improvement over the timing-feasible previous best.\n## Summary\n- Passed: 6 of 6\n- Failed: 0 of 6\n- Improved over previous best: YES\n## Recommendation\nACCEPT\n## Reason\nThe candidate passes the deterministic checks and required tool and metric gates, preserves the defined observable behavior, and improves the selected objective by reducing LUT use while maintaining timing feasibility.",
+      "recommendation": "ACCEPT",
+      "passed": 6,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}

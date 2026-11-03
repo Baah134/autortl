@@ -1,0 +1,45 @@
+{
+  "candidates": [
+    {
+      "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff3-t1-01\\tier1_7qme3l6w\\debouncer_build\\iter_004\\cand_standard",
+      "cache_hit": false,
+      "final_code_hash": "82a07a209f1d258f",
+      "final_source_sha256": "24f1b7287d5a64153f60844e0d0928dc99020368a9d0989b9c1f67a370c5b4ef",
+      "flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff3-t1-01\\tier1_7qme3l6w\\debouncer_build\\iter_004\\cand_standard\\synth.tcl",
+        "sha256": "d375839a9349e32e0c4b740579c2568e115b9d9e2db445702311e0f23cde1dd9"
+      },
+      "generated_code_hash": "82a07a209f1d258f",
+      "generated_source_sha256": "24f1b7287d5a64153f60844e0d0928dc99020368a9d0989b9c1f67a370c5b4ef",
+      "instruction": "Keep the top interface and `// @latency 0`, but replace `previous_noisy` tracking with a 3-bit consecutive-difference counter: clear it when `noisy == clean`, increment it while `noisy != clean`, and update `clean` when the old count is 7. Clear the counter when `clean` updates, and retain the synchronous reset that sets both `clean` and the counter to zero. This should preserve the first update on the eighth consecutive sample differing from `clean`; verify reversals, reset, and the output hold behavior, then compare routed LUTs and FFs against the 3-LUT, 5-FF incumbent.",
+      "iteration": 4,
+      "metrics": {
+        "bram_used": 0.0,
+        "dsp_used": 0,
+        "dynamic_power_w": 0.003,
+        "ff_used": 4,
+        "lut_used": 3,
+        "sim_passed": true,
+        "timing_met": true,
+        "total_power_w": 0.073,
+        "whs_ns": 0.057,
+        "wns_ns": 0.57
+      },
+      "mutation": "standard",
+      "reason": "",
+      "rungs": 5,
+      "source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff3-t1-01\\tier1_7qme3l6w\\debouncer_build\\iter_004\\cand_standard\\debouncer_top.v",
+        "sha256": "c05d4a0c9df5b2e571878a285f90646458517d0363446af0bab4adc7ea00908f"
+      },
+      "status": "measured"
+    }
+  ],
+  "doctor": null,
+  "instruction": "Keep the top interface and `// @latency 0`, but replace `previous_noisy` tracking with a 3-bit consecutive-difference counter: clear it when `noisy == clean`, increment it while `noisy != clean`, and update `clean` when the old count is 7. Clear the counter when `clean` updates, and retain the synchronous reset that sets both `clean` and the counter to zero. This should preserve the first update on the eighth consecutive sample differing from `clean`; verify reversals, reset, and the output hold behavior, then compare routed LUTs and FFs against the 3-LUT, 5-FF incumbent.",
+  "is_best": true,
+  "iteration": 4,
+  "recommendation": "ACCEPT",
+  "schema_version": 1,
+  "selected_source_sha256": "24f1b7287d5a64153f60844e0d0928dc99020368a9d0989b9c1f67a370c5b4ef"
+}

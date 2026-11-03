@@ -1,0 +1,13 @@
+# PLAN — iteration 1
+
+## Current state assessment
+
+The verified incumbent passes simulation and timing, with 6 LUTs, 8 FFs, WNS 0.424 ns, and WHS 0.226 ns. Since it is already timing-feasible, this minimize_luts run needs strictly fewer LUTs to improve the incumbent; equal LUTs and FFs do not qualify. No prior trial outcomes are provided.
+
+## Hypothesis
+
+Replacing the conditional increment and hold with an unconditional addition of the one-bit `enable` may let Vivado use the 7-series carry chain with fewer LUTs, while retaining the same register count and observable behavior.
+
+## Instruction for generator
+
+In `counter8_core`, replace the `else if (enable)` increment/implicit hold pattern with an unconditional `count_reg <= count_reg + enable` update in the non-reset branch; keep the synchronous active-high reset as the higher-priority branch. Preserve the 8-bit modulo-256 result, registered output, and top interface, and retain the top’s required `// @latency 1` annotation. The candidate must pass all fixed verification and metric gates, and promotion requires strictly fewer than 6 LUTs.

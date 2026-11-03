@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_3:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 3\n## Contract check\n- Ports and interface: PASS \u2014 top name, port names, directions, and widths match the frozen source.\n- Reset and cycle behavior: FAIL \u2014 forcing `counter[31:8]` to zero changes behavior for possible unreset states above 255; the contract does not guarantee reset before observation.\n- Top latency annotation: PASS \u2014 authoritative `declared_latency.known=false`; no numeric annotation is required.\n- Deterministic ladder: PASS \u2014 standard ladder reports 5 rungs, ALIVE.\n- Compile, elaboration, and simulation: PASS \u2014 required tool exits are successful and the frozen testbench reports `TEST PASSED`.\n- Synthesis and process receipts: PASS \u2014 successful exit evidence and `SYNTH_COMPLETE` are recorded.\n- Routed metrics and timing: PASS \u2014 retained routed reports are present; WNS is 0.553 ns and WHS is 0.135 ns.\n- Objective improvement: FAIL \u2014 LUTs increased from 7 to 9 under `minimize_luts`; the recorded improvement kind is null.\n## Summary\n- Passed: 6 of 8\n- Failed: 2 of 8\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes the deterministic ladder and timing gates, but it changes behavior for possible unreset counter states and uses more LUTs than the feasible previous best. Both are mandatory contract failures.",
+      "recommendation": "REJECT",
+      "passed": 6,
+      "failed": 2
+    }
+  },
+  "artifacts": {}
+}

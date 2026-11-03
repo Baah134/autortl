@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_3:decision:instruction:0",
+  "result": "Keep the top interface and `// @latency 0` annotation, and retain the registered `clean_reg` and 3-bit `run_count`. Replace the terminal branch that explicitly clears `run_count` with an unconditional 3-bit increment on samples where `noisy != clean_reg`; the 3-bit overflow at count 7 wraps to zero, while `clean_reg` updates to `noisy` on that same terminal mismatch. Preserve synchronous active-high reset, clear the counter when `noisy == clean_reg`, and preserve the exact cycle behavior.",
+  "artifacts": {}
+}

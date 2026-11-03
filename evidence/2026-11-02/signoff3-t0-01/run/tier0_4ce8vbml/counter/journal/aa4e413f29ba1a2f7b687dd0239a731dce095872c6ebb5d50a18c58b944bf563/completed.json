@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_1:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 1,
+    "instruction": "Replace the `count_next` temporary and the enabled count branch\u2019s all-ones comparison with an explicitly `WIDTH+1`-bit increment result. On enabled cycles, load its low `WIDTH` bits into `count` and use its carry-out for `overflow`; retain the existing reset, load priority, and disabled-cycle holds. Preserve the registered threshold flags and their one-cycle-old-count behavior, and keep all parameter and high-bit semantics unchanged. The candidate must pass the unchanged verification and routed metric gates, and improve the LUT objective to be promotable.",
+    "candidates": [
+      {
+        "iteration": 1,
+        "mutation": "standard",
+        "instruction": "Replace the `count_next` temporary and the enabled count branch\u2019s all-ones comparison with an explicitly `WIDTH+1`-bit increment result. On enabled cycles, load its low `WIDTH` bits into `count` and use its carry-out for `overflow`; retain the existing reset, load priority, and disabled-cycle holds. Preserve the registered threshold flags and their one-cycle-old-count behavior, and keep all parameter and high-bit semantics unchanged. The candidate must pass the unchanged verification and routed metric gates, and improve the LUT objective to be promotable.",
+        "generated_source_sha256": "c8b2375d4fe468e0fd98f24a72bae05ae6eff0369a146cfd3973699613602986",
+        "final_source_sha256": "c8b2375d4fe468e0fd98f24a72bae05ae6eff0369a146cfd3973699613602986",
+        "generated_code_hash": "a496b42a7da162f6",
+        "final_code_hash": "a496b42a7da162f6",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.126,
+          "whs_ns": 0.026,
+          "lut_used": 31,
+          "ff_used": 37,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.053,
+          "total_power_w": 0.123
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff3-t0-01\\tier0_4ce8vbml\\counter\\iter_001\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff3-t0-01\\tier0_4ce8vbml\\counter\\iter_001\\cand_standard\\synth.tcl",
+          "sha256": "dc108c78d062bbfcdb67084fb6d11e6c5d6d34fffc316bc7527069c5fd880c3d"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff3-t0-01\\tier0_4ce8vbml\\counter\\iter_001\\cand_standard\\counter.v",
+          "sha256": "37acbfc3c90c34823ed390a90209781e1597e5bb7ecf252aa5d86ed3a8096607"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "ACCEPT",
+    "is_best": true,
+    "selected_source_sha256": "c8b2375d4fe468e0fd98f24a72bae05ae6eff0369a146cfd3973699613602986"
+  },
+  "artifacts": {}
+}

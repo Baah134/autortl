@@ -1,0 +1,81 @@
+{
+  "stage": "iteration_1:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 1,
+    "instruction": "In `packet_fifo_core`, replace the integer `occupancy` with a counter sized for values 0 through `DEPTH`, and maintain a `full` register that tracks whether the post-edge occupancy equals `DEPTH`. Drive `in_ready` as `!full || out_ready`, updating `full` correctly on reset, push-only, pop-only, and simultaneous push/pop, including `DEPTH=1`. Preserve the existing pointers, storage, transfer rules, symbolic `WIDTH` behavior, reset semantics, and top latency annotation.",
+    "candidates": [
+      {
+        "iteration": 1,
+        "mutation": "standard",
+        "instruction": "In `packet_fifo_core`, replace the integer `occupancy` with a counter sized for values 0 through `DEPTH`, and maintain a `full` register that tracks whether the post-edge occupancy equals `DEPTH`. Drive `in_ready` as `!full || out_ready`, updating `full` correctly on reset, push-only, pop-only, and simultaneous push/pop, including `DEPTH=1`. Preserve the existing pointers, storage, transfer rules, symbolic `WIDTH` behavior, reset semantics, and top latency annotation.",
+        "generated_source_sha256": "eb231e6e5fab125086cfa0b6e2288be5f001072a8248b4359c6f9b76428fc236",
+        "final_source_sha256": "eb231e6e5fab125086cfa0b6e2288be5f001072a8248b4359c6f9b76428fc236",
+        "generated_code_hash": "d9aadf7811f7d935",
+        "final_code_hash": "d9aadf7811f7d935",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": false,
+          "wns_ns": -1.0,
+          "whs_ns": 0.152,
+          "lut_used": 95,
+          "ff_used": 67,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.017,
+          "total_power_w": 0.087
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff3-t2-01\\tier2_4eu1mzmy\\packet_fifo_build\\iter_001\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff3-t2-01\\tier2_4eu1mzmy\\packet_fifo_build\\iter_001\\cand_standard\\synth.tcl",
+          "sha256": "81f60c177092f09966dbab9010de1305359f3f4c3f427ce968b0dd88d76b041c"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff3-t2-01\\tier2_4eu1mzmy\\packet_fifo_build\\iter_001\\cand_standard\\packet_fifo.v",
+          "sha256": "5bcc66266f29a5769caaa85957985585f63e223d3aa8e0b5c1deef25a22c771e"
+        }
+      }
+    ],
+    "doctor": {
+      "status": "ADOPTED",
+      "action": "rtl_surgery",
+      "reason": "policy_improvement",
+      "tools_ran": true,
+      "measured_metrics": {
+        "sim_passed": true,
+        "timing_met": true,
+        "wns_ns": 0.007,
+        "whs_ns": 0.03,
+        "lut_used": 107,
+        "ff_used": 102,
+        "dsp_used": 0,
+        "bram_used": 0.0,
+        "dynamic_power_w": 0.017,
+        "total_power_w": 0.087
+      },
+      "adopted": true,
+      "input_source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff3-t2-01\\tier2_4eu1mzmy\\packet_fifo_build\\iter_001\\cand_standard\\packet_fifo.v",
+        "sha256": "5bcc66266f29a5769caaa85957985585f63e223d3aa8e0b5c1deef25a22c771e"
+      },
+      "trial_source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff3-t2-01\\tier2_4eu1mzmy\\packet_fifo_build\\iter_001\\doctor_rtl_surgery_trial\\packet_fifo.v",
+        "sha256": "57221af4403b065caaba7dcb7ffb30811e301db8d7e8dda508fbc704e387eaec"
+      },
+      "trial_flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff3-t2-01\\tier2_4eu1mzmy\\packet_fifo_build\\iter_001\\doctor_rtl_surgery_trial\\synth.tcl",
+        "sha256": "84365979487e0715f001ef40c4c8b7bf63511449f07c36e9fcbba5b928072ed7"
+      },
+      "identity_count": 3,
+      "proposed_source_text_sha256": "4c0763a8315cb8d8341374af24ea77eebcc20a4fc35569f85a9db9a8329210df"
+    },
+    "recommendation": "ACCEPT",
+    "is_best": true,
+    "selected_source_sha256": "4c0763a8315cb8d8341374af24ea77eebcc20a4fc35569f85a9db9a8329210df"
+  },
+  "artifacts": {}
+}

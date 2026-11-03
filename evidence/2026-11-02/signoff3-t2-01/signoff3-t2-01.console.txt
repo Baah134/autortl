@@ -1,0 +1,48 @@
+{"source_files": 334, "freeze": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff3-t2-01-source-freeze.json"}
+{"exit_code": 0, "seconds": 725.8120000000054, "summary": "2022 passed in 723.16s (0:12:03)", "source_unchanged": true, "source_files": 334, "source_freeze_sha256": "a04575137d03b8ce867e8264f1ed1cbe6134da25d95ca15f1dd4a7e2bbd3647b"}
+{"prelaunch": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff3-t2-01-prelaunch.json", "budgets_per_entry": {"iterations": null, "best_of_n": 1, "model_calls": 30, "tool_minutes": 40, "wall_minutes": 60, "infra_retries": 1}}
+[module packet_fifo_core] golden model + testbench...
+[iter 0] baseline failed verification
+[bench] fir8: finished (1/4)
+[module skid_buffer_core] golden model + testbench...
+[module packet_fifo_core] tb qualification: detected stuck-zero outputs; missed: flip < to >
+[module skid_buffer_core] tb qualification: detected stuck-zero outputs; missed: flip < to >
+[module packet_fifo_core] independent tb qualification: detected flip < to >
+[build] integrated design compiles; entering optimize loop as baseline
+[build] editable unit: packet_fifo_core + packet_fifo; verified by the trusted integration testbench
+[module skid_buffer_core] independent tb qualification: detected flip < to >
+[build] integrated design compiles; entering optimize loop as baseline
+[build] editable unit: skid_buffer_core + skid_buffer; verified by the trusted integration testbench
+[iter 0] baseline LUTs=12 FFs=18 WNS=-0.053
+[iter 0] baseline LUTs=146 FFs=96 WNS=-1.796
+[iter 1] *** NEW BEST *** LUTs=11 FFs=19 WNS=0.133
+[doctor] wns=-1.0 category=port_path action=rtl_surgery
+[iter 2] *** NEW BEST *** LUTs=11 FFs=18 WNS=0.438
+
+DONE — best from iter 2: LUTs=11 FFs=18 WNS=0.438
+[bench] skid_buffer_build: finished (2/4)
+[module sync_fifo_core] golden model + testbench...
+[iter 1] *** NEW BEST *** LUTs=107 FFs=102 WNS=0.007
+[module sync_fifo_core] tb qualification: detected flip < to >
+[module sync_fifo_core] independent tb qualification: detected flip < to >
+[build] integrated design compiles; entering optimize loop as baseline
+[build] editable unit: sync_fifo_core + sync_fifo; verified by the trusted integration testbench
+[iter 2] *** NEW BEST *** LUTs=24 FFs=42 WNS=0.107
+[iter 0] baseline LUTs=13 FFs=6 WNS=-0.931
+[doctor] wns=-0.146 category=port_path action=rtl_surgery
+[doctor] wns=-0.418 category=port_path action=rtl_surgery
+[iter 1] *** NEW BEST *** LUTs=23 FFs=15 WNS=0.105
+[iter 3] REJECT LUTs=27 (best iter 2, stall 1)
+
+DONE — best from iter 2: LUTs=24 FFs=42 WNS=0.107
+[bench] packet_fifo_build: finished (3/4)
+[doctor] wns=-0.093 category=port_path action=rtl_surgery
+[iter 2] *** NEW BEST *** LUTs=23 FFs=13 WNS=0.153
+
+DONE — best from iter 2: LUTs=23 FFs=13 WNS=0.153
+[bench] sync_fifo_build: finished (4/4)
+[bench] fir8: FAIL (run did not complete successfully)
+[bench] packet_fifo_build: PASS (mandatory gates passed)
+[bench] skid_buffer_build: PASS (mandatory gates passed)
+[bench] sync_fifo_build: PASS (mandatory gates passed)
+[bench] tier 2: 3/4; held=False; streak=0

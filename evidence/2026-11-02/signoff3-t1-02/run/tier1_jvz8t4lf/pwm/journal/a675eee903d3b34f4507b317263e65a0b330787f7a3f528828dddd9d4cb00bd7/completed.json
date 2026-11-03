@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_4:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 4\n## Contract check\n- Interface, reset, and observable cycle behavior: PASS \u2014 the 8-bit down-counter preserves the original 256-cycle phase and registered PWM output.\n- Top latency annotation: PASS \u2014 authoritative latency is unknown, so no numeric annotation is required.\n- Deterministic verification and tool gates: PASS \u2014 ladder is ALIVE; simulation passed; required tools exited successfully.\n- Routed metric integrity and timing closure: PASS \u2014 routed metrics are present; WNS is 0.412 ns and WHS is 0.196 ns.\n- Objective improvement over previous best: FAIL \u2014 both designs are timing-feasible, but LUTs increased from 7 to 10; the chosen objective requires strict improvement.\n\n## Summary\n- Passed: 4 of 5\n- Failed: 1 of 5\n- Improved over previous best: NO\n\n## Recommendation\nRESTART\n\n## Reason\nThe candidate preserves the defined behavior and passes verification and timing gates, but it does not improve the `minimize_luts` objective over the timing-feasible previous best. The stall count is 3, meeting the threshold for RESTART.",
+      "recommendation": "REJECT",
+      "passed": 4,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

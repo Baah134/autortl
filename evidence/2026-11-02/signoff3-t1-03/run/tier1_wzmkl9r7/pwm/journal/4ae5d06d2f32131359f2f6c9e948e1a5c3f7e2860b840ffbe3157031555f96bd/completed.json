@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_2:decision:instruction:0",
+  "result": "Keep the 32-bit counter, its terminal-count reset branch, and the registered output behavior unchanged. Replace only `counter < {24'd0, duty}` with an equivalent comparison: require `counter[31:8] == 0`, then compare the high nibbles `counter[7:4]` and `duty[7:4]`, using the low-nibble comparison `counter[3:0] < duty[3:0]` only when the high nibbles are equal. Preserve reset behavior and cycle timing; retain the candidate only if it passes every gate and strictly reduces LUTs versus the 7-LUT incumbent.",
+  "artifacts": {}
+}

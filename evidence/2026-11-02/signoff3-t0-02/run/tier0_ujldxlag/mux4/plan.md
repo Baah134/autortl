@@ -1,0 +1,9 @@
+# PLAN — iteration 1
+## Current state assessment
+The incumbent is timing-feasible at 8 LUTs, 8 FFs, WNS 0.579 ns and WHS 0.052 ns, and the supplied simulation passed. The current mux uses one LUT per output bit, with all 8 output registers required by the cycle behavior; there is no numeric top latency annotation requirement because authoritative latency is unknown. The objective is strictly fewer LUTs, with fewer FFs as a tie-break.
+
+## Hypothesis
+Writing the 4:1 mux as a balanced, explicit conditional tree may let Vivado map its mux stages to 7-series MUXF7/MUXF8 resources and reduce LUT use while retaining the eight output FFs.
+
+## Instruction for generator
+Replace the `case (sel)` data selection with a balanced two-level conditional expression: select `a`/`b` and `c`/`d` using `sel[0]`, then select between those results using `sel[1]`. Keep the existing synchronous active-high reset to zero and the registered `y` update on every rising edge, with no added state or cycle. The expected benefit is fewer LUTs if Vivado infers dedicated mux resources; confirm it through routed utilization and timing reports, and retain the candidate only if simulation and all promotion gates pass and it strictly improves the LUT objective.

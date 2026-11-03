@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Interface and implementation flow: PASS \u2014 Top name, ports, widths, clock, and reset structure are preserved; the fixed flow completed.\n- Observable behavior: FAIL \u2014 With an X or Z in `sel`, the original `case` selects `d` by its default branch, while the candidate\u2019s equality masks can produce X on `y`.\n- Top latency annotation: PASS \u2014 Authoritative top latency is unknown, so no numeric annotation is required.\n- Simulation and tool gates: PASS \u2014 The fixed testbench reports `TEST PASSED`; required tool exits are zero, and synthesis reports `SYNTH_COMPLETE`.\n- Routed metrics and timing: PASS \u2014 Routed evidence is present; setup WNS is 0.579 ns and hold WHS is 0.092 ns, both nonnegative.\n- Objective improvement: FAIL \u2014 Both designs are timing-feasible, but candidate LUTs and FFs are unchanged at 8, so `minimize_luts` has no strict improvement.\n## Summary\n- Passed: 4 of 6\n- Failed: 2 of 6\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes simulation and timing gates, but changes selector behavior for X/Z values and does not strictly improve the chosen objective over the already feasible previous best.",
+      "recommendation": "REJECT",
+      "passed": 4,
+      "failed": 2
+    }
+  },
+  "artifacts": {}
+}
