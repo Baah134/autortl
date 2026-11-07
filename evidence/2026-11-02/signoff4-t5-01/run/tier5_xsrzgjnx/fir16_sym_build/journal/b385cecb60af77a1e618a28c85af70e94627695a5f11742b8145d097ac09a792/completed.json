@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_4:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 4,
+    "instruction": "In `fir16_sym_core`, replace the eight full-coefficient product registers with products of the 17-bit pair sums by the half coefficients `-3, -10, -12, 9, 55, 113, 165, 195`, using signed widths of 19, 21, 21, 21, 23, 24, 25, and 25 bits respectively. Narrow the registered grouped sums to 22, 22, 25, and 26 signed bits, sign-extend them into an exact 27-bit half-accumulator, and compute rounding as `(half_acc + 27'sd512) >>> 10`, which is equivalent to the existing full accumulator rounding because the original coefficients are all even. Preserve the five ready-controlled register stages, vali",
+    "candidates": [
+      {
+        "iteration": 4,
+        "mutation": "standard",
+        "instruction": "In `fir16_sym_core`, replace the eight full-coefficient product registers with products of the 17-bit pair sums by the half coefficients `-3, -10, -12, 9, 55, 113, 165, 195`, using signed widths of 19, 21, 21, 21, 23, 24, 25, and 25 bits respectively. Narrow the registered grouped sums to 22, 22, 25, and 26 signed bits, sign-extend them into an exact 27-bit half-accumulator, and compute rounding as `(half_acc + 27'sd512) >>> 10`, which is equivalent to the existing full accumulator rounding because the original coefficients are all even. Preserve the five ready-controlled register stages, vali",
+        "generated_source_sha256": "b478fcdd7cab1fa49017c0cbe3a88355baf134bbb6badf6581323d9a15264a00",
+        "final_source_sha256": "b478fcdd7cab1fa49017c0cbe3a88355baf134bbb6badf6581323d9a15264a00",
+        "generated_code_hash": "2a973b63642f1819",
+        "final_code_hash": "2a973b63642f1819",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.877,
+          "whs_ns": 0.115,
+          "lut_used": 388,
+          "ff_used": 522,
+          "dsp_used": 4,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.028,
+          "total_power_w": 0.096
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-01\\tier5_xsrzgjnx\\fir16_sym_build\\iter_004\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-01\\tier5_xsrzgjnx\\fir16_sym_build\\iter_004\\cand_standard\\synth.tcl",
+          "sha256": "b14e9e09c1a9a6990a1bdf82843918ac82ee297c18a41cb20ea7b703677750ce"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-01\\tier5_xsrzgjnx\\fir16_sym_build\\iter_004\\cand_standard\\fir16_sym.v",
+          "sha256": "7bc916d889574b1a8a7e51101e6aaf8b38e4dfaa672323e1c374f7dfca7534cd"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": "b478fcdd7cab1fa49017c0cbe3a88355baf134bbb6badf6581323d9a15264a00"
+  },
+  "artifacts": {}
+}

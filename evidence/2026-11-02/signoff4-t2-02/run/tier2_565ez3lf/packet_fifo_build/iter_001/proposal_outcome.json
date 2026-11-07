@@ -1,0 +1,34 @@
+{
+  "candidates": [
+    {
+      "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-02\\tier2_565ez3lf\\packet_fifo_build\\iter_001\\cand_standard",
+      "cache_hit": false,
+      "final_code_hash": "d19fcdb54c37d85a",
+      "final_source_sha256": "1128530d988f4e1594dbcc067d338a1a3ffb68ec15b094d1628224b1416e8d03",
+      "flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-02\\tier2_565ez3lf\\packet_fifo_build\\iter_001\\cand_standard\\synth.tcl",
+        "sha256": "1c35e02a73f0f59557525aa00a85f28423415aafacf9fd68f8c7ec2faa9270f5"
+      },
+      "generated_code_hash": "d19fcdb54c37d85a",
+      "generated_source_sha256": "1128530d988f4e1594dbcc067d338a1a3ffb68ec15b094d1628224b1416e8d03",
+      "instruction": "In `packet_fifo_core`, replace the `data_mem`/`last_mem` plus `read_ptr` indexed-output pattern with a WIDTH-generic register queue: drive `out_data` and `out_last` directly from the head registers, shift remaining entries on pop, and append accepted input at the correct tail on push, including simultaneous push/pop at full capacity. Keep the occupancy-based `out_valid`, combinational `in_ready`, explicit DEPTH handling, and synchronous reset behavior; do not add an output pipeline stage or change the top interface or `// @latency 1` annotation. Preserve empty-queue no-bypass behavior, tuple o",
+      "iteration": 1,
+      "metrics": {},
+      "mutation": "standard",
+      "reason": "# set_msg_config -id {VRFC 10-3609} -new_severity ERROR\n# set_msg_config -id {Synth 8-9873} -new_severity ERROR\n# set_msg_config -id {Designutils 20-1307} -new_severity ERROR\n# set_msg_config -id {Syn",
+      "rungs": 4,
+      "source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-02\\tier2_565ez3lf\\packet_fifo_build\\iter_001\\cand_standard\\packet_fifo.v",
+        "sha256": "9d2c0e9de5ea65859dc987aaf4e65898c879325750047e41e13ee78581b915ff"
+      },
+      "status": "design_rejected"
+    }
+  ],
+  "doctor": null,
+  "instruction": "In `packet_fifo_core`, replace the `data_mem`/`last_mem` plus `read_ptr` indexed-output pattern with a WIDTH-generic register queue: drive `out_data` and `out_last` directly from the head registers, shift remaining entries on pop, and append accepted input at the correct tail on push, including simultaneous push/pop at full capacity. Keep the occupancy-based `out_valid`, combinational `in_ready`, explicit DEPTH handling, and synchronous reset behavior; do not add an output pipeline stage or change the top interface or `// @latency 1` annotation. Preserve empty-queue no-bypass behavior, tuple o",
+  "is_best": false,
+  "iteration": 1,
+  "recommendation": "REJECT",
+  "schema_version": 1,
+  "selected_source_sha256": null
+}

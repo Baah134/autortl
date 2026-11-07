@@ -1,0 +1,77 @@
+{
+  "candidates": [
+    {
+      "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-05\\tier2_wiv1t2yv\\fir8\\iter_005\\cand_standard",
+      "cache_hit": false,
+      "final_code_hash": "9edaf848a2c2b642",
+      "final_source_sha256": "51935c7fba58d0c72f649c252168fc3755d10567f89d787659cda19acfebf996",
+      "flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-05\\tier2_wiv1t2yv\\fir8\\iter_005\\cand_standard\\synth.tcl",
+        "sha256": "9fb9bc724331e71746b4414b54ccd967649370ec1a1fdbadb2390bcc185df1ff"
+      },
+      "generated_code_hash": "9edaf848a2c2b642",
+      "generated_source_sha256": "51935c7fba58d0c72f649c252168fc3755d10567f89d787659cda19acfebf996",
+      "instruction": "Replace the `x_d` and `acc1`\u2013`acc7` transposed accumulation structure with an eight-sample delay line and a registered sum of its taps, preserving the current output cycle alignment and synchronous reset behavior. For each symmetric tap pair, use a signed pre-add and one multiplication only when that pair\u2019s coefficient parameters are equal; otherwise retain the exact two independent products, so all supported parameter overrides preserve their behavior. Sum the resulting 32-bit products modulo 32 bits with a balanced tree, retain `// @latency 1`, and evaluate against the incumbent\u2019s 1.387 ns r",
+      "iteration": 5,
+      "metrics": {
+        "bram_used": 0.0,
+        "dsp_used": 4,
+        "dynamic_power_w": 0.008,
+        "ff_used": 128,
+        "lut_used": 64,
+        "sim_passed": true,
+        "timing_met": false,
+        "total_power_w": 0.076,
+        "whs_ns": 0.177,
+        "wns_ns": -5.32
+      },
+      "mutation": "standard",
+      "reason": "",
+      "rungs": 5,
+      "source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-05\\tier2_wiv1t2yv\\fir8\\iter_005\\cand_standard\\fir8.v",
+        "sha256": "b679b1a0be527f9bd106cdf63d296176aa83243ccfda19b42c43d8b26923b91f"
+      },
+      "status": "measured"
+    }
+  ],
+  "doctor": {
+    "action": "rtl_surgery",
+    "adopted": false,
+    "identity_count": 3,
+    "input_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-05\\tier2_wiv1t2yv\\fir8\\iter_005\\cand_standard\\fir8.v",
+      "sha256": "b679b1a0be527f9bd106cdf63d296176aa83243ccfda19b42c43d8b26923b91f"
+    },
+    "measured_metrics": {
+      "bram_used": 0.0,
+      "dsp_used": 0,
+      "dynamic_power_w": 0.01,
+      "ff_used": 160,
+      "lut_used": 213,
+      "sim_passed": true,
+      "timing_met": false,
+      "total_power_w": 0.078,
+      "whs_ns": 0.176,
+      "wns_ns": -0.865
+    },
+    "proposed_source_text_sha256": "7aff34cf848aa96ae803fa57260f92bfbe9817b75ad7376631a657a0e32bb7c7",
+    "reason": "timing_not_closed",
+    "status": "NOT_ADOPTED",
+    "tools_ran": true,
+    "trial_flow_script": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-05\\tier2_wiv1t2yv\\fir8\\iter_005\\doctor_rtl_surgery_trial\\synth.tcl",
+      "sha256": "6f953948ef629e63189e7eeb4355e472a9aa35c065901e84d3ea5d2f6713761d"
+    },
+    "trial_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-05\\tier2_wiv1t2yv\\fir8\\iter_005\\doctor_rtl_surgery_trial\\fir8.v",
+      "sha256": "4c02fb70bf5df15bec7396439b3e2891d680cdc89ccd85ceecf7590c31f50cf1"
+    }
+  },
+  "instruction": "Replace the `x_d` and `acc1`\u2013`acc7` transposed accumulation structure with an eight-sample delay line and a registered sum of its taps, preserving the current output cycle alignment and synchronous reset behavior. For each symmetric tap pair, use a signed pre-add and one multiplication only when that pair\u2019s coefficient parameters are equal; otherwise retain the exact two independent products, so all supported parameter overrides preserve their behavior. Sum the resulting 32-bit products modulo 32 bits with a balanced tree, retain `// @latency 1`, and evaluate against the incumbent\u2019s 1.387 ns r",
+  "is_best": false,
+  "iteration": 5,
+  "recommendation": "REJECT",
+  "schema_version": 1,
+  "selected_source_sha256": "51935c7fba58d0c72f649c252168fc3755d10567f89d787659cda19acfebf996"
+}

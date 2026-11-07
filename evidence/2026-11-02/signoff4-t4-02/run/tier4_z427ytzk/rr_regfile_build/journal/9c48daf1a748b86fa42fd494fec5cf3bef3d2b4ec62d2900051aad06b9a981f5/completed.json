@@ -1,0 +1,5 @@
+{
+  "stage": "module_regfile8x8:model:generator.generate:0",
+  "result": "`timescale 1ns/1ps\n// @latency 1\nmodule regfile8x8 (\n    input wire clk,\n    input wire rst,\n    input wire wr_en,\n    input wire [2:0] wr_addr,\n    input wire [7:0] wr_data,\n    input wire [2:0] rd_addr,\n    output wire [7:0] rd_data\n);\n\n    reg [7:0] mem [0:7];\n    reg [7:0] rd_data_reg;\n    integer i;\n\n    assign rd_data = rd_data_reg;\n\n    always @(posedge clk) begin\n        if (rst) begin\n            for (i = 0; i < 8; i = i + 1)\n                mem[i] <= 8'b0;\n            rd_data_reg <= 8'b0;\n        end else begin\n            rd_data_reg <= mem[rd_addr];\n            if (wr_en)\n                mem[wr_addr] <= wr_data;\n        end\n    end\n\nendmodule",
+  "artifacts": {}
+}

@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "status": "qualified",
+  "qualified": true,
+  "testbench_sha256": "49ae9848e0869d24ac53fd84ff48e99578b211e9c0e2d61aa2b01fed5f14a850",
+  "attempts": [
+    {
+      "label": "control",
+      "description": "unmodified control",
+      "passed": true,
+      "failure_kind": "design",
+      "error": "",
+      "assertion_detected": false,
+      "proof_reason": "simulation passed",
+      "source_sha256": "6f667d8d251541419c89543784515901cbf5822d9b7333bc385042ffb51cb795",
+      "raw_log_sha256": "9b4d27776d96e1f20300a4ab2be3dfd45f290fb12d8292f197a62075a860d021"
+    },
+    {
+      "label": "mutant",
+      "description": "flip == to !=",
+      "passed": false,
+      "failure_kind": "design",
+      "error": "Testbench failures:\nFAIL case=5 WIDTH=16 cycle=3 remaining=15 pending=0: exact WIDTH-step result availability / no early or late valid  (x25)\nFAIL case=1 WIDTH=1 cycle=3 remaining=0 pending=1: unsigned quotient / stable held result  (x7)\nFAIL case=5 WIDTH=16 cycle=4 remaining=14 pending=0: single outstanding readiness / retirement-edge bubble  (x40)",
+      "assertion_detected": true,
+      "proof_reason": "raw assertion detail and failure verdict retained",
+      "source_sha256": "16d3d2b3a57d597d16e3f1db1070c8ae00cc15bef760a0430e5ad992d221eb4e",
+      "raw_log_sha256": "ce70cffe0c37c96bced0e2cb712d77ab3cfed52e1bb99cbdea7a5427224f8aab"
+    }
+  ],
+  "missed": [],
+  "scope": "Minimum assertion sensitivity; missed faults remain coverage limits."
+}

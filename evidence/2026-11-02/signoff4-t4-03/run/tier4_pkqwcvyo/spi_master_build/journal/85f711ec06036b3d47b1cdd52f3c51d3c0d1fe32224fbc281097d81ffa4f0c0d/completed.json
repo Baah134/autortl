@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_2:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 2\n## Contract check\n- Defined behavior and integration verification: PASS \u2014 deterministic ladder is ALIVE; simulation passed.\n- Top latency annotation: PASS \u2014 `spi_master` declares `// @latency 33`, matching authoritative latency.\n- Tool, report, and metric gates: PASS \u2014 required tool exits succeeded; routed metrics are available and consistent.\n- Timing feasibility: PASS \u2014 timing_met=true, WNS=0.179 ns and WHS=0.133 ns.\n- Improvement over previous best: FAIL \u2014 both designs are timing-feasible; LUTs increased from 19 to 20, so the minimize_luts objective did not improve. The FF reduction does not offset a higher primary LUT count; improvement_kind is null.\n## Summary\n- Passed: 4 of 5\n- Failed: 1 of 5\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes behavioral, latency, tool, metric, and timing checks, but it does not strictly improve the chosen objective over the timing-feasible previous best: LUT usage rises from 19 to 20. The lower FF count cannot compensate for that primary metric increase.",
+      "recommendation": "REJECT",
+      "passed": 4,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

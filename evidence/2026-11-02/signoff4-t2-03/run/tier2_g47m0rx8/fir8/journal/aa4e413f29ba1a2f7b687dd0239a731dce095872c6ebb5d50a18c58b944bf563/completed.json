@@ -1,0 +1,81 @@
+{
+  "stage": "iteration_1:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 1,
+    "instruction": "Keep the delay-line registers, reset assignments, and `y_out` register behavior unchanged, and preserve all signed 16-bit parameter semantics and 32-bit result behavior. Replace only the serial `d[0]*C0 + ... + d[7]*C7` expression with explicitly sized signed product intermediates and a balanced three-level pairwise sum tree, preserving the original expression\u2019s observable truncation and overflow behavior. Retain the `// @latency 1` annotation; do not add pipeline stages or alter the interface.",
+    "candidates": [
+      {
+        "iteration": 1,
+        "mutation": "standard",
+        "instruction": "Keep the delay-line registers, reset assignments, and `y_out` register behavior unchanged, and preserve all signed 16-bit parameter semantics and 32-bit result behavior. Replace only the serial `d[0]*C0 + ... + d[7]*C7` expression with explicitly sized signed product intermediates and a balanced three-level pairwise sum tree, preserving the original expression\u2019s observable truncation and overflow behavior. Retain the `// @latency 1` annotation; do not add pipeline stages or alter the interface.",
+        "generated_source_sha256": "3bca5bea2f766c3917fee53c46d281298299d719ac35b6211a95bd80e908da73",
+        "final_source_sha256": "3bca5bea2f766c3917fee53c46d281298299d719ac35b6211a95bd80e908da73",
+        "generated_code_hash": "efcacb0a5efd5587",
+        "final_code_hash": "efcacb0a5efd5587",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": false,
+          "wns_ns": -9.799,
+          "whs_ns": 0.164,
+          "lut_used": 150,
+          "ff_used": 160,
+          "dsp_used": 5,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.011,
+          "total_power_w": 0.08
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-03\\tier2_g47m0rx8\\fir8\\iter_001\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-03\\tier2_g47m0rx8\\fir8\\iter_001\\cand_standard\\synth.tcl",
+          "sha256": "a95f8ed8a22dd8c2c5aa8713ff143d6ca3e991361bf9ee53de5686925e311e11"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-03\\tier2_g47m0rx8\\fir8\\iter_001\\cand_standard\\fir8.v",
+          "sha256": "dc5f79c065f8776c486bc4a64a3f390b6079682d838c009f28c8d262b84ff66c"
+        }
+      }
+    ],
+    "doctor": {
+      "status": "NOT_ADOPTED",
+      "action": "rtl_surgery",
+      "reason": "timing_not_closed",
+      "tools_ran": true,
+      "measured_metrics": {
+        "sim_passed": true,
+        "timing_met": false,
+        "wns_ns": -2.072,
+        "whs_ns": 0.125,
+        "lut_used": 285,
+        "ff_used": 308,
+        "dsp_used": 1,
+        "bram_used": 0.0,
+        "dynamic_power_w": 0.016,
+        "total_power_w": 0.085
+      },
+      "adopted": false,
+      "input_source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-03\\tier2_g47m0rx8\\fir8\\iter_001\\cand_standard\\fir8.v",
+        "sha256": "dc5f79c065f8776c486bc4a64a3f390b6079682d838c009f28c8d262b84ff66c"
+      },
+      "trial_source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-03\\tier2_g47m0rx8\\fir8\\iter_001\\doctor_rtl_surgery_trial\\fir8.v",
+        "sha256": "cc21885305c595970ff36917ee40c5fae682ecb9e3a0579ae787900176aea62e"
+      },
+      "trial_flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-03\\tier2_g47m0rx8\\fir8\\iter_001\\doctor_rtl_surgery_trial\\synth.tcl",
+        "sha256": "0980a4184ffcbdb704154312433938b89b78fb5748a64e37ff1bfd0e444bb1f3"
+      },
+      "identity_count": 3,
+      "proposed_source_text_sha256": "6576eb9655dbd9474827f8cf31e0782ecdf403576c804422db28d91d2fa1c7fe"
+    },
+    "recommendation": "ACCEPT",
+    "is_best": true,
+    "selected_source_sha256": "3bca5bea2f766c3917fee53c46d281298299d719ac35b6211a95bd80e908da73"
+  },
+  "artifacts": {}
+}

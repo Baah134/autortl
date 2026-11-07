@@ -1,0 +1,77 @@
+{
+  "candidates": [
+    {
+      "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-02\\tier2_565ez3lf\\packet_fifo_build\\iter_003\\cand_standard",
+      "cache_hit": false,
+      "final_code_hash": "96713bf5b57bc5df",
+      "final_source_sha256": "e7169d5d216d2cd0bc0b527d52d0ba524085e8dc403ac84fdd5ed237c51bf56d",
+      "flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-02\\tier2_565ez3lf\\packet_fifo_build\\iter_003\\cand_standard\\synth.tcl",
+        "sha256": "c0a27b1eae04a722a96fc4063794c79f32e034bd4a70bcc6f68668b7279b9d8c"
+      },
+      "generated_code_hash": "96713bf5b57bc5df",
+      "generated_source_sha256": "e7169d5d216d2cd0bc0b527d52d0ba524085e8dc403ac84fdd5ed237c51bf56d",
+      "instruction": "In `packet_fifo_core`, replace the full-depth `data_mem`/`last_mem` plus duplicated head storage with a registered head tuple and a circular tail buffer of capacity `DEPTH-1`; use a dedicated `DEPTH==1` case so all supported configurations elaborate correctly. On an empty push, load the head; on a pop with more than one queued tuple, load the old tail head and advance its read pointer; write accepted tuples behind the head, including full simultaneous pop/push. Preserve explicit pointer wrap, occupancy, synchronous reset priority, the ready equation, minimum transfer age, stall stability, all ",
+      "iteration": 3,
+      "metrics": {
+        "bram_used": 0.0,
+        "dsp_used": 0,
+        "dynamic_power_w": 0.015,
+        "ff_used": 13,
+        "lut_used": 23,
+        "sim_passed": true,
+        "timing_met": false,
+        "total_power_w": 0.085,
+        "whs_ns": 0.076,
+        "wns_ns": -0.098
+      },
+      "mutation": "standard",
+      "reason": "",
+      "rungs": 5,
+      "source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-02\\tier2_565ez3lf\\packet_fifo_build\\iter_003\\cand_standard\\packet_fifo.v",
+        "sha256": "99fbca9f02265f7700508718e35eefdfe26099aba2fa33a1df28aacf9e10fc96"
+      },
+      "status": "measured"
+    }
+  ],
+  "doctor": {
+    "action": "rtl_surgery",
+    "adopted": true,
+    "identity_count": 3,
+    "input_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-02\\tier2_565ez3lf\\packet_fifo_build\\iter_003\\cand_standard\\packet_fifo.v",
+      "sha256": "99fbca9f02265f7700508718e35eefdfe26099aba2fa33a1df28aacf9e10fc96"
+    },
+    "measured_metrics": {
+      "bram_used": 0.0,
+      "dsp_used": 0,
+      "dynamic_power_w": 0.015,
+      "ff_used": 14,
+      "lut_used": 26,
+      "sim_passed": true,
+      "timing_met": true,
+      "total_power_w": 0.085,
+      "whs_ns": 0.089,
+      "wns_ns": 0.197
+    },
+    "proposed_source_text_sha256": "f9edef03cb238fe637af2b98d4b5685d813f086178a3fa11a8352229af3095d1",
+    "reason": "policy_improvement",
+    "status": "ADOPTED",
+    "tools_ran": true,
+    "trial_flow_script": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-02\\tier2_565ez3lf\\packet_fifo_build\\iter_003\\doctor_rtl_surgery_trial\\synth.tcl",
+      "sha256": "388e2c8ea5bd3421a837c412d934ca9c1ebda3cf3121820595047b093bc3105c"
+    },
+    "trial_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-02\\tier2_565ez3lf\\packet_fifo_build\\iter_003\\doctor_rtl_surgery_trial\\packet_fifo.v",
+      "sha256": "51401d9d9129af24ae7b7677e75701c61600f36c6d2e715d015297826a757d24"
+    }
+  },
+  "instruction": "In `packet_fifo_core`, replace the full-depth `data_mem`/`last_mem` plus duplicated head storage with a registered head tuple and a circular tail buffer of capacity `DEPTH-1`; use a dedicated `DEPTH==1` case so all supported configurations elaborate correctly. On an empty push, load the head; on a pop with more than one queued tuple, load the old tail head and advance its read pointer; write accepted tuples behind the head, including full simultaneous pop/push. Preserve explicit pointer wrap, occupancy, synchronous reset priority, the ready equation, minimum transfer age, stall stability, all ",
+  "is_best": true,
+  "iteration": 3,
+  "recommendation": "ACCEPT",
+  "schema_version": 1,
+  "selected_source_sha256": "f9edef03cb238fe637af2b98d4b5685d813f086178a3fa11a8352229af3095d1"
+}

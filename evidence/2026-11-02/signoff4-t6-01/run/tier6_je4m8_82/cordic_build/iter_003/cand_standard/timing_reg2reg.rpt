@@ -1,0 +1,94 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025
+| Date         : Thu Nov  5 16:50:47 2026
+| Host         : Baah running 64-bit major release  (build 9200)
+| Command      : report_timing -from [all_registers] -to [all_registers] -max_paths 1 -file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t6-01/tier6_je4m8_82/cordic_build/iter_003/cand_standard/timing_reg2reg.rpt
+| Design       : cordic_sincos
+| Device       : 7a35t-cpg236
+| Speed File   : -1  PRODUCTION 1.23 2018-06-13
+| Design State : Routed
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Timing Report
+
+Slack (MET) :             2.208ns  (required time - arrival time)
+  Source:                 u_cordic_engine/x_state_reg[13]/C
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            u_cordic_engine/sin_state_reg[15]/D
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            10.000ns  (clk rise@10.000ns - clk rise@0.000ns)
+  Data Path Delay:        7.505ns  (logic 3.479ns (46.354%)  route 4.026ns (53.646%))
+  Logic Levels:           9  (CARRY4=6 LUT3=1 LUT6=2)
+  Clock Path Skew:        -0.014ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    4.570ns = ( 14.570 - 10.000 ) 
+    Source Clock Delay      (SCD):    4.934ns
+    Clock Pessimism Removal (CPR):    0.349ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+    C15                                               0.000     0.000 r  clk (IN)
+                         net (fo=0)                   0.000     0.000    clk
+    C15                  IBUF (Prop_ibuf_I_O)         0.935     0.935 r  clk_IBUF_inst/O
+                         net (fo=1, routed)           2.273     3.208    clk_IBUF
+    BUFGCTRL_X0Y16       BUFG (Prop_bufg_I_O)         0.096     3.304 r  clk_IBUF_BUFG_inst/O
+                         net (fo=95, routed)          1.629     4.934    u_cordic_engine/CLK
+    SLICE_X2Y31          FDRE                                         r  u_cordic_engine/x_state_reg[13]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X2Y31          FDRE (Prop_fdre_C_Q)         0.518     5.452 r  u_cordic_engine/x_state_reg[13]/Q
+                         net (fo=8, routed)           1.054     6.505    u_cordic_engine/x_state_reg_n_0_[13]
+    SLICE_X4Y30          LUT6 (Prop_lut6_I0_O)        0.124     6.629 r  u_cordic_engine/y_next_carry_i_13/O
+                         net (fo=1, routed)           0.811     7.441    u_cordic_engine/y_next_carry_i_13_n_0
+    SLICE_X4Y32          LUT3 (Prop_lut3_I2_O)        0.154     7.595 r  u_cordic_engine/y_next_carry_i_8/O
+                         net (fo=2, routed)           0.436     8.031    u_cordic_engine/y_next_carry_i_8_n_0
+    SLICE_X4Y33          LUT6 (Prop_lut6_I5_O)        0.327     8.358 r  u_cordic_engine/y_next_carry_i_1/O
+                         net (fo=1, routed)           0.555     8.913    u_cordic_engine/y_next1[0]
+    SLICE_X2Y33          CARRY4 (Prop_carry4_CYINIT_CO[3])
+                                                      0.595     9.508 r  u_cordic_engine/y_next_carry/CO[3]
+                         net (fo=1, routed)           0.000     9.508    u_cordic_engine/y_next_carry_n_0
+    SLICE_X2Y34          CARRY4 (Prop_carry4_CI_CO[3])
+                                                      0.117     9.625 r  u_cordic_engine/y_next_carry__0/CO[3]
+                         net (fo=1, routed)           0.000     9.625    u_cordic_engine/y_next_carry__0_n_0
+    SLICE_X2Y35          CARRY4 (Prop_carry4_CI_CO[3])
+                                                      0.117     9.742 r  u_cordic_engine/y_next_carry__1/CO[3]
+                         net (fo=1, routed)           0.000     9.742    u_cordic_engine/y_next_carry__1_n_0
+    SLICE_X2Y36          CARRY4 (Prop_carry4_CI_O[1])
+                                                      0.337    10.079 r  u_cordic_engine/y_next_carry__2/O[1]
+                         net (fo=2, routed)           0.486    10.565    u_cordic_engine/y_next_ext[13]
+    SLICE_X0Y36          CARRY4 (Prop_carry4_S[1]_CO[3])
+                                                      0.856    11.421 r  u_cordic_engine/y_next_rounded_carry__2/CO[3]
+                         net (fo=1, routed)           0.000    11.421    u_cordic_engine/y_next_rounded_carry__2_n_0
+    SLICE_X0Y37          CARRY4 (Prop_carry4_CI_O[1])
+                                                      0.334    11.755 r  u_cordic_engine/y_next_rounded_carry__3/O[1]
+                         net (fo=1, routed)           0.684    12.439    u_cordic_engine/p_0_in[15]
+    SLICE_X1Y46          FDRE                                         r  u_cordic_engine/sin_state_reg[15]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)       10.000    10.000 r  
+    C15                                               0.000    10.000 r  clk (IN)
+                         net (fo=0)                   0.000    10.000    clk
+    C15                  IBUF (Prop_ibuf_I_O)         0.802    10.802 r  clk_IBUF_inst/O
+                         net (fo=1, routed)           2.155    12.957    clk_IBUF
+    BUFGCTRL_X0Y16       BUFG (Prop_bufg_I_O)         0.091    13.048 r  clk_IBUF_BUFG_inst/O
+                         net (fo=95, routed)          1.522    14.570    u_cordic_engine/CLK
+    SLICE_X1Y46          FDRE                                         r  u_cordic_engine/sin_state_reg[15]/C
+                         clock pessimism              0.349    14.920    
+                         clock uncertainty           -0.035    14.884    
+    SLICE_X1Y46          FDRE (Setup_fdre_C_D)       -0.237    14.647    u_cordic_engine/sin_state_reg[15]
+  -------------------------------------------------------------------
+                         required time                         14.647    
+                         arrival time                         -12.439    
+  -------------------------------------------------------------------
+                         slack                                  2.208    
+
+
+
+

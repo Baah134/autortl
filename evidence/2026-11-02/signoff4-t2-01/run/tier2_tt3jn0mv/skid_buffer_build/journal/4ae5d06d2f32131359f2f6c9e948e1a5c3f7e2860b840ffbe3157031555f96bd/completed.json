@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_2:decision:instruction:0",
+  "result": "In `skid_buffer_core`, replace the 2-bit `occupancy` state and its increment/decrement case with synchronous `empty` and `full` flags updated for reset, push-only, pop-only, simultaneous push/pop, and idle transitions. Keep `in_ready = ~full || out_ready` and `out_valid = ~empty` combinational; preserve the two-entry queue\u2019s payload ordering, stall stability, throughput, reset behavior, and minimum transfer age. Do not register `in_ready` or alter the top\u2019s `// @latency 1`; evaluate whether routed WNS improves and whether WHS, simulation, and all metric gates still pass.",
+  "artifacts": {}
+}

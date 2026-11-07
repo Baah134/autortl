@@ -1,0 +1,9 @@
+# PLAN — iteration 2
+## Current state assessment
+Iteration 1 is the verified best: it recovered timing with WNS 0.155 ns and WHS 0.082 ns, at 23 LUTs and 15 FFs. The objective is now strict LUT reduction while retaining timing closure; the prior head-data register change is already part of the incumbent and should not be repeated.
+
+## Hypothesis
+Using the registered head as the FIFO’s front slot and storing only the remaining `DEPTH-1` words in a circular tail buffer can reduce LUT use by removing redundant storage and its associated write/read logic, while keeping the output path registered.
+
+## Instruction for generator
+In `sync_fifo_core`, change the current full-depth `mem` organization into a registered head plus a circular buffer for only `DEPTH-1` tail entries; handle `DEPTH=1` explicitly and preserve symbolic `WIDTH`, explicit wrap for non-power-of-two depths, and full simultaneous pop/push behavior. Promote the oldest tail word into `head_data` on pop, append accepted inputs to the tail when the head remains queued, and replace the head directly when a pop and push occur with occupancy one. Keep the `sync_fifo` interface and `// @latency 1` annotation, and preserve reset, handshake, stall stability, ordering, and minimum transfer age across the supported parameter domain.

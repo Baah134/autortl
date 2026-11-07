@@ -1,0 +1,45 @@
+{
+  "candidates": [
+    {
+      "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t1-03\\tier1_thbzfnr6\\pwm\\iter_004\\cand_standard",
+      "cache_hit": false,
+      "final_code_hash": "1fd336cbede13f95",
+      "final_source_sha256": "25fbb658371bbd7241eeedbe80d9e9b3f64d0101a0fb1332a8a078de22fa3b2c",
+      "flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t1-03\\tier1_thbzfnr6\\pwm\\iter_004\\cand_standard\\synth.tcl",
+        "sha256": "22d4b026c70df3a3eb274addae0b7343d4a93d08860916e7c7804309d9ea8db2"
+      },
+      "generated_code_hash": "1fd336cbede13f95",
+      "generated_source_sha256": "25fbb658371bbd7241eeedbe80d9e9b3f64d0101a0fb1332a8a078de22fa3b2c",
+      "instruction": "Replace the 32-bit counter with an 8-bit counter and retain the explicit `counter == 8'hFF` terminal branch, but express the increment as per-bit toggle logic: bit 0 toggles every active cycle, and each higher bit toggles when all lower bits are 1. Keep the terminal branch setting the counter to zero, and leave `pwm_out <= (counter < {24'd0, duty})` in the same clocked branch so output sampling, reset behavior, and cycle alignment remain unchanged. This is a concrete alternative to the already rejected ordinary `counter + 1` implementations; verify it against the unchanged testbench and promot",
+      "iteration": 4,
+      "metrics": {
+        "bram_used": 0.0,
+        "dsp_used": 0,
+        "dynamic_power_w": 0.01,
+        "ff_used": 9,
+        "lut_used": 10,
+        "sim_passed": true,
+        "timing_met": true,
+        "total_power_w": 0.081,
+        "whs_ns": 0.174,
+        "wns_ns": 0.404
+      },
+      "mutation": "standard",
+      "reason": "",
+      "rungs": 5,
+      "source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t1-03\\tier1_thbzfnr6\\pwm\\iter_004\\cand_standard\\pwm.v",
+        "sha256": "e80ed39093e68372c97dff8d442790b8c5a60a3a65d9276b76e442537b1224cf"
+      },
+      "status": "measured"
+    }
+  ],
+  "doctor": null,
+  "instruction": "Replace the 32-bit counter with an 8-bit counter and retain the explicit `counter == 8'hFF` terminal branch, but express the increment as per-bit toggle logic: bit 0 toggles every active cycle, and each higher bit toggles when all lower bits are 1. Keep the terminal branch setting the counter to zero, and leave `pwm_out <= (counter < {24'd0, duty})` in the same clocked branch so output sampling, reset behavior, and cycle alignment remain unchanged. This is a concrete alternative to the already rejected ordinary `counter + 1` implementations; verify it against the unchanged testbench and promot",
+  "is_best": false,
+  "iteration": 4,
+  "recommendation": "REJECT",
+  "schema_version": 1,
+  "selected_source_sha256": "25fbb658371bbd7241eeedbe80d9e9b3f64d0101a0fb1332a8a078de22fa3b2c"
+}

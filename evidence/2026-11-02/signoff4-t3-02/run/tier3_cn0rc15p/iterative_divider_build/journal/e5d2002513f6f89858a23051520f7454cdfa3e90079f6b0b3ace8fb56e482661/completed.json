@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_3:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 3,
+    "instruction": "In `iterative_divider_core`, change `iteration_count` from `[WIDTH-1:0]` to a counter sized by a local parameter such as `COUNT_WIDTH = (WIDTH <= 2) ? 1 : $clog2(WIDTH)`, covering every supported WIDTH from 1 through 16. Keep the existing reset, increment, and `iteration_count == WIDTH - 1` terminal condition, and leave the divider datapath and dividend shift structure unchanged. Preserve exactly WIDTH compute edges, the WIDTH+1 minimum transfer age, output holding, reset behavior, and the top\u2019s `// @latency 9` annotation.",
+    "candidates": [
+      {
+        "iteration": 3,
+        "mutation": "standard",
+        "instruction": "In `iterative_divider_core`, change `iteration_count` from `[WIDTH-1:0]` to a counter sized by a local parameter such as `COUNT_WIDTH = (WIDTH <= 2) ? 1 : $clog2(WIDTH)`, covering every supported WIDTH from 1 through 16. Keep the existing reset, increment, and `iteration_count == WIDTH - 1` terminal condition, and leave the divider datapath and dividend shift structure unchanged. Preserve exactly WIDTH compute edges, the WIDTH+1 minimum transfer age, output holding, reset behavior, and the top\u2019s `// @latency 9` annotation.",
+        "generated_source_sha256": "e9b99896bc3d17c5b7b558113eb9f632437b430c9a70a5ec8bca2b21cb090de4",
+        "final_source_sha256": "e9b99896bc3d17c5b7b558113eb9f632437b430c9a70a5ec8bca2b21cb090de4",
+        "generated_code_hash": "465d150266d03436",
+        "final_code_hash": "465d150266d03436",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.313,
+          "whs_ns": 0.034,
+          "lut_used": 33,
+          "ff_used": 52,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.022,
+          "total_power_w": 0.092
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t3-02\\tier3_cn0rc15p\\iterative_divider_build\\iter_003\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t3-02\\tier3_cn0rc15p\\iterative_divider_build\\iter_003\\cand_standard\\synth.tcl",
+          "sha256": "bc65a0d6df0819ab8fd4a18025fc778fdba1f3cf34ddfbded7fa6352a39eabc9"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t3-02\\tier3_cn0rc15p\\iterative_divider_build\\iter_003\\cand_standard\\iterative_divider.v",
+          "sha256": "22cadb15d178408bee13033eb1a1038f8a7b71a163f5acc2c8f359183ad34180"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": "e9b99896bc3d17c5b7b558113eb9f632437b430c9a70a5ec8bca2b21cb090de4"
+  },
+  "artifacts": {}
+}

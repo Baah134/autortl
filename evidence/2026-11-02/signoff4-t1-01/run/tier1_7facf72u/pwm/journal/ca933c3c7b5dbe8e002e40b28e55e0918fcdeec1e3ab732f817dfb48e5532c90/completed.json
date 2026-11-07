@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_2:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 2,
+    "instruction": "Keep the 32-bit `counter`, its reset, and the `counter == 32'd255` clear-versus-increment update unchanged. Replace only `pwm_out <= (counter < {24'd0, duty});` with a comparison of `counter[7:0]` against `duty`; after reset, the counter never exceeds 255. Preserve the registered output and reset behavior, and retain the candidate only if the unchanged verification gates pass and routed LUT usage strictly improves over the incumbent.",
+    "candidates": [
+      {
+        "iteration": 2,
+        "mutation": "standard",
+        "instruction": "Keep the 32-bit `counter`, its reset, and the `counter == 32'd255` clear-versus-increment update unchanged. Replace only `pwm_out <= (counter < {24'd0, duty});` with a comparison of `counter[7:0]` against `duty`; after reset, the counter never exceeds 255. Preserve the registered output and reset behavior, and retain the candidate only if the unchanged verification gates pass and routed LUT usage strictly improves over the incumbent.",
+        "generated_source_sha256": "2e16bd4f7b2846a7505d566cd4dffbee48bd2f9a3d08284e9c3bced1147bbf03",
+        "final_source_sha256": "2e16bd4f7b2846a7505d566cd4dffbee48bd2f9a3d08284e9c3bced1147bbf03",
+        "generated_code_hash": "890c38e2b239b053",
+        "final_code_hash": "890c38e2b239b053",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.553,
+          "whs_ns": 0.135,
+          "lut_used": 7,
+          "ff_used": 9,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.011,
+          "total_power_w": 0.081
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t1-01\\tier1_7facf72u\\pwm\\iter_002\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t1-01\\tier1_7facf72u\\pwm\\iter_002\\cand_standard\\synth.tcl",
+          "sha256": "b655a4c8dfcdfad6aa4c348e7c1fe93658aa2ca06fcc1e997c8df7d61ee5ed50"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t1-01\\tier1_7facf72u\\pwm\\iter_002\\cand_standard\\pwm.v",
+          "sha256": "97ba51838a08171a4b3e0264a14e447c0c302cbd9f713479460d856642452281"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": "2e16bd4f7b2846a7505d566cd4dffbee48bd2f9a3d08284e9c3bced1147bbf03"
+  },
+  "artifacts": {}
+}

@@ -1,0 +1,45 @@
+{
+  "candidates": [
+    {
+      "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-05\\tier2_wiv1t2yv\\packet_fifo_build\\iter_003\\cand_standard",
+      "cache_hit": false,
+      "final_code_hash": "e82c8a2738789a25",
+      "final_source_sha256": "c44f299a84b24ba9c258175019a9d2208a4d62e62b8c4178234e2a71ebdc5e9c",
+      "flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-05\\tier2_wiv1t2yv\\packet_fifo_build\\iter_003\\cand_standard\\synth.tcl",
+        "sha256": "b592fcca000f74e011dcaeaf882b8c13a7659105bd4ac1eca768f5d81a12c0b7"
+      },
+      "generated_code_hash": "e82c8a2738789a25",
+      "generated_source_sha256": "c44f299a84b24ba9c258175019a9d2208a4d62e62b8c4178234e2a71ebdc5e9c",
+      "instruction": "In `packet_fifo_core`, replace `assign out_valid = |occupancy_state[DEPTH:1];` with `assign out_valid = !occupancy_state[0];`, relying on the initialized one-hot state and its shift-only updates. Keep the full-state ready logic, registered head outputs, pointers, reset behavior, and all handshake logic unchanged; preserve support for every specified `DEPTH` and `WIDTH`. This is a LUT-reduction hypothesis: retain the candidate only if routed metrics show fewer LUTs than the incumbent and all verification and timing gates pass.",
+      "iteration": 3,
+      "metrics": {
+        "bram_used": 0.0,
+        "dsp_used": 0,
+        "dynamic_power_w": 0.015,
+        "ff_used": 17,
+        "lut_used": 27,
+        "sim_passed": true,
+        "timing_met": true,
+        "total_power_w": 0.085,
+        "whs_ns": 0.098,
+        "wns_ns": 0.17
+      },
+      "mutation": "standard",
+      "reason": "",
+      "rungs": 5,
+      "source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-05\\tier2_wiv1t2yv\\packet_fifo_build\\iter_003\\cand_standard\\packet_fifo.v",
+        "sha256": "9af6421490922c0a168279a2c6ae472608ea25b68882b71e86324c0ef0c028a7"
+      },
+      "status": "measured"
+    }
+  ],
+  "doctor": null,
+  "instruction": "In `packet_fifo_core`, replace `assign out_valid = |occupancy_state[DEPTH:1];` with `assign out_valid = !occupancy_state[0];`, relying on the initialized one-hot state and its shift-only updates. Keep the full-state ready logic, registered head outputs, pointers, reset behavior, and all handshake logic unchanged; preserve support for every specified `DEPTH` and `WIDTH`. This is a LUT-reduction hypothesis: retain the candidate only if routed metrics show fewer LUTs than the incumbent and all verification and timing gates pass.",
+  "is_best": true,
+  "iteration": 3,
+  "recommendation": "ACCEPT",
+  "schema_version": 1,
+  "selected_source_sha256": "c44f299a84b24ba9c258175019a9d2208a4d62e62b8c4178234e2a71ebdc5e9c"
+}

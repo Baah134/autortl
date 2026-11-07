@@ -1,0 +1,574 @@
+{
+  "allowed_flow_variations": "The harness may enable retiming or physical optimization. The candidate's retained synthesis script is authoritative for its actual settings.",
+  "authority": "Harness evidence is fixed. Proposed architectural goals cannot redefine it.",
+  "baseline_metrics": {
+    "bram_total": 50.0,
+    "bram_used": 0.0,
+    "dsp_total": 90,
+    "dsp_used": 0,
+    "dynamic_power_w": 0.014,
+    "ff_pct": 0.009615384615384616,
+    "ff_total": 41600,
+    "ff_used": 4,
+    "lut_pct": 0.057692307692307696,
+    "lut_total": 20800,
+    "lut_used": 12,
+    "reg2reg_wns_ns": 5.74,
+    "sim_error": "",
+    "sim_passed": true,
+    "synth_error": "",
+    "timing_met": false,
+    "total_power_w": 0.084,
+    "whs_ns": 0.109,
+    "wns_ns": -0.753
+  },
+  "build_spec": {
+    "authority": "Complete resolved typed build contract. Defined behavior is mandatory; explicitly unspecified cases remain unspecified. Frozen implementation identities do not turn incidental values in unspecified cases into requirements.",
+    "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\skid_buffer_build\\design_spec.json",
+    "resolved_spec": {
+      "connections": [],
+      "external_ports": [
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "clk",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "rst",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "in_data",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 8
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "in_valid",
+          "packed_dimensions": null,
+          "protocol": "valid_ready",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "output",
+          "name": "in_ready",
+          "packed_dimensions": null,
+          "protocol": "valid_ready",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "output",
+          "name": "out_data",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 8
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "output",
+          "name": "out_valid",
+          "packed_dimensions": null,
+          "protocol": "valid_ready",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "out_ready",
+          "packed_dimensions": null,
+          "protocol": "valid_ready",
+          "signed": false,
+          "width": 1
+        }
+      ],
+      "modules": [
+        {
+          "behavior": "Two-entry 8-bit elastic FIFO with no combinational data/valid fallthrough. At each rising clk edge, synchronous active-high rst discards all queued words and overrides all transfers. Reset must not clear state between edges. Outside reset, accept input iff in_valid && in_ready and retire output iff out_valid && out_ready, sampled BEFORE the edge. out_valid equals (occupancy != 0). in_ready equals (occupancy < 2) || out_ready, including simultaneous pop/push when full. This is an explicitly combinational ready path, not registered-ready isolation. out_data is the oldest unretired accepted input whenever out_valid is high; order, full 8-bit values and multiplicity must be preserved. While stalled, keep out_valid asserted and out_data unchanged until transfer or reset. Data when out_valid is low is unspecified. Newly accepted input into an empty queue becomes visible after that capture edge; earliest output handshake is the following edge (minimum one-cycle transaction latency), never a same-edge empty bypass. Sustain one accepted input and output every cycle when nonempty and downstream ready. No ports, parameters, extra cycles or capacity changes. For the Python scoreboard payload oracle ONLY: one step maps one accepted in_data to its eventual identical out_data; do not simulate FIFO occupancy, stalls or backpressure in that oracle. RTL still implements all cycle-level queue behavior above; the harness/testbench schedules handshakes.",
+          "clock_domains": [
+            "clk"
+          ],
+          "compare_mode": "scoreboard",
+          "examples": [
+            {
+              "after_cycles": 1,
+              "expected": {
+                "out_data": 0
+              },
+              "inputs": {
+                "in_data": 0,
+                "in_valid": 1,
+                "out_ready": 1,
+                "rst": 0
+              }
+            },
+            {
+              "after_cycles": 1,
+              "expected": {
+                "out_data": 255
+              },
+              "inputs": {
+                "in_data": 255,
+                "in_valid": 1,
+                "out_ready": 1,
+                "rst": 0
+              }
+            },
+            {
+              "after_cycles": 1,
+              "expected": {
+                "out_data": 165
+              },
+              "inputs": {
+                "in_data": 165,
+                "in_valid": 1,
+                "out_ready": 1,
+                "rst": 0
+              }
+            }
+          ],
+          "golden_model": "",
+          "interface_signature": null,
+          "latency": 1,
+          "latency_known": true,
+          "name": "skid_buffer_core",
+          "parameters": {},
+          "ports": [
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "clk",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "rst",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "in_data",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 8
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "in_valid",
+              "packed_dimensions": null,
+              "protocol": "valid_ready",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "in_ready",
+              "packed_dimensions": null,
+              "protocol": "valid_ready",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "out_data",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 8
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "out_valid",
+              "packed_dimensions": null,
+              "protocol": "valid_ready",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "out_ready",
+              "packed_dimensions": null,
+              "protocol": "valid_ready",
+              "signed": false,
+              "width": 1
+            }
+          ],
+          "reset": {
+            "active_high": true,
+            "duration_cycles": 3,
+            "kind": "sync",
+            "signal": "rst"
+          }
+        }
+      ],
+      "top_name": "skid_buffer"
+    },
+    "sha256": "b55473ba70327a4d3321e5f2767197fa3e50eab818bd370d9cc47f925222d105",
+    "truncated": false
+  },
+  "clock_period_ns": 10.0,
+  "declared_latency": {
+    "cycles": 1,
+    "known": true,
+    "meaning": "A source annotation declares numeric latency only when present. This known/cycles pair is authoritative for the current top module's annotation requirement. Only known=true requires a matching numeric top annotation. Child typed-module latency does not invent a top annotation for arbitrary aggregate wrappers. When known=false, absence of a top annotation is not a failed or unverifiable criterion. Unannotated numeric latency is UNKNOWN, not zero. Preserve the source's exact observable cycles and registered behavior. Annotation presence or absence alone is not independent proof of behavioral correctness; use the fixed source contract, all defined typed latency/minimum transfer age and deterministic verification, without inventing a numeric requirement.",
+    "source_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\skid_buffer_build\\iter_000\\skid_buffer.v",
+    "source_sha256": "a842b36e1018a977cce87a92860b30932991cd08e095f43aba73f23d5e8fae78"
+  },
+  "edit_scope": {
+    "children": [
+      "skid_buffer_core"
+    ],
+    "mode": "whole_design",
+    "reason": "The supplied testbench instantiates the top skid_buffer and is the trusted integration authority, so every generated child module and the mechanical top form one editable unit verified through the top. Per-child generated oracles and testbenches verified the baseline children only and are not evidence for changed children.",
+    "testbench_modules": [],
+    "top": "skid_buffer"
+  },
+  "execution_context": {
+    "dependencies": [],
+    "implementation": "chip_top",
+    "part": "xc7a35tcpg236-1",
+    "period_ns": 10.0,
+    "promotions": {
+      "Designutils 20-1307": "ERROR",
+      "Synth 8-327": "ERROR",
+      "Synth 8-3352": "ERROR",
+      "Synth 8-9873": "ERROR",
+      "VRFC 10-3609": "ERROR"
+    },
+    "synthesis_template": "82fa3469b365c54e445b50a587f2dfd2ca06256e842bb05a2596faac46249cd4",
+    "tb": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\skid_buffer_build\\inputs\\testbench_path.v",
+      "sha256": "935d2e3ee7ca124b47d9e2d483e7b2e4a92b07bd2d8766a9f22d3049e26c10ef"
+    },
+    "tools": {
+      "vivado_bin": {
+        "path": "C:\\AMDDesignTools\\2025.2\\Vivado\\bin\\vivado.bat",
+        "sha256": "4f9c05aea82a71c7086a9e5edf01ba16ea70255f69cf3420c58b805ec113e994"
+      },
+      "xelab_bin": {
+        "path": "C:\\AMDDesignTools\\2025.2\\Vivado\\bin\\xelab.bat",
+        "sha256": "512a29ace988992d7fab14ca84f20f0b4515bb69ef1d5fef0a57c5f28b72c9b1"
+      },
+      "xsim_bin": {
+        "path": "C:\\AMDDesignTools\\2025.2\\Vivado\\bin\\xsim.bat",
+        "sha256": "8819fbb54fdf9cbcaaf24c2bf72801b403d5c93e0990ba32408b56c666761d21"
+      },
+      "xvlog_bin": {
+        "path": "C:\\AMDDesignTools\\2025.2\\Vivado\\bin\\xvlog.bat",
+        "sha256": "512a29ace988992d7fab14ca84f20f0b4515bb69ef1d5fef0a57c5f28b72c9b1"
+      }
+    },
+    "top": "skid_buffer"
+  },
+  "first_violated_path_excerpt": {
+    "category": "setup",
+    "destination": "out_data[7]",
+    "fanout": 16,
+    "logic_levels": 2,
+    "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\skid_buffer_build\\iter_000\\timing_routed.rpt",
+    "preview_policy": "First complete identifiable violated path in report order, at most 6000 characters. Slack, endpoints, levels and fanout describe this path only, not global WNS/WHS. Resource text is retained verbatim; absent fields are unknown.",
+    "sha256": "69dfd1cd663b0001c1bba5ff5ba8d04ab9a9f4a574feb25f2416833cb20ab662",
+    "slack_ns": -0.753,
+    "source": "u_skid_buffer_core/read_ptr_reg/C",
+    "text": "Slack (VIOLATED) :        -0.753ns  (required time - arrival time)\r\n  Source:                 u_skid_buffer_core/read_ptr_reg/C\r\n                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@5.000ns period=10.000ns})\r\n  Destination:            out_data[7]\r\n                            (output port clocked by clk  {rise@0.000ns fall@5.000ns period=10.000ns})\r\n  Path Group:             clk\r\n  Path Type:              Max at Slow Process Corner\r\n  Requirement:            10.000ns  (clk rise@10.000ns - clk rise@0.000ns)\r\n  Data Path Delay:        6.079ns  (logic 3.418ns (56.220%)  route 2.661ns (43.780%))\r\n  Logic Levels:           2  (OBUF=1 RAMD32=1)\r\n  Output Delay:           0.000ns\r\n  Clock Path Skew:        -4.639ns (DCD - SCD + CPR)\r\n    Destination Clock Delay (DCD):    0.000ns = ( 10.000 - 10.000 ) \r\n    Source Clock Delay      (SCD):    4.639ns\r\n    Clock Pessimism Removal (CPR):    0.000ns\r\n  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE\r\n    Total System Jitter     (TSJ):    0.071ns\r\n    Total Input Jitter      (TIJ):    0.000ns\r\n    Discrete Jitter          (DJ):    0.000ns\r\n    Phase Error              (PE):    0.000ns\r\n\r\n    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)\r\n  -------------------------------------------------------------------    -------------------\r\n                         (clock clk rise edge)        0.000     0.000 r  \r\n    M18                                               0.000     0.000 r  clk (IN)\r\n                         net (fo=0)                   0.000     0.000    clk\r\n    M18                  IBUF (Prop_ibuf_I_O)         0.938     0.938 r  clk_IBUF_inst/O\r\n                         net (fo=1, routed)           1.972     2.910    clk_IBUF\r\n    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.096     3.006 r  clk_IBUF_BUFG_inst/O\r\n                         net (fo=16, routed)          1.633     4.639    u_skid_buffer_core/clk_IBUF_BUFG\r\n    SLICE_X1Y14          FDRE                                         r  u_skid_buffer_core/read_ptr_reg/C\r\n  -------------------------------------------------------------------    -------------------\r\n    SLICE_X1Y14          FDRE (Prop_fdre_C_Q)         0.456     5.095 r  u_skid_buffer_core/read_ptr_reg/Q\r\n                         net (fo=9, routed)           0.981     6.076    u_skid_buffer_core/storage_reg_0_1_6_7__0/DPRA0\r\n    SLICE_X2Y17          RAMD32 (Prop_ramd32_RADR0_O)\r\n                                                      0.153     6.229 r  u_skid_buffer_core/storage_reg_0_1_6_7__0/DP/O\r\n                         net (fo=1, routed)           1.680     7.909    out_data_OBUF[7]\r\n    W18                  OBUF (Prop_obuf_I_O)         2.809    10.718 r  out_data_OBUF[7]_inst/O\r\n                         net (fo=0)                   0.000    10.718    out_data[7]\r\n    W18                                                               r  out_data[7] (OUT)\r\n  -------------------------------------------------------------------    -------------------\r\n\r\n                         (clock clk rise edge)       10.000    10.000 r  \r\n                         clock pessimism              0.000    10.000    \r\n                         clock uncertainty           -0.035     9.965    \r\n                         output delay                -0.000     9.965    \r\n  -------------------------------------------------------------------\r\n                         required time                          9.965    \r\n                         arrival time                         -10.718    \r\n  -------------------------------------------------------------------\r\n                         slack                                 -0.753    ",
+    "truncated": false
+  },
+  "flow_and_constraints": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\skid_buffer_build\\iter_000\\synth.tcl",
+      "sha256": "fafa6e45f9983a69b43cc1a8e8ac15365c051948fab0c53f86820fba8f446cf3",
+      "text": "set_msg_config -id {VRFC 10-3609} -new_severity ERROR\r\nset_msg_config -id {Synth 8-9873} -new_severity ERROR\r\nset_msg_config -id {Designutils 20-1307} -new_severity ERROR\r\nset_msg_config -id {Synth 8-327} -new_severity ERROR\r\nset_msg_config -id {Synth 8-3352} -new_severity ERROR\r\nset_part xc7a35tcpg236-1\r\nread_verilog \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t2-06/tier2_5ta6370s/skid_buffer_build/iter_000/skid_buffer.v\"\r\nset fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t2-06/tier2_5ta6370s/skid_buffer_build/iter_000/timing.xdc\" w]\r\nputs $fp {create_clock -period 10.000 -name clk [get_ports clk]}\r\nclose $fp\r\nread_xdc \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t2-06/tier2_5ta6370s/skid_buffer_build/iter_000/timing.xdc\"\r\nsynth_design -top skid_buffer -flatten_hierarchy rebuilt \r\nset fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t2-06/tier2_5ta6370s/skid_buffer_build/iter_000/timing_io.tcl\" w]\r\nputs $fp {set data_inputs [get_ports -filter {DIRECTION == IN && NAME != clk}]}\r\nputs $fp {if {[llength $data_inputs] > 0} {set_input_delay -clock clk -max 0.000 $data_inputs; set_input_delay -clock clk -min 0.000 $data_inputs}}\r\nputs $fp {if {[llength [all_outputs]] > 0} {set_output_delay -clock clk -max 0.000 [all_outputs]; set_output_delay -clock clk -min 0.000 [all_outputs]}}\r\nclose $fp\r\nsource \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t2-06/tier2_5ta6370s/skid_buffer_build/iter_000/timing_io.tcl\"\r\nreport_utilization -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t2-06/tier2_5ta6370s/skid_buffer_build/iter_000/utilization.rpt\"\r\nreport_timing_summary -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t2-06/tier2_5ta6370s/skid_buffer_build/iter_000/timing.rpt\"\r\nopt_design\r\nplace_design\r\n\r\nroute_design\r\nreport_utilization -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t2-06/tier2_5ta6370s/skid_buffer_build/iter_000/utilization_routed.rpt\"\r\nreport_timing_summary -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t2-06/tier2_5ta6370s/skid_buffer_build/iter_000/timing_routed.rpt\"\r\ncatch { if {[llength [all_registers]] > 0} { report_timing -from [all_registers] -to [all_registers] -max_paths 1 -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t2-06/tier2_5ta6370s/skid_buffer_build/iter_000/timing_reg2reg.rpt\" } }\r\nreport_design_analysis -logic_level_distribution -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t2-06/tier2_5ta6370s/skid_buffer_build/iter_000/design_analysis.rpt\"\r\nreport_power -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t2-06/tier2_5ta6370s/skid_buffer_build/iter_000/power.rpt\"\r\ncatch { report_methodology -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t2-06/tier2_5ta6370s/skid_buffer_build/iter_000/methodology.rpt\" }\r\ncatch { report_qor_suggestions -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t2-06/tier2_5ta6370s/skid_buffer_build/iter_000/qor_suggestions.rpt\" }\r\nputs \"SYNTH_COMPLETE\"\r\n",
+      "truncated": false
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\skid_buffer_build\\iter_000\\timing.xdc",
+      "sha256": "fa142c09f0fadb5e303ca9fea08c02bc353451533e44aeee9cd9a0231cc8bede",
+      "text": "create_clock -period 10.000 -name clk [get_ports clk]\r\n",
+      "truncated": false
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\skid_buffer_build\\iter_000\\timing_io.tcl",
+      "sha256": "6b38098841a48bbb3ab15de49d2bf2baf7e4384f599259ff5f3afa2c2b1daf00",
+      "text": "set data_inputs [get_ports -filter {DIRECTION == IN && NAME != clk}]\r\nif {[llength $data_inputs] > 0} {set_input_delay -clock clk -max 0.000 $data_inputs; set_input_delay -clock clk -min 0.000 $data_inputs}\r\nif {[llength [all_outputs]] > 0} {set_output_delay -clock clk -max 0.000 [all_outputs]; set_output_delay -clock clk -min 0.000 [all_outputs]}\r\n",
+      "truncated": false
+    }
+  ],
+  "hard_gates": [
+    "Preserve typed build spec defined behavior, ports, parameter defaults, reset and observable cycles; explicitly unspecified cases remain unspecified.",
+    "Use the fixed provided testbench, tools, device and constraints without modification.",
+    "Static/interface checks, compile, simulation and real routed metric integrity must pass.",
+    "Timing closure requires setup slack >= 0 and hold slack >= 0.",
+    "Unknown or absent evidence cannot count as success."
+  ],
+  "implementation": {
+    "meaning": "Chip-top implementation: the top is the whole FPGA design. Every port bit gets an I/O buffer on a package pin, and data ports have zero input and output delay to clk, so the routed WNS and WHS include pad delay. Utilization includes the I/O buffers.",
+    "mode": "chip_top"
+  },
+  "metric_provenance": "Structured metrics are parsed from retained reports; routed utilization/timing reports take precedence when present. The manifest identifies complete files by hash. Header excerpts are bounded previews, not complete reports or an independent metric source.",
+  "objective": "minimize_luts",
+  "objective_policy": "First establish timing feasibility. A verified timing-feasible candidate may replace a known timing-infeasible previous best even with higher area or power; classify this as timing_recovery, not objective savings. While the previous best is timing-infeasible, a verified still-infeasible candidate with strictly better setup WNS and hold not worse beyond a small tolerance may replace it as timing_progress, which is not closure; a feasible candidate always outranks it. Once both are timing-feasible, require strict improvement of the chosen objective; for maximize_freq that is register-to-register setup slack (reg2reg_wns_ns) when both designs report it, otherwise full setup WNS for both, while feasibility stays on full WNS and WHS. minimize_luts compares (lut_used, ff_used) and minimize_ffs compares (ff_used, lut_used) lexicographically: an equal primary metric with a strictly lower secondary is an objective improvement, a higher primary never is, and a secondary missing from either design gives no tie-break. Unknown or contradictory incumbent timing evidence cannot establish recovery. A completed experiment may find no improvement. Do not invent mandatory savings, slack margins, tool versions, timing corners, new tests, thresholds, code-style quotas or external environment requirements.",
+  "part": "xc7a35tcpg236-1",
+  "report_headers": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\skid_buffer_build\\iter_000\\power.rpt",
+      "sha256": "5d0cf144c3ba853c870bb1b1e63f21d1ea97c6d0e3b9506e8f49113e29bcea01",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version     : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date             : Tue Nov  3 05:01:08 2026\r\n| Host             : Baah running 64-bit major release  (build 9200)\r\n| Command          : report_power -file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t2-06/tier2_5ta6370s/skid_buffer_build/iter_000/power.rpt\r\n| Design           : skid_buffer\r\n| Device           : xc7a35tcpg236-1\r\n| Design State     : routed\r\n| Grade            : commercial\r\n| Process          : typical\r\n| Characterization : Production\r\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nPower Report\r\n\r\nTable of Contents\r\n-----------------\r\n1. Summary\r\n1.1 On-Chip Components\r\n1.2 Power Supply Summary\r\n1.3 Confidence Level\r\n2. Settings\r\n2.1 Environment\r\n2.2 Clock Constraints\r\n3. Detailed Reports\r\n3.1 By Hierarchy\r\n\r\n1. Summary\r\n----------\r\n\r\n+--------------------------+--------------+\r\n| Total On-Chip Power (W)  | 0.084        |\r\n| Design Power Budget (W)  | Unspecified* |\r\n| Power Budget Margin (W)  | NA           |\r\n| Dynamic (W)              | 0.014        |\r\n| Device Static (W)        | 0.070        |\r\n| Effective TJA (C/W)      | 5.0          |\r\n| Max Ambient (C)          | 84.6         |\r\n| Junction Temperature (C) | 25.4         |\r\n| Confidence Level         | Low          |\r\n| Setting File             | ---          |\r\n| Simulation Activity File |",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\skid_buffer_build\\iter_000\\timing.rpt",
+      "sha256": "7148aa4ee1f56cd93e77bc4f84589499c698e1865cef8dfa74dd1824f0ed94b3",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date         : Tue Nov  3 05:00:43 2026\r\n| Host         : Baah running 64-bit major release  (build 9200)\r\n| Command      : report_timing_summary -file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t2-06/tier2_5ta6370s/skid_buffer_build/iter_000/timing.rpt\r\n| Design       : skid_buffer\r\n| Device       : 7a35t-cpg236\r\n| Speed File   : -1  PRODUCTION 1.23 2018-06-13\r\n| Design State : Synthesized\r\n------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nTiming Summary Report\r\n\r\n------------------------------------------------------------------------------------------------\r\n| Timer Settings\r\n| --------------\r\n------------------------------------------------------------------------------------------------\r\n\r\n  Enable Multi Corner Analysis               :  Yes\r\n  Enable Pessimism Removal                   :  Yes\r\n  Pessimism Removal Resolution               :  Nearest Common Node\r\n  Enable Input Delay Default Clock           :  No\r\n  Enable Preset / Clear Arcs                 :  No\r\n  Disable Flight Delays                      :  No\r\n  Ignore I/O Paths                           :  No\r\n  Timing Early Launch at Borrowing Latches   :  No\r\n  Borrow Time for Max Delay Exceptions       :  Yes\r\n  Merge Timing Exceptions                    :  Yes\r\n  Inter-SLR Compensation                     :  ",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\skid_buffer_build\\iter_000\\timing_reg2reg.rpt",
+      "sha256": "35645666fc1a5f6bac1f13a0531d93c3dc684d1ced374f92ddbe5385a73b9b45",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date         : Tue Nov  3 05:01:08 2026\r\n| Host         : Baah running 64-bit major release  (build 9200)\r\n| Command      : report_timing -from [all_registers] -to [all_registers] -max_paths 1 -file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t2-06/tier2_5ta6370s/skid_buffer_build/iter_000/timing_reg2reg.rpt\r\n| Design       : skid_buffer\r\n| Device       : 7a35t-cpg236\r\n| Speed File   : -1  PRODUCTION 1.23 2018-06-13\r\n| Design State : Routed\r\n-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nTiming Report\r\n\r\nSlack (MET) :             5.740ns  (required time - arrival time)\r\n  Source:                 u_skid_buffer_core/occupancy_reg[1]/C\r\n                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@5.000ns period=10.000ns})\r\n  Destination:            u_skid_buffer_core/storage_reg_0_1_6_7/DP/WE\r\n                            (rising edge-triggered cell RAMD32 clocked by clk  {rise@0.000ns fall@5.000ns period=10.000ns})\r\n  Path Group:             clk\r\n  Path Type:              Setup (Max at Slow Process Corner)\r\n  Requirement:            10.000ns  (clk rise@10.000ns - clk rise@0.000ns)\r\n  Data Path Delay:        3.666ns  (logic 0.716ns ",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\skid_buffer_build\\iter_000\\timing_routed.rpt",
+      "sha256": "69dfd1cd663b0001c1bba5ff5ba8d04ab9a9f4a574feb25f2416833cb20ab662",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n-------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date         : Tue Nov  3 05:01:08 2026\r\n| Host         : Baah running 64-bit major release  (build 9200)\r\n| Command      : report_timing_summary -file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t2-06/tier2_5ta6370s/skid_buffer_build/iter_000/timing_routed.rpt\r\n| Design       : skid_buffer\r\n| Device       : 7a35t-cpg236\r\n| Speed File   : -1  PRODUCTION 1.23 2018-06-13\r\n| Design State : Routed\r\n-------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nTiming Summary Report\r\n\r\n------------------------------------------------------------------------------------------------\r\n| Timer Settings\r\n| --------------\r\n------------------------------------------------------------------------------------------------\r\n\r\n  Enable Multi Corner Analysis               :  Yes\r\n  Enable Pessimism Removal                   :  Yes\r\n  Pessimism Removal Resolution               :  Nearest Common Node\r\n  Enable Input Delay Default Clock           :  No\r\n  Enable Preset / Clear Arcs                 :  No\r\n  Disable Flight Delays                      :  No\r\n  Ignore I/O Paths                           :  No\r\n  Timing Early Launch at Borrowing Latches   :  No\r\n  Borrow Time for Max Delay Exceptions       :  Yes\r\n  Merge Timing Exceptions                    :  Yes\r\n  Inter-SLR Compensation        ",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\skid_buffer_build\\iter_000\\utilization.rpt",
+      "sha256": "10905980125eb7508d91594b503b55dac76885f04a9fce0b4e4b09cf98c07637",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\n| Date         : Tue Nov  3 05:00:43 2026\n| Host         : Baah running 64-bit major release  (build 9200)\n| Command      : report_utilization -file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t2-06/tier2_5ta6370s/skid_buffer_build/iter_000/utilization.rpt\n| Design       : skid_buffer\n| Device       : xc7a35tcpg236-1\n| Speed File   : -1\n| Design State : Synthesized\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------\n\nUtilization Design Information\n\nTable of Contents\n-----------------\n1. Slice Logic\n1.1 Summary of Registers by Type\n2. Memory\n3. DSP\n4. IO and GT Specific\n5. Clocking\n6. Specific Feature\n7. Primitives\n8. Black Boxes\n9. Instantiated Netlists\n\n1. Slice Logic\n--------------\n\n+----------------------------+------+-------+------------+-----------+-------+\n|          Site Type         | Used | Fixed | Prohibited | Available | Util% |\n+----------------------------+------+-------+------------+-----------+-------+\n| Slice LUTs*                |   12 |     0 |          0 |     20800 |  0.06 |\n|   LUT as Logic             |    4 |     0 |          0 |     20800 |  0.02 |\n|   LUT as Memory            |    8 |     0 |          0 |      9600 |  0.08 |\n|     LUT as Distributed RAM |    8 |     0 |            |           |       |\n|     LUT as Shift Register  |    0 |     0 |        ",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\skid_buffer_build\\iter_000\\utilization_routed.rpt",
+      "sha256": "099d77ca3cc9f64d326a74af3a4b3227b5270a3d6795e8b891a8c4824a0b9c1f",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\n---------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\n| Date         : Tue Nov  3 05:01:08 2026\n| Host         : Baah running 64-bit major release  (build 9200)\n| Command      : report_utilization -file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t2-06/tier2_5ta6370s/skid_buffer_build/iter_000/utilization_routed.rpt\n| Design       : skid_buffer\n| Device       : xc7a35tcpg236-1\n| Speed File   : -1\n| Design State : Routed\n---------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n\nUtilization Design Information\n\nTable of Contents\n-----------------\n1. Slice Logic\n1.1 Summary of Registers by Type\n2. Slice Logic Distribution\n3. Memory\n4. DSP\n5. IO and GT Specific\n6. Clocking\n7. Specific Feature\n8. Primitives\n9. Black Boxes\n10. Instantiated Netlists\n\n1. Slice Logic\n--------------\n\n+----------------------------+------+-------+------------+-----------+-------+\n|          Site Type         | Used | Fixed | Prohibited | Available | Util% |\n+----------------------------+------+-------+------------+-----------+-------+\n| Slice LUTs                 |   12 |     0 |          0 |     20800 |  0.06 |\n|   LUT as Logic             |    6 |     0 |          0 |     20800 |  0.03 |\n|   LUT as Memory            |    6 |     0 |          0 |      9600 |  0.06 |\n|     LUT as Distributed RAM |    6 |     0 |            |           |       |\n|     LU",
+      "truncated": true
+    }
+  ],
+  "report_manifest": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\skid_buffer_build\\iter_000\\power.rpt",
+      "sha256": "5d0cf144c3ba853c870bb1b1e63f21d1ea97c6d0e3b9506e8f49113e29bcea01"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\skid_buffer_build\\iter_000\\timing.rpt",
+      "sha256": "7148aa4ee1f56cd93e77bc4f84589499c698e1865cef8dfa74dd1824f0ed94b3"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\skid_buffer_build\\iter_000\\timing_reg2reg.rpt",
+      "sha256": "35645666fc1a5f6bac1f13a0531d93c3dc684d1ced374f92ddbe5385a73b9b45"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\skid_buffer_build\\iter_000\\timing_routed.rpt",
+      "sha256": "69dfd1cd663b0001c1bba5ff5ba8d04ab9a9f4a574feb25f2416833cb20ab662"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\skid_buffer_build\\iter_000\\utilization.rpt",
+      "sha256": "10905980125eb7508d91594b503b55dac76885f04a9fce0b4e4b09cf98c07637"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\skid_buffer_build\\iter_000\\utilization_routed.rpt",
+      "sha256": "099d77ca3cc9f64d326a74af3a4b3227b5270a3d6795e8b891a8c4824a0b9c1f"
+    }
+  ],
+  "schema_version": 1,
+  "simulation": {
+    "failure_verdict": "TEST FAILED",
+    "required_verdict": "TEST PASSED",
+    "scope": "Provided testbench checks; not a formal equivalence proof.",
+    "tools": [
+      "xvlog",
+      "xelab",
+      "xsim -runall"
+    ]
+  },
+  "sources": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\skid_buffer_build\\iter_000\\skid_buffer.v",
+      "sha256": "a842b36e1018a977cce87a92860b30932991cd08e095f43aba73f23d5e8fae78",
+      "text": "`timescale 1ns/1ps\r\n// @latency 1\r\nmodule skid_buffer_core (\r\n    input wire clk,\r\n    input wire rst,\r\n    input wire [7:0] in_data,\r\n    input wire in_valid,\r\n    output wire in_ready,\r\n    output wire [7:0] out_data,\r\n    output wire out_valid,\r\n    input wire out_ready\r\n);\r\n\r\n    reg [7:0] storage [0:1];\r\n    reg read_ptr;\r\n    reg write_ptr;\r\n    reg [1:0] occupancy;\r\n\r\n    assign out_valid = (occupancy != 2'd0);\r\n    assign in_ready = (occupancy < 2'd2) || out_ready;\r\n    assign out_data = storage[read_ptr];\r\n\r\n    always @(posedge clk) begin\r\n        if (rst) begin\r\n            read_ptr <= 1'b0;\r\n            write_ptr <= 1'b0;\r\n            occupancy <= 2'd0;\r\n        end else begin\r\n            if (in_valid && in_ready) begin\r\n                storage[write_ptr] <= in_data;\r\n                write_ptr <= ~write_ptr;\r\n            end\r\n\r\n            if (out_valid && out_ready)\r\n                read_ptr <= ~read_ptr;\r\n\r\n            case ({in_valid && in_ready, out_valid && out_ready})\r\n                2'b10: occupancy <= occupancy + 2'd1;\r\n                2'b01: occupancy <= occupancy - 2'd1;\r\n                default: occupancy <= occupancy;\r\n            endcase\r\n        end\r\n    end\r\n\r\nendmodule\r\n`timescale 1ns/1ps\r\n// @latency 1\r\n// Inherited minimum accepted-transfer age from transparent typed child wiring; not measured timing.\r\nmodule skid_buffer (\r\n    input wire clk,\r\n    input wire rst,\r\n    input wire [7:0] in_data,\r\n    input wire in_valid,\r\n    output wire in_ready,\r\n    output wire [7:0] out_data,\r\n    output wire out_valid,\r\n    input wire out_ready\r\n);\r\n    skid_buffer_core u_skid_buffer_core (\r\n        .clk(clk),\r\n        .rst(rst),\r\n        .in_data(in_data),\r\n        .in_valid(in_valid),\r\n        .in_ready(in_ready),\r\n        .out_data(out_data),\r\n        .out_valid(out_valid),\r\n        .out_ready(out_ready)\r\n    );\r\nendmodule\r\n",
+      "truncated": false
+    }
+  ],
+  "testbench": {
+    "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\skid_buffer_build\\inputs\\testbench_path.v",
+    "sha256": "935d2e3ee7ca124b47d9e2d483e7b2e4a92b07bd2d8766a9f22d3049e26c10ef",
+    "text": "`timescale 1ns/1ps\r\nmodule skid_buffer_tb;\r\n    reg clk=0, rst=1, in_valid=0, out_ready=0;\r\n    reg [7:0] in_data=0;\r\n    wire in_ready, out_valid;\r\n    wire [7:0] out_data;\r\n    skid_buffer dut(.clk(clk),.rst(rst),.in_data(in_data),.in_valid(in_valid),\r\n        .in_ready(in_ready),.out_data(out_data),.out_valid(out_valid),.out_ready(out_ready));\r\n    always #5 clk=~clk;\r\n\r\n    // Independent SHIFT queue: no reference to DUT storage, pointers or count.\r\n    reg [7:0] expected0, expected1;\r\n    integer queued=0, errors=0, checked=0;\r\n    integer accepted=0, retired=0, discarded=0, full_cycles=0;\r\n    integer stalled_cycles=0, simultaneous=0, bubble_cycles=0, empty_cycles=0;\r\n    integer reset_occupied=0, max_queued=0;\r\n    reg model_started=0, push, pop, last_push=0;\r\n    reg pending_valid=0;\r\n    reg [7:0] pending_data=0;\r\n    reg [31:0] seed=32'h793ac4e1;\r\n    integer i;\r\n\r\n    task fail;\r\n        input [511:0] message;\r\n        begin\r\n            errors=errors+1;\r\n            if(errors<=12) $display(\"FAIL cycle=%0d queued=%0d: %0s\",checked,queued,message);\r\n        end\r\n    endtask\r\n    task check_outputs;\r\n        begin\r\n            if(out_valid !== (queued!=0)) fail(\"out_valid must equal nonempty queue\");\r\n            if(in_ready !== ((queued<2)||out_ready)) fail(\"in_ready capacity/full-pop rule\");\r\n            if(queued>0 && out_data !== expected0) fail(\"oldest payload/order/stall stability\");\r\n        end\r\n    endtask\r\n    task step;\r\n        input reset_value, valid_value;\r\n        input [7:0] data_value;\r\n        input ready_value;\r\n        begin\r\n            @(negedge clk);\r\n            rst=reset_value; in_valid=valid_value; in_data=data_value; out_ready=ready_value;\r\n            #1;\r\n            // Catches empty fallthrough and asynchronous reset while occupied.\r\n            if(model_started) check_outputs;\r\n            @(posedge clk);\r\n            if(model_started) check_outputs; // BEFORE DUT nonblocking updates\r\n            push=in_valid && ((queued<2)||out_ready);\r\n            pop=(queued>0) && out_ready;\r\n            last_push=0;\r\n            if(rst) begin\r\n                if(queued>0) reset_occupied=reset_occupied+1;\r\n                discarded=discarded+queued;\r\n                queued=0;\r\n            end else begin\r\n                if(queued==2) full_cycles=full_cycles+1;\r\n                if(queued==0) empty_cycles=empty_cycles+1;\r\n                if(queued>0 && !out_ready) stalled_cycles=stalled_cycles+1;\r\n                if(!in_valid) bubble_cycles=bubble_cycles+1;\r\n                if(push && pop) simultaneous=simultaneous+1;\r\n                // Retire FIRST, then append; model uses no DUT handshake output.\r\n                if(pop) begin\r\n                    expected0=expected1;\r\n                    queued=queued-1;\r\n                    retired=retired+1;\r\n                end\r\n                if(push) begin\r\n                    if(queued==0) expected0=in_data;\r\n                    else expected1=in_data;\r\n                    queued=queued+1;\r\n                    accepted=accepted+1;\r\n                    last_push=1;\r\n                end\r\n            end\r\n            if(queued>max_queued) max_queued=queued;\r\n            if(queued<0 || queued>2) fail(\"reference queue bounds\");\r\n            #1;\r\n            model_started=1;\r\n            check_outputs;\r\n            checked=checked+1;\r\n            #1;\r\n        end\r\n    endtask\r\n    function [31:0] advance;\r\n        input [31:0] value;\r\n        reg [31:0] x;\r\n        begin\r\n            x=value^(value<<13); x=x^(x>>17); x=x^(x<<5); advance=x;\r\n        end\r\n    endfunction\r\n    initial begin\r\n        step(1,0,0,0); step(1,0,0,0);\r\n        step(0,1,8'h10,0); step(0,1,8'h20,0);\r\n        // Third word must remain pending until space is available.\r\n        repeat(6) step(0,1,8'h30,0);\r\n        step(0,1,8'h30,1); step(0,1,8'h40,1);\r\n        step(0,0,0,0); step(0,0,0,1); step(0,0,0,1);\r\n        repeat(4) step(0,0,0,1);\r\n        // Long throughput run covers every 8-bit payload and repeated wraps.\r\n        for(i=0;i<256;i=i+1) step(0,1,i[7:0],1);\r\n        repeat(4) step(0,0,0,1);\r\n        // Reset must discard two queued words at the edge, not before it.\r\n        step(0,1,8'h91,0); step(0,1,8'h92,0);\r\n        step(1,1,8'h93,0); step(0,1,8'h93,0);\r\n        repeat(4) step(0,0,0,1);\r\n        for(i=0;i<600;i=i+1) begin\r\n            seed=advance(seed);\r\n            if(!pending_valid || last_push) begin\r\n                pending_valid=seed[0]||seed[3];\r\n                pending_data=seed[15:8];\r\n            end\r\n            step((i==173)||(i==421),pending_valid,pending_data,seed[2]||seed[7]);\r\n        end\r\n        // Finish any producer-held word before withdrawing valid.\r\n        if(pending_valid && !last_push) step(0,1,pending_data,1);\r\n        repeat(6) step(0,0,0,1);\r\n        if(queued!=0 || accepted!=retired+discarded) fail(\"final drain/accounting\");\r\n        if(checked<850 || accepted<300 || retired<300 || max_queued!=2 ||\r\n           full_cycles<4 || stalled_cycles<4 || simultaneous<200 ||\r\n           bubble_cycles<2 || empty_cycles<4 || reset_occupied<1)\r\n            fail(\"required scenario coverage missing\");\r\n        $display(\"COVERAGE checked=%0d accepted=%0d retired=%0d discarded=%0d full=%0d stall=%0d simultaneous=%0d resets_occupied=%0d\",checked,accepted,retired,discarded,full_cycles,stalled_cycles,simultaneous,reset_occupied);\r\n        if(errors==0) $display(\"TEST PASSED\");\r\n        else $display(\"TEST FAILED: %0d errors\",errors);\r\n        $finish;\r\n    end\r\n    initial begin\r\n        #100000;\r\n        $display(\"TEST FAILED: watchdog\");\r\n        $finish;\r\n    end\r\nendmodule\r\n",
+    "truncated": false
+  },
+  "testbench_top": "skid_buffer_tb",
+  "tool_exit_evidence": {
+    "history_count": 4,
+    "latest_by_tool": {
+      "vivado": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\skid_buffer_build\\iter_000\\vivado_synth_output.log",
+        "output_log_sha256": "e6c39640e3de02d6d97c045ebb3de8b841b6d5d29dae79f6649eacd106041ed6",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xelab": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\skid_buffer_build\\iter_000\\xelab.log",
+        "output_log_sha256": "17520d968172afe4d24a7c461fd6939914fbb532d43236c65a75cf990313b193",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xsim": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\skid_buffer_build\\iter_000\\xsim.log",
+        "output_log_sha256": "43c719f3f666eb4f70a4641163bd6cacca32d6b3852949c7e5600bb505ba0120",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xvlog": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\skid_buffer_build\\iter_000\\xvlog.log",
+        "output_log_sha256": "89bf4609f8ece5dbc053d8785b80198ef05ec1505619f2e8f8aaf38826edb9ee",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      }
+    },
+    "missing_required_tools": [],
+    "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\skid_buffer_build\\iter_000\\tool_exit_records.log",
+    "records": [
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\skid_buffer_build\\iter_000",
+        "driver_returncode": 0,
+        "elapsed_seconds": 1.1541381999995792,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xvlog.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\skid_buffer_build\\iter_000\\xvlog.log",
+        "output_log_sha256": "89bf4609f8ece5dbc053d8785b80198ef05ec1505619f2e8f8aaf38826edb9ee",
+        "pid": 10996,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xvlog"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\skid_buffer_build\\iter_000",
+        "driver_returncode": 0,
+        "elapsed_seconds": 1.7290604000008898,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xelab.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\skid_buffer_build\\iter_000\\xelab.log",
+        "output_log_sha256": "17520d968172afe4d24a7c461fd6939914fbb532d43236c65a75cf990313b193",
+        "pid": 7440,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xelab"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\skid_buffer_build\\iter_000",
+        "driver_returncode": 0,
+        "elapsed_seconds": 3.096535500008031,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xsim.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\skid_buffer_build\\iter_000\\xsim.log",
+        "output_log_sha256": "43c719f3f666eb4f70a4641163bd6cacca32d6b3852949c7e5600bb505ba0120",
+        "pid": 14600,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xsim"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\skid_buffer_build\\iter_000",
+        "driver_returncode": 0,
+        "elapsed_seconds": 84.11628270000801,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/vivado.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\skid_buffer_build\\iter_000\\vivado_synth_output.log",
+        "output_log_sha256": "e6c39640e3de02d6d97c045ebb3de8b841b6d5d29dae79f6649eacd106041ed6",
+        "pid": 25220,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "vivado"
+      }
+    ],
+    "schema_valid": true,
+    "sha256": "430cdfd1a1ec8e1e61aa1af9960189633a597b2368e875f121b4760af564fe4b",
+    "status": "recorded",
+    "truncated": false
+  },
+  "top_module": "skid_buffer",
+  "verification_logs": [
+    {
+      "head": "INFO: [VRFC 10-2263] Analyzing Verilog file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t2-06/tier2_5ta6370s/skid_buffer_build/iter_000/skid_buffer.v\" into library work\r\nINFO: [VRFC 10-311] analyzing module skid_buffer_core\r\nINFO: [VRFC 10-311] analyzing module skid_buffer\r\nINFO: [VRFC 10-2263] Analyzing Verilog file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t2-06/tier2_5ta6370s/skid_buffer_build/inputs/testbench_path.v\" into library work\r\nINFO: [VRFC 10-311] analyzing module skid_buffer_tb\r\n\r\n",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\skid_buffer_build\\iter_000\\xvlog.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "89bf4609f8ece5dbc053d8785b80198ef05ec1505619f2e8f8aaf38826edb9ee",
+      "tail": "",
+      "truncated": false
+    },
+    {
+      "head": "Vivado Simulator v2025.2\r\nCopyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\nCopyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\nRunning: C:/AMDDesignTools/2025.2/Vivado/bin/unwrapped/win64.o/xelab.exe skid_buffer_tb -s skid_buffer_tb_snap --debug off \r\nMulti-threading is on. Using 10 slave threads.\r\nStarting static elaboration\r\nPass Through NonSizing Optimizer\r\nCompleted static elaboration\r\nStarting simulation data flow analysis\r\nCompleted simulation data flow analysis\r\nTime Resolution for simulation is 1ps\r\nCompiling module work.skid_buffer_core\r\nCompiling module work.skid_buffer_tb\r\nBuilt simulation snapshot skid_buffer_tb_snap\r\n\r\n",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\skid_buffer_build\\iter_000\\xelab.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "17520d968172afe4d24a7c461fd6939914fbb532d43236c65a75cf990313b193",
+      "tail": "",
+      "truncated": false
+    },
+    {
+      "head": "\r\n****** xsim v2025.2 (64-bit)\r\n  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025\r\n  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025\r\n  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025\r\n  **** Start of session at: Tue Nov  3 04:59:43 2026\r\n    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\n    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n\r\nsource xsim.dir/skid_buffer_tb_snap/xsim_script.tcl\r\n# xsim {skid_buffer_tb_snap} -autoloadwcfg -runall\r\nTime resolution is 1 ps\r\nrun -all\r\nCOVERAGE checked=893 accepted=679 retired=675 discarded=4 full=278 stall=135 simultaneous=580 resets_occupied=3\r\nTEST PASSED\r\n$finish called at time : 8937 ns : File \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t2-06/tier2_5ta6370s/skid_buffer_build/inputs/testbench_path.v\" Line 126\r\nexit\r\nINFO: [Common 17-206] Exiting xsim at Tue Nov  3 04:59:45 2026...\r\n\r\n",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\skid_buffer_build\\iter_000\\sim_log.txt",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "43c719f3f666eb4f70a4641163bd6cacca32d6b3852949c7e5600bb505ba0120",
+      "tail": "",
+      "truncated": false
+    },
+    {
+      "head": "\r\n****** Vivado v2025.2 (64-bit)\r\n  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025\r\n  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025\r\n  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025\r\n  **** Start of session at: Tue Nov  3 04:59:47 2026\r\n    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\n    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n\r\nsource C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t2-06/tier2_5ta6370s/skid_buffer_build/iter_000/synth.tcl\r\n# set_msg_config -id {VRFC 10-3609} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-9873} -new_severity ERROR\r\n# set_msg_config -id {Designutils 20-1307} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-327} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-3352} -new_severity ERROR\r\n# set_part xc7a35tcpg236-1\r\nINFO: [Coretcl 2-1500] The part has been set to 'xc7a35tcpg236-1' for the current project only. Run set_part -help for more details. To evaluate different speed grades in the current design, use the set_speed_grade command, or use the open_checkpoint -part command to change the part used by an existing checkpoint design.\r\nset_part: Time (s): cpu = 00:00:14 ; elapsed = 00:00:10 . Memory (MB): peak = 534.078 ; gain = 229.105\r\n# read_verilog \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t2-06/tier2_5ta6370s/skid_buffer_build/iter_000/skid_buffer.v\"\r\n# set fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t2-06/tier2_5ta6370s/skid_buffer_build/iter_000/timing.xdc\" w]\r\n# puts $fp {create_clock -period 10.000 -name clk [get_ports clk]}\r\n# close $fp\r\n# read_xdc \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t2-06/tier2_5ta6370s/skid_buffer_build/iter_000/timing.xdc\"\r\n# synth_design -top skid_buffer ",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\skid_buffer_build\\iter_000\\vivado_synth_output.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "e6c39640e3de02d6d97c045ebb3de8b841b6d5d29dae79f6649eacd106041ed6",
+      "tail": "tier2_5ta6370s/skid_buffer_build/iter_000/power.rpt\r\nRunning Vector-less Activity Propagation...\r\n\r\nFinished Running Vector-less Activity Propagation\r\n0 Infos, 0 Warnings, 0 Critical Warnings and 0 Errors encountered.\r\nreport_power completed successfully\r\n# catch { report_methodology -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t2-06/tier2_5ta6370s/skid_buffer_build/iter_000/methodology.rpt\" }\r\nCommand: report_methodology -file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t2-06/tier2_5ta6370s/skid_buffer_build/iter_000/methodology.rpt\r\nINFO: [Timing 38-35] Done setting XDC timing constraints.\r\nINFO: [DRC 23-133] Running Methodology with 2 threads\r\nINFO: [Vivado_Tcl 2-1520] The results of Report Methodology are in file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t2-06/tier2_5ta6370s/skid_buffer_build/iter_000/methodology.rpt.\r\nreport_methodology completed successfully\r\n# catch { report_qor_suggestions -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t2-06/tier2_5ta6370s/skid_buffer_build/iter_000/qor_suggestions.rpt\" }\r\nCommand: report_qor_suggestions -file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t2-06/tier2_5ta6370s/skid_buffer_build/iter_000/qor_suggestions.rpt\r\nCongestion Prediction Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.004 . Memory (MB): peak = 2000.883 ; gain = 0.000\r\nINFO: [Implflow 47-1309] PredResultString: 1:42.54:57.46\r\nfeatureProvider Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.018 . Memory (MB): peak = 2000.883 ; gain = 0.000\r\nINFO: [Implflow 47-1274] ML strategy prediction is not supported for 7-series devices.\r\nreport_qor_suggestions completed successfully\r\n# puts \"SYNTH_COMPLETE\"\r\nSYNTH_COMPLETE\r\nINFO: [Common 17-206] Exiting Vivado at Tue Nov  3 05:01:09 2026...\r\n\r\n",
+      "truncated": true
+    }
+  ]
+}

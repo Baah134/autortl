@@ -1,0 +1,65 @@
+{"source_files": 334, "freeze": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-04-source-freeze.json"}
+{"exit_code": 0, "seconds": 453.9219999999914, "summary": "2022 passed in 452.61s (0:07:32)", "source_unchanged": true, "source_files": 334, "source_freeze_sha256": "45527af20ff706d9261d95a9cae6c03a0fee7bd2a615e2335e949e008040971a"}
+{"prelaunch": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-04-prelaunch.json", "budgets_per_entry": {"iterations": null, "best_of_n": 1, "model_calls": 30, "tool_minutes": 40, "wall_minutes": 60, "infra_retries": 1}}
+[bench] fir8: meta.yaml sets max_vivado_minutes = 70.0; the bench value 40.0 does not apply to it
+[bench] fir8: meta.yaml sets max_wall_minutes = 110.0; the bench value 60.0 does not apply to it
+[module packet_fifo_core] golden model + testbench...
+[module packet_fifo_core] tb qualification: detected stuck-zero outputs; missed: flip < to >
+[module packet_fifo_core] independent tb qualification: detected flip < to >
+[build] integrated design compiles; entering optimize loop as baseline
+[build] editable unit: packet_fifo_core + packet_fifo; verified by the trusted integration testbench
+[iter 0] baseline LUTs=101 FFs=128 WNS=-9.981
+[iter 0] baseline LUTs=15 FFs=6 WNS=-0.946
+[doctor] wns=-9.799 category=logic_depth action=rtl_surgery
+[doctor] wns=-0.17 category=port_path action=rtl_surgery
+[iter 1] *** NEW BEST *** LUTs=150 FFs=160 WNS=-9.799
+[iter 1] *** NEW BEST *** LUTs=25 FFs=15 WNS=-0.17
+[doctor] wns=-2.962 category=logic_depth action=rtl_surgery
+[iter 2] *** NEW BEST *** LUTs=27 FFs=17 WNS=0.329
+[iter 2] *** NEW BEST *** LUTs=284 FFs=160 WNS=-2.962
+[doctor] wns=-0.075 category=port_path action=rtl_surgery
+[doctor] wns=-3.856 category=high_fanout action=rtl_surgery
+[iter 3] REJECT LUTs=27 (best iter 2, stall 1)
+
+DONE — best from iter 2: LUTs=27 FFs=17 WNS=0.329
+[bench] packet_fifo_build: finished (1/4)
+[module skid_buffer_core] golden model + testbench...
+[module skid_buffer_core] tb qualification: detected stuck-zero outputs; missed: flip < to >
+[module skid_buffer_core] independent tb qualification: detected flip < to >
+[build] integrated design compiles; entering optimize loop as baseline
+[build] editable unit: skid_buffer_core + skid_buffer; verified by the trusted integration testbench
+[iter 3] REJECT LUTs=0 (best iter 2, stall 1)
+[iter 0] baseline LUTs=15 FFs=19 WNS=0.272
+[doctor] wns=-1.906 category=logic_depth action=rtl_surgery
+[iter 1] *** NEW BEST *** LUTs=11 FFs=18 WNS=0.171
+[iter 2] REJECT LUTs=11 (best iter 1, stall 1)
+
+DONE — best from iter 1: LUTs=11 FFs=18 WNS=0.171
+[bench] skid_buffer_build: finished (2/4)
+[module sync_fifo_core] golden model + testbench...
+[iter 4] *** NEW BEST *** LUTs=238 FFs=51 WNS=0.807
+[module sync_fifo_core] tb qualification: detected stuck-zero outputs; missed: flip < to >
+[module sync_fifo_core] independent tb qualification: detected flip < to >
+[build] integrated design compiles; entering optimize loop as baseline
+[build] editable unit: sync_fifo_core + sync_fifo; verified by the trusted integration testbench
+[iter 0] baseline LUTs=13 FFs=6 WNS=-0.931
+[doctor] wns=-0.341 category=logic_depth action=tool_knobs
+[doctor] wns=-0.137 category=port_path action=rtl_surgery
+[iter 5] REJECT LUTs=279 (best iter 4, stall 1)
+[iter 1] *** NEW BEST *** LUTs=23 FFs=15 WNS=0.155
+[doctor] wns=-0.095 category=high_fanout action=rtl_surgery
+[doctor] wns=-0.177 category=port_path action=rtl_surgery
+[iter 2] *** NEW BEST *** LUTs=23 FFs=13 WNS=0.009
+
+DONE — best from iter 2: LUTs=23 FFs=13 WNS=0.009
+[bench] sync_fifo_build: finished (3/4)
+[iter 6] REJECT LUTs=327 (best iter 4, stall 2)
+
+DONE — best from iter 4: LUTs=238 FFs=51 WNS=0.807
+[bench] fir8: finished (4/4)
+[bench] fir8: PASS (mandatory gates passed)
+[bench] packet_fifo_build: PASS (mandatory gates passed)
+[bench] skid_buffer_build: PASS (mandatory gates passed)
+[bench] sync_fifo_build: PASS (mandatory gates passed)
+[bench] tier 2: 4/4; held=False; streak=1
+{"exit_code": 0, "wall_seconds": 2061.9060000000027, "source_unchanged": true, "router_stats_prefix_unchanged": true, "history_prefix_unchanged": true, "ended_utc": "2026-11-03T08:49:40.670765+00:00"}

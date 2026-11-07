@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_2:decision:instruction:0",
+  "result": "In `packet_fifo_core`, replace the combinational `occupancy < DEPTH` comparison in `in_ready` with a `full` status register, updated on each clock edge to reflect the post-transfer occupancy and cleared by synchronous reset; retain `in_ready = !full || out_ready`. Handle push, pop, and simultaneous full pop/push correctly for every supported `DEPTH` from 1 through 8, while preserving reset priority, capacity, throughput, and all existing output behavior. Keep the top `// @latency 1` annotation and the registered head data and marker behavior.",
+  "artifacts": {}
+}

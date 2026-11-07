@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_2:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 2,
+    "instruction": "In `skid_buffer_core`, replace the 2-bit `occupancy` state with a `full` flag and reuse `out_valid_reg` as the registered nonempty flag; drive `in_ready` from `!full || out_ready` and keep `out_valid` driven directly by `out_valid_reg`. Update the two flags on push/pop combinations so empty, single-entry, full, simultaneous transfer, and full pop/push transitions preserve the exact two-entry FIFO behavior and stall stability. Preserve synchronous active-high reset, the one-cycle minimum transfer age, throughput, the top `// @latency 1` annotation, and all ports; evaluate against the incumbent\u2019",
+    "candidates": [
+      {
+        "iteration": 2,
+        "mutation": "standard",
+        "instruction": "In `skid_buffer_core`, replace the 2-bit `occupancy` state with a `full` flag and reuse `out_valid_reg` as the registered nonempty flag; drive `in_ready` from `!full || out_ready` and keep `out_valid` driven directly by `out_valid_reg`. Update the two flags on push/pop combinations so empty, single-entry, full, simultaneous transfer, and full pop/push transitions preserve the exact two-entry FIFO behavior and stall stability. Preserve synchronous active-high reset, the one-cycle minimum transfer age, throughput, the top `// @latency 1` annotation, and all ports; evaluate against the incumbent\u2019",
+        "generated_source_sha256": "f9eafa7c9d56af824c8d788a79b43777288e62d5eeaae50d0f7d744349402109",
+        "final_source_sha256": "f9eafa7c9d56af824c8d788a79b43777288e62d5eeaae50d0f7d744349402109",
+        "generated_code_hash": "1019124044522d5c",
+        "final_code_hash": "1019124044522d5c",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.438,
+          "whs_ns": 0.104,
+          "lut_used": 11,
+          "ff_used": 18,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.013,
+          "total_power_w": 0.083
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-03\\tier2_g47m0rx8\\skid_buffer_build\\iter_002\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-03\\tier2_g47m0rx8\\skid_buffer_build\\iter_002\\cand_standard\\synth.tcl",
+          "sha256": "e20ed51087a31d2cdc698b1ec7cd529d3969510a565f15228f46375c0fbc0bc4"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-03\\tier2_g47m0rx8\\skid_buffer_build\\iter_002\\cand_standard\\skid_buffer.v",
+          "sha256": "8e375a1c0d00797209c0695acbba4c5d7c0eaedaec7b48831f17532bdc1af545"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "ACCEPT",
+    "is_best": true,
+    "selected_source_sha256": "f9eafa7c9d56af824c8d788a79b43777288e62d5eeaae50d0f7d744349402109"
+  },
+  "artifacts": {}
+}

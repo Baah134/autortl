@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_3:decision:instruction:0",
+  "result": "Keep the 32-bit counter, full-width comparison, reset, and registered `pwm_out` behavior. Replace the terminal-count clear-versus-increment update with an unconditional 32-bit increment, then explicitly clear only `counter[31:8]` when the old counter equals 32'd255; at that count the increment already makes `counter[7:0]` zero. Preserve the full 32-bit PWM comparison and all reset and cycle behavior, including for counter values above 255.",
+  "artifacts": {}
+}

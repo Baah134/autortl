@@ -1,0 +1,45 @@
+{
+  "candidates": [
+    {
+      "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-03\\tier2_g47m0rx8\\packet_fifo_build\\iter_003\\cand_standard",
+      "cache_hit": false,
+      "final_code_hash": "30ce76eb11199a6a",
+      "final_source_sha256": "0d6811a62631aee7f9f6ae8adf2e2a585c8926855837cbc5e2669a207e792905",
+      "flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-03\\tier2_g47m0rx8\\packet_fifo_build\\iter_003\\cand_standard\\synth.tcl",
+        "sha256": "6f2900b5d8d8be584dd944ff56dcd5cdfebf1cd016bb3723b1f020c1847c83e1"
+      },
+      "generated_code_hash": "30ce76eb11199a6a",
+      "generated_source_sha256": "0d6811a62631aee7f9f6ae8adf2e2a585c8926855837cbc5e2669a207e792905",
+      "instruction": "In `packet_fifo_core`, replace the fixed `reg [3:0] occupancy` declaration with a counter sized to represent 0 through `DEPTH`, and replace both fixed 3-bit pointer declarations with pointers sized for `TAIL_DEPTH` entries, using at least one bit for depth-1 cases. Keep explicit pointer wrap at `TAIL_DEPTH-1` and preserve the existing head/tail data movement, registered `full` update, handshakes, synchronous reset, and top `// @latency 1` annotation. Check depths 1 through 8, including full simultaneous pop/push and non-power-of-two wraps; retain the candidate only if all gates pass and routed",
+      "iteration": 3,
+      "metrics": {
+        "bram_used": 0.0,
+        "dsp_used": 0,
+        "dynamic_power_w": 0.014,
+        "ff_used": 14,
+        "lut_used": 23,
+        "sim_passed": true,
+        "timing_met": true,
+        "total_power_w": 0.084,
+        "whs_ns": 0.104,
+        "wns_ns": 0.135
+      },
+      "mutation": "standard",
+      "reason": "",
+      "rungs": 5,
+      "source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-03\\tier2_g47m0rx8\\packet_fifo_build\\iter_003\\cand_standard\\packet_fifo.v",
+        "sha256": "a843d043591657fc6cccacd9fcd479d86da3f1976bbed78df7b2ff7e56f18470"
+      },
+      "status": "measured"
+    }
+  ],
+  "doctor": null,
+  "instruction": "In `packet_fifo_core`, replace the fixed `reg [3:0] occupancy` declaration with a counter sized to represent 0 through `DEPTH`, and replace both fixed 3-bit pointer declarations with pointers sized for `TAIL_DEPTH` entries, using at least one bit for depth-1 cases. Keep explicit pointer wrap at `TAIL_DEPTH-1` and preserve the existing head/tail data movement, registered `full` update, handshakes, synchronous reset, and top `// @latency 1` annotation. Check depths 1 through 8, including full simultaneous pop/push and non-power-of-two wraps; retain the candidate only if all gates pass and routed",
+  "is_best": true,
+  "iteration": 3,
+  "recommendation": "ACCEPT",
+  "schema_version": 1,
+  "selected_source_sha256": "0d6811a62631aee7f9f6ae8adf2e2a585c8926855837cbc5e2669a207e792905"
+}

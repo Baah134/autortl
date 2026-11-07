@@ -1,0 +1,81 @@
+{
+  "stage": "iteration_1:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 1,
+    "instruction": "In `fir16_sym_core`, change the `acc = product0 + ... + product7` accumulation from a serial left-associated sum to an explicitly balanced tree of signed 28-bit partial sums, preserving the exact products, rounding, saturation, and output behavior. Keep the five elastic slots, accepted-sample history updates, reset behavior, registered outputs, and the top\u2019s `// @latency 5` annotation unchanged. Check that Vivado does not remap the tree into a long DSP cascade; retain the candidate only if simulation and all metric gates pass, with routed setup and hold slack both nonnegative for timing recove",
+    "candidates": [
+      {
+        "iteration": 1,
+        "mutation": "standard",
+        "instruction": "In `fir16_sym_core`, change the `acc = product0 + ... + product7` accumulation from a serial left-associated sum to an explicitly balanced tree of signed 28-bit partial sums, preserving the exact products, rounding, saturation, and output behavior. Keep the five elastic slots, accepted-sample history updates, reset behavior, registered outputs, and the top\u2019s `// @latency 5` annotation unchanged. Check that Vivado does not remap the tree into a long DSP cascade; retain the candidate only if simulation and all metric gates pass, with routed setup and hold slack both nonnegative for timing recove",
+        "generated_source_sha256": "463b4aa0083e077cc7fb678706e4401db471b43607577871292c1c6109deb3a5",
+        "final_source_sha256": "463b4aa0083e077cc7fb678706e4401db471b43607577871292c1c6109deb3a5",
+        "generated_code_hash": "711b5f0f26d0af5e",
+        "final_code_hash": "711b5f0f26d0af5e",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": false,
+          "wns_ns": -17.804,
+          "whs_ns": 0.107,
+          "lut_used": 166,
+          "ff_used": 325,
+          "dsp_used": 8,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.019,
+          "total_power_w": 0.087
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-01\\tier5_xsrzgjnx\\fir16_sym_build\\iter_001\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-01\\tier5_xsrzgjnx\\fir16_sym_build\\iter_001\\cand_standard\\synth.tcl",
+          "sha256": "fbc42d61b795487a40a210772876d497430c0bb1bcde988514eff9e61a4bd011"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-01\\tier5_xsrzgjnx\\fir16_sym_build\\iter_001\\cand_standard\\fir16_sym.v",
+          "sha256": "c077cb5a3ccb65919701ff96dc422a5816f40f552fbd00d2a3c261b2a295eafc"
+        }
+      }
+    ],
+    "doctor": {
+      "status": "ADOPTED",
+      "action": "rtl_surgery",
+      "reason": "policy_improvement",
+      "tools_ran": true,
+      "measured_metrics": {
+        "sim_passed": true,
+        "timing_met": true,
+        "wns_ns": 0.197,
+        "whs_ns": 0.118,
+        "lut_used": 161,
+        "ff_used": 317,
+        "dsp_used": 10,
+        "bram_used": 0.0,
+        "dynamic_power_w": 0.021,
+        "total_power_w": 0.089
+      },
+      "adopted": true,
+      "input_source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-01\\tier5_xsrzgjnx\\fir16_sym_build\\iter_001\\cand_standard\\fir16_sym.v",
+        "sha256": "c077cb5a3ccb65919701ff96dc422a5816f40f552fbd00d2a3c261b2a295eafc"
+      },
+      "trial_source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-01\\tier5_xsrzgjnx\\fir16_sym_build\\iter_001\\doctor_rtl_surgery_trial\\fir16_sym.v",
+        "sha256": "984aedb6331933c103c19054cc6709ed717025bdefd47dc53615aebf000b40f5"
+      },
+      "trial_flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-01\\tier5_xsrzgjnx\\fir16_sym_build\\iter_001\\doctor_rtl_surgery_trial\\synth.tcl",
+        "sha256": "3db234fcf48a7c3610ca4b01667635ada726951de951d120480b8eef5bd2a2ba"
+      },
+      "identity_count": 3,
+      "proposed_source_text_sha256": "792a71997cbb9124eefbf4f5138747886ae09020d18f29dd82cdd84fb1718d07"
+    },
+    "recommendation": "ACCEPT",
+    "is_best": true,
+    "selected_source_sha256": "792a71997cbb9124eefbf4f5138747886ae09020d18f29dd82cdd84fb1718d07"
+  },
+  "artifacts": {}
+}

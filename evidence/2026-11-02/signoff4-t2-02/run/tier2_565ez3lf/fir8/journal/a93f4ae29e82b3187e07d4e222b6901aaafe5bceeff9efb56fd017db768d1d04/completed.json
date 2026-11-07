@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_3:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 3\n## Contract check\n- Interface and defined behavior: PASS \u2014 candidate preserves the top interface, parameters, reset behavior and registered output behavior; deterministic ladder is ALIVE and simulation passes.\n- Top latency annotation: PASS \u2014 `// @latency 1` matches the authoritative known latency.\n- Compile, elaboration and simulation: PASS \u2014 required tool exits are successful and the fixed testbench reports `TEST PASSED`.\n- Routed metric integrity: PASS \u2014 retained routed reports and metric evidence are present; synthesis completed successfully.\n- Timing comparison: PASS \u2014 timing remains infeasible at WNS \u22120.865 ns, but improves from \u22125.32 ns; WHS is 0.176 ns versus 0.177 ns, meeting the timing progress rule.\n- Improvement classification: PASS \u2014 `timing_progress` is supported by the metrics. Higher LUT, FF and power counts do not disqualify this progress.\n## Summary\n- Passed: 6 of 6\n- Failed: 0 of 6\n- Improved over previous best: YES\n## Recommendation\nACCEPT\n## Reason\nThe verified candidate satisfies the timing progress rule against an infeasible previous best: setup WNS improves strictly and hold slack is not worse beyond tolerance. Timing is not yet closed, but that is not a failed criterion for this comparison; deterministic checks, latency declaration, tool gates and routed evidence pass.",
+      "recommendation": "ACCEPT",
+      "passed": 6,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}

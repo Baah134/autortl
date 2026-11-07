@@ -1,0 +1,45 @@
+{
+  "candidates": [
+    {
+      "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t1-03\\tier1_thbzfnr6\\pwm\\iter_002\\cand_standard",
+      "cache_hit": false,
+      "final_code_hash": "ca3fc40dc1392f3d",
+      "final_source_sha256": "5d85030a91e71c098b39663f42303f16cb7bc8e7592b56b55d978ff72acbfcba",
+      "flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t1-03\\tier1_thbzfnr6\\pwm\\iter_002\\cand_standard\\synth.tcl",
+        "sha256": "cff64a8066526238540b84d8bf8a160679c866b17223fc8d1992942a96f1c16f"
+      },
+      "generated_code_hash": "ca3fc40dc1392f3d",
+      "generated_source_sha256": "5d85030a91e71c098b39663f42303f16cb7bc8e7592b56b55d978ff72acbfcba",
+      "instruction": "Change the 32-bit `counter` to 8 bits and keep an explicit `if (counter == 8'hFF) counter <= 8'h00; else counter <= counter + 8'd1;` update, instead of iteration 1\u2019s unconditional natural-wrap increment. Keep the synchronous active-high reset and registered `pwm_out <= (counter < duty)` behavior unchanged, including sampling the current counter and duty each cycle. Preserve all observable cycles and reset behavior; do not add a numeric latency annotation.",
+      "iteration": 2,
+      "metrics": {
+        "bram_used": 0.0,
+        "dsp_used": 0,
+        "dynamic_power_w": 0.01,
+        "ff_used": 9,
+        "lut_used": 10,
+        "sim_passed": true,
+        "timing_met": true,
+        "total_power_w": 0.081,
+        "whs_ns": 0.227,
+        "wns_ns": 0.463
+      },
+      "mutation": "standard",
+      "reason": "",
+      "rungs": 5,
+      "source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t1-03\\tier1_thbzfnr6\\pwm\\iter_002\\cand_standard\\pwm.v",
+        "sha256": "336f0c6df81d094b97521cab616454e9ea7d8babe180cc85a8754bd8bde1d070"
+      },
+      "status": "measured"
+    }
+  ],
+  "doctor": null,
+  "instruction": "Change the 32-bit `counter` to 8 bits and keep an explicit `if (counter == 8'hFF) counter <= 8'h00; else counter <= counter + 8'd1;` update, instead of iteration 1\u2019s unconditional natural-wrap increment. Keep the synchronous active-high reset and registered `pwm_out <= (counter < duty)` behavior unchanged, including sampling the current counter and duty each cycle. Preserve all observable cycles and reset behavior; do not add a numeric latency annotation.",
+  "is_best": false,
+  "iteration": 2,
+  "recommendation": "REJECT",
+  "schema_version": 1,
+  "selected_source_sha256": "5d85030a91e71c098b39663f42303f16cb7bc8e7592b56b55d978ff72acbfcba"
+}

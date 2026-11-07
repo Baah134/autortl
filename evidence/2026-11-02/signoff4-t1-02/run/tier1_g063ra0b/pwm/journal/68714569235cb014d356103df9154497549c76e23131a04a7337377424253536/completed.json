@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Ports and interface: PASS \u2014 top name and port names, directions, and widths match the frozen source.\n- Observable behavior: PASS \u2014 reset and registered output behavior are preserved; the 8-bit counter matches the original counter\u2019s reachable 0\u2013255 sequence.\n- Top latency annotation: PASS \u2014 authoritative latency is unknown, so no numeric annotation is required.\n- xvlog compilation: PASS \u2014 successful exit recorded.\n- xelab elaboration: PASS \u2014 successful exit recorded.\n- xsim simulation: PASS \u2014 successful exit and exact `TEST PASSED` verdict recorded.\n- Routed metrics and process receipts: PASS \u2014 retained routed reports and required successful tool exits are recorded; synthesis reports `SYNTH_COMPLETE`.\n- Timing closure: PASS \u2014 timing is met with WNS 0.412 ns and WHS 0.196 ns.\n- Objective improvement: FAIL \u2014 both designs are timing-feasible; LUTs increased from 7 to 10 and FFs stayed at 9, so the `minimize_luts` objective did not improve.\n## Summary\n- Passed: 8 of 9\n- Failed: 1 of 9\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate preserves the observable counter and PWM behavior and passes the deterministic verification and timing gates. However, the previous best was already timing-feasible, so promotion requires a strict `minimize_luts` improvement; the candidate uses more LUTs with no FF reduction.",
+      "recommendation": "REJECT",
+      "passed": 8,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

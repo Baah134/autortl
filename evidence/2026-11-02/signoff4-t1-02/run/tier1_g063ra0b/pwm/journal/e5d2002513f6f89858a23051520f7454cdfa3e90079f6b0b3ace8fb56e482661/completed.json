@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_3:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 3,
+    "instruction": "Keep the existing `counter < {24'd0, duty}` comparison and registered `pwm_out` assignment unchanged. Replace only the counter update with an 8-bit modulo-256 counter expressed as per-bit toggles: bit 0 toggles each active cycle, and each higher bit toggles when all lower bits are one; preserve synchronous reset to zero. This differs from iteration 1\u2019s narrowed counter using a whole-vector `+ 1` expression; preserve the exact post-reset 0\u2013255 sequence and assess the result against the 7-LUT incumbent under the fixed verification and routed timing gates.",
+    "candidates": [
+      {
+        "iteration": 3,
+        "mutation": "standard",
+        "instruction": "Keep the existing `counter < {24'd0, duty}` comparison and registered `pwm_out` assignment unchanged. Replace only the counter update with an 8-bit modulo-256 counter expressed as per-bit toggles: bit 0 toggles each active cycle, and each higher bit toggles when all lower bits are one; preserve synchronous reset to zero. This differs from iteration 1\u2019s narrowed counter using a whole-vector `+ 1` expression; preserve the exact post-reset 0\u2013255 sequence and assess the result against the 7-LUT incumbent under the fixed verification and routed timing gates.",
+        "generated_source_sha256": "b725d718e26d703f88c6609f8b85c0cb5035fe8af061fded88797a9cd8e66aba",
+        "final_source_sha256": "b725d718e26d703f88c6609f8b85c0cb5035fe8af061fded88797a9cd8e66aba",
+        "generated_code_hash": "acc6bda2662b7b82",
+        "final_code_hash": "acc6bda2662b7b82",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.404,
+          "whs_ns": 0.186,
+          "lut_used": 11,
+          "ff_used": 9,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.01,
+          "total_power_w": 0.081
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t1-02\\tier1_g063ra0b\\pwm\\iter_003\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t1-02\\tier1_g063ra0b\\pwm\\iter_003\\cand_standard\\synth.tcl",
+          "sha256": "f0d032dc1b69f01d32f4d5a043e44aeb127649ceff06427f34d0b1bf0d26d3f6"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t1-02\\tier1_g063ra0b\\pwm\\iter_003\\cand_standard\\pwm.v",
+          "sha256": "c0dc3e28314bddc040199a896cf4aa757076b21a8d1de4a9ccfa356bd49ebd0d"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": "b725d718e26d703f88c6609f8b85c0cb5035fe8af061fded88797a9cd8e66aba"
+  },
+  "artifacts": {}
+}

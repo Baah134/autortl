@@ -1,0 +1,5 @@
+{
+  "stage": "module_sync_byte_fifo:model:generator.golden_model:0",
+  "result": "def init():\n    return dict(queue=[])\n\ndef step(state, inputs):\n    queue = state.get(\"queue\", []).copy()\n    rst = int(inputs.get(\"rst\", 0)) & 1\n\n    if rst:\n        queue = []\n    else:\n        in_ready = int(len(queue) < 8)\n        out_valid = int(len(queue) > 0)\n        enqueue = in_ready and (int(inputs.get(\"in_valid\", 0)) & 1)\n        dequeue = out_valid and (int(inputs.get(\"out_ready\", 0)) & 1)\n\n        if dequeue:\n            queue.pop(0)\n        if enqueue:\n            queue.append(int(inputs.get(\"in_data\", 0)) & 255)\n\n    outputs = dict(\n        in_ready=int(len(queue) < 8),\n        out_data=queue[0] if len(queue) > 0 else 0,\n        out_valid=int(len(queue) > 0)\n    )\n    return dict(queue=queue), outputs",
+  "artifacts": {}
+}

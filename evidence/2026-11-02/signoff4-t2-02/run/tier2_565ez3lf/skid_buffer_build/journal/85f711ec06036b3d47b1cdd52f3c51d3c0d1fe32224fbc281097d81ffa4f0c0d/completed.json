@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_2:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 2\n## Contract check\n- Top interface and defined FIFO behavior: PASS \u2014 the candidate preserves the two-entry queue, handshake rules, ordering, stall stability, synchronous reset behavior, throughput, and minimum transfer age; the authoritative ladder is ALIVE.\n- Top latency annotation: PASS \u2014 `skid_buffer` declares `// @latency 1`, matching authoritative latency.\n- Compile, elaboration, and simulation: PASS \u2014 required tools exited successfully and the frozen testbench reported `TEST PASSED`.\n- Synthesis and process gates: PASS \u2014 Vivado exited successfully and the retained log contains `SYNTH_COMPLETE`.\n- Routed metric integrity: PASS \u2014 retained routed reports and metric evidence are present and consistent.\n- Timing closure: PASS \u2014 timing is met, with WNS 0.169 ns and WHS 0.197 ns.\n- Improvement over previous best: PASS \u2014 LUTs are equal at 11 and FFs decrease from 19 to 18, a strict lexicographic improvement for `minimize_luts`.\n## Summary\n- Passed: 7 of 7\n- Failed: 0 of 7\n- Improved over previous best: YES\n## Recommendation\nACCEPT\n## Reason\nThe candidate satisfies the defined behavior and all verification, receipt, metric, and timing gates. Against the timing-feasible previous best, its equal LUT count and lower FF count meet the stated objective tie-break rule.",
+      "recommendation": "ACCEPT",
+      "passed": 7,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}

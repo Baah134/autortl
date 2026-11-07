@@ -1,0 +1,63 @@
+{"source_files": 334, "freeze": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-03-source-freeze.json"}
+{"exit_code": 0, "seconds": 458.3119999999908, "summary": "2022 passed in 456.86s (0:07:36)", "source_unchanged": true, "source_files": 334, "source_freeze_sha256": "45527af20ff706d9261d95a9cae6c03a0fee7bd2a615e2335e949e008040971a"}
+{"prelaunch": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-03-prelaunch.json", "budgets_per_entry": {"iterations": null, "best_of_n": 1, "model_calls": 30, "tool_minutes": 40, "wall_minutes": 60, "infra_retries": 1}}
+[bench] fir8: meta.yaml sets max_vivado_minutes = 70.0; the bench value 40.0 does not apply to it
+[bench] fir8: meta.yaml sets max_wall_minutes = 110.0; the bench value 60.0 does not apply to it
+[module packet_fifo_core] golden model + testbench...
+[module packet_fifo_core] tb qualification: detected stuck-zero outputs; missed: flip < to >
+[module packet_fifo_core] independent tb qualification: detected flip < to >
+[build] integrated design compiles; entering optimize loop as baseline
+[build] editable unit: packet_fifo_core + packet_fifo; verified by the trusted integration testbench
+[iter 0] baseline LUTs=101 FFs=128 WNS=-9.981
+[iter 0] baseline LUTs=24 FFs=10 WNS=-0.93
+[doctor] wns=-9.799 category=logic_depth action=rtl_surgery
+[doctor] wns=-0.386 category=port_path action=rtl_surgery
+[iter 1] *** NEW BEST *** LUTs=150 FFs=160 WNS=-9.799
+[iter 1] *** NEW BEST *** LUTs=31 FFs=15 WNS=-0.386
+[doctor] wns=-2.049 category=logic_depth action=rtl_surgery
+[iter 2] *** NEW BEST *** LUTs=29 FFs=16 WNS=0.089
+[iter 2] *** NEW BEST *** LUTs=300 FFs=160 WNS=-2.049
+[iter 3] *** NEW BEST *** LUTs=23 FFs=14 WNS=0.135
+
+DONE — best from iter 3: LUTs=23 FFs=14 WNS=0.135
+[bench] packet_fifo_build: finished (1/4)
+[module skid_buffer_core] golden model + testbench...
+[module skid_buffer_core] tb qualification: detected stuck-zero outputs; missed: flip < to >
+[module skid_buffer_core] independent tb qualification: detected flip < to >
+[build] integrated design compiles; entering optimize loop as baseline
+[build] editable unit: skid_buffer_core + skid_buffer; verified by the trusted integration testbench
+[doctor] wns=-0.294 category=logic_depth action=tool_knobs
+[iter 0] baseline LUTs=12 FFs=18 WNS=-0.053
+[iter 3] *** NEW BEST *** LUTs=351 FFs=160 WNS=-0.294
+[iter 1] *** NEW BEST *** LUTs=11 FFs=19 WNS=0.146
+[doctor] wns=-2.814 category=logic_depth action=rtl_surgery
+[iter 2] *** NEW BEST *** LUTs=11 FFs=18 WNS=0.438
+
+DONE — best from iter 2: LUTs=11 FFs=18 WNS=0.438
+[bench] skid_buffer_build: finished (2/4)
+[module sync_fifo_core] golden model + testbench...
+[module sync_fifo_core] tb qualification: detected stuck-zero outputs; missed: flip < to >
+[module sync_fifo_core] independent tb qualification: detected flip < to >
+[build] integrated design compiles; entering optimize loop as baseline
+[build] editable unit: sync_fifo_core + sync_fifo; verified by the trusted integration testbench
+[iter 4] REJECT LUTs=410 (best iter 3, stall 1)
+[iter 0] baseline LUTs=144 FFs=96 WNS=-1.736
+[doctor] wns=-0.294 category=logic_depth action=rtl_surgery
+[doctor] wns=-0.931 category=port_path action=rtl_surgery
+[iter 5] *** NEW BEST *** LUTs=133 FFs=112 WNS=0.137
+[iter 1] *** NEW BEST *** LUTs=13 FFs=6 WNS=-0.931
+[doctor] wns=-0.449 category=port_path action=rtl_surgery
+[iter 6] *** NEW BEST *** LUTs=133 FFs=135 WNS=3.067
+
+DONE — best from iter 6: LUTs=133 FFs=135 WNS=3.067
+[bench] fir8: finished (3/4)
+[iter 2] *** NEW BEST *** LUTs=25 FFs=16 WNS=-0.449
+
+DONE — best from iter 2: LUTs=25 FFs=16 WNS=-0.449
+[bench] sync_fifo_build: finished (4/4)
+[bench] fir8: PASS (mandatory gates passed)
+[bench] packet_fifo_build: PASS (mandatory gates passed)
+[bench] skid_buffer_build: PASS (mandatory gates passed)
+[bench] sync_fifo_build: FAIL (timing closure failed)
+[bench] tier 2: 3/4; held=False; streak=0
+{"exit_code": 1, "wall_seconds": 1908.952999999994, "source_unchanged": true, "router_stats_prefix_unchanged": true, "history_prefix_unchanged": true, "ended_utc": "2026-11-03T08:02:55.523867+00:00"}

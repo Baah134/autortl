@@ -1,0 +1,10 @@
+# PLAN — iteration 2
+
+## Current state assessment
+Iteration 1 is the verified best at 8 LUTs and 18 FFs, with setup WNS −0.193 ns and hold WHS 0.171 ns: timing has improved but remains infeasible. Its critical path is the combinational `in_ready` path from the occupancy MSB through one LUT and the output buffer; the advisor’s suggestion to register `in_ready` conflicts with the required immediate dependence on `out_ready` and exact ready rule.
+
+## Hypothesis
+Replacing the binary occupancy counter with dedicated empty and full state flags may reduce state decode and fanout, improving routed setup slack while preserving the same combinational `in_ready` behavior, though the output pad delay may still prevent timing closure.
+
+## Instruction for generator
+In `skid_buffer_core`, replace the 2-bit `occupancy` state and its increment/decrement case with synchronous `empty` and `full` flags updated for reset, push-only, pop-only, simultaneous push/pop, and idle transitions. Keep `in_ready = ~full || out_ready` and `out_valid = ~empty` combinational; preserve the two-entry queue’s payload ordering, stall stability, throughput, reset behavior, and minimum transfer age. Do not register `in_ready` or alter the top’s `// @latency 1`; evaluate whether routed WNS improves and whether WHS, simulation, and all metric gates still pass.

@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Top interface and defined behavior: PASS \u2014 the trusted integration testbench passed, covering arithmetic, pipeline handshakes, stalls, and reset behavior.\n- Top latency annotation: PASS \u2014 the top declares `// @latency 5`, matching the authoritative latency.\n- Compile, elaboration, and simulation: PASS \u2014 required tools exited successfully and simulation reported `TEST PASSED`.\n- Metric and report integrity: PASS \u2014 routed metrics and reports are present, with successful synthesis and implementation evidence.\n- Timing closure and promotion: PASS \u2014 WNS is 1.386 ns, WHS is 0.137 ns, and `timing_met=true`; the previous best was timing-infeasible.\n- Improvement classification: PASS \u2014 this is a valid `timing_recovery`; LUTs also decreased from 388 to 320.\n## Summary\n- Passed: 6 of 6\n- Failed: 0 of 6\n- Improved over previous best: YES\n## Recommendation\nACCEPT\n## Reason\nThe candidate passes the deterministic verification and implementation gates, preserves the specified top latency, and recovers timing feasibility over the known infeasible previous best. The LUT count also improved; the higher FF count does not invalidate a timing recovery.",
+      "recommendation": "ACCEPT",
+      "passed": 6,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}

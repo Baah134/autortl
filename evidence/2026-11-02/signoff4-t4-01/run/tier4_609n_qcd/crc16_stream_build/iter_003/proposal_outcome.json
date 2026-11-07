@@ -1,0 +1,45 @@
+{
+  "candidates": [
+    {
+      "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-01\\tier4_609n_qcd\\crc16_stream_build\\iter_003\\cand_standard",
+      "cache_hit": false,
+      "final_code_hash": "505d21975effe4d1",
+      "final_source_sha256": "172e8cdde3a9f652c8338a21a438174d610bffde9a2781f37503d99052d384e4",
+      "flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-01\\tier4_609n_qcd\\crc16_stream_build\\iter_003\\cand_standard\\synth.tcl",
+        "sha256": "b98dd75f97c0908a7d884b2679012b8fc9965dfb9192dc7a7133f71b46c0e209"
+      },
+      "generated_code_hash": "505d21975effe4d1",
+      "generated_source_sha256": "172e8cdde3a9f652c8338a21a438174d610bffde9a2781f37503d99052d384e4",
+      "instruction": "In `crc16_stream_core`, remove `start_of_frame` and use the prior `out_last_reg` value to select `16'hFFFF` as the CRC seed for the next accepted byte; otherwise use `crc_reg`. Set `out_last_reg` to 1 on synchronous reset so the first post-reset byte starts from `16'hFFFF`; its reset value is unspecified while `out_valid` is low. On each accepted byte, continue registering the computed CRC and `in_last`, and preserve the existing one-slot ready/valid behavior, stall stability, reset priority, and one-cycle minimum transfer age. Keep the top `// @latency 1` annotation; evaluate against the incu",
+      "iteration": 3,
+      "metrics": {
+        "bram_used": 0.0,
+        "dsp_used": 0,
+        "dynamic_power_w": 0.018,
+        "ff_used": 18,
+        "lut_used": 15,
+        "sim_passed": true,
+        "timing_met": true,
+        "total_power_w": 0.088,
+        "whs_ns": 0.156,
+        "wns_ns": 0.318
+      },
+      "mutation": "standard",
+      "reason": "",
+      "rungs": 5,
+      "source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-01\\tier4_609n_qcd\\crc16_stream_build\\iter_003\\cand_standard\\crc16_stream.v",
+        "sha256": "d3963857e4d7e3f11e4a177fb40f9b8102fd24da99c6b1418bf1401fbe8d3165"
+      },
+      "status": "measured"
+    }
+  ],
+  "doctor": null,
+  "instruction": "In `crc16_stream_core`, remove `start_of_frame` and use the prior `out_last_reg` value to select `16'hFFFF` as the CRC seed for the next accepted byte; otherwise use `crc_reg`. Set `out_last_reg` to 1 on synchronous reset so the first post-reset byte starts from `16'hFFFF`; its reset value is unspecified while `out_valid` is low. On each accepted byte, continue registering the computed CRC and `in_last`, and preserve the existing one-slot ready/valid behavior, stall stability, reset priority, and one-cycle minimum transfer age. Keep the top `// @latency 1` annotation; evaluate against the incu",
+  "is_best": true,
+  "iteration": 3,
+  "recommendation": "ACCEPT",
+  "schema_version": 1,
+  "selected_source_sha256": "172e8cdde3a9f652c8338a21a438174d610bffde9a2781f37503d99052d384e4"
+}

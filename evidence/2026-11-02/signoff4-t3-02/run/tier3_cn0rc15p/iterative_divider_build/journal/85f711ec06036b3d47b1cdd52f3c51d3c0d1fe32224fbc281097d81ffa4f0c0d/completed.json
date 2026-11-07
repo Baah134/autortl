@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_2:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 2\n## Contract check\n- Interface and top latency annotation: PASS \u2014 top ports match the contract and `// @latency 9` matches the authoritative latency.\n- Defined behavior and cycle semantics: PASS \u2014 the candidate source preserves the specified iterative schedule, handshakes, reset behavior, and WIDTH-dependent arithmetic; the deterministic ladder is ALIVE.\n- Compile and simulation gates: PASS \u2014 required tools exited successfully and simulation reported `TEST PASSED`.\n- Routed metric integrity: PASS \u2014 retained routed reports and metric evidence are present and consistent.\n- Timing closure: PASS \u2014 timing is met, with WNS 0.313 ns and WHS 0.174 ns.\n- Required objective improvement: FAIL \u2014 LUTs increased from 31 to 46. The FF reduction does not offset a higher primary metric for `minimize_luts`; `improvement_kind` is null and `measured_improvement` is false.\n## Summary\n- Passed: 5 of 6\n- Failed: 1 of 6\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes behavioral, tool, metric, and timing gates, but both candidate and previous best are timing-feasible, so promotion requires strict improvement of the `minimize_luts` objective. LUT use rose from 31 to 46; fewer FFs do not qualify when the primary LUT count is higher.",
+      "recommendation": "REJECT",
+      "passed": 5,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

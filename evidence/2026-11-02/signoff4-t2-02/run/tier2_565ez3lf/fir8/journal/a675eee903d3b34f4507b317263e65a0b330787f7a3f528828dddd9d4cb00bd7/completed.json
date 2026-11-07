@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_4:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 4\n## Contract check\n- Interface and parameter semantics: PASS \u2014 ports, widths, signedness, defaults, and parameterized coefficient arithmetic are preserved.\n- Reset, latency, and cycle behavior: PASS \u2014 synchronous reset and registered output remain; the accumulator chain preserves the original one-cycle FIR behavior. `// @latency 1` matches the authoritative latency.\n- Deterministic verification: PASS \u2014 ladder is ALIVE; compilation, elaboration, and simulation succeeded, with the required `TEST PASSED` verdict.\n- Routed metrics and timing closure: PASS \u2014 retained routed metrics show WNS 0.148 ns and WHS 0.182 ns, both nonnegative.\n- Improvement over previous best: PASS \u2014 this is a valid timing recovery from the infeasible incumbent (WNS \u22120.865 ns); higher LUT count or power does not disqualify recovery.\n## Summary\n- Passed: 5 of 5\n- Failed: 0 of 5\n- Improved over previous best: YES\n## Recommendation\nACCEPT\n## Reason\nThe candidate preserves the FIR\u2019s registered cycle behavior and declared latency, passes the deterministic verification gates, and closes both setup and hold timing. It validly replaces the timing-infeasible previous best as a timing recovery.",
+      "recommendation": "ACCEPT",
+      "passed": 5,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}

@@ -1,0 +1,77 @@
+{
+  "candidates": [
+    {
+      "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-04\\tier2_32vakp9v\\fir8\\iter_003\\cand_standard",
+      "cache_hit": false,
+      "final_code_hash": "94d5a1c204c9fc5a",
+      "final_source_sha256": "da040ae744bf44801e044ab757097890941d7df2c8a7c188eb1312be44345160",
+      "flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-04\\tier2_32vakp9v\\fir8\\iter_003\\cand_standard\\synth.tcl",
+        "sha256": "6f909fbb9ffcd6734f7fb25bd7b508b3a6cf07a1732964c8ac443af7d814326a"
+      },
+      "generated_code_hash": "94d5a1c204c9fc5a",
+      "generated_source_sha256": "da040ae744bf44801e044ab757097890941d7df2c8a7c188eb1312be44345160",
+      "instruction": "Add a generate-time symmetric-coefficient branch for `C0==C7`, `C1==C6`, `C2==C5`, and `C3==C4`: form four signed 17-bit mirrored-sample sums, multiply each by its shared signed 16-bit coefficient, and combine the low 32-bit results with a balanced tree. Keep a generic branch with the existing eight products for every non-symmetric parameter combination, preserving signed arithmetic and modulo-32-bit output behavior. Keep the delay line, reset logic, output register, `// @latency 1`, and cycle behavior unchanged; do not add product registers.",
+      "iteration": 3,
+      "metrics": {
+        "bram_used": 0.0,
+        "dsp_used": 4,
+        "dynamic_power_w": 0.007,
+        "ff_used": 96,
+        "lut_used": 0,
+        "sim_passed": true,
+        "timing_met": false,
+        "total_power_w": 0.075,
+        "whs_ns": 0.162,
+        "wns_ns": -3.856
+      },
+      "mutation": "standard",
+      "reason": "",
+      "rungs": 5,
+      "source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-04\\tier2_32vakp9v\\fir8\\iter_003\\cand_standard\\fir8.v",
+        "sha256": "bd430a5ce567a004b67ec59213305f15c6cd75fe657b9abae127c987146c3dec"
+      },
+      "status": "measured"
+    }
+  ],
+  "doctor": {
+    "action": "rtl_surgery",
+    "adopted": false,
+    "identity_count": 3,
+    "input_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-04\\tier2_32vakp9v\\fir8\\iter_003\\cand_standard\\fir8.v",
+      "sha256": "bd430a5ce567a004b67ec59213305f15c6cd75fe657b9abae127c987146c3dec"
+    },
+    "measured_metrics": {
+      "bram_used": 0.0,
+      "dsp_used": 4,
+      "dynamic_power_w": 0.009,
+      "ff_used": 192,
+      "lut_used": 0,
+      "sim_passed": true,
+      "timing_met": false,
+      "total_power_w": 0.078,
+      "whs_ns": 0.146,
+      "wns_ns": -4.644
+    },
+    "proposed_source_text_sha256": "0c2ba3b7209294133309363691507fdf9bf9a968e36c3dc3977cf986edd7dcaf",
+    "reason": "timing_not_closed",
+    "status": "NOT_ADOPTED",
+    "tools_ran": true,
+    "trial_flow_script": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-04\\tier2_32vakp9v\\fir8\\iter_003\\doctor_rtl_surgery_trial\\synth.tcl",
+      "sha256": "05608bb6f5c798883d816b7a0467187dd0b9d91534dd74cc61648ef35d9ae94b"
+    },
+    "trial_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-04\\tier2_32vakp9v\\fir8\\iter_003\\doctor_rtl_surgery_trial\\fir8.v",
+      "sha256": "b0b92c39efba7c53070ba374dda01a30a1fbde1a186e858b3d88da8bb148a70c"
+    }
+  },
+  "instruction": "Add a generate-time symmetric-coefficient branch for `C0==C7`, `C1==C6`, `C2==C5`, and `C3==C4`: form four signed 17-bit mirrored-sample sums, multiply each by its shared signed 16-bit coefficient, and combine the low 32-bit results with a balanced tree. Keep a generic branch with the existing eight products for every non-symmetric parameter combination, preserving signed arithmetic and modulo-32-bit output behavior. Keep the delay line, reset logic, output register, `// @latency 1`, and cycle behavior unchanged; do not add product registers.",
+  "is_best": false,
+  "iteration": 3,
+  "recommendation": "REJECT",
+  "schema_version": 1,
+  "selected_source_sha256": "da040ae744bf44801e044ab757097890941d7df2c8a7c188eb1312be44345160"
+}

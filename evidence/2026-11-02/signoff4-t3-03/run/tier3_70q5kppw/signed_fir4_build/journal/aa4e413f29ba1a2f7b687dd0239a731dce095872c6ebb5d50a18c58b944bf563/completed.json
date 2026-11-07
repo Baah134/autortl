@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_1:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 1,
+    "instruction": "In `signed_fir4_core`, replace the cascaded `r3`/`r2`/`r1` readiness calculation for `in_ready` with a registered flag that tracks whether all three slots are occupied, then form `in_ready` from that flag and the current `out_ready`. Update the flag from the exact next-state valid values, including simultaneous advance, replacement, stalls, and synchronous reset, so readiness remains cycle-for-cycle identical; preserve all data and history behavior. Keep the top interface and `// @latency 3` annotation unchanged, and judge the result by the unchanged simulation and routed timing gates.",
+    "candidates": [
+      {
+        "iteration": 1,
+        "mutation": "standard",
+        "instruction": "In `signed_fir4_core`, replace the cascaded `r3`/`r2`/`r1` readiness calculation for `in_ready` with a registered flag that tracks whether all three slots are occupied, then form `in_ready` from that flag and the current `out_ready`. Update the flag from the exact next-state valid values, including simultaneous advance, replacement, stalls, and synchronous reset, so readiness remains cycle-for-cycle identical; preserve all data and history behavior. Keep the top interface and `// @latency 3` annotation unchanged, and judge the result by the unchanged simulation and routed timing gates.",
+        "generated_source_sha256": "289c385237ee042683e119fbe0ece9e9f6c4e3670fa22a43a84b2c4937af2775",
+        "final_source_sha256": "289c385237ee042683e119fbe0ece9e9f6c4e3670fa22a43a84b2c4937af2775",
+        "generated_code_hash": "cfd7ec72a8017fda",
+        "final_code_hash": "cfd7ec72a8017fda",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.301,
+          "whs_ns": 0.154,
+          "lut_used": 80,
+          "ff_used": 67,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.021,
+          "total_power_w": 0.091
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t3-03\\tier3_70q5kppw\\signed_fir4_build\\iter_001\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t3-03\\tier3_70q5kppw\\signed_fir4_build\\iter_001\\cand_standard\\synth.tcl",
+          "sha256": "a868c5c7649db40e6196034b7df4daf814ca43ada6eea67721b9f93bfe9498a7"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t3-03\\tier3_70q5kppw\\signed_fir4_build\\iter_001\\cand_standard\\signed_fir4.v",
+          "sha256": "06341f535cfcc5cd463b1f943095b4777c891ef5bd6d0625fcbcdd7d33f2068d"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "ACCEPT",
+    "is_best": true,
+    "selected_source_sha256": "289c385237ee042683e119fbe0ece9e9f6c4e3670fa22a43a84b2c4937af2775"
+  },
+  "artifacts": {}
+}

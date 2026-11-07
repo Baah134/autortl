@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_1:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 1,
+    "instruction": "In `skid_buffer_core`, replace `storage[0:1]` and `read_ptr`-based output selection with an explicit front register that drives `out_data` and a back register for the second queued word; update them on accepted pushes and retired pops, including simultaneous transfers. Preserve the two-entry occupancy rules, combinational `in_ready`, synchronous active-high reset priority, stall stability, one-cycle minimum transfer age, and full throughput; data while `out_valid` is low remains unspecified. Keep the top interface and `// @latency 1` unchanged, then judge the candidate using the frozen simulat",
+    "candidates": [
+      {
+        "iteration": 1,
+        "mutation": "standard",
+        "instruction": "In `skid_buffer_core`, replace `storage[0:1]` and `read_ptr`-based output selection with an explicit front register that drives `out_data` and a back register for the second queued word; update them on accepted pushes and retired pops, including simultaneous transfers. Preserve the two-entry occupancy rules, combinational `in_ready`, synchronous active-high reset priority, stall stability, one-cycle minimum transfer age, and full throughput; data while `out_valid` is low remains unspecified. Keep the top interface and `// @latency 1` unchanged, then judge the candidate using the frozen simulat",
+        "generated_source_sha256": "69fe377ebbd2d84820629168a90cddb81c531db8700ad462b415f77e1491ee9d",
+        "final_source_sha256": "69fe377ebbd2d84820629168a90cddb81c531db8700ad462b415f77e1491ee9d",
+        "generated_code_hash": "db7296ef68e3c222",
+        "final_code_hash": "db7296ef68e3c222",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.122,
+          "whs_ns": 0.104,
+          "lut_used": 12,
+          "ff_used": 18,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.013,
+          "total_power_w": 0.083
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\skid_buffer_build\\iter_001\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\skid_buffer_build\\iter_001\\cand_standard\\synth.tcl",
+          "sha256": "0c0f0968d5641a9d21b636152dd41b0351eecfe3103d1a642e00dbf424a9c450"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\skid_buffer_build\\iter_001\\cand_standard\\skid_buffer.v",
+          "sha256": "4d1d5cd64a2702514dea6796eccf02d647b779263fdd36dd85469846a6a971f9"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "ACCEPT",
+    "is_best": true,
+    "selected_source_sha256": "69fe377ebbd2d84820629168a90cddb81c531db8700ad462b415f77e1491ee9d"
+  },
+  "artifacts": {}
+}

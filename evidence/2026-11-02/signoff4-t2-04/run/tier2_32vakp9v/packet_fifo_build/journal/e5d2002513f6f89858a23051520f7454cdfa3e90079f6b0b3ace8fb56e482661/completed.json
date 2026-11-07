@@ -1,0 +1,81 @@
+{
+  "stage": "iteration_3:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 3,
+    "instruction": "In `packet_fifo_core`, remove `out_valid_reg` and its reset and case updates, and drive `out_valid` as `(occupancy != 0)` from the existing occupancy state. Keep the `has_space` register and all FIFO storage, head-update, pointer-wrap, and occupancy behavior unchanged; preserve the top\u2019s `// @latency 1` annotation and all defined handshakes, stalls, reset behavior, and minimum transfer age. Check the full parameter matrix and retain the candidate only if all gates pass and routed timing remains feasible; promotion requires fewer LUTs, or equal LUTs with fewer FFs than the incumbent.",
+    "candidates": [
+      {
+        "iteration": 3,
+        "mutation": "standard",
+        "instruction": "In `packet_fifo_core`, remove `out_valid_reg` and its reset and case updates, and drive `out_valid` as `(occupancy != 0)` from the existing occupancy state. Keep the `has_space` register and all FIFO storage, head-update, pointer-wrap, and occupancy behavior unchanged; preserve the top\u2019s `// @latency 1` annotation and all defined handshakes, stalls, reset behavior, and minimum transfer age. Check the full parameter matrix and retain the candidate only if all gates pass and routed timing remains feasible; promotion requires fewer LUTs, or equal LUTs with fewer FFs than the incumbent.",
+        "generated_source_sha256": "7185636901a01d8100d01586f0795e77ed5abc983b19f969c81a4768a5eff01f",
+        "final_source_sha256": "7185636901a01d8100d01586f0795e77ed5abc983b19f969c81a4768a5eff01f",
+        "generated_code_hash": "807a266073a7c0f5",
+        "final_code_hash": "807a266073a7c0f5",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": false,
+          "wns_ns": -0.075,
+          "whs_ns": 0.124,
+          "lut_used": 26,
+          "ff_used": 16,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.015,
+          "total_power_w": 0.085
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-04\\tier2_32vakp9v\\packet_fifo_build\\iter_003\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-04\\tier2_32vakp9v\\packet_fifo_build\\iter_003\\cand_standard\\synth.tcl",
+          "sha256": "efbc74bb2b9554468084630a17b6426468960748366555855933838aa216a051"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-04\\tier2_32vakp9v\\packet_fifo_build\\iter_003\\cand_standard\\packet_fifo.v",
+          "sha256": "901e7002768dd4821a5ad33a5001330fc61946bb772cac577273707663557017"
+        }
+      }
+    ],
+    "doctor": {
+      "status": "ADOPTED",
+      "action": "rtl_surgery",
+      "reason": "policy_improvement",
+      "tools_ran": true,
+      "measured_metrics": {
+        "sim_passed": true,
+        "timing_met": true,
+        "wns_ns": 0.15,
+        "whs_ns": 0.056,
+        "lut_used": 27,
+        "ff_used": 17,
+        "dsp_used": 0,
+        "bram_used": 0.0,
+        "dynamic_power_w": 0.015,
+        "total_power_w": 0.085
+      },
+      "adopted": true,
+      "input_source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-04\\tier2_32vakp9v\\packet_fifo_build\\iter_003\\cand_standard\\packet_fifo.v",
+        "sha256": "901e7002768dd4821a5ad33a5001330fc61946bb772cac577273707663557017"
+      },
+      "trial_source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-04\\tier2_32vakp9v\\packet_fifo_build\\iter_003\\doctor_rtl_surgery_trial\\packet_fifo.v",
+        "sha256": "11adf3255236e8439c713e3f514cadc8d6c62552cd7066d36a78a028ee2de3b2"
+      },
+      "trial_flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-04\\tier2_32vakp9v\\packet_fifo_build\\iter_003\\doctor_rtl_surgery_trial\\synth.tcl",
+        "sha256": "52675645cd2549c2396e368fd85fa60186233e87772bb2c84d8434a0e0ee6540"
+      },
+      "identity_count": 3,
+      "proposed_source_text_sha256": "9ea402c00f07b8bb4abf26b3e734519500b88c29695826cebf6c40fd1282d347"
+    },
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": "9ea402c00f07b8bb4abf26b3e734519500b88c29695826cebf6c40fd1282d347"
+  },
+  "artifacts": {}
+}

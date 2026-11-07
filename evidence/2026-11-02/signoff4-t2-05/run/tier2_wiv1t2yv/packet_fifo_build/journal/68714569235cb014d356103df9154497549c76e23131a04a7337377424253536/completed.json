@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Top interface and defined FIFO behavior: PASS \u2014 Candidate preserves the required ports, parameters, reset behavior, tuple ordering, handshakes, and minimum transfer age; the authoritative ladder reports ALIVE.\n- Top latency annotation: PASS \u2014 `packet_fifo` declares `// @latency 1`, matching the authoritative value.\n- Deterministic verification: PASS \u2014 Simulation passed; compile, elaboration, and simulation exits succeeded.\n- Routed reports and metric integrity: PASS \u2014 Routed timing and utilization reports are retained, and the synthesis log includes `SYNTH_COMPLETE`.\n- Timing comparison: PASS \u2014 Setup WNS improved from -1.796 ns to -0.915 ns and hold slack improved from 0.004 ns to 0.096 ns; this qualifies as timing progress while the incumbent is infeasible.\n- Improvement over previous best: PASS \u2014 The recorded `timing_progress` qualifies despite timing remaining infeasible.\n## Summary\n- Passed: 6 of 6\n- Failed: 0 of 6\n- Improved over previous best: YES\n## Recommendation\nACCEPT\n## Reason\nThe verified candidate preserves the defined behavior and makes strict setup timing progress over the still-infeasible previous best, with hold slack not degraded. Routed setup WNS remains negative, so timing closure has not been achieved; the contract permits this candidate as timing progress.",
+      "recommendation": "ACCEPT",
+      "passed": 6,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}

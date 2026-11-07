@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_4:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 4\n## Contract check\n- Behavioral verification: PASS \u2014 the authoritative ladder is 5 rungs ALIVE; simulation reports `TEST PASSED`.\n- Interface and top latency: PASS \u2014 the required top is present; authoritative top latency is unknown, so no numeric annotation is required.\n- Tool and synthesis gates: PASS \u2014 required tool exits are successful, and synthesis reports `SYNTH_COMPLETE`.\n- Routed metrics: PASS \u2014 routed timing and utilization evidence is retained and consistent with the reported metrics.\n- Timing feasibility: PASS \u2014 timing is met, with WNS 0.597 ns and WHS 0.068 ns.\n- Objective improvement: FAIL \u2014 both designs are timing-feasible; for `minimize_luts`, candidate LUTs increased from 1992 to 1993, with FFs unchanged. The recorded `improvement_kind: null` is consistent with no improvement.\n## Summary\n- Passed: 5 of 6\n- Failed: 1 of 6\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes behavioral verification and timing closure, but it does not strictly improve the chosen objective over the feasible previous best: LUT use increased by one while FF use stayed the same. The contract therefore does not permit promoting it as an improvement.",
+      "recommendation": "REJECT",
+      "passed": 5,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

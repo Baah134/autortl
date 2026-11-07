@@ -1,0 +1,80 @@
+{
+  "stage": "iteration_2:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 2,
+    "instruction": "In `fir16_sym_core`, keep the 28-bit `rounded` calculation unchanged and replace the comparisons against `28'sd32767` and `-28'sd32768` with sign-extension checks: positive overflow is `!rounded[27] && |rounded[26:15]`, and negative overflow is `rounded[27] && !(&rounded[26:15])`. Retain the same saturated constants and the `rounded[15:0]` result for in-range values. Preserve the five-slot handshake, reset, registered output, and `// @latency 5` on the top.",
+    "candidates": [
+      {
+        "iteration": 2,
+        "mutation": "standard",
+        "instruction": "In `fir16_sym_core`, keep the 28-bit `rounded` calculation unchanged and replace the comparisons against `28'sd32767` and `-28'sd32768` with sign-extension checks: positive overflow is `!rounded[27] && |rounded[26:15]`, and negative overflow is `rounded[27] && !(&rounded[26:15])`. Retain the same saturated constants and the `rounded[15:0]` result for in-range values. Preserve the five-slot handshake, reset, registered output, and `// @latency 5` on the top.",
+        "generated_source_sha256": "f0080cbf77769fdb54892117f16a98e5346f1988c3b4413f4bec25ca18c98d36",
+        "final_source_sha256": "f0080cbf77769fdb54892117f16a98e5346f1988c3b4413f4bec25ca18c98d36",
+        "generated_code_hash": "2e1104e46908be62",
+        "final_code_hash": "2e1104e46908be62",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": false,
+          "wns_ns": -0.038,
+          "whs_ns": 0.1,
+          "lut_used": 154,
+          "ff_used": 261,
+          "dsp_used": 10,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.019,
+          "total_power_w": 0.088
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-01\\tier5_xsrzgjnx\\fir16_sym_build\\iter_002\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-01\\tier5_xsrzgjnx\\fir16_sym_build\\iter_002\\cand_standard\\synth.tcl",
+          "sha256": "fd82964e5ebfe88768bb39c8101ca7fef4477786b8bfb08805431fe68dcbeb8a"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-01\\tier5_xsrzgjnx\\fir16_sym_build\\iter_002\\cand_standard\\fir16_sym.v",
+          "sha256": "89dd4321873ca57dffa037bbfea1bb54e23f706b35c3b8e0b911451aebec464b"
+        }
+      }
+    ],
+    "doctor": {
+      "status": "NOT_ADOPTED",
+      "action": "tool_knobs",
+      "reason": "timing_not_closed",
+      "tools_ran": true,
+      "measured_metrics": {
+        "sim_passed": true,
+        "timing_met": false,
+        "wns_ns": -0.038,
+        "whs_ns": 0.1,
+        "lut_used": 154,
+        "ff_used": 261,
+        "dsp_used": 10,
+        "bram_used": 0.0,
+        "dynamic_power_w": 0.019,
+        "total_power_w": 0.088
+      },
+      "adopted": false,
+      "input_source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-01\\tier5_xsrzgjnx\\fir16_sym_build\\iter_002\\cand_standard\\fir16_sym.v",
+        "sha256": "89dd4321873ca57dffa037bbfea1bb54e23f706b35c3b8e0b911451aebec464b"
+      },
+      "trial_source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-01\\tier5_xsrzgjnx\\fir16_sym_build\\iter_002\\doctor_tool_knobs_trial\\fir16_sym.v",
+        "sha256": "89dd4321873ca57dffa037bbfea1bb54e23f706b35c3b8e0b911451aebec464b"
+      },
+      "trial_flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-01\\tier5_xsrzgjnx\\fir16_sym_build\\iter_002\\doctor_tool_knobs_trial\\synth.tcl",
+        "sha256": "4662d1ca9e2bc20698215302b38826c653a8d67991cf619e7245287eb934a13b"
+      },
+      "identity_count": 3
+    },
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": "f0080cbf77769fdb54892117f16a98e5346f1988c3b4413f4bec25ca18c98d36"
+  },
+  "artifacts": {}
+}

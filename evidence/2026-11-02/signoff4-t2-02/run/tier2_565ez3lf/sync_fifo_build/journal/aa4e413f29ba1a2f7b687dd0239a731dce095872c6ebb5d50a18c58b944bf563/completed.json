@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_1:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 1,
+    "instruction": "In `sync_fifo_core`, keep the circular storage and occupancy behavior, but add a `WIDTH`-bit head register that directly drives `out_data`; load it from `in_data` when pushing into an empty FIFO and update it to the next queued word on a pop with remaining occupancy. Handle simultaneous push/pop explicitly, including the full FIFO case and `DEPTH=1`, so the head always represents the oldest queued word after each edge. Preserve the combinational ready/valid equations, synchronous reset priority, minimum transfer age, parameterized widths and depths, and the top\u2019s `// @latency 1` annotation. Ex",
+    "candidates": [
+      {
+        "iteration": 1,
+        "mutation": "standard",
+        "instruction": "In `sync_fifo_core`, keep the circular storage and occupancy behavior, but add a `WIDTH`-bit head register that directly drives `out_data`; load it from `in_data` when pushing into an empty FIFO and update it to the next queued word on a pop with remaining occupancy. Handle simultaneous push/pop explicitly, including the full FIFO case and `DEPTH=1`, so the head always represents the oldest queued word after each edge. Preserve the combinational ready/valid equations, synchronous reset priority, minimum transfer age, parameterized widths and depths, and the top\u2019s `// @latency 1` annotation. Ex",
+        "generated_source_sha256": "c97b9d221065e5364883087726c9f33f52d4601a18ccb91de9bad27314939880",
+        "final_source_sha256": "c97b9d221065e5364883087726c9f33f52d4601a18ccb91de9bad27314939880",
+        "generated_code_hash": "eee323813256dfd0",
+        "final_code_hash": "eee323813256dfd0",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.164,
+          "whs_ns": 0.128,
+          "lut_used": 26,
+          "ff_used": 38,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.014,
+          "total_power_w": 0.085
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-02\\tier2_565ez3lf\\sync_fifo_build\\iter_001\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-02\\tier2_565ez3lf\\sync_fifo_build\\iter_001\\cand_standard\\synth.tcl",
+          "sha256": "51d0e37a10d154c6f2fddee1334b77d63b033a8b7a298cac6ee2f3b11faa06d0"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-02\\tier2_565ez3lf\\sync_fifo_build\\iter_001\\cand_standard\\sync_fifo.v",
+          "sha256": "eeb4f43219cab358c89767ec887ce9c8982547c5b2a98446e480c90412dac354"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "ACCEPT",
+    "is_best": true,
+    "selected_source_sha256": "c97b9d221065e5364883087726c9f33f52d4601a18ccb91de9bad27314939880"
+  },
+  "artifacts": {}
+}

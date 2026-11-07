@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_3:decision:instruction:0",
+  "result": "In `packet_fifo_core`, replace `assign out_valid = |occupancy_state[DEPTH:1];` with `assign out_valid = !occupancy_state[0];`, relying on the initialized one-hot state and its shift-only updates. Keep the full-state ready logic, registered head outputs, pointers, reset behavior, and all handshake logic unchanged; preserve support for every specified `DEPTH` and `WIDTH`. This is a LUT-reduction hypothesis: retain the candidate only if routed metrics show fewer LUTs than the incumbent and all verification and timing gates pass.",
+  "artifacts": {}
+}

@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_3:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 3,
+    "instruction": "In `iterative_divider_core`, replace the separate `trial_remainder >= divisor_extended` comparison and `trial_remainder - divisor_extended` expression with one explicitly widened unsigned subtraction whose top bit indicates borrow; select the difference\u2019s low `WIDTH+1` bits when there is no borrow, otherwise retain `trial_remainder`. Keep `quotient_step`, the iteration schedule, state and handshake behavior unchanged, including the existing fixed-width counter. Preserve the top\u2019s `// @latency 9` annotation and verify the full parameter range and all existing gates; treat any LUT reduction as a",
+    "candidates": [
+      {
+        "iteration": 3,
+        "mutation": "standard",
+        "instruction": "In `iterative_divider_core`, replace the separate `trial_remainder >= divisor_extended` comparison and `trial_remainder - divisor_extended` expression with one explicitly widened unsigned subtraction whose top bit indicates borrow; select the difference\u2019s low `WIDTH+1` bits when there is no borrow, otherwise retain `trial_remainder`. Keep `quotient_step`, the iteration schedule, state and handshake behavior unchanged, including the existing fixed-width counter. Preserve the top\u2019s `// @latency 9` annotation and verify the full parameter range and all existing gates; treat any LUT reduction as a",
+        "generated_source_sha256": "5decef8b8b192b6a59cc31ac7e6d04f4575b17f43227f70052486cd2e6853c18",
+        "final_source_sha256": "5decef8b8b192b6a59cc31ac7e6d04f4575b17f43227f70052486cd2e6853c18",
+        "generated_code_hash": "7cfdc364a3f899b7",
+        "final_code_hash": "7cfdc364a3f899b7",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.277,
+          "whs_ns": 0.009,
+          "lut_used": 26,
+          "ff_used": 39,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.033,
+          "total_power_w": 0.103
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t3-01\\tier3_6h_ol6d8\\iterative_divider_build\\iter_003\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t3-01\\tier3_6h_ol6d8\\iterative_divider_build\\iter_003\\cand_standard\\synth.tcl",
+          "sha256": "ab704102d359b4e42cbd71295701139e99be8e72d2bacf895db7f99f603c1166"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t3-01\\tier3_6h_ol6d8\\iterative_divider_build\\iter_003\\cand_standard\\iterative_divider.v",
+          "sha256": "414b502ee8f6ec770f1aa778d8393cbd2934d8b6671755ed6cbf88c40fe228f0"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "ACCEPT",
+    "is_best": true,
+    "selected_source_sha256": "5decef8b8b192b6a59cc31ac7e6d04f4575b17f43227f70052486cd2e6853c18"
+  },
+  "artifacts": {}
+}

@@ -1,0 +1,77 @@
+{
+  "candidates": [
+    {
+      "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t3-02\\tier3_cn0rc15p\\elastic_dot4_build\\iter_003\\cand_standard",
+      "cache_hit": false,
+      "final_code_hash": "6fa4b9873e8a635b",
+      "final_source_sha256": "a1756b1d7a61a2e62c219859d40ca57ff1f372d1120c3dbc9096e346cd8bc518",
+      "flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t3-02\\tier3_cn0rc15p\\elastic_dot4_build\\iter_003\\cand_standard\\synth.tcl",
+        "sha256": "7f2f195c36ee8660f34ced338568e0c19a13e5f1472b14c291ea6c26bb777a0d"
+      },
+      "generated_code_hash": "6fa4b9873e8a635b",
+      "generated_source_sha256": "a1756b1d7a61a2e62c219859d40ca57ff1f372d1120c3dbc9096e346cd8bc518",
+      "instruction": "In `elastic_dot4_core`, replace `partial_sum_01` and `partial_sum_23` with a single 18-bit stage-1 result register, computed from the four unsigned products using a DSP48E1 cascade for the multiply-accumulate path. Keep the existing stage valid and ready logic, synchronous reset priority, stage-2 registered output, and `// @latency 2` on the top unchanged; stage 2 must capture the old stage-1 value only when ready. Preserve full carry width and verify that the deeper input-to-stage-1 path still meets setup and hold timing.",
+      "iteration": 3,
+      "metrics": {
+        "bram_used": 0.0,
+        "dsp_used": 4,
+        "dynamic_power_w": 0.058,
+        "ff_used": 20,
+        "lut_used": 3,
+        "sim_passed": true,
+        "timing_met": false,
+        "total_power_w": 0.128,
+        "whs_ns": 0.081,
+        "wns_ns": -0.007
+      },
+      "mutation": "standard",
+      "reason": "",
+      "rungs": 5,
+      "source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t3-02\\tier3_cn0rc15p\\elastic_dot4_build\\iter_003\\cand_standard\\elastic_dot4.v",
+        "sha256": "4a812697589e000d8018577368009d6dda89d9cfcb7bd823c305f796309e60fb"
+      },
+      "status": "measured"
+    }
+  ],
+  "doctor": {
+    "action": "rtl_surgery",
+    "adopted": false,
+    "identity_count": 3,
+    "input_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t3-02\\tier3_cn0rc15p\\elastic_dot4_build\\iter_003\\cand_standard\\elastic_dot4.v",
+      "sha256": "4a812697589e000d8018577368009d6dda89d9cfcb7bd823c305f796309e60fb"
+    },
+    "measured_metrics": {
+      "bram_used": 0.0,
+      "dsp_used": 4,
+      "dynamic_power_w": 0.058,
+      "ff_used": 20,
+      "lut_used": 3,
+      "sim_passed": true,
+      "timing_met": false,
+      "total_power_w": 0.128,
+      "whs_ns": 0.081,
+      "wns_ns": -0.007
+    },
+    "proposed_source_text_sha256": "9e8211936b9092a7c963cf0653cdced233ad6445a3309d1e9060cb423546b9a6",
+    "reason": "timing_not_closed",
+    "status": "NOT_ADOPTED",
+    "tools_ran": true,
+    "trial_flow_script": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t3-02\\tier3_cn0rc15p\\elastic_dot4_build\\iter_003\\doctor_rtl_surgery_trial\\synth.tcl",
+      "sha256": "942b72c9552b37d0d5152522412d934b7499c17f01cf997b0d95e8435b77e9d0"
+    },
+    "trial_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t3-02\\tier3_cn0rc15p\\elastic_dot4_build\\iter_003\\doctor_rtl_surgery_trial\\elastic_dot4.v",
+      "sha256": "12012f068a3038a0beb1e7f0603d5ee864b5d87a54e81c6c3d6cf524b369107f"
+    }
+  },
+  "instruction": "In `elastic_dot4_core`, replace `partial_sum_01` and `partial_sum_23` with a single 18-bit stage-1 result register, computed from the four unsigned products using a DSP48E1 cascade for the multiply-accumulate path. Keep the existing stage valid and ready logic, synchronous reset priority, stage-2 registered output, and `// @latency 2` on the top unchanged; stage 2 must capture the old stage-1 value only when ready. Preserve full carry width and verify that the deeper input-to-stage-1 path still meets setup and hold timing.",
+  "is_best": false,
+  "iteration": 3,
+  "recommendation": "REJECT",
+  "schema_version": 1,
+  "selected_source_sha256": "a1756b1d7a61a2e62c219859d40ca57ff1f372d1120c3dbc9096e346cd8bc518"
+}

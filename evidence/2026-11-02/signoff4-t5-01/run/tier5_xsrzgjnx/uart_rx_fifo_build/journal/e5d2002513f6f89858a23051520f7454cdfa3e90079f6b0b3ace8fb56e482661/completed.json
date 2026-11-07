@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_3:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 3,
+    "instruction": "In `uart_rx_core`, replace the `frame_data[bit_index - 1'b1] <= majority` variable-index write in the data-bit decision branch with a right shift that inserts `majority` at bit 7; keep the existing start-bit, stop-bit, and decision-cycle conditions. Preserve the reset and frame-start clear, and verify that the final byte remains LSB-first for every supported `OVERSAMPLE_DIV`. Keep the iteration 1 FIFO output register behavior so the routed timing closure is retained; do not change the top interface or add latency.",
+    "candidates": [
+      {
+        "iteration": 3,
+        "mutation": "standard",
+        "instruction": "In `uart_rx_core`, replace the `frame_data[bit_index - 1'b1] <= majority` variable-index write in the data-bit decision branch with a right shift that inserts `majority` at bit 7; keep the existing start-bit, stop-bit, and decision-cycle conditions. Preserve the reset and frame-start clear, and verify that the final byte remains LSB-first for every supported `OVERSAMPLE_DIV`. Keep the iteration 1 FIFO output register behavior so the routed timing closure is retained; do not change the top interface or add latency.",
+        "generated_source_sha256": "ddefba6fb028238b7177d117c62128830972c0a7b7b1073d84340c15bd0071dc",
+        "final_source_sha256": "ddefba6fb028238b7177d117c62128830972c0a7b7b1073d84340c15bd0071dc",
+        "generated_code_hash": "0b977a150ae4f928",
+        "final_code_hash": "0b977a150ae4f928",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.544,
+          "whs_ns": 0.016,
+          "lut_used": 58,
+          "ff_used": 64,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.004,
+          "total_power_w": 0.074
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-01\\tier5_xsrzgjnx\\uart_rx_fifo_build\\iter_003\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-01\\tier5_xsrzgjnx\\uart_rx_fifo_build\\iter_003\\cand_standard\\synth.tcl",
+          "sha256": "564c37fa28cd1c5a9f6821ec41ba05aa189bb8b4dc05dec3f43093dbac5a0852"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-01\\tier5_xsrzgjnx\\uart_rx_fifo_build\\iter_003\\cand_standard\\uart_rx_fifo.v",
+          "sha256": "8270434fed7b9feace8b4f8ad5de3171f3d00106da7e0abed31c167972f3770c"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "ACCEPT",
+    "is_best": true,
+    "selected_source_sha256": "ddefba6fb028238b7177d117c62128830972c0a7b7b1073d84340c15bd0071dc"
+  },
+  "artifacts": {}
+}

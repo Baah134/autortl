@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_1:decision:instruction:0",
+  "result": "In `packet_fifo_core`, replace the asynchronous `data_mem[rd_ptr]` and `last_mem[rd_ptr]` output reads with a registered head tuple, updating it when an empty FIFO accepts a beat and when a pop advances to the next queued beat. Handle simultaneous pop and push at occupancy one by loading the incoming tuple as the new head; preserve stall stability, exact capacity, full simultaneous transfers, explicit pointer wrap for every supported `DEPTH`, and the existing minimum transfer age. Keep the top interface and `// @latency 1` annotation unchanged, and retain a live `packet_fifo_core` instance under `packet_fifo`.",
+  "artifacts": {}
+}

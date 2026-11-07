@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_2:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 2\n## Contract check\n- Interface, parameters, and live child: PASS \u2014 `packet_fifo` retains the required ports; `packet_fifo_core` is defined and instantiated unconditionally, with outputs driving the top.\n- Behavior, reset, and parameter semantics: PASS \u2014 the source preserves FIFO ordering, handshake behavior, stall stability, synchronous reset, and the supported width and depth range; the authoritative ladder reports 5 rungs ALIVE.\n- Top latency annotation: PASS \u2014 the top declares `// @latency 1`, matching the authoritative value.\n- Compile, elaboration, and simulation: PASS \u2014 required tool exits succeeded and the frozen testbench reports `TEST PASSED`.\n- Routed metrics and integrity: PASS \u2014 retained routed reports and metric evidence are present; setup WNS is 0.089 ns and hold WHS is 0.064 ns.\n- Timing closure: PASS \u2014 timing is feasible with nonnegative setup and hold slack.\n- Promotion over previous best: PASS \u2014 the previous best was timing-infeasible; this verified candidate achieves timing recovery. LUTs also decrease from 31 to 29.\n## Summary\n- Passed: 7 of 7\n- Failed: 0 of 7\n- Improved over previous best: YES\n## Recommendation\nACCEPT\n## Reason\nThe candidate preserves the specified FIFO behavior and interface, passes the authoritative verification gates, and closes timing with nonnegative setup and hold slack. It qualifies as a timing recovery over the infeasible previous best, with LUT usage also reduced.",
+      "recommendation": "ACCEPT",
+      "passed": 7,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}

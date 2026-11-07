@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_3:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 3,
+    "instruction": "In `packet_fifo_core`, replace `assign out_valid = |occupancy_state[DEPTH:1];` with `assign out_valid = !occupancy_state[0];`, relying on the initialized one-hot state and its shift-only updates. Keep the full-state ready logic, registered head outputs, pointers, reset behavior, and all handshake logic unchanged; preserve support for every specified `DEPTH` and `WIDTH`. This is a LUT-reduction hypothesis: retain the candidate only if routed metrics show fewer LUTs than the incumbent and all verification and timing gates pass.",
+    "candidates": [
+      {
+        "iteration": 3,
+        "mutation": "standard",
+        "instruction": "In `packet_fifo_core`, replace `assign out_valid = |occupancy_state[DEPTH:1];` with `assign out_valid = !occupancy_state[0];`, relying on the initialized one-hot state and its shift-only updates. Keep the full-state ready logic, registered head outputs, pointers, reset behavior, and all handshake logic unchanged; preserve support for every specified `DEPTH` and `WIDTH`. This is a LUT-reduction hypothesis: retain the candidate only if routed metrics show fewer LUTs than the incumbent and all verification and timing gates pass.",
+        "generated_source_sha256": "c44f299a84b24ba9c258175019a9d2208a4d62e62b8c4178234e2a71ebdc5e9c",
+        "final_source_sha256": "c44f299a84b24ba9c258175019a9d2208a4d62e62b8c4178234e2a71ebdc5e9c",
+        "generated_code_hash": "e82c8a2738789a25",
+        "final_code_hash": "e82c8a2738789a25",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.17,
+          "whs_ns": 0.098,
+          "lut_used": 27,
+          "ff_used": 17,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.015,
+          "total_power_w": 0.085
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-05\\tier2_wiv1t2yv\\packet_fifo_build\\iter_003\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-05\\tier2_wiv1t2yv\\packet_fifo_build\\iter_003\\cand_standard\\synth.tcl",
+          "sha256": "b592fcca000f74e011dcaeaf882b8c13a7659105bd4ac1eca768f5d81a12c0b7"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-05\\tier2_wiv1t2yv\\packet_fifo_build\\iter_003\\cand_standard\\packet_fifo.v",
+          "sha256": "9af6421490922c0a168279a2c6ae472608ea25b68882b71e86324c0ef0c028a7"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "ACCEPT",
+    "is_best": true,
+    "selected_source_sha256": "c44f299a84b24ba9c258175019a9d2208a4d62e62b8c4178234e2a71ebdc5e9c"
+  },
+  "artifacts": {}
+}

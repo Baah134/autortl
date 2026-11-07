@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_2:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 2\n## Contract check\n- Interface, parameters, reset, and FIFO behavior: PASS \u2014 the candidate preserves the defined contract; the trusted parameterized testbench passes.\n- Top latency annotation: PASS \u2014 the top declares `// @latency 1`, matching authoritative latency.\n- Compile, elaboration, and simulation: PASS \u2014 required tools exited successfully and the exact `TEST PASSED` verdict is recorded.\n- Routed reports and metric integrity: PASS \u2014 retained routed metrics and report evidence are available.\n- Timing progress: PASS \u2014 setup WNS improves from -0.931 ns to -0.449 ns; hold worsens by 0.006 ns, within small tolerance. Timing remains infeasible, but this qualifies as recorded `timing_progress`.\n- Promotion over previous best: PASS \u2014 timing progress qualifies under the contract despite higher LUT and FF counts; no LUT objective gain is claimed.\n\n## Summary\n- Passed: 6 of 6\n- Failed: 0 of 6\n- Improved over previous best: YES\n\n## Recommendation\nACCEPT\n\n## Reason\nThe candidate passes deterministic behavioral checks and required tool and metric gates. Although setup slack remains negative and LUTs and FFs increase, setup WNS improves by 0.482 ns while hold changes by only -0.006 ns, meeting the contract\u2019s timing progress rule for an infeasible incumbent.",
+      "recommendation": "ACCEPT",
+      "passed": 6,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}

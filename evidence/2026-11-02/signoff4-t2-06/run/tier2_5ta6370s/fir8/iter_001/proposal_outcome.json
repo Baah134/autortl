@@ -1,0 +1,62 @@
+{
+  "candidates": [
+    {
+      "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\fir8\\iter_001\\cand_standard",
+      "cache_hit": false,
+      "final_code_hash": "4173f3ecf34ac174",
+      "final_source_sha256": "35cac8692edd2f4b71c7903e2dd93b1213916145f15a9d852005f20c6096f45d",
+      "flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\fir8\\iter_001\\cand_standard\\synth.tcl",
+        "sha256": "e7b6568f9fbb9ab43ddf42f9523ed8dddd7e8e5e4d173422b4ea7a61ede2abeb"
+      },
+      "generated_code_hash": "4173f3ecf34ac174",
+      "generated_source_sha256": "35cac8692edd2f4b71c7903e2dd93b1213916145f15a9d852005f20c6096f45d",
+      "instruction": "Keep the eight-sample delay line, reset behavior, output register, interface, parameter defaults, and `// @latency 1` unchanged. Replace the left-associated eight-product sum with four explicit pair sums for `(d[0]*C0 + d[7]*C7)`, `(d[1]*C1 + d[6]*C6)`, `(d[2]*C2 + d[5]*C5)`, and `(d[3]*C3 + d[4]*C4)`, then combine those pair results in a balanced tree into `y_out`. Preserve signed 16-bit parameter and sample semantics, Verilog expression sizing, and 32-bit output truncation for every supported parameter value; verify simulation and routed setup/hold before judging timing progress or closure.",
+      "iteration": 1,
+      "metrics": {
+        "bram_used": 0.0,
+        "dsp_used": 8,
+        "dynamic_power_w": 0.01,
+        "ff_used": 67,
+        "lut_used": 24,
+        "sim_passed": true,
+        "timing_met": false,
+        "total_power_w": 0.078,
+        "whs_ns": 0.055,
+        "wns_ns": -9.358
+      },
+      "mutation": "standard",
+      "reason": "",
+      "rungs": 5,
+      "source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\fir8\\iter_001\\cand_standard\\fir8.v",
+        "sha256": "d605c30b20fa6ebc4573813c8e9e8258a2853933e91e9dfae6d28d51e8757f4a"
+      },
+      "status": "measured"
+    }
+  ],
+  "doctor": {
+    "action": "rtl_surgery",
+    "adopted": false,
+    "identity_count": 2,
+    "input_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\fir8\\iter_001\\cand_standard\\fir8.v",
+      "sha256": "d605c30b20fa6ebc4573813c8e9e8258a2853933e91e9dfae6d28d51e8757f4a"
+    },
+    "measured_metrics": {},
+    "proposed_source_text_sha256": "df929ca4a0635228ebc3747fe03c9e6fc0f14b523c64db0bc68b90295eeb4503",
+    "reason": "simulation_not_verified",
+    "status": "NOT_ADOPTED",
+    "tools_ran": true,
+    "trial_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\fir8\\iter_001\\doctor_rtl_surgery_trial\\fir8.v",
+      "sha256": "68cdc2ed39ddd1866b71bc570fa29b43f9de60c27cd8c6cbf19c6df599a511ec"
+    }
+  },
+  "instruction": "Keep the eight-sample delay line, reset behavior, output register, interface, parameter defaults, and `// @latency 1` unchanged. Replace the left-associated eight-product sum with four explicit pair sums for `(d[0]*C0 + d[7]*C7)`, `(d[1]*C1 + d[6]*C6)`, `(d[2]*C2 + d[5]*C5)`, and `(d[3]*C3 + d[4]*C4)`, then combine those pair results in a balanced tree into `y_out`. Preserve signed 16-bit parameter and sample semantics, Verilog expression sizing, and 32-bit output truncation for every supported parameter value; verify simulation and routed setup/hold before judging timing progress or closure.",
+  "is_best": true,
+  "iteration": 1,
+  "recommendation": "ACCEPT",
+  "schema_version": 1,
+  "selected_source_sha256": "35cac8692edd2f4b71c7903e2dd93b1213916145f15a9d852005f20c6096f45d"
+}

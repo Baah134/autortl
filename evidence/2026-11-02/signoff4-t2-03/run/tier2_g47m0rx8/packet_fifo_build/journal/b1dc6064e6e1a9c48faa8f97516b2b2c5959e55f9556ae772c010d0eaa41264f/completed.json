@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_3:decision:instruction:0",
+  "result": "In `packet_fifo_core`, replace the fixed `reg [3:0] occupancy` declaration with a counter sized to represent 0 through `DEPTH`, and replace both fixed 3-bit pointer declarations with pointers sized for `TAIL_DEPTH` entries, using at least one bit for depth-1 cases. Keep explicit pointer wrap at `TAIL_DEPTH-1` and preserve the existing head/tail data movement, registered `full` update, handshakes, synchronous reset, and top `// @latency 1` annotation. Check depths 1 through 8, including full simultaneous pop/push and non-power-of-two wraps; retain the candidate only if all gates pass and routed LUT count strictly improves over the feasible incumbent.",
+  "artifacts": {}
+}

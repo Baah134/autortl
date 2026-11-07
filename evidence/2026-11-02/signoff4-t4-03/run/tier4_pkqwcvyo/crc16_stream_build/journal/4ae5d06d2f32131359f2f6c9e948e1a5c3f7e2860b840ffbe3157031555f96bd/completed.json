@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_2:decision:instruction:0",
+  "result": "In `crc16_stream_core`, remove `frame_crc` and derive the CRC update state from `out_crc_reg` when the previous accepted byte was not last, or `16'hFFFF` when `out_last_reg` is set. Set `out_last_reg` to 1 on synchronous reset as the initial-frame marker; output payload and `out_last` are unspecified while `out_valid` is low. Keep the output CRC and last registers stable during stalls, preserve the one-slot ready/valid logic and reset priority, and retain the top\u2019s `// @latency 1` annotation. The candidate is useful only if routed LUTs decrease, or LUTs stay equal and FFs decrease, while all verification and timing gates pass.",
+  "artifacts": {}
+}

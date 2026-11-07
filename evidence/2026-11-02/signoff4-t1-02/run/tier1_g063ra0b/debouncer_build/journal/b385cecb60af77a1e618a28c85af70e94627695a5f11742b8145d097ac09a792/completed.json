@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_4:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 4,
+    "instruction": "In `debouncer_top`, keep `clean_reg` and the 3-bit counter, but replace the binary up-counter and `count == 3'd7` saturation branch with a countdown: reset the count to zero when `noisy == clean_reg`, load `3'd7` on the first differing sample while idle, and decrement on subsequent differing samples. When the prior count is `3'd1`, update `clean_reg` to `noisy` and return the count to zero, so the output changes on the eighth consecutive differing sample. Preserve synchronous active-high reset, registered `clean`, the exact interface and `// @latency 0`; retain the candidate only if all gates ",
+    "candidates": [
+      {
+        "iteration": 4,
+        "mutation": "standard",
+        "instruction": "In `debouncer_top`, keep `clean_reg` and the 3-bit counter, but replace the binary up-counter and `count == 3'd7` saturation branch with a countdown: reset the count to zero when `noisy == clean_reg`, load `3'd7` on the first differing sample while idle, and decrement on subsequent differing samples. When the prior count is `3'd1`, update `clean_reg` to `noisy` and return the count to zero, so the output changes on the eighth consecutive differing sample. Preserve synchronous active-high reset, registered `clean`, the exact interface and `// @latency 0`; retain the candidate only if all gates ",
+        "generated_source_sha256": "6f7f51605a7bafb59a1eae77f1c368078bf516cc2072094e9b43b36f478347ab",
+        "final_source_sha256": "6f7f51605a7bafb59a1eae77f1c368078bf516cc2072094e9b43b36f478347ab",
+        "generated_code_hash": "c83dce1cfbe305a4",
+        "final_code_hash": "c83dce1cfbe305a4",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.558,
+          "whs_ns": 0.178,
+          "lut_used": 3,
+          "ff_used": 4,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.003,
+          "total_power_w": 0.073
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t1-02\\tier1_g063ra0b\\debouncer_build\\iter_004\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t1-02\\tier1_g063ra0b\\debouncer_build\\iter_004\\cand_standard\\synth.tcl",
+          "sha256": "8a980150c477078bed6cd315cd6ba21f6c1b858de841844caae53cb43f6d4154"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t1-02\\tier1_g063ra0b\\debouncer_build\\iter_004\\cand_standard\\debouncer_top.v",
+          "sha256": "1e6edbf10d6dfc36e81c4d568a99e6af47cd0394899547e658fd4d26b7ec7e04"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": "6f7f51605a7bafb59a1eae77f1c368078bf516cc2072094e9b43b36f478347ab"
+  },
+  "artifacts": {}
+}

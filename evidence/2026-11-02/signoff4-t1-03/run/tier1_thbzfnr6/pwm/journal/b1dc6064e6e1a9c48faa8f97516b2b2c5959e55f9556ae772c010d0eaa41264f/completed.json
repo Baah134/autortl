@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_3:decision:instruction:0",
+  "result": "Replace the up-counter with an 8-bit phase register that resets to `8'hFF` and decrements each non-reset clock, relying on 8-bit wraparound. Compute the registered output from the old phase as `phase > ~duty`; this is equivalent to the original `counter < duty` when `phase` is the bitwise complement of the original count. Preserve synchronous reset of `pwm_out` to zero and all existing ports; promote only if the unchanged verification gates pass and routed LUT count is strictly below 7.",
+  "artifacts": {}
+}

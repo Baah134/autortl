@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_2:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 2,
+    "instruction": "In `elastic_dot4_core`, replace the separate `product_0`\u2013`product_3` wires and pair-sum additions with explicit unsigned multiply-accumulate expressions for the two 17-bit stage-1 partial sums, using `use_dsp = \"yes\"` on those accumulator expressions so Vivado can map the additions into DSP48 arithmetic. Keep the existing stage-1 and stage-2 registers, valid/ready logic, reset behavior, and 18-bit final sum unchanged; retain the top\u2019s `// @latency 2` annotation. Preserve all four unsigned products and carry bits, and rely on routed reports to establish whether LUT use actually falls while both",
+    "candidates": [
+      {
+        "iteration": 2,
+        "mutation": "standard",
+        "instruction": "In `elastic_dot4_core`, replace the separate `product_0`\u2013`product_3` wires and pair-sum additions with explicit unsigned multiply-accumulate expressions for the two 17-bit stage-1 partial sums, using `use_dsp = \"yes\"` on those accumulator expressions so Vivado can map the additions into DSP48 arithmetic. Keep the existing stage-1 and stage-2 registers, valid/ready logic, reset behavior, and 18-bit final sum unchanged; retain the top\u2019s `// @latency 2` annotation. Preserve all four unsigned products and carry bits, and rely on routed reports to establish whether LUT use actually falls while both",
+        "generated_source_sha256": "55fdc06f05700408cf68afcf35b6b6ba999621b9b479748d2fada5f20fc74f1b",
+        "final_source_sha256": "55fdc06f05700408cf68afcf35b6b6ba999621b9b479748d2fada5f20fc74f1b",
+        "generated_code_hash": "df46da7db032ab97",
+        "final_code_hash": "df46da7db032ab97",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.105,
+          "whs_ns": 0.18,
+          "lut_used": 20,
+          "ff_used": 20,
+          "dsp_used": 4,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.079,
+          "total_power_w": 0.149
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t3-02\\tier3_cn0rc15p\\elastic_dot4_build\\iter_002\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t3-02\\tier3_cn0rc15p\\elastic_dot4_build\\iter_002\\cand_standard\\synth.tcl",
+          "sha256": "4ebdd75692b01a9cf6f0439453ada4c2f1799c3af86034b63ff83a06e913fd4c"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t3-02\\tier3_cn0rc15p\\elastic_dot4_build\\iter_002\\cand_standard\\elastic_dot4.v",
+          "sha256": "469731dc3ab72280a4e866de31eb95d40db5c05bfe8c28e8e1888fff28386bef"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": "55fdc06f05700408cf68afcf35b6b6ba999621b9b479748d2fada5f20fc74f1b"
+  },
+  "artifacts": {}
+}

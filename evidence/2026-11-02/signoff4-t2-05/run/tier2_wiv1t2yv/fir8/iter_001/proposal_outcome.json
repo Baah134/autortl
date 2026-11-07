@@ -1,0 +1,77 @@
+{
+  "candidates": [
+    {
+      "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-05\\tier2_wiv1t2yv\\fir8\\iter_001\\cand_standard",
+      "cache_hit": false,
+      "final_code_hash": "14da84d33201560d",
+      "final_source_sha256": "7321dc3b42f16dc2517786181d28126f1dc95a3b92836615fabe25225e83e0b7",
+      "flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-05\\tier2_wiv1t2yv\\fir8\\iter_001\\cand_standard\\synth.tcl",
+        "sha256": "e53986959f56a85283656c62a51fc84efcd1938020ec91b5dee8d51dd1c44e29"
+      },
+      "generated_code_hash": "14da84d33201560d",
+      "generated_source_sha256": "7321dc3b42f16dc2517786181d28126f1dc95a3b92836615fabe25225e83e0b7",
+      "instruction": "Keep the eight sample-delay registers, their synchronous reset behavior, the output register, all parameter declarations and the latency annotation unchanged. Replace the chained `y_out <= d[0]*C0 + ... + d[7]*C7` expression with eight signed 32-bit product terms and a balanced tree of 32-bit pairwise sums, preserving the low 32-bit result for every supported parameter value. Do not add pipeline stages or change cycle timing; retain the existing behavior that `y_out` is cleared on reset and otherwise registers the sum from the current delay taps.",
+      "iteration": 1,
+      "metrics": {
+        "bram_used": 0.0,
+        "dsp_used": 0,
+        "dynamic_power_w": 0.013,
+        "ff_used": 160,
+        "lut_used": 348,
+        "sim_passed": true,
+        "timing_met": false,
+        "total_power_w": 0.081,
+        "whs_ns": 0.179,
+        "wns_ns": -0.841
+      },
+      "mutation": "standard",
+      "reason": "",
+      "rungs": 5,
+      "source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-05\\tier2_wiv1t2yv\\fir8\\iter_001\\cand_standard\\fir8.v",
+        "sha256": "8008d9bbbd7eefdf30a9d9f2b071071f66bd3623e949dd1cd9dbed86a4f501ac"
+      },
+      "status": "measured"
+    }
+  ],
+  "doctor": {
+    "action": "rtl_surgery",
+    "adopted": true,
+    "identity_count": 3,
+    "input_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-05\\tier2_wiv1t2yv\\fir8\\iter_001\\cand_standard\\fir8.v",
+      "sha256": "8008d9bbbd7eefdf30a9d9f2b071071f66bd3623e949dd1cd9dbed86a4f501ac"
+    },
+    "measured_metrics": {
+      "bram_used": 0.0,
+      "dsp_used": 0,
+      "dynamic_power_w": 0.012,
+      "ff_used": 259,
+      "lut_used": 285,
+      "sim_passed": true,
+      "timing_met": true,
+      "total_power_w": 0.08,
+      "whs_ns": 0.109,
+      "wns_ns": 1.387
+    },
+    "proposed_source_text_sha256": "cfa8db9f293b4cbd523600a68afd1b9d94a379d01ca83005024dc57df3778074",
+    "reason": "policy_improvement",
+    "status": "ADOPTED",
+    "tools_ran": true,
+    "trial_flow_script": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-05\\tier2_wiv1t2yv\\fir8\\iter_001\\doctor_rtl_surgery_trial\\synth.tcl",
+      "sha256": "2030c2e8afdce7a6e6074db143d270de390e9266271eb143be645f491fb806c9"
+    },
+    "trial_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-05\\tier2_wiv1t2yv\\fir8\\iter_001\\doctor_rtl_surgery_trial\\fir8.v",
+      "sha256": "861027281639191f087f2755888cb801d69daf1bde860dadfb64515baca46327"
+    }
+  },
+  "instruction": "Keep the eight sample-delay registers, their synchronous reset behavior, the output register, all parameter declarations and the latency annotation unchanged. Replace the chained `y_out <= d[0]*C0 + ... + d[7]*C7` expression with eight signed 32-bit product terms and a balanced tree of 32-bit pairwise sums, preserving the low 32-bit result for every supported parameter value. Do not add pipeline stages or change cycle timing; retain the existing behavior that `y_out` is cleared on reset and otherwise registers the sum from the current delay taps.",
+  "is_best": true,
+  "iteration": 1,
+  "recommendation": "ACCEPT",
+  "schema_version": 1,
+  "selected_source_sha256": "cfa8db9f293b4cbd523600a68afd1b9d94a379d01ca83005024dc57df3778074"
+}

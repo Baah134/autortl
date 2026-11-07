@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_1:model:generator.generate:0",
+  "result": "`timescale 1ns/1ps\n// @latency 1\nmodule counter8_core (\n    input wire clk,\n    input wire rst,\n    input wire enable,\n    output wire [7:0] count\n);\n\nreg [7:0] count_reg;\n\nassign count = count_reg;\n\nalways @(posedge clk) begin\n    if (rst)\n        count_reg <= 8'b0;\n    else\n        count_reg <= count_reg ^ {\n            (enable & (&count_reg[6:0])),\n            (enable & (&count_reg[5:0])),\n            (enable & (&count_reg[4:0])),\n            (enable & (&count_reg[3:0])),\n            (enable & (&count_reg[2:0])),\n            (enable & (&count_reg[1:0])),\n            (enable & count_reg[0]),\n            enable\n        };\nend\n\nendmodule\n`timescale 1ns/1ps\n// @latency 1\n// Inherited fixed logical latency from transparent typed child wiring; not measured timing.\nmodule counter8 (\n    input wire clk,\n    input wire rst,\n    input wire enable,\n    output wire [7:0] count\n);\n    counter8_core u_counter8_core (\n        .clk(clk),\n        .rst(rst),\n        .enable(enable),\n        .count(count)\n    );\nendmodule",
+  "artifacts": {}
+}

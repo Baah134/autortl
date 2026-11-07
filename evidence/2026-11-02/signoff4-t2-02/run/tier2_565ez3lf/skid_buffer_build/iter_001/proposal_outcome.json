@@ -1,0 +1,77 @@
+{
+  "candidates": [
+    {
+      "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-02\\tier2_565ez3lf\\skid_buffer_build\\iter_001\\cand_standard",
+      "cache_hit": false,
+      "final_code_hash": "cfc9529d24faf671",
+      "final_source_sha256": "3ba052a98772697e7b15ba7319cdc5a0d3ec76bec7f8196120ac7a4c2f2a9117",
+      "flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-02\\tier2_565ez3lf\\skid_buffer_build\\iter_001\\cand_standard\\synth.tcl",
+        "sha256": "fd05085663197dd2e4885fd0f9e57c949d63b24d41ba916c4a5a47830773afd8"
+      },
+      "generated_code_hash": "cfc9529d24faf671",
+      "generated_source_sha256": "3ba052a98772697e7b15ba7319cdc5a0d3ec76bec7f8196120ac7a4c2f2a9117",
+      "instruction": "In `skid_buffer_core`, replace the `storage[read_ptr]` indexed output with explicit 8-bit head and tail registers, and drive `out_data` directly from the head register; update them on push/pop combinations so the oldest word remains at the head, including simultaneous push/pop when full. Preserve the exact occupancy-based `in_ready` and `out_valid` behavior, synchronous active-high reset, stalled payload stability, and one-cycle minimum transfer age; leave data unspecified when `out_valid` is low. Keep the top module interface and its `// @latency 1` annotation unchanged.",
+      "iteration": 1,
+      "metrics": {
+        "bram_used": 0.0,
+        "dsp_used": 0,
+        "dynamic_power_w": 0.013,
+        "ff_used": 18,
+        "lut_used": 12,
+        "sim_passed": true,
+        "timing_met": false,
+        "total_power_w": 0.083,
+        "whs_ns": 0.116,
+        "wns_ns": -0.053
+      },
+      "mutation": "standard",
+      "reason": "",
+      "rungs": 5,
+      "source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-02\\tier2_565ez3lf\\skid_buffer_build\\iter_001\\cand_standard\\skid_buffer.v",
+        "sha256": "366a39a374fe307baf08e8061a1004ebac118e91723c29300288327f563e184d"
+      },
+      "status": "measured"
+    }
+  ],
+  "doctor": {
+    "action": "rtl_surgery",
+    "adopted": true,
+    "identity_count": 3,
+    "input_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-02\\tier2_565ez3lf\\skid_buffer_build\\iter_001\\cand_standard\\skid_buffer.v",
+      "sha256": "366a39a374fe307baf08e8061a1004ebac118e91723c29300288327f563e184d"
+    },
+    "measured_metrics": {
+      "bram_used": 0.0,
+      "dsp_used": 0,
+      "dynamic_power_w": 0.013,
+      "ff_used": 19,
+      "lut_used": 11,
+      "sim_passed": true,
+      "timing_met": true,
+      "total_power_w": 0.083,
+      "whs_ns": 0.013,
+      "wns_ns": 0.146
+    },
+    "proposed_source_text_sha256": "9524062fe197182e3b178a88c5fe1767da8b5be72e850c8057ae03434481b415",
+    "reason": "policy_improvement",
+    "status": "ADOPTED",
+    "tools_ran": true,
+    "trial_flow_script": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-02\\tier2_565ez3lf\\skid_buffer_build\\iter_001\\doctor_rtl_surgery_trial\\synth.tcl",
+      "sha256": "d7e62bc3a395bad1dee0284a1023d388c7ea269ede8f48b1e89248fa1955a889"
+    },
+    "trial_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-02\\tier2_565ez3lf\\skid_buffer_build\\iter_001\\doctor_rtl_surgery_trial\\skid_buffer.v",
+      "sha256": "d2b8ce9ea6edddea00dedd0b4cdc47d27876e764d3fbb8d0145593ec1f5bc7bb"
+    }
+  },
+  "instruction": "In `skid_buffer_core`, replace the `storage[read_ptr]` indexed output with explicit 8-bit head and tail registers, and drive `out_data` directly from the head register; update them on push/pop combinations so the oldest word remains at the head, including simultaneous push/pop when full. Preserve the exact occupancy-based `in_ready` and `out_valid` behavior, synchronous active-high reset, stalled payload stability, and one-cycle minimum transfer age; leave data unspecified when `out_valid` is low. Keep the top module interface and its `// @latency 1` annotation unchanged.",
+  "is_best": true,
+  "iteration": 1,
+  "recommendation": "ACCEPT",
+  "schema_version": 1,
+  "selected_source_sha256": "9524062fe197182e3b178a88c5fe1767da8b5be72e850c8057ae03434481b415"
+}

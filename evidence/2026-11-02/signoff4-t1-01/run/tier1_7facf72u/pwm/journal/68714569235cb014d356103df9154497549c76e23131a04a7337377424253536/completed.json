@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Interface and behavior: PASS \u2014 authoritative ladder is ALIVE at all 5 rungs, and simulation passes.\n- Top latency annotation: PASS \u2014 declared latency is unknown, so no numeric annotation is required.\n- Compile, elaboration, and simulation: PASS \u2014 required tools exited successfully and the exact TEST PASSED verdict is present.\n- Synthesis and routed metric integrity: PASS \u2014 synthesis completed and retained routed reports support the metrics.\n- Timing feasibility: PASS \u2014 timing_met is true, WNS is 0.412 ns, and WHS is 0.196 ns.\n- Objective improvement: FAIL \u2014 both designs are timing-feasible, but LUTs increased from 7 to 10 with FFs unchanged; no strict minimize_luts improvement is recorded.\n## Summary\n- Passed: 5 of 6\n- Failed: 1 of 6\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes the deterministic correctness and implementation gates, and its missing top latency annotation is permitted because authoritative latency is unknown. Since the previous best already meets timing, promotion requires a strict objective improvement; this candidate uses more LUTs, so it cannot replace the previous best.",
+      "recommendation": "REJECT",
+      "passed": 5,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_2:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 2,
+    "instruction": "In `packet_fifo_core`, replace the combinational `occupancy < DEPTH` comparison in `in_ready` with a `full` status register, updated on each clock edge to reflect the post-transfer occupancy and cleared by synchronous reset; retain `in_ready = !full || out_ready`. Handle push, pop, and simultaneous full pop/push correctly for every supported `DEPTH` from 1 through 8, while preserving reset priority, capacity, throughput, and all existing output behavior. Keep the top `// @latency 1` annotation and the registered head data and marker behavior.",
+    "candidates": [
+      {
+        "iteration": 2,
+        "mutation": "standard",
+        "instruction": "In `packet_fifo_core`, replace the combinational `occupancy < DEPTH` comparison in `in_ready` with a `full` status register, updated on each clock edge to reflect the post-transfer occupancy and cleared by synchronous reset; retain `in_ready = !full || out_ready`. Handle push, pop, and simultaneous full pop/push correctly for every supported `DEPTH` from 1 through 8, while preserving reset priority, capacity, throughput, and all existing output behavior. Keep the top `// @latency 1` annotation and the registered head data and marker behavior.",
+        "generated_source_sha256": "fec829817c35e5719425b982cc816ba3b4f54ab19a8ca6303f3c799e7805dba0",
+        "final_source_sha256": "fec829817c35e5719425b982cc816ba3b4f54ab19a8ca6303f3c799e7805dba0",
+        "generated_code_hash": "8c296be448a51557",
+        "final_code_hash": "8c296be448a51557",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.089,
+          "whs_ns": 0.064,
+          "lut_used": 29,
+          "ff_used": 16,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.015,
+          "total_power_w": 0.085
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-03\\tier2_g47m0rx8\\packet_fifo_build\\iter_002\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-03\\tier2_g47m0rx8\\packet_fifo_build\\iter_002\\cand_standard\\synth.tcl",
+          "sha256": "172d8273bdfd62e354ea4abc3feaab2d8bc36e323e3c86444781c8c170207934"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-03\\tier2_g47m0rx8\\packet_fifo_build\\iter_002\\cand_standard\\packet_fifo.v",
+          "sha256": "0e8e8e8dfc6af86d6ba3bbce02e4b58cb70bb3dd45aec34bbbb2a7905ad908e1"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "ACCEPT",
+    "is_best": true,
+    "selected_source_sha256": "fec829817c35e5719425b982cc816ba3b4f54ab19a8ca6303f3c799e7805dba0"
+  },
+  "artifacts": {}
+}

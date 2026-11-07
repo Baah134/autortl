@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_6:decision:instruction:0",
+  "result": "Keep `// @latency 1`, the delay and partial-sum registers, `y_out`, and all reset and update behavior unchanged. For each default-coefficient branch, replace the serial shift/add product followed by `pN + sN` with a 32-bit carry-save combination of the shifted `x_d` terms and the matching partial sum, followed by one carry-propagate addition; preserve modulo-32-bit signed results, including the subtraction case for coefficient 7. Keep the generic parameter fallback arithmetic unchanged, and validate every supported independent coefficient override. Retain the candidate only if simulation and all evidence gates pass, routed WNS and WHS are nonnegative, and register-to-register setup slack strictly exceeds 1.431 ns.",
+  "artifacts": {}
+}

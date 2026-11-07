@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "status": "qualified",
+  "qualified": true,
+  "testbench_sha256": "d84ec4f3b6ea319fc97a99e531bd459b1a6f2f908bc5b6934ac3a4fc9542c68b",
+  "attempts": [
+    {
+      "label": "control",
+      "description": "unmodified control",
+      "passed": true,
+      "failure_kind": "design",
+      "error": "",
+      "assertion_detected": false,
+      "proof_reason": "simulation passed",
+      "source_sha256": "c58c6d941a23fab7e62840d14fb7c8ddf8d40d4c29452320a18ec55991ffc4a6",
+      "raw_log_sha256": "26d602ee226320af0abb75a8b3e7b1b41049003779bf312ea8efe7aaae82230f"
+    },
+    {
+      "label": "mutant",
+      "description": "flip < to >",
+      "passed": true,
+      "failure_kind": "design",
+      "error": "",
+      "assertion_detected": false,
+      "proof_reason": "simulation passed",
+      "source_sha256": "e055ad7e0a655a4e4ba63b852f29e75ae9faf74c0688b959d31885428e2746e2",
+      "raw_log_sha256": "48dce48b5fa2319a7055f83212ada678a734948db819cf2a5d2e14bc287e3c14"
+    },
+    {
+      "label": "stuck_zero",
+      "description": "stuck-zero outputs",
+      "passed": false,
+      "failure_kind": "design",
+      "error": "Testbench failures:\nFAIL scoreboard did not drain",
+      "assertion_detected": true,
+      "proof_reason": "raw assertion detail and failure verdict retained",
+      "source_sha256": "e2f917fc4b29d39c34a0320d26cd68c283d1f910d367db530fc47dfddc9b8727",
+      "raw_log_sha256": "f7f0ce192be1c21168b1ae7d816d0b176e448bd8fe702310b5e7dd5a14545ed8"
+    }
+  ],
+  "missed": [
+    {
+      "label": "mutant",
+      "description": "flip < to >",
+      "reason": "simulation passed"
+    }
+  ],
+  "scope": "Minimum assertion sensitivity; missed faults remain coverage limits."
+}

@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_1:decision:instruction:0",
+  "result": "Replace the combinational `!v1 || !v2 || !v3` vacancy calculation with a resettable register that tracks whether any elastic slot is vacant, updating it from the same next-state valid-slot behavior used by the existing `r1`/`r2`/`r3` transitions. Drive `in_ready` as the registered vacancy flag OR the current `out_ready`, preserving same-cycle handshakes, capacity, stalls, reset behavior, and the three-cycle minimum transfer age; keep the top annotation at `// @latency 3`. Check that the added state does not create a worse timing path or excessive LUT growth, and retain the candidate only if all gates pass and it qualifies as timing recovery or progress.",
+  "artifacts": {}
+}

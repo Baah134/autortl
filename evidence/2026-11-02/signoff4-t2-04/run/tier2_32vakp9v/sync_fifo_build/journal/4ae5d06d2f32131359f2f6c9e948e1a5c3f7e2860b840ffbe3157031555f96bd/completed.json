@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_2:decision:instruction:0",
+  "result": "In `sync_fifo_core`, change the current full-depth `mem` organization into a registered head plus a circular buffer for only `DEPTH-1` tail entries; handle `DEPTH=1` explicitly and preserve symbolic `WIDTH`, explicit wrap for non-power-of-two depths, and full simultaneous pop/push behavior. Promote the oldest tail word into `head_data` on pop, append accepted inputs to the tail when the head remains queued, and replace the head directly when a pop and push occur with occupancy one. Keep the `sync_fifo` interface and `// @latency 1` annotation, and preserve reset, handshake, stall stability, ordering, and minimum transfer age across the supported parameter domain.",
+  "artifacts": {}
+}

@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_2:decision:instruction:0",
+  "result": "In `signed_fir4_core`, replace the 13-bit sign-extended operands and wide multiply/add chain in `fir_result` with explicitly sized signed intermediates: 10 bits for `3*x`, 11 bits for `5*x_prev1` and `7*x_prev2`, 9 bits for `2*x_prev3`, then 11-, 12-, and 13-bit partial sums in tap order. Sign-extend each intermediate explicitly before the next operation so truncation, signedness, and the full output range remain exact. Preserve accepted-sample history updates, all three elastic slots and their registered data/valid behavior, the registered `full` readiness tracking, synchronous reset semantics, throughput, and the top `// @latency 3` annotation.",
+  "artifacts": {}
+}

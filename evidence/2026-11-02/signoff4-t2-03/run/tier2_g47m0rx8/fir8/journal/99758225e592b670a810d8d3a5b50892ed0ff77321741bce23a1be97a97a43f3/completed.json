@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_5:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 5\n## Contract check\n- Interface, parameters, reset, and observable cycle behavior: PASS \u2014 the candidate preserves the top interface and defaults; its staged sums preserve the FIR tap order and 1-cycle output behavior, including reset.\n- Top latency annotation: PASS \u2014 `// @latency 1` matches the authoritative latency.\n- Deterministic verification and tool stages: PASS \u2014 ladder is ALIVE; simulation passed, and required tool exits succeeded.\n- Routed reports and metric integrity: PASS \u2014 retained routed reports and structured metrics are provided with matching hashes.\n- Timing closure: PASS \u2014 `timing_met=true`, WNS is 0.137 ns, and WHS is 0.212 ns.\n- Improvement over previous best: PASS \u2014 the incumbent was timing-infeasible; this verified candidate achieves timing recovery. Its higher LUT count does not negate recovery.\n\n## Summary\n- Passed: 6 of 6\n- Failed: 0 of 6\n- Improved over previous best: YES\n\n## Recommendation\nACCEPT\n\n## Reason\nThe candidate passes the deterministic checks and preserves the defined FIR behavior, including its latency annotation. It closes timing with nonnegative setup and hold slack, replacing a known timing-infeasible previous best; the recorded `timing_recovery` is valid even though LUT usage increased.",
+      "recommendation": "ACCEPT",
+      "passed": 6,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}

@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_2:decision:instruction:0",
+  "result": "In `sync_fifo_core`, replace the `occupancy` and `out_valid` state with a parameterized prefix-valid vector whose set bits represent occupied queue slots: derive `out_valid` from its head bit and `in_ready` from its terminal bit plus `out_ready`. Update that vector for push, pop, and simultaneous push/pop, and use it to select the first free queue slot for insertion; keep the shift-register payload queue and the existing registered transfer behavior. Preserve reset, full simultaneous pop/push, stall stability, explicit capacity for every supported `DEPTH`, and the top\u2019s `// @latency 1` annotation; compare routed LUTs and FFs against the 21-LUT, 27-FF incumbent.",
+  "artifacts": {}
+}

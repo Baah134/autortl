@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_3:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 3,
+    "instruction": "In `axil_regbank`, replace the separate `case (wr_idx)` branches and nested strobe checks for indices 0\u20132 with shared per-register select terms and per-byte write enables derived from `wr_en`, `wr_idx`, and `wr_strb`. Use those enables to update only the selected register bytes from the matching `wr_data` lanes, preserving each disabled byte. Keep reset values, IRQ and write-count logic, read behavior, handshakes, and all cycle behavior unchanged; this is an area hypothesis, so retain it only if the full gates pass and routed LUTs strictly decrease, or LUTs tie with fewer FFs.",
+    "candidates": [
+      {
+        "iteration": 3,
+        "mutation": "standard",
+        "instruction": "In `axil_regbank`, replace the separate `case (wr_idx)` branches and nested strobe checks for indices 0\u20132 with shared per-register select terms and per-byte write enables derived from `wr_en`, `wr_idx`, and `wr_strb`. Use those enables to update only the selected register bytes from the matching `wr_data` lanes, preserving each disabled byte. Keep reset values, IRQ and write-count logic, read behavior, handshakes, and all cycle behavior unchanged; this is an area hypothesis, so retain it only if the full gates pass and routed LUTs strictly decrease, or LUTs tie with fewer FFs.",
+        "generated_source_sha256": "af2d574a6f7e980c2cb96cc3b1866f722bea7446ac5c0f8ba8445f4a01dce62d",
+        "final_source_sha256": "af2d574a6f7e980c2cb96cc3b1866f722bea7446ac5c0f8ba8445f4a01dce62d",
+        "generated_code_hash": "2a110e494ba5e882",
+        "final_code_hash": "2a110e494ba5e882",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 5.716,
+          "whs_ns": 0.168,
+          "lut_used": 95,
+          "ff_used": 254,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.002,
+          "total_power_w": 0.071
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-03\\tier5_m24_d80m\\axil_regs_build\\iter_003\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-03\\tier5_m24_d80m\\axil_regs_build\\iter_003\\cand_standard\\synth.tcl",
+          "sha256": "e0f760f2e09eebc4f5a841bbd8337c69ca7253f496af5057619c6d80076a46d6"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-03\\tier5_m24_d80m\\axil_regs_build\\iter_003\\cand_standard\\axil_regs.v",
+          "sha256": "0ed5f3cdd12b9cf6bde615320bc6f9777706339d17d8f99bdc54a4a68bae3650"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": "af2d574a6f7e980c2cb96cc3b1866f722bea7446ac5c0f8ba8445f4a01dce62d"
+  },
+  "artifacts": {}
+}

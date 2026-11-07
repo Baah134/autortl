@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_2:decision:instruction:0",
+  "result": "In `uart_rx_core`, change the data-bit update from `data_bits[bit_index - 1'b1] <= majority_vote` to shifting the sampled bit into the byte, such as `data_bits <= {majority_vote, data_bits[7:1]}` on each decision for bit indices 1 through 8. Verify the resulting bit order for all byte values and supported `OVERSAMPLE_DIV` values, and preserve reset, start validation, stop-bit decisions, and registered outputs. Keep the FIFO head-data register from iteration 1; require the candidate to pass every verification gate and retain routed WNS \u2265 0 and WHS \u2265 0, then compare LUTs against the 72-LUT incumbent.",
+  "artifacts": {}
+}

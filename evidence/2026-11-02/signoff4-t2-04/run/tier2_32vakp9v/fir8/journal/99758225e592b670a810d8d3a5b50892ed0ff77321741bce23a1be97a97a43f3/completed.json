@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_5:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 5\n## Contract check\n- Interface and latency annotation: PASS \u2014 top-level ports match the frozen interface, and `// @latency 1` matches the authoritative latency.\n- Deterministic behavioral verification: PASS \u2014 ladder is ALIVE; simulation passed with the required verdict.\n- Tool and metric integrity: PASS \u2014 required tools exited successfully, synthesis completed, and retained routed metrics are available.\n- Timing closure and promotion: FAIL \u2014 candidate setup WNS is \u22120.341 ns and `timing_met=false`; the previous best is timing-feasible.\n- Objective improvement: FAIL \u2014 an infeasible candidate cannot replace the feasible previous best for `maximize_freq`.\n## Summary\n- Passed: 3 of 5\n- Failed: 2 of 5\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes behavioral verification, tool execution, and the known latency annotation check, but it misses setup timing and is infeasible while the previous best is feasible. It therefore cannot be promoted or accepted as an improvement.",
+      "recommendation": "REJECT",
+      "passed": 3,
+      "failed": 2
+    }
+  },
+  "artifacts": {}
+}

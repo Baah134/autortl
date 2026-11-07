@@ -1,0 +1,66 @@
+{
+  "stage": "iteration_2:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 2,
+    "instruction": "In `sync_fifo_core`, replace the binary `occupancy` counter and `(occupancy < DEPTH)` comparison with a parameterized one-hot occupancy state for counts 0 through `DEPTH`; derive `out_valid` and the not-full condition from that state, and retain `in_ready = not_full || out_ready`. Also apply the tried output-register transformation: drive `out_data` directly from a register and update it on accepted pushes and retiring pops so the oldest payload and stall stability remain exact. Preserve explicit pointer wrap, simultaneous full pop/push, synchronous reset, all supported `WIDTH`/`DEPTH` values,",
+    "candidates": [
+      {
+        "iteration": 2,
+        "mutation": "standard",
+        "instruction": "In `sync_fifo_core`, replace the binary `occupancy` counter and `(occupancy < DEPTH)` comparison with a parameterized one-hot occupancy state for counts 0 through `DEPTH`; derive `out_valid` and the not-full condition from that state, and retain `in_ready = not_full || out_ready`. Also apply the tried output-register transformation: drive `out_data` directly from a register and update it on accepted pushes and retiring pops so the oldest payload and stall stability remain exact. Preserve explicit pointer wrap, simultaneous full pop/push, synchronous reset, all supported `WIDTH`/`DEPTH` values,",
+        "generated_source_sha256": "627568ca4ed8ebf85c41544fcf8fbee1edf982f6892e23c05a47d5639c6612ea",
+        "final_source_sha256": "627568ca4ed8ebf85c41544fcf8fbee1edf982f6892e23c05a47d5639c6612ea",
+        "generated_code_hash": "8d3a612f0a085366",
+        "final_code_hash": "8d3a612f0a085366",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": false,
+          "wns_ns": -0.449,
+          "whs_ns": 0.085,
+          "lut_used": 25,
+          "ff_used": 16,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.014,
+          "total_power_w": 0.084
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-03\\tier2_g47m0rx8\\sync_fifo_build\\iter_002\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-03\\tier2_g47m0rx8\\sync_fifo_build\\iter_002\\cand_standard\\synth.tcl",
+          "sha256": "ed75a5570fefefbb6548ee44a0093ff93ae5533184381f8666beee677987be3a"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-03\\tier2_g47m0rx8\\sync_fifo_build\\iter_002\\cand_standard\\sync_fifo.v",
+          "sha256": "eb614b43aa2d052b3133a402d58605f4c2e63bad56a444b95ceb5eee1df51c97"
+        }
+      }
+    ],
+    "doctor": {
+      "status": "NOT_ADOPTED",
+      "action": "rtl_surgery",
+      "reason": "simulation_not_verified",
+      "tools_ran": true,
+      "measured_metrics": {},
+      "adopted": false,
+      "input_source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-03\\tier2_g47m0rx8\\sync_fifo_build\\iter_002\\cand_standard\\sync_fifo.v",
+        "sha256": "eb614b43aa2d052b3133a402d58605f4c2e63bad56a444b95ceb5eee1df51c97"
+      },
+      "trial_source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-03\\tier2_g47m0rx8\\sync_fifo_build\\iter_002\\doctor_rtl_surgery_trial\\sync_fifo.v",
+        "sha256": "6423c3a33cc93a9f3c0c644bf604fe1ac8607764ff9695b3e9ca425820f8d806"
+      },
+      "identity_count": 2,
+      "proposed_source_text_sha256": "e2ee3fee715450ab727d60eb83fe7f94de99468c35fdf8ab763a2706dff5bc34"
+    },
+    "recommendation": "ACCEPT",
+    "is_best": true,
+    "selected_source_sha256": "627568ca4ed8ebf85c41544fcf8fbee1edf982f6892e23c05a47d5639c6612ea"
+  },
+  "artifacts": {}
+}

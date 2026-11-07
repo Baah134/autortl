@@ -1604,3 +1604,4 @@ Only then continue higher curricula and the CV-oriented board/public-task plan.
   Proposed benchmark:40tasks/6disjoint pilots/360runs; no trials executed.
   Reports and pure probe retained in parallel-diagnoses-01. A minimal UART
   prompt correction is being prepared off-tree pending the live gate.
+- Completed signoff archive verification finished: 22 archives, 49,435 manifest entries all match retained bytes. Failed attempts remain included. No tier6-02 verdict is inferred.

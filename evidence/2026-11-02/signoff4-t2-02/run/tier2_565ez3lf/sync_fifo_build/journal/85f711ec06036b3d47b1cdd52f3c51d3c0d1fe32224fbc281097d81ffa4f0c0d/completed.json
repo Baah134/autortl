@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_2:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 2\n## Contract check\n- Behavior and supported FIFO configurations: PASS \u2014 authoritative ladder reports 5 rungs ALIVE; the trusted testbench passed.\n- Top interface and latency annotation: PASS \u2014 the top interface is preserved and `// @latency 1` matches the known top latency.\n- Required child remains defined and live under top: PASS \u2014 `sync_fifo_core` is instantiated by `sync_fifo`.\n- Compile, elaboration, simulation, and process exit gates: PASS \u2014 required tools exited successfully; simulation reported `TEST PASSED`.\n- Routed metric integrity and timing closure: PASS \u2014 metrics are backed by retained routed reports; WNS is 0.003 ns and WHS is 0.020 ns.\n- Improvement over previous best: PASS \u2014 with both designs timing-feasible, LUTs decreased from 26 to 23 (FFs from 38 to 26), improving the `minimize_luts` objective.\n## Summary\n- Passed: 6 of 6\n- Failed: 0 of 6\n- Improved over previous best: YES\n## Recommendation\nACCEPT\n## Reason\nThe candidate passes the authoritative correctness ladder and required tool gates, declares the known top latency, and meets setup and hold timing. Compared with the timing-feasible previous best, it reduces LUT usage from 26 to 23, so it satisfies the selected objective with no failed mandatory criteria.",
+      "recommendation": "ACCEPT",
+      "passed": 6,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}

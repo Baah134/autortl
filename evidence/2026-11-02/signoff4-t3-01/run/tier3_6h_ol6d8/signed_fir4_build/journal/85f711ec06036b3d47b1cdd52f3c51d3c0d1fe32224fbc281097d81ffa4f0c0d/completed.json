@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_2:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 2\n## Contract check\n- Interface and top latency annotation: PASS \u2014 the candidate preserves the `signed_fir4` interface and declares `// @latency 3`, matching the known top latency.\n- Defined behavior and deterministic verification: PASS \u2014 the authoritative ladder reports 5 rungs ALIVE, and simulation passed.\n- Tool and synthesis gates: PASS \u2014 required tools exited successfully, and synthesis reported `SYNTH_COMPLETE`.\n- Routed metric integrity: PASS \u2014 retained routed reports and metric evidence are present.\n- Timing closure: PASS \u2014 timing is met with WNS 0.337 ns and WHS 0.12 ns.\n- Objective improvement over previous best: FAIL \u2014 both designs are timing-feasible, but LUTs increased from 81 to 82; the candidate does not improve the `minimize_luts` objective.\n## Summary\n- Passed: 5 of 6\n- Failed: 1 of 6\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes behavioral, tool, metric, latency, and timing checks, but the previous best is already timing-feasible and uses fewer LUTs. Since the objective is `minimize_luts`, the candidate\u2019s increase from 81 to 82 LUTs fails the required strict objective improvement.",
+      "recommendation": "REJECT",
+      "passed": 5,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

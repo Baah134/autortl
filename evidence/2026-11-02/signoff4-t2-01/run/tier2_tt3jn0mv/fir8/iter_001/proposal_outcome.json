@@ -1,0 +1,77 @@
+{
+  "candidates": [
+    {
+      "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-01\\tier2_tt3jn0mv\\fir8\\iter_001\\cand_standard",
+      "cache_hit": false,
+      "final_code_hash": "7ba1bba56fd3ab77",
+      "final_source_sha256": "a83740eab8161c09377fe87e1748f4da316a4ce82e250c17522a1c4843e7f640",
+      "flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-01\\tier2_tt3jn0mv\\fir8\\iter_001\\cand_standard\\synth.tcl",
+        "sha256": "31640fa444269e1e44f221b4e0801d7a0168d7c2b3479b42a9b3f8a9c3655131"
+      },
+      "generated_code_hash": "7ba1bba56fd3ab77",
+      "generated_source_sha256": "a83740eab8161c09377fe87e1748f4da316a4ce82e250c17522a1c4843e7f640",
+      "instruction": "Keep the delay line and clocked `y_out` reset and update behavior unchanged. Replace the single left-associative sum with explicit signed 32-bit product wires for `d[0]*C0` through `d[7]*C7`, then combine them in a balanced tree of signed 32-bit additions, preserving the existing parameterized multiplications and 32-bit result semantics. Retain `// @latency 1`; the change must pass the unchanged simulation and all routed timing and metric gates before it can count as timing recovery.",
+      "iteration": 1,
+      "metrics": {
+        "bram_used": 0.0,
+        "dsp_used": 5,
+        "dynamic_power_w": 0.011,
+        "ff_used": 160,
+        "lut_used": 150,
+        "sim_passed": true,
+        "timing_met": false,
+        "total_power_w": 0.08,
+        "whs_ns": 0.164,
+        "wns_ns": -9.799
+      },
+      "mutation": "standard",
+      "reason": "",
+      "rungs": 5,
+      "source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-01\\tier2_tt3jn0mv\\fir8\\iter_001\\cand_standard\\fir8.v",
+        "sha256": "bf48f8af55d6a257c2b3c59f3db851aeded2d2b5717a646c767a1ec586d03b5c"
+      },
+      "status": "measured"
+    }
+  ],
+  "doctor": {
+    "action": "rtl_surgery",
+    "adopted": true,
+    "identity_count": 3,
+    "input_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-01\\tier2_tt3jn0mv\\fir8\\iter_001\\cand_standard\\fir8.v",
+      "sha256": "bf48f8af55d6a257c2b3c59f3db851aeded2d2b5717a646c767a1ec586d03b5c"
+    },
+    "measured_metrics": {
+      "bram_used": 0.0,
+      "dsp_used": 5,
+      "dynamic_power_w": 0.013,
+      "ff_used": 112,
+      "lut_used": 133,
+      "sim_passed": true,
+      "timing_met": true,
+      "total_power_w": 0.082,
+      "whs_ns": 0.182,
+      "wns_ns": 0.148
+    },
+    "proposed_source_text_sha256": "af5fa09ad25df57298da25013dc7169416004ab27c4eaf5e721590b003ec13e6",
+    "reason": "policy_improvement",
+    "status": "ADOPTED",
+    "tools_ran": true,
+    "trial_flow_script": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-01\\tier2_tt3jn0mv\\fir8\\iter_001\\doctor_rtl_surgery_trial\\synth.tcl",
+      "sha256": "b19dd14ea3d82f2864a647d51e02dc5c8cf1bd922397c0caf5c04d69fa43137d"
+    },
+    "trial_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-01\\tier2_tt3jn0mv\\fir8\\iter_001\\doctor_rtl_surgery_trial\\fir8.v",
+      "sha256": "bd3d5dda37476fcde08219526e7f2641d535b0e618342644633c4782cf2d4e35"
+    }
+  },
+  "instruction": "Keep the delay line and clocked `y_out` reset and update behavior unchanged. Replace the single left-associative sum with explicit signed 32-bit product wires for `d[0]*C0` through `d[7]*C7`, then combine them in a balanced tree of signed 32-bit additions, preserving the existing parameterized multiplications and 32-bit result semantics. Retain `// @latency 1`; the change must pass the unchanged simulation and all routed timing and metric gates before it can count as timing recovery.",
+  "is_best": true,
+  "iteration": 1,
+  "recommendation": "ACCEPT",
+  "schema_version": 1,
+  "selected_source_sha256": "af5fa09ad25df57298da25013dc7169416004ab27c4eaf5e721590b003ec13e6"
+}

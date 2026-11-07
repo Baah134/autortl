@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Top interface and defined behavior: PASS \u2014 top ports are preserved, and the candidate passes the integration simulation.\n- Top latency annotation: PASS \u2014 authoritative `declared_latency.known=false`; no numeric top annotation is required.\n- Deterministic verification: PASS \u2014 ladder is ALIVE and simulation reports `TEST PASSED`.\n- Tool and synthesis gates: PASS \u2014 required tool exits are zero, and synthesis reports `SYNTH_COMPLETE`.\n- Routed metrics and timing closure: PASS \u2014 retained routed evidence reports timing met, WNS 0.569 ns and WHS 0.052 ns.\n- Subjective source review: PASS \u2014 deriving `wr_en` from registered one-hot `grant` preserves its specified cycle behavior.\n- Objective improvement: FAIL \u2014 LUTs are unchanged at 42, while FFs increase from 90 to 93; `(42, 93)` does not improve on `(42, 90)` for `minimize_luts`.\n## Summary\n- Passed: 6 of 7\n- Failed: 1 of 7\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes behavioral, tool, metric, and timing gates, but both designs are timing-feasible, so promotion requires strict improvement of the `minimize_luts` objective. LUT usage is unchanged and FF usage is higher, so the candidate does not improve over the previous best.",
+      "recommendation": "REJECT",
+      "passed": 6,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_1:decision:instruction:0",
+  "result": "In `skid_buffer_core`, replace `reg [1:0] count` and the `case (count)` occupancy control with head-valid and tail-valid state; derive `out_valid` from head-valid and `in_ready` from tail-valid and `out_ready`. Keep the two 8-bit storage registers, and rewrite their updates so push into empty loads the head, push into a one-entry queue loads the tail, and a pop from full advances the tail into the head, with simultaneous full pop/push loading the new input into the tail. Preserve synchronous active-high reset priority, pre-edge handshakes, stall stability, throughput, and the top\u2019s `// @latency 1`; retain the candidate only if all verification and routed metric gates pass and the LUT objective improves.",
+  "artifacts": {}
+}

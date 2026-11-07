@@ -1,0 +1,81 @@
+{
+  "stage": "iteration_1:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 1,
+    "instruction": "In `skid_buffer_core`, replace the case-based `count` FSM with a two-bit binary occupancy register and explicit next-state logic driven by the existing `push` and `pop` handshakes; retain the two data registers and their FIFO ordering and stall behavior. Keep `in_ready = (occupancy < 2) || out_ready`, `out_valid = (occupancy != 0)`, synchronous active-high reset priority, and the top module\u2019s `// @latency 1` annotation. Preserve simultaneous full pop/push, empty capture without fallthrough, and all specified transfer behavior; do not change ports or add pipeline stages.",
+    "candidates": [
+      {
+        "iteration": 1,
+        "mutation": "standard",
+        "instruction": "In `skid_buffer_core`, replace the case-based `count` FSM with a two-bit binary occupancy register and explicit next-state logic driven by the existing `push` and `pop` handshakes; retain the two data registers and their FIFO ordering and stall behavior. Keep `in_ready = (occupancy < 2) || out_ready`, `out_valid = (occupancy != 0)`, synchronous active-high reset priority, and the top module\u2019s `// @latency 1` annotation. Preserve simultaneous full pop/push, empty capture without fallthrough, and all specified transfer behavior; do not change ports or add pipeline stages.",
+        "generated_source_sha256": "6a1040d4d31f2bb7d1322830a0b770cdd1a87191fa8ce4c8c2b87300a3550116",
+        "final_source_sha256": "6a1040d4d31f2bb7d1322830a0b770cdd1a87191fa8ce4c8c2b87300a3550116",
+        "generated_code_hash": "6b30469b347bea37",
+        "final_code_hash": "6b30469b347bea37",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": false,
+          "wns_ns": -0.053,
+          "whs_ns": 0.013,
+          "lut_used": 12,
+          "ff_used": 18,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.013,
+          "total_power_w": 0.083
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-05\\tier2_wiv1t2yv\\skid_buffer_build\\iter_001\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-05\\tier2_wiv1t2yv\\skid_buffer_build\\iter_001\\cand_standard\\synth.tcl",
+          "sha256": "110c273be50e9aa9d9e625215ca1a9afcc1e7d9308db64d38da74451386546d7"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-05\\tier2_wiv1t2yv\\skid_buffer_build\\iter_001\\cand_standard\\skid_buffer.v",
+          "sha256": "b400aa22497330ae79777173b769d6e4123d7c655b167aab3ffe4f559f54b575"
+        }
+      }
+    ],
+    "doctor": {
+      "status": "ADOPTED",
+      "action": "rtl_surgery",
+      "reason": "policy_improvement",
+      "tools_ran": true,
+      "measured_metrics": {
+        "sim_passed": true,
+        "timing_met": true,
+        "wns_ns": 0.088,
+        "whs_ns": 0.158,
+        "lut_used": 14,
+        "ff_used": 19,
+        "dsp_used": 0,
+        "bram_used": 0.0,
+        "dynamic_power_w": 0.013,
+        "total_power_w": 0.083
+      },
+      "adopted": true,
+      "input_source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-05\\tier2_wiv1t2yv\\skid_buffer_build\\iter_001\\cand_standard\\skid_buffer.v",
+        "sha256": "b400aa22497330ae79777173b769d6e4123d7c655b167aab3ffe4f559f54b575"
+      },
+      "trial_source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-05\\tier2_wiv1t2yv\\skid_buffer_build\\iter_001\\doctor_rtl_surgery_trial\\skid_buffer.v",
+        "sha256": "464bd0c5893555c96e98a7f68ce7680c8a0a20ace4b3f484012c612d96f36f2e"
+      },
+      "trial_flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-05\\tier2_wiv1t2yv\\skid_buffer_build\\iter_001\\doctor_rtl_surgery_trial\\synth.tcl",
+        "sha256": "2ee9d6c1b54e6a3f4b162ead001476a7bfd0039e78cb6bf15ce9bb1118759429"
+      },
+      "identity_count": 3,
+      "proposed_source_text_sha256": "4626f5ca1cb517bc40282ea602bb5923243d29e2810c50da85190410829a028e"
+    },
+    "recommendation": "ACCEPT",
+    "is_best": true,
+    "selected_source_sha256": "4626f5ca1cb517bc40282ea602bb5923243d29e2810c50da85190410829a028e"
+  },
+  "artifacts": {}
+}

@@ -1,0 +1,5 @@
+{
+  "stage": "module_cordic_out:model:generator.golden_model:0",
+  "result": "def init():\n    return dict()\n\n\ndef step(state, inputs):\n    outputs = dict()\n\n    x_value = int(inputs.get(\"x_in\", 0)) & 0x3ffff\n    if x_value & 0x20000:\n        x_value -= 0x40000\n    x_sum = (x_value + 2) & 0x7ffff\n\n    y_value = int(inputs.get(\"y_in\", 0)) & 0x3ffff\n    if y_value & 0x20000:\n        y_value -= 0x40000\n    y_sum = (y_value + 2) & 0x7ffff\n\n    outputs[\"cos_out\"] = (x_sum >> 2) & 0xffff\n    outputs[\"sin_out\"] = (y_sum >> 2) & 0xffff\n    return state, outputs",
+  "artifacts": {}
+}

@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_3:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 3\n## Contract check\n- Top interface, latency annotation, and defined behavior: PASS \u2014 top interface is preserved, `// @latency 3` matches the authoritative latency, and the trusted testbench passed.\n- Compilation, elaboration, and simulation: PASS \u2014 required tools exited successfully and simulation reported `TEST PASSED`.\n- Routed reports and metric integrity: PASS \u2014 retained routed metrics are available and consistent.\n- Timing closure: PASS \u2014 timing is met; WNS is 0.337 ns and WHS is 0.142 ns.\n- Objective improvement over previous best: FAIL \u2014 both designs are timing-feasible; LUTs increased from 81 to 83 and FFs remained 67, so the `minimize_luts` objective did not improve.\n## Summary\n- Passed: 4 of 5\n- Failed: 1 of 5\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes behavioral, tool, metric, and timing gates, but the previous best was already timing-feasible and used fewer LUTs with the same FF count. Since the candidate does not strictly improve the chosen objective, a mandatory criterion fails.",
+      "recommendation": "REJECT",
+      "passed": 4,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

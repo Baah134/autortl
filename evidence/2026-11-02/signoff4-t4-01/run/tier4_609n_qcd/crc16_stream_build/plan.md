@@ -1,0 +1,9 @@
+# PLAN — iteration 3
+## Current state assessment
+Iteration 1 is the verified incumbent at 15 LUTs and 19 FFs with setup WNS 0.449 ns and hold WHS 0.155 ns, so it is timing-feasible and the next candidate must strictly improve the `minimize_luts` tuple. Iteration 2’s factored XOR equations were rejected because they used 34 FFs without reducing LUTs. The seed already shares CRC state with the registered output and uses `start_of_frame` to select the next frame’s initial CRC.
+
+## Hypothesis
+Reuse the registered `out_last_reg` bit as the frame-start indicator, removing the separate `start_of_frame` FF and potentially its associated logic while keeping LUTs no higher.
+
+## Instruction for generator
+In `crc16_stream_core`, remove `start_of_frame` and use the prior `out_last_reg` value to select `16'hFFFF` as the CRC seed for the next accepted byte; otherwise use `crc_reg`. Set `out_last_reg` to 1 on synchronous reset so the first post-reset byte starts from `16'hFFFF`; its reset value is unspecified while `out_valid` is low. On each accepted byte, continue registering the computed CRC and `in_last`, and preserve the existing one-slot ready/valid behavior, stall stability, reset priority, and one-cycle minimum transfer age. Keep the top `// @latency 1` annotation; evaluate against the incumbent’s 15 LUTs and 19 FFs.

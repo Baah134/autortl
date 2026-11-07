@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_3:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 3,
+    "instruction": "In `axil_rd_if`, replace `regs_flat[{araddr[4:2], 5'b0} +: 32]` with an explicit case on `araddr[4:2]` selecting the corresponding 32-bit slice, retaining the existing out-of-range handling for `araddr[5]`. Keep `rdata_reg`, `rresp_reg`, and `rvalid_reg` registered with the same reset, accept, stall, and transfer behavior; the read must still sample the pre-edge bank value. Preserve every top port and observable cycle, and do not add a top latency annotation because the authoritative top latency is unknown.",
+    "candidates": [
+      {
+        "iteration": 3,
+        "mutation": "standard",
+        "instruction": "In `axil_rd_if`, replace `regs_flat[{araddr[4:2], 5'b0} +: 32]` with an explicit case on `araddr[4:2]` selecting the corresponding 32-bit slice, retaining the existing out-of-range handling for `araddr[5]`. Keep `rdata_reg`, `rresp_reg`, and `rvalid_reg` registered with the same reset, accept, stall, and transfer behavior; the read must still sample the pre-edge bank value. Preserve every top port and observable cycle, and do not add a top latency annotation because the authoritative top latency is unknown.",
+        "generated_source_sha256": "c8be2d718344eca28283a91c31f9768ee0d4d94830b44e3e86e4be19f818a84f",
+        "final_source_sha256": "c8be2d718344eca28283a91c31f9768ee0d4d94830b44e3e86e4be19f818a84f",
+        "generated_code_hash": "bb28908322141129",
+        "final_code_hash": "bb28908322141129",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 5.441,
+          "whs_ns": 0.134,
+          "lut_used": 95,
+          "ff_used": 254,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.002,
+          "total_power_w": 0.071
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-02\\tier5_sjw1itjc\\axil_regs_build\\iter_003\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-02\\tier5_sjw1itjc\\axil_regs_build\\iter_003\\cand_standard\\synth.tcl",
+          "sha256": "842d9471a419c1b8db1c400eadc7a1fc8b7182a340a52345fdf2acc4db11e297"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-02\\tier5_sjw1itjc\\axil_regs_build\\iter_003\\cand_standard\\axil_regs.v",
+          "sha256": "d18fcec896aecfcfc4bef5f703048fe0cc1610c16713561c6bdcd3525c24653b"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": "c8be2d718344eca28283a91c31f9768ee0d4d94830b44e3e86e4be19f818a84f"
+  },
+  "artifacts": {}
+}

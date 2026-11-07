@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_1:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 1,
+    "instruction": "Replace the combinational `!v1 || !v2 || !v3` vacancy calculation with a resettable register that tracks whether any elastic slot is vacant, updating it from the same next-state valid-slot behavior used by the existing `r1`/`r2`/`r3` transitions. Drive `in_ready` as the registered vacancy flag OR the current `out_ready`, preserving same-cycle handshakes, capacity, stalls, reset behavior, and the three-cycle minimum transfer age; keep the top annotation at `// @latency 3`. Check that the added state does not create a worse timing path or excessive LUT growth, and retain the candidate only if al",
+    "candidates": [
+      {
+        "iteration": 1,
+        "mutation": "standard",
+        "instruction": "Replace the combinational `!v1 || !v2 || !v3` vacancy calculation with a resettable register that tracks whether any elastic slot is vacant, updating it from the same next-state valid-slot behavior used by the existing `r1`/`r2`/`r3` transitions. Drive `in_ready` as the registered vacancy flag OR the current `out_ready`, preserving same-cycle handshakes, capacity, stalls, reset behavior, and the three-cycle minimum transfer age; keep the top annotation at `// @latency 3`. Check that the added state does not create a worse timing path or excessive LUT growth, and retain the candidate only if al",
+        "generated_source_sha256": "dbccffaa4a12f7328dd9c6070597821e3db4218f66998ae099bc2eb7d1a432e8",
+        "final_source_sha256": "dbccffaa4a12f7328dd9c6070597821e3db4218f66998ae099bc2eb7d1a432e8",
+        "generated_code_hash": "2a918f68f3f3220d",
+        "final_code_hash": "2a918f68f3f3220d",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.183,
+          "whs_ns": 0.099,
+          "lut_used": 80,
+          "ff_used": 67,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.018,
+          "total_power_w": 0.088
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t3-02\\tier3_cn0rc15p\\signed_fir4_build\\iter_001\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t3-02\\tier3_cn0rc15p\\signed_fir4_build\\iter_001\\cand_standard\\synth.tcl",
+          "sha256": "45e8e6c66f52f0802207df45329625414b6355488df18306147188f23d1b0362"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t3-02\\tier3_cn0rc15p\\signed_fir4_build\\iter_001\\cand_standard\\signed_fir4.v",
+          "sha256": "f5f5af92d920d08b32b32a1865d72f5a19f1e06c79adff58c4f9b46f4bda0c6a"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "ACCEPT",
+    "is_best": true,
+    "selected_source_sha256": "dbccffaa4a12f7328dd9c6070597821e3db4218f66998ae099bc2eb7d1a432e8"
+  },
+  "artifacts": {}
+}

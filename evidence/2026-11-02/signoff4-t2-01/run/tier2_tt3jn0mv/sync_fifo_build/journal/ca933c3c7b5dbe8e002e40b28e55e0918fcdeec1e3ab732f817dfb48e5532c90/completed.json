@@ -1,0 +1,34 @@
+{
+  "stage": "iteration_2:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 2,
+    "instruction": "In `sync_fifo_core`, replace the `occupancy` and `out_valid` state with a parameterized prefix-valid vector whose set bits represent occupied queue slots: derive `out_valid` from its head bit and `in_ready` from its terminal bit plus `out_ready`. Update that vector for push, pop, and simultaneous push/pop, and use it to select the first free queue slot for insertion; keep the shift-register payload queue and the existing registered transfer behavior. Preserve reset, full simultaneous pop/push, stall stability, explicit capacity for every supported `DEPTH`, and the top\u2019s `// @latency 1` annotat",
+    "candidates": [
+      {
+        "iteration": 2,
+        "mutation": "standard",
+        "instruction": "In `sync_fifo_core`, replace the `occupancy` and `out_valid` state with a parameterized prefix-valid vector whose set bits represent occupied queue slots: derive `out_valid` from its head bit and `in_ready` from its terminal bit plus `out_ready`. Update that vector for push, pop, and simultaneous push/pop, and use it to select the first free queue slot for insertion; keep the shift-register payload queue and the existing registered transfer behavior. Preserve reset, full simultaneous pop/push, stall stability, explicit capacity for every supported `DEPTH`, and the top\u2019s `// @latency 1` annotat",
+        "generated_source_sha256": "37a314391e61e5994df2f948ed32a941e042f0550b46741724afb710e92d7a0a",
+        "final_source_sha256": "37a314391e61e5994df2f948ed32a941e042f0550b46741724afb710e92d7a0a",
+        "generated_code_hash": "c5712e2be292451b",
+        "final_code_hash": "c5712e2be292451b",
+        "rungs": 0,
+        "status": "design_rejected",
+        "reason": "possible inferred latch: combinational always @(*) has 'if' without 'else' assigning ['i', 'insert_index'] \u2014 add default assignments at the top of the block",
+        "metrics": {},
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-01\\tier2_tt3jn0mv\\sync_fifo_build\\iter_002\\cand_standard",
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-01\\tier2_tt3jn0mv\\sync_fifo_build\\iter_002\\cand_standard\\sync_fifo.v",
+          "sha256": "ff945a0edcec172c2ed864cdf77af9b15c488c435bd9f5a3c1b4e7ff7ae3a21f"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": null
+  },
+  "artifacts": {}
+}

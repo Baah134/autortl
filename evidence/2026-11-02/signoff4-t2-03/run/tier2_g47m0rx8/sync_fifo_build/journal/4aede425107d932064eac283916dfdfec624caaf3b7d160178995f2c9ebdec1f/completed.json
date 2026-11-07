@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_1:decision:instruction:0",
+  "result": "In `sync_fifo_core`, replace `integer rd_ptr`, `integer wr_ptr`, and `integer occupancy` with unsigned registers sized for the supported `DEPTH` range, including a valid width for `DEPTH=1`; retain explicit wrap at `DEPTH-1`. Keep `in_ready` combinationally equal to `(occupancy < DEPTH) || out_ready`, and preserve push/pop behavior when full, reset priority, output ordering, stalls, and one-transfer-per-cycle throughput. Preserve the top\u2019s `// @latency 1` annotation and verify the full parameter range, especially `DEPTH=1` and non-power-of-two depths.",
+  "artifacts": {}
+}

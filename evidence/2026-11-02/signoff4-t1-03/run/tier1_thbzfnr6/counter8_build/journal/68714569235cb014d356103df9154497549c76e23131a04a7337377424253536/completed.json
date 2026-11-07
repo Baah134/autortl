@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Behavior and interface: PASS \u2014 candidate preserves the 8-bit modulo counter, synchronous active-high reset priority, enable increment and hold behavior, ports, and registered cycle behavior; the authoritative ladder is ALIVE.\n- Top latency annotation: PASS \u2014 top declares `// @latency 1`, matching the authoritative latency.\n- Compile, elaboration, and simulation: PASS \u2014 required tools exited successfully and the frozen testbench reported `TEST PASSED`.\n- Routed metrics and timing feasibility: PASS \u2014 retained routed evidence reports 6 LUTs, 8 FFs, WNS 0.555 ns, WHS 0.051 ns, and `timing_met=true`.\n- Improvement over previous best: FAIL \u2014 both designs are timing-feasible, and the candidate has unchanged LUTs and FFs, so it does not strictly improve the `minimize_luts` objective. The recorded `improvement_kind` is null.\n\n## Summary\n- Passed: 4 of 5\n- Failed: 1 of 5\n- Improved over previous best: NO\n\n## Recommendation\nREJECT\n\n## Reason\nThe candidate passes behavioral, annotation, tool, and timing gates, but the incumbent is already timing-feasible and the candidate leaves both objective metrics unchanged at 6 LUTs and 8 FFs. Its improved setup WNS does not satisfy the required strict `minimize_luts` improvement.",
+      "recommendation": "REJECT",
+      "passed": 4,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

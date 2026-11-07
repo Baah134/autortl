@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_1:decision:instruction:0",
+  "result": "In `sync_fifo_core`, add a head-data register and replace the asynchronous `mem[rd_ptr]` output with a direct connection from that register; update it from `in_data` when a push makes the queue\u2019s head, and from the next queued slot when a pop advances a nonempty queue. Handle simultaneous pop/push, including depth one and a full FIFO, so the new head is correct immediately after the edge; preserve the existing occupancy, ready/valid, reset, wrap, stall, and minimum-transfer-age behavior for every supported WIDTH and DEPTH. Keep `sync_fifo`\u2019s interface and matching `// @latency 1` annotation, and keep `sync_fifo_core` defined and live-reached from the top.",
+  "artifacts": {}
+}

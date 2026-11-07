@@ -1,0 +1,77 @@
+{
+  "candidates": [
+    {
+      "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-01\\tier2_tt3jn0mv\\packet_fifo_build\\iter_003\\cand_standard",
+      "cache_hit": false,
+      "final_code_hash": "15cc62bb84581764",
+      "final_source_sha256": "5bde68d3ee592d7771c3643d203d22997cccf6774e2320a2a3d6aa44e8b5189d",
+      "flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-01\\tier2_tt3jn0mv\\packet_fifo_build\\iter_003\\cand_standard\\synth.tcl",
+        "sha256": "e9741b53c24702e2f481f7d22ff5d974d73eab45b2368b0d662331ca559d0026"
+      },
+      "generated_code_hash": "15cc62bb84581764",
+      "generated_source_sha256": "5bde68d3ee592d7771c3643d203d22997cccf6774e2320a2a3d6aa44e8b5189d",
+      "instruction": "In `packet_fifo_core`, keep the registered `head_data` and `head_last` outputs, but replace `data_mem` and `last_mem` with a tail of `DEPTH-1` tuples that shifts toward the head on pop; append accepted inputs at the position determined by occupancy, including full simultaneous pop/push. Preserve the existing top annotation `// @latency 1`, ready/valid behavior, reset priority, and all supported WIDTH and DEPTH values, including DEPTH=1 and non-power-of-two depths. Preserve tuple order and stall stability, and leave invalid output payload unspecified; the expected benefit is fewer LUTs from rem",
+      "iteration": 3,
+      "metrics": {
+        "bram_used": 0.0,
+        "dsp_used": 0,
+        "dynamic_power_w": 0.015,
+        "ff_used": 29,
+        "lut_used": 32,
+        "sim_passed": true,
+        "timing_met": false,
+        "total_power_w": 0.085,
+        "whs_ns": 0.171,
+        "wns_ns": -0.098
+      },
+      "mutation": "standard",
+      "reason": "",
+      "rungs": 5,
+      "source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-01\\tier2_tt3jn0mv\\packet_fifo_build\\iter_003\\cand_standard\\packet_fifo.v",
+        "sha256": "827725c60904094c7c1006daa1ad364c49fcef35a31c23323cd21befecda3c79"
+      },
+      "status": "measured"
+    }
+  ],
+  "doctor": {
+    "action": "rtl_surgery",
+    "adopted": true,
+    "identity_count": 3,
+    "input_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-01\\tier2_tt3jn0mv\\packet_fifo_build\\iter_003\\cand_standard\\packet_fifo.v",
+      "sha256": "827725c60904094c7c1006daa1ad364c49fcef35a31c23323cd21befecda3c79"
+    },
+    "measured_metrics": {
+      "bram_used": 0.0,
+      "dsp_used": 0,
+      "dynamic_power_w": 0.015,
+      "ff_used": 30,
+      "lut_used": 35,
+      "sim_passed": true,
+      "timing_met": true,
+      "total_power_w": 0.085,
+      "whs_ns": 0.062,
+      "wns_ns": 0.174
+    },
+    "proposed_source_text_sha256": "a05184955ad357e120e2433173af5dff811ea913c0edc0a0b42b9af25da33eca",
+    "reason": "policy_improvement",
+    "status": "ADOPTED",
+    "tools_ran": true,
+    "trial_flow_script": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-01\\tier2_tt3jn0mv\\packet_fifo_build\\iter_003\\doctor_rtl_surgery_trial\\synth.tcl",
+      "sha256": "541ceb75ac9203a1acd7f60da212af0f1ae1682eea8bd51514e0bb273539e2e1"
+    },
+    "trial_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-01\\tier2_tt3jn0mv\\packet_fifo_build\\iter_003\\doctor_rtl_surgery_trial\\packet_fifo.v",
+      "sha256": "2c670d3310e6b565418f76e4e0d15f2a22870c80b62f042fa6c4a266c146b764"
+    }
+  },
+  "instruction": "In `packet_fifo_core`, keep the registered `head_data` and `head_last` outputs, but replace `data_mem` and `last_mem` with a tail of `DEPTH-1` tuples that shifts toward the head on pop; append accepted inputs at the position determined by occupancy, including full simultaneous pop/push. Preserve the existing top annotation `// @latency 1`, ready/valid behavior, reset priority, and all supported WIDTH and DEPTH values, including DEPTH=1 and non-power-of-two depths. Preserve tuple order and stall stability, and leave invalid output payload unspecified; the expected benefit is fewer LUTs from rem",
+  "is_best": false,
+  "iteration": 3,
+  "recommendation": "REJECT",
+  "schema_version": 1,
+  "selected_source_sha256": "a05184955ad357e120e2433173af5dff811ea913c0edc0a0b42b9af25da33eca"
+}

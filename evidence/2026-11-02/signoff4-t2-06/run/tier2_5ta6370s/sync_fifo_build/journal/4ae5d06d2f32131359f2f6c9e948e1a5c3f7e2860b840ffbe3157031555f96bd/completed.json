@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_2:decision:instruction:0",
+  "result": "In `sync_fifo_core`, add a `nonempty` state bit, synchronously clear it on `rst`, and update it from the accepted `push` and `pop` events so it always tracks whether occupancy is nonzero; drive `out_valid` directly from this bit. Keep the occupancy counter and head-data logic, and preserve the current combinational `in_ready = (occupancy < DEPTH) || out_ready` behavior, including full simultaneous pop/push. Preserve the top\u2019s `// @latency 1` annotation and verify reset, empty capture, final pop, stalls, and parameterized depths.",
+  "artifacts": {}
+}

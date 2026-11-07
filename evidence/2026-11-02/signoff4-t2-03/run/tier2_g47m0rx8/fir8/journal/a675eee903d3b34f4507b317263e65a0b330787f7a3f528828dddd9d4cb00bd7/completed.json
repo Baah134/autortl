@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_4:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 4\n## Contract check\n- Interface and observable behavior: PASS \u2014 ladder is ALIVE; the unchanged testbench passed.\n- Top latency annotation: PASS \u2014 `// @latency 1` matches authoritative latency.\n- Compile, elaboration, simulation, and synthesis flow: PASS \u2014 required tools exited successfully; synthesis marker and exact `TEST PASSED` verdict are recorded.\n- Routed metric evidence: PASS \u2014 retained routed reports and structured metrics are recorded.\n- Timing feasibility: FAIL \u2014 WNS is \u22122.814 ns, so timing is not met.\n- Improvement over previous best: FAIL \u2014 setup WNS worsened from \u22120.294 ns to \u22122.814 ns and hold slack fell from 0.206 ns to 0.080 ns; no valid timing progress or recovery is established.\n## Summary\n- Passed: 4 of 6\n- Failed: 2 of 6\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes the recorded functional and tool checks and carries the required latency annotation, but it remains timing-infeasible and is worse than the infeasible previous best in both setup and hold slack. The recorded evidence establishes neither timing progress nor recovery, so the candidate cannot be promoted.",
+      "recommendation": "REJECT",
+      "passed": 4,
+      "failed": 2
+    }
+  },
+  "artifacts": {}
+}

@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_1:decision:instruction:0",
+  "result": "In `crc16_stream_core`, replace the separate `frame_crc` and `out_crc_reg` storage with one 16-bit CRC register that drives `out_crc` and captures the computed CRC on each accepted byte. Add a start-of-frame flag: set it on reset and accepted `in_last`, and use it to select `16'hFFFF` as the CRC update seed for the next accepted byte; otherwise use the shared CRC register. Keep the output slot\u2019s valid/last registers, ready equation, reset priority, and acceptance conditions unchanged, and retain the top\u2019s `// @latency 1` annotation. Aim for LUT count no higher than 15 and verify all deterministic gates, including routed WNS and WHS.",
+  "artifacts": {}
+}

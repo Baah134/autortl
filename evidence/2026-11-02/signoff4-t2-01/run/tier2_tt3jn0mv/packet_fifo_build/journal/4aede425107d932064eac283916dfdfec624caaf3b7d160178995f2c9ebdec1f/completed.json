@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_1:decision:instruction:0",
+  "result": "In `packet_fifo_core`, add head data and last registers and drive `out_data` and `out_last` directly from them; update the cached tuple on an empty push, and on a pop load the next queued tuple, handling simultaneous pop/push at occupancy one by caching the incoming tuple. Preserve the ring buffer, exact occupancy and ready/valid behavior, reset priority, parameterized widths and depths, full simultaneous transfers, and minimum accepted-transfer age; leave invalid payload unspecified and keep the top\u2019s `// @latency 1` annotation. The cached outputs must stay stable during stalls, and the changed child must remain live-reached from `packet_fifo` and pass the unchanged parameter-matrix testbench and all routed metric gates.",
+  "artifacts": {}
+}

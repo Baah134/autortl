@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_2:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 2\n## Contract check\n- Interface and defined stream behavior: PASS \u2014 the integration testbench reports `TEST PASSED`, including CRC values, handshakes, stalls, resets, and frame boundaries.\n- Top latency annotation: PASS \u2014 `crc16_stream` declares `// @latency 1`, matching the authoritative latency.\n- Compile, elaboration, and simulation gates: PASS \u2014 xvlog, xelab, and xsim exited successfully; the required simulation verdict is present.\n- Routed report and metric integrity: PASS \u2014 retained routed timing and utilization reports are present, and required tool exits and synthesis completion are recorded.\n- Timing feasibility: PASS \u2014 `timing_met=true`, WNS is 0.445 ns, and WHS is 0.011 ns.\n- Objective improvement over previous best: PASS \u2014 LUTs tie at 16 while FFs decrease from 34 to 18, improving the `minimize_luts` lexicographic objective.\n## Summary\n- Passed: 6 of 6\n- Failed: 0 of 6\n- Improved over previous best: YES\n## Recommendation\nACCEPT\n## Reason\nThe candidate passes the deterministic integration and tool gates, meets setup and hold timing, and improves the chosen objective through fewer FFs at equal LUT count.",
+      "recommendation": "ACCEPT",
+      "passed": 6,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}

@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_3:model:generator.generate:0",
+  "result": "`timescale 1ns/1ps\n// @latency 0\nmodule debouncer_top (\n    input wire clk,\n    input wire rst,\n    input wire noisy,\n    output wire clean\n);\n    reg [2:0] run_state;\n    reg clean_reg;\n\n    assign clean = clean_reg;\n\n    always @(posedge clk) begin\n        if (rst) begin\n            run_state <= 3'b000;\n            clean_reg <= 1'b0;\n        end else if (noisy == clean_reg) begin\n            run_state <= 3'b000;\n        end else if (run_state == 3'b100) begin\n            clean_reg <= noisy;\n            run_state <= 3'b000;\n        end else if (run_state == 3'b000) begin\n            run_state <= 3'b001;\n        end else begin\n            run_state <= {run_state[1:0], run_state[2] ^ run_state[0]};\n        end\n    end\nendmodule",
+  "artifacts": {}
+}

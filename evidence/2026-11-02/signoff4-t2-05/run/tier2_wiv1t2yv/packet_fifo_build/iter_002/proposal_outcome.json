@@ -1,0 +1,45 @@
+{
+  "candidates": [
+    {
+      "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-05\\tier2_wiv1t2yv\\packet_fifo_build\\iter_002\\cand_standard",
+      "cache_hit": false,
+      "final_code_hash": "95693bf99ff3f708",
+      "final_source_sha256": "e9350fabe609554a0d878b14de6c56f305c102d74035f8fb81960c294c43f17b",
+      "flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-05\\tier2_wiv1t2yv\\packet_fifo_build\\iter_002\\cand_standard\\synth.tcl",
+        "sha256": "5cfb2b4e1dc06718f89bbb711d3d32dfe8154e0242a235e1ee0724e8150deb14"
+      },
+      "generated_code_hash": "95693bf99ff3f708",
+      "generated_source_sha256": "e9350fabe609554a0d878b14de6c56f305c102d74035f8fb81960c294c43f17b",
+      "instruction": "In `packet_fifo_core`, replace `out_data = data_mem[read_ptr]` and `out_last = last_mem[read_ptr]` with registered head outputs: load the input tuple when pushing into an empty FIFO, and on a pop with more than one queued tuple, load the next stored tuple; for a simultaneous pop and push at occupancy one, load the incoming tuple as the new head. Hold the head registers during stalls, preserve the existing one-hot occupancy and pointer wrap logic, and handle `DEPTH=1` explicitly; keep the top interface and `// @latency 1` annotation unchanged.",
+      "iteration": 2,
+      "metrics": {
+        "bram_used": 0.0,
+        "dsp_used": 0,
+        "dynamic_power_w": 0.015,
+        "ff_used": 17,
+        "lut_used": 29,
+        "sim_passed": true,
+        "timing_met": true,
+        "total_power_w": 0.085,
+        "whs_ns": 0.038,
+        "wns_ns": 0.142
+      },
+      "mutation": "standard",
+      "reason": "",
+      "rungs": 5,
+      "source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-05\\tier2_wiv1t2yv\\packet_fifo_build\\iter_002\\cand_standard\\packet_fifo.v",
+        "sha256": "6febd2c391803d73c074906bdf7015736eb8dfb8761be9ec5d95c72ceb631dbe"
+      },
+      "status": "measured"
+    }
+  ],
+  "doctor": null,
+  "instruction": "In `packet_fifo_core`, replace `out_data = data_mem[read_ptr]` and `out_last = last_mem[read_ptr]` with registered head outputs: load the input tuple when pushing into an empty FIFO, and on a pop with more than one queued tuple, load the next stored tuple; for a simultaneous pop and push at occupancy one, load the incoming tuple as the new head. Hold the head registers during stalls, preserve the existing one-hot occupancy and pointer wrap logic, and handle `DEPTH=1` explicitly; keep the top interface and `// @latency 1` annotation unchanged.",
+  "is_best": true,
+  "iteration": 2,
+  "recommendation": "ACCEPT",
+  "schema_version": 1,
+  "selected_source_sha256": "e9350fabe609554a0d878b14de6c56f305c102d74035f8fb81960c294c43f17b"
+}

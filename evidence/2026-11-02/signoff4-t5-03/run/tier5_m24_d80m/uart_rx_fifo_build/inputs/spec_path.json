@@ -1,0 +1,417 @@
+{
+  "top_name": "uart_rx_fifo",
+  "modules": [
+    {
+      "name": "uart_rx_core",
+      "behavior": "UART 8N1 receiver with 16x oversampling, a two-flop input synchronizer, a three-sample majority vote, start-bit validation and framing-error detection. Public parameter OVERSAMPLE_DIV=2 is the number of clk cycles per oversample tick; supported domain integer 1..64. Preserve the actual OVERSAMPLE_DIV-dependent timing, not only the default. Let D = OVERSAMPLE_DIV and B = 16*D (clk cycles per bit). Synchronizer: registers sync1 <= rx and sync2 <= sync1 at every rising edge, both reset to 1; the line sample L used at edge i is sync2 before edge i, i.e. rx as it was before edge i-2. States IDLE, BUSY and WAIT_IDLE; reset state IDLE. In IDLE the first edge with L = 0 is the detection edge e0 and enters BUSY. In BUSY, at edge e0 + m (m >= 1) the frame offset is m, the bit index is b = m div B (0 start bit, 1..8 data bits LSB first, 9 stop bit) and the phase is p = m mod B. At p = 7D, p = 8D and p = 9D the receiver takes L as three votes for bit b; at the p = 9D edge the bit value is the majority of the three votes and is decided at that edge. L at every other BUSY edge is ignored, so the line may carry anything there. Start bit (b = 0): majority 1 is a false start: return to IDLE at that edge with no output (the next edge may detect again); majority 0 continues the frame. Data bit b in 1..8 becomes received bit b-1 (LSB first). Stop bit (b = 9, decided at edge e0 + 153D): return to IDLE at that edge; majority 1 registers rx_data = the 8 received bits and pulses rx_strobe = 1 for exactly one cycle; majority 0 pulses frame_err = 1 for exactly one cycle, leaves rx_data unchanged and enters WAIT_IDLE. In WAIT_IDLE the first edge with L = 1 returns to IDLE without detecting, so a line held low produces exactly one framing error and a new frame can be detected at the following edge. Outputs are registers that change only at rising edges: rx_strobe and frame_err are 0 except for their one-cycle pulses, rx_data holds the last good byte (0 after reset). Synchronous active-high rst at a rising edge returns to IDLE and sets sync1 = sync2 = 1, rx_data = 0, rx_strobe = 0 and frame_err = 0; reset has no effect between edges. Python oracle: cycle-level model, one step per rising edge given the rx value present before that edge; keep sync1, sync2, the state, the frame offset, the votes and the received bits in state and return rx_data, rx_strobe and frame_err as registered by that edge. The driver applies the fixed latency of 1; do not add a delay queue. init() is the reset state and a supplied rst must be handled. The examples hold rx constant from the reset state: with rx = 0 the detection edge is edge 3 (L lags rx by two edges), so with D = 2 the all-zero frame's stop bit is decided at edge 3 + 153*2 = 309, where frame_err pulses; frame_err is 0 again after edge 310 and the still-low line never re-triggers.",
+      "ports": [
+        {
+          "name": "clk",
+          "direction": "input",
+          "width": 1,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "rst",
+          "direction": "input",
+          "width": 1,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "rx",
+          "direction": "input",
+          "width": 1,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "rx_data",
+          "direction": "output",
+          "width": 8,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "rx_strobe",
+          "direction": "output",
+          "width": 1,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "frame_err",
+          "direction": "output",
+          "width": 1,
+          "protocol": "none",
+          "signed": false
+        }
+      ],
+      "latency": 1,
+      "latency_known": true,
+      "compare_mode": "fixed_latency",
+      "reset": {
+        "signal": "rst",
+        "kind": "sync",
+        "active_high": true,
+        "duration_cycles": 3
+      },
+      "parameters": {
+        "OVERSAMPLE_DIV": 2
+      },
+      "clock_domains": [
+        "clk"
+      ],
+      "examples": [
+        {
+          "inputs": {
+            "rst": 0,
+            "rx": 1
+          },
+          "expected": {
+            "rx_data": 0,
+            "rx_strobe": 0,
+            "frame_err": 0
+          },
+          "after_cycles": 40
+        },
+        {
+          "inputs": {
+            "rst": 0,
+            "rx": 0
+          },
+          "expected": {
+            "rx_data": 0,
+            "rx_strobe": 0,
+            "frame_err": 1
+          },
+          "after_cycles": 309
+        },
+        {
+          "inputs": {
+            "rst": 0,
+            "rx": 0
+          },
+          "expected": {
+            "rx_data": 0,
+            "rx_strobe": 0,
+            "frame_err": 0
+          },
+          "after_cycles": 310
+        }
+      ]
+    },
+    {
+      "name": "rx_fifo",
+      "behavior": "Synchronous first-word-fall-through byte FIFO with registered occupancy and an overflow pulse. Public parameter ADDR_BITS=2 sets the capacity DEPTH = 2^ADDR_BITS entries; supported domain integer 1..4; preserve the parameter. count is the number of stored bytes, 0..DEPTH. out_valid = (count != 0); out_data = the oldest stored byte when out_valid = 1 and 0 when out_valid = 0. Both depend only on registered state: there is no combinational path from wr_en, wr_data, out_ready or rst to any output. At each rising edge with rst low, using the inputs present before the edge: pop = out_ready && count != 0 removes the head byte; push = wr_en && (count < DEPTH || pop) stores wr_data behind all remaining bytes, so a full FIFO accepts a write at an edge where it also pops; a push and a pop at the same edge keep order and leave count unchanged. A byte written into an empty FIFO is visible after that edge, never in the same cycle (no bypass). overflow is a register: after an edge where wr_en = 1 and push = 0 (the byte is dropped) it is 1 for one cycle, otherwise 0. Synchronous active-high rst at a rising edge empties the FIFO and clears overflow; reset has no effect between edges. Python oracle: cycle-level model, one step per rising edge; keep the queue in state and return out_data, out_valid and overflow as they are after that edge. The driver applies the fixed latency of 1; do not add a delay queue. init() is the reset state (empty) and a supplied rst must be handled.",
+      "ports": [
+        {
+          "name": "clk",
+          "direction": "input",
+          "width": 1,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "rst",
+          "direction": "input",
+          "width": 1,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "wr_en",
+          "direction": "input",
+          "width": 1,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "wr_data",
+          "direction": "input",
+          "width": 8,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "out_data",
+          "direction": "output",
+          "width": 8,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "out_valid",
+          "direction": "output",
+          "width": 1,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "out_ready",
+          "direction": "input",
+          "width": 1,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "overflow",
+          "direction": "output",
+          "width": 1,
+          "protocol": "none",
+          "signed": false
+        }
+      ],
+      "latency": 1,
+      "latency_known": true,
+      "compare_mode": "fixed_latency",
+      "reset": {
+        "signal": "rst",
+        "kind": "sync",
+        "active_high": true,
+        "duration_cycles": 3
+      },
+      "parameters": {
+        "ADDR_BITS": 2
+      },
+      "clock_domains": [
+        "clk"
+      ],
+      "examples": [
+        {
+          "inputs": {
+            "rst": 0,
+            "wr_en": 1,
+            "wr_data": 60,
+            "out_ready": 0
+          },
+          "expected": {
+            "out_data": 60,
+            "out_valid": 1,
+            "overflow": 0
+          },
+          "after_cycles": 1
+        },
+        {
+          "inputs": {
+            "rst": 0,
+            "wr_en": 1,
+            "wr_data": 60,
+            "out_ready": 0
+          },
+          "expected": {
+            "out_data": 60,
+            "out_valid": 1,
+            "overflow": 1
+          },
+          "after_cycles": 5
+        },
+        {
+          "inputs": {
+            "rst": 0,
+            "wr_en": 1,
+            "wr_data": 167,
+            "out_ready": 1
+          },
+          "expected": {
+            "out_data": 167,
+            "out_valid": 1,
+            "overflow": 0
+          },
+          "after_cycles": 3
+        }
+      ]
+    },
+    {
+      "name": "rx_err_count",
+      "behavior": "Two 4-bit saturating event counters. At each rising edge with rst low: if ferr_in = 1 and ferr_count < 15 then ferr_count increments by 1; if ovf_in = 1 and ovf_count < 15 then ovf_count increments by 1; a counter at 15 stays 15 (saturates, never wraps). Inputs are sampled only at rising edges and both outputs are registers. Synchronous active-high rst at a rising edge clears both counters; reset has no effect between edges. Python oracle: cycle-level model, one step per rising edge; keep both counts in state and return ferr_count and ovf_count as registered by that edge. The driver applies the fixed latency of 1; do not add a delay queue. init() is the reset state and a supplied rst must be handled.",
+      "ports": [
+        {
+          "name": "clk",
+          "direction": "input",
+          "width": 1,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "rst",
+          "direction": "input",
+          "width": 1,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "ferr_in",
+          "direction": "input",
+          "width": 1,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "ovf_in",
+          "direction": "input",
+          "width": 1,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "ferr_count",
+          "direction": "output",
+          "width": 4,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "ovf_count",
+          "direction": "output",
+          "width": 4,
+          "protocol": "none",
+          "signed": false
+        }
+      ],
+      "latency": 1,
+      "latency_known": true,
+      "compare_mode": "fixed_latency",
+      "reset": {
+        "signal": "rst",
+        "kind": "sync",
+        "active_high": true,
+        "duration_cycles": 3
+      },
+      "parameters": {},
+      "clock_domains": [
+        "clk"
+      ],
+      "examples": [
+        {
+          "inputs": {
+            "rst": 0,
+            "ferr_in": 1,
+            "ovf_in": 0
+          },
+          "expected": {
+            "ferr_count": 3,
+            "ovf_count": 0
+          },
+          "after_cycles": 3
+        },
+        {
+          "inputs": {
+            "rst": 0,
+            "ferr_in": 1,
+            "ovf_in": 1
+          },
+          "expected": {
+            "ferr_count": 15,
+            "ovf_count": 15
+          },
+          "after_cycles": 20
+        },
+        {
+          "inputs": {
+            "rst": 0,
+            "ferr_in": 0,
+            "ovf_in": 1
+          },
+          "expected": {
+            "ferr_count": 0,
+            "ovf_count": 15
+          },
+          "after_cycles": 16
+        }
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "src_module": "uart_rx_core",
+      "src_port": "rx_strobe",
+      "dst_module": "rx_fifo",
+      "dst_port": "wr_en"
+    },
+    {
+      "src_module": "uart_rx_core",
+      "src_port": "rx_data",
+      "dst_module": "rx_fifo",
+      "dst_port": "wr_data"
+    },
+    {
+      "src_module": "uart_rx_core",
+      "src_port": "frame_err",
+      "dst_module": "rx_err_count",
+      "dst_port": "ferr_in"
+    },
+    {
+      "src_module": "rx_fifo",
+      "src_port": "overflow",
+      "dst_module": "rx_err_count",
+      "dst_port": "ovf_in"
+    }
+  ],
+  "external_ports": [
+    {
+      "name": "clk",
+      "direction": "input",
+      "width": 1,
+      "protocol": "none",
+      "signed": false
+    },
+    {
+      "name": "rst",
+      "direction": "input",
+      "width": 1,
+      "protocol": "none",
+      "signed": false
+    },
+    {
+      "name": "rx",
+      "direction": "input",
+      "width": 1,
+      "protocol": "none",
+      "signed": false
+    },
+    {
+      "name": "out_data",
+      "direction": "output",
+      "width": 8,
+      "protocol": "none",
+      "signed": false
+    },
+    {
+      "name": "out_valid",
+      "direction": "output",
+      "width": 1,
+      "protocol": "none",
+      "signed": false
+    },
+    {
+      "name": "out_ready",
+      "direction": "input",
+      "width": 1,
+      "protocol": "none",
+      "signed": false
+    },
+    {
+      "name": "frame_err",
+      "direction": "output",
+      "width": 1,
+      "protocol": "none",
+      "signed": false
+    },
+    {
+      "name": "ferr_count",
+      "direction": "output",
+      "width": 4,
+      "protocol": "none",
+      "signed": false
+    },
+    {
+      "name": "ovf_count",
+      "direction": "output",
+      "width": 4,
+      "protocol": "none",
+      "signed": false
+    }
+  ]
+}

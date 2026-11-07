@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_5:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 5\n## Contract check\n- Interface and observable behavior: PASS \u2014 candidate preserves the top ports, reset behavior, counter sequence and registered PWM output; the deterministic ladder reports ALIVE and simulation passes.\n- Top latency annotation: PASS \u2014 authoritative `declared_latency.known=false`; no numeric annotation is required.\n- Compile, elaboration and simulation: PASS \u2014 required tool exits succeeded and simulation reports `TEST PASSED`.\n- Routed reports and metric integrity: PASS \u2014 retained routed timing, utilization and power reports are present with successful synthesis and tool evidence.\n- Timing closure: PASS \u2014 timing is met with WNS 0.597 ns and WHS 0.207 ns.\n- Objective improvement: FAIL \u2014 previous best was already timing-feasible; LUTs increased from 7 to 13 and FFs from 9 to 33, so the candidate does not improve `minimize_luts`.\n## Summary\n- Passed: 5 of 6\n- Failed: 1 of 6\n- Improved over previous best: NO\n## Recommendation\nRESTART\n## Reason\nThe candidate passes behavioral, tool, report-integrity and timing gates, and its missing top latency annotation is allowed because authoritative latency is unknown. It fails the required objective comparison against the already timing-feasible previous best: both LUT and FF counts increased. With stall count 4, the recommendation is RESTART.",
+      "recommendation": "REJECT",
+      "passed": 5,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_3:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 3\n## Contract check\n- Interface, behavior, parameters, and live child modules: PASS \u2014 the trusted integration testbench passed.\n- Top latency annotation: PASS \u2014 authoritative top latency is unknown, so no numeric annotation is required.\n- Compile, elaboration, and simulation: PASS \u2014 required tools exited successfully and the exact `TEST PASSED` verdict is recorded.\n- Routed metrics and metric integrity: PASS \u2014 retained reports and process evidence are present and consistent.\n- Timing closure: PASS \u2014 timing_met is true, WNS is 0.06 ns, and WHS is 0.13 ns.\n- Minimize-LUT objective: FAIL \u2014 both designs are timing-feasible, but candidate LUTs increased from 59 to 72; no strict objective improvement is established.\n## Summary\n- Passed: 5 of 6\n- Failed: 1 of 6\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes the behavioral and timing gates, and its missing top latency annotation is acceptable because the authoritative top latency is unknown. Since the previous best was already timing-feasible, promotion requires a strict minimize-LUT improvement; the candidate uses 72 LUTs versus 59, and the recorded improvement_kind is null. The mandatory objective criterion therefore fails.",
+      "recommendation": "REJECT",
+      "passed": 5,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

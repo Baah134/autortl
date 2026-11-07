@@ -1,0 +1,851 @@
+{
+  "allowed_flow_variations": "The harness may enable retiming or physical optimization. The candidate's retained synthesis script is authoritative for its actual settings.",
+  "authority": "Harness evidence is fixed. Proposed architectural goals cannot redefine it.",
+  "baseline_metrics": {
+    "bram_total": 50.0,
+    "bram_used": 0.0,
+    "dsp_total": 90,
+    "dsp_used": 0,
+    "dynamic_power_w": 0.061,
+    "ff_pct": 0.21634615384615385,
+    "ff_total": 41600,
+    "ff_used": 90,
+    "lut_pct": 0.20192307692307693,
+    "lut_total": 20800,
+    "lut_used": 42,
+    "reg2reg_wns_ns": 5.549,
+    "sim_error": "",
+    "sim_passed": true,
+    "synth_error": "",
+    "timing_met": true,
+    "total_power_w": 0.131,
+    "whs_ns": 0.063,
+    "wns_ns": 0.554
+  },
+  "build_spec": {
+    "authority": "Complete resolved typed build contract. Defined behavior is mandatory; explicitly unspecified cases remain unspecified. Frozen implementation identities do not turn incidental values in unspecified cases into requirements.",
+    "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-02\\tier4_z427ytzk\\rr_regfile_build\\design_spec.json",
+    "resolved_spec": {
+      "connections": [
+        {
+          "dst_module": "regfile8x8",
+          "dst_port": "wr_en",
+          "src_module": "rr_arbiter4",
+          "src_port": "wr_en"
+        },
+        {
+          "dst_module": "regfile8x8",
+          "dst_port": "wr_addr",
+          "src_module": "rr_arbiter4",
+          "src_port": "wr_addr"
+        },
+        {
+          "dst_module": "regfile8x8",
+          "dst_port": "wr_data",
+          "src_module": "rr_arbiter4",
+          "src_port": "wr_data"
+        }
+      ],
+      "external_ports": [
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "clk",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "rst",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "req",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 4
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "addr0",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 3
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "data0",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 8
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "addr1",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 3
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "data1",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 8
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "addr2",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 3
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "data2",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 8
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "addr3",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 3
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "data3",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 8
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "rd_addr",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 3
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "output",
+          "name": "grant",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 4
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "output",
+          "name": "rd_data",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 8
+        }
+      ],
+      "modules": [
+        {
+          "behavior": "Four-requester round-robin arbiter with a registered register-file write port. State last is the index 0..3 of the most recently granted requester; its reset value is 3, so requester 0 has the highest priority after reset. At each rising clk edge with rst low, using req and the addrN/dataN inputs sampled before the edge, search requesters in the order (last+1)%4, (last+2)%4, (last+3)%4, last and choose the first i with req[i] = 1 as the winner. If a winner exists: grant = 1 << winner (one-hot), wr_en = 1, wr_addr = addr<winner>, wr_data = data<winner>, last = winner. If req == 0: grant = 0, wr_en = 0, wr_addr = 0, wr_data = 0 and last is unchanged. grant, wr_en, wr_addr and wr_data are registers: they change only at rising edges and hold between edges whatever the inputs do. Synchronous active-high rst at a rising edge sets grant = 0, wr_en = 0, wr_addr = 0, wr_data = 0 and last = 3; reset has no effect between edges. Consequences: with all four requesting, grants rotate 0,1,2,3,0,...; a requester that keeps requesting is granted within 4 edges; a lone requester is granted at every edge. Python oracle: cycle-level model, one step per rising edge; keep last in state and return grant, wr_en, wr_addr and wr_data as registered by that edge. The driver applies the fixed latency of 1; do not add a delay queue. init() is the reset state and a supplied rst must be handled.",
+          "clock_domains": [
+            "clk"
+          ],
+          "compare_mode": "fixed_latency",
+          "examples": [
+            {
+              "after_cycles": 1,
+              "expected": {
+                "grant": 1,
+                "wr_addr": 1,
+                "wr_data": 16,
+                "wr_en": 1
+              },
+              "inputs": {
+                "addr0": 1,
+                "addr1": 2,
+                "addr2": 3,
+                "addr3": 4,
+                "data0": 16,
+                "data1": 32,
+                "data2": 48,
+                "data3": 64,
+                "req": 15,
+                "rst": 0
+              }
+            },
+            {
+              "after_cycles": 4,
+              "expected": {
+                "grant": 8,
+                "wr_addr": 4,
+                "wr_data": 64,
+                "wr_en": 1
+              },
+              "inputs": {
+                "addr0": 1,
+                "addr1": 2,
+                "addr2": 3,
+                "addr3": 4,
+                "data0": 16,
+                "data1": 32,
+                "data2": 48,
+                "data3": 64,
+                "req": 15,
+                "rst": 0
+              }
+            },
+            {
+              "after_cycles": 3,
+              "expected": {
+                "grant": 2,
+                "wr_addr": 2,
+                "wr_data": 32,
+                "wr_en": 1
+              },
+              "inputs": {
+                "addr0": 1,
+                "addr1": 2,
+                "addr2": 3,
+                "addr3": 4,
+                "data0": 16,
+                "data1": 32,
+                "data2": 48,
+                "data3": 64,
+                "req": 10,
+                "rst": 0
+              }
+            }
+          ],
+          "golden_model": "",
+          "interface_signature": null,
+          "latency": 1,
+          "latency_known": true,
+          "name": "rr_arbiter4",
+          "parameters": {},
+          "ports": [
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "clk",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "rst",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "req",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 4
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "addr0",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 3
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "data0",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 8
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "addr1",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 3
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "data1",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 8
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "addr2",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 3
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "data2",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 8
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "addr3",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 3
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "data3",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 8
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "grant",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 4
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "wr_en",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "wr_addr",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 3
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "wr_data",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 8
+            }
+          ],
+          "reset": {
+            "active_high": true,
+            "duration_cycles": 3,
+            "kind": "sync",
+            "signal": "rst"
+          }
+        },
+        {
+          "behavior": "8-entry by 8-bit register file with one synchronous write port and one registered read port, read-before-write. At each rising clk edge with rst low: rd_data takes mem[rd_addr] as it was BEFORE this edge's write (read-first: reading the address written at the same edge returns the old value; the new value is visible to a read sampled at the next edge); then, if wr_en = 1, mem[wr_addr] = wr_data. wr_addr and wr_data are ignored when wr_en = 0. rd_data is a register and holds between edges. Synchronous active-high rst at a rising edge clears all 8 entries and rd_data to 0 and blocks any write at that edge; reset has no effect between edges. Python oracle: cycle-level model, one step per rising edge; keep the 8 entries in state and return rd_data as registered by that edge. The driver applies the fixed latency of 1; do not add a delay queue. init() is the reset state (all entries zero) and a supplied rst must be handled.",
+          "clock_domains": [
+            "clk"
+          ],
+          "compare_mode": "fixed_latency",
+          "examples": [
+            {
+              "after_cycles": 1,
+              "expected": {
+                "rd_data": 0
+              },
+              "inputs": {
+                "rd_addr": 5,
+                "rst": 0,
+                "wr_addr": 5,
+                "wr_data": 165,
+                "wr_en": 1
+              }
+            },
+            {
+              "after_cycles": 2,
+              "expected": {
+                "rd_data": 165
+              },
+              "inputs": {
+                "rd_addr": 5,
+                "rst": 0,
+                "wr_addr": 5,
+                "wr_data": 165,
+                "wr_en": 1
+              }
+            },
+            {
+              "after_cycles": 2,
+              "expected": {
+                "rd_data": 0
+              },
+              "inputs": {
+                "rd_addr": 3,
+                "rst": 0,
+                "wr_addr": 3,
+                "wr_data": 255,
+                "wr_en": 0
+              }
+            }
+          ],
+          "golden_model": "",
+          "interface_signature": null,
+          "latency": 1,
+          "latency_known": true,
+          "name": "regfile8x8",
+          "parameters": {},
+          "ports": [
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "clk",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "rst",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "wr_en",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "wr_addr",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 3
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "wr_data",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 8
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "rd_addr",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 3
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "rd_data",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 8
+            }
+          ],
+          "reset": {
+            "active_high": true,
+            "duration_cycles": 3,
+            "kind": "sync",
+            "signal": "rst"
+          }
+        }
+      ],
+      "top_name": "rr_regfile"
+    },
+    "sha256": "4138d30db9e69af8f74ad67241765bffb736efb26b2e92b340113ef92a682c15",
+    "truncated": false
+  },
+  "clock_period_ns": 10.0,
+  "declared_latency": {
+    "cycles": null,
+    "known": false,
+    "meaning": "A source annotation declares numeric latency only when present. This known/cycles pair is authoritative for the current top module's annotation requirement. Only known=true requires a matching numeric top annotation. Child typed-module latency does not invent a top annotation for arbitrary aggregate wrappers. When known=false, absence of a top annotation is not a failed or unverifiable criterion. Unannotated numeric latency is UNKNOWN, not zero. Preserve the source's exact observable cycles and registered behavior. Annotation presence or absence alone is not independent proof of behavioral correctness; use the fixed source contract, all defined typed latency/minimum transfer age and deterministic verification, without inventing a numeric requirement.",
+    "source_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-02\\tier4_z427ytzk\\rr_regfile_build\\iter_000\\rr_regfile.v",
+    "source_sha256": "f4c386f8af1b0168c36654eee26dcef618d72d3a7237386b95ad28a7987bfa55"
+  },
+  "edit_scope": {
+    "children": [
+      "rr_arbiter4",
+      "regfile8x8"
+    ],
+    "mode": "whole_design",
+    "reason": "The supplied testbench instantiates the top rr_regfile and is the trusted integration authority, so every generated child module and the mechanical top form one editable unit verified through the top. Per-child generated oracles and testbenches verified the baseline children only and are not evidence for changed children.",
+    "testbench_modules": [],
+    "top": "rr_regfile"
+  },
+  "execution_context": {
+    "dependencies": [],
+    "implementation": "chip_top",
+    "part": "xc7a35tcpg236-1",
+    "period_ns": 10.0,
+    "promotions": {
+      "Designutils 20-1307": "ERROR",
+      "Synth 8-327": "ERROR",
+      "Synth 8-3352": "ERROR",
+      "Synth 8-9873": "ERROR",
+      "VRFC 10-3609": "ERROR"
+    },
+    "synthesis_template": "82fa3469b365c54e445b50a587f2dfd2ca06256e842bb05a2596faac46249cd4",
+    "tb": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-02\\tier4_z427ytzk\\rr_regfile_build\\inputs\\testbench_path.v",
+      "sha256": "e71840495db4324b9a11e09cba164c682f97f92477679f8daf1ed0819ba50a0a"
+    },
+    "tools": {
+      "vivado_bin": {
+        "path": "C:\\AMDDesignTools\\2025.2\\Vivado\\bin\\vivado.bat",
+        "sha256": "4f9c05aea82a71c7086a9e5edf01ba16ea70255f69cf3420c58b805ec113e994"
+      },
+      "xelab_bin": {
+        "path": "C:\\AMDDesignTools\\2025.2\\Vivado\\bin\\xelab.bat",
+        "sha256": "512a29ace988992d7fab14ca84f20f0b4515bb69ef1d5fef0a57c5f28b72c9b1"
+      },
+      "xsim_bin": {
+        "path": "C:\\AMDDesignTools\\2025.2\\Vivado\\bin\\xsim.bat",
+        "sha256": "8819fbb54fdf9cbcaaf24c2bf72801b403d5c93e0990ba32408b56c666761d21"
+      },
+      "xvlog_bin": {
+        "path": "C:\\AMDDesignTools\\2025.2\\Vivado\\bin\\xvlog.bat",
+        "sha256": "512a29ace988992d7fab14ca84f20f0b4515bb69ef1d5fef0a57c5f28b72c9b1"
+      }
+    },
+    "top": "rr_regfile"
+  },
+  "first_violated_path_excerpt": null,
+  "flow_and_constraints": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-02\\tier4_z427ytzk\\rr_regfile_build\\iter_000\\synth.tcl",
+      "sha256": "a733cf310175e3ddfe28a5f9097db769964ee14713bf16479c95220986c6f256",
+      "text": "set_msg_config -id {VRFC 10-3609} -new_severity ERROR\r\nset_msg_config -id {Synth 8-9873} -new_severity ERROR\r\nset_msg_config -id {Designutils 20-1307} -new_severity ERROR\r\nset_msg_config -id {Synth 8-327} -new_severity ERROR\r\nset_msg_config -id {Synth 8-3352} -new_severity ERROR\r\nset_part xc7a35tcpg236-1\r\nread_verilog \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t4-02/tier4_z427ytzk/rr_regfile_build/iter_000/rr_regfile.v\"\r\nset fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t4-02/tier4_z427ytzk/rr_regfile_build/iter_000/timing.xdc\" w]\r\nputs $fp {create_clock -period 10.000 -name clk [get_ports clk]}\r\nclose $fp\r\nread_xdc \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t4-02/tier4_z427ytzk/rr_regfile_build/iter_000/timing.xdc\"\r\nsynth_design -top rr_regfile -flatten_hierarchy rebuilt \r\nset fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t4-02/tier4_z427ytzk/rr_regfile_build/iter_000/timing_io.tcl\" w]\r\nputs $fp {set data_inputs [get_ports -filter {DIRECTION == IN && NAME != clk}]}\r\nputs $fp {if {[llength $data_inputs] > 0} {set_input_delay -clock clk -max 0.000 $data_inputs; set_input_delay -clock clk -min 0.000 $data_inputs}}\r\nputs $fp {if {[llength [all_outputs]] > 0} {set_output_delay -clock clk -max 0.000 [all_outputs]; set_output_delay -clock clk -min 0.000 [all_outputs]}}\r\nclose $fp\r\nsource \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t4-02/tier4_z427ytzk/rr_regfile_build/iter_000/timing_io.tcl\"\r\nreport_utilization -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t4-02/tier4_z427ytzk/rr_regfile_build/iter_000/utilization.rpt\"\r\nreport_timing_summary -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t4-02/tier4_z427ytzk/rr_regfile_build/iter_000/timing.rpt\"\r\nopt_design\r\nplace_design\r\n\r\nroute_design\r\nreport_utilization -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t4-02/tier4_z427ytzk/rr_regfile_build/iter_000/utilization_routed.rpt\"\r\nreport_timing_summary -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t4-02/tier4_z427ytzk/rr_regfile_build/iter_000/timing_routed.rpt\"\r\ncatch { if {[llength [all_registers]] > 0} { report_timing -from [all_registers] -to [all_registers] -max_paths 1 -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t4-02/tier4_z427ytzk/rr_regfile_build/iter_000/timing_reg2reg.rpt\" } }\r\nreport_design_analysis -logic_level_distribution -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t4-02/tier4_z427ytzk/rr_regfile_build/iter_000/design_analysis.rpt\"\r\nreport_power -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t4-02/tier4_z427ytzk/rr_regfile_build/iter_000/power.rpt\"\r\ncatch { report_methodology -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t4-02/tier4_z427ytzk/rr_regfile_build/iter_000/methodology.rpt\" }\r\ncatch { report_qor_suggestions -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t4-02/tier4_z427ytzk/rr_regfile_build/iter_000/qor_suggestions.rpt\" }\r\nputs \"SYNTH_COMPLETE\"\r\n",
+      "truncated": false
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-02\\tier4_z427ytzk\\rr_regfile_build\\iter_000\\timing.xdc",
+      "sha256": "fa142c09f0fadb5e303ca9fea08c02bc353451533e44aeee9cd9a0231cc8bede",
+      "text": "create_clock -period 10.000 -name clk [get_ports clk]\r\n",
+      "truncated": false
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-02\\tier4_z427ytzk\\rr_regfile_build\\iter_000\\timing_io.tcl",
+      "sha256": "6b38098841a48bbb3ab15de49d2bf2baf7e4384f599259ff5f3afa2c2b1daf00",
+      "text": "set data_inputs [get_ports -filter {DIRECTION == IN && NAME != clk}]\r\nif {[llength $data_inputs] > 0} {set_input_delay -clock clk -max 0.000 $data_inputs; set_input_delay -clock clk -min 0.000 $data_inputs}\r\nif {[llength [all_outputs]] > 0} {set_output_delay -clock clk -max 0.000 [all_outputs]; set_output_delay -clock clk -min 0.000 [all_outputs]}\r\n",
+      "truncated": false
+    }
+  ],
+  "hard_gates": [
+    "Preserve typed build spec defined behavior, ports, parameter defaults, reset and observable cycles; explicitly unspecified cases remain unspecified.",
+    "Use the fixed provided testbench, tools, device and constraints without modification.",
+    "Static/interface checks, compile, simulation and real routed metric integrity must pass.",
+    "Timing closure requires setup slack >= 0 and hold slack >= 0.",
+    "Unknown or absent evidence cannot count as success."
+  ],
+  "implementation": {
+    "meaning": "Chip-top implementation: the top is the whole FPGA design. Every port bit gets an I/O buffer on a package pin, and data ports have zero input and output delay to clk, so the routed WNS and WHS include pad delay. Utilization includes the I/O buffers.",
+    "mode": "chip_top"
+  },
+  "metric_provenance": "Structured metrics are parsed from retained reports; routed utilization/timing reports take precedence when present. The manifest identifies complete files by hash. Header excerpts are bounded previews, not complete reports or an independent metric source.",
+  "objective": "minimize_luts",
+  "objective_policy": "First establish timing feasibility. A verified timing-feasible candidate may replace a known timing-infeasible previous best even with higher area or power; classify this as timing_recovery, not objective savings. While the previous best is timing-infeasible, a verified still-infeasible candidate with strictly better setup WNS and hold not worse beyond a small tolerance may replace it as timing_progress, which is not closure; a feasible candidate always outranks it. Once both are timing-feasible, require strict improvement of the chosen objective; for maximize_freq that is register-to-register setup slack (reg2reg_wns_ns) when both designs report it, otherwise full setup WNS for both, while feasibility stays on full WNS and WHS. minimize_luts compares (lut_used, ff_used) and minimize_ffs compares (ff_used, lut_used) lexicographically: an equal primary metric with a strictly lower secondary is an objective improvement, a higher primary never is, and a secondary missing from either design gives no tie-break. Unknown or contradictory incumbent timing evidence cannot establish recovery. A completed experiment may find no improvement. Do not invent mandatory savings, slack margins, tool versions, timing corners, new tests, thresholds, code-style quotas or external environment requirements.",
+  "part": "xc7a35tcpg236-1",
+  "report_headers": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-02\\tier4_z427ytzk\\rr_regfile_build\\iter_000\\power.rpt",
+      "sha256": "857dc0a5992857453a4ec3267d2d052fda1a38705f72ba45feba063e8709d21f",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n-------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version     : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date             : Tue Nov  3 07:41:38 2026\r\n| Host             : Baah running 64-bit major release  (build 9200)\r\n| Command          : report_power -file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t4-02/tier4_z427ytzk/rr_regfile_build/iter_000/power.rpt\r\n| Design           : rr_regfile\r\n| Device           : xc7a35tcpg236-1\r\n| Design State     : routed\r\n| Grade            : commercial\r\n| Process          : typical\r\n| Characterization : Production\r\n-------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nPower Report\r\n\r\nTable of Contents\r\n-----------------\r\n1. Summary\r\n1.1 On-Chip Components\r\n1.2 Power Supply Summary\r\n1.3 Confidence Level\r\n2. Settings\r\n2.1 Environment\r\n2.2 Clock Constraints\r\n3. Detailed Reports\r\n3.1 By Hierarchy\r\n\r\n1. Summary\r\n----------\r\n\r\n+--------------------------+--------------+\r\n| Total On-Chip Power (W)  | 0.131        |\r\n| Design Power Budget (W)  | Unspecified* |\r\n| Power Budget Margin (W)  | NA           |\r\n| Dynamic (W)              | 0.061        |\r\n| Device Static (W)        | 0.070        |\r\n| Effective TJA (C/W)      | 5.0          |\r\n| Max Ambient (C)          | 84.3         |\r\n| Junction Temperature (C) | 25.7         |\r\n| Confidence Level         | Low          |\r\n| Setting File             | ---          |\r\n| Simulation Activity File | ---",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-02\\tier4_z427ytzk\\rr_regfile_build\\iter_000\\timing.rpt",
+      "sha256": "23731ade96f84f99e9b3ad0caf790138428355ced421438a5430709055070273",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n-----------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date         : Tue Nov  3 07:41:10 2026\r\n| Host         : Baah running 64-bit major release  (build 9200)\r\n| Command      : report_timing_summary -file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t4-02/tier4_z427ytzk/rr_regfile_build/iter_000/timing.rpt\r\n| Design       : rr_regfile\r\n| Device       : 7a35t-cpg236\r\n| Speed File   : -1  PRODUCTION 1.23 2018-06-13\r\n| Design State : Synthesized\r\n-----------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nTiming Summary Report\r\n\r\n------------------------------------------------------------------------------------------------\r\n| Timer Settings\r\n| --------------\r\n------------------------------------------------------------------------------------------------\r\n\r\n  Enable Multi Corner Analysis               :  Yes\r\n  Enable Pessimism Removal                   :  Yes\r\n  Pessimism Removal Resolution               :  Nearest Common Node\r\n  Enable Input Delay Default Clock           :  No\r\n  Enable Preset / Clear Arcs                 :  No\r\n  Disable Flight Delays                      :  No\r\n  Ignore I/O Paths                           :  No\r\n  Timing Early Launch at Borrowing Latches   :  No\r\n  Borrow Time for Max Delay Exceptions       :  Yes\r\n  Merge Timing Exceptions                    :  Yes\r\n  Inter-SLR Compensation                     :  Cons",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-02\\tier4_z427ytzk\\rr_regfile_build\\iter_000\\timing_reg2reg.rpt",
+      "sha256": "9989935b2922dc7f1d95630f12c98f28f991058ea44685dcf1fa0391d799faf8",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date         : Tue Nov  3 07:41:38 2026\r\n| Host         : Baah running 64-bit major release  (build 9200)\r\n| Command      : report_timing -from [all_registers] -to [all_registers] -max_paths 1 -file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t4-02/tier4_z427ytzk/rr_regfile_build/iter_000/timing_reg2reg.rpt\r\n| Design       : rr_regfile\r\n| Device       : 7a35t-cpg236\r\n| Speed File   : -1  PRODUCTION 1.23 2018-06-13\r\n| Design State : Routed\r\n------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nTiming Report\r\n\r\nSlack (MET) :             5.549ns  (required time - arrival time)\r\n  Source:                 u_rr_arbiter4/FSM_sequential_last_reg[1]/C\r\n                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@5.000ns period=10.000ns})\r\n  Destination:            u_rr_arbiter4/wr_data_reg_reg[0]/D\r\n                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@5.000ns period=10.000ns})\r\n  Path Group:             clk\r\n  Path Type:              Setup (Max at Slow Process Corner)\r\n  Requirement:            10.000ns  (clk rise@10.000ns - clk rise@0.000ns)\r\n  Data Path Delay:        4.346ns  (logic 0.842ns (19.376%)  ",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-02\\tier4_z427ytzk\\rr_regfile_build\\iter_000\\timing_routed.rpt",
+      "sha256": "e13334d50f8ed9d56c451e77174e67f2122678d126817b4eb761d8d993c58fba",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date         : Tue Nov  3 07:41:38 2026\r\n| Host         : Baah running 64-bit major release  (build 9200)\r\n| Command      : report_timing_summary -file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t4-02/tier4_z427ytzk/rr_regfile_build/iter_000/timing_routed.rpt\r\n| Design       : rr_regfile\r\n| Device       : 7a35t-cpg236\r\n| Speed File   : -1  PRODUCTION 1.23 2018-06-13\r\n| Design State : Routed\r\n------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nTiming Summary Report\r\n\r\n------------------------------------------------------------------------------------------------\r\n| Timer Settings\r\n| --------------\r\n------------------------------------------------------------------------------------------------\r\n\r\n  Enable Multi Corner Analysis               :  Yes\r\n  Enable Pessimism Removal                   :  Yes\r\n  Pessimism Removal Resolution               :  Nearest Common Node\r\n  Enable Input Delay Default Clock           :  No\r\n  Enable Preset / Clear Arcs                 :  No\r\n  Disable Flight Delays                      :  No\r\n  Ignore I/O Paths                           :  No\r\n  Timing Early Launch at Borrowing Latches   :  No\r\n  Borrow Time for Max Delay Exceptions       :  Yes\r\n  Merge Timing Exceptions                    :  Yes\r\n  Inter-SLR Compensation            ",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-02\\tier4_z427ytzk\\rr_regfile_build\\iter_000\\utilization.rpt",
+      "sha256": "4d42a1eedb7d75cf145640661c6d57489a27a0bed1332ccbe3e71a2a1850c5d4",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\n-------------------------------------------------------------------------------------------------------------------------------------------------------------------\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\n| Date         : Tue Nov  3 07:41:10 2026\n| Host         : Baah running 64-bit major release  (build 9200)\n| Command      : report_utilization -file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t4-02/tier4_z427ytzk/rr_regfile_build/iter_000/utilization.rpt\n| Design       : rr_regfile\n| Device       : xc7a35tcpg236-1\n| Speed File   : -1\n| Design State : Synthesized\n-------------------------------------------------------------------------------------------------------------------------------------------------------------------\n\nUtilization Design Information\n\nTable of Contents\n-----------------\n1. Slice Logic\n1.1 Summary of Registers by Type\n2. Memory\n3. DSP\n4. IO and GT Specific\n5. Clocking\n6. Specific Feature\n7. Primitives\n8. Black Boxes\n9. Instantiated Netlists\n\n1. Slice Logic\n--------------\n\n+-------------------------+------+-------+------------+-----------+-------+\n|        Site Type        | Used | Fixed | Prohibited | Available | Util% |\n+-------------------------+------+-------+------------+-----------+-------+\n| Slice LUTs*             |   42 |     0 |          0 |     20800 |  0.20 |\n|   LUT as Logic          |   42 |     0 |          0 |     20800 |  0.20 |\n|   LUT as Memory         |    0 |     0 |          0 |      9600 |  0.00 |\n| Slice Registers         |   90 |     0 |          0 |     41600 |  0.22 |\n|   Register as Flip Flop |   90 |     0 |          0 |     41600 |  0.22 |\n| ",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-02\\tier4_z427ytzk\\rr_regfile_build\\iter_000\\utilization_routed.rpt",
+      "sha256": "a38890a428ac14011096b65749b622a9d3d4d03942243bfcaebe24abb879dff8",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\n| Date         : Tue Nov  3 07:41:38 2026\n| Host         : Baah running 64-bit major release  (build 9200)\n| Command      : report_utilization -file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t4-02/tier4_z427ytzk/rr_regfile_build/iter_000/utilization_routed.rpt\n| Design       : rr_regfile\n| Device       : xc7a35tcpg236-1\n| Speed File   : -1\n| Design State : Routed\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n\nUtilization Design Information\n\nTable of Contents\n-----------------\n1. Slice Logic\n1.1 Summary of Registers by Type\n2. Slice Logic Distribution\n3. Memory\n4. DSP\n5. IO and GT Specific\n6. Clocking\n7. Specific Feature\n8. Primitives\n9. Black Boxes\n10. Instantiated Netlists\n\n1. Slice Logic\n--------------\n\n+-------------------------+------+-------+------------+-----------+-------+\n|        Site Type        | Used | Fixed | Prohibited | Available | Util% |\n+-------------------------+------+-------+------------+-----------+-------+\n| Slice LUTs              |   42 |     0 |          0 |     20800 |  0.20 |\n|   LUT as Logic          |   42 |     0 |          0 |     20800 |  0.20 |\n|   LUT as Memory         |    0 |     0 |          0 |      9600 |  0.00 |\n| Slice Registers         |   90 |     0 |          0 |     41600 |  0.22 |\n|   Register as Flip Flop |   90 ",
+      "truncated": true
+    }
+  ],
+  "report_manifest": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-02\\tier4_z427ytzk\\rr_regfile_build\\iter_000\\power.rpt",
+      "sha256": "857dc0a5992857453a4ec3267d2d052fda1a38705f72ba45feba063e8709d21f"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-02\\tier4_z427ytzk\\rr_regfile_build\\iter_000\\timing.rpt",
+      "sha256": "23731ade96f84f99e9b3ad0caf790138428355ced421438a5430709055070273"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-02\\tier4_z427ytzk\\rr_regfile_build\\iter_000\\timing_reg2reg.rpt",
+      "sha256": "9989935b2922dc7f1d95630f12c98f28f991058ea44685dcf1fa0391d799faf8"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-02\\tier4_z427ytzk\\rr_regfile_build\\iter_000\\timing_routed.rpt",
+      "sha256": "e13334d50f8ed9d56c451e77174e67f2122678d126817b4eb761d8d993c58fba"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-02\\tier4_z427ytzk\\rr_regfile_build\\iter_000\\utilization.rpt",
+      "sha256": "4d42a1eedb7d75cf145640661c6d57489a27a0bed1332ccbe3e71a2a1850c5d4"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-02\\tier4_z427ytzk\\rr_regfile_build\\iter_000\\utilization_routed.rpt",
+      "sha256": "a38890a428ac14011096b65749b622a9d3d4d03942243bfcaebe24abb879dff8"
+    }
+  ],
+  "schema_version": 1,
+  "simulation": {
+    "failure_verdict": "TEST FAILED",
+    "required_verdict": "TEST PASSED",
+    "scope": "Provided testbench checks; not a formal equivalence proof.",
+    "tools": [
+      "xvlog",
+      "xelab",
+      "xsim -runall"
+    ]
+  },
+  "sources": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-02\\tier4_z427ytzk\\rr_regfile_build\\iter_000\\rr_regfile.v",
+      "sha256": "f4c386f8af1b0168c36654eee26dcef618d72d3a7237386b95ad28a7987bfa55",
+      "text": "`timescale 1ns/1ps\r\n// @latency 1\r\nmodule rr_arbiter4 (\r\n    input wire clk,\r\n    input wire rst,\r\n    input wire [3:0] req,\r\n    input wire [2:0] addr0,\r\n    input wire [7:0] data0,\r\n    input wire [2:0] addr1,\r\n    input wire [7:0] data1,\r\n    input wire [2:0] addr2,\r\n    input wire [7:0] data2,\r\n    input wire [2:0] addr3,\r\n    input wire [7:0] data3,\r\n    output wire [3:0] grant,\r\n    output wire wr_en,\r\n    output wire [2:0] wr_addr,\r\n    output wire [7:0] wr_data\r\n);\r\n\r\n    reg [1:0] last;\r\n    reg [1:0] winner;\r\n    reg winner_valid;\r\n    reg [3:0] grant_reg;\r\n    reg wr_en_reg;\r\n    reg [2:0] wr_addr_reg;\r\n    reg [7:0] wr_data_reg;\r\n\r\n    assign grant = grant_reg;\r\n    assign wr_en = wr_en_reg;\r\n    assign wr_addr = wr_addr_reg;\r\n    assign wr_data = wr_data_reg;\r\n\r\n    always @(*) begin\r\n        winner = 2'd0;\r\n        winner_valid = 1'b0;\r\n\r\n        case (last)\r\n            2'd0: begin\r\n                if (req[1]) begin\r\n                    winner = 2'd1;\r\n                    winner_valid = 1'b1;\r\n                end else if (req[2]) begin\r\n                    winner = 2'd2;\r\n                    winner_valid = 1'b1;\r\n                end else if (req[3]) begin\r\n                    winner = 2'd3;\r\n                    winner_valid = 1'b1;\r\n                end else if (req[0]) begin\r\n                    winner = 2'd0;\r\n                    winner_valid = 1'b1;\r\n                end\r\n            end\r\n            2'd1: begin\r\n                if (req[2]) begin\r\n                    winner = 2'd2;\r\n                    winner_valid = 1'b1;\r\n                end else if (req[3]) begin\r\n                    winner = 2'd3;\r\n                    winner_valid = 1'b1;\r\n                end else if (req[0]) begin\r\n                    winner = 2'd0;\r\n                    winner_valid = 1'b1;\r\n                end else if (req[1]) begin\r\n                    winner = 2'd1;\r\n                    winner_valid = 1'b1;\r\n                end\r\n            end\r\n            2'd2: begin\r\n                if (req[3]) begin\r\n                    winner = 2'd3;\r\n                    winner_valid = 1'b1;\r\n                end else if (req[0]) begin\r\n                    winner = 2'd0;\r\n                    winner_valid = 1'b1;\r\n                end else if (req[1]) begin\r\n                    winner = 2'd1;\r\n                    winner_valid = 1'b1;\r\n                end else if (req[2]) begin\r\n                    winner = 2'd2;\r\n                    winner_valid = 1'b1;\r\n                end\r\n            end\r\n            default: begin\r\n                if (req[0]) begin\r\n                    winner = 2'd0;\r\n                    winner_valid = 1'b1;\r\n                end else if (req[1]) begin\r\n                    winner = 2'd1;\r\n                    winner_valid = 1'b1;\r\n                end else if (req[2]) begin\r\n                    winner = 2'd2;\r\n                    winner_valid = 1'b1;\r\n                end else if (req[3]) begin\r\n                    winner = 2'd3;\r\n                    winner_valid = 1'b1;\r\n                end\r\n            end\r\n        endcase\r\n    end\r\n\r\n    always @(posedge clk) begin\r\n        if (rst) begin\r\n            last <= 2'd3;\r\n            grant_reg <= 4'b0000;\r\n            wr_en_reg <= 1'b0;\r\n            wr_addr_reg <= 3'b000;\r\n            wr_data_reg <= 8'b00000000;\r\n        end else if (winner_valid) begin\r\n            last <= winner;\r\n            grant_reg <= 4'b0001 << winner;\r\n            wr_en_reg <= 1'b1;\r\n            case (winner)\r\n                2'd0: begin\r\n                    wr_addr_reg <= addr0;\r\n                    wr_data_reg <= data0;\r\n                end\r\n                2'd1: begin\r\n                    wr_addr_reg <= addr1;\r\n                    wr_data_reg <= data1;\r\n                end\r\n                2'd2: begin\r\n                    wr_addr_reg <= addr2;\r\n                    wr_data_reg <= data2;\r\n                end\r\n                default: begin\r\n                    wr_addr_reg <= addr3;\r\n                    wr_data_reg <= data3;\r\n                end\r\n            endcase\r\n        end else begin\r\n            grant_reg <= 4'b0000;\r\n            wr_en_reg <= 1'b0;\r\n            wr_addr_reg <= 3'b000;\r\n            wr_data_reg <= 8'b00000000;\r\n        end\r\n    end\r\n\r\nendmodule\r\n`timescale 1ns/1ps\r\n// @latency 1\r\nmodule regfile8x8 (\r\n    input wire clk,\r\n    input wire rst,\r\n    input wire wr_en,\r\n    input wire [2:0] wr_addr,\r\n    input wire [7:0] wr_data,\r\n    input wire [2:0] rd_addr,\r\n    output wire [7:0] rd_data\r\n);\r\n\r\n    reg [7:0] mem [0:7];\r\n    reg [7:0] rd_data_reg;\r\n    integer i;\r\n\r\n    assign rd_data = rd_data_reg;\r\n\r\n    always @(posedge clk) begin\r\n        if (rst) begin\r\n            for (i = 0; i < 8; i = i + 1)\r\n                mem[i] <= 8'b0;\r\n            rd_data_reg <= 8'b0;\r\n        end else begin\r\n            rd_data_reg <= mem[rd_addr];\r\n            if (wr_en)\r\n                mem[wr_addr] <= wr_data;\r\n        end\r\n    end\r\n\r\nendmodule\r\n`timescale 1ns/1ps\r\nmodule rr_regfile (\r\n    input wire clk,\r\n    input wire rst,\r\n    input wire [3:0] req,\r\n    input wire [2:0] addr0,\r\n    input wire [7:0] data0,\r\n    input wire [2:0] addr1,\r\n    input wire [7:0] data1,\r\n    input wire [2:0] addr2,\r\n    input wire [7:0] data2,\r\n    input wire [2:0] addr3,\r\n    input wire [7:0] data3,\r\n    input wire [2:0] rd_addr,\r\n    output wire [3:0] grant,\r\n    output wire [7:0] rd_data\r\n);\r\n    wire w_rr_arbiter4_wr_en;\r\n    wire [2:0] w_rr_arbiter4_wr_addr;\r\n    wire [7:0] w_rr_arbiter4_wr_data;\r\n    rr_arbiter4 u_rr_arbiter4 (\r\n        .clk(clk),\r\n        .rst(rst),\r\n        .req(req),\r\n        .addr0(addr0),\r\n        .data0(data0),\r\n        .addr1(addr1),\r\n        .data1(data1),\r\n        .addr2(addr2),\r\n        .data2(data2),\r\n        .addr3(addr3),\r\n        .data3(data3),\r\n        .grant(grant),\r\n        .wr_en(w_rr_arbiter4_wr_en),\r\n        .wr_addr(w_rr_arbiter4_wr_addr),\r\n        .wr_data(w_rr_arbiter4_wr_data)\r\n    );\r\n    regfile8x8 u_regfile8x8 (\r\n        .clk(clk),\r\n        .rst(rst),\r\n        .wr_en(w_rr_arbiter4_wr_en),\r\n        .wr_addr(w_rr_arbiter4_wr_addr),\r\n        .wr_data(w_rr_arbiter4_wr_data),\r\n        .rd_addr(rd_addr),\r\n        .rd_data(rd_data)\r\n    );\r\nendmodule\r\n",
+      "truncated": false
+    }
+  ],
+  "testbench": {
+    "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-02\\tier4_z427ytzk\\rr_regfile_build\\inputs\\testbench_path.v",
+    "sha256": "e71840495db4324b9a11e09cba164c682f97f92477679f8daf1ed0819ba50a0a",
+    "text": "`timescale 1ns/1ps\r\n// Independent integration checker for the arbiter + register file hierarchy.\r\n// It models round-robin arbitration, the registered write port and the\r\n// read-first register file itself, observes only the top ports (grant and\r\n// rd_data), and never reads DUT internals or the internal write channel.\r\nmodule rr_regfile_tb;\r\n    reg clk=0, rst=1;\r\n    reg [3:0] req=0;\r\n    reg [2:0] addr0=0, addr1=0, addr2=0, addr3=0, rd_addr=0;\r\n    reg [7:0] data0=0, data1=0, data2=0, data3=0;\r\n    wire [3:0] grant;\r\n    wire [7:0] rd_data;\r\n    rr_regfile dut(.clk(clk),.rst(rst),.req(req),.addr0(addr0),.data0(data0),\r\n        .addr1(addr1),.data1(data1),.addr2(addr2),.data2(data2),.addr3(addr3),\r\n        .data3(data3),.rd_addr(rd_addr),.grant(grant),.rd_data(rd_data));\r\n    always #5 clk=~clk;\r\n\r\n    // Reference state: arbiter pointer and registered write port, memory,\r\n    // registered read data.\r\n    integer m_last=3, m_winner=0;\r\n    reg [3:0] m_grant=0;\r\n    reg m_wen=0, started=0, nonzero=0;\r\n    reg [2:0] m_waddr=0;\r\n    reg [7:0] m_wdata=0, m_rd=0, next_rd=0;\r\n    reg [7:0] m_mem [0:7];\r\n    integer grants [0:3];\r\n    reg [15:0] patterns=0;\r\n    integer cycle=0, errors=0, collisions=0, idle_cycles=0, pending_resets=0;\r\n    integer nonzero_resets=0, pulses=0, i, k, idx;\r\n    reg [31:0] seed=32'h7f4a7c15;\r\n    reg [3:0] random_req;\r\n\r\n    task fail;\r\n        input [511:0] rule;\r\n        begin\r\n            errors=errors+1;\r\n            if(errors<=40) $display(\"FAIL BEHAVIOR rule=%0s cycle=%0d\",rule,cycle);\r\n        end\r\n    endtask\r\n    task coverage_fail;\r\n        input [511:0] rule;\r\n        begin errors=errors+1; $display(\"COVERAGE_FAIL rule=%0s\",rule); end\r\n    endtask\r\n\r\n    function [31:0] advance;\r\n        input [31:0] value;\r\n        reg [31:0] x;\r\n        begin x=value^(value<<13); x=x^(x>>17); advance=x^(x<<5); end\r\n    endfunction\r\n\r\n    task check_outputs;\r\n        begin\r\n            if(grant !== m_grant) fail(\"round_robin_one_hot_grant\");\r\n            if(rd_data !== m_rd) fail(\"read_first_register_file_data\");\r\n        end\r\n    endtask\r\n\r\n    // One clock cycle. Inputs change at the falling edge; outputs must hold\r\n    // between edges and match the model after each rising edge.\r\n    task step;\r\n        input reset_value;\r\n        input [3:0] req_value;\r\n        input [11:0] addr_value;  // {addr3,addr2,addr1,addr0}\r\n        input [31:0] data_value;  // {data3,data2,data1,data0}\r\n        input [2:0] read_value;\r\n        begin\r\n            @(negedge clk);\r\n            rst=reset_value; req=req_value; rd_addr=read_value;\r\n            {addr3,addr2,addr1,addr0}=addr_value;\r\n            {data3,data2,data1,data0}=data_value;\r\n            #1; if(started) check_outputs;\r\n            @(posedge clk);\r\n            cycle=cycle+1;\r\n            if(rst) begin\r\n                if(m_wen) pending_resets=pending_resets+1;\r\n                nonzero=0;\r\n                for(k=0;k<8;k=k+1) if(m_mem[k]!=0) nonzero=1;\r\n                if(nonzero) nonzero_resets=nonzero_resets+1;\r\n                for(k=0;k<8;k=k+1) m_mem[k]=0;\r\n                m_last=3; m_grant=0; m_wen=0; m_waddr=0; m_wdata=0; m_rd=0;\r\n            end else begin\r\n                // Register file: read the old contents, then apply the write\r\n                // registered by the arbiter at the previous edge.\r\n                next_rd=m_mem[read_value];\r\n                if(m_wen && m_waddr==read_value) collisions=collisions+1;\r\n                if(m_wen) m_mem[m_waddr]=m_wdata;\r\n                m_rd=next_rd;\r\n                // Arbiter: first requester after the last winner, cyclically.\r\n                patterns[req_value]=1'b1;\r\n                m_winner=-1;\r\n                for(k=1;k<=4;k=k+1) begin\r\n                    idx=(m_last+k)%4;\r\n                    if(m_winner<0 && req_value[idx]) m_winner=idx;\r\n                end\r\n                if(m_winner>=0) begin\r\n                    m_grant=4'b0001<<m_winner;\r\n                    m_wen=1;\r\n                    m_waddr=addr_value>>(3*m_winner);\r\n                    m_wdata=data_value>>(8*m_winner);\r\n                    m_last=m_winner;\r\n                    grants[m_winner]=grants[m_winner]+1;\r\n                end else begin\r\n                    m_grant=0; m_wen=0; m_waddr=0; m_wdata=0;\r\n                    idle_cycles=idle_cycles+1;\r\n                end\r\n            end\r\n            #1; started=1; check_outputs;\r\n        end\r\n    endtask\r\n\r\n    task rand_step;\r\n        input reset_value;\r\n        input [3:0] req_value;\r\n        input [2:0] read_value;\r\n        reg [11:0] addresses;\r\n        begin\r\n            seed=advance(seed); addresses=seed[11:0];\r\n            seed=advance(seed);\r\n            step(reset_value,req_value,addresses,seed,read_value);\r\n        end\r\n    endtask\r\n\r\n    // Called one ns after a rising edge: the pulse ends before the next one.\r\n    task pulse_reset;\r\n        begin\r\n            #1 rst=1;\r\n            #1 check_outputs;\r\n            #1 rst=0;\r\n            #0.5 check_outputs;\r\n            pulses=pulses+1;\r\n        end\r\n    endtask\r\n\r\n    initial begin\r\n        for(k=0;k<8;k=k+1) m_mem[k]=0;\r\n        for(k=0;k<4;k=k+1) grants[k]=0;\r\n        step(1,4'b0000,12'h000,32'h00000000,3'd0);\r\n        step(1,4'b1111,12'hfff,32'hffffffff,3'd7); // reset blocks arbitration and writes\r\n        // 1: all four request; grants rotate 0,1,2,3 with distinct addresses.\r\n        for(i=0;i<16;i=i+1) begin\r\n            seed=advance(seed);\r\n            step(0,4'b1111,{i[2:0]+3'd3,i[2:0]+3'd2,i[2:0]+3'd1,i[2:0]},seed,i[2:0]+3'd5);\r\n        end\r\n        // 2: every request pattern for three consecutive cycles.\r\n        for(i=0;i<16;i=i+1) begin\r\n            rand_step(0,i,i[2:0]); rand_step(0,i,i[2:0]+3'd1); rand_step(0,i,i[2:0]+3'd2);\r\n        end\r\n        // 3: a lone requester is granted at every edge.\r\n        for(i=0;i<4;i=i+1) begin\r\n            rand_step(0,4'b0001<<i,3'd0); rand_step(0,4'b0001<<i,3'd1);\r\n            rand_step(0,4'b0001<<i,3'd2); rand_step(0,4'b0001<<i,3'd3);\r\n        end\r\n        // 4: read-first collisions: requester 2 rewrites entry 5 every cycle\r\n        // while entry 5 is read.\r\n        for(i=0;i<8;i=i+1) begin\r\n            seed=advance(seed);\r\n            step(0,4'b0100,{3'd0,3'd5,3'd0,3'd0},seed,3'd5);\r\n        end\r\n        // 5: entry 0 keeps 0xC3 through idle cycles with noisy write inputs.\r\n        step(0,4'b0001,12'h000,32'h000000c3,3'd0);\r\n        for(i=0;i<6;i=i+1) begin\r\n            seed=advance(seed);\r\n            step(0,4'b0000,seed[11:0],seed,3'd0);\r\n        end\r\n        // 6: fill every entry, reset with a write pending, then check that the\r\n        // pointer restarts at requester 0 and every entry reads zero.\r\n        for(i=0;i<8;i=i+1) step(0,4'b0001,{9'd0,i[2:0]},{24'd0,8'h41+i[7:0]},i[2:0]);\r\n        step(0,4'b0001,12'h007,32'h00000099,3'd7);\r\n        step(1,4'b1111,12'hfff,32'hffffffff,3'd2);\r\n        for(i=0;i<7;i=i+1) step(0,4'b1111,12'hfff,32'h5a5a5a5a,i[2:0]);\r\n        step(0,4'b0000,12'h000,32'h00000000,3'd7);\r\n        // 7: off-edge reset pulses with nonzero grant, read data and entries.\r\n        for(i=0;i<8;i=i+1) step(0,4'b0010,{6'd0,i[2:0],3'd0},{16'd0,8'h81+i[7:0],8'd0},3'd6);\r\n        step(0,4'b1010,12'h000,32'h00000000,3'd3);\r\n        pulse_reset;\r\n        step(0,4'b1010,12'h000,32'h00000000,3'd4);\r\n        pulse_reset;\r\n        for(i=0;i<8;i=i+1) step(0,4'b0000,12'h000,32'h00000000,i[2:0]);\r\n        // 8: seeded random traffic with two synchronous resets.\r\n        for(i=0;i<1500;i=i+1) begin\r\n            seed=advance(seed);\r\n            random_req=seed[3:0];\r\n            rand_step(i==500 || i==1100,random_req,seed[6:4]);\r\n        end\r\n        // 9: read every entry back while idle.\r\n        for(i=0;i<10;i=i+1) rand_step(0,4'b0000,i[2:0]);\r\n        if(patterns!=16'hffff) coverage_fail(\"request_patterns\");\r\n        if(grants[0]<100 || grants[1]<100 || grants[2]<100 || grants[3]<100) coverage_fail(\"grants_per_requester\");\r\n        if(collisions<50 || idle_cycles<40) coverage_fail(\"collisions_idle\");\r\n        if(pending_resets<1 || nonzero_resets<1 || pulses!=2) coverage_fail(\"reset_pulses\");\r\n        $display(\"COVERAGE cycles=%0d grants=%0d/%0d/%0d/%0d collisions=%0d idle=%0d pending_resets=%0d nonzero_resets=%0d pulses=%0d\",\r\n            cycle,grants[0],grants[1],grants[2],grants[3],collisions,idle_cycles,pending_resets,nonzero_resets,pulses);\r\n        if(errors==0) $display(\"TEST PASSED\");\r\n        else $display(\"TEST FAILED: %0d errors\",errors);\r\n        $finish;\r\n    end\r\n    initial begin\r\n        #1000000;\r\n        $display(\"TEST FAILED: watchdog timeout\");\r\n        $finish;\r\n    end\r\nendmodule\r\n",
+    "truncated": false
+  },
+  "testbench_top": "rr_regfile_tb",
+  "tool_exit_evidence": {
+    "history_count": 4,
+    "latest_by_tool": {
+      "vivado": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-02\\tier4_z427ytzk\\rr_regfile_build\\iter_000\\vivado_synth_output.log",
+        "output_log_sha256": "75a762677d3ae51de456fddffdec04f3e3bb737a3f954086135f66d97b3fcfcf",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xelab": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-02\\tier4_z427ytzk\\rr_regfile_build\\iter_000\\xelab.log",
+        "output_log_sha256": "a692419104487b8423473843ffb731fc75308446cf2a077e38079216c96fc435",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xsim": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-02\\tier4_z427ytzk\\rr_regfile_build\\iter_000\\xsim.log",
+        "output_log_sha256": "d281264e856f6ef96574698f6bea7f8c0d1873e84bb43cb5d3ad0316feb38b63",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xvlog": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-02\\tier4_z427ytzk\\rr_regfile_build\\iter_000\\xvlog.log",
+        "output_log_sha256": "940a7e1daf8387aa51b08e80ee99fc7d8d96d66f6ab15775f3a6330debe00750",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      }
+    },
+    "missing_required_tools": [],
+    "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-02\\tier4_z427ytzk\\rr_regfile_build\\iter_000\\tool_exit_records.log",
+    "records": [
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-02\\tier4_z427ytzk\\rr_regfile_build\\iter_000",
+        "driver_returncode": 0,
+        "elapsed_seconds": 1.9218128999928012,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xvlog.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-02\\tier4_z427ytzk\\rr_regfile_build\\iter_000\\xvlog.log",
+        "output_log_sha256": "940a7e1daf8387aa51b08e80ee99fc7d8d96d66f6ab15775f3a6330debe00750",
+        "pid": 22556,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xvlog"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-02\\tier4_z427ytzk\\rr_regfile_build\\iter_000",
+        "driver_returncode": 0,
+        "elapsed_seconds": 2.0994831999996677,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xelab.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-02\\tier4_z427ytzk\\rr_regfile_build\\iter_000\\xelab.log",
+        "output_log_sha256": "a692419104487b8423473843ffb731fc75308446cf2a077e38079216c96fc435",
+        "pid": 20108,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xelab"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-02\\tier4_z427ytzk\\rr_regfile_build\\iter_000",
+        "driver_returncode": 0,
+        "elapsed_seconds": 3.1470994999981485,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xsim.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-02\\tier4_z427ytzk\\rr_regfile_build\\iter_000\\xsim.log",
+        "output_log_sha256": "d281264e856f6ef96574698f6bea7f8c0d1873e84bb43cb5d3ad0316feb38b63",
+        "pid": 14496,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xsim"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-02\\tier4_z427ytzk\\rr_regfile_build\\iter_000",
+        "driver_returncode": 0,
+        "elapsed_seconds": 92.97685930000443,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/vivado.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-02\\tier4_z427ytzk\\rr_regfile_build\\iter_000\\vivado_synth_output.log",
+        "output_log_sha256": "75a762677d3ae51de456fddffdec04f3e3bb737a3f954086135f66d97b3fcfcf",
+        "pid": 22512,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "vivado"
+      }
+    ],
+    "schema_valid": true,
+    "sha256": "2cbafbe80b196fe884887a64218edf29741d8771bbb6814ee302b3e8c7c873c7",
+    "status": "recorded",
+    "truncated": false
+  },
+  "top_module": "rr_regfile",
+  "verification_logs": [
+    {
+      "head": "INFO: [VRFC 10-2263] Analyzing Verilog file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t4-02/tier4_z427ytzk/rr_regfile_build/iter_000/rr_regfile.v\" into library work\r\nINFO: [VRFC 10-311] analyzing module rr_arbiter4\r\nINFO: [VRFC 10-311] analyzing module regfile8x8\r\nINFO: [VRFC 10-311] analyzing module rr_regfile\r\nINFO: [VRFC 10-2263] Analyzing Verilog file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t4-02/tier4_z427ytzk/rr_regfile_build/inputs/testbench_path.v\" into library work\r\nINFO: [VRFC 10-311] analyzing module rr_regfile_tb\r\n\r\n",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-02\\tier4_z427ytzk\\rr_regfile_build\\iter_000\\xvlog.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "940a7e1daf8387aa51b08e80ee99fc7d8d96d66f6ab15775f3a6330debe00750",
+      "tail": "",
+      "truncated": false
+    },
+    {
+      "head": "Vivado Simulator v2025.2\r\nCopyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\nCopyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\nRunning: C:/AMDDesignTools/2025.2/Vivado/bin/unwrapped/win64.o/xelab.exe rr_regfile_tb -s rr_regfile_tb_snap --debug off \r\nMulti-threading is on. Using 10 slave threads.\r\nStarting static elaboration\r\nPass Through NonSizing Optimizer\r\nCompleted static elaboration\r\nStarting simulation data flow analysis\r\nCompleted simulation data flow analysis\r\nTime Resolution for simulation is 1ps\r\nCompiling module work.rr_arbiter4\r\nCompiling module work.regfile8x8\r\nCompiling module work.rr_regfile\r\nCompiling module work.rr_regfile_tb\r\nBuilt simulation snapshot rr_regfile_tb_snap\r\n\r\n",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-02\\tier4_z427ytzk\\rr_regfile_build\\iter_000\\xelab.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "a692419104487b8423473843ffb731fc75308446cf2a077e38079216c96fc435",
+      "tail": "",
+      "truncated": false
+    },
+    {
+      "head": "\r\n****** xsim v2025.2 (64-bit)\r\n  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025\r\n  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025\r\n  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025\r\n  **** Start of session at: Tue Nov  3 07:40:04 2026\r\n    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\n    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n\r\nsource xsim.dir/rr_regfile_tb_snap/xsim_script.tcl\r\n# xsim {rr_regfile_tb_snap} -autoloadwcfg -runall\r\nTime resolution is 1 ps\r\nrun -all\r\nCOVERAGE cycles=1643 grants=392/362/388/380 collisions=192 idle=116 pending_resets=3 nonzero_resets=3 pulses=2\r\nTEST PASSED\r\n$finish called at time : 16436 ns : File \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t4-02/tier4_z427ytzk/rr_regfile_build/inputs/testbench_path.v\" Line 195\r\nexit\r\nINFO: [Common 17-206] Exiting xsim at Tue Nov  3 07:40:06 2026...\r\n\r\n",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-02\\tier4_z427ytzk\\rr_regfile_build\\iter_000\\sim_log.txt",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "d281264e856f6ef96574698f6bea7f8c0d1873e84bb43cb5d3ad0316feb38b63",
+      "tail": "",
+      "truncated": false
+    },
+    {
+      "head": "\r\n****** Vivado v2025.2 (64-bit)\r\n  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025\r\n  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025\r\n  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025\r\n  **** Start of session at: Tue Nov  3 07:40:07 2026\r\n    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\n    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n\r\nsource C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t4-02/tier4_z427ytzk/rr_regfile_build/iter_000/synth.tcl\r\n# set_msg_config -id {VRFC 10-3609} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-9873} -new_severity ERROR\r\n# set_msg_config -id {Designutils 20-1307} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-327} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-3352} -new_severity ERROR\r\n# set_part xc7a35tcpg236-1\r\nINFO: [Coretcl 2-1500] The part has been set to 'xc7a35tcpg236-1' for the current project only. Run set_part -help for more details. To evaluate different speed grades in the current design, use the set_speed_grade command, or use the open_checkpoint -part command to change the part used by an existing checkpoint design.\r\nset_part: Time (s): cpu = 00:00:13 ; elapsed = 00:00:09 . Memory (MB): peak = 531.219 ; gain = 223.984\r\n# read_verilog \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t4-02/tier4_z427ytzk/rr_regfile_build/iter_000/rr_regfile.v\"\r\n# set fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t4-02/tier4_z427ytzk/rr_regfile_build/iter_000/timing.xdc\" w]\r\n# puts $fp {create_clock -period 10.000 -name clk [get_ports clk]}\r\n# close $fp\r\n# read_xdc \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t4-02/tier4_z427ytzk/rr_regfile_build/iter_000/timing.xdc\"\r\n# synth_design -top rr_regfile -flatt",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-02\\tier4_z427ytzk\\rr_regfile_build\\iter_000\\vivado_synth_output.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "75a762677d3ae51de456fddffdec04f3e3bb737a3f954086135f66d97b3fcfcf",
+      "tail": "t4-02/tier4_z427ytzk/rr_regfile_build/iter_000/power.rpt\r\nRunning Vector-less Activity Propagation...\r\n\r\nFinished Running Vector-less Activity Propagation\r\n0 Infos, 0 Warnings, 0 Critical Warnings and 0 Errors encountered.\r\nreport_power completed successfully\r\n# catch { report_methodology -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t4-02/tier4_z427ytzk/rr_regfile_build/iter_000/methodology.rpt\" }\r\nCommand: report_methodology -file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t4-02/tier4_z427ytzk/rr_regfile_build/iter_000/methodology.rpt\r\nINFO: [Timing 38-35] Done setting XDC timing constraints.\r\nINFO: [DRC 23-133] Running Methodology with 2 threads\r\nINFO: [Vivado_Tcl 2-1520] The results of Report Methodology are in file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t4-02/tier4_z427ytzk/rr_regfile_build/iter_000/methodology.rpt.\r\nreport_methodology completed successfully\r\n# catch { report_qor_suggestions -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t4-02/tier4_z427ytzk/rr_regfile_build/iter_000/qor_suggestions.rpt\" }\r\nCommand: report_qor_suggestions -file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t4-02/tier4_z427ytzk/rr_regfile_build/iter_000/qor_suggestions.rpt\r\nCongestion Prediction Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.009 . Memory (MB): peak = 1986.805 ; gain = 0.000\r\nINFO: [Implflow 47-1309] PredResultString: 1:30.15:69.85\r\nfeatureProvider Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.020 . Memory (MB): peak = 1986.805 ; gain = 0.000\r\nINFO: [Implflow 47-1274] ML strategy prediction is not supported for 7-series devices.\r\nreport_qor_suggestions completed successfully\r\n# puts \"SYNTH_COMPLETE\"\r\nSYNTH_COMPLETE\r\nINFO: [Common 17-206] Exiting Vivado at Tue Nov  3 07:41:39 2026...\r\n\r\n",
+      "truncated": true
+    }
+  ]
+}

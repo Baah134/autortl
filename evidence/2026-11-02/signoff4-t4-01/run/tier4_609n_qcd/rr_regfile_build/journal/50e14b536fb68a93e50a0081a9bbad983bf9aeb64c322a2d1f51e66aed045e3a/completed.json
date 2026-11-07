@@ -1,0 +1,5 @@
+{
+  "stage": "module_regfile8x8:model:generator.golden_model:0",
+  "result": "def init():\n    return dict(mem=[0, 0, 0, 0, 0, 0, 0, 0], rd_data=0)\n\ndef step(state, inputs):\n    mem = state.get(\"mem\", [0, 0, 0, 0, 0, 0, 0, 0])\n    rd_data = state.get(\"rd_data\", 0)\n\n    if inputs.get(\"rst\", 0):\n        mem = [0, 0, 0, 0, 0, 0, 0, 0]\n        rd_data = 0\n    else:\n        rd_addr = int(inputs.get(\"rd_addr\", 0)) & 7\n        rd_data = mem[rd_addr] & 255\n\n        if inputs.get(\"wr_en\", 0):\n            wr_addr = int(inputs.get(\"wr_addr\", 0)) & 7\n            wr_data = int(inputs.get(\"wr_data\", 0)) & 255\n            mem[wr_addr] = wr_data\n\n    state = dict(mem=mem, rd_data=rd_data)\n    outputs = dict(rd_data=rd_data & 255)\n    return state, outputs",
+  "artifacts": {}
+}

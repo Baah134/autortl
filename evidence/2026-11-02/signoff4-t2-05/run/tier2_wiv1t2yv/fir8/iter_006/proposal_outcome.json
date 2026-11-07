@@ -1,0 +1,45 @@
+{
+  "candidates": [
+    {
+      "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-05\\tier2_wiv1t2yv\\fir8\\iter_006\\cand_standard",
+      "cache_hit": false,
+      "final_code_hash": "13e75fbc197d3760",
+      "final_source_sha256": "44bb914b8ec6475fa58159b95327ee48286ccb90987f0bb1088bd46cbdbe9fe0",
+      "flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-05\\tier2_wiv1t2yv\\fir8\\iter_006\\cand_standard\\synth.tcl",
+        "sha256": "2a7b8e6de2555c8061e6deeada2f8901cc24a584949f7b6e6d92ce74ada90534"
+      },
+      "generated_code_hash": "13e75fbc197d3760",
+      "generated_source_sha256": "44bb914b8ec6475fa58159b95327ee48286ccb90987f0bb1088bd46cbdbe9fe0",
+      "instruction": "In `fir8`, retain `x_d`, `p0`\u2013`p7`, `acc1`\u2013`acc7`, `y_out`, the sequential reset and update structure, and `// @latency 1`. Isolate each existing 32-bit accumulation expression (`p6 + acc7` through `p1 + acc2`, and `p0 + acc1`) as a signed 32-bit sum wire with `(* use_dsp = \"no\" *)`, then register that sum into the same destination on the same edge; leave `acc7 <= p7` unchanged. Preserve the full 32-bit wraparound and verify that the mapped path no longer cascades through multiple DSP48E1s, while checking simulation, routed setup and hold, and reg-to-reg WNS against the 1.387 ns incumbent.",
+      "iteration": 6,
+      "metrics": {
+        "bram_used": 0.0,
+        "dsp_used": 0,
+        "dynamic_power_w": 0.012,
+        "ff_used": 259,
+        "lut_used": 285,
+        "sim_passed": true,
+        "timing_met": true,
+        "total_power_w": 0.08,
+        "whs_ns": 0.109,
+        "wns_ns": 1.387
+      },
+      "mutation": "standard",
+      "reason": "",
+      "rungs": 5,
+      "source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-05\\tier2_wiv1t2yv\\fir8\\iter_006\\cand_standard\\fir8.v",
+        "sha256": "4b83440e6f812398e8f7809aab3c94132b7c4041b1a156eb13bff48f14cf95e7"
+      },
+      "status": "measured"
+    }
+  ],
+  "doctor": null,
+  "instruction": "In `fir8`, retain `x_d`, `p0`\u2013`p7`, `acc1`\u2013`acc7`, `y_out`, the sequential reset and update structure, and `// @latency 1`. Isolate each existing 32-bit accumulation expression (`p6 + acc7` through `p1 + acc2`, and `p0 + acc1`) as a signed 32-bit sum wire with `(* use_dsp = \"no\" *)`, then register that sum into the same destination on the same edge; leave `acc7 <= p7` unchanged. Preserve the full 32-bit wraparound and verify that the mapped path no longer cascades through multiple DSP48E1s, while checking simulation, routed setup and hold, and reg-to-reg WNS against the 1.387 ns incumbent.",
+  "is_best": false,
+  "iteration": 6,
+  "recommendation": "REJECT",
+  "schema_version": 1,
+  "selected_source_sha256": "44bb914b8ec6475fa58159b95327ee48286ccb90987f0bb1088bd46cbdbe9fe0"
+}

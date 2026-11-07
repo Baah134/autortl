@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Top interface and FIFO behavior: PASS \u2014 source preserves the required ports, two-entry queue behavior, handshakes, synchronous reset, payload order, stall stability, and minimum transfer age.\n- Top latency annotation: PASS \u2014 top declares `// @latency 1`, matching the authoritative value.\n- Compile, elaboration, and simulation: PASS \u2014 required tools exited successfully and the unchanged testbench reported `TEST PASSED`.\n- Deterministic ladder: PASS \u2014 standard rung is ALIVE.\n- Routed metrics and evidence: PASS \u2014 retained routed metrics and tool records are present; synthesis completed successfully.\n- Timing closure: PASS \u2014 timing is met with WNS 0.146 ns and WHS 0.162 ns.\n- Improvement over previous best: PASS \u2014 valid timing recovery from a known timing-infeasible baseline; the higher FF count does not disqualify recovery.\n## Summary\n- Passed: 7 of 7\n- Failed: 0 of 7\n- Improved over previous best: YES\n## Recommendation\nACCEPT\n## Reason\nThe candidate passes the deterministic checks and preserves the defined FIFO behavior. Its matching top latency annotation and successful tool and simulation evidence satisfy the verification gates. Routed setup and hold slack are both nonnegative, establishing timing recovery over the timing-infeasible previous best.",
+      "recommendation": "ACCEPT",
+      "passed": 7,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}

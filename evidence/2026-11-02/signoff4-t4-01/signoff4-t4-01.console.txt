@@ -1,0 +1,42 @@
+{"source_files": 334, "freeze": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-01-source-freeze.json"}
+{"exit_code": 0, "seconds": 457.2969999999914, "summary": "2022 passed in 455.59s (0:07:35)", "source_unchanged": true, "source_files": 334, "source_freeze_sha256": "45527af20ff706d9261d95a9cae6c03a0fee7bd2a615e2335e949e008040971a"}
+{"prelaunch": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-01-prelaunch.json", "budgets_per_entry": {"iterations": null, "best_of_n": 1, "model_calls": 30, "tool_minutes": 40, "wall_minutes": 60, "infra_retries": 1}}
+[module crc16_stream_core] golden model + testbench...
+[module rr_arbiter4] golden model + testbench...
+[module crc16_stream_core] tb qualification: detected flip < to >
+[module crc16_stream_core] independent tb qualification: detected flip < to >
+[build] integrated design compiles; entering optimize loop as baseline
+[build] editable unit: crc16_stream_core + crc16_stream; verified by the trusted integration testbench
+[module rr_arbiter4] tb qualification: detected flip < to >
+[module regfile8x8] golden model + testbench...
+[module regfile8x8] tb qualification: detected flip < to >
+[build] integrated design compiles; entering optimize loop as baseline
+[build] editable unit: rr_arbiter4, regfile8x8 + rr_regfile; verified by the trusted integration testbench
+[iter 0] baseline LUTs=15 FFs=34 WNS=0.432
+[iter 0] baseline LUTs=40 FFs=90 WNS=0.456
+[iter 1] *** NEW BEST *** LUTs=15 FFs=19 WNS=0.449
+[iter 1] REJECT LUTs=46 (best iter 0, stall 1)
+[iter 2] REJECT LUTs=15 (best iter 1, stall 1)
+[iter 2] REJECT LUTs=49 (best iter 0, stall 2)
+
+DONE — best from iter 0: LUTs=40 FFs=90 WNS=0.456
+[bench] rr_regfile_build: finished (1/3)
+[module spi_master_core] golden model + testbench...
+[build] integrated design compiles; entering optimize loop as baseline
+[build] editable unit: spi_master_core + spi_master; verified by the trusted integration testbench
+[iter 3] *** NEW BEST *** LUTs=15 FFs=18 WNS=0.318
+
+DONE — best from iter 3: LUTs=15 FFs=18 WNS=0.318
+[bench] crc16_stream_build: finished (2/3)
+[iter 0] baseline LUTs=21 FFs=33 WNS=0.342
+[iter 1] *** NEW BEST *** LUTs=20 FFs=31 WNS=0.317
+[iter 2] REJECT LUTs=20 (best iter 1, stall 1)
+[iter 3] *** NEW BEST *** LUTs=20 FFs=30 WNS=0.342
+
+DONE — best from iter 3: LUTs=20 FFs=30 WNS=0.342
+[bench] spi_master_build: finished (3/3)
+[bench] crc16_stream_build: PASS (mandatory gates passed)
+[bench] rr_regfile_build: PASS (mandatory gates passed)
+[bench] spi_master_build: PASS (mandatory gates passed)
+[bench] tier 4: 3/3; held=False; streak=1
+{"exit_code": 0, "wall_seconds": 1035.2810000000027, "source_unchanged": true, "router_stats_prefix_unchanged": true, "history_prefix_unchanged": true, "ended_utc": "2026-11-03T12:27:51.104713+00:00"}

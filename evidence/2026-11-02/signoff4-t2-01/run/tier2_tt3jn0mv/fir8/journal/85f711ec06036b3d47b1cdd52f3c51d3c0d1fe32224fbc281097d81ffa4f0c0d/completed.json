@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_2:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 2\n## Contract check\n- Interface, parameters, and reset behavior: PASS \u2014 ports, widths, signedness, parameter defaults, and synchronous active-high reset behavior match the frozen source.\n- Latency annotation: PASS \u2014 the top declares `// @latency 1`, matching authoritative latency.\n- Observable cycle behavior: PASS \u2014 the candidate preserves the FIR\u2019s one-cycle output behavior; the authoritative ladder is ALIVE and simulation passes.\n- Compile, elaboration, and simulation: PASS \u2014 required tools exited successfully and the testbench reports `TEST PASSED`.\n- Metric and receipt integrity: PASS \u2014 routed reports are retained and the process exit gate passed.\n- Timing feasibility: PASS \u2014 timing is met with WNS 0.148 ns and WHS 0.182 ns.\n- Objective improvement: FAIL \u2014 candidate and previous best have equal register-to-register WNS (0.148 ns), so the maximize-frequency objective did not strictly improve.\n## Summary\n- Passed: 6 of 7\n- Failed: 1 of 7\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes the behavioral, verification, metric-integrity, and timing gates, but the previous best is already timing-feasible and the candidate\u2019s register-to-register WNS is unchanged. With no strict objective improvement, it cannot replace the previous best.",
+      "recommendation": "REJECT",
+      "passed": 6,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

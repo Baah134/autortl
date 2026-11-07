@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_1:decision:instruction:0",
+  "result": "In `fir16_sym_core`, replace `(acc + 28'sd1024) >>> 11` with the exact identity `acc[27:11] + acc[10]`, using a signed 17-bit quotient; the discarded lower bits affect round-half-up only through bit 10. Replace the wide comparisons against \u00b132767/\u221232768 with signed 17-bit range detection and the same 16-bit saturation outputs, preserving all in-range quotient bits. Keep the five elastic slots, history update on accepted transfers, synchronous reset behavior, registered outputs, and top `// @latency 5` annotation unchanged.",
+  "artifacts": {}
+}

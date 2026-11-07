@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_2:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 2\n## Contract check\n- Top interface and supported parameter behavior: PASS \u2014 candidate preserves the required top ports and the child handles supported WIDTH and DEPTH values.\n- FIFO behavior, reset, handshakes, and minimum transfer age: PASS \u2014 authoritative ladder reports ALIVE with simulation passed.\n- Top latency annotation: PASS \u2014 top declares `// @latency 1`, matching the known authoritative latency.\n- Compile and elaboration: PASS \u2014 xvlog and xelab exited successfully.\n- Simulation verdict: PASS \u2014 xsim exited successfully with the exact `TEST PASSED` verdict.\n- Routed reports and metric integrity: PASS \u2014 retained routed reports are present and required tool exits succeeded.\n- Timing closure: PASS \u2014 timing_met=true, WNS=0.142 ns, and WHS=0.038 ns.\n- Improvement over previous best: PASS \u2014 valid timing recovery from an infeasible incumbent (WNS=-0.915 ns); higher LUT and FF counts do not disqualify recovery.\n## Summary\n- Passed: 8 of 8\n- Failed: 0 of 8\n- Improved over previous best: YES\n## Recommendation\nACCEPT\n## Reason\nThe candidate passes the deterministic verification and metric gates, declares the required top latency, and closes both setup and hold timing. Its previous best was timing-infeasible, so the verified timing recovery qualifies for promotion despite increased LUT and FF counts.",
+      "recommendation": "ACCEPT",
+      "passed": 8,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}

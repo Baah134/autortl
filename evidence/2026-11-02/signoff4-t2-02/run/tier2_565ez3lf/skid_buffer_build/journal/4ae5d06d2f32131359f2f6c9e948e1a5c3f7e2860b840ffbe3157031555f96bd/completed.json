@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_2:decision:instruction:0",
+  "result": "In `skid_buffer_core`, recode occupancy control as `head_valid` and `tail_valid` flags: drive `out_valid` from `head_valid`, `in_ready` as `!tail_valid || out_ready`, and derive push and pop from those signals. Update the flags for empty, one-entry, and full states, including simultaneous push/pop at each occupancy, while retaining the existing head/tail payload movement and synchronous reset behavior. Keep the top\u2019s `// @latency 1` annotation and interface; compare routed LUTs, WNS, and WHS against the incumbent, since this proposal improves the objective only if it uses fewer LUTs and passes every gate.",
+  "artifacts": {}
+}

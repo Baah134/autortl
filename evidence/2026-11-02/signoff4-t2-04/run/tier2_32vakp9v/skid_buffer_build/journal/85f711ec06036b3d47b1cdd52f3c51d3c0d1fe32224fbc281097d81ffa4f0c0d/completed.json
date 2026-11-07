@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_2:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 2\n## Contract check\n- Top interface and latency annotation: PASS \u2014 top is `skid_buffer` and declares `// @latency 1`, matching the known value.\n- Defined FIFO behavior: PASS \u2014 the unchanged integration testbench reports `TEST PASSED`; it covers stalls, full capacity, simultaneous transfers, reset while occupied, and payload order.\n- Compile, elaboration, and simulation gates: PASS \u2014 `xvlog`, `xelab`, and `xsim` exited successfully; the exact required simulation verdict is present.\n- Synthesis and metric integrity: PASS \u2014 synthesis exited successfully with `SYNTH_COMPLETE`; routed reports and structured candidate metrics are provided.\n- Timing closure: PASS \u2014 `timing_met=true`, WNS is 0.169 ns, and WHS is 0.057 ns.\n- Objective improvement over previous best: FAIL \u2014 both have 11 LUTs and 18 FFs, so the candidate does not strictly improve the `minimize_luts` objective; `improvement_kind` is null and `measured_improvement=false`.\n## Summary\n- Passed: 5 of 6\n- Failed: 1 of 6\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes the behavioral, tool, metric, annotation, and timing gates, but both it and the previous best are timing-feasible and have identical objective metrics. The contract requires a strict objective improvement in that case, which is not established. The stall count is 0, so RESTART does not apply.",
+      "recommendation": "REJECT",
+      "passed": 5,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

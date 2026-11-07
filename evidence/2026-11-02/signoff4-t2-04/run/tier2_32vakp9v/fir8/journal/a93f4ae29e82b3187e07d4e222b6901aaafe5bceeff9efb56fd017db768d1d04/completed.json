@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_3:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 3\n## Contract check\n- Interface, behavior, and latency: PASS \u2014 the authoritative ladder reports ALIVE; the candidate retains the 1-cycle annotation and contract interface.\n- Compile, elaboration, and simulation: PASS \u2014 required tool exits are successful and simulation reports `TEST PASSED`.\n- Synthesis completion and process receipts: PASS \u2014 successful exits and `SYNTH_COMPLETE` are recorded.\n- Routed metric integrity: PASS \u2014 routed timing, utilization, and power evidence is retained.\n- Timing feasibility: FAIL \u2014 WNS is \u22123.856 ns, so timing is not closed.\n- Improvement over previous best: FAIL \u2014 setup WNS worsened from \u22122.962 ns; this does not qualify as timing progress, and no timing recovery or objective improvement is established.\n## Summary\n- Passed: 4 of 6\n- Failed: 2 of 6\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes deterministic verification and the implementation evidence gates, but it remains timing-infeasible and has worse setup WNS than the previous best. The improved hold slack and resource counts do not meet the recorded improvement policy for this maximize-frequency comparison.",
+      "recommendation": "REJECT",
+      "passed": 4,
+      "failed": 2
+    }
+  },
+  "artifacts": {}
+}

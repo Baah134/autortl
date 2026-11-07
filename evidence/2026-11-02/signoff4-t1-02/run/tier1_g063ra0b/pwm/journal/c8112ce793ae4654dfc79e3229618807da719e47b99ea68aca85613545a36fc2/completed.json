@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_2:model:planner.plan:0",
+  "result": "# PLAN \u2014 iteration 2\n## Current state assessment\nIteration 1 preserved behavior and met timing, but used 10 LUTs and 9 FFs versus the timing-feasible incumbent\u2019s 7 LUTs and 9 FFs, so it did not improve the `minimize_luts` objective. Promotion now requires passing every verification and routed-metric gate and using fewer than 7 LUTs, or 7 LUTs with fewer than 9 FFs; the top\u2019s numeric latency is unknown, so no numeric annotation is required.\n\n## Hypothesis\nFactoring the 32-bit unsigned comparison into an upper-bit zero check and an 8-bit comparison may reduce comparator LUT cost while preserving its full-width behavior.\n\n## Instruction for generator\nKeep the 32-bit counter, its `counter == 255` wrap logic, and all reset and registered-output behavior unchanged. Replace only `counter < {24'd0, duty}` with an exactly equivalent expression that checks `counter[31:8] == 0` and then compares `counter[7:0] < duty`. Preserve behavior for every 32-bit counter value, including values with nonzero upper bits; do not add a latency annotation.",
+  "artifacts": {}
+}

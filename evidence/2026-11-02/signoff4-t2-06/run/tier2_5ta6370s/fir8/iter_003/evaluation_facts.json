@@ -1,0 +1,390 @@
+{
+  "candidate_metrics": {
+    "bram_total": 50.0,
+    "bram_used": 0.0,
+    "dsp_total": 90,
+    "dsp_used": 1,
+    "dynamic_power_w": 0.024,
+    "ff_pct": 0.7932692307692307,
+    "ff_total": 41600,
+    "ff_used": 330,
+    "lut_pct": 1.7259615384615385,
+    "lut_total": 20800,
+    "lut_used": 359,
+    "reg2reg_wns_ns": -0.35,
+    "sim_error": "",
+    "sim_passed": true,
+    "synth_error": "",
+    "timing_met": false,
+    "total_power_w": 0.093,
+    "whs_ns": 0.127,
+    "wns_ns": -0.35
+  },
+  "candidate_source": {
+    "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\fir8\\iter_003\\cand_standard\\fir8.v",
+    "sha256": "1648562591ed80b89523fe4822d9e1d4ad336a3e18ce60c0c916f0da1eb1c63b",
+    "text": "`timescale 1ns/1ps\r\n// @latency 1\r\nmodule fir8 (\r\n    input  wire               clk,\r\n    input  wire               rst,\r\n    input  wire signed [15:0] x_in,\r\n    output reg  signed [31:0] y_out\r\n);\r\n    parameter signed [15:0] C0=16'd3, C1=16'd7, C2=16'd12, C3=16'd18,\r\n                            C4=16'd18, C5=16'd12, C6=16'd7,  C7=16'd3;\r\n\r\n    reg signed [31:0] prod [0:63];\r\n    integer i;\r\n    integer j;\r\n\r\n    wire signed [31:0] in_product0 = x_in * C0;\r\n    wire signed [31:0] in_product1 = x_in * C1;\r\n    wire signed [31:0] in_product2 = x_in * C2;\r\n    wire signed [31:0] in_product3 = x_in * C3;\r\n    wire signed [31:0] in_product4 = x_in * C4;\r\n    wire signed [31:0] in_product5 = x_in * C5;\r\n    wire signed [31:0] in_product6 = x_in * C6;\r\n    wire signed [31:0] in_product7 = x_in * C7;\r\n\r\n    wire [31:0] a0 = prod[0];\r\n    wire [31:0] a1 = prod[63];\r\n    wire [31:0] a2 = prod[9];\r\n    wire [31:0] a3 = prod[54];\r\n    wire [31:0] a4 = prod[18];\r\n    wire [31:0] a5 = prod[45];\r\n    wire [31:0] a6 = prod[27];\r\n    wire [31:0] a7 = prod[36];\r\n\r\n    wire [31:0] s0 = a0 ^ a1 ^ a2;\r\n    wire [31:0] c0 = ((a0 & a1) | (a0 & a2) | (a1 & a2)) << 1;\r\n    wire [31:0] s1 = a3 ^ a4 ^ a5;\r\n    wire [31:0] c1 = ((a3 & a4) | (a3 & a5) | (a4 & a5)) << 1;\r\n\r\n    wire [31:0] s2 = s0 ^ c0 ^ s1;\r\n    wire [31:0] c2 = ((s0 & c0) | (s0 & s1) | (c0 & s1)) << 1;\r\n    wire [31:0] s3 = c1 ^ a6 ^ a7;\r\n    wire [31:0] c3 = ((c1 & a6) | (c1 & a7) | (a6 & a7)) << 1;\r\n\r\n    wire [31:0] s4 = s2 ^ c2 ^ s3;\r\n    wire [31:0] c4 = ((s2 & c2) | (s2 & s3) | (c2 & s3)) << 1;\r\n    wire [31:0] s5 = s4 ^ c4 ^ c3;\r\n    wire [31:0] c5 = ((s4 & c4) | (s4 & c3) | (c4 & c3)) << 1;\r\n\r\n    wire [8:0] sum0_cin0 = {1'b0, s5[7:0]} + {1'b0, c5[7:0]};\r\n    wire [8:0] sum1_cin0 = {1'b0, s5[15:8]} + {1'b0, c5[15:8]};\r\n    wire [8:0] sum1_cin1 = {1'b0, s5[15:8]} + {1'b0, c5[15:8]} + 9'd1;\r\n    wire [8:0] sum2_cin0 = {1'b0, s5[23:16]} + {1'b0, c5[23:16]};\r\n    wire [8:0] sum2_cin1 = {1'b0, s5[23:16]} + {1'b0, c5[23:16]} + 9'd1;\r\n    wire [8:0] sum3_cin0 = {1'b0, s5[31:24]} + {1'b0, c5[31:24]};\r\n    wire [8:0] sum3_cin1 = {1'b0, s5[31:24]} + {1'b0, c5[31:24]} + 9'd1;\r\n\r\n    wire carry1 = sum0_cin0[8];\r\n    wire [8:0] selected1 = carry1 ? sum1_cin1 : sum1_cin0;\r\n    wire carry2 = selected1[8];\r\n    wire [8:0] selected2 = carry2 ? sum2_cin1 : sum2_cin0;\r\n    wire carry3 = selected2[8];\r\n    wire [8:0] selected3 = carry3 ? sum3_cin1 : sum3_cin0;\r\n\r\n    wire signed [31:0] total = {\r\n        selected3[7:0],\r\n        selected2[7:0],\r\n        selected1[7:0],\r\n        sum0_cin0[7:0]\r\n    };\r\n\r\n    always @(posedge clk) begin\r\n        if (rst) begin\r\n            for (i = 0; i < 64; i = i + 1)\r\n                prod[i] <= 32'sd0;\r\n            y_out <= 32'sd0;\r\n        end else begin\r\n            for (i = 0; i < 8; i = i + 1) begin\r\n                case (i)\r\n                    0: prod[0]  <= in_product0;\r\n                    1: prod[8]  <= in_product1;\r\n                    2: prod[16] <= in_product2;\r\n                    3: prod[24] <= in_product3;\r\n                    4: prod[32] <= in_product4;\r\n                    5: prod[40] <= in_product5;\r\n                    6: prod[48] <= in_product6;\r\n                    7: prod[56] <= in_product7;\r\n                endcase\r\n                for (j = 1; j <= i; j = j + 1)\r\n                    prod[i*8+j] <= prod[i*8+j-1];\r\n            end\r\n            y_out <= total;\r\n        end\r\n    end\r\nendmodule",
+    "truncated": false
+  },
+  "candidate_timing_feasible": false,
+  "doctor_trial": {
+    "action": "tool_knobs",
+    "first_violated_path_excerpt": {
+      "category": "setup",
+      "destination": "y_out_reg[31]/D",
+      "fanout": 371,
+      "logic_levels": 10,
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\fir8\\iter_003\\doctor_tool_knobs_trial\\timing_routed.rpt",
+      "preview_policy": "First complete identifiable violated path in report order, at most 6000 characters. Slack, endpoints, levels and fanout describe this path only, not global WNS/WHS. Resource text is retained verbatim; absent fields are unknown.",
+      "sha256": "6b761b64ac9b40f5d59f8caba07be303b4f5fd1b9760650f005cc35b584399e9",
+      "slack_ns": -0.072,
+      "source": "prod_reg[63][4]/C",
+      "text": "Slack (VIOLATED) :        -0.072ns  (required time - arrival time)\r\n  Source:                 prod_reg[63][4]/C\r\n                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@3.333ns period=6.667ns})\r\n  Destination:            y_out_reg[31]/D\r\n                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@3.333ns period=6.667ns})\r\n  Path Group:             clk\r\n  Path Type:              Setup (Max at Slow Process Corner)\r\n  Requirement:            6.667ns  (clk rise@6.667ns - clk rise@0.000ns)\r\n  Data Path Delay:        6.690ns  (logic 2.101ns (31.403%)  route 4.589ns (68.597%))\r\n  Logic Levels:           10  (CARRY4=2 LUT3=2 LUT5=3 LUT6=3)\r\n  Clock Path Skew:        -0.045ns (DCD - SCD + CPR)\r\n    Destination Clock Delay (DCD):    1.497ns = ( 8.164 - 6.667 ) \r\n    Source Clock Delay      (SCD):    1.622ns\r\n    Clock Pessimism Removal (CPR):    0.080ns\r\n  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE\r\n    Total System Jitter     (TSJ):    0.071ns\r\n    Total Input Jitter      (TIJ):    0.000ns\r\n    Discrete Jitter          (DJ):    0.000ns\r\n    Phase Error              (PE):    0.000ns\r\n\r\n    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)\r\n  -------------------------------------------------------------------    -------------------\r\n                         (clock clk rise edge)        0.000     0.000 r  \r\n                                                      0.000     0.000 r  clk (IN)\r\n                         net (fo=371, unset)          1.622     1.622    clk\r\n    SLICE_X3Y57          FDRE                                         r  prod_reg[63][4]/C\r\n  -------------------------------------------------------------------    -------------------\r\n    SLICE_X3Y57          FDRE (Prop_fdre_C_Q)         0.419     2.041 r  prod_reg[63][4]/Q\r\n                         net (fo=3, routed)           0.641     2.682    prod_reg[63][4]\r\n    SLICE_X2Y",
+      "truncated": true
+    },
+    "input_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\fir8\\iter_003\\cand_standard\\fir8.v",
+      "sha256": "1648562591ed80b89523fe4822d9e1d4ad336a3e18ce60c0c916f0da1eb1c63b",
+      "text": "",
+      "truncated": true
+    },
+    "measured_metrics": {
+      "bram_total": 50.0,
+      "bram_used": 0.0,
+      "dsp_total": 90,
+      "dsp_used": 1,
+      "dynamic_power_w": 0.025,
+      "ff_pct": 0.7980769230769231,
+      "ff_total": 41600,
+      "ff_used": 332,
+      "lut_pct": 1.7596153846153846,
+      "lut_total": 20800,
+      "lut_used": 366,
+      "reg2reg_wns_ns": -0.072,
+      "sim_error": "",
+      "sim_passed": true,
+      "synth_error": "",
+      "timing_met": false,
+      "total_power_w": 0.093,
+      "whs_ns": 0.137,
+      "wns_ns": -0.072
+    },
+    "reason": "timing_not_closed",
+    "reports": [
+      {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\fir8\\iter_003\\doctor_tool_knobs_trial\\power.rpt",
+        "sha256": "ec232900078404af00ad1914fbb23377ec0150bfe33a65981be46a71e99eb191"
+      },
+      {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\fir8\\iter_003\\doctor_tool_knobs_trial\\timing.rpt",
+        "sha256": "291ca07caf74c527637de8e82c30bed10c91ecace6e268da6b206128e774dc42"
+      },
+      {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\fir8\\iter_003\\doctor_tool_knobs_trial\\timing_reg2reg.rpt",
+        "sha256": "e1f13ac08248c6a5fc81d6bf3fde4eaebd941eaf6ead009c9bc2fc4040cc3570"
+      },
+      {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\fir8\\iter_003\\doctor_tool_knobs_trial\\timing_routed.rpt",
+        "sha256": "6b761b64ac9b40f5d59f8caba07be303b4f5fd1b9760650f005cc35b584399e9"
+      },
+      {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\fir8\\iter_003\\doctor_tool_knobs_trial\\utilization.rpt",
+        "sha256": "7b899cf095a3759682c061223862ef1f7c256a7228cef9ead0c557760885ef9c"
+      },
+      {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\fir8\\iter_003\\doctor_tool_knobs_trial\\utilization_routed.rpt",
+        "sha256": "15fcbb5e8ae87b7dc419670ceb9c3652cf3f1b852efead79daa5e236753233c8"
+      }
+    ],
+    "reports_truncated": false,
+    "scope": "Trial observations only; these do not replace candidate or incumbent metrics.",
+    "status": "NOT_ADOPTED",
+    "tools_ran": true,
+    "trial_flow_script": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\fir8\\iter_003\\doctor_tool_knobs_trial\\synth.tcl",
+      "sha256": "eebae53c7681f683e8617538eacece7d926490cbdc4dbc7b2eb5061dab41403d",
+      "text": "",
+      "truncated": true
+    },
+    "trial_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\fir8\\iter_003\\doctor_tool_knobs_trial\\fir8.v",
+      "sha256": "1648562591ed80b89523fe4822d9e1d4ad336a3e18ce60c0c916f0da1eb1c63b",
+      "text": "`timescale 1ns/1ps\r\n// @latency 1\r\nmodule fir8 (\r\n    input  wire               clk,\r\n    input  wire               rst,\r\n    input  wire signed [15:0] x_in,\r\n    output reg  signed [31:0] y_out\r\n);\r\n    parameter signed [15:0] C0=16'd3, C1=16'd7, C2=16'd12, C3=16'd18,\r\n                            C4=16'd18, C5=16'd12, C6=16'd7,  C7=16'd3;\r\n\r\n    reg signed [31:0] prod [0:63];\r\n    integer i;\r\n    integer j;\r\n\r\n    wire signed [31:0] in_product0 = x_in * C0;\r\n    wire signed [31:0] in_product1 = x_in * C1;\r\n    wire signed [31:0] in_product2 = x_in * C2;\r\n    wire signed [31:0] in_product3 = x_in * C3;\r\n    wire signed [31:0] in_product4 = x_in * C4;\r\n    wire signed [31:0] in_product5 = x_in * C5;\r\n    wire signed [31:0] in_product6 = x_in * C6;\r\n    wire signed [31:0] in_product7 = x_in * C7;\r\n\r\n    wire [31:0] a0 = prod[0];\r\n    wire [31:0] a1 = prod[63];\r\n    wire [31:0] a2 = prod[9];\r\n    wire [31:0] a3 = prod[54];\r\n    wire [31:0] a4 = prod[18];\r\n    wire [31:0] a5 = prod[45];\r\n ",
+      "truncated": true
+    }
+  },
+  "first_violated_path_excerpt": {
+    "category": "setup",
+    "destination": "y_out_reg[31]/D",
+    "fanout": 369,
+    "logic_levels": 8,
+    "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\fir8\\iter_003\\cand_standard\\timing_routed.rpt",
+    "preview_policy": "First complete identifiable violated path in report order, at most 6000 characters. Slack, endpoints, levels and fanout describe this path only, not global WNS/WHS. Resource text is retained verbatim; absent fields are unknown.",
+    "sha256": "3ec2fe3d34eff1ef27a0f5b919d97e16b154798e9b8b9a7ed20d470e17bed017",
+    "slack_ns": -0.35,
+    "source": "prod_reg[54][13]/C",
+    "text": "Slack (VIOLATED) :        -0.350ns  (required time - arrival time)\r\n  Source:                 prod_reg[54][13]/C\r\n                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@3.333ns period=6.667ns})\r\n  Destination:            y_out_reg[31]/D\r\n                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@3.333ns period=6.667ns})\r\n  Path Group:             clk\r\n  Path Type:              Setup (Max at Slow Process Corner)\r\n  Requirement:            6.667ns  (clk rise@6.667ns - clk rise@0.000ns)\r\n  Data Path Delay:        7.043ns  (logic 2.365ns (33.580%)  route 4.678ns (66.420%))\r\n  Logic Levels:           8  (CARRY4=2 LUT3=2 LUT5=3 LUT6=1)\r\n  Clock Path Skew:        0.029ns (DCD - SCD + CPR)\r\n    Destination Clock Delay (DCD):    1.497ns = ( 8.164 - 6.667 ) \r\n    Source Clock Delay      (SCD):    1.548ns\r\n    Clock Pessimism Removal (CPR):    0.080ns\r\n  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE\r\n    Total System Jitter     (TSJ):    0.071ns\r\n    Total Input Jitter      (TIJ):    0.000ns\r\n    Discrete Jitter          (DJ):    0.000ns\r\n    Phase Error              (PE):    0.000ns\r\n\r\n    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)\r\n  -------------------------------------------------------------------    -------------------\r\n                         (clock clk rise edge)        0.000     0.000 r  \r\n                                                      0.000     0.000 r  clk (IN)\r\n                         net (fo=369, unset)          1.548     1.548    clk\r\n    SLICE_X11Y65         FDRE                                         r  prod_reg[54][13]/C\r\n  -------------------------------------------------------------------    -------------------\r\n    SLICE_X11Y65         FDRE (Prop_fdre_C_Q)         0.419     1.967 r  prod_reg[54][13]/Q\r\n                         net (fo=3, routed)           0.537     2.504    prod_reg[54][13]\r\n    SLICE_X9Y64          LUT3 (Prop_lut3_I0_O)        0.299     2.803 r  y_out[20]_i_41/O\r\n                         net (fo=2, routed)           0.883     3.686    y_out[20]_i_41_n_0\r\n    SLICE_X4Y64          LUT5 (Prop_lut5_I0_O)        0.124     3.810 r  y_out[17]_i_27/O\r\n                         net (fo=2, routed)           0.604     4.414    y_out[17]_i_27_n_0\r\n    SLICE_X5Y64          LUT5 (Prop_lut5_I0_O)        0.124     4.538 r  y_out[17]_i_17/O\r\n                         net (fo=3, routed)           0.678     5.216    y_out[17]_i_17_n_0\r\n    SLICE_X2Y64          LUT3 (Prop_lut3_I1_O)        0.124     5.340 r  y_out[17]_i_7/O\r\n                         net (fo=1, routed)           0.763     6.103    p_1_in3_in[5]\r\n    SLICE_X4Y62          CARRY4 (Prop_carry4_DI[1]_CO[3])\r\n                                                      0.507     6.610 r  y_out_reg[17]_i_4/CO[3]\r\n                         net (fo=1, routed)           0.000     6.610    y_out_reg[17]_i_4_n_0\r\n    SLICE_X4Y63          CARRY4 (Prop_carry4_CI_CO[0])\r\n                                                      0.271     6.881 r  y_out_reg[17]_i_2/CO[0]\r\n                         net (fo=3, routed)           0.707     7.588    sum1_cin0[8]\r\n    SLICE_X5Y62          LUT5 (Prop_lut5_I0_O)        0.373     7.961 r  y_out[31]_i_3/O\r\n                         net (fo=8, routed)           0.506     8.467    y_out[31]_i_3_n_0\r\n    SLICE_X5Y65          LUT6 (Prop_lut6_I1_O)        0.124     8.591 r  y_out[31]_i_1/O\r\n                         net (fo=1, routed)           0.000     8.591    total[31]\r\n    SLICE_X5Y65          FDRE                                         r  y_out_reg[31]/D\r\n  -------------------------------------------------------------------    -------------------\r\n\r\n                         (clock clk rise edge)        6.667     6.667 r  \r\n                                                      0.000     6.667 r  clk (IN)\r\n                         net (fo=369, unset)          1.497     8.164    clk\r\n    SLICE_X5Y65          FDRE                                         r  y_out_reg[31]/C\r\n                         clock pessimism              0.080     8.244    \r\n                         clock uncertainty           -0.035     8.209    \r\n    SLICE_X5Y65          FDRE (Setup_fdre_C_D)        0.032     8.241    y_out_reg[31]\r\n  -------------------------------------------------------------------\r\n                         required time                          8.241    \r\n                         arrival time                          -8.591    \r\n  -------------------------------------------------------------------\r\n                         slack                                 -0.350    ",
+    "truncated": false
+  },
+  "flow_and_constraints": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\fir8\\iter_003\\cand_standard\\synth.tcl",
+      "sha256": "eb5c3ba3b827a8069a61793ac3511c3caac055bfbef5c79d0f378424ab9e26ca",
+      "text": "set_msg_config -id {VRFC 10-3609} -new_severity ERROR\r\nset_msg_config -id {Synth 8-9873} -new_severity ERROR\r\nset_msg_config -id {Designutils 20-1307} -new_severity ERROR\r\nset_msg_config -id {Synth 8-327} -new_severity ERROR\r\nset_msg_config -id {Synth 8-3352} -new_severity ERROR\r\nset_part xc7a35tcpg236-1\r\nread_verilog \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t2-06/tier2_5ta6370s/fir8/iter_003/cand_standard/fir8.v\"\r\nset fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t2-06/tier2_5ta6370s/fir8/iter_003/cand_standard/timing.xdc\" w]\r\nputs $fp {create_clock -period 6.667 -name clk [get_ports clk]}\r\nputs $fp {set_property HD.CLK_SRC BUFGCTRL_X0Y0 [get_ports clk]}\r\nclose $fp\r\nread_xdc \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t2-06/tier2_5ta6370s/fir8/iter_003/cand_standard/timing.xdc\"\r\nsynth_design -top fir8 -flatten_hierarchy rebuilt -mode out_of_context \r\nreport_utilization -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t2-06/tier2_5ta6370s/fir8/iter_003/cand_standard/utilization.rpt\"\r\nreport_timing_summary -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t2-06/tier2_5ta6370s/fir8/iter_003/cand_standard/timing.rpt\"\r\nopt_design\r\nplace_design\r\n\r\nroute_design\r\nreport_utilization -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t2-06/tier2_5ta6370s/fir8/iter_003/cand_standard/utilization_routed.rpt\"\r\nreport_timing_summary -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t2-06/tier2_5ta6370s/fir8/iter_003/cand_standard/timing_routed.rpt\"\r\ncatch { if {[llength [all_registers]] > 0} { report_timing -from [all_registers] -to [all_registers] -max_paths 1 -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t2-06/tier2_5ta6370s/fir8/iter_003/cand_standard/timing_reg2reg.rpt\" } }\r\nreport_design_analysis -logic_level_distribution -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t2-06/tier2_5ta6370s/fir8/iter_003/cand_standard/design_analysis.rpt\"\r\nreport_power -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t2-06/tier2_5ta6370s/fir8/iter_003/cand_standard/power.rpt\"\r\ncatch { report_methodology -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t2-06/tier2_5ta6370s/fir8/iter_003/cand_standard/methodology.rpt\" }\r\ncatch { report_qor_suggestions -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t2-06/tier2_5ta6370s/fir8/iter_003/cand_standard/qor_suggestions.rpt\" }\r\nputs \"SYNTH_COMPLETE\"\r\n",
+      "truncated": false
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\fir8\\iter_003\\cand_standard\\timing.xdc",
+      "sha256": "952d85aec49f6e20f2003112943b665b86d078d91c18438bd81498e37ec1a892",
+      "text": "create_clock -period 6.667 -name clk [get_ports clk]\r\nset_property HD.CLK_SRC BUFGCTRL_X0Y0 [get_ports clk]\r\n",
+      "truncated": false
+    }
+  ],
+  "improvement_kind": null,
+  "measured_improvement": false,
+  "metric_provenance": "Structured metrics are parsed from retained reports; routed utilization/timing reports take precedence when present. The manifest identifies complete files by hash. Header excerpts are bounded previews, not complete reports or an independent metric source.",
+  "objective": "maximize_freq",
+  "previous_best_metrics": {
+    "bram_total": 50.0,
+    "bram_used": 0.0,
+    "dsp_total": 90,
+    "dsp_used": 1,
+    "dynamic_power_w": 0.021,
+    "ff_pct": 0.7403846153846154,
+    "ff_total": 41600,
+    "ff_used": 308,
+    "lut_pct": 1.3173076923076923,
+    "lut_total": 20800,
+    "lut_used": 274,
+    "reg2reg_wns_ns": 0.329,
+    "sim_error": "",
+    "sim_passed": true,
+    "synth_error": "",
+    "timing_met": true,
+    "total_power_w": 0.09,
+    "whs_ns": 0.076,
+    "wns_ns": 0.329
+  },
+  "previous_best_timing_feasible": true,
+  "process_exit_gate": {
+    "passed": true,
+    "policy": "Every required tool's latest actual process exit must be zero with retained matching output; physical-only Doctor may reuse source-bound prior compile/simulation.",
+    "reasons": []
+  },
+  "report_headers": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\fir8\\iter_003\\cand_standard\\power.rpt",
+      "sha256": "a8dd9ea91f892cdd71c769bdfd3639ae309e5c8b762e4e95d6980055c725a777",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n---------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version     : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date             : Tue Nov  3 04:58:01 2026\r\n| Host             : Baah running 64-bit major release  (build 9200)\r\n| Command          : report_power -file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t2-06/tier2_5ta6370s/fir8/iter_003/cand_standard/power.rpt\r\n| Design           : fir8\r\n| Device           : xc7a35tcpg236-1\r\n| Design State     : routed\r\n| Grade            : commercial\r\n| Process          : typical\r\n| Characterization : Production\r\n---------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nPower Report\r\n\r\nTable of Contents\r\n-----------------\r\n1. Summary\r\n1.1 On-Chip Components\r\n1.2 Power Supply Summary\r\n1.3 Confidence Level\r\n2. Settings\r\n2.1 Environment\r\n2.2 Clock Constraints\r\n3. Detailed Reports\r\n3.1 By Hierarchy\r\n\r\n1. Summary\r\n----------\r\n\r\n+--------------------------+--------------+\r\n| Total On-Chip Power (W)  | 0.093        |\r\n| Design Power Budget (W)  | Unspecified* |\r\n| Power Budget Margin (W)  | NA           |\r\n| Dynamic (W)              | 0.024        |\r\n| Device Static (W)        | 0.068        |\r\n| Effective TJA (C/W)      | 5.0          |\r\n| Max Ambient (C)          | 84.5         |\r\n| Junction Temperature (C) | 25.5         |\r\n| Confidence Level         | Medium       |\r\n| Setting File             | ---          |\r\n| Simulation Activity File | ---",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\fir8\\iter_003\\cand_standard\\timing.rpt",
+      "sha256": "f297a392934c2c44a80ef40083e6ee40527979116cc68c54c32ba11642827cd8",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n-------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date         : Tue Nov  3 04:56:51 2026\r\n| Host         : Baah running 64-bit major release  (build 9200)\r\n| Command      : report_timing_summary -file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t2-06/tier2_5ta6370s/fir8/iter_003/cand_standard/timing.rpt\r\n| Design       : fir8\r\n| Device       : 7a35t-cpg236\r\n| Speed File   : -1  PRODUCTION 1.23 2018-06-13\r\n| Design State : Synthesized\r\n-------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nTiming Summary Report\r\n\r\n------------------------------------------------------------------------------------------------\r\n| Timer Settings\r\n| --------------\r\n------------------------------------------------------------------------------------------------\r\n\r\n  Enable Multi Corner Analysis               :  Yes\r\n  Enable Pessimism Removal                   :  Yes\r\n  Pessimism Removal Resolution               :  Nearest Common Node\r\n  Enable Input Delay Default Clock           :  No\r\n  Enable Preset / Clear Arcs                 :  No\r\n  Disable Flight Delays                      :  No\r\n  Ignore I/O Paths                           :  No\r\n  Timing Early Launch at Borrowing Latches   :  No\r\n  Borrow Time for Max Delay Exceptions       :  Yes\r\n  Merge Timing Exceptions                    :  Yes\r\n  Inter-SLR Compensation                     :  Cons",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\fir8\\iter_003\\cand_standard\\timing_reg2reg.rpt",
+      "sha256": "c4e991d2a3c0d605f743796f6c108115838ee5a34828f1dc581e1a4be0dbfed6",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date         : Tue Nov  3 04:58:01 2026\r\n| Host         : Baah running 64-bit major release  (build 9200)\r\n| Command      : report_timing -from [all_registers] -to [all_registers] -max_paths 1 -file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t2-06/tier2_5ta6370s/fir8/iter_003/cand_standard/timing_reg2reg.rpt\r\n| Design       : fir8\r\n| Device       : 7a35t-cpg236\r\n| Speed File   : -1  PRODUCTION 1.23 2018-06-13\r\n| Design State : Routed\r\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nTiming Report\r\n\r\nSlack (VIOLATED) :        -0.350ns  (required time - arrival time)\r\n  Source:                 prod_reg[54][13]/C\r\n                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@3.333ns period=6.667ns})\r\n  Destination:            y_out_reg[31]/D\r\n                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@3.333ns period=6.667ns})\r\n  Path Group:             clk\r\n  Path Type:              Setup (Max at Slow Process Corner)\r\n  Requirement:            6.667ns  (clk rise@6.667ns - clk rise@0.000ns)\r\n  Data Path Delay:        7.043ns  (logic 2.365ns (33.580%)  route 4.678ns (66.420%))\r\n  Logic Levels:     ",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\fir8\\iter_003\\cand_standard\\timing_routed.rpt",
+      "sha256": "3ec2fe3d34eff1ef27a0f5b919d97e16b154798e9b8b9a7ed20d470e17bed017",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date         : Tue Nov  3 04:58:01 2026\r\n| Host         : Baah running 64-bit major release  (build 9200)\r\n| Command      : report_timing_summary -file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t2-06/tier2_5ta6370s/fir8/iter_003/cand_standard/timing_routed.rpt\r\n| Design       : fir8\r\n| Device       : 7a35t-cpg236\r\n| Speed File   : -1  PRODUCTION 1.23 2018-06-13\r\n| Design State : Routed\r\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nTiming Summary Report\r\n\r\n------------------------------------------------------------------------------------------------\r\n| Timer Settings\r\n| --------------\r\n------------------------------------------------------------------------------------------------\r\n\r\n  Enable Multi Corner Analysis               :  Yes\r\n  Enable Pessimism Removal                   :  Yes\r\n  Pessimism Removal Resolution               :  Nearest Common Node\r\n  Enable Input Delay Default Clock           :  No\r\n  Enable Preset / Clear Arcs                 :  No\r\n  Disable Flight Delays                      :  No\r\n  Ignore I/O Paths                           :  No\r\n  Timing Early Launch at Borrowing Latches   :  No\r\n  Borrow Time for Max Delay Exceptions       :  Yes\r\n  Merge Timing Exceptions                    :  Yes\r\n  Inter-SLR Compensation            ",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\fir8\\iter_003\\cand_standard\\utilization.rpt",
+      "sha256": "03c2b993a7794b4948333b144dfaf78963bb79c320714178ed1e2ceb1b25cbcb",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\n---------------------------------------------------------------------------------------------------------------------------------------------------------------------\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\n| Date         : Tue Nov  3 04:56:44 2026\n| Host         : Baah running 64-bit major release  (build 9200)\n| Command      : report_utilization -file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t2-06/tier2_5ta6370s/fir8/iter_003/cand_standard/utilization.rpt\n| Design       : fir8\n| Device       : xc7a35tcpg236-1\n| Speed File   : -1\n| Design State : Synthesized\n---------------------------------------------------------------------------------------------------------------------------------------------------------------------\n\nUtilization Design Information\n\nTable of Contents\n-----------------\n1. Slice Logic\n1.1 Summary of Registers by Type\n2. Memory\n3. DSP\n4. IO and GT Specific\n5. Clocking\n6. Specific Feature\n7. Primitives\n8. Black Boxes\n9. Instantiated Netlists\n\n1. Slice Logic\n--------------\n\n+----------------------------+------+-------+------------+-----------+-------+\n|          Site Type         | Used | Fixed | Prohibited | Available | Util% |\n+----------------------------+------+-------+------------+-----------+-------+\n| Slice LUTs*                |  298 |     0 |          0 |     20800 |  1.43 |\n|   LUT as Logic             |  259 |     0 |          0 |     20800 |  1.25 |\n|   LUT as Memory            |   39 |     0 |          0 |      9600 |  0.41 |\n|     LUT as Distributed RAM |    0 |     0 |            |           |       |\n|     LUT as Shift Register  |   39 |     0 |            ",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\fir8\\iter_003\\cand_standard\\utilization_routed.rpt",
+      "sha256": "fb98ec579fb7c50029e42233dda30d99d6d47f80437f6ed75b14fd5546e8d5bf",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\n----------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\n| Date         : Tue Nov  3 04:58:01 2026\n| Host         : Baah running 64-bit major release  (build 9200)\n| Command      : report_utilization -file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t2-06/tier2_5ta6370s/fir8/iter_003/cand_standard/utilization_routed.rpt\n| Design       : fir8\n| Device       : xc7a35tcpg236-1\n| Speed File   : -1\n| Design State : Routed\n----------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n\nUtilization Design Information\n\nTable of Contents\n-----------------\n1. Slice Logic\n1.1 Summary of Registers by Type\n2. Slice Logic Distribution\n3. Memory\n4. DSP\n5. IO and GT Specific\n6. Clocking\n7. Specific Feature\n8. Primitives\n9. Black Boxes\n10. Instantiated Netlists\n\n1. Slice Logic\n--------------\n\n+----------------------------+------+-------+------------+-----------+-------+\n|          Site Type         | Used | Fixed | Prohibited | Available | Util% |\n+----------------------------+------+-------+------------+-----------+-------+\n| Slice LUTs                 |  359 |     0 |          0 |     20800 |  1.73 |\n|   LUT as Logic             |  320 |     0 |          0 |     20800 |  1.54 |\n|   LUT as Memory            |   39 |     0 |          0 |      9600 |  0.41 |\n|     LUT as Distributed RAM |    0 |     0 |            |           |       |\n|     LUT as",
+      "truncated": true
+    }
+  ],
+  "report_manifest": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\fir8\\iter_003\\cand_standard\\power.rpt",
+      "sha256": "a8dd9ea91f892cdd71c769bdfd3639ae309e5c8b762e4e95d6980055c725a777"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\fir8\\iter_003\\cand_standard\\timing.rpt",
+      "sha256": "f297a392934c2c44a80ef40083e6ee40527979116cc68c54c32ba11642827cd8"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\fir8\\iter_003\\cand_standard\\timing_reg2reg.rpt",
+      "sha256": "c4e991d2a3c0d605f743796f6c108115838ee5a34828f1dc581e1a4be0dbfed6"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\fir8\\iter_003\\cand_standard\\timing_routed.rpt",
+      "sha256": "3ec2fe3d34eff1ef27a0f5b919d97e16b154798e9b8b9a7ed20d470e17bed017"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\fir8\\iter_003\\cand_standard\\utilization.rpt",
+      "sha256": "03c2b993a7794b4948333b144dfaf78963bb79c320714178ed1e2ceb1b25cbcb"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\fir8\\iter_003\\cand_standard\\utilization_routed.rpt",
+      "sha256": "fb98ec579fb7c50029e42233dda30d99d6d47f80437f6ed75b14fd5546e8d5bf"
+    }
+  ],
+  "tool_exit_evidence": {
+    "history_count": 5,
+    "latest_by_tool": {
+      "vivado": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\fir8\\iter_003\\cand_standard\\vivado_synth_output.log",
+        "output_log_sha256": "59bf87780a5dd3fe49c0f852961c42715f25e89156b71fcb46a8ade95f5a84b8",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xelab": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\fir8\\iter_003\\cand_standard\\xelab.log",
+        "output_log_sha256": "f35354b37b7986ee18717af427880a64af20b431259481a9d7a6c1ba554a24df",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xsim": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\fir8\\iter_003\\cand_standard\\xsim.log",
+        "output_log_sha256": "da68edacffc16dc7cc628427a8a318ddda7968caf863f99aac0476c4cc3441f4",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xvlog": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\fir8\\iter_003\\cand_standard\\xvlog.log",
+        "output_log_sha256": "0f551571da65008b74aa4b0d035324537c474dc6eb5e78e163358d6898016cf7",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      }
+    },
+    "missing_required_tools": [],
+    "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\fir8\\iter_003\\cand_standard\\tool_exit_records.log",
+    "records": [
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\fir8\\iter_003\\cand_standard",
+        "driver_returncode": 0,
+        "elapsed_seconds": 0.9081868000066606,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xvlog.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\fir8\\iter_003\\cand_standard\\xvlog.log",
+        "output_log_sha256": "b54f5b3d356982a3b18be1e88ebabe24ecd1ab7dff6ecf08c269c384503a3447",
+        "pid": 16652,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xvlog"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\fir8\\iter_003\\cand_standard",
+        "driver_returncode": 0,
+        "elapsed_seconds": 0.8167048000032082,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xvlog.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\fir8\\iter_003\\cand_standard\\xvlog.log",
+        "output_log_sha256": "0f551571da65008b74aa4b0d035324537c474dc6eb5e78e163358d6898016cf7",
+        "pid": 26768,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xvlog"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\fir8\\iter_003\\cand_standard",
+        "driver_returncode": 0,
+        "elapsed_seconds": 1.3737536999979056,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xelab.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\fir8\\iter_003\\cand_standard\\xelab.log",
+        "output_log_sha256": "f35354b37b7986ee18717af427880a64af20b431259481a9d7a6c1ba554a24df",
+        "pid": 26336,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xelab"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\fir8\\iter_003\\cand_standard",
+        "driver_returncode": 0,
+        "elapsed_seconds": 2.813938000006601,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xsim.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\fir8\\iter_003\\cand_standard\\xsim.log",
+        "output_log_sha256": "da68edacffc16dc7cc628427a8a318ddda7968caf863f99aac0476c4cc3441f4",
+        "pid": 8288,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xsim"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\fir8\\iter_003\\cand_standard",
+        "driver_returncode": 0,
+        "elapsed_seconds": 133.39164089999394,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/vivado.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\fir8\\iter_003\\cand_standard\\vivado_synth_output.log",
+        "output_log_sha256": "59bf87780a5dd3fe49c0f852961c42715f25e89156b71fcb46a8ade95f5a84b8",
+        "pid": 9944,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "vivado"
+      }
+    ],
+    "schema_valid": true,
+    "sha256": "9e4ee90bf76f700be0a9b97a4c2ca5507791c97a2b48c7ea476c6bb4afe02c68",
+    "status": "recorded",
+    "truncated": false
+  },
+  "verification_logs": [
+    {
+      "head": "INFO: [VRFC 10-2263] Analyzing Verilog file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t2-06/tier2_5ta6370s/fir8/iter_003/cand_standard/fir8.v\" into library work\r\nINFO: [VRFC 10-311] analyzing module fir8\r\nINFO: [VRFC 10-2263] Analyzing Verilog file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t2-06/tier2_5ta6370s/fir8/inputs/testbench_path.v\" into library work\r\nINFO: [VRFC 10-311] analyzing module fir8_tb\r\n\r\n",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\fir8\\iter_003\\cand_standard\\xvlog.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "0f551571da65008b74aa4b0d035324537c474dc6eb5e78e163358d6898016cf7",
+      "tail": "",
+      "truncated": false
+    },
+    {
+      "head": "Vivado Simulator v2025.2\r\nCopyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\nCopyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\nRunning: C:/AMDDesignTools/2025.2/Vivado/bin/unwrapped/win64.o/xelab.exe fir8_tb -s fir8_tb_snap --debug off \r\nMulti-threading is on. Using 10 slave threads.\r\nStarting static elaboration\r\nPass Through NonSizing Optimizer\r\nCompleted static elaboration\r\nStarting simulation data flow analysis\r\nCompleted simulation data flow analysis\r\nTime Resolution for simulation is 1ps\r\nCompiling module work.fir8\r\nCompiling module work.fir8_tb\r\nBuilt simulation snapshot fir8_tb_snap\r\n\r\n",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\fir8\\iter_003\\cand_standard\\xelab.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "f35354b37b7986ee18717af427880a64af20b431259481a9d7a6c1ba554a24df",
+      "tail": "",
+      "truncated": false
+    },
+    {
+      "head": "\r\n****** xsim v2025.2 (64-bit)\r\n  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025\r\n  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025\r\n  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025\r\n  **** Start of session at: Tue Nov  3 04:55:47 2026\r\n    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\n    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n\r\nsource xsim.dir/fir8_tb_snap/xsim_script.tcl\r\n# xsim {fir8_tb_snap} -autoloadwcfg -runall\r\nTime resolution is 1 ps\r\nrun -all\r\nTEST PASSED\r\n$finish called at time : 156 ns : File \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t2-06/tier2_5ta6370s/fir8/inputs/testbench_path.v\" Line 31\r\nexit\r\nINFO: [Common 17-206] Exiting xsim at Tue Nov  3 04:55:49 2026...\r\n\r\n",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\fir8\\iter_003\\cand_standard\\sim_log.txt",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "da68edacffc16dc7cc628427a8a318ddda7968caf863f99aac0476c4cc3441f4",
+      "tail": "",
+      "truncated": false
+    },
+    {
+      "head": "\r\n****** Vivado v2025.2 (64-bit)\r\n  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025\r\n  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025\r\n  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025\r\n  **** Start of session at: Tue Nov  3 04:55:51 2026\r\n    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\n    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n\r\nsource C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t2-06/tier2_5ta6370s/fir8/iter_003/cand_standard/synth.tcl\r\n# set_msg_config -id {VRFC 10-3609} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-9873} -new_severity ERROR\r\n# set_msg_config -id {Designutils 20-1307} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-327} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-3352} -new_severity ERROR\r\n# set_part xc7a35tcpg236-1\r\nINFO: [Coretcl 2-1500] The part has been set to 'xc7a35tcpg236-1' for the current project only. Run set_part -help for more details. To evaluate different speed grades in the current design, use the set_speed_grade command, or use the open_checkpoint -part command to change the part used by an existing checkpoint design.\r\nset_part: Time (s): cpu = 00:00:11 ; elapsed = 00:00:08 . Memory (MB): peak = 531.273 ; gain = 224.273\r\n# read_verilog \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t2-06/tier2_5ta6370s/fir8/iter_003/cand_standard/fir8.v\"\r\n# set fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t2-06/tier2_5ta6370s/fir8/iter_003/cand_standard/timing.xdc\" w]\r\n# puts $fp {create_clock -period 6.667 -name clk [get_ports clk]}\r\n# puts $fp {set_property HD.CLK_SRC BUFGCTRL_X0Y0 [get_ports clk]}\r\n# close $fp\r\n# read_xdc \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t2-06/tier2_5ta6370s/fir8/iter",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\fir8\\iter_003\\cand_standard\\vivado_synth_output.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "59bf87780a5dd3fe49c0f852961c42715f25e89156b71fcb46a8ade95f5a84b8",
+      "tail": "y Propagation\r\n0 Infos, 0 Warnings, 0 Critical Warnings and 0 Errors encountered.\r\nreport_power completed successfully\r\n# catch { report_methodology -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t2-06/tier2_5ta6370s/fir8/iter_003/cand_standard/methodology.rpt\" }\r\nCommand: report_methodology -file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t2-06/tier2_5ta6370s/fir8/iter_003/cand_standard/methodology.rpt\r\nINFO: [Timing 38-35] Done setting XDC timing constraints.\r\nINFO: [DRC 23-133] Running Methodology with 2 threads\r\nWARNING: [DRC 23-814] Not all possible (connectivity based) DRCs may have been run because this design is seen as Out of Context.\r\nINFO: [Vivado_Tcl 2-1520] The results of Report Methodology are in file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t2-06/tier2_5ta6370s/fir8/iter_003/cand_standard/methodology.rpt.\r\nreport_methodology completed successfully\r\n# catch { report_qor_suggestions -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t2-06/tier2_5ta6370s/fir8/iter_003/cand_standard/qor_suggestions.rpt\" }\r\nCommand: report_qor_suggestions -file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t2-06/tier2_5ta6370s/fir8/iter_003/cand_standard/qor_suggestions.rpt\r\nCongestion Prediction Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.024 . Memory (MB): peak = 1926.902 ; gain = 0.000\r\nINFO: [Implflow 47-1309] PredResultString: 1:44.89:55.11\r\nfeatureProvider Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.037 . Memory (MB): peak = 1926.902 ; gain = 0.000\r\nINFO: [Implflow 47-1274] ML strategy prediction is not supported for 7-series devices.\r\nreport_qor_suggestions completed successfully\r\n# puts \"SYNTH_COMPLETE\"\r\nSYNTH_COMPLETE\r\nINFO: [Common 17-206] Exiting Vivado at Tue Nov  3 04:58:03 2026...\r\n\r\n",
+      "truncated": true
+    }
+  ]
+}

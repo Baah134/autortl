@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_2:decision:instruction:0",
+  "result": "In `crc16_stream_core`, remove `frame_crc` and use `out_crc_reg` as the input state to `crc16_update` on each accepted byte; after `in_last`, select `16'hFFFF` as the next update seed instead of storing a separate frame state. Preserve the existing output register, valid/ready replacement and stall behavior, and synchronous reset semantics; ensure a stalled output remains stable while the next update uses the reset frame seed when the preceding accepted byte had `in_last=1`. Keep `// @latency 1` on the top and verify the complete unit against the frozen integration testbench and routed gates.",
+  "artifacts": {}
+}

@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_2:decision:instruction:0",
+  "result": "In `skid_buffer_core`, replace the nested occupancy branches that update `head_valid` and `tail_valid` with direct next-state equations derived from `push`, `pop`, and the current validity flags. Replace the branch-specific data-register conditions with explicit shared write enables: shift `data1` into `data0` when a full queue pops, write `in_data` into `data0` when an accepted input becomes the head, and write `in_data` into `data1` when the tail is filled or replaced. Preserve synchronous reset priority, combinational `in_ready`, no empty fallthrough, stalled output stability, and simultaneous full pop/push behavior; retain `// @latency 1` on the top. Compare routed LUTs and FFs against the 11-LUT, 18-FF incumbent, and keep the candidate only if all gates pass and the objective improves.",
+  "artifacts": {}
+}

@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_1:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 1,
+    "instruction": "Keep the existing `always @(posedge clk)` reset and output-register behavior, but replace the `case (sel)` data selection with four mutually exclusive `sel` equality terms that mask `a`, `b`, `c`, and `d`, then OR the masked 8-bit values into `y`. Preserve synchronous active-high reset to `8'd0`, the same input-to-output cycle, and all 8 data bits for every selector value. Do not add registers or a numeric latency annotation; promote only if the unchanged verification gates pass, routed setup WNS and hold WHS are nonnegative, and LUT count strictly improves against the incumbent.",
+    "candidates": [
+      {
+        "iteration": 1,
+        "mutation": "standard",
+        "instruction": "Keep the existing `always @(posedge clk)` reset and output-register behavior, but replace the `case (sel)` data selection with four mutually exclusive `sel` equality terms that mask `a`, `b`, `c`, and `d`, then OR the masked 8-bit values into `y`. Preserve synchronous active-high reset to `8'd0`, the same input-to-output cycle, and all 8 data bits for every selector value. Do not add registers or a numeric latency annotation; promote only if the unchanged verification gates pass, routed setup WNS and hold WHS are nonnegative, and LUT count strictly improves against the incumbent.",
+        "generated_source_sha256": "0d916960a319b76db17f0336b9c483d675f161506e5ae80f2b5fe79d68dc2c58",
+        "final_source_sha256": "0d916960a319b76db17f0336b9c483d675f161506e5ae80f2b5fe79d68dc2c58",
+        "generated_code_hash": "9ed3446f105fe893",
+        "final_code_hash": "9ed3446f105fe893",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.579,
+          "whs_ns": 0.092,
+          "lut_used": 8,
+          "ff_used": 8,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.04,
+          "total_power_w": 0.111
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t0-01\\tier0_ep7ce5kd\\mux4\\iter_001\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t0-01\\tier0_ep7ce5kd\\mux4\\iter_001\\cand_standard\\synth.tcl",
+          "sha256": "ef34726f1178beddbb3414e03bd7fa838b630cdeb1c678927eade0e5838226ee"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t0-01\\tier0_ep7ce5kd\\mux4\\iter_001\\cand_standard\\mux4.v",
+          "sha256": "0ce4999958187d6dff80f84728e0964e36ccaaad6f32459298c762351a983cef"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": "0d916960a319b76db17f0336b9c483d675f161506e5ae80f2b5fe79d68dc2c58"
+  },
+  "artifacts": {}
+}

@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_2:model:planner.plan:0",
+  "result": "# PLAN \u2014 iteration 2\n## Current state assessment\nThe incumbent uses 7 LUTs and 9 FFs and already meets setup and hold, so promotion requires a strict LUT reduction (or equal LUTs with fewer FFs). Iteration 1\u2019s 8-bit counter with unconditional increment passed correctness and timing but used 10 LUTs, so repeating that counter rewrite does not meet the objective.\n\n## Hypothesis\nKeeping the incumbent counter update while narrowing only the PWM comparison to the low 8 counter bits may reduce comparator logic and LUT use without changing reset-reachable output cycles.\n\n## Instruction for generator\nKeep the 32-bit `counter`, its reset, and the `counter == 32'd255` clear-versus-increment update unchanged. Replace only `pwm_out <= (counter < {24'd0, duty});` with a comparison of `counter[7:0]` against `duty`; after reset, the counter never exceeds 255. Preserve the registered output and reset behavior, and retain the candidate only if the unchanged verification gates pass and routed LUT usage strictly improves over the incumbent.",
+  "artifacts": {}
+}

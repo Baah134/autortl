@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_3:model:planner.plan:0",
+  "result": "# PLAN \u2014 iteration 3\n## Current state assessment\nThe verified incumbent is timing-feasible at 7 LUTs and 9 FFs. Iterations 1 and 2 both passed behavior and timing checks but used 10 LUTs, so neither improved the `minimize_luts` objective. The top\u2019s numeric latency is unknown; no annotation is required.\n\n## Hypothesis\nRepresenting the phase with an 8-bit down-counter may map the decrement and inverted threshold comparison to fewer LUTs while keeping the same 9 FFs and observable PWM cycles.\n\n## Instruction for generator\nReplace the up-counter with an 8-bit phase register that resets to `8'hFF` and decrements each non-reset clock, relying on 8-bit wraparound. Compute the registered output from the old phase as `phase > ~duty`; this is equivalent to the original `counter < duty` when `phase` is the bitwise complement of the original count. Preserve synchronous reset of `pwm_out` to zero and all existing ports; promote only if the unchanged verification gates pass and routed LUT count is strictly below 7.",
+  "artifacts": {}
+}

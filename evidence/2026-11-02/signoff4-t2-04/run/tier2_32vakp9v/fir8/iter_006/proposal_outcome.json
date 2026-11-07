@@ -1,0 +1,77 @@
+{
+  "candidates": [
+    {
+      "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-04\\tier2_32vakp9v\\fir8\\iter_006\\cand_standard",
+      "cache_hit": false,
+      "final_code_hash": "beee9f0916298515",
+      "final_source_sha256": "4394cb7d7441fbc2267b9470dde1cc9317c152cb39c6a1891d488bd927b8b457",
+      "flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-04\\tier2_32vakp9v\\fir8\\iter_006\\cand_standard\\synth.tcl",
+        "sha256": "3bf7dce2e64a812d3e45052f56659fc54c91302cd05c4af3071066843dbad276"
+      },
+      "generated_code_hash": "beee9f0916298515",
+      "generated_source_sha256": "4394cb7d7441fbc2267b9470dde1cc9317c152cb39c6a1891d488bd927b8b457",
+      "instruction": "Keep `p0`\u2013`p7`, the carry-save reduction, `y_out`, reset behavior, parameters, and `// @latency 1` unchanged. Replace only `sum_all = s6 + c6` with a 32-bit segmented carry-select sum: compute a low chunk\u2019s sum and carry, compute each upper chunk\u2019s sums for carry-in 0 and 1, then select by the preceding chunk\u2019s carry. Preserve exact modulo-32-bit addition semantics; evaluate the routed timing, especially `reg2reg_wns_ns`, against the 0.807 ns incumbent and retain the candidate only if all gates pass and the objective improves.",
+      "iteration": 6,
+      "metrics": {
+        "bram_used": 0.0,
+        "dsp_used": 7,
+        "dynamic_power_w": 0.03,
+        "ff_used": 174,
+        "lut_used": 327,
+        "sim_passed": true,
+        "timing_met": false,
+        "total_power_w": 0.098,
+        "whs_ns": 0.362,
+        "wns_ns": -0.095
+      },
+      "mutation": "standard",
+      "reason": "",
+      "rungs": 5,
+      "source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-04\\tier2_32vakp9v\\fir8\\iter_006\\cand_standard\\fir8.v",
+        "sha256": "0b80f986ea991b822d1515034fe2d4a485788c03796e06cac50e9f9c392ad6cc"
+      },
+      "status": "measured"
+    }
+  ],
+  "doctor": {
+    "action": "rtl_surgery",
+    "adopted": false,
+    "identity_count": 3,
+    "input_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-04\\tier2_32vakp9v\\fir8\\iter_006\\cand_standard\\fir8.v",
+      "sha256": "0b80f986ea991b822d1515034fe2d4a485788c03796e06cac50e9f9c392ad6cc"
+    },
+    "measured_metrics": {
+      "bram_used": 0.0,
+      "dsp_used": 7,
+      "dynamic_power_w": 0.036,
+      "ff_used": 238,
+      "lut_used": 381,
+      "sim_passed": true,
+      "timing_met": false,
+      "total_power_w": 0.105,
+      "whs_ns": 0.414,
+      "wns_ns": -0.047
+    },
+    "proposed_source_text_sha256": "47ce683ce5ba5e6f19bdc4f8b33854a4260cfb98a772982004d764e8fb63f345",
+    "reason": "timing_not_closed",
+    "status": "NOT_ADOPTED",
+    "tools_ran": true,
+    "trial_flow_script": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-04\\tier2_32vakp9v\\fir8\\iter_006\\doctor_rtl_surgery_trial\\synth.tcl",
+      "sha256": "2ec2c6f13470924bc4f8dc910351d978b995e11e8e93ed99e5d25bda9188c656"
+    },
+    "trial_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-04\\tier2_32vakp9v\\fir8\\iter_006\\doctor_rtl_surgery_trial\\fir8.v",
+      "sha256": "a86ef5349f054b3fa91b173a675fe773e7941ba19dbc996c91167b9309e4036d"
+    }
+  },
+  "instruction": "Keep `p0`\u2013`p7`, the carry-save reduction, `y_out`, reset behavior, parameters, and `// @latency 1` unchanged. Replace only `sum_all = s6 + c6` with a 32-bit segmented carry-select sum: compute a low chunk\u2019s sum and carry, compute each upper chunk\u2019s sums for carry-in 0 and 1, then select by the preceding chunk\u2019s carry. Preserve exact modulo-32-bit addition semantics; evaluate the routed timing, especially `reg2reg_wns_ns`, against the 0.807 ns incumbent and retain the candidate only if all gates pass and the objective improves.",
+  "is_best": false,
+  "iteration": 6,
+  "recommendation": "REJECT",
+  "schema_version": 1,
+  "selected_source_sha256": "4394cb7d7441fbc2267b9470dde1cc9317c152cb39c6a1891d488bd927b8b457"
+}

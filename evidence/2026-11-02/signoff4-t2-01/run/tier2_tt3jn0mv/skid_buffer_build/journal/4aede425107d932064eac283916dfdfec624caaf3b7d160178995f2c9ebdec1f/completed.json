@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_1:decision:instruction:0",
+  "result": "In `skid_buffer_core`, replace `storage[0:1]` plus `read_ptr`-indexed `out_data` with explicit head and tail data registers, and drive `out_data` directly from the head register. Update the registers on enqueue, dequeue, and simultaneous transfers: capture into head when empty, move tail into head on a dequeue from a full queue, and place a simultaneous replacement input into the newly free slot as needed. Preserve occupancy-based `in_ready`/`out_valid`, synchronous active-high reset priority, stalled head stability, full 8-bit payloads, and the existing one-cycle minimum transfer age; keep the top\u2019s `// @latency 1` annotation.",
+  "artifacts": {}
+}

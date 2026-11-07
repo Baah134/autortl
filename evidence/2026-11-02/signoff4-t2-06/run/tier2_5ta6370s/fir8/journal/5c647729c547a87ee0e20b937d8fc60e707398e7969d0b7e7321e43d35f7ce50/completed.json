@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_5:decision:instruction:0",
+  "result": "Replace the `prod[0:63]` product-delay chains and the combinational carry-save reduction with a transposed FIR: keep a signed 16-bit input sample register, seven signed 32-bit partial-sum registers, and the registered `y_out`. On each clock, compute `y_out` from the previous sample and first partial sum, and update each partial sum from that same previous sample, its coefficient, and the next partial sum; use 32-bit modular arithmetic so arbitrary signed parameter values retain the existing product and sum semantics. Reset every state register and `y_out` to zero, preserve the interface and `// @latency 1`, and ensure the output still uses the previous cycle\u2019s sample.",
+  "artifacts": {}
+}

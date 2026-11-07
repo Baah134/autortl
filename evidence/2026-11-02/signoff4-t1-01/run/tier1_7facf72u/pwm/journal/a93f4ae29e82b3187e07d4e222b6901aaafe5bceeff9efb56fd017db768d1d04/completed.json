@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_3:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 3\n## Contract check\n- Interface, reset, and observable cycle behavior: PASS \u2014 The candidate preserves the top interface and reset behavior; its counter wraps every 256 cycles, matching the frozen design. The unchanged testbench passes.\n- Top latency annotation: PASS \u2014 Authoritative top latency is unknown, so the missing numeric annotation is not a failure or unverifiable criterion.\n- Tool and simulation gates: PASS \u2014 xvlog, xelab, xsim, and Vivado exited successfully; simulation reports `TEST PASSED` and synthesis includes `SYNTH_COMPLETE`.\n- Routed reports and metric integrity: PASS \u2014 Retained routed timing and utilization reports are present, with matching report hashes and complete tool-exit evidence.\n- Timing closure: PASS \u2014 Candidate setup WNS is 0.464 ns and hold WHS is 0.128 ns; both are nonnegative and `timing_met=true`.\n- Objective improvement over previous best: FAIL \u2014 Both designs are timing-feasible, so `minimize_luts` requires a strict lexicographic improvement. Candidate metrics (48 LUTs, 33 FFs) are worse than the previous best (7 LUTs, 9 FFs); `improvement_kind` is null and `measured_improvement` is false.\n## Summary\n- Passed: 5 of 6\n- Failed: 1 of 6\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes behavioral, tool, metric-integrity, and timing-closure checks, but it does not improve the chosen objective over the timing-feasible previous best. The stall count is 2, below the threshold for RESTART.",
+      "recommendation": "REJECT",
+      "passed": 5,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

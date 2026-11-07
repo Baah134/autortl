@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_2:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 2,
+    "instruction": "In `crc16_stream_core`, replace the loop-based `crc16_update` function with explicit, factored XOR equations for the same CRC-16/CCITT-FALSE byte update, using the current `crc_seed` and `in_data` inputs. Keep the shared `crc_reg`, `start_of_frame`, output-slot control, reset behavior, and registered outputs unchanged; preserve the top\u2019s `// @latency 1` annotation. Compare routed LUT and FF counts against the incumbent and retain the candidate only if it passes all verification and metric gates and strictly improves the `minimize_luts` objective.",
+    "candidates": [
+      {
+        "iteration": 2,
+        "mutation": "standard",
+        "instruction": "In `crc16_stream_core`, replace the loop-based `crc16_update` function with explicit, factored XOR equations for the same CRC-16/CCITT-FALSE byte update, using the current `crc_seed` and `in_data` inputs. Keep the shared `crc_reg`, `start_of_frame`, output-slot control, reset behavior, and registered outputs unchanged; preserve the top\u2019s `// @latency 1` annotation. Compare routed LUT and FF counts against the incumbent and retain the candidate only if it passes all verification and metric gates and strictly improves the `minimize_luts` objective.",
+        "generated_source_sha256": "77cc59dfeb469a5134f973e6134098b71ca6aa1caba98e344d3f27677e2ebb57",
+        "final_source_sha256": "13cca4bdf968b90d8b656c8aa44d0dc42880b1d3c1b120ad1aafafb1d08d897b",
+        "generated_code_hash": "a89de58276e17992",
+        "final_code_hash": "f3fe7ee2b863a777",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.432,
+          "whs_ns": 0.217,
+          "lut_used": 15,
+          "ff_used": 34,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.019,
+          "total_power_w": 0.089
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-01\\tier4_609n_qcd\\crc16_stream_build\\iter_002\\cand_standard\\repair_001",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-01\\tier4_609n_qcd\\crc16_stream_build\\iter_002\\cand_standard\\repair_001\\synth.tcl",
+          "sha256": "b3b0791479dfc464ab6defca86dbeb7a1fdfa6566bcced210d29fb1661a637fc"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-01\\tier4_609n_qcd\\crc16_stream_build\\iter_002\\cand_standard\\repair_001\\crc16_stream.v",
+          "sha256": "45e4545a6e7c77760d707d3ee78eca50e37c84a9d8d85cf350bc12efcd3e5451"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": "13cca4bdf968b90d8b656c8aa44d0dc42880b1d3c1b120ad1aafafb1d08d897b"
+  },
+  "artifacts": {}
+}

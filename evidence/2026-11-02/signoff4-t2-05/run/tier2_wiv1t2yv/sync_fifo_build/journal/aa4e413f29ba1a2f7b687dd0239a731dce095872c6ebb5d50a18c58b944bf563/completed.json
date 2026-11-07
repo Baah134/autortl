@@ -1,0 +1,81 @@
+{
+  "stage": "iteration_1:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 1,
+    "instruction": "In `sync_fifo_core`, replace the dynamically indexed memory read with a register array whose entries hold queued words in order: shift entries toward the head on each pop, then write accepted input at the post-pop tail, with push taking priority if both updates target the same entry. Drive `out_data` from the head register and retain the occupancy-based `out_valid`, combinational `in_ready`, explicit capacity behavior, and synchronous reset of queue state. Preserve full simultaneous pop/push, stable head data during stalls, minimum transfer age, and the current top\u2019s `// @latency 1` annotation",
+    "candidates": [
+      {
+        "iteration": 1,
+        "mutation": "standard",
+        "instruction": "In `sync_fifo_core`, replace the dynamically indexed memory read with a register array whose entries hold queued words in order: shift entries toward the head on each pop, then write accepted input at the post-pop tail, with push taking priority if both updates target the same entry. Drive `out_data` from the head register and retain the occupancy-based `out_valid`, combinational `in_ready`, explicit capacity behavior, and synchronous reset of queue state. Preserve full simultaneous pop/push, stable head data during stalls, minimum transfer age, and the current top\u2019s `// @latency 1` annotation",
+        "generated_source_sha256": "c9a2bf09968ef6053703092e70d1c42f0486be265b18746d48cfc52f0eecaadf",
+        "final_source_sha256": "c9a2bf09968ef6053703092e70d1c42f0486be265b18746d48cfc52f0eecaadf",
+        "generated_code_hash": "fe3cc9c1c59b77a1",
+        "final_code_hash": "fe3cc9c1c59b77a1",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": false,
+          "wns_ns": -0.273,
+          "whs_ns": 0.124,
+          "lut_used": 21,
+          "ff_used": 26,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.013,
+          "total_power_w": 0.083
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-05\\tier2_wiv1t2yv\\sync_fifo_build\\iter_001\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-05\\tier2_wiv1t2yv\\sync_fifo_build\\iter_001\\cand_standard\\synth.tcl",
+          "sha256": "a46aa6df11b6dbabfa688d0ddbbb525c789f39d1f77c441f0adf9d5ee127d4dc"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-05\\tier2_wiv1t2yv\\sync_fifo_build\\iter_001\\cand_standard\\sync_fifo.v",
+          "sha256": "05c9edc275fd496505dc6eeb1c899bda171b82710407429add98a60f1add363d"
+        }
+      }
+    ],
+    "doctor": {
+      "status": "NOT_ADOPTED",
+      "action": "rtl_surgery",
+      "reason": "timing_not_closed",
+      "tools_ran": true,
+      "measured_metrics": {
+        "sim_passed": true,
+        "timing_met": false,
+        "wns_ns": -0.931,
+        "whs_ns": 0.029,
+        "lut_used": 13,
+        "ff_used": 7,
+        "dsp_used": 0,
+        "bram_used": 0.0,
+        "dynamic_power_w": 0.015,
+        "total_power_w": 0.085
+      },
+      "adopted": false,
+      "input_source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-05\\tier2_wiv1t2yv\\sync_fifo_build\\iter_001\\cand_standard\\sync_fifo.v",
+        "sha256": "05c9edc275fd496505dc6eeb1c899bda171b82710407429add98a60f1add363d"
+      },
+      "trial_source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-05\\tier2_wiv1t2yv\\sync_fifo_build\\iter_001\\doctor_rtl_surgery_trial\\sync_fifo.v",
+        "sha256": "3c67038d1b1d6336ceffbbb155468d6050a9b599ca33ba847dded1df1c78e884"
+      },
+      "trial_flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-05\\tier2_wiv1t2yv\\sync_fifo_build\\iter_001\\doctor_rtl_surgery_trial\\synth.tcl",
+        "sha256": "d83bb403e3a557dba5489bf172eaca9fde2fe8063f7b4be05751297f93e999dd"
+      },
+      "identity_count": 3,
+      "proposed_source_text_sha256": "f83f3511576f9959df578bc9a84c0a1aed64863b23ff7998d934f0807d781ac2"
+    },
+    "recommendation": "ACCEPT",
+    "is_best": true,
+    "selected_source_sha256": "c9a2bf09968ef6053703092e70d1c42f0486be265b18746d48cfc52f0eecaadf"
+  },
+  "artifacts": {}
+}

@@ -1,0 +1,5 @@
+{
+  "stage": "module_rx_err_count:model:generator.golden_model:0",
+  "result": "def init():\n    return dict(ferr_count=0, ovf_count=0)\n\ndef step(state, inputs):\n    ferr_count = state.get(\"ferr_count\", 0)\n    ovf_count = state.get(\"ovf_count\", 0)\n\n    if int(inputs.get(\"rst\", 0)) & 1:\n        ferr_count = 0\n        ovf_count = 0\n    else:\n        if (int(inputs.get(\"ferr_in\", 0)) & 1) and ferr_count < 15:\n            ferr_count += 1\n        if (int(inputs.get(\"ovf_in\", 0)) & 1) and ovf_count < 15:\n            ovf_count += 1\n\n    state[\"ferr_count\"] = ferr_count\n    state[\"ovf_count\"] = ovf_count\n\n    outputs = dict()\n    outputs[\"ferr_count\"] = ferr_count & 15\n    outputs[\"ovf_count\"] = ovf_count & 15\n    return state, outputs",
+  "artifacts": {}
+}

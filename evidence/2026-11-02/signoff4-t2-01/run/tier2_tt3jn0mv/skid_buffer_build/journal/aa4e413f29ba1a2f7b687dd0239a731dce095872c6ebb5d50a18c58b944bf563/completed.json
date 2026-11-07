@@ -1,0 +1,81 @@
+{
+  "stage": "iteration_1:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 1,
+    "instruction": "In `skid_buffer_core`, replace `storage[0:1]` plus `read_ptr`-indexed `out_data` with explicit head and tail data registers, and drive `out_data` directly from the head register. Update the registers on enqueue, dequeue, and simultaneous transfers: capture into head when empty, move tail into head on a dequeue from a full queue, and place a simultaneous replacement input into the newly free slot as needed. Preserve occupancy-based `in_ready`/`out_valid`, synchronous active-high reset priority, stalled head stability, full 8-bit payloads, and the existing one-cycle minimum transfer age; keep th",
+    "candidates": [
+      {
+        "iteration": 1,
+        "mutation": "standard",
+        "instruction": "In `skid_buffer_core`, replace `storage[0:1]` plus `read_ptr`-indexed `out_data` with explicit head and tail data registers, and drive `out_data` directly from the head register. Update the registers on enqueue, dequeue, and simultaneous transfers: capture into head when empty, move tail into head on a dequeue from a full queue, and place a simultaneous replacement input into the newly free slot as needed. Preserve occupancy-based `in_ready`/`out_valid`, synchronous active-high reset priority, stalled head stability, full 8-bit payloads, and the existing one-cycle minimum transfer age; keep th",
+        "generated_source_sha256": "410621ea2e5ae05e6d5a4fe8df44abe963cf78765546d1635b87059d7cfeb1ac",
+        "final_source_sha256": "410621ea2e5ae05e6d5a4fe8df44abe963cf78765546d1635b87059d7cfeb1ac",
+        "generated_code_hash": "996d3bfddada849b",
+        "final_code_hash": "996d3bfddada849b",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": false,
+          "wns_ns": -0.193,
+          "whs_ns": 0.171,
+          "lut_used": 8,
+          "ff_used": 18,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.013,
+          "total_power_w": 0.083
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-01\\tier2_tt3jn0mv\\skid_buffer_build\\iter_001\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-01\\tier2_tt3jn0mv\\skid_buffer_build\\iter_001\\cand_standard\\synth.tcl",
+          "sha256": "6431d08d2f0cd26904f8ade1b96c1ab63e524cf42c09e62c95282a41b4d8f241"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-01\\tier2_tt3jn0mv\\skid_buffer_build\\iter_001\\cand_standard\\skid_buffer.v",
+          "sha256": "a41589da01ac661ad729018f142c58a709d5c79fb370d8693ecf9ca9188429dd"
+        }
+      }
+    ],
+    "doctor": {
+      "status": "NOT_ADOPTED",
+      "action": "rtl_surgery",
+      "reason": "timing_not_closed",
+      "tools_ran": true,
+      "measured_metrics": {
+        "sim_passed": true,
+        "timing_met": false,
+        "wns_ns": -0.193,
+        "whs_ns": 0.171,
+        "lut_used": 8,
+        "ff_used": 18,
+        "dsp_used": 0,
+        "bram_used": 0.0,
+        "dynamic_power_w": 0.013,
+        "total_power_w": 0.083
+      },
+      "adopted": false,
+      "input_source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-01\\tier2_tt3jn0mv\\skid_buffer_build\\iter_001\\cand_standard\\skid_buffer.v",
+        "sha256": "a41589da01ac661ad729018f142c58a709d5c79fb370d8693ecf9ca9188429dd"
+      },
+      "trial_source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-01\\tier2_tt3jn0mv\\skid_buffer_build\\iter_001\\doctor_rtl_surgery_trial\\skid_buffer.v",
+        "sha256": "2b4e500e9e8f9eff37e6bb76506ba2fdb9ed301b43e9cd10aeceab0cc6a7f837"
+      },
+      "trial_flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-01\\tier2_tt3jn0mv\\skid_buffer_build\\iter_001\\doctor_rtl_surgery_trial\\synth.tcl",
+        "sha256": "9ff123d1f75fa606bd72fe49e757514734e67fb6ef2e8e11bfe91185caaf5c37"
+      },
+      "identity_count": 3,
+      "proposed_source_text_sha256": "0228d25ad24c9aa4555214eaa0a721eb7f59630d768694a68c6867eadbb29345"
+    },
+    "recommendation": "ACCEPT",
+    "is_best": true,
+    "selected_source_sha256": "410621ea2e5ae05e6d5a4fe8df44abe963cf78765546d1635b87059d7cfeb1ac"
+  },
+  "artifacts": {}
+}

@@ -1,0 +1,77 @@
+{
+  "candidates": [
+    {
+      "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\cordic_build\\iter_001\\cand_standard",
+      "cache_hit": false,
+      "final_code_hash": "6582378ef9428f8d",
+      "final_source_sha256": "d1e9b1fa6056572505fdea34e2d3d26a7f2e555bd722902c95c0af127ff7409f",
+      "flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\cordic_build\\iter_001\\cand_standard\\synth.tcl",
+        "sha256": "3ab24b1330d9ca6950853d6db2d1986eaf4b5303772b97c314f13f24dea67cf6"
+      },
+      "generated_code_hash": "6582378ef9428f8d",
+      "generated_source_sha256": "d1e9b1fa6056572505fdea34e2d3d26a7f2e555bd722902c95c0af127ff7409f",
+      "instruction": "Change the engine/output path so 16-bit cosine and sine registers track the rounded views of the current 18-bit `x_state` and `y_state`, and drive the top outputs directly from those registers. Update them in lockstep on reset, input acceptance, and each busy iteration; hold them whenever `x_state` and `y_state` hold, including output backpressure. Preserve signed rounding, modulo state arithmetic, handshakes, reset priority, and every observable output cycle; do not add a pipeline stage or numeric top latency annotation.",
+      "iteration": 1,
+      "metrics": {
+        "bram_used": 0.0,
+        "dsp_used": 0,
+        "dynamic_power_w": 0.051,
+        "ff_used": 94,
+        "lut_used": 195,
+        "sim_passed": true,
+        "timing_met": false,
+        "total_power_w": 0.121,
+        "whs_ns": 0.129,
+        "wns_ns": -0.279
+      },
+      "mutation": "standard",
+      "reason": "",
+      "rungs": 5,
+      "source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\cordic_build\\iter_001\\cand_standard\\cordic_sincos.v",
+        "sha256": "3492a0d6432605ddd7c268b8d1f9ed92c0451e366aae159458f5fa141a341bb2"
+      },
+      "status": "measured"
+    }
+  ],
+  "doctor": {
+    "action": "rtl_surgery",
+    "adopted": false,
+    "identity_count": 3,
+    "input_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\cordic_build\\iter_001\\cand_standard\\cordic_sincos.v",
+      "sha256": "3492a0d6432605ddd7c268b8d1f9ed92c0451e366aae159458f5fa141a341bb2"
+    },
+    "measured_metrics": {
+      "bram_used": 0.0,
+      "dsp_used": 0,
+      "dynamic_power_w": 0.052,
+      "ff_used": 63,
+      "lut_used": 155,
+      "sim_passed": true,
+      "timing_met": false,
+      "total_power_w": 0.122,
+      "whs_ns": 0.13,
+      "wns_ns": -1.757
+    },
+    "proposed_source_text_sha256": "9f9e487b7a988039adab43bd0ef4b4f2c43b7d96cdcfc1b3d0ba425a90a422f7",
+    "reason": "timing_not_closed",
+    "status": "NOT_ADOPTED",
+    "tools_ran": true,
+    "trial_flow_script": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\cordic_build\\iter_001\\doctor_rtl_surgery_trial\\synth.tcl",
+      "sha256": "f15cbbb88681135d14ad400fc232cfb3ca308eafe0d602e54517ddc373f6f71f"
+    },
+    "trial_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\cordic_build\\iter_001\\doctor_rtl_surgery_trial\\cordic_sincos.v",
+      "sha256": "7df0b181fd017147b651234a303900c82fbbd7e4b8726638afda7d2cbba027f7"
+    }
+  },
+  "instruction": "Change the engine/output path so 16-bit cosine and sine registers track the rounded views of the current 18-bit `x_state` and `y_state`, and drive the top outputs directly from those registers. Update them in lockstep on reset, input acceptance, and each busy iteration; hold them whenever `x_state` and `y_state` hold, including output backpressure. Preserve signed rounding, modulo state arithmetic, handshakes, reset priority, and every observable output cycle; do not add a pipeline stage or numeric top latency annotation.",
+  "is_best": true,
+  "iteration": 1,
+  "recommendation": "ACCEPT",
+  "schema_version": 1,
+  "selected_source_sha256": "d1e9b1fa6056572505fdea34e2d3d26a7f2e555bd722902c95c0af127ff7409f"
+}

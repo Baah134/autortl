@@ -1,0 +1,77 @@
+{
+  "candidates": [
+    {
+      "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\packet_fifo_build\\iter_001\\cand_standard",
+      "cache_hit": false,
+      "final_code_hash": "dc39a18c83612146",
+      "final_source_sha256": "2064cddf5f464b61db311dc67108f623580303da0cfca82703e7d42e938580fc",
+      "flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\packet_fifo_build\\iter_001\\cand_standard\\synth.tcl",
+        "sha256": "25abb19095a2fcdbedce9d367739a66fe2070e48402456b0358ec36fad7eb308"
+      },
+      "generated_code_hash": "dc39a18c83612146",
+      "generated_source_sha256": "2064cddf5f464b61db311dc67108f623580303da0cfca82703e7d42e938580fc",
+      "instruction": "Replace the asynchronous `data_mem[read_ptr]` and `last_mem[read_ptr]` output selection with a registered head tuple and shift-register tail storage, so both payload outputs are driven directly by the head registers. Capture a push into the head when empty; on a pop, promote the next queued tuple and correctly compact or append the tail when push and pop coincide. Preserve the existing capacity, ready/valid behavior, reset priority, stall stability, minimum transfer age, parameter support, and top `// @latency 1` annotation; expect FF use to rise and treat timing recovery as unproven until all",
+      "iteration": 1,
+      "metrics": {
+        "bram_used": 0.0,
+        "dsp_used": 0,
+        "dynamic_power_w": 0.014,
+        "ff_used": 29,
+        "lut_used": 23,
+        "sim_passed": true,
+        "timing_met": false,
+        "total_power_w": 0.084,
+        "whs_ns": 0.179,
+        "wns_ns": -0.068
+      },
+      "mutation": "standard",
+      "reason": "",
+      "rungs": 5,
+      "source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\packet_fifo_build\\iter_001\\cand_standard\\packet_fifo.v",
+        "sha256": "555cc56adf216fe55ba7fb1ddc02c84e5d58990bd545c6e061913def50ea09ca"
+      },
+      "status": "measured"
+    }
+  ],
+  "doctor": {
+    "action": "rtl_surgery",
+    "adopted": true,
+    "identity_count": 3,
+    "input_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\packet_fifo_build\\iter_001\\cand_standard\\packet_fifo.v",
+      "sha256": "555cc56adf216fe55ba7fb1ddc02c84e5d58990bd545c6e061913def50ea09ca"
+    },
+    "measured_metrics": {
+      "bram_used": 0.0,
+      "dsp_used": 0,
+      "dynamic_power_w": 0.014,
+      "ff_used": 30,
+      "lut_used": 26,
+      "sim_passed": true,
+      "timing_met": true,
+      "total_power_w": 0.084,
+      "whs_ns": 0.039,
+      "wns_ns": 0.331
+    },
+    "proposed_source_text_sha256": "4414877cec5d62812011eb8fe5f28d34df6d9358192bc18642de92eb4b4c875a",
+    "reason": "policy_improvement",
+    "status": "ADOPTED",
+    "tools_ran": true,
+    "trial_flow_script": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\packet_fifo_build\\iter_001\\doctor_rtl_surgery_trial\\synth.tcl",
+      "sha256": "2f6aab654b8890e3d6c0fa13940e05001f152f87a87140359984fe8d789ac4b6"
+    },
+    "trial_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\packet_fifo_build\\iter_001\\doctor_rtl_surgery_trial\\packet_fifo.v",
+      "sha256": "6d35212ebf41d9099d97fe1bb3f1a66b5ec6874e9cbc37c553e253254ea7d294"
+    }
+  },
+  "instruction": "Replace the asynchronous `data_mem[read_ptr]` and `last_mem[read_ptr]` output selection with a registered head tuple and shift-register tail storage, so both payload outputs are driven directly by the head registers. Capture a push into the head when empty; on a pop, promote the next queued tuple and correctly compact or append the tail when push and pop coincide. Preserve the existing capacity, ready/valid behavior, reset priority, stall stability, minimum transfer age, parameter support, and top `// @latency 1` annotation; expect FF use to rise and treat timing recovery as unproven until all",
+  "is_best": true,
+  "iteration": 1,
+  "recommendation": "ACCEPT",
+  "schema_version": 1,
+  "selected_source_sha256": "4414877cec5d62812011eb8fe5f28d34df6d9358192bc18642de92eb4b4c875a"
+}

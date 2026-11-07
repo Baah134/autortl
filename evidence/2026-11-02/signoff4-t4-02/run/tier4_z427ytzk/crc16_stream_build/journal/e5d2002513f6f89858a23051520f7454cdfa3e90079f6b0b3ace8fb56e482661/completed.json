@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_3:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 3,
+    "instruction": "In `crc16_stream_core`, change the `crc_seed` / `crc_next` logic so the CRC update is expressed using CRC linearity: separate the data contribution and the `out_crc_reg` state contribution, then apply the fixed `0xFFFF` state correction when `out_last_reg` is set. Keep the existing registered outputs, handshake, reset priority, and `// @latency 1`; preserve the CRC result for consecutive frames and stalled transfers. This is a distinct transformation from iteration 1\u2019s explicit factored equations: evaluate whether removing the full-width seed mux lowers routed LUT count, and retain the candida",
+    "candidates": [
+      {
+        "iteration": 3,
+        "mutation": "standard",
+        "instruction": "In `crc16_stream_core`, change the `crc_seed` / `crc_next` logic so the CRC update is expressed using CRC linearity: separate the data contribution and the `out_crc_reg` state contribution, then apply the fixed `0xFFFF` state correction when `out_last_reg` is set. Keep the existing registered outputs, handshake, reset priority, and `// @latency 1`; preserve the CRC result for consecutive frames and stalled transfers. This is a distinct transformation from iteration 1\u2019s explicit factored equations: evaluate whether removing the full-width seed mux lowers routed LUT count, and retain the candida",
+        "generated_source_sha256": "cf4560a1bed1d01620810c1ac2fa1b94390773d380b9756812011e16bfab87c8",
+        "final_source_sha256": "d36eb59420ea994b393a04bf054f8597ea18c43bac92797ad9df8f39fdd07f42",
+        "generated_code_hash": "0d8a61cad6e346dd",
+        "final_code_hash": "d0e88fefc25af8e9",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.445,
+          "whs_ns": 0.208,
+          "lut_used": 16,
+          "ff_used": 34,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.017,
+          "total_power_w": 0.088
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-02\\tier4_z427ytzk\\crc16_stream_build\\iter_003\\cand_standard\\repair_001",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-02\\tier4_z427ytzk\\crc16_stream_build\\iter_003\\cand_standard\\repair_001\\synth.tcl",
+          "sha256": "41731560691a406a66b4118a63c6b209b07bde450c5a257f001c3d7ae2659360"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-02\\tier4_z427ytzk\\crc16_stream_build\\iter_003\\cand_standard\\repair_001\\crc16_stream.v",
+          "sha256": "c52cb43a09a8c886221ee45545f89b89cdf1fe7ab160719292425f051f5fc4a0"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": "d36eb59420ea994b393a04bf054f8597ea18c43bac92797ad9df8f39fdd07f42"
+  },
+  "artifacts": {}
+}

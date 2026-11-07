@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_5:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 5\n## Contract check\n- Interface and parameter behavior: PASS \u2014 Preserves the top name, ports, widths, signedness, parameter names, defaults, and parameter-dependent coefficient arithmetic.\n- Reset and cycle behavior: PASS \u2014 Preserves synchronous active-high reset and registered output behavior; the partial-sum recurrence produces the same cycle-by-cycle FIR result.\n- Declared latency: PASS \u2014 Includes the required `// @latency 1` annotation.\n- Deterministic verification: PASS \u2014 Ladder is ALIVE; simulation passed, and required tool exits are successful.\n- Routed evidence and metric integrity: PASS \u2014 Retained routed reports and metric evidence are present and consistent.\n- Timing feasibility: PASS \u2014 WNS is 1.431 ns and WHS is 0.219 ns; both are nonnegative and `timing_met=true`.\n- Objective improvement: PASS \u2014 For `maximize_freq`, register-to-register WNS improves from 0.148 ns to 1.431 ns at the same clock period.\n\n## Summary\n- Passed: 7 of 7\n- Failed: 0 of 7\n- Improved over previous best: YES\n\n## Recommendation\nACCEPT\n\n## Reason\nThe candidate passes the deterministic checks, preserves the defined interface and cycle behavior, and meets setup and hold timing. Its register-to-register setup slack strictly improves over the timing-feasible previous best, satisfying the `maximize_freq` objective.",
+      "recommendation": "ACCEPT",
+      "passed": 7,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}

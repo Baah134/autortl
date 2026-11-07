@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_3:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 3\n## Contract check\n- Interface and live child reachability: PASS \u2014 `packet_fifo` preserves its ports and instantiates `packet_fifo_core`, whose outputs drive the top outputs.\n- FIFO behavior and supported parameters: PASS \u2014 the source preserves the specified queue behavior; the trusted parameterized temporal testbench passes.\n- Top latency annotation: PASS \u2014 `packet_fifo` declares `// @latency 1`, matching the authoritative latency.\n- Deterministic verification: PASS \u2014 ladder is ALIVE and simulation reports the exact `TEST PASSED` verdict.\n- Tool stages: PASS \u2014 xvlog, xelab, xsim, and Vivado exit successfully; synthesis includes `SYNTH_COMPLETE`.\n- Routed metrics and integrity: PASS \u2014 retained routed reports support the candidate metrics.\n- Timing feasibility: PASS \u2014 timing is met with WNS 0.135 ns and WHS 0.104 ns.\n- Objective improvement: PASS \u2014 with both designs timing-feasible, LUTs decrease from 29 to 23; FFs also decrease from 16 to 14.\n## Summary\n- Passed: 8 of 8\n- Failed: 0 of 8\n- Improved over previous best: YES\n## Recommendation\nACCEPT\n## Reason\nThe candidate passes the deterministic and tool gates, preserves the defined FIFO contract, and meets setup and hold timing. It strictly improves the `minimize_luts` objective over the previous feasible best, reducing LUTs from 29 to 23.",
+      "recommendation": "ACCEPT",
+      "passed": 8,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}

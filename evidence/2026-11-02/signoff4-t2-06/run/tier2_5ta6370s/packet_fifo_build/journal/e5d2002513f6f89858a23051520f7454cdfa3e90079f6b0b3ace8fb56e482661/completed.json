@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_3:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 3,
+    "instruction": "In `packet_fifo_core`, change only the variable-index writes to `tail_data` and `tail_last` into per-slot updates using constant slot indices and occupancy-derived enables. Cover both push-only appends and simultaneous pop/push replacement, including the shift on pop, for every supported `DEPTH` from 1 through 8. Preserve the registered head, occupancy and `not_full` behavior, reset handling, handshakes, stall stability, minimum transfer age, and the top\u2019s `// @latency 1` annotation; judge the candidate by the required simulation, routed timing, and resource gates.",
+    "candidates": [
+      {
+        "iteration": 3,
+        "mutation": "standard",
+        "instruction": "In `packet_fifo_core`, change only the variable-index writes to `tail_data` and `tail_last` into per-slot updates using constant slot indices and occupancy-derived enables. Cover both push-only appends and simultaneous pop/push replacement, including the shift on pop, for every supported `DEPTH` from 1 through 8. Preserve the registered head, occupancy and `not_full` behavior, reset handling, handshakes, stall stability, minimum transfer age, and the top\u2019s `// @latency 1` annotation; judge the candidate by the required simulation, routed timing, and resource gates.",
+        "generated_source_sha256": "f432ce456697686fbe15ddb0e8750ffa1cf8b501ce890f035edc7cad6e9cf5fc",
+        "final_source_sha256": "f432ce456697686fbe15ddb0e8750ffa1cf8b501ce890f035edc7cad6e9cf5fc",
+        "generated_code_hash": "652810a735bbbea3",
+        "final_code_hash": "652810a735bbbea3",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.323,
+          "whs_ns": 0.039,
+          "lut_used": 26,
+          "ff_used": 30,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.014,
+          "total_power_w": 0.084
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\packet_fifo_build\\iter_003\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\packet_fifo_build\\iter_003\\cand_standard\\synth.tcl",
+          "sha256": "091ab80c2b47e4025d399dd1923a669e82c4f49c97cfcf78b233f7ed3656c243"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\packet_fifo_build\\iter_003\\cand_standard\\packet_fifo.v",
+          "sha256": "4d6413f56e69fc227626316d6245b3c6be09950a10b29fc0bd3dca6ca7f5063d"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": "f432ce456697686fbe15ddb0e8750ffa1cf8b501ce890f035edc7cad6e9cf5fc"
+  },
+  "artifacts": {}
+}
