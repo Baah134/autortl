@@ -1,0 +1,273 @@
+"""Fresh full tier0 merge gate on the current harness source.
+
+The same gate as Codex's campaign13/14 runners, rebuilt for a changed
+harness. campaign14 could not launch after bc959cc and e062271 because it
+asserts the old 230-file source freeze, and those commits changed the
+harness on purpose. This runner:
+
+1. Freezes the current runtime source identity, the same selection as
+   validate_seed_binding_live.identities(): every .py/.v/.sv/.json/.yaml/.md
+   under autortl, llm, tests, curriculum, scripts, data and .claude, plus
+   run.py. tools/ is outside that set, so this file does not change it.
+2. Runs the full pytest suite as the receipt, and requires exit 0 with the
+   source unchanged before and after.
+3. Runs `run.py bench --tier 0` with campaign14's exact budgets, and
+   requires the source, router statistics and curriculum history prefixes
+   to be unchanged afterwards. It passes no target frequency: each entry
+   runs at its meta.yaml frequency, else 100 MHz
+   (gate_frequency_overrides_entry_meta).
+
+    python tools/tier0_gate.py --name contract-campaign-15 [--python PY] [--tier 1] [--vivado-bin DIR]
+
+--tier N (1 to 6) runs the same discipline on curriculum tier N with
+TIER_BUDGETS[N]; an entry's meta.yaml `budgets` replace the tier's model-call,
+tool-minute and wall-minute limits for that entry (entry_budgets_ignored_by_bench).
+The Vivado bin folder is --vivado-bin, else $AUTORTL_VIVADO_BIN, else
+C:/AMDDesignTools/2025.2/Vivado/bin/.
+
+Outputs go to logs/<name>* (ignored) and are archived under evidence/
+afterwards. It refuses to overwrite an earlier attempt.
+"""
+from __future__ import annotations
+import argparse
+import hashlib
+import json
+import os
+from pathlib import Path
+import subprocess
+import sys
+import time
+from datetime import datetime, timezone
+
+ROOT = Path(__file__).resolve().parents[1]
+SELECTION = ("autortl", "llm", "tests", "curriculum", "scripts", "data", ".claude")
+SUFFIXES = (".py", ".v", ".sv", ".json", ".yaml", ".md")
+VIVADO = "C:/AMDDesignTools/2025.2/Vivado/bin/"
+BUDGETS = {"iterations": 1, "best_of_n": 1, "model_calls": 16, "tool_minutes": 20, "wall_minutes": 30,
+           "infra_retries": 1}
+# Per-tier budgets. Tier 0 keeps campaign14's exactly. Tier 1 leaves iterations
+# to each entry's meta.yaml (None omits --iterations) and allows for build mode's
+# planner, oracle and testbench calls.
+TIER_BUDGETS = {0: BUDGETS,
+                1: {"iterations": None, "best_of_n": 1, "model_calls": 30, "tool_minutes": 40, "wall_minutes": 60,
+                    "infra_retries": 1}}
+# gate_limited_to_tiers_zero_and_one: tiers 2 to 6 take tier 1's budgets, the same
+# defaults tools/explore.py runs them with. A heavy entry raises its own limits in
+# its meta.yaml `budgets`, which the bench applies to that entry only.
+TIER_BUDGETS.update({tier: dict(TIER_BUDGETS[1]) for tier in range(2, 7)})
+
+
+def sha(path):
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+
+def identities(root=ROOT):
+    """The runtime source identity (same selection as campaign13/14)."""
+    result = {}
+    for name in SELECTION:
+        for directory, dirs, files in os.walk(root / name, topdown=True, followlinks=False):
+            directory = Path(directory)
+            # Exclude other checkouts before traversal, not after rglob visits them.
+            if directory == root / ".claude":
+                dirs[:] = [entry for entry in dirs if entry != "worktrees"]
+            for filename in files:
+                path = directory / filename
+                if path.is_file() and path.suffix in SUFFIXES and "__pycache__" not in path.parts:
+                    result[path.relative_to(root).as_posix()] = sha(path)
+    result["run.py"] = sha(root / "run.py")
+    return dict(sorted(result.items()))
+
+
+def vivado_bin(option=None):
+    """--vivado-bin, else $AUTORTL_VIVADO_BIN, else the default; always ends in "/"."""
+    folder = option or os.environ.get("AUTORTL_VIVADO_BIN") or VIVADO
+    folder = folder.replace("\\", "/")
+    return folder if folder.endswith("/") else folder + "/"
+
+
+def bench_command(python, out, tier=0, model=None, jobs=1, vivado=None):
+    budgets = TIER_BUDGETS[tier]
+    args = [python, "run.py", "bench", "--tier", str(tier)]
+    if budgets["iterations"] is not None:
+        args += ["--iterations", str(budgets["iterations"])]
+    args += ["--best-of-n", str(budgets["best_of_n"]), "--max-llm-calls", str(budgets["model_calls"]),
+             "--max-vivado-minutes", str(budgets["tool_minutes"]), "--max-wall-minutes", str(budgets["wall_minutes"]),
+             "--max-infra-retries", str(budgets["infra_retries"]), "--target-part", "xc7a35tcpg236-1",
+             "--output-dir", str(out)]
+    # No --target-freq-mhz (gate_frequency_overrides_entry_meta): each entry runs at
+    # its meta.yaml frequency, else RunConfig's 100 MHz, and records it in its config.
+    for name in ("vivado", "xvlog", "xelab", "xsim"):
+        args += ["--" + name, vivado_bin(vivado) + name + ".bat"]
+    if model:
+        args += ["--model", model]
+    if jobs > 1:
+        args += ["--jobs", str(jobs)]
+    return args
+
+
+def implementation_hashes(root=ROOT):
+    """The harness implementation files a run freezes into runtime.json (fsm._prepare_inputs)."""
+    result = {}
+    for directory in (root / "autortl", root / "llm", root / "data", root / ".claude" / "skills"):
+        for path in sorted(directory.rglob("*")):
+            if path.is_file() and path.suffix in (".py", ".yaml", ".md", ".v"):
+                result[path.relative_to(root).as_posix()] = sha(path)
+    return result
+
+
+def recorded_implementation(record):
+    """A history record's frozen implementation hashes, read from its first entry's runtime.json."""
+    for result in record.get("results") or []:
+        path = Path(str(result.get("evidence_dir") or "")) / "runtime.json"
+        try:
+            return json.loads(path.read_text(encoding="utf-8"))["implementation"]
+        except (OSError, ValueError, KeyError, TypeError):
+            continue
+    return None
+
+
+def held_higher_tiers(history, tier, governance_sha256=None, implementation=None):
+    """Tiers above tier whose latest full-tier record is held.
+
+    Held is a state, not an event (stale_held_record_blocks_lower_gates): a tier
+    that was held and later lost it, or that was re-gated on a changed harness,
+    no longer blocks the lower tiers. A subset record never changes it. In the
+    bottom-up sign-off pass every tier above the one being gated is not yet held.
+    A hold recorded under other governance code (held_under_old_governance_blocks)
+    or on other harness implementation files (held_under_old_runtime_blocks) is a
+    hold of another cohort and does not block; when the record's implementation
+    cannot be read it still blocks.
+    """
+    latest = {}
+    for record in history:
+        if record.get("full_tier") is True:
+            latest[record["tier"]] = record
+    def current(record):
+        recorded = (record.get("runtime_identity") or {}).get("governance_sha256")
+        if governance_sha256 is not None and recorded != governance_sha256:
+            return False
+        if implementation is not None:
+            frozen = recorded_implementation(record)
+            if frozen is not None and frozen != implementation:
+                return False
+        return True
+    return sorted(t for t, record in latest.items()
+                  if t > tier and record.get("held") is True and current(record))
+
+
+def entry_settings(tier, root=None):
+    """Each entry's own meta.yaml frequency and budgets, which win over the tier's."""
+    if str(ROOT) not in sys.path:
+        sys.path.insert(0, str(ROOT))
+    from curriculum.runner import _metadata, entry_settings as declared
+    folder = (root or ROOT) / "curriculum" / f"tier{tier}"
+    if not folder.is_dir():
+        return {}
+    return {p.name: declared(_metadata(p)) for p in sorted(folder.iterdir()) if (p / "meta.yaml").is_file()}
+
+
+def positive_int(text):
+    """argparse type: 0 or a negative count is a usage error (gate_jobs_zero_silently_serial)."""
+    try:
+        value = int(text)
+    except ValueError:
+        raise argparse.ArgumentTypeError(f"invalid int value: {text!r}") from None
+    if value < 1:
+        raise argparse.ArgumentTypeError("must be at least 1")
+    return value
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser.add_argument("--name", required=True)
+    parser.add_argument("--python", default=sys.executable)
+    parser.add_argument("--tier", type=int, choices=sorted(TIER_BUDGETS), default=0)
+    parser.add_argument("--jobs", type=positive_int, default=1,
+                        help="bench entries run at once (not part of the cohort)")
+    parser.add_argument("--model", default=None,
+                        help="model alias pinned for every role (recorded in the cohort); default: the CLI default")
+    parser.add_argument("--vivado-bin", help="Vivado bin folder (default: $AUTORTL_VIVADO_BIN, else %s)" % VIVADO)
+    args = parser.parse_args(argv)
+    logs = ROOT / "logs"
+    run, freeze_path = logs / args.name, logs / f"{args.name}-source-freeze.json"
+    tests_path, pre, launch = logs / f"{args.name}-tests.json", logs / f"{args.name}-prelaunch.json", \
+        logs / f"{args.name}-launch-result.json"
+    for path in (run, freeze_path, tests_path, pre, launch):
+        if path.exists():
+            raise SystemExit(f"{path} exists: an earlier attempt is never overwritten")
+    sys.path.insert(0, str(ROOT))
+    from curriculum import runner
+    held_above = held_higher_tiers(runner._history(), args.tier, sha(runner.__file__), implementation_hashes())
+    if held_above:
+        raise SystemExit("a higher held tier requires its own gate: tier "
+                         + ", ".join(str(t) for t in held_above) + " is held")
+    # Fail fast before the long test receipt: a missing tool or a moved model CLI
+    # (the Codex app replaces its versioned binary folder when it updates) would
+    # otherwise only show up as an infrastructure-blocked bench.
+    folder = vivado_bin(args.vivado_bin)
+    doctor = subprocess.run([args.python, "run.py", "doctor"]
+                            + [a for name in ("vivado", "xvlog", "xelab", "xsim")
+                               for a in ("--" + name, folder + name + ".bat")],
+                            cwd=ROOT, capture_output=True, text=True, encoding="utf-8", errors="replace")
+    if doctor.returncode != 0:
+        print(doctor.stdout, flush=True)
+        raise SystemExit("environment not ready (run.py doctor); the gate was not started")
+
+    source = identities()
+    freeze_path.write_text(json.dumps(source, indent=2) + "\n", encoding="utf-8")
+    print(json.dumps({"source_files": len(source), "freeze": str(freeze_path)}), flush=True)
+
+    tick = time.monotonic()
+    pytest = subprocess.run([args.python, "-m", "pytest", "tests/", "-q", "-p", "no:cacheprovider"], cwd=ROOT,
+                            capture_output=True, text=True, encoding="utf-8", errors="replace")
+    receipt = {"exit_code": pytest.returncode, "seconds": time.monotonic() - tick,
+               "summary": pytest.stdout.strip().splitlines()[-1] if pytest.stdout.strip() else "",
+               "source_unchanged": identities() == source, "source_files": len(source),
+               "source_freeze_sha256": sha(freeze_path)}
+    tests_path.write_text(json.dumps(receipt, indent=2) + "\n", encoding="utf-8")
+    print(json.dumps(receipt), flush=True)
+    if receipt["exit_code"] != 0 or not receipt["source_unchanged"]:
+        raise SystemExit("full test receipt failed; the bench gate was not launched")
+
+    history_path, stats = ROOT / "curriculum/results.jsonl", ROOT / "llm/router_stats.jsonl"
+    history_before = history_path.read_bytes() if history_path.exists() else b""
+    stats_before = stats.read_bytes() if stats.exists() else b""
+    command = bench_command(args.python, run, args.tier, args.model, args.jobs, args.vivado_bin)
+    budgets = TIER_BUDGETS[args.tier]
+    plan = {"git_commit": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
+            "runtime_source": source, "source_freeze_sha256": sha(freeze_path),
+            "full_test_receipt_sha256": sha(tests_path), "command": command,
+            "started_utc": datetime.now(timezone.utc).isoformat(), "python_version": sys.version,
+            "python_executable_sha256": sha(Path(args.python)), "helper_sha256": sha(Path(__file__)),
+            "router_stats_offset": len(stats_before), "router_stats_prefix_sha256": hashlib.sha256(stats_before).hexdigest(),
+            "history_offset": len(history_before), "history_prefix_sha256": hashlib.sha256(history_before).hexdigest(),
+            "tier": args.tier, "model": args.model, "budgets_per_entry": budgets, "no_higher_held_tier": True,
+            # Settings an entry declares itself; they replace budgets_per_entry and the
+            # 100 MHz default for that entry, and the bench records them in its config.
+            "entry_settings": entry_settings(args.tier),
+            "scope": (f"Fresh full tier0 runtime merge gate on {len(source)} source identities after harness changes; "
+                      "campaign14's budgets, target frequency from each entry's meta.yaml (else 100 MHz). "
+                      "Ideal zero min/max I/O, no higher held tier.") if args.tier == 0
+            else (f"Fresh full tier{args.tier} runtime gate on {len(source)} source identities; per-tier budgets, "
+                  "iterations, target frequency and any budgets from each entry's meta.yaml. "
+                  "Ideal zero min/max I/O, no higher held tier.")}
+    pre.write_text(json.dumps(plan, indent=2) + "\n", encoding="utf-8")
+    print(json.dumps({"prelaunch": str(pre), "budgets_per_entry": budgets}), flush=True)
+    tick, code = time.monotonic(), None
+    try:
+        code = subprocess.call(command, cwd=ROOT)
+    finally:
+        result = {"exit_code": code, "wall_seconds": time.monotonic() - tick,
+                  "source_unchanged": identities() == source,
+                  "router_stats_prefix_unchanged": (stats.read_bytes() if stats.exists() else b"")[:len(stats_before)] == stats_before,
+                  "history_prefix_unchanged": history_path.is_file()
+                  and history_path.read_bytes()[:len(history_before)] == history_before,
+                  "ended_utc": datetime.now(timezone.utc).isoformat()}
+        launch.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
+        print(json.dumps(result), flush=True)
+    ok = result["source_unchanged"] and result["router_stats_prefix_unchanged"] and result["history_prefix_unchanged"]
+    return code if ok and code is not None else (code or 1)
+
+
+if __name__ == "__main__":
+    sys.exit(main())

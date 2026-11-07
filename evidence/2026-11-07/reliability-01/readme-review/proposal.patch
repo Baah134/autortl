@@ -1,0 +1,152 @@
+--- a/README.md
++++ b/README.md
+@@ -4,24 +4,29 @@
+ 
+ **An agentic FPGA design loop where the model only proposes and verification decides.**
+ 
+-AutoRTL writes and optimizes Verilog with a team of LLM agent roles, driving
+-AMD Vivado from the command line. Every candidate must pass static checks,
+-simulation against a testbench that has itself been shown to catch injected
+-bugs, and place-and-route timing before it can replace the current design.
+-The agents read the specification but cannot change it, the testbench, the
+-TCL or the acceptance gates.
+-
+-Everything below was produced by the harness's own roles and measured by
+-Vivado 2025.2 on the Basys 3's FPGA (`xc7a35tcpg236-1`), then run on a real
+-board. Every number links to an archived run.
++AutoRTL writes and optimizes Verilog with bounded LLM roles, driving AMD
++Vivado from the command line. Before a candidate becomes the working best, it
++must pass static checks, compilation and simulation with a fault-qualified
++testbench. Routed reports govern selection: resource-saving wins require setup
++and hold closure; an improvement toward closure can be retained explicitly as
++timing progress.
++
++The planner creates and repairs prose-derived specifications. RTL optimization
++keeps the current contract, trusted testbench, TCL and acceptance gates fixed.
++
++The generated cores below were measured with Vivado 2025.2 for the Basys 3's
++FPGA (`xc7a35tcpg236-1`). Twelve were also checked on a real board through
++hand-written shells and independent reference models. Archived runs distinguish
++standalone implementation, simulation and hardware results.
+ 
+ ## Highlights
+ 
+-- **A UART link built entirely by the agents, running on the board.** The
++- **Agent-built UART cores running as a board echo.** The
+   roles built a 16x-oversampling UART receiver with a FIFO from a typed
+   specification and a FIFO-buffered transmitter from a plain-English request,
+   then optimized both (70 → 55 and 170 → 36 LUTs, each after recovering timing).
+-  Wired together unchanged on a Basys 3, they **echoed 1,000,000 of 1,000,000
++  A hand-written Basys 3 wrapper connects the unchanged child RTL with
++  board-specific baud parameters. They **echoed 1,000,000 of 1,000,000
+   bytes at full line rate with 0 errors**
+   ([evidence](evidence/2026-11-01/basys3-harness-echo-01/README.md)). An
+   earlier harness-built transmitter streamed a million bytes the same way
+@@ -30,9 +35,12 @@
+   core (50,000 random programs checked against an ISA model), an AES-128
+   core, a CORDIC sine/cosine unit, a 16-tap FIR built for 150 MHz, an SPI
+   master, a CRC-16 stream, a signed FIR filter, two dot products, a divider
+-  and two FIFOs. Each ran unedited on the board and passed 50,000
+-  transactions against an independent model under randomized backpressure,
+-  with 0 mismatches.
++  and two FIFOs. Each archived core ran unedited in a hand-written board
++  shell at 100 MHz and passed 50,000 transactions against an independent model
++  under randomized backpressure, with 0 mismatches
++  ([first six](evidence/2026-10-28/basys3-harness-winners-01/README.md),
++  [CPU/CRC/SPI](evidence/2026-11-02/basys3-tier46-board-01/README.md),
++  [AES/CORDIC/FIR16](evidence/2026-11-02/basys3-tier56-board-01/README.md)).
+ - **Real optimization, not just passing tests.** The FIR went from failing
+   timing at 78 LUTs to 52 LUTs with positive slack, and a dot product from
+   328 to 20 LUTs by moving arithmetic into DSP slices.
+@@ -44,7 +52,8 @@
+   15 official FIPS-197/AESAVS known answers (9,108 → 614 LUTs, from missing
+   timing by 9.8 ns to +2.2 ns); a CORDIC sin/cos unit is bit-exact against its
+   model and closes 100 MHz. A 16-tap symmetric FIR closes **150 MHz** (394 →
+-  148 LUTs, from −10.25 ns to +0.75 ns).
++  148 LUTs, from −10.25 ns to +0.75 ns) out of context; its physical-board
++  check uses the 100 MHz shell.
+ - **Verifiers that are tested themselves.** Before a testbench may grade
+   anything, it must pass a correct design and fail deliberately broken ones.
+   An audit injected 27 faults into the FIR: generated testbenches first caught
+@@ -55,10 +64,12 @@
+   line you name in a local config file. The same tier0 bench passed on four
+   different models, and the role parsers read each model's own output format
+   ([model matrix](evidence/2026-10-29/model-matrix-01/README.md)).
+-- **Reproducible by construction.** 2,258 regression tests, crash-safe
+-  resumable runs, fixed model-call and tool-time budgets, per-run token
+-  accounting, and a CI audit that checks over 34,000 recorded SHA-256 claims
+-  against the committed bytes. Curriculum tier 0 is held: three consecutive
++- **Reproducible experiments.** More than 2,000 harness regression tests
++  ([recorded receipt](evidence/2026-11-02/signoff4-t6-01/signoff4-t6-01-tests.json)),
++  resumable runs with input/environment checks, fixed model-call and tool-time
++  budgets, and per-run token accounting. CI audits archived SHA-256 bindings
++  against committed bytes, with historical losses recorded explicitly
++  ([publication policy](docs/PUBLICATION.md)). A recorded tier 0 hold: three consecutive
+   fresh runs on the same frozen harness passed every gate
+   ([campaign 17](evidence/2026-10-29/contract-campaign-17/README.md)).
+   `python run.py doctor` checks a new machine, and `python scripts/demo.py`
+@@ -82,8 +93,9 @@
+ 
+ ### Agent roles
+ 
+-Each role gets an isolated view of the run and one job. None of them can
+-change the specification, the testbench or the gates.
++Each role receives the context for one job. The planner can create or repair
++a prose-derived spec; optimization candidates cannot amend their current
++contract or trusted verification inputs.
+ 
+ | Role | Sees | Produces |
+ |---|---|---|
+@@ -100,9 +112,10 @@
+ 
+ ### Guarantees
+ 
+-- **Fixed contracts.** Interfaces, reset behavior and cycle latency come from
+-  a typed specification. A candidate that changes them fails; it is never
+-  renegotiated.
++- **Fixed contracts.** A supplied typed spec is immutable. RTL optimization
++  preserves the current interface, reset behavior and cycle latency.
++  Planner-written specs may be repaired during build, rebuilding modules under
++  each revision.
+ - **Measured selection.** Timing feasibility comes before resource savings.
+   Candidates are deduplicated by exact source, and every score comes from
+   routed Vivado reports.
+@@ -158,7 +171,7 @@
+ | UART receiver + FIFO + error counters (4 modules, tier 5) | Setup −1.166 → +0.443 ns · 70 → 55 LUTs after timing recovery | Independent fault-qualified test · 1,000,000-byte echo on the board |
+ | UART transmitter + FIFO from a prose request (tier 3) | Setup −1.188 → +0.179 ns · 170 → 36 LUTs / 117 → 27 FFs | Independent fault-qualified test · 1,000,000-byte echo on the board |
+ | AXI4-Lite register block (tier 5, out of context) | Built from specification: 95 LUTs · setup +5.441 ns | Independent fault-qualified test |
+-| 16-tap symmetric FIR at 150 MHz (tier 5, out of context) | 394 → 148 LUTs · 9 DSPs · setup −10.25 → +0.751 ns | Independent fault-qualified test · 50,000 transactions on the board |
++| 16-tap symmetric FIR at 150 MHz (tier 5, out of context) | 394 → 148 LUTs · 9 DSPs · setup −10.25 → +0.751 ns | Independent fault-qualified test · 50,000 transactions on the board at 100 MHz |
+ | RISC-V RV32I core, 6 modules (tier 6, out of context) | 2,093 → 1,530 LUTs / 4,356 → 3,325 FFs · setup +0.916 ns | ISA-level checker, fault-qualified · 50,000 programs run on the board |
+ | AES-128 encryption core (tier 6, out of context) | 9,108 → 614 LUTs · setup −9.76 → +2.216 ns | 15 FIPS-197/AESAVS known answers · 50,000 blocks encrypted on the board |
+ | CORDIC sin/cos, 4 modules (tier 6) | Setup −1.757 → +0.076 ns · 194 LUTs | Bit-exact model · 50,000 angles on the board |
+@@ -166,8 +179,13 @@
+ | CRC-16 stream, arbiter + register file (tier 4) | Built from specification: 16 and 42 LUTs, timing met | Independent fault-qualified test · CRC-16 on the board |
+ | Curriculum tier 0 (counter, mux4) | Held: 3 consecutive qualifying runs · counter 55 → 31 LUTs | All mandatory gates |
+ 
+-All at 100 MHz with ideal zero I/O delays; the dot products map their
+-arithmetic onto DSP slices. Details: [hardware targets](docs/TARGETS.md).
++Standalone results target 100 MHz with ideal zero I/O delays unless marked
++otherwise; FIR16's 150 MHz result is out of context. Physical-board checks use
++a 100 MHz shell with board pin constraints. The dot products use DSP slices.
++Details: [hardware targets](docs/TARGETS.md).
++
++A controlled public-task comparison against a single model invocation has not
++yet been completed.
+ 
+ **Fmax.** Out of context, the six winners close at 181.8 MHz (FIR) to
+ 425.5 MHz (packet FIFO). The harness reports both the board-level
+@@ -282,9 +300,10 @@
+   mistakes back to the planner with the exact ports to fix
+   ([tier 4](evidence/2026-10-30/explore-tier4-02/README.md),
+   [tier 5](evidence/2026-10-30/explore-tier5-01/README.md)).
+-- **The evidence is audited.** CI checks every recorded SHA-256 claim, over
+-  34,000 of them, against the committed bytes
+-  ([audit](evidence/2026-10-28/evidence-integrity-01/README.md)).
++- **The evidence is audited.** CI checks archived SHA-256 bindings against
++  committed bytes and requires explicit records for historical losses
++  ([publication policy](docs/PUBLICATION.md),
++  [audit](evidence/2026-10-28/evidence-integrity-01/README.md)).
+ 
+ ## Quick start
+ 

@@ -35,6 +35,15 @@ supported schema and limits.
    code (tbgen.py) in two compare modes: fixed_latency (shift-register
    compare) and scoreboard (queue-based, for valid/ready). Pulse mode is
    deliberately stubbed.
+   Fixed-latency stimulus is driven at a falling edge. Latency zero compares
+   after combinational settling before the next rising edge; latency one
+   compares after that edge and its register updates. Larger values add pipeline
+   delay. A post-transition stateful oracle therefore needs the matching
+   observation phase; a clock port or FIFO fall-through label alone does not
+   determine it. All protocol-none outputs are compared on every sampled row,
+   including invalid/empty data, whose behavior must be defined. No implicit
+   valid mask exists. The planner prompt teaches this existing contract;
+   it does not rewrite supplied latency or relax the driver.
    Scoreboard stimulus includes unique complete payload vectors from declared
    examples that explicitly assert input-valid and deassert the configured
    reset. Scheduling remains driver-owned; oracle outputs remain authoritative.

@@ -65,13 +65,15 @@ def identities(root=ROOT):
     """The runtime source identity (same selection as campaign13/14)."""
     result = {}
     for name in SELECTION:
-        for path in (root / name).rglob("*"):
-            rel = path.relative_to(root).parts
-            # Agent worktrees (.claude/worktrees/*) are other checkouts, not this source.
-            if rel[:2] == (".claude", "worktrees"):
-                continue
-            if path.is_file() and path.suffix in SUFFIXES and "__pycache__" not in path.parts:
-                result[path.relative_to(root).as_posix()] = sha(path)
+        for directory, dirs, files in os.walk(root / name, topdown=True, followlinks=False):
+            directory = Path(directory)
+            # Exclude other checkouts before traversal, not after rglob visits them.
+            if directory == root / ".claude":
+                dirs[:] = [entry for entry in dirs if entry != "worktrees"]
+            for filename in files:
+                path = directory / filename
+                if path.is_file() and path.suffix in SUFFIXES and "__pycache__" not in path.parts:
+                    result[path.relative_to(root).as_posix()] = sha(path)
     result["run.py"] = sha(root / "run.py")
     return dict(sorted(result.items()))
 

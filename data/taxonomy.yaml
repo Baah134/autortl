@@ -86,6 +86,12 @@ messages:
 # Methodology violations (report_methodology, UG1292 IDs). ADVISORY ONLY:
 # these never kill candidates; they are digested into the planner's context.
 harness_failures:
+  fixed_latency_observation_ambiguous:
+    meaning: "Three signoff4 tier3 UART/FIFO plans used fixed_latency 0 for oracles returning post-transition state; the generated driver correctly compared before the next rising edge, causing repeated child assertions"
+    repair: "Teach the existing fixed-latency observation phase explicitly in the planner prompt: 0 before the next rising edge, 1 after its register updates; distinguish scoreboard transfer age and require deterministic invalid data for compared protocol-none outputs; never rewrite the requested contract or weaken comparisons"
+  identity_walk_enters_excluded_worktrees:
+    meaning: "The gate excluded .claude/worktrees only after Path.rglob recursively enumerated their contents, so identity checks still traversed unrelated checkouts and tool outputs"
+    repair: "Prune the exact excluded subtree before traversal while preserving source selection, raw-byte hashes and sorted keys; compare against the legacy selector and observe traversal on synthetic trees, including link behavior"
   stale_companion_masks_inlined_candidate:
     meaning: "An optimized top inlined a frozen companion it no longer instantiates, while the trusted testbench still instantiated that companion directly, so the stale companion file kept that part of the testbench passing without testing the candidate"
     repair: "Before compiling, require every frozen companion the trusted testbench instantiates to stay reachable from the candidate top; otherwise reject it as a design failure with that reason inside the bounded repair loop, and name those companions in the candidate context"

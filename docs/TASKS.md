@@ -986,3 +986,30 @@ Remaining acceptance: controlled pytest only; no Vivado ran. Any change to
 curriculum/runner.py changes the governance hash, so every tier starts a new
 cohort in the sign-off pass regardless. Tier1 has four entries, so it
 qualifies only at 4/4 (3/4 = 75%).
+
+
+## November 7 — bounded reliability corrections before release freeze
+
+The original signoff4 process has stopped. Tier6-02 passed 2022 software
+tests, then all three entries hit CODEX_QUOTA. Its controller recorded
+gate_exit 1073807364 and no verdict; the final launch receipt is missing.
+Keep that incomplete attempt and its 96-file archive unchanged. Do not resume
+it across changed sources or reinterpret it as a design failure.
+
+Observed failures are recorded in data/taxonomy.yaml before implementation:
+fixed_latency_observation_ambiguous and identity_walk_enters_excluded_worktrees.
+Apply only explicit planner sampling guidance and pre-descent pruning of the
+excluded agent-worktree subtree. Keep verification, example/oracle budgets,
+design budgets and source-selection semantics intact. No additional roles.
+
+Acceptance: independent review; original prompt assertions fail before the
+change and pass after; real simulator-only controls pass for combinational0
+and clocked1, and the identical clocked source fails at0 through the expected
+three data assertions with all tool exits zero. Compare old/new exact source
+hash dictionaries and verify ignored descendants are never traversed on
+synthetic trees. Run complete harness and tooling software tests. This does
+not establish improved model success; a fresh current-tier exploration is
+separate evidence. Finished tiers are not re-held during development.
+
+User connected the board. This stage uses software and simulation only;
+no programming, flash, reset, JTAG or serial commands are part of it.

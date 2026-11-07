@@ -1,10 +1,59 @@
 # Current AutoRTL checkpoint
 
-Updated November 6, 2026 (America/New_York). Verify files, Git, ownership and
+Updated November 7, 2026 (America/New_York). Verify files, Git, ownership and
 actual jobs before acting. Canonical checkout: Downloads/autortl-work. Preserve
 the separate Downloads/autortl copy. User choice: command-line Vivado.
 
-## Current — November6: release plan and existing sign-off supervision
+## Current — November 7: reviewed reliability batch and software checks
+
+Coordinator: Codex / reliability fixes Nov7, normal claim after expired lease.
+Private token remains outside Git. Claim/status in SQLite is authoritative.
+Original Python signoff/gate processes are gone; no board jobs were found.
+The user connected the FPGA and requested care. This stage makes no serial,
+JTAG, hardware-server, programming, flash or reset calls.
+
+Development b59d077 is pushed: 22 completed archives / 49,435 committed blobs
+verified; repository evidence audit passed. Main remains ca61dbc. Original
+signoff4-t6-02 was archived with 96 matching entries but lacks its final launch
+receipt. It passed 2022 harness tests, then all three entries were model_blocked
+with CODEX_QUOTA. Controller gate_exit 1073807364; no verdict and no t6-03.
+The latest valid tier6 record remains 2/3/not held. Do not resume that attempt.
+
+Before edits, all 334 original frozen files matched. New taxonomy entries and
+acceptance preceded the patches. Integrated only explicit planner observation
+guidance plus pruning .claude/worktrees before traversal, with six sampling
+tests and six identity tests (one native Windows symlink-privilege skip).
+Independent isolated sampling review: 114 passed. Identity comparison preserves
+exact selected raw-byte hashes, including executed Windows junction controls;
+excluded synthetic subtree scandir visits went from 8 to 0.
+
+Three real XSIM controls met their declared outcomes: combinational0 PASS,
+clocked1 PASS, identical clocked RTL/oracle/stimulus at0 failed through exactly
+three data assertions. Nine process exits were zero. No model benefit inferred.
+README review corrects measurement scope, hand-written board integration,
+150MHz FIR16 OOC versus 100MHz board, and timing progress versus closure.
+
+Software checks completed: 2028 harness passed (822.21s); 323 tooling passed
+and one Windows symbolic-link privilege test skipped (78.81s). Both exited0;
+all337 frozen inputs remained unchanged. Portable sampling replay also passed
+all three outcomes. Sessions57697/42151 completed; do not poll obsolete jobs.
+Raw receipts/source freeze are archived in evidence/2026-11-07/reliability-01.
+FIR and verifier case studies are added for readers; their evidence links were
+checked. Local doctor passed, which does not establish available model quota.
+
+Publication is the reviewed batch following b59d077; verify latest Git/remote
+and workspace work/nov7-publication.json for the actual pushed commit and audit.
+No model/vendor campaign is active. Next AES exploration is fully specified in
+the archive, but must wait for a verified worker tool restriction: the current
+Codex adapter inherits local MCP configuration and asks rather than enforces
+no tools. An isolated proposal is being prepared in work/nov7-worker-boundary-stage;
+do not copy it without review/tests or alter auth/sandbox/security policies.
+One planned fresh current-tier AES exploration retains original budgets and
+does not access the board. Preserve the no-intermediate-rehold rule.
+Public benchmark adapter review is research only; no scored trials have run.
+Earlier checkpoints below are historical and can name obsolete live jobs.
+
+## Previous — November6: release plan and existing sign-off supervision
 
 User requested continued work, an action plan and subagents where useful.
 Codex claimed the expired lease normally for supervision/documentation. The

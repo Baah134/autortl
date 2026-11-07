@@ -16,9 +16,10 @@ The harness is the contribution; its demonstrations and evidence establish scope
   at4/5; uart_fifo_build repeatedly failed. A held tier is not universal success.
 - Tier6 first campaign passed CORDIC/RV32I but failed AES oracle construction.
   The generated aes_round oracle indexed255 in a255-element exponent table.
-- Existing signoff4-t6-02 is running its regression, supervised by Python19924
-  ->5980 ->18808 at inspection. Preserve its334-file freeze and original budgets.
-  The old coordinator lease expired; Codex claimed supervision normally.
+- Original signoff4-t6-02 subsequently stopped: 2022 software tests passed,
+  then model quota blocked all three entries. No design verdict; final launch
+  receipt missing. Its 96-file archive and 334 original frozen inputs match.
+  Preserve it as an incomplete infrastructure-blocked attempt.
 
 ## Execution order and completion criteria
 
@@ -99,3 +100,23 @@ A planner sampling-clarity correction is being prepared in isolation, with
 controls, while the active implementation remains frozen. The benchmark protocol
 proposes40tasks plus6disjoint pilots and360scored runs; it is not yet registered
 or executed and requires a real independent grading boundary and adapter.
+
+## November 7 execution update
+
+Steps 1–2: completed archives published in b59d077 (22 archives, 49,435
+committed blobs verified). Original sign-off stopped with quota/no verdict;
+the controller outcome and incomplete receipt are preserved. Step 3 is in
+validation: explicit sampling guidance and worktree pruning, independent
+reviews, real simulator controls, full software regression. No retries or
+budget expansion, hidden test changes, new roles or board actions.
+
+No benchmark trials or superiority result yet. Dataset pin/adapter review
+does not select the scored task roster or freeze a final release identity.
+
+Reliability software acceptance completed:2028 harness+323tooling passes;
+one explicit Windows symlink-privilege skip,337 frozen inputs unchanged, and
+three real sampling controls plus portable replay. Reader case studies now
+explain FIR4's measured tradeoff and the verifier's18/27→22/27 correction.
+Before another model exploration, restrict inherited worker tool capabilities
+and validate the effective boundary; requesting no tools is insufficient.
+No board command is authorized by this work stage.

@@ -1,48 +1,37 @@
 # AutoRTL shared project memory
 
-This repository is the shared workspace for every coordinator and its workers.
-You can continue without access to the previous provider's conversation.
-
 Canonical checkout: `C:/Users/prince.baah/Downloads/autortl-work`.
-GitHub integration branch: `main`. Development branch: `codex/contract-context`.
-Current checkpoint: **November6, release plan and final sign-off supervision**.
-Read docs/SESSION_HANDOFF.md and query live ownership before editing. Base
-e61665c5; last checked remote main ca61dbc. The prior October29 patches are
-already integrated; do not replay stale staged changes.
+Development: `codex/contract-context`. Main remains `ca61dbc` pending final release.
+Current checkpoint: **November 7, reliability corrections and release preparation**.
 
-Twelve harness-built designs have recorded Basys3 verification. Current full
-records hold tiers0–5; tier3 includes a recurring UART/FIFO failure. Tier6's
-first attempt passed2/3 and failed AES oracle generation. An existing signoff4
-process is running tier6-02; preserve all334 frozen inputs and original budgets.
-A held tier is an80% curriculum criterion, not a claim every entry passed.
+Read `AGENTS.md`, `docs/AGENT_HANDOFF.md` and the latest section of
+`docs/SESSION_HANDOFF.md`, then verify live SQLite ownership, Git and processes.
+One coordinator leads; its scoped subagents may work in parallel. Never replay
+old staged patches or overwrite another coordinator's active work.
 
-The finite release plan is docs/ACTION_PLAN.md: close the current sign-off,
-resolve demonstrated reliability gaps, freeze a release candidate, measure
-a public-task comparison and publish a reproducible CV/engineering package.
-Finished tiers are not repeatedly re-held during development; the final pass
-is the release gate. Full public-benchmark superiority is not yet established.
+Development commit `b59d077` published 22 completed signoff4 archives: all
+49,435 committed blobs were verified. The original sign-off has stopped.
+Tier6-02 passed 2,022 harness tests, then all three entries hit CODEX_QUOTA.
+Its final launch receipt is missing and it has **no design verdict**. The
+96-file archive and 334 original source inputs were verified before new edits.
+Latest valid recorded holds remain tiers 0–5 on their earlier runtime identity;
+tier 3 is 4/5 with a UART/FIFO failure, and tier 6 is 2/3, not held.
 
-**Agents take turns.** Before editing, check live coordinator ownership and
-actual jobs using the arrival checklist in `docs/AGENT_HANDOFF.md`. An active
-coordinator keeps ownership; a returning agent must not overwrite newer work.
+Current work: independently reviewed planner sampling guidance and exact source
+identity pruning are integrated. Software checks: 2028 harness tests and
+323 tooling tests passed; one Windows symlink-privilege test skipped. Three
+real XSIM sampling controls passed their declared positive/negative outcomes.
+The portable replay also passed. Read evidence/2026-11-07/reliability-01.
+New model exploration waits for a verified worker tool restriction; the CLI
+currently inherits local MCP configuration. Source changes require a new run.
+The user connected the FPGA; this stage does not access or program the board.
 
-1. Read `AGENTS.md` and `docs/AGENT_HANDOFF.md` for the working contract.
-2. Read `docs/SESSION_HANDOFF.md` for current state and exact next actions.
-3. Inspect `git status --short`, recent commits, and `python scripts/session.py status`.
-   Read messages for you: `python coordination/mail.py inbox --for <codex|claude>`.
-4. Claim the coordinator lease. Respect existing worker file ownership.
-5. Read `docs/DECISIONS.md`, `docs/TASKS.md`, `docs/DESIGN.md` and
-   `docs/RESEARCH.md` before substantial harness changes.
-6. Implement, test, review, and retain evidence. Follow `docs/PUBLICATION.md`
-   before declaring archives published. Update shared memory and push
-   tested progress. Before switching providers, run the handoff command.
+`docs/ACTION_PLAN.md` defines the finite release: finish demonstrated reliability
+work, freeze a candidate, run a predeclared public-task comparison, and package
+the hardware/verification evidence. Benchmark superiority is not established.
+Do not re-hold finished tiers during development; the final release pass gates
+main integration. Use only fresh attempt directories and original budgets.
 
-The coordination database in `.autortl/` is local, transactional working state.
-`coordination/status.json` is its readable export. Both are machine state, not
-Git history. The checked-in handoff, task board, decisions, and test evidence
-survive a fresh clone. On another computer, start a new coordinator lease and
-reconstruct task ownership from the checked-in handoff.
-
-Checkpointing does not stop the active coordinator or release its lease. Keep
-working while usage is available; switch only when necessary. Read the handoff
-and test results before starting unattended design campaigns.
+Shared memory belongs here and in the docs, not in the public README. Update
+the checkpoint after substantial progress and publish tested milestones.
+Checkpointing keeps coordinator ownership; release it only when actually leaving.

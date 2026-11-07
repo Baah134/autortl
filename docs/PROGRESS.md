@@ -1605,3 +1605,23 @@ Only then continue higher curricula and the CV-oriented board/public-task plan.
   Reports and pure probe retained in parallel-diagnoses-01. A minimal UART
   prompt correction is being prepared off-tree pending the live gate.
 - Completed signoff archive verification finished: 22 archives, 49,435 manifest entries all match retained bytes. Failed attempts remain included. No tier6-02 verdict is inferred.
+
+- November7: reclaimed the expired lease after verifying the original signoff
+  stopped; no Python/Vivado/hw_server jobs were active. b59d077 published all
+  22 completed archives (49,435 committed blobs checked). Tier6-02 is a
+  quota-blocked incomplete gate with no verdict, not three design failures.
+  Its96 manifest entries and334 original frozen inputs verified before edits.
+  Recorded two demonstrated reliability failures and acceptance before patches.
+  Connected FPGA is untouched; only software and simulator controls planned.
+
+- Reliability batch validation: 2028 harness tests passed in822.21s;323 tooling
+  passed in78.81s, with one explicit native Windows symlink-privilege skip.
+  Both actual exits0 and all337 frozen source inputs unchanged. Three actual
+  sampling controls and their portable archived replay met all declared
+  outcomes. No board access or new design/benchmark verdict.
+- Added evidence-checked FIR and verifier case studies; corrected front-page
+  timing, handwritten shell and historical-result claims. Public benchmark
+  review pins upstream/tool sources but no roster/trials or advantage claim.
+- Before next AES exploration, review found inherited MCP tools in the current
+  CLI worker. A scoped restriction is being investigated off-tree; no new model
+  campaign launched. Preserve auth, managed policies and sandbox/network guards.

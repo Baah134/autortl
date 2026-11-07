@@ -84,6 +84,21 @@ the harness derives that immutable metadata from existing source.
 Typed build modules require a known numeric latency; latency_known, if supplied,
 must be true. An absent annotation in an existing optimization source is a
 separate case and must never be interpreted as zero cycles.
+For fixed_latency, stimulus is driven at a falling edge: latency 0 is checked
+before the next rising edge, after combinational settling; latency 1 is checked
+just after that rising edge, after register updates. A Python step that returns
+the result of the current clocked state transition therefore uses latency 1;
+first-word-fall-through does not by itself determine this observation phase.
+Larger latencies add pipeline delay to that observation. Do not infer latency
+from the mere presence of clk:
+a combinational observation can still have clock/reset ports. Preserve the
+request's edge behavior; do not silently change a declared latency to fit RTL.
+This is distinct from scoreboard: scoreboard latency is the minimum
+accepted-transfer age, not the fixed_latency observation phase.
+fixed_latency compares every protocol none output on every sampled row, even
+when a valid output is zero. Define deterministic empty/invalid data values in
+behavior and examples; the typed spec has no per-cycle don't-care or output-mask
+field. Do not assume invalid data is excluded from those comparisons.
 Every module MUST include 2-3 concrete examples. Keep modules under ~60 lines
 of eventual Verilog each; split anything bigger.
 Each example holds its inputs constant for after_cycles clock steps, starting

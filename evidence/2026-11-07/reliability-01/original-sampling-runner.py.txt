@@ -1,0 +1,56 @@
+"""Only compile/elaborate/simulate three isolated HDL controls; no board APIs."""
+import hashlib
+import importlib.util
+import json
+import re
+import sys
+from pathlib import Path
+
+work = Path(__file__).resolve().parent
+root = Path('C:/Users/prince.baah/Downloads/autortl-work')
+sys.path.insert(0, str(root))
+from autortl.config import RunConfig
+from autortl.vivado import xsim_run
+
+proposal = work / 'nov6-uart-stage/tests/test_spec_sampling_guidance.py'
+spec = importlib.util.spec_from_file_location('sampling_controls', proposal)
+module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(module)
+out = work / 'nov7-sampling-controls-01'
+out.mkdir(exist_ok=False)
+rows = module.save_live_controls(out)
+cfg = RunConfig(mode='build', xvlog_bin='C:/AMDDesignTools/2025.2/Vivado/bin/xvlog.bat',
+                xelab_bin='C:/AMDDesignTools/2025.2/Vivado/bin/xelab.bat',
+                xsim_bin='C:/AMDDesignTools/2025.2/Vivado/bin/xsim.bat')
+results = []
+for row in rows:
+    directory = Path(row['testbench']).parent
+    passed, error, kind = xsim_run([Path(p) for p in row['sources']],
+                                  Path(row['testbench']), row['top'], cfg, directory, timeout=180)
+    records = [json.loads(line) for line in (directory / 'tool_exit_records.log').read_text().splitlines()]
+    log = (directory / 'sim_log.txt').read_text()
+    assertions = re.findall(r'^FAIL index=\d+ signal=total\s*$', log, re.MULTILINE)
+    result = {'name': row['name'], 'expected_pass': row['expected_pass'], 'observed_pass': passed,
+              'failure_kind': kind.value, 'error': error, 'assertions': [a.strip() for a in assertions],
+              'tool_exit_records': records,
+              'inputs': {p.name: hashlib.sha256(p.read_bytes()).hexdigest()
+                         for p in directory.iterdir() if p.suffix in ('.v', '.py', '.json')}}
+    results.append(result)
+    (out / 'results.json').write_text(json.dumps({'results': results, 'board_access': False}, indent=2) + '\n')
+    assert len(records) == 3, records
+    assert [r.get('tool') for r in records] == ['xvlog', 'xelab', 'xsim'], records
+    assert all(r.get('returncode') == 0 and r.get('driver_returncode') == 0
+               and r.get('status') == 'exited' for r in records), records
+    assert passed is row['expected_pass'], result
+    assert 'watchdog timeout' not in log
+    assert result['assertions'] == row['required_assertions'], result
+    if passed:
+        assert 'TEST PASSED' in log and 'TEST FAILED' not in log
+    else:
+        assert 'TEST FAILED: 3 errors' in log and 'TEST PASSED' not in log
+    print(json.dumps({'name': row['name'], 'expected_pass': row['expected_pass'],
+                      'observed_pass': passed, 'actual_data_assertions': len(assertions),
+                      'all_three_tool_exits_zero': True}), flush=True)
+for name in ('accumulated_cell.v', 'golden.py', 'stimulus.json'):
+    assert (out / 'clocked1' / name).read_bytes() == (out / 'clocked0_mismatch' / name).read_bytes()
+print('All three sampling controls met their declared outcomes.', flush=True)

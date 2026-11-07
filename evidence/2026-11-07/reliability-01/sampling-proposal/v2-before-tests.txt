@@ -1,0 +1,17 @@
+F.....                                                                   [100%]
+================================== FAILURES ===================================
+_______ test_planner_receives_explicit_fixed_latency_sampling_semantics _______
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000027D95842120>
+
+    def test_planner_receives_explicit_fixed_latency_sampling_semantics(monkeypatch):
+        prompt = rendered_prompt(monkeypatch)
+        assert "latency 0 is checked before the next rising edge" in prompt
+        assert "latency 1 is checked just after that rising edge" in prompt
+>       assert "first-word-fall-through does not by itself determine this observation phase" in prompt
+E       assert 'first-word-fall-through does not by itself determine this observation phase' in "Produce a design_spec JSON for this request. **Request:** Build a renamed clocked accumulator. **Target:** xc7a35tcpg...es). Fix exactly these errors and output the complete corrected JSON only: Preserve the request's exact edge behavior."
+
+tests\test_spec_sampling_guidance.py:71: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_spec_sampling_guidance.py::test_planner_receives_explicit_fixed_latency_sampling_semantics
+1 failed, 5 passed in 3.73s

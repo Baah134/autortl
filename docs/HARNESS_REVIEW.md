@@ -690,3 +690,26 @@ run the committed-blob audit. Do not spend on a third hold run of code scheduled
 for replacement. No new roles, services, model escalation or budget expansion.
 Only then continue higher curricula and the CV-oriented board/public-task plan.
 
+
+
+## November 7 — keep deterministic verification; clarify and prune
+
+Three tier3 UART/FIFO failures used a pre-edge fixed_latency0 contract for
+post-transition Python outputs. Keep the driver semantics and every comparison;
+teach the planner the actual observation phases and deterministic empty data.
+No new output mask, global latency conversion or additional role. Six new
+instruction/contract tests and independent 114-test review support consistency;
+three real XSIM positive/negative controls establish the actual sampling
+behavior. Prompt benefit to model success remains unmeasured.
+
+The gate's rglob visited agent worktrees before discarding their paths. Prune
+the exact excluded subtree before traversal; preserve selected paths and raw
+hashes. Compare against a self-contained legacy selector, including Windows
+junction behavior. Synthetic excluded scans fell from8 to0; no wall-time
+speedup factor is claimed. Symbolic-link privilege was unavailable on this
+Windows host, so that test is explicitly skipped, not passed.
+
+AES golden generation in tier6-01 failed correctly. Tier6-02 is quota-blocked,
+not another AES design failure. A source-plus-error oracle repair mechanism
+remains conditional on a controlled need, not added after one failed campaign.
+No framework, role, model escalation or budget expansion was justified.

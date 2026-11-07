@@ -1,0 +1,426 @@
+{
+  "top_name": "aes128_core",
+  "modules": [
+    {
+      "name": "aes_ctrl",
+      "behavior": "Iterative AES-128 encryption sequencer (FIPS-197) with a valid/ready-style input and output; the handshake ports are plain protocol none signals. Blocks are 128-bit big-endian byte strings: byte 0 is bits [127:120]. Registers, all reset to 0: busy, out_valid, rnd[3:0], ct[127:0] (the state), rk[127:0] (the round key). Outputs, all views of registered state: in_ready = !busy && !out_valid; out_valid; ct; rk; last = (rnd == 10); rcon = 01, 02, 04, 08, 10, 20, 40, 80, 1b, 36 (hex) for rnd = 0..9 and 00 for rnd = 10..15. Neighbours: round_out = AES round of (ct, round key rk, final round = last); key_next = key-schedule step of (rk, rcon). At each rising edge with rst low, using pre-edge values: if busy: rk = key_next; then if rnd == 0 (key preparation) rnd = 1; else ct = round_out and, when rnd == 10, busy = 0, out_valid = 1, rnd = 0, otherwise rnd = rnd + 1. Else if out_valid: out_valid = 0 when out_ready = 1 (ct holds). Else (idle) if in_valid = 1: accept: ct = pt ^ key (initial AddRoundKey), rk = key, rnd = 0, busy = 1. key, pt and in_valid are ignored except at the accepting edge, out_ready only while out_valid. An accepted block takes 11 busy edges (key preparation, rounds 1..10) and out_valid with ct = ciphertext appears after the 11th; the next block can be accepted at the edge after the output transfer at the earliest. Synchronous active-high rst at a rising edge returns every register to its reset value; reset has no effect between edges. Python oracle: cycle-level model, one step per rising edge; keep the registers in state and return every output as it is after that edge. The driver applies the fixed latency of 1; do not add a delay queue. init() is the reset state and a supplied rst must be handled.",
+      "ports": [
+        {
+          "name": "clk",
+          "direction": "input",
+          "width": 1,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "rst",
+          "direction": "input",
+          "width": 1,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "in_valid",
+          "direction": "input",
+          "width": 1,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "in_ready",
+          "direction": "output",
+          "width": 1,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "key",
+          "direction": "input",
+          "width": 128,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "pt",
+          "direction": "input",
+          "width": 128,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "out_valid",
+          "direction": "output",
+          "width": 1,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "out_ready",
+          "direction": "input",
+          "width": 1,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "ct",
+          "direction": "output",
+          "width": 128,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "rk",
+          "direction": "output",
+          "width": 128,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "rcon",
+          "direction": "output",
+          "width": 8,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "last",
+          "direction": "output",
+          "width": 1,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "round_out",
+          "direction": "input",
+          "width": 128,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "key_next",
+          "direction": "input",
+          "width": 128,
+          "protocol": "none",
+          "signed": false
+        }
+      ],
+      "latency": 1,
+      "latency_known": true,
+      "compare_mode": "fixed_latency",
+      "reset": {
+        "signal": "rst",
+        "kind": "sync",
+        "active_high": true,
+        "duration_cycles": 3
+      },
+      "parameters": {},
+      "clock_domains": [
+        "clk"
+      ],
+      "examples": [
+        {
+          "inputs": {
+            "rst": 0,
+            "in_valid": 1,
+            "key": 5233100606242806050955395731361295,
+            "pt": 88962710306127702866241727433142015,
+            "out_ready": 0,
+            "round_out": 1512366075204170928972419503379277431,
+            "key_next": 340193404210632335760508365704335069440
+          },
+          "expected": {
+            "in_ready": 0,
+            "out_valid": 0,
+            "ct": 83729609699884896815286331701780720,
+            "rk": 5233100606242806050955395731361295,
+            "rcon": 1,
+            "last": 0
+          },
+          "after_cycles": 1
+        },
+        {
+          "inputs": {
+            "rst": 0,
+            "in_valid": 1,
+            "key": 5233100606242806050955395731361295,
+            "pt": 88962710306127702866241727433142015,
+            "out_ready": 0,
+            "round_out": 1512366075204170928972419503379277431,
+            "key_next": 340193404210632335760508365704335069440
+          },
+          "expected": {
+            "in_ready": 0,
+            "out_valid": 0,
+            "ct": 1512366075204170928972419503379277431,
+            "rk": 340193404210632335760508365704335069440,
+            "rcon": 0,
+            "last": 1
+          },
+          "after_cycles": 11
+        },
+        {
+          "inputs": {
+            "rst": 0,
+            "in_valid": 1,
+            "key": 57811460909138771071931939740208549692,
+            "pt": 66814286504060421741230023322616923956,
+            "out_ready": 1,
+            "round_out": 75960790320075369159181001580855561010,
+            "key_next": 276588332753250198369059907516451982502
+          },
+          "expected": {
+            "in_ready": 0,
+            "out_valid": 0,
+            "ct": 33552049213138075477934976549088937992,
+            "rk": 57811460909138771071931939740208549692,
+            "rcon": 1,
+            "last": 0
+          },
+          "after_cycles": 14
+        }
+      ]
+    },
+    {
+      "name": "aes_round",
+      "behavior": "Combinational AES encryption round (FIPS-197). Bytes are big-endian: byte n (0..15) of a 128-bit value is bits [127-8n:120-8n], and byte n sits at row n % 4, column n // 4 of the state. state_out = AddRoundKey(MixColumns(ShiftRows(SubBytes(state_in))), round_key) when final_round = 0, and AddRoundKey(ShiftRows(SubBytes(state_in)), round_key) when final_round = 1. SubBytes applies the AES S-box to every byte (the multiplicative inverse in GF(2^8) modulo x^8 + x^4 + x^3 + x + 1, 0 mapping to 0, followed by the affine map b ^ rotl(b,1) ^ rotl(b,2) ^ rotl(b,3) ^ rotl(b,4) ^ 0x63; S(00) = 63, S(01) = 7c, S(53) = ed). ShiftRows rotates row r left by r: new byte at (r, c) = old byte at (r, (c + r) % 4). MixColumns maps each column (a0, a1, a2, a3), a0 at row 0, to (2a0^3a1^a2^a3, a0^2a1^3a2^a3, a0^a1^2a2^3a3, 3a0^a1^a2^2a3) in GF(2^8). AddRoundKey is a 128-bit XOR. Python oracle: combinational and stateless; step returns the outputs for this step's inputs (latency 0, no clock and no reset port).",
+      "ports": [
+        {
+          "name": "state_in",
+          "direction": "input",
+          "width": 128,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "round_key",
+          "direction": "input",
+          "width": 128,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "final_round",
+          "direction": "input",
+          "width": 1,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "state_out",
+          "direction": "output",
+          "width": 128,
+          "protocol": "none",
+          "signed": false
+        }
+      ],
+      "latency": 0,
+      "latency_known": true,
+      "compare_mode": "fixed_latency",
+      "reset": {
+        "signal": "rst",
+        "kind": "sync",
+        "active_high": true,
+        "duration_cycles": 3
+      },
+      "parameters": {},
+      "clock_domains": [
+        "clk"
+      ],
+      "examples": [
+        {
+          "inputs": {
+            "state_in": 33552049213138075477934976549088937992,
+            "round_key": 213979707136699034080426665618942227973,
+            "final_round": 0
+          },
+          "expected": {
+            "state_out": 218805984690271539793496889057209897033
+          },
+          "after_cycles": 1
+        },
+        {
+          "inputs": {
+            "state_in": 312705796755970461592149921386262119122,
+            "round_key": 276588332753250198369059907516451982502,
+            "final_round": 1
+          },
+          "expected": {
+            "state_out": 75960790320075369159181001580855561010
+          },
+          "after_cycles": 1
+        }
+      ]
+    },
+    {
+      "name": "aes_key_step",
+      "behavior": "Combinational AES-128 key-schedule step (FIPS-197 KeyExpansion, one round key at a time). key_in = {w0, w1, w2, w3} with w0 = key_in[127:96]; temp = SubWord(RotWord(w3)) ^ {rcon, 24 zero bits}, where RotWord({a0, a1, a2, a3}) = {a1, a2, a3, a0} (a0 the most significant byte) and SubWord applies the AES S-box (as in aes_round) to each byte; w4 = w0 ^ temp, w5 = w1 ^ w4, w6 = w2 ^ w5, w7 = w3 ^ w6; key_out = {w4, w5, w6, w7}. rcon is used as given (any 8-bit value). Python oracle: combinational and stateless; step returns the outputs for this step's inputs (latency 0, no clock and no reset port).",
+      "ports": [
+        {
+          "name": "key_in",
+          "direction": "input",
+          "width": 128,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "rcon",
+          "direction": "input",
+          "width": 8,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "key_out",
+          "direction": "output",
+          "width": 128,
+          "protocol": "none",
+          "signed": false
+        }
+      ],
+      "latency": 0,
+      "latency_known": true,
+      "compare_mode": "fixed_latency",
+      "reset": {
+        "signal": "rst",
+        "kind": "sync",
+        "active_high": true,
+        "duration_cycles": 3
+      },
+      "parameters": {},
+      "clock_domains": [
+        "clk"
+      ],
+      "examples": [
+        {
+          "inputs": {
+            "key_in": 57811460909138771071931939740208549692,
+            "rcon": 1
+          },
+          "expected": {
+            "key_out": 213979707136699034080426665618942227973
+          },
+          "after_cycles": 1
+        },
+        {
+          "inputs": {
+            "key_in": 229247186667434634296614468440630755438,
+            "rcon": 54
+          },
+          "expected": {
+            "key_out": 276588332753250198369059907516451982502
+          },
+          "after_cycles": 1
+        }
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "src_module": "aes_ctrl",
+      "src_port": "ct",
+      "dst_module": "aes_round",
+      "dst_port": "state_in"
+    },
+    {
+      "src_module": "aes_ctrl",
+      "src_port": "rk",
+      "dst_module": "aes_round",
+      "dst_port": "round_key"
+    },
+    {
+      "src_module": "aes_ctrl",
+      "src_port": "last",
+      "dst_module": "aes_round",
+      "dst_port": "final_round"
+    },
+    {
+      "src_module": "aes_round",
+      "src_port": "state_out",
+      "dst_module": "aes_ctrl",
+      "dst_port": "round_out"
+    },
+    {
+      "src_module": "aes_ctrl",
+      "src_port": "rk",
+      "dst_module": "aes_key_step",
+      "dst_port": "key_in"
+    },
+    {
+      "src_module": "aes_ctrl",
+      "src_port": "rcon",
+      "dst_module": "aes_key_step",
+      "dst_port": "rcon"
+    },
+    {
+      "src_module": "aes_key_step",
+      "src_port": "key_out",
+      "dst_module": "aes_ctrl",
+      "dst_port": "key_next"
+    }
+  ],
+  "external_ports": [
+    {
+      "name": "clk",
+      "direction": "input",
+      "width": 1,
+      "protocol": "none",
+      "signed": false
+    },
+    {
+      "name": "rst",
+      "direction": "input",
+      "width": 1,
+      "protocol": "none",
+      "signed": false
+    },
+    {
+      "name": "in_valid",
+      "direction": "input",
+      "width": 1,
+      "protocol": "none",
+      "signed": false
+    },
+    {
+      "name": "in_ready",
+      "direction": "output",
+      "width": 1,
+      "protocol": "none",
+      "signed": false
+    },
+    {
+      "name": "key",
+      "direction": "input",
+      "width": 128,
+      "protocol": "none",
+      "signed": false
+    },
+    {
+      "name": "pt",
+      "direction": "input",
+      "width": 128,
+      "protocol": "none",
+      "signed": false
+    },
+    {
+      "name": "out_valid",
+      "direction": "output",
+      "width": 1,
+      "protocol": "none",
+      "signed": false
+    },
+    {
+      "name": "out_ready",
+      "direction": "input",
+      "width": 1,
+      "protocol": "none",
+      "signed": false
+    },
+    {
+      "name": "ct",
+      "direction": "output",
+      "width": 128,
+      "protocol": "none",
+      "signed": false
+    }
+  ]
+}
