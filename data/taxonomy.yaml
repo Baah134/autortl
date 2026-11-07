@@ -86,6 +86,9 @@ messages:
 # Methodology violations (report_methodology, UG1292 IDs). ADVISORY ONLY:
 # these never kill candidates; they are digested into the planner's context.
 harness_failures:
+  codex_worker_inherits_tool_capabilities:
+    meaning: "The text-generation backend inherited enabled local MCP tools despite read-only cwd and a no-tools instruction; empty MCP overrides still left node_repl enabled in model-free checks"
+    repair: "Restrict child execution capabilities and web, ignore user config for execution while preserving auth/security environment, replace configured MCP entries with inert disabled transports and verify none remain enabled before a turn; reject tool/unknown response items as protocol infrastructure failures. This is a checked CLI configuration boundary, not universal OS isolation or a way to undo side effects after execution"
   fixed_latency_observation_ambiguous:
     meaning: "Three signoff4 tier3 UART/FIFO plans used fixed_latency 0 for oracles returning post-transition state; the generated driver correctly compared before the next rising edge, causing repeated child assertions"
     repair: "Teach the existing fixed-latency observation phase explicitly in the planner prompt: 0 before the next rising edge, 1 after its register updates; distinguish scoreboard transfer age and require deterministic invalid data for compared protocol-none outputs; never rewrite the requested contract or weaken comparisons"

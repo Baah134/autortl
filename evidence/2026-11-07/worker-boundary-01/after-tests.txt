@@ -1,0 +1,94 @@
+........................................................FF               [100%]
+================================== FAILURES ===================================
+_______ test_cleanup_wait_failure_preserves_original_outcome[outcome0] ________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000016410F02150>
+outcome = TimeoutExpired('codex', 1)
+
+    @pytest.mark.parametrize("outcome", [subprocess.TimeoutExpired("codex", 1), KeyboardInterrupt()])
+    def test_cleanup_wait_failure_preserves_original_outcome(monkeypatch, outcome):
+        monkeypatch.setenv("AUTORTL_CODEX_BIN", "codex")
+        monkeypatch.setattr(codex_cli.os, "name", "nt")
+        monkeypatch.setattr(codex_cli.subprocess, "run", Mock())
+        process = Mock(pid=12345)
+        process.communicate.side_effect = [outcome, subprocess.TimeoutExpired("codex", 5)]
+        process.wait.side_effect = subprocess.TimeoutExpired("codex", 5)
+        monkeypatch.setattr(codex_cli.subprocess, "Popen", Mock(return_value=process))
+        expected = KeyboardInterrupt if isinstance(outcome, KeyboardInterrupt) else codex_cli.CodexError
+        with pytest.raises(expected):
+            codex_cli.ask("default", "request")
+>       process.wait.assert_called_once_with(timeout=5)
+
+tests\test_codex_backend.py:190: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <Mock name='mock.wait' id='1529292523088'>, args = ()
+kwargs = {'timeout': 5}
+
+    def assert_called_once_with(self, /, *args, **kwargs):
+        """assert that the mock was called exactly once and that that call was
+        with the specified arguments."""
+        if not self.call_count == 1:
+            msg = ("Expected '%s' to be called once. Called %s times.%s"
+                   % (self._mock_name or 'mock',
+                      self.call_count,
+                      self._calls_repr()))
+>           raise AssertionError(msg)
+E           AssertionError: Expected 'wait' to be called once. Called 0 times.
+
+..\..\..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\unittest\mock.py:960: AssertionError
+_______ test_cleanup_wait_failure_preserves_original_outcome[outcome1] ________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000016410F01490>
+outcome = KeyboardInterrupt()
+
+    @pytest.mark.parametrize("outcome", [subprocess.TimeoutExpired("codex", 1), KeyboardInterrupt()])
+    def test_cleanup_wait_failure_preserves_original_outcome(monkeypatch, outcome):
+        monkeypatch.setenv("AUTORTL_CODEX_BIN", "codex")
+        monkeypatch.setattr(codex_cli.os, "name", "nt")
+        monkeypatch.setattr(codex_cli.subprocess, "run", Mock())
+        process = Mock(pid=12345)
+        process.communicate.side_effect = [outcome, subprocess.TimeoutExpired("codex", 5)]
+        process.wait.side_effect = subprocess.TimeoutExpired("codex", 5)
+        monkeypatch.setattr(codex_cli.subprocess, "Popen", Mock(return_value=process))
+        expected = KeyboardInterrupt if isinstance(outcome, KeyboardInterrupt) else codex_cli.CodexError
+        with pytest.raises(expected):
+>           codex_cli.ask("default", "request")
+
+tests\test_codex_backend.py:189: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+llm\backends\codex_cli.py:261: in ask
+    config = _worker_config(executable, directory, deadline)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+llm\backends\codex_cli.py:76: in _worker_config
+    servers = _configured_mcp(executable, directory, [*overrides, "-c", "mcp_servers={}"], deadline)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+executable = 'codex'
+directory = 'C:\\Users\\prince.baah\\Documents\\Codex\\2026-10-15\\hey\\work\\nov7-boundary-after-tmp\\test_cleanup_wait_failure_pres1\\autortl-codex-lvayazdf'
+overrides = ['--disable', 'shell_tool', '--disable', 'apps', '--disable', 'view_image', ...]
+deadline = 491360.562
+
+    def _configured_mcp(executable, directory, overrides, deadline):
+        """Inspect config only; never initialize MCP servers or retain transports."""
+        try:
+            result = subprocess.run([executable, "mcp", "list", "--json", *overrides], cwd=directory,
+                                    capture_output=True, text=True, encoding="utf-8", errors="replace",
+                                    shell=False, timeout=min(10, _remaining(deadline)))
+        except subprocess.TimeoutExpired as exc:
+            raise CodexError("CODEX_TIMEOUT", "worker configuration check timed out") from exc
+        except OSError as exc:
+            raise CodexError("CODEX_UNAVAILABLE", "worker configuration check could not launch") from exc
+        if result.returncode:
+            # Config output can contain private transports/env. Never include it in
+            # diagnostics and never retry with weaker restrictions.
+>           raise CodexError("CODEX_UNAVAILABLE", "worker configuration check failed",
+                             {"configuration_stage": "mcp_list", "returncode": result.returncode})
+E           llm.backends.codex_cli.CodexError: CODEX_UNAVAILABLE: worker configuration check failed
+
+llm\backends\codex_cli.py:54: CodexError
+=========================== short test summary info ===========================
+FAILED tests/test_codex_backend.py::test_cleanup_wait_failure_preserves_original_outcome[outcome0]
+FAILED tests/test_codex_backend.py::test_cleanup_wait_failure_preserves_original_outcome[outcome1]
+2 failed, 56 passed in 92.14s (0:01:32)

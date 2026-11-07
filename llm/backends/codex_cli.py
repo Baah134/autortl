@@ -1,8 +1,10 @@
-"""Bounded Codex CLI calls using the user's existing login and configuration.
+"""Bounded text generation using the user's existing Codex login.
 
-No API key or authentication changes. Read-only is an OS sandbox, not a
-promise that the CLI has no tools. max_turns is retained for adapter API
-compatibility; only timeout_s is enforced by this adapter.
+User config is ignored for worker execution. Capability flags and an effective
+MCP configuration check restrict the configured worker; event validation also
+rejects tool trajectories. This is not a universal OS isolation guarantee, and
+rejecting an event afterwards cannot undo side effects. No auth/security
+environment is rewritten. max_turns remains an unenforced compatibility field.
 """
 from __future__ import annotations
 
@@ -14,11 +16,78 @@ import shutil
 import signal
 import subprocess
 import tempfile
+import time
 
 MAX_EVENTS = 4096
 MAX_ERROR_EVENTS = 8
 MAX_MESSAGE = 400
 MAX_STDERR = 1000
+MAX_CONFIG_BYTES = 256 * 1024
+WORKER_DISABLED_FEATURES = (
+    "shell_tool", "apps", "view_image", "hooks", "plugins", "multi_agent",
+    "code_mode", "computer_use", "browser_use", "image_generation",
+)
+TEXT_ITEM_TYPES = {"agent_message", "reasoning"}
+WORKER_EVENT_TYPES = {"thread.started", "turn.started", "turn.completed", "turn.failed", "error",
+                      "item.started", "item.updated", "item.completed"}
+
+
+def _remaining(deadline):
+    seconds = deadline - time.monotonic()
+    if seconds <= 0:
+        raise CodexError("CODEX_TIMEOUT", "worker deadline exhausted")
+    return seconds
+
+
+def _configured_mcp(executable, directory, overrides, deadline):
+    """Inspect config only; never initialize MCP servers or retain transports."""
+    try:
+        result = subprocess.run([executable, "mcp", "list", "--json", *overrides], cwd=directory,
+                                capture_output=True, text=True, encoding="utf-8", errors="replace",
+                                shell=False, timeout=min(10, _remaining(deadline)))
+    except subprocess.TimeoutExpired as exc:
+        raise CodexError("CODEX_TIMEOUT", "worker configuration check timed out") from exc
+    except OSError as exc:
+        raise CodexError("CODEX_UNAVAILABLE", "worker configuration check could not launch") from exc
+    if result.returncode:
+        # Config output can contain private transports/env. Never include it in
+        # diagnostics and never retry with weaker restrictions.
+        raise CodexError("CODEX_UNAVAILABLE", "worker configuration check failed",
+                         {"configuration_stage": "mcp_list", "returncode": result.returncode})
+    if not isinstance(result.stdout, str) or len(result.stdout.encode("utf-8", errors="replace")) > MAX_CONFIG_BYTES:
+        raise CodexError("CODEX_PROTOCOL", "worker configuration result exceeded its bound")
+    try:
+        records = json.loads(result.stdout)
+    except (ValueError, TypeError) as exc:
+        raise CodexError("CODEX_PROTOCOL", "invalid worker configuration result") from exc
+    if not isinstance(records, list) or len(records) > 128:
+        raise CodexError("CODEX_PROTOCOL", "invalid worker configuration result")
+    servers = {}
+    for record in records:
+        if not isinstance(record, dict):
+            raise CodexError("CODEX_PROTOCOL", "invalid worker configuration entry")
+        name, enabled = record.get("name"), record.get("enabled")
+        if (not isinstance(name, str) or not name or len(name) > 200 or name in servers
+                or any(ord(c) < 32 or 0xD800 <= ord(c) <= 0xDFFF for c in name) or type(enabled) is not bool):
+            raise CodexError("CODEX_PROTOCOL", "invalid worker configuration entry")
+        servers[name] = enabled
+    return servers
+
+
+def _worker_config(executable, directory, deadline):
+    overrides = [arg for feature in WORKER_DISABLED_FEATURES for arg in ("--disable", feature)]
+    overrides += ["-c", 'web_search="disabled"']
+    servers = _configured_mcp(executable, directory, [*overrides, "-c", "mcp_servers={}"], deadline)
+    # Empty tables do not erase inherited entries in the tested CLI. A complete
+    # disabled entry needs a transport to pass bootstrap schema validation. Use
+    # an inert command, not the user's actual executable/URL/credentials.
+    entries = [json.dumps(name, ensure_ascii=False) + '={command="__autortl_disabled_mcp__",enabled=false}'
+               for name in sorted(servers)]
+    overrides += ["-c", "mcp_servers={" + ",".join(entries) + "}"]
+    effective = _configured_mcp(executable, directory, overrides, deadline)
+    if any(effective.values()):
+        raise CodexError("CODEX_PROTOCOL", "worker configuration still enables MCP servers")
+    return overrides
 
 
 def redact(text, secrets=()):
@@ -150,6 +219,15 @@ def _parse_events(stdout: str, secrets=()) -> dict:
         meta["event_count"] += 1
         if meta["event_count"] > MAX_EVENTS:
             raise CodexError("CODEX_PROTOCOL", "event limit exceeded", meta)
+        if event["type"] not in WORKER_EVENT_TYPES:
+            raise CodexError("CODEX_PROTOCOL", "unsupported text-worker event", meta)
+        if event["type"].startswith("item."):
+            item = event.get("item")
+            if (not isinstance(item, dict) or not isinstance(item.get("type"), str)
+                    or item["type"] not in TEXT_ITEM_TYPES):
+                # Rejection is after execution, not a side-effect prevention
+                # boundary. Do not retain tool names, arguments or results.
+                raise CodexError("CODEX_PROTOCOL", "tool or unsupported item in text-worker response", meta)
         if isinstance(event.get("model"), str):
             meta["model"] = redact(event["model"], secrets)[:200]
         if event["type"] == "thread.started":
@@ -176,6 +254,7 @@ def ask(model_alias: str, prompt: str, system: str = "",
         timeout_s: int = 180, max_turns: int = 1) -> tuple[str, dict]:
     if timeout_s <= 0:
         raise ValueError("timeout_s must be positive")
+    deadline = time.monotonic() + timeout_s
     executable = os.environ.get("AUTORTL_CODEX_BIN") or shutil.which("codex")
     if not executable:
         raise CodexError("CODEX_UNAVAILABLE", "set AUTORTL_CODEX_BIN or put codex on PATH")
@@ -184,12 +263,15 @@ def ask(model_alias: str, prompt: str, system: str = "",
                    + f"\nRequest:\n{prompt}")
     with tempfile.TemporaryDirectory(prefix="autortl-codex-") as directory:
         final = Path(directory) / "final.txt"
-        cmd = [executable, "exec", "--sandbox", "read-only", "--ephemeral",
+        config = _worker_config(executable, directory, deadline)
+        cmd = [executable, "exec", "--ignore-user-config", "--strict-config",
+               "--sandbox", "read-only", "--ephemeral",
                "--json", "--output-last-message", str(final),
-               "--skip-git-repo-check", "-C", directory]
+               "--skip-git-repo-check", "-C", directory, *config]
         if model_alias and model_alias != "default":
             cmd += ["--model", model_alias]
         cmd += ["-"]
+        _remaining(deadline)  # An expired configuration check must not start generation.
         try:
             process = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                                        stderr=subprocess.PIPE, text=True, encoding="utf-8",
@@ -198,7 +280,7 @@ def ask(model_alias: str, prompt: str, system: str = "",
         except OSError as exc:
             raise CodexError("CODEX_UNAVAILABLE", "worker could not launch") from exc
         try:
-            stdout, stderr = process.communicate(input=instruction, timeout=timeout_s)
+            stdout, stderr = process.communicate(input=instruction, timeout=_remaining(deadline))
         except subprocess.TimeoutExpired as exc:
             _terminate_worker(process)
             diagnostic = _diagnostics(exc.output, exc.stderr, process.returncode, (prompt, system, instruction))
@@ -218,6 +300,9 @@ def ask(model_alias: str, prompt: str, system: str = "",
             raise
         meta["requested_model"] = None if model_alias == "default" else model_alias
         meta["max_turns_enforced"] = False
+        meta["worker_policy"] = "restricted_text_v1"
+        meta["mcp_configuration_checked"] = True
+        meta["tool_items_observed"] = 0
         try:
             response = final.read_text(encoding="utf-8").strip()
         except OSError as exc:

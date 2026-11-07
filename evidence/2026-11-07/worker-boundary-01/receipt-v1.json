@@ -1,0 +1,33 @@
+{
+  "canonical_commit_at_review": "3c8089ba28f594e5510ad139f8cec3ce4a35b098",
+  "canonical_input_drift": [],
+  "patch_files": [
+    "llm/backends/codex_cli.py",
+    "tests/test_codex_backend.py",
+    "tests/test_codex_worker_boundary.py",
+    "tests/fixtures/codex_unexpected_tool.jsonl"
+  ],
+  "sha256": {
+    "llm/backends/codex_cli.py": "9c27b891b6e34b340c7f32c18bc2860148605e504dd13fec1791c0f5cb816d73",
+    "tests/test_codex_backend.py": "50e93cd61314c529f798d9da75ef500ed018c4b66fe0da8678cc124bf5afa1b1",
+    "tests/test_codex_worker_boundary.py": "e34867d91f8009c5dc73476523e7194d8dfcbbe5617fe2bd500b98f39d1480b4",
+    "tests/fixtures/codex_unexpected_tool.jsonl": "32b6f3ab59732587b493809208606fd31f1c8fb8bd1ee5190f8399d5948770cb",
+    "proposal.patch": "2feca8f0ec0d35796c78e3745d4862c3931c24c3040f9732a1308d0deff40a28"
+  },
+  "before": {
+    "command": "python -m pytest tests/test_codex_worker_boundary.py tests/test_codex_backend.py -q -p no:cacheprovider --basetemp <workspace>/nov7-boundary-before-v3-tmp",
+    "log": "before-v3-tests.txt",
+    "exit": 1,
+    "summary": "44 failed, 22 passed in 3.06s"
+  },
+  "after": {
+    "command": "python -m pytest tests/test_codex_worker_boundary.py tests/test_codex_backend.py -q -p no:cacheprovider --basetemp <workspace>/nov7-boundary-after-v3-tmp",
+    "log": "after-v3-tests.txt",
+    "exit": 0,
+    "summary": "66 passed in 1.54s"
+  },
+  "real_cli_profile_validation": "profile-validation.json",
+  "model_calls": 0,
+  "server_connections": 0,
+  "limits": "Focused mocked tests plus real model-free configuration listings. Not a full harness regression, live harmless model control or universal OS isolation proof."
+}

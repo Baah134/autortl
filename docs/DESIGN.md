@@ -603,3 +603,33 @@ functions are fixed stand-ins, and process launch, socket connection and the
 model client are blocked while it runs. It needs no Vivado, model login or
 network. Every LUT count and slack it prints is made up, and it says so. It
 shows what a run writes and where. It is not a measurement and not evidence.
+
+
+## Configured text-generation worker policy (November 7)
+
+Codex CLI roles use a restricted child configuration: user config is ignored
+for execution; command/app/plugin/hook/browser/computer/image/delegation
+capabilities and web search are disabled. Two model-free MCP configuration
+listings discover server names and verify complete inert disabled entries leave
+no server enabled. Malformed/unresolved configuration blocks before generation.
+Authentication, managed requirements, security environment, read-only sandbox
+and execpolicy rule loading are preserved. No weaker automatic fallback.
+
+Configuration checks and generation share the existing worker timeout. A
+known-expired deadline is checked before launching a model process. Only text
+and reasoning JSONL items are accepted; unexpected tool/unknown items are
+infrastructure/protocol failures, not RTL repair feedback. Successful metadata
+records restricted_text_v1, the completed MCP check and zero observed tool
+items. max_turns remains an unenforced compatibility argument.
+
+Ignoring user config changes default model/provider semantics: an unspecified
+model uses CLI builtins; explicit --model is retained but does not restore a
+custom user provider/profile. Use the explicit AutoRTL endpoint backend for
+custom endpoints. No credential file is copied or global configuration edited.
+
+The installed CLI0.166.0-alpha.6 profile was checked with all ten targeted
+features false and no enabled MCP server. Preserve executable version/hash
+qualification when updating. This is a bounded configuration restriction, not
+a complete runtime-tool-catalog or universal OS/device isolation guarantee.
+Event rejection after execution cannot prevent or undo earlier side effects.
+The public benchmark requires its own independently qualified grader boundary.

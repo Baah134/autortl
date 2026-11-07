@@ -13,6 +13,8 @@ from llm.backends import codex_cli
 @pytest.fixture(autouse=True)
 def temporary_workspace(monkeypatch, tmp_path):
     monkeypatch.setattr(codex_cli.tempfile, "tempdir", str(tmp_path))
+    # Configuration-only checks must not invoke an actual CLI in unit tests.
+    monkeypatch.setattr(codex_cli.subprocess, "run", Mock(return_value=Mock(returncode=0, stdout="[]", stderr="")))
 
 
 @pytest.fixture
@@ -56,7 +58,7 @@ def test_default_invocation_stdin_isolation_and_metadata(monkeypatch, events_fil
     directory = cmd[cmd.index("-C") + 1]
     assert captured["kwargs"]["cwd"] == directory
     assert not Path(directory).exists()
-    assert process.communicate.call_args.kwargs["timeout"] == 12
+    assert 0 < process.communicate.call_args.kwargs["timeout"] <= 12
     prompt = process.communicate.call_args.kwargs["input"]
     assert "RTL request" in prompt and "contract law" in prompt
     assert text.startswith("module m")
@@ -177,7 +179,7 @@ def test_cleanup_fallback_on_tree_kill_failure(monkeypatch):
 def test_cleanup_wait_failure_preserves_original_outcome(monkeypatch, outcome):
     monkeypatch.setenv("AUTORTL_CODEX_BIN", "codex")
     monkeypatch.setattr(codex_cli.os, "name", "nt")
-    monkeypatch.setattr(codex_cli.subprocess, "run", Mock())
+    monkeypatch.setattr(codex_cli.subprocess, "run", Mock(return_value=Mock(returncode=0, stdout="[]", stderr="")))
     process = Mock(pid=12345)
     process.communicate.side_effect = [outcome, subprocess.TimeoutExpired("codex", 5)]
     process.wait.side_effect = subprocess.TimeoutExpired("codex", 5)

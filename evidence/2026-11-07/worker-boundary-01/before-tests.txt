@@ -1,0 +1,1805 @@
+EEEEEEEEEEFFFFFFFFFFFFFFFFFFFFFFFFF.E                                    [100%]
+=================================== ERRORS ====================================
+_ ERROR at setup of test_effective_mcp_is_disabled_before_worker_and_security_env_is_preserved _
+
+cls = <class '_pytest.runner.CallInfo'>
+func = <function call_and_report.<locals>.<lambda> at 0x00000241E48DC5E0>
+when = 'setup'
+reraise = (<class '_pytest.outcomes.Exit'>, <class 'KeyboardInterrupt'>)
+
+    @classmethod
+    def from_call(
+        cls,
+        func: Callable[[], TResult],
+        when: Literal["collect", "setup", "call", "teardown"],
+        reraise: type[BaseException] | tuple[type[BaseException], ...] | None = None,
+    ) -> CallInfo[TResult]:
+        """Call func, wrapping the result in a CallInfo.
+    
+        :param func:
+            The function to call. Called without arguments.
+        :type func: Callable[[], _pytest.runner.TResult]
+        :param when:
+            The phase in which the function is called.
+        :param reraise:
+            Exception or exceptions that shall propagate if raised by the
+            function, instead of being wrapped in the CallInfo.
+        """
+        excinfo = None
+        instant = timing.Instant()
+        try:
+>           result: TResult | None = func()
+                                     ^^^^^^
+
+..\review_deps\_pytest\runner.py:361: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\review_deps\_pytest\runner.py:250: in <lambda>
+    lambda: runtest_hook(item=item, **kwds),
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\pluggy\_caller.py:197: in __call__
+    return self._hookexec(
+..\review_deps\pluggy\_manager.py:183: in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\logging.py:858: in pytest_runtest_setup
+    yield
+..\review_deps\_pytest\capture.py:895: in pytest_runtest_setup
+    return (yield)
+            ^^^^^
+..\review_deps\_pytest\runner.py:170: in pytest_runtest_setup
+    item.session._setupstate.setup(item)
+..\review_deps\_pytest\runner.py:536: in setup
+    col.setup()
+..\review_deps\_pytest\python.py:1710: in setup
+    self._request._fillfixtures()
+..\review_deps\_pytest\fixtures.py:806: in _fillfixtures
+    item.funcargs[argname] = self.getfixturevalue(argname)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\fixtures.py:630: in getfixturevalue
+    fixturedef = self._get_active_fixturedef(argname)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\fixtures.py:726: in _get_active_fixturedef
+    fixturedef.execute(request=subrequest)
+..\review_deps\_pytest\fixtures.py:1181: in execute
+    fixturedef = request._get_active_fixturedef(argname)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\fixtures.py:726: in _get_active_fixturedef
+    fixturedef.execute(request=subrequest)
+..\review_deps\_pytest\fixtures.py:1232: in execute
+    result: FixtureValue = ihook.pytest_fixture_setup(
+..\review_deps\pluggy\_caller.py:197: in __call__
+    return self._hookexec(
+..\review_deps\pluggy\_manager.py:183: in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\setuponly.py:36: in pytest_fixture_setup
+    return (yield)
+            ^^^^^
+..\review_deps\_pytest\fixtures.py:1328: in pytest_fixture_setup
+    result = call_fixture_func(fixturefunc, request, kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\fixtures.py:998: in call_fixture_func
+    fixture_result = next(generator)
+                     ^^^^^^^^^^^^^^^
+..\review_deps\_pytest\tmpdir.py:300: in tmp_path
+    path = _mk_tmp(request, tmp_path_factory)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\tmpdir.py:287: in _mk_tmp
+    return factory.mktemp(name, numbered=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\tmpdir.py:136: in mktemp
+    basename = self._ensure_relative_to_basetemp(basename)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\tmpdir.py:117: in _ensure_relative_to_basetemp
+    if (self.getbasetemp() / basename).resolve().parent != self.getbasetemp():
+        ^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\tmpdir.py:213: in getbasetemp
+    basetemp = make_numbered_dir_with_cleanup(
+..\review_deps\_pytest\pathlib.py:420: in make_numbered_dir_with_cleanup
+    raise e
+..\review_deps\_pytest\pathlib.py:401: in make_numbered_dir_with_cleanup
+    p = make_numbered_dir(root, prefix, mode)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+root = WindowsPath('C:/Users/prince.baah/AppData/Local/Packages/sandbox.{de7e7ea3-7b45-4ec0-92fe-270d23c66436}/AC/Temp/pytest-of-prince.baah')
+prefix = 'pytest-', mode = 448
+
+    def make_numbered_dir(root: Path, prefix: str, mode: int = 0o700) -> Path:
+        """Create a directory with an increased number as suffix for the given prefix."""
+        for i in range(10):
+            # try up to 10 times to create the directory
+            max_existing = max(map(parse_num, find_suffixes(root, prefix)), default=-1)
+            new_number = max_existing + 1
+            new_path = root.joinpath(f"{prefix}{new_number}")
+            try:
+                new_path.mkdir(mode=mode)
+            except Exception:
+                pass
+            else:
+                _force_symlink(root, prefix + "current", new_path)
+                return new_path
+        else:
+>           raise OSError(
+                "could not create numbered dir with prefix "
+                f"{prefix} in {root} after 10 tries"
+            )
+E           OSError: could not create numbered dir with prefix pytest- in C:\Users\prince.baah\AppData\Local\Packages\sandbox.{de7e7ea3-7b45-4ec0-92fe-270d23c66436}\AC\Temp\pytest-of-prince.baah after 10 tries
+
+..\review_deps\_pytest\pathlib.py:239: OSError
+______ ERROR at setup of test_unprovable_mcp_config_blocks_worker[None] _______
+
+cls = <class '_pytest.runner.CallInfo'>
+func = <function call_and_report.<locals>.<lambda> at 0x00000241E48DC7C0>
+when = 'setup'
+reraise = (<class '_pytest.outcomes.Exit'>, <class 'KeyboardInterrupt'>)
+
+    @classmethod
+    def from_call(
+        cls,
+        func: Callable[[], TResult],
+        when: Literal["collect", "setup", "call", "teardown"],
+        reraise: type[BaseException] | tuple[type[BaseException], ...] | None = None,
+    ) -> CallInfo[TResult]:
+        """Call func, wrapping the result in a CallInfo.
+    
+        :param func:
+            The function to call. Called without arguments.
+        :type func: Callable[[], _pytest.runner.TResult]
+        :param when:
+            The phase in which the function is called.
+        :param reraise:
+            Exception or exceptions that shall propagate if raised by the
+            function, instead of being wrapped in the CallInfo.
+        """
+        excinfo = None
+        instant = timing.Instant()
+        try:
+>           result: TResult | None = func()
+                                     ^^^^^^
+
+..\review_deps\_pytest\runner.py:361: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\review_deps\_pytest\runner.py:250: in <lambda>
+    lambda: runtest_hook(item=item, **kwds),
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\pluggy\_caller.py:197: in __call__
+    return self._hookexec(
+..\review_deps\pluggy\_manager.py:183: in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\logging.py:858: in pytest_runtest_setup
+    yield
+..\review_deps\_pytest\capture.py:895: in pytest_runtest_setup
+    return (yield)
+            ^^^^^
+..\review_deps\_pytest\runner.py:170: in pytest_runtest_setup
+    item.session._setupstate.setup(item)
+..\review_deps\_pytest\runner.py:536: in setup
+    col.setup()
+..\review_deps\_pytest\python.py:1710: in setup
+    self._request._fillfixtures()
+..\review_deps\_pytest\fixtures.py:806: in _fillfixtures
+    item.funcargs[argname] = self.getfixturevalue(argname)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\fixtures.py:630: in getfixturevalue
+    fixturedef = self._get_active_fixturedef(argname)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\fixtures.py:726: in _get_active_fixturedef
+    fixturedef.execute(request=subrequest)
+..\review_deps\_pytest\fixtures.py:1181: in execute
+    fixturedef = request._get_active_fixturedef(argname)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\fixtures.py:726: in _get_active_fixturedef
+    fixturedef.execute(request=subrequest)
+..\review_deps\_pytest\fixtures.py:1232: in execute
+    result: FixtureValue = ihook.pytest_fixture_setup(
+..\review_deps\pluggy\_caller.py:197: in __call__
+    return self._hookexec(
+..\review_deps\pluggy\_manager.py:183: in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\setuponly.py:36: in pytest_fixture_setup
+    return (yield)
+            ^^^^^
+..\review_deps\_pytest\fixtures.py:1328: in pytest_fixture_setup
+    result = call_fixture_func(fixturefunc, request, kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\fixtures.py:998: in call_fixture_func
+    fixture_result = next(generator)
+                     ^^^^^^^^^^^^^^^
+..\review_deps\_pytest\tmpdir.py:300: in tmp_path
+    path = _mk_tmp(request, tmp_path_factory)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\tmpdir.py:287: in _mk_tmp
+    return factory.mktemp(name, numbered=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\tmpdir.py:136: in mktemp
+    basename = self._ensure_relative_to_basetemp(basename)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\tmpdir.py:117: in _ensure_relative_to_basetemp
+    if (self.getbasetemp() / basename).resolve().parent != self.getbasetemp():
+        ^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\tmpdir.py:213: in getbasetemp
+    basetemp = make_numbered_dir_with_cleanup(
+..\review_deps\_pytest\pathlib.py:420: in make_numbered_dir_with_cleanup
+    raise e
+..\review_deps\_pytest\pathlib.py:401: in make_numbered_dir_with_cleanup
+    p = make_numbered_dir(root, prefix, mode)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+root = WindowsPath('C:/Users/prince.baah/AppData/Local/Packages/sandbox.{de7e7ea3-7b45-4ec0-92fe-270d23c66436}/AC/Temp/pytest-of-prince.baah')
+prefix = 'pytest-', mode = 448
+
+    def make_numbered_dir(root: Path, prefix: str, mode: int = 0o700) -> Path:
+        """Create a directory with an increased number as suffix for the given prefix."""
+        for i in range(10):
+            # try up to 10 times to create the directory
+            max_existing = max(map(parse_num, find_suffixes(root, prefix)), default=-1)
+            new_number = max_existing + 1
+            new_path = root.joinpath(f"{prefix}{new_number}")
+            try:
+                new_path.mkdir(mode=mode)
+            except Exception:
+                pass
+            else:
+                _force_symlink(root, prefix + "current", new_path)
+                return new_path
+        else:
+>           raise OSError(
+                "could not create numbered dir with prefix "
+                f"{prefix} in {root} after 10 tries"
+            )
+E           OSError: could not create numbered dir with prefix pytest- in C:\Users\prince.baah\AppData\Local\Packages\sandbox.{de7e7ea3-7b45-4ec0-92fe-270d23c66436}\AC\Temp\pytest-of-prince.baah after 10 tries
+
+..\review_deps\_pytest\pathlib.py:239: OSError
+____ ERROR at setup of test_unprovable_mcp_config_blocks_worker[payload1] _____
+
+cls = <class '_pytest.runner.CallInfo'>
+func = <function call_and_report.<locals>.<lambda> at 0x00000241E48FBEC0>
+when = 'setup'
+reraise = (<class '_pytest.outcomes.Exit'>, <class 'KeyboardInterrupt'>)
+
+    @classmethod
+    def from_call(
+        cls,
+        func: Callable[[], TResult],
+        when: Literal["collect", "setup", "call", "teardown"],
+        reraise: type[BaseException] | tuple[type[BaseException], ...] | None = None,
+    ) -> CallInfo[TResult]:
+        """Call func, wrapping the result in a CallInfo.
+    
+        :param func:
+            The function to call. Called without arguments.
+        :type func: Callable[[], _pytest.runner.TResult]
+        :param when:
+            The phase in which the function is called.
+        :param reraise:
+            Exception or exceptions that shall propagate if raised by the
+            function, instead of being wrapped in the CallInfo.
+        """
+        excinfo = None
+        instant = timing.Instant()
+        try:
+>           result: TResult | None = func()
+                                     ^^^^^^
+
+..\review_deps\_pytest\runner.py:361: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\review_deps\_pytest\runner.py:250: in <lambda>
+    lambda: runtest_hook(item=item, **kwds),
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\pluggy\_caller.py:197: in __call__
+    return self._hookexec(
+..\review_deps\pluggy\_manager.py:183: in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\logging.py:858: in pytest_runtest_setup
+    yield
+..\review_deps\_pytest\capture.py:895: in pytest_runtest_setup
+    return (yield)
+            ^^^^^
+..\review_deps\_pytest\runner.py:170: in pytest_runtest_setup
+    item.session._setupstate.setup(item)
+..\review_deps\_pytest\runner.py:536: in setup
+    col.setup()
+..\review_deps\_pytest\python.py:1710: in setup
+    self._request._fillfixtures()
+..\review_deps\_pytest\fixtures.py:806: in _fillfixtures
+    item.funcargs[argname] = self.getfixturevalue(argname)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\fixtures.py:630: in getfixturevalue
+    fixturedef = self._get_active_fixturedef(argname)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\fixtures.py:726: in _get_active_fixturedef
+    fixturedef.execute(request=subrequest)
+..\review_deps\_pytest\fixtures.py:1181: in execute
+    fixturedef = request._get_active_fixturedef(argname)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\fixtures.py:726: in _get_active_fixturedef
+    fixturedef.execute(request=subrequest)
+..\review_deps\_pytest\fixtures.py:1232: in execute
+    result: FixtureValue = ihook.pytest_fixture_setup(
+..\review_deps\pluggy\_caller.py:197: in __call__
+    return self._hookexec(
+..\review_deps\pluggy\_manager.py:183: in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\setuponly.py:36: in pytest_fixture_setup
+    return (yield)
+            ^^^^^
+..\review_deps\_pytest\fixtures.py:1328: in pytest_fixture_setup
+    result = call_fixture_func(fixturefunc, request, kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\fixtures.py:998: in call_fixture_func
+    fixture_result = next(generator)
+                     ^^^^^^^^^^^^^^^
+..\review_deps\_pytest\tmpdir.py:300: in tmp_path
+    path = _mk_tmp(request, tmp_path_factory)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\tmpdir.py:287: in _mk_tmp
+    return factory.mktemp(name, numbered=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\tmpdir.py:136: in mktemp
+    basename = self._ensure_relative_to_basetemp(basename)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\tmpdir.py:117: in _ensure_relative_to_basetemp
+    if (self.getbasetemp() / basename).resolve().parent != self.getbasetemp():
+        ^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\tmpdir.py:213: in getbasetemp
+    basetemp = make_numbered_dir_with_cleanup(
+..\review_deps\_pytest\pathlib.py:420: in make_numbered_dir_with_cleanup
+    raise e
+..\review_deps\_pytest\pathlib.py:401: in make_numbered_dir_with_cleanup
+    p = make_numbered_dir(root, prefix, mode)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+root = WindowsPath('C:/Users/prince.baah/AppData/Local/Packages/sandbox.{de7e7ea3-7b45-4ec0-92fe-270d23c66436}/AC/Temp/pytest-of-prince.baah')
+prefix = 'pytest-', mode = 448
+
+    def make_numbered_dir(root: Path, prefix: str, mode: int = 0o700) -> Path:
+        """Create a directory with an increased number as suffix for the given prefix."""
+        for i in range(10):
+            # try up to 10 times to create the directory
+            max_existing = max(map(parse_num, find_suffixes(root, prefix)), default=-1)
+            new_number = max_existing + 1
+            new_path = root.joinpath(f"{prefix}{new_number}")
+            try:
+                new_path.mkdir(mode=mode)
+            except Exception:
+                pass
+            else:
+                _force_symlink(root, prefix + "current", new_path)
+                return new_path
+        else:
+>           raise OSError(
+                "could not create numbered dir with prefix "
+                f"{prefix} in {root} after 10 tries"
+            )
+E           OSError: could not create numbered dir with prefix pytest- in C:\Users\prince.baah\AppData\Local\Packages\sandbox.{de7e7ea3-7b45-4ec0-92fe-270d23c66436}\AC\Temp\pytest-of-prince.baah after 10 tries
+
+..\review_deps\_pytest\pathlib.py:239: OSError
+_______ ERROR at setup of test_unprovable_mcp_config_blocks_worker[[]] ________
+
+cls = <class '_pytest.runner.CallInfo'>
+func = <function call_and_report.<locals>.<lambda> at 0x00000241E48DC900>
+when = 'setup'
+reraise = (<class '_pytest.outcomes.Exit'>, <class 'KeyboardInterrupt'>)
+
+    @classmethod
+    def from_call(
+        cls,
+        func: Callable[[], TResult],
+        when: Literal["collect", "setup", "call", "teardown"],
+        reraise: type[BaseException] | tuple[type[BaseException], ...] | None = None,
+    ) -> CallInfo[TResult]:
+        """Call func, wrapping the result in a CallInfo.
+    
+        :param func:
+            The function to call. Called without arguments.
+        :type func: Callable[[], _pytest.runner.TResult]
+        :param when:
+            The phase in which the function is called.
+        :param reraise:
+            Exception or exceptions that shall propagate if raised by the
+            function, instead of being wrapped in the CallInfo.
+        """
+        excinfo = None
+        instant = timing.Instant()
+        try:
+>           result: TResult | None = func()
+                                     ^^^^^^
+
+..\review_deps\_pytest\runner.py:361: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\review_deps\_pytest\runner.py:250: in <lambda>
+    lambda: runtest_hook(item=item, **kwds),
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\pluggy\_caller.py:197: in __call__
+    return self._hookexec(
+..\review_deps\pluggy\_manager.py:183: in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\logging.py:858: in pytest_runtest_setup
+    yield
+..\review_deps\_pytest\capture.py:895: in pytest_runtest_setup
+    return (yield)
+            ^^^^^
+..\review_deps\_pytest\runner.py:170: in pytest_runtest_setup
+    item.session._setupstate.setup(item)
+..\review_deps\_pytest\runner.py:536: in setup
+    col.setup()
+..\review_deps\_pytest\python.py:1710: in setup
+    self._request._fillfixtures()
+..\review_deps\_pytest\fixtures.py:806: in _fillfixtures
+    item.funcargs[argname] = self.getfixturevalue(argname)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\fixtures.py:630: in getfixturevalue
+    fixturedef = self._get_active_fixturedef(argname)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\fixtures.py:726: in _get_active_fixturedef
+    fixturedef.execute(request=subrequest)
+..\review_deps\_pytest\fixtures.py:1181: in execute
+    fixturedef = request._get_active_fixturedef(argname)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\fixtures.py:726: in _get_active_fixturedef
+    fixturedef.execute(request=subrequest)
+..\review_deps\_pytest\fixtures.py:1232: in execute
+    result: FixtureValue = ihook.pytest_fixture_setup(
+..\review_deps\pluggy\_caller.py:197: in __call__
+    return self._hookexec(
+..\review_deps\pluggy\_manager.py:183: in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\setuponly.py:36: in pytest_fixture_setup
+    return (yield)
+            ^^^^^
+..\review_deps\_pytest\fixtures.py:1328: in pytest_fixture_setup
+    result = call_fixture_func(fixturefunc, request, kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\fixtures.py:998: in call_fixture_func
+    fixture_result = next(generator)
+                     ^^^^^^^^^^^^^^^
+..\review_deps\_pytest\tmpdir.py:300: in tmp_path
+    path = _mk_tmp(request, tmp_path_factory)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\tmpdir.py:287: in _mk_tmp
+    return factory.mktemp(name, numbered=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\tmpdir.py:136: in mktemp
+    basename = self._ensure_relative_to_basetemp(basename)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\tmpdir.py:117: in _ensure_relative_to_basetemp
+    if (self.getbasetemp() / basename).resolve().parent != self.getbasetemp():
+        ^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\tmpdir.py:213: in getbasetemp
+    basetemp = make_numbered_dir_with_cleanup(
+..\review_deps\_pytest\pathlib.py:420: in make_numbered_dir_with_cleanup
+    raise e
+..\review_deps\_pytest\pathlib.py:401: in make_numbered_dir_with_cleanup
+    p = make_numbered_dir(root, prefix, mode)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+root = WindowsPath('C:/Users/prince.baah/AppData/Local/Packages/sandbox.{de7e7ea3-7b45-4ec0-92fe-270d23c66436}/AC/Temp/pytest-of-prince.baah')
+prefix = 'pytest-', mode = 448
+
+    def make_numbered_dir(root: Path, prefix: str, mode: int = 0o700) -> Path:
+        """Create a directory with an increased number as suffix for the given prefix."""
+        for i in range(10):
+            # try up to 10 times to create the directory
+            max_existing = max(map(parse_num, find_suffixes(root, prefix)), default=-1)
+            new_number = max_existing + 1
+            new_path = root.joinpath(f"{prefix}{new_number}")
+            try:
+                new_path.mkdir(mode=mode)
+            except Exception:
+                pass
+            else:
+                _force_symlink(root, prefix + "current", new_path)
+                return new_path
+        else:
+>           raise OSError(
+                "could not create numbered dir with prefix "
+                f"{prefix} in {root} after 10 tries"
+            )
+E           OSError: could not create numbered dir with prefix pytest- in C:\Users\prince.baah\AppData\Local\Packages\sandbox.{de7e7ea3-7b45-4ec0-92fe-270d23c66436}\AC\Temp\pytest-of-prince.baah after 10 tries
+
+..\review_deps\_pytest\pathlib.py:239: OSError
+____ ERROR at setup of test_unprovable_mcp_config_blocks_worker[payload3] _____
+
+cls = <class '_pytest.runner.CallInfo'>
+func = <function call_and_report.<locals>.<lambda> at 0x00000241E48A7D80>
+when = 'setup'
+reraise = (<class '_pytest.outcomes.Exit'>, <class 'KeyboardInterrupt'>)
+
+    @classmethod
+    def from_call(
+        cls,
+        func: Callable[[], TResult],
+        when: Literal["collect", "setup", "call", "teardown"],
+        reraise: type[BaseException] | tuple[type[BaseException], ...] | None = None,
+    ) -> CallInfo[TResult]:
+        """Call func, wrapping the result in a CallInfo.
+    
+        :param func:
+            The function to call. Called without arguments.
+        :type func: Callable[[], _pytest.runner.TResult]
+        :param when:
+            The phase in which the function is called.
+        :param reraise:
+            Exception or exceptions that shall propagate if raised by the
+            function, instead of being wrapped in the CallInfo.
+        """
+        excinfo = None
+        instant = timing.Instant()
+        try:
+>           result: TResult | None = func()
+                                     ^^^^^^
+
+..\review_deps\_pytest\runner.py:361: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\review_deps\_pytest\runner.py:250: in <lambda>
+    lambda: runtest_hook(item=item, **kwds),
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\pluggy\_caller.py:197: in __call__
+    return self._hookexec(
+..\review_deps\pluggy\_manager.py:183: in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\logging.py:858: in pytest_runtest_setup
+    yield
+..\review_deps\_pytest\capture.py:895: in pytest_runtest_setup
+    return (yield)
+            ^^^^^
+..\review_deps\_pytest\runner.py:170: in pytest_runtest_setup
+    item.session._setupstate.setup(item)
+..\review_deps\_pytest\runner.py:536: in setup
+    col.setup()
+..\review_deps\_pytest\python.py:1710: in setup
+    self._request._fillfixtures()
+..\review_deps\_pytest\fixtures.py:806: in _fillfixtures
+    item.funcargs[argname] = self.getfixturevalue(argname)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\fixtures.py:630: in getfixturevalue
+    fixturedef = self._get_active_fixturedef(argname)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\fixtures.py:726: in _get_active_fixturedef
+    fixturedef.execute(request=subrequest)
+..\review_deps\_pytest\fixtures.py:1181: in execute
+    fixturedef = request._get_active_fixturedef(argname)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\fixtures.py:726: in _get_active_fixturedef
+    fixturedef.execute(request=subrequest)
+..\review_deps\_pytest\fixtures.py:1232: in execute
+    result: FixtureValue = ihook.pytest_fixture_setup(
+..\review_deps\pluggy\_caller.py:197: in __call__
+    return self._hookexec(
+..\review_deps\pluggy\_manager.py:183: in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\setuponly.py:36: in pytest_fixture_setup
+    return (yield)
+            ^^^^^
+..\review_deps\_pytest\fixtures.py:1328: in pytest_fixture_setup
+    result = call_fixture_func(fixturefunc, request, kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\fixtures.py:998: in call_fixture_func
+    fixture_result = next(generator)
+                     ^^^^^^^^^^^^^^^
+..\review_deps\_pytest\tmpdir.py:300: in tmp_path
+    path = _mk_tmp(request, tmp_path_factory)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\tmpdir.py:287: in _mk_tmp
+    return factory.mktemp(name, numbered=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\tmpdir.py:136: in mktemp
+    basename = self._ensure_relative_to_basetemp(basename)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\tmpdir.py:117: in _ensure_relative_to_basetemp
+    if (self.getbasetemp() / basename).resolve().parent != self.getbasetemp():
+        ^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\tmpdir.py:213: in getbasetemp
+    basetemp = make_numbered_dir_with_cleanup(
+..\review_deps\_pytest\pathlib.py:420: in make_numbered_dir_with_cleanup
+    raise e
+..\review_deps\_pytest\pathlib.py:401: in make_numbered_dir_with_cleanup
+    p = make_numbered_dir(root, prefix, mode)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+root = WindowsPath('C:/Users/prince.baah/AppData/Local/Packages/sandbox.{de7e7ea3-7b45-4ec0-92fe-270d23c66436}/AC/Temp/pytest-of-prince.baah')
+prefix = 'pytest-', mode = 448
+
+    def make_numbered_dir(root: Path, prefix: str, mode: int = 0o700) -> Path:
+        """Create a directory with an increased number as suffix for the given prefix."""
+        for i in range(10):
+            # try up to 10 times to create the directory
+            max_existing = max(map(parse_num, find_suffixes(root, prefix)), default=-1)
+            new_number = max_existing + 1
+            new_path = root.joinpath(f"{prefix}{new_number}")
+            try:
+                new_path.mkdir(mode=mode)
+            except Exception:
+                pass
+            else:
+                _force_symlink(root, prefix + "current", new_path)
+                return new_path
+        else:
+>           raise OSError(
+                "could not create numbered dir with prefix "
+                f"{prefix} in {root} after 10 tries"
+            )
+E           OSError: could not create numbered dir with prefix pytest- in C:\Users\prince.baah\AppData\Local\Packages\sandbox.{de7e7ea3-7b45-4ec0-92fe-270d23c66436}\AC\Temp\pytest-of-prince.baah after 10 tries
+
+..\review_deps\_pytest\pathlib.py:239: OSError
+____ ERROR at setup of test_unprovable_mcp_config_blocks_worker[payload4] _____
+
+cls = <class '_pytest.runner.CallInfo'>
+func = <function call_and_report.<locals>.<lambda> at 0x00000241E487D260>
+when = 'setup'
+reraise = (<class '_pytest.outcomes.Exit'>, <class 'KeyboardInterrupt'>)
+
+    @classmethod
+    def from_call(
+        cls,
+        func: Callable[[], TResult],
+        when: Literal["collect", "setup", "call", "teardown"],
+        reraise: type[BaseException] | tuple[type[BaseException], ...] | None = None,
+    ) -> CallInfo[TResult]:
+        """Call func, wrapping the result in a CallInfo.
+    
+        :param func:
+            The function to call. Called without arguments.
+        :type func: Callable[[], _pytest.runner.TResult]
+        :param when:
+            The phase in which the function is called.
+        :param reraise:
+            Exception or exceptions that shall propagate if raised by the
+            function, instead of being wrapped in the CallInfo.
+        """
+        excinfo = None
+        instant = timing.Instant()
+        try:
+>           result: TResult | None = func()
+                                     ^^^^^^
+
+..\review_deps\_pytest\runner.py:361: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\review_deps\_pytest\runner.py:250: in <lambda>
+    lambda: runtest_hook(item=item, **kwds),
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\pluggy\_caller.py:197: in __call__
+    return self._hookexec(
+..\review_deps\pluggy\_manager.py:183: in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\logging.py:858: in pytest_runtest_setup
+    yield
+..\review_deps\_pytest\capture.py:895: in pytest_runtest_setup
+    return (yield)
+            ^^^^^
+..\review_deps\_pytest\runner.py:170: in pytest_runtest_setup
+    item.session._setupstate.setup(item)
+..\review_deps\_pytest\runner.py:536: in setup
+    col.setup()
+..\review_deps\_pytest\python.py:1710: in setup
+    self._request._fillfixtures()
+..\review_deps\_pytest\fixtures.py:806: in _fillfixtures
+    item.funcargs[argname] = self.getfixturevalue(argname)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\fixtures.py:630: in getfixturevalue
+    fixturedef = self._get_active_fixturedef(argname)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\fixtures.py:726: in _get_active_fixturedef
+    fixturedef.execute(request=subrequest)
+..\review_deps\_pytest\fixtures.py:1181: in execute
+    fixturedef = request._get_active_fixturedef(argname)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\fixtures.py:726: in _get_active_fixturedef
+    fixturedef.execute(request=subrequest)
+..\review_deps\_pytest\fixtures.py:1232: in execute
+    result: FixtureValue = ihook.pytest_fixture_setup(
+..\review_deps\pluggy\_caller.py:197: in __call__
+    return self._hookexec(
+..\review_deps\pluggy\_manager.py:183: in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\setuponly.py:36: in pytest_fixture_setup
+    return (yield)
+            ^^^^^
+..\review_deps\_pytest\fixtures.py:1328: in pytest_fixture_setup
+    result = call_fixture_func(fixturefunc, request, kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\fixtures.py:998: in call_fixture_func
+    fixture_result = next(generator)
+                     ^^^^^^^^^^^^^^^
+..\review_deps\_pytest\tmpdir.py:300: in tmp_path
+    path = _mk_tmp(request, tmp_path_factory)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\tmpdir.py:287: in _mk_tmp
+    return factory.mktemp(name, numbered=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\tmpdir.py:136: in mktemp
+    basename = self._ensure_relative_to_basetemp(basename)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\tmpdir.py:117: in _ensure_relative_to_basetemp
+    if (self.getbasetemp() / basename).resolve().parent != self.getbasetemp():
+        ^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\tmpdir.py:213: in getbasetemp
+    basetemp = make_numbered_dir_with_cleanup(
+..\review_deps\_pytest\pathlib.py:420: in make_numbered_dir_with_cleanup
+    raise e
+..\review_deps\_pytest\pathlib.py:401: in make_numbered_dir_with_cleanup
+    p = make_numbered_dir(root, prefix, mode)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+root = WindowsPath('C:/Users/prince.baah/AppData/Local/Packages/sandbox.{de7e7ea3-7b45-4ec0-92fe-270d23c66436}/AC/Temp/pytest-of-prince.baah')
+prefix = 'pytest-', mode = 448
+
+    def make_numbered_dir(root: Path, prefix: str, mode: int = 0o700) -> Path:
+        """Create a directory with an increased number as suffix for the given prefix."""
+        for i in range(10):
+            # try up to 10 times to create the directory
+            max_existing = max(map(parse_num, find_suffixes(root, prefix)), default=-1)
+            new_number = max_existing + 1
+            new_path = root.joinpath(f"{prefix}{new_number}")
+            try:
+                new_path.mkdir(mode=mode)
+            except Exception:
+                pass
+            else:
+                _force_symlink(root, prefix + "current", new_path)
+                return new_path
+        else:
+>           raise OSError(
+                "could not create numbered dir with prefix "
+                f"{prefix} in {root} after 10 tries"
+            )
+E           OSError: could not create numbered dir with prefix pytest- in C:\Users\prince.baah\AppData\Local\Packages\sandbox.{de7e7ea3-7b45-4ec0-92fe-270d23c66436}\AC\Temp\pytest-of-prince.baah after 10 tries
+
+..\review_deps\_pytest\pathlib.py:239: OSError
+____ ERROR at setup of test_unprovable_mcp_config_blocks_worker[payload5] _____
+
+cls = <class '_pytest.runner.CallInfo'>
+func = <function call_and_report.<locals>.<lambda> at 0x00000241E4898680>
+when = 'setup'
+reraise = (<class '_pytest.outcomes.Exit'>, <class 'KeyboardInterrupt'>)
+
+    @classmethod
+    def from_call(
+        cls,
+        func: Callable[[], TResult],
+        when: Literal["collect", "setup", "call", "teardown"],
+        reraise: type[BaseException] | tuple[type[BaseException], ...] | None = None,
+    ) -> CallInfo[TResult]:
+        """Call func, wrapping the result in a CallInfo.
+    
+        :param func:
+            The function to call. Called without arguments.
+        :type func: Callable[[], _pytest.runner.TResult]
+        :param when:
+            The phase in which the function is called.
+        :param reraise:
+            Exception or exceptions that shall propagate if raised by the
+            function, instead of being wrapped in the CallInfo.
+        """
+        excinfo = None
+        instant = timing.Instant()
+        try:
+>           result: TResult | None = func()
+                                     ^^^^^^
+
+..\review_deps\_pytest\runner.py:361: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\review_deps\_pytest\runner.py:250: in <lambda>
+    lambda: runtest_hook(item=item, **kwds),
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\pluggy\_caller.py:197: in __call__
+    return self._hookexec(
+..\review_deps\pluggy\_manager.py:183: in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\logging.py:858: in pytest_runtest_setup
+    yield
+..\review_deps\_pytest\capture.py:895: in pytest_runtest_setup
+    return (yield)
+            ^^^^^
+..\review_deps\_pytest\runner.py:170: in pytest_runtest_setup
+    item.session._setupstate.setup(item)
+..\review_deps\_pytest\runner.py:536: in setup
+    col.setup()
+..\review_deps\_pytest\python.py:1710: in setup
+    self._request._fillfixtures()
+..\review_deps\_pytest\fixtures.py:806: in _fillfixtures
+    item.funcargs[argname] = self.getfixturevalue(argname)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\fixtures.py:630: in getfixturevalue
+    fixturedef = self._get_active_fixturedef(argname)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\fixtures.py:726: in _get_active_fixturedef
+    fixturedef.execute(request=subrequest)
+..\review_deps\_pytest\fixtures.py:1181: in execute
+    fixturedef = request._get_active_fixturedef(argname)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\fixtures.py:726: in _get_active_fixturedef
+    fixturedef.execute(request=subrequest)
+..\review_deps\_pytest\fixtures.py:1232: in execute
+    result: FixtureValue = ihook.pytest_fixture_setup(
+..\review_deps\pluggy\_caller.py:197: in __call__
+    return self._hookexec(
+..\review_deps\pluggy\_manager.py:183: in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\setuponly.py:36: in pytest_fixture_setup
+    return (yield)
+            ^^^^^
+..\review_deps\_pytest\fixtures.py:1328: in pytest_fixture_setup
+    result = call_fixture_func(fixturefunc, request, kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\fixtures.py:998: in call_fixture_func
+    fixture_result = next(generator)
+                     ^^^^^^^^^^^^^^^
+..\review_deps\_pytest\tmpdir.py:300: in tmp_path
+    path = _mk_tmp(request, tmp_path_factory)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\tmpdir.py:287: in _mk_tmp
+    return factory.mktemp(name, numbered=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\tmpdir.py:136: in mktemp
+    basename = self._ensure_relative_to_basetemp(basename)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\tmpdir.py:117: in _ensure_relative_to_basetemp
+    if (self.getbasetemp() / basename).resolve().parent != self.getbasetemp():
+        ^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\tmpdir.py:213: in getbasetemp
+    basetemp = make_numbered_dir_with_cleanup(
+..\review_deps\_pytest\pathlib.py:420: in make_numbered_dir_with_cleanup
+    raise e
+..\review_deps\_pytest\pathlib.py:401: in make_numbered_dir_with_cleanup
+    p = make_numbered_dir(root, prefix, mode)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+root = WindowsPath('C:/Users/prince.baah/AppData/Local/Packages/sandbox.{de7e7ea3-7b45-4ec0-92fe-270d23c66436}/AC/Temp/pytest-of-prince.baah')
+prefix = 'pytest-', mode = 448
+
+    def make_numbered_dir(root: Path, prefix: str, mode: int = 0o700) -> Path:
+        """Create a directory with an increased number as suffix for the given prefix."""
+        for i in range(10):
+            # try up to 10 times to create the directory
+            max_existing = max(map(parse_num, find_suffixes(root, prefix)), default=-1)
+            new_number = max_existing + 1
+            new_path = root.joinpath(f"{prefix}{new_number}")
+            try:
+                new_path.mkdir(mode=mode)
+            except Exception:
+                pass
+            else:
+                _force_symlink(root, prefix + "current", new_path)
+                return new_path
+        else:
+>           raise OSError(
+                "could not create numbered dir with prefix "
+                f"{prefix} in {root} after 10 tries"
+            )
+E           OSError: could not create numbered dir with prefix pytest- in C:\Users\prince.baah\AppData\Local\Packages\sandbox.{de7e7ea3-7b45-4ec0-92fe-270d23c66436}\AC\Temp\pytest-of-prince.baah after 10 tries
+
+..\review_deps\_pytest\pathlib.py:239: OSError
+_____ ERROR at setup of test_enabled_managed_or_new_server_blocks_worker ______
+
+cls = <class '_pytest.runner.CallInfo'>
+func = <function call_and_report.<locals>.<lambda> at 0x00000241E48DC7C0>
+when = 'setup'
+reraise = (<class '_pytest.outcomes.Exit'>, <class 'KeyboardInterrupt'>)
+
+    @classmethod
+    def from_call(
+        cls,
+        func: Callable[[], TResult],
+        when: Literal["collect", "setup", "call", "teardown"],
+        reraise: type[BaseException] | tuple[type[BaseException], ...] | None = None,
+    ) -> CallInfo[TResult]:
+        """Call func, wrapping the result in a CallInfo.
+    
+        :param func:
+            The function to call. Called without arguments.
+        :type func: Callable[[], _pytest.runner.TResult]
+        :param when:
+            The phase in which the function is called.
+        :param reraise:
+            Exception or exceptions that shall propagate if raised by the
+            function, instead of being wrapped in the CallInfo.
+        """
+        excinfo = None
+        instant = timing.Instant()
+        try:
+>           result: TResult | None = func()
+                                     ^^^^^^
+
+..\review_deps\_pytest\runner.py:361: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\review_deps\_pytest\runner.py:250: in <lambda>
+    lambda: runtest_hook(item=item, **kwds),
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\pluggy\_caller.py:197: in __call__
+    return self._hookexec(
+..\review_deps\pluggy\_manager.py:183: in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\logging.py:858: in pytest_runtest_setup
+    yield
+..\review_deps\_pytest\capture.py:895: in pytest_runtest_setup
+    return (yield)
+            ^^^^^
+..\review_deps\_pytest\runner.py:170: in pytest_runtest_setup
+    item.session._setupstate.setup(item)
+..\review_deps\_pytest\runner.py:536: in setup
+    col.setup()
+..\review_deps\_pytest\python.py:1710: in setup
+    self._request._fillfixtures()
+..\review_deps\_pytest\fixtures.py:806: in _fillfixtures
+    item.funcargs[argname] = self.getfixturevalue(argname)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\fixtures.py:630: in getfixturevalue
+    fixturedef = self._get_active_fixturedef(argname)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\fixtures.py:726: in _get_active_fixturedef
+    fixturedef.execute(request=subrequest)
+..\review_deps\_pytest\fixtures.py:1181: in execute
+    fixturedef = request._get_active_fixturedef(argname)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\fixtures.py:726: in _get_active_fixturedef
+    fixturedef.execute(request=subrequest)
+..\review_deps\_pytest\fixtures.py:1232: in execute
+    result: FixtureValue = ihook.pytest_fixture_setup(
+..\review_deps\pluggy\_caller.py:197: in __call__
+    return self._hookexec(
+..\review_deps\pluggy\_manager.py:183: in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\setuponly.py:36: in pytest_fixture_setup
+    return (yield)
+            ^^^^^
+..\review_deps\_pytest\fixtures.py:1328: in pytest_fixture_setup
+    result = call_fixture_func(fixturefunc, request, kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\fixtures.py:998: in call_fixture_func
+    fixture_result = next(generator)
+                     ^^^^^^^^^^^^^^^
+..\review_deps\_pytest\tmpdir.py:300: in tmp_path
+    path = _mk_tmp(request, tmp_path_factory)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\tmpdir.py:287: in _mk_tmp
+    return factory.mktemp(name, numbered=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\tmpdir.py:136: in mktemp
+    basename = self._ensure_relative_to_basetemp(basename)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\tmpdir.py:117: in _ensure_relative_to_basetemp
+    if (self.getbasetemp() / basename).resolve().parent != self.getbasetemp():
+        ^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\tmpdir.py:213: in getbasetemp
+    basetemp = make_numbered_dir_with_cleanup(
+..\review_deps\_pytest\pathlib.py:420: in make_numbered_dir_with_cleanup
+    raise e
+..\review_deps\_pytest\pathlib.py:401: in make_numbered_dir_with_cleanup
+    p = make_numbered_dir(root, prefix, mode)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+root = WindowsPath('C:/Users/prince.baah/AppData/Local/Packages/sandbox.{de7e7ea3-7b45-4ec0-92fe-270d23c66436}/AC/Temp/pytest-of-prince.baah')
+prefix = 'pytest-', mode = 448
+
+    def make_numbered_dir(root: Path, prefix: str, mode: int = 0o700) -> Path:
+        """Create a directory with an increased number as suffix for the given prefix."""
+        for i in range(10):
+            # try up to 10 times to create the directory
+            max_existing = max(map(parse_num, find_suffixes(root, prefix)), default=-1)
+            new_number = max_existing + 1
+            new_path = root.joinpath(f"{prefix}{new_number}")
+            try:
+                new_path.mkdir(mode=mode)
+            except Exception:
+                pass
+            else:
+                _force_symlink(root, prefix + "current", new_path)
+                return new_path
+        else:
+>           raise OSError(
+                "could not create numbered dir with prefix "
+                f"{prefix} in {root} after 10 tries"
+            )
+E           OSError: could not create numbered dir with prefix pytest- in C:\Users\prince.baah\AppData\Local\Packages\sandbox.{de7e7ea3-7b45-4ec0-92fe-270d23c66436}\AC\Temp\pytest-of-prince.baah after 10 tries
+
+..\review_deps\_pytest\pathlib.py:239: OSError
+_ ERROR at setup of test_unsupported_cli_restriction_fails_without_weaker_retry _
+
+cls = <class '_pytest.runner.CallInfo'>
+func = <function call_and_report.<locals>.<lambda> at 0x00000241E48A7880>
+when = 'setup'
+reraise = (<class '_pytest.outcomes.Exit'>, <class 'KeyboardInterrupt'>)
+
+    @classmethod
+    def from_call(
+        cls,
+        func: Callable[[], TResult],
+        when: Literal["collect", "setup", "call", "teardown"],
+        reraise: type[BaseException] | tuple[type[BaseException], ...] | None = None,
+    ) -> CallInfo[TResult]:
+        """Call func, wrapping the result in a CallInfo.
+    
+        :param func:
+            The function to call. Called without arguments.
+        :type func: Callable[[], _pytest.runner.TResult]
+        :param when:
+            The phase in which the function is called.
+        :param reraise:
+            Exception or exceptions that shall propagate if raised by the
+            function, instead of being wrapped in the CallInfo.
+        """
+        excinfo = None
+        instant = timing.Instant()
+        try:
+>           result: TResult | None = func()
+                                     ^^^^^^
+
+..\review_deps\_pytest\runner.py:361: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\review_deps\_pytest\runner.py:250: in <lambda>
+    lambda: runtest_hook(item=item, **kwds),
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\pluggy\_caller.py:197: in __call__
+    return self._hookexec(
+..\review_deps\pluggy\_manager.py:183: in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\logging.py:858: in pytest_runtest_setup
+    yield
+..\review_deps\_pytest\capture.py:895: in pytest_runtest_setup
+    return (yield)
+            ^^^^^
+..\review_deps\_pytest\runner.py:170: in pytest_runtest_setup
+    item.session._setupstate.setup(item)
+..\review_deps\_pytest\runner.py:536: in setup
+    col.setup()
+..\review_deps\_pytest\python.py:1710: in setup
+    self._request._fillfixtures()
+..\review_deps\_pytest\fixtures.py:806: in _fillfixtures
+    item.funcargs[argname] = self.getfixturevalue(argname)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\fixtures.py:630: in getfixturevalue
+    fixturedef = self._get_active_fixturedef(argname)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\fixtures.py:726: in _get_active_fixturedef
+    fixturedef.execute(request=subrequest)
+..\review_deps\_pytest\fixtures.py:1181: in execute
+    fixturedef = request._get_active_fixturedef(argname)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\fixtures.py:726: in _get_active_fixturedef
+    fixturedef.execute(request=subrequest)
+..\review_deps\_pytest\fixtures.py:1232: in execute
+    result: FixtureValue = ihook.pytest_fixture_setup(
+..\review_deps\pluggy\_caller.py:197: in __call__
+    return self._hookexec(
+..\review_deps\pluggy\_manager.py:183: in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\setuponly.py:36: in pytest_fixture_setup
+    return (yield)
+            ^^^^^
+..\review_deps\_pytest\fixtures.py:1328: in pytest_fixture_setup
+    result = call_fixture_func(fixturefunc, request, kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\fixtures.py:998: in call_fixture_func
+    fixture_result = next(generator)
+                     ^^^^^^^^^^^^^^^
+..\review_deps\_pytest\tmpdir.py:300: in tmp_path
+    path = _mk_tmp(request, tmp_path_factory)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\tmpdir.py:287: in _mk_tmp
+    return factory.mktemp(name, numbered=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\tmpdir.py:136: in mktemp
+    basename = self._ensure_relative_to_basetemp(basename)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\tmpdir.py:117: in _ensure_relative_to_basetemp
+    if (self.getbasetemp() / basename).resolve().parent != self.getbasetemp():
+        ^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\tmpdir.py:213: in getbasetemp
+    basetemp = make_numbered_dir_with_cleanup(
+..\review_deps\_pytest\pathlib.py:420: in make_numbered_dir_with_cleanup
+    raise e
+..\review_deps\_pytest\pathlib.py:401: in make_numbered_dir_with_cleanup
+    p = make_numbered_dir(root, prefix, mode)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+root = WindowsPath('C:/Users/prince.baah/AppData/Local/Packages/sandbox.{de7e7ea3-7b45-4ec0-92fe-270d23c66436}/AC/Temp/pytest-of-prince.baah')
+prefix = 'pytest-', mode = 448
+
+    def make_numbered_dir(root: Path, prefix: str, mode: int = 0o700) -> Path:
+        """Create a directory with an increased number as suffix for the given prefix."""
+        for i in range(10):
+            # try up to 10 times to create the directory
+            max_existing = max(map(parse_num, find_suffixes(root, prefix)), default=-1)
+            new_number = max_existing + 1
+            new_path = root.joinpath(f"{prefix}{new_number}")
+            try:
+                new_path.mkdir(mode=mode)
+            except Exception:
+                pass
+            else:
+                _force_symlink(root, prefix + "current", new_path)
+                return new_path
+        else:
+>           raise OSError(
+                "could not create numbered dir with prefix "
+                f"{prefix} in {root} after 10 tries"
+            )
+E           OSError: could not create numbered dir with prefix pytest- in C:\Users\prince.baah\AppData\Local\Packages\sandbox.{de7e7ea3-7b45-4ec0-92fe-270d23c66436}\AC\Temp\pytest-of-prince.baah after 10 tries
+
+..\review_deps\_pytest\pathlib.py:239: OSError
+________ ERROR at setup of test_config_preflight_timeout_blocks_worker ________
+
+cls = <class '_pytest.runner.CallInfo'>
+func = <function call_and_report.<locals>.<lambda> at 0x00000241E48A72E0>
+when = 'setup'
+reraise = (<class '_pytest.outcomes.Exit'>, <class 'KeyboardInterrupt'>)
+
+    @classmethod
+    def from_call(
+        cls,
+        func: Callable[[], TResult],
+        when: Literal["collect", "setup", "call", "teardown"],
+        reraise: type[BaseException] | tuple[type[BaseException], ...] | None = None,
+    ) -> CallInfo[TResult]:
+        """Call func, wrapping the result in a CallInfo.
+    
+        :param func:
+            The function to call. Called without arguments.
+        :type func: Callable[[], _pytest.runner.TResult]
+        :param when:
+            The phase in which the function is called.
+        :param reraise:
+            Exception or exceptions that shall propagate if raised by the
+            function, instead of being wrapped in the CallInfo.
+        """
+        excinfo = None
+        instant = timing.Instant()
+        try:
+>           result: TResult | None = func()
+                                     ^^^^^^
+
+..\review_deps\_pytest\runner.py:361: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\review_deps\_pytest\runner.py:250: in <lambda>
+    lambda: runtest_hook(item=item, **kwds),
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\pluggy\_caller.py:197: in __call__
+    return self._hookexec(
+..\review_deps\pluggy\_manager.py:183: in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\logging.py:858: in pytest_runtest_setup
+    yield
+..\review_deps\_pytest\capture.py:895: in pytest_runtest_setup
+    return (yield)
+            ^^^^^
+..\review_deps\_pytest\runner.py:170: in pytest_runtest_setup
+    item.session._setupstate.setup(item)
+..\review_deps\_pytest\runner.py:536: in setup
+    col.setup()
+..\review_deps\_pytest\python.py:1710: in setup
+    self._request._fillfixtures()
+..\review_deps\_pytest\fixtures.py:806: in _fillfixtures
+    item.funcargs[argname] = self.getfixturevalue(argname)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\fixtures.py:630: in getfixturevalue
+    fixturedef = self._get_active_fixturedef(argname)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\fixtures.py:726: in _get_active_fixturedef
+    fixturedef.execute(request=subrequest)
+..\review_deps\_pytest\fixtures.py:1181: in execute
+    fixturedef = request._get_active_fixturedef(argname)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\fixtures.py:726: in _get_active_fixturedef
+    fixturedef.execute(request=subrequest)
+..\review_deps\_pytest\fixtures.py:1232: in execute
+    result: FixtureValue = ihook.pytest_fixture_setup(
+..\review_deps\pluggy\_caller.py:197: in __call__
+    return self._hookexec(
+..\review_deps\pluggy\_manager.py:183: in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\setuponly.py:36: in pytest_fixture_setup
+    return (yield)
+            ^^^^^
+..\review_deps\_pytest\fixtures.py:1328: in pytest_fixture_setup
+    result = call_fixture_func(fixturefunc, request, kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\fixtures.py:998: in call_fixture_func
+    fixture_result = next(generator)
+                     ^^^^^^^^^^^^^^^
+..\review_deps\_pytest\tmpdir.py:300: in tmp_path
+    path = _mk_tmp(request, tmp_path_factory)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\tmpdir.py:287: in _mk_tmp
+    return factory.mktemp(name, numbered=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\tmpdir.py:136: in mktemp
+    basename = self._ensure_relative_to_basetemp(basename)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\tmpdir.py:117: in _ensure_relative_to_basetemp
+    if (self.getbasetemp() / basename).resolve().parent != self.getbasetemp():
+        ^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\tmpdir.py:213: in getbasetemp
+    basetemp = make_numbered_dir_with_cleanup(
+..\review_deps\_pytest\pathlib.py:420: in make_numbered_dir_with_cleanup
+    raise e
+..\review_deps\_pytest\pathlib.py:401: in make_numbered_dir_with_cleanup
+    p = make_numbered_dir(root, prefix, mode)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+root = WindowsPath('C:/Users/prince.baah/AppData/Local/Packages/sandbox.{de7e7ea3-7b45-4ec0-92fe-270d23c66436}/AC/Temp/pytest-of-prince.baah')
+prefix = 'pytest-', mode = 448
+
+    def make_numbered_dir(root: Path, prefix: str, mode: int = 0o700) -> Path:
+        """Create a directory with an increased number as suffix for the given prefix."""
+        for i in range(10):
+            # try up to 10 times to create the directory
+            max_existing = max(map(parse_num, find_suffixes(root, prefix)), default=-1)
+            new_number = max_existing + 1
+            new_path = root.joinpath(f"{prefix}{new_number}")
+            try:
+                new_path.mkdir(mode=mode)
+            except Exception:
+                pass
+            else:
+                _force_symlink(root, prefix + "current", new_path)
+                return new_path
+        else:
+>           raise OSError(
+                "could not create numbered dir with prefix "
+                f"{prefix} in {root} after 10 tries"
+            )
+E           OSError: could not create numbered dir with prefix pytest- in C:\Users\prince.baah\AppData\Local\Packages\sandbox.{de7e7ea3-7b45-4ec0-92fe-270d23c66436}\AC\Temp\pytest-of-prince.baah after 10 tries
+
+..\review_deps\_pytest\pathlib.py:239: OSError
+_____ ERROR at setup of test_tool_fixture_rejected_through_public_adapter _____
+
+cls = <class '_pytest.runner.CallInfo'>
+func = <function call_and_report.<locals>.<lambda> at 0x00000241E4CE09A0>
+when = 'setup'
+reraise = (<class '_pytest.outcomes.Exit'>, <class 'KeyboardInterrupt'>)
+
+    @classmethod
+    def from_call(
+        cls,
+        func: Callable[[], TResult],
+        when: Literal["collect", "setup", "call", "teardown"],
+        reraise: type[BaseException] | tuple[type[BaseException], ...] | None = None,
+    ) -> CallInfo[TResult]:
+        """Call func, wrapping the result in a CallInfo.
+    
+        :param func:
+            The function to call. Called without arguments.
+        :type func: Callable[[], _pytest.runner.TResult]
+        :param when:
+            The phase in which the function is called.
+        :param reraise:
+            Exception or exceptions that shall propagate if raised by the
+            function, instead of being wrapped in the CallInfo.
+        """
+        excinfo = None
+        instant = timing.Instant()
+        try:
+>           result: TResult | None = func()
+                                     ^^^^^^
+
+..\review_deps\_pytest\runner.py:361: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\review_deps\_pytest\runner.py:250: in <lambda>
+    lambda: runtest_hook(item=item, **kwds),
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\pluggy\_caller.py:197: in __call__
+    return self._hookexec(
+..\review_deps\pluggy\_manager.py:183: in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\logging.py:858: in pytest_runtest_setup
+    yield
+..\review_deps\_pytest\capture.py:895: in pytest_runtest_setup
+    return (yield)
+            ^^^^^
+..\review_deps\_pytest\runner.py:170: in pytest_runtest_setup
+    item.session._setupstate.setup(item)
+..\review_deps\_pytest\runner.py:536: in setup
+    col.setup()
+..\review_deps\_pytest\python.py:1710: in setup
+    self._request._fillfixtures()
+..\review_deps\_pytest\fixtures.py:806: in _fillfixtures
+    item.funcargs[argname] = self.getfixturevalue(argname)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\fixtures.py:630: in getfixturevalue
+    fixturedef = self._get_active_fixturedef(argname)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\fixtures.py:726: in _get_active_fixturedef
+    fixturedef.execute(request=subrequest)
+..\review_deps\_pytest\fixtures.py:1181: in execute
+    fixturedef = request._get_active_fixturedef(argname)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\fixtures.py:726: in _get_active_fixturedef
+    fixturedef.execute(request=subrequest)
+..\review_deps\_pytest\fixtures.py:1232: in execute
+    result: FixtureValue = ihook.pytest_fixture_setup(
+..\review_deps\pluggy\_caller.py:197: in __call__
+    return self._hookexec(
+..\review_deps\pluggy\_manager.py:183: in _hookexec
+    return self._inner_hookexec(hook_name, methods, kwargs, firstresult)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\setuponly.py:36: in pytest_fixture_setup
+    return (yield)
+            ^^^^^
+..\review_deps\_pytest\fixtures.py:1328: in pytest_fixture_setup
+    result = call_fixture_func(fixturefunc, request, kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\fixtures.py:998: in call_fixture_func
+    fixture_result = next(generator)
+                     ^^^^^^^^^^^^^^^
+..\review_deps\_pytest\tmpdir.py:300: in tmp_path
+    path = _mk_tmp(request, tmp_path_factory)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\tmpdir.py:287: in _mk_tmp
+    return factory.mktemp(name, numbered=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\tmpdir.py:136: in mktemp
+    basename = self._ensure_relative_to_basetemp(basename)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\tmpdir.py:117: in _ensure_relative_to_basetemp
+    if (self.getbasetemp() / basename).resolve().parent != self.getbasetemp():
+        ^^^^^^^^^^^^^^^^^^
+..\review_deps\_pytest\tmpdir.py:213: in getbasetemp
+    basetemp = make_numbered_dir_with_cleanup(
+..\review_deps\_pytest\pathlib.py:420: in make_numbered_dir_with_cleanup
+    raise e
+..\review_deps\_pytest\pathlib.py:401: in make_numbered_dir_with_cleanup
+    p = make_numbered_dir(root, prefix, mode)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+root = WindowsPath('C:/Users/prince.baah/AppData/Local/Packages/sandbox.{de7e7ea3-7b45-4ec0-92fe-270d23c66436}/AC/Temp/pytest-of-prince.baah')
+prefix = 'pytest-', mode = 448
+
+    def make_numbered_dir(root: Path, prefix: str, mode: int = 0o700) -> Path:
+        """Create a directory with an increased number as suffix for the given prefix."""
+        for i in range(10):
+            # try up to 10 times to create the directory
+            max_existing = max(map(parse_num, find_suffixes(root, prefix)), default=-1)
+            new_number = max_existing + 1
+            new_path = root.joinpath(f"{prefix}{new_number}")
+            try:
+                new_path.mkdir(mode=mode)
+            except Exception:
+                pass
+            else:
+                _force_symlink(root, prefix + "current", new_path)
+                return new_path
+        else:
+>           raise OSError(
+                "could not create numbered dir with prefix "
+                f"{prefix} in {root} after 10 tries"
+            )
+E           OSError: could not create numbered dir with prefix pytest- in C:\Users\prince.baah\AppData\Local\Packages\sandbox.{de7e7ea3-7b45-4ec0-92fe-270d23c66436}\AC\Temp\pytest-of-prince.baah after 10 tries
+
+..\review_deps\_pytest\pathlib.py:239: OSError
+================================== FAILURES ===================================
+_ test_tools_and_unknown_item_types_reject_even_completed_turn[item.started-command_execution] _
+
+item_type = 'command_execution', event_type = 'item.started'
+
+    @pytest.mark.parametrize('item_type', ['command_execution', 'mcp_tool_call', 'file_change', 'web_search',
+                                           'collab_agent_tool_call', 'todo_list', 'future_tool_type'])
+    @pytest.mark.parametrize('event_type', ['item.started', 'item.updated', 'item.completed'])
+    def test_tools_and_unknown_item_types_reject_even_completed_turn(item_type, event_type):
+        events = jsonl({'type': event_type, 'item': {'type': item_type, 'arguments': {'secret': 'do-not-retain'}}},
+                       {'type': 'turn.completed'})
+>       with pytest.raises(codex_cli.CodexError, match='CODEX_PROTOCOL') as error:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE CodexError
+
+tests\test_codex_worker_boundary.py:122: Failed
+_ test_tools_and_unknown_item_types_reject_even_completed_turn[item.started-mcp_tool_call] _
+
+item_type = 'mcp_tool_call', event_type = 'item.started'
+
+    @pytest.mark.parametrize('item_type', ['command_execution', 'mcp_tool_call', 'file_change', 'web_search',
+                                           'collab_agent_tool_call', 'todo_list', 'future_tool_type'])
+    @pytest.mark.parametrize('event_type', ['item.started', 'item.updated', 'item.completed'])
+    def test_tools_and_unknown_item_types_reject_even_completed_turn(item_type, event_type):
+        events = jsonl({'type': event_type, 'item': {'type': item_type, 'arguments': {'secret': 'do-not-retain'}}},
+                       {'type': 'turn.completed'})
+>       with pytest.raises(codex_cli.CodexError, match='CODEX_PROTOCOL') as error:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE CodexError
+
+tests\test_codex_worker_boundary.py:122: Failed
+_ test_tools_and_unknown_item_types_reject_even_completed_turn[item.started-file_change] _
+
+item_type = 'file_change', event_type = 'item.started'
+
+    @pytest.mark.parametrize('item_type', ['command_execution', 'mcp_tool_call', 'file_change', 'web_search',
+                                           'collab_agent_tool_call', 'todo_list', 'future_tool_type'])
+    @pytest.mark.parametrize('event_type', ['item.started', 'item.updated', 'item.completed'])
+    def test_tools_and_unknown_item_types_reject_even_completed_turn(item_type, event_type):
+        events = jsonl({'type': event_type, 'item': {'type': item_type, 'arguments': {'secret': 'do-not-retain'}}},
+                       {'type': 'turn.completed'})
+>       with pytest.raises(codex_cli.CodexError, match='CODEX_PROTOCOL') as error:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE CodexError
+
+tests\test_codex_worker_boundary.py:122: Failed
+_ test_tools_and_unknown_item_types_reject_even_completed_turn[item.started-web_search] _
+
+item_type = 'web_search', event_type = 'item.started'
+
+    @pytest.mark.parametrize('item_type', ['command_execution', 'mcp_tool_call', 'file_change', 'web_search',
+                                           'collab_agent_tool_call', 'todo_list', 'future_tool_type'])
+    @pytest.mark.parametrize('event_type', ['item.started', 'item.updated', 'item.completed'])
+    def test_tools_and_unknown_item_types_reject_even_completed_turn(item_type, event_type):
+        events = jsonl({'type': event_type, 'item': {'type': item_type, 'arguments': {'secret': 'do-not-retain'}}},
+                       {'type': 'turn.completed'})
+>       with pytest.raises(codex_cli.CodexError, match='CODEX_PROTOCOL') as error:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE CodexError
+
+tests\test_codex_worker_boundary.py:122: Failed
+_ test_tools_and_unknown_item_types_reject_even_completed_turn[item.started-collab_agent_tool_call] _
+
+item_type = 'collab_agent_tool_call', event_type = 'item.started'
+
+    @pytest.mark.parametrize('item_type', ['command_execution', 'mcp_tool_call', 'file_change', 'web_search',
+                                           'collab_agent_tool_call', 'todo_list', 'future_tool_type'])
+    @pytest.mark.parametrize('event_type', ['item.started', 'item.updated', 'item.completed'])
+    def test_tools_and_unknown_item_types_reject_even_completed_turn(item_type, event_type):
+        events = jsonl({'type': event_type, 'item': {'type': item_type, 'arguments': {'secret': 'do-not-retain'}}},
+                       {'type': 'turn.completed'})
+>       with pytest.raises(codex_cli.CodexError, match='CODEX_PROTOCOL') as error:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE CodexError
+
+tests\test_codex_worker_boundary.py:122: Failed
+_ test_tools_and_unknown_item_types_reject_even_completed_turn[item.started-todo_list] _
+
+item_type = 'todo_list', event_type = 'item.started'
+
+    @pytest.mark.parametrize('item_type', ['command_execution', 'mcp_tool_call', 'file_change', 'web_search',
+                                           'collab_agent_tool_call', 'todo_list', 'future_tool_type'])
+    @pytest.mark.parametrize('event_type', ['item.started', 'item.updated', 'item.completed'])
+    def test_tools_and_unknown_item_types_reject_even_completed_turn(item_type, event_type):
+        events = jsonl({'type': event_type, 'item': {'type': item_type, 'arguments': {'secret': 'do-not-retain'}}},
+                       {'type': 'turn.completed'})
+>       with pytest.raises(codex_cli.CodexError, match='CODEX_PROTOCOL') as error:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE CodexError
+
+tests\test_codex_worker_boundary.py:122: Failed
+_ test_tools_and_unknown_item_types_reject_even_completed_turn[item.started-future_tool_type] _
+
+item_type = 'future_tool_type', event_type = 'item.started'
+
+    @pytest.mark.parametrize('item_type', ['command_execution', 'mcp_tool_call', 'file_change', 'web_search',
+                                           'collab_agent_tool_call', 'todo_list', 'future_tool_type'])
+    @pytest.mark.parametrize('event_type', ['item.started', 'item.updated', 'item.completed'])
+    def test_tools_and_unknown_item_types_reject_even_completed_turn(item_type, event_type):
+        events = jsonl({'type': event_type, 'item': {'type': item_type, 'arguments': {'secret': 'do-not-retain'}}},
+                       {'type': 'turn.completed'})
+>       with pytest.raises(codex_cli.CodexError, match='CODEX_PROTOCOL') as error:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE CodexError
+
+tests\test_codex_worker_boundary.py:122: Failed
+_ test_tools_and_unknown_item_types_reject_even_completed_turn[item.updated-command_execution] _
+
+item_type = 'command_execution', event_type = 'item.updated'
+
+    @pytest.mark.parametrize('item_type', ['command_execution', 'mcp_tool_call', 'file_change', 'web_search',
+                                           'collab_agent_tool_call', 'todo_list', 'future_tool_type'])
+    @pytest.mark.parametrize('event_type', ['item.started', 'item.updated', 'item.completed'])
+    def test_tools_and_unknown_item_types_reject_even_completed_turn(item_type, event_type):
+        events = jsonl({'type': event_type, 'item': {'type': item_type, 'arguments': {'secret': 'do-not-retain'}}},
+                       {'type': 'turn.completed'})
+>       with pytest.raises(codex_cli.CodexError, match='CODEX_PROTOCOL') as error:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE CodexError
+
+tests\test_codex_worker_boundary.py:122: Failed
+_ test_tools_and_unknown_item_types_reject_even_completed_turn[item.updated-mcp_tool_call] _
+
+item_type = 'mcp_tool_call', event_type = 'item.updated'
+
+    @pytest.mark.parametrize('item_type', ['command_execution', 'mcp_tool_call', 'file_change', 'web_search',
+                                           'collab_agent_tool_call', 'todo_list', 'future_tool_type'])
+    @pytest.mark.parametrize('event_type', ['item.started', 'item.updated', 'item.completed'])
+    def test_tools_and_unknown_item_types_reject_even_completed_turn(item_type, event_type):
+        events = jsonl({'type': event_type, 'item': {'type': item_type, 'arguments': {'secret': 'do-not-retain'}}},
+                       {'type': 'turn.completed'})
+>       with pytest.raises(codex_cli.CodexError, match='CODEX_PROTOCOL') as error:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE CodexError
+
+tests\test_codex_worker_boundary.py:122: Failed
+_ test_tools_and_unknown_item_types_reject_even_completed_turn[item.updated-file_change] _
+
+item_type = 'file_change', event_type = 'item.updated'
+
+    @pytest.mark.parametrize('item_type', ['command_execution', 'mcp_tool_call', 'file_change', 'web_search',
+                                           'collab_agent_tool_call', 'todo_list', 'future_tool_type'])
+    @pytest.mark.parametrize('event_type', ['item.started', 'item.updated', 'item.completed'])
+    def test_tools_and_unknown_item_types_reject_even_completed_turn(item_type, event_type):
+        events = jsonl({'type': event_type, 'item': {'type': item_type, 'arguments': {'secret': 'do-not-retain'}}},
+                       {'type': 'turn.completed'})
+>       with pytest.raises(codex_cli.CodexError, match='CODEX_PROTOCOL') as error:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE CodexError
+
+tests\test_codex_worker_boundary.py:122: Failed
+_ test_tools_and_unknown_item_types_reject_even_completed_turn[item.updated-web_search] _
+
+item_type = 'web_search', event_type = 'item.updated'
+
+    @pytest.mark.parametrize('item_type', ['command_execution', 'mcp_tool_call', 'file_change', 'web_search',
+                                           'collab_agent_tool_call', 'todo_list', 'future_tool_type'])
+    @pytest.mark.parametrize('event_type', ['item.started', 'item.updated', 'item.completed'])
+    def test_tools_and_unknown_item_types_reject_even_completed_turn(item_type, event_type):
+        events = jsonl({'type': event_type, 'item': {'type': item_type, 'arguments': {'secret': 'do-not-retain'}}},
+                       {'type': 'turn.completed'})
+>       with pytest.raises(codex_cli.CodexError, match='CODEX_PROTOCOL') as error:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE CodexError
+
+tests\test_codex_worker_boundary.py:122: Failed
+_ test_tools_and_unknown_item_types_reject_even_completed_turn[item.updated-collab_agent_tool_call] _
+
+item_type = 'collab_agent_tool_call', event_type = 'item.updated'
+
+    @pytest.mark.parametrize('item_type', ['command_execution', 'mcp_tool_call', 'file_change', 'web_search',
+                                           'collab_agent_tool_call', 'todo_list', 'future_tool_type'])
+    @pytest.mark.parametrize('event_type', ['item.started', 'item.updated', 'item.completed'])
+    def test_tools_and_unknown_item_types_reject_even_completed_turn(item_type, event_type):
+        events = jsonl({'type': event_type, 'item': {'type': item_type, 'arguments': {'secret': 'do-not-retain'}}},
+                       {'type': 'turn.completed'})
+>       with pytest.raises(codex_cli.CodexError, match='CODEX_PROTOCOL') as error:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE CodexError
+
+tests\test_codex_worker_boundary.py:122: Failed
+_ test_tools_and_unknown_item_types_reject_even_completed_turn[item.updated-todo_list] _
+
+item_type = 'todo_list', event_type = 'item.updated'
+
+    @pytest.mark.parametrize('item_type', ['command_execution', 'mcp_tool_call', 'file_change', 'web_search',
+                                           'collab_agent_tool_call', 'todo_list', 'future_tool_type'])
+    @pytest.mark.parametrize('event_type', ['item.started', 'item.updated', 'item.completed'])
+    def test_tools_and_unknown_item_types_reject_even_completed_turn(item_type, event_type):
+        events = jsonl({'type': event_type, 'item': {'type': item_type, 'arguments': {'secret': 'do-not-retain'}}},
+                       {'type': 'turn.completed'})
+>       with pytest.raises(codex_cli.CodexError, match='CODEX_PROTOCOL') as error:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE CodexError
+
+tests\test_codex_worker_boundary.py:122: Failed
+_ test_tools_and_unknown_item_types_reject_even_completed_turn[item.updated-future_tool_type] _
+
+item_type = 'future_tool_type', event_type = 'item.updated'
+
+    @pytest.mark.parametrize('item_type', ['command_execution', 'mcp_tool_call', 'file_change', 'web_search',
+                                           'collab_agent_tool_call', 'todo_list', 'future_tool_type'])
+    @pytest.mark.parametrize('event_type', ['item.started', 'item.updated', 'item.completed'])
+    def test_tools_and_unknown_item_types_reject_even_completed_turn(item_type, event_type):
+        events = jsonl({'type': event_type, 'item': {'type': item_type, 'arguments': {'secret': 'do-not-retain'}}},
+                       {'type': 'turn.completed'})
+>       with pytest.raises(codex_cli.CodexError, match='CODEX_PROTOCOL') as error:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE CodexError
+
+tests\test_codex_worker_boundary.py:122: Failed
+_ test_tools_and_unknown_item_types_reject_even_completed_turn[item.completed-command_execution] _
+
+item_type = 'command_execution', event_type = 'item.completed'
+
+    @pytest.mark.parametrize('item_type', ['command_execution', 'mcp_tool_call', 'file_change', 'web_search',
+                                           'collab_agent_tool_call', 'todo_list', 'future_tool_type'])
+    @pytest.mark.parametrize('event_type', ['item.started', 'item.updated', 'item.completed'])
+    def test_tools_and_unknown_item_types_reject_even_completed_turn(item_type, event_type):
+        events = jsonl({'type': event_type, 'item': {'type': item_type, 'arguments': {'secret': 'do-not-retain'}}},
+                       {'type': 'turn.completed'})
+>       with pytest.raises(codex_cli.CodexError, match='CODEX_PROTOCOL') as error:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE CodexError
+
+tests\test_codex_worker_boundary.py:122: Failed
+_ test_tools_and_unknown_item_types_reject_even_completed_turn[item.completed-mcp_tool_call] _
+
+item_type = 'mcp_tool_call', event_type = 'item.completed'
+
+    @pytest.mark.parametrize('item_type', ['command_execution', 'mcp_tool_call', 'file_change', 'web_search',
+                                           'collab_agent_tool_call', 'todo_list', 'future_tool_type'])
+    @pytest.mark.parametrize('event_type', ['item.started', 'item.updated', 'item.completed'])
+    def test_tools_and_unknown_item_types_reject_even_completed_turn(item_type, event_type):
+        events = jsonl({'type': event_type, 'item': {'type': item_type, 'arguments': {'secret': 'do-not-retain'}}},
+                       {'type': 'turn.completed'})
+>       with pytest.raises(codex_cli.CodexError, match='CODEX_PROTOCOL') as error:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE CodexError
+
+tests\test_codex_worker_boundary.py:122: Failed
+_ test_tools_and_unknown_item_types_reject_even_completed_turn[item.completed-file_change] _
+
+item_type = 'file_change', event_type = 'item.completed'
+
+    @pytest.mark.parametrize('item_type', ['command_execution', 'mcp_tool_call', 'file_change', 'web_search',
+                                           'collab_agent_tool_call', 'todo_list', 'future_tool_type'])
+    @pytest.mark.parametrize('event_type', ['item.started', 'item.updated', 'item.completed'])
+    def test_tools_and_unknown_item_types_reject_even_completed_turn(item_type, event_type):
+        events = jsonl({'type': event_type, 'item': {'type': item_type, 'arguments': {'secret': 'do-not-retain'}}},
+                       {'type': 'turn.completed'})
+>       with pytest.raises(codex_cli.CodexError, match='CODEX_PROTOCOL') as error:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE CodexError
+
+tests\test_codex_worker_boundary.py:122: Failed
+_ test_tools_and_unknown_item_types_reject_even_completed_turn[item.completed-web_search] _
+
+item_type = 'web_search', event_type = 'item.completed'
+
+    @pytest.mark.parametrize('item_type', ['command_execution', 'mcp_tool_call', 'file_change', 'web_search',
+                                           'collab_agent_tool_call', 'todo_list', 'future_tool_type'])
+    @pytest.mark.parametrize('event_type', ['item.started', 'item.updated', 'item.completed'])
+    def test_tools_and_unknown_item_types_reject_even_completed_turn(item_type, event_type):
+        events = jsonl({'type': event_type, 'item': {'type': item_type, 'arguments': {'secret': 'do-not-retain'}}},
+                       {'type': 'turn.completed'})
+>       with pytest.raises(codex_cli.CodexError, match='CODEX_PROTOCOL') as error:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE CodexError
+
+tests\test_codex_worker_boundary.py:122: Failed
+_ test_tools_and_unknown_item_types_reject_even_completed_turn[item.completed-collab_agent_tool_call] _
+
+item_type = 'collab_agent_tool_call', event_type = 'item.completed'
+
+    @pytest.mark.parametrize('item_type', ['command_execution', 'mcp_tool_call', 'file_change', 'web_search',
+                                           'collab_agent_tool_call', 'todo_list', 'future_tool_type'])
+    @pytest.mark.parametrize('event_type', ['item.started', 'item.updated', 'item.completed'])
+    def test_tools_and_unknown_item_types_reject_even_completed_turn(item_type, event_type):
+        events = jsonl({'type': event_type, 'item': {'type': item_type, 'arguments': {'secret': 'do-not-retain'}}},
+                       {'type': 'turn.completed'})
+>       with pytest.raises(codex_cli.CodexError, match='CODEX_PROTOCOL') as error:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE CodexError
+
+tests\test_codex_worker_boundary.py:122: Failed
+_ test_tools_and_unknown_item_types_reject_even_completed_turn[item.completed-todo_list] _
+
+item_type = 'todo_list', event_type = 'item.completed'
+
+    @pytest.mark.parametrize('item_type', ['command_execution', 'mcp_tool_call', 'file_change', 'web_search',
+                                           'collab_agent_tool_call', 'todo_list', 'future_tool_type'])
+    @pytest.mark.parametrize('event_type', ['item.started', 'item.updated', 'item.completed'])
+    def test_tools_and_unknown_item_types_reject_even_completed_turn(item_type, event_type):
+        events = jsonl({'type': event_type, 'item': {'type': item_type, 'arguments': {'secret': 'do-not-retain'}}},
+                       {'type': 'turn.completed'})
+>       with pytest.raises(codex_cli.CodexError, match='CODEX_PROTOCOL') as error:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE CodexError
+
+tests\test_codex_worker_boundary.py:122: Failed
+_ test_tools_and_unknown_item_types_reject_even_completed_turn[item.completed-future_tool_type] _
+
+item_type = 'future_tool_type', event_type = 'item.completed'
+
+    @pytest.mark.parametrize('item_type', ['command_execution', 'mcp_tool_call', 'file_change', 'web_search',
+                                           'collab_agent_tool_call', 'todo_list', 'future_tool_type'])
+    @pytest.mark.parametrize('event_type', ['item.started', 'item.updated', 'item.completed'])
+    def test_tools_and_unknown_item_types_reject_even_completed_turn(item_type, event_type):
+        events = jsonl({'type': event_type, 'item': {'type': item_type, 'arguments': {'secret': 'do-not-retain'}}},
+                       {'type': 'turn.completed'})
+>       with pytest.raises(codex_cli.CodexError, match='CODEX_PROTOCOL') as error:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE CodexError
+
+tests\test_codex_worker_boundary.py:122: Failed
+________________ test_unknown_event_shapes_fail_closed[event0] ________________
+
+event = {'type': 'item.completed'}
+
+    @pytest.mark.parametrize('event', [{'type': 'item.completed'}, {'type': 'item.started', 'item': []},
+                                      {'type': 'item.updated', 'item': {'text': 'missing-type'}},
+                                      {'type': 'future.unrecognized.event'}])
+    def test_unknown_event_shapes_fail_closed(event):
+>       with pytest.raises(codex_cli.CodexError, match='CODEX_PROTOCOL'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE CodexError
+
+tests\test_codex_worker_boundary.py:131: Failed
+________________ test_unknown_event_shapes_fail_closed[event1] ________________
+
+event = {'type': 'item.started', 'item': []}
+
+    @pytest.mark.parametrize('event', [{'type': 'item.completed'}, {'type': 'item.started', 'item': []},
+                                      {'type': 'item.updated', 'item': {'text': 'missing-type'}},
+                                      {'type': 'future.unrecognized.event'}])
+    def test_unknown_event_shapes_fail_closed(event):
+>       with pytest.raises(codex_cli.CodexError, match='CODEX_PROTOCOL'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE CodexError
+
+tests\test_codex_worker_boundary.py:131: Failed
+________________ test_unknown_event_shapes_fail_closed[event2] ________________
+
+event = {'type': 'item.updated', 'item': {'text': 'missing-type'}}
+
+    @pytest.mark.parametrize('event', [{'type': 'item.completed'}, {'type': 'item.started', 'item': []},
+                                      {'type': 'item.updated', 'item': {'text': 'missing-type'}},
+                                      {'type': 'future.unrecognized.event'}])
+    def test_unknown_event_shapes_fail_closed(event):
+>       with pytest.raises(codex_cli.CodexError, match='CODEX_PROTOCOL'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE CodexError
+
+tests\test_codex_worker_boundary.py:131: Failed
+________________ test_unknown_event_shapes_fail_closed[event3] ________________
+
+event = {'type': 'future.unrecognized.event'}
+
+    @pytest.mark.parametrize('event', [{'type': 'item.completed'}, {'type': 'item.started', 'item': []},
+                                      {'type': 'item.updated', 'item': {'text': 'missing-type'}},
+                                      {'type': 'future.unrecognized.event'}])
+    def test_unknown_event_shapes_fail_closed(event):
+>       with pytest.raises(codex_cli.CodexError, match='CODEX_PROTOCOL'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE CodexError
+
+tests\test_codex_worker_boundary.py:131: Failed
+=========================== short test summary info ===========================
+FAILED tests/test_codex_worker_boundary.py::test_tools_and_unknown_item_types_reject_even_completed_turn[item.started-command_execution]
+FAILED tests/test_codex_worker_boundary.py::test_tools_and_unknown_item_types_reject_even_completed_turn[item.started-mcp_tool_call]
+FAILED tests/test_codex_worker_boundary.py::test_tools_and_unknown_item_types_reject_even_completed_turn[item.started-file_change]
+FAILED tests/test_codex_worker_boundary.py::test_tools_and_unknown_item_types_reject_even_completed_turn[item.started-web_search]
+FAILED tests/test_codex_worker_boundary.py::test_tools_and_unknown_item_types_reject_even_completed_turn[item.started-collab_agent_tool_call]
+FAILED tests/test_codex_worker_boundary.py::test_tools_and_unknown_item_types_reject_even_completed_turn[item.started-todo_list]
+FAILED tests/test_codex_worker_boundary.py::test_tools_and_unknown_item_types_reject_even_completed_turn[item.started-future_tool_type]
+FAILED tests/test_codex_worker_boundary.py::test_tools_and_unknown_item_types_reject_even_completed_turn[item.updated-command_execution]
+FAILED tests/test_codex_worker_boundary.py::test_tools_and_unknown_item_types_reject_even_completed_turn[item.updated-mcp_tool_call]
+FAILED tests/test_codex_worker_boundary.py::test_tools_and_unknown_item_types_reject_even_completed_turn[item.updated-file_change]
+FAILED tests/test_codex_worker_boundary.py::test_tools_and_unknown_item_types_reject_even_completed_turn[item.updated-web_search]
+FAILED tests/test_codex_worker_boundary.py::test_tools_and_unknown_item_types_reject_even_completed_turn[item.updated-collab_agent_tool_call]
+FAILED tests/test_codex_worker_boundary.py::test_tools_and_unknown_item_types_reject_even_completed_turn[item.updated-todo_list]
+FAILED tests/test_codex_worker_boundary.py::test_tools_and_unknown_item_types_reject_even_completed_turn[item.updated-future_tool_type]
+FAILED tests/test_codex_worker_boundary.py::test_tools_and_unknown_item_types_reject_even_completed_turn[item.completed-command_execution]
+FAILED tests/test_codex_worker_boundary.py::test_tools_and_unknown_item_types_reject_even_completed_turn[item.completed-mcp_tool_call]
+FAILED tests/test_codex_worker_boundary.py::test_tools_and_unknown_item_types_reject_even_completed_turn[item.completed-file_change]
+FAILED tests/test_codex_worker_boundary.py::test_tools_and_unknown_item_types_reject_even_completed_turn[item.completed-web_search]
+FAILED tests/test_codex_worker_boundary.py::test_tools_and_unknown_item_types_reject_even_completed_turn[item.completed-collab_agent_tool_call]
+FAILED tests/test_codex_worker_boundary.py::test_tools_and_unknown_item_types_reject_even_completed_turn[item.completed-todo_list]
+FAILED tests/test_codex_worker_boundary.py::test_tools_and_unknown_item_types_reject_even_completed_turn[item.completed-future_tool_type]
+FAILED tests/test_codex_worker_boundary.py::test_unknown_event_shapes_fail_closed[event0]
+FAILED tests/test_codex_worker_boundary.py::test_unknown_event_shapes_fail_closed[event1]
+FAILED tests/test_codex_worker_boundary.py::test_unknown_event_shapes_fail_closed[event2]
+FAILED tests/test_codex_worker_boundary.py::test_unknown_event_shapes_fail_closed[event3]
+ERROR tests/test_codex_worker_boundary.py::test_effective_mcp_is_disabled_before_worker_and_security_env_is_preserved
+ERROR tests/test_codex_worker_boundary.py::test_unprovable_mcp_config_blocks_worker[None]
+ERROR tests/test_codex_worker_boundary.py::test_unprovable_mcp_config_blocks_worker[payload1]
+ERROR tests/test_codex_worker_boundary.py::test_unprovable_mcp_config_blocks_worker[[]]
+ERROR tests/test_codex_worker_boundary.py::test_unprovable_mcp_config_blocks_worker[payload3]
+ERROR tests/test_codex_worker_boundary.py::test_unprovable_mcp_config_blocks_worker[payload4]
+ERROR tests/test_codex_worker_boundary.py::test_unprovable_mcp_config_blocks_worker[payload5]
+ERROR tests/test_codex_worker_boundary.py::test_enabled_managed_or_new_server_blocks_worker
+ERROR tests/test_codex_worker_boundary.py::test_unsupported_cli_restriction_fails_without_weaker_retry
+ERROR tests/test_codex_worker_boundary.py::test_config_preflight_timeout_blocks_worker
+ERROR tests/test_codex_worker_boundary.py::test_tool_fixture_rejected_through_public_adapter
+25 failed, 1 passed, 11 errors in 10.59s

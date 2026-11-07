@@ -1,0 +1,27 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+___________ test_expired_configuration_deadline_never_spawns_worker ___________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x00000275D8491640>
+worker = ([('worker', ['configured-codex.exe', 'exec', '--ignore-user-config', '--strict-config', '--sandbox', 'read-only', ...], {'stdin': -1, 'stdout': -1, 'stderr': -1, 'text': True, ...})], <Mock id='2705159591632'>)
+
+    def test_expired_configuration_deadline_never_spawns_worker(monkeypatch, worker):
+        calls, _ = worker
+        clock = {'now': 100.0}
+        monkeypatch.setattr(codex_cli.time, 'monotonic', lambda: clock['now'])
+        def late_configuration(executable, directory, deadline):
+            clock['now'] = deadline + 1
+            return []
+        monkeypatch.setattr(codex_cli, '_worker_config', late_configuration, raising=False)
+        cleanup = Mock()
+        monkeypatch.setattr(codex_cli, '_terminate_worker', cleanup)
+        with pytest.raises(codex_cli.CodexError, match='CODEX_TIMEOUT'):
+            codex_cli.ask('default', 'request', timeout_s=12)
+>       assert not any(row[0] == 'worker' for row in calls)
+E       assert not True
+E        +  where True = any(<generator object test_expired_configuration_deadline_never_spawns_worker.<locals>.<genexpr> at 0x00000275D9C75080>)
+
+tests\test_codex_worker_boundary.py:157: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_codex_worker_boundary.py::test_expired_configuration_deadline_never_spawns_worker
+1 failed, 45 deselected in 0.93s

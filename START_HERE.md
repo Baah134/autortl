@@ -35,3 +35,5 @@ main integration. Use only fresh attempt directories and original budgets.
 Shared memory belongs here and in the docs, not in the public README. Update
 the checkpoint after substantial progress and publish tested milestones.
 Checkpointing keeps coordinator ownership; release it only when actually leaving.
+
+November7 worker milestone: 2074 passed in 646.94s (0:10:46); 323 passed, 1 skipped in 110.73s (0:01:50); 340 frozen inputs unchanged. Restricted text control passed; model identity unobserved, no board access. Evidence: evidence/2026-11-07/worker-boundary-01. Previous worker-stage pending notes are superseded by this receipt. Next is one fresh tier6 AES exploration with original budgets, no lower-tier reholds.

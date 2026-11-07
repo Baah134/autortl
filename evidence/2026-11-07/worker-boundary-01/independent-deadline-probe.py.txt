@@ -1,0 +1,31 @@
+"""Isolated mocked deadline probe; never launches CLI/vendor/model processes."""
+import importlib.util
+import json
+from pathlib import Path
+from types import SimpleNamespace
+from unittest.mock import Mock, patch
+
+stage = Path(__file__).resolve().parent / 'nov7-worker-boundary-stage'
+spec = importlib.util.spec_from_file_location('reviewed_codex', stage / 'llm/backends/codex_cli.py')
+backend = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(backend)
+clock = {'now': 0.0}
+spawn = Mock(return_value=Mock(pid=12345))
+cleanup = Mock()
+def prepared(*args):
+    # Represents the final preflight returning/validating as its deadline expires.
+    clock['now'] = 2.0
+    return []
+with patch.dict(backend.os.environ, {'AUTORTL_CODEX_BIN': 'mock-worker'}), \
+     patch.object(backend.time, 'monotonic', lambda: clock['now']), \
+     patch.object(backend, '_worker_config', prepared), \
+     patch.object(backend.subprocess, 'Popen', spawn), \
+     patch.object(backend, '_terminate_worker', cleanup), \
+     patch.object(backend.tempfile, 'tempdir', str(stage.parent)):
+    try:
+        backend.ask('requested', 'no-real-model', timeout_s=1)
+    except backend.CodexError as error:
+        result = {'error_code': error.code, 'worker_spawned_after_known_deadline': spawn.called,
+                  'cleanup_called': cleanup.called, 'real_processes': 0}
+print(json.dumps(result, indent=2))
+(stage.parent / 'nov7-boundary-deadline-probe.json').write_text(json.dumps(result, indent=2) + '\n')
