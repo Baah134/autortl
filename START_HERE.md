@@ -5,29 +5,22 @@ You can continue without access to the previous provider's conversation.
 
 Canonical checkout: `C:/Users/prince.baah/Downloads/autortl-work`.
 GitHub integration branch: `main`. Development branch: `codex/contract-context`.
-Current coordinator: Codex resumed October29 at the user's explicit request.
-Read the current SESSION_HANDOFF section and live session.py ownership before
-editing. Development base749d6d1; last checked remote main0939c43.
+Current checkpoint: **November6, release plan and final sign-off supervision**.
+Read docs/SESSION_HANDOFF.md and query live ownership before editing. Base
+e61665c5; last checked remote main ca61dbc. The prior October29 patches are
+already integrated; do not replay stale staged changes.
 
-Claude added physical Basys3 validation for six unedited harness winners, each
-50,000 transactions with0mismatches, plus a harness-generated UART transmitter
-that streamed1,000,000bytes. CI, evidence audit, model endpoints and qualified
-tier4 graders are implemented. These are bounded results, not a wholly
-harness-generated board system or a controlled public-benchmark advantage.
+Twelve harness-built designs have recorded Basys3 verification. Current full
+records hold tiers0–5; tier3 includes a recurring UART/FIFO failure. Tier6's
+first attempt passed2/3 and failed AES oracle generation. An existing signoff4
+process is running tier6-02; preserve all334 frozen inputs and original budgets.
+A held tier is an80% curriculum criterion, not a claim every entry passed.
 
-The independent review passed1654harness tests and reproduced acceptance gaps.
-The claimed golden sandbox branch is still pending integration;1742tests was
-not the count in the actual reviewed checkout. Campaign25 passed2/2 and was
-archived before this repair batch. New implementation is in isolated stages.
-Root recorded taxonomy/acceptance criteria first; full regression and fresh
-tier0 on the combined source remain required. No new gate is running yet.
-
-See docs/SESSION_HANDOFF.md for exact scoped stages, evidence and next actions;
-AGENTS.md and docs/AGENT_HANDOFF.md govern sequential coordinator ownership.
-
-Keep source-bound planning and exact candidate dedupe. Additional prior-proposal
-prompt context is experimental/opt-in after its study did not establish a benefit.
-No held tier, controlled weak-model or product-superiority claim is made.
+The finite release plan is docs/ACTION_PLAN.md: close the current sign-off,
+resolve demonstrated reliability gaps, freeze a release candidate, measure
+a public-task comparison and publish a reproducible CV/engineering package.
+Finished tiers are not repeatedly re-held during development; the final pass
+is the release gate. Full public-benchmark superiority is not yet established.
 
 **Agents take turns.** Before editing, check live coordinator ownership and
 actual jobs using the arrival checklist in `docs/AGENT_HANDOFF.md`. An active

@@ -1584,3 +1584,18 @@ run the committed-blob audit. Do not spend on a third hold run of code scheduled
 for replacement. No new roles, services, model escalation or budget expansion.
 Only then continue higher curricula and the CV-oriented board/public-task plan.
 
+## November6 — reconcile current state and define the portfolio release
+
+- User authorized continued work, a concrete plan and bounded subagents.
+- Claimed expired coordinator lease for supervision; existing signoff4 retained.
+  No frozen runtime or configuration edits, duplicate vendor/model queue or
+  reapplication of superseded October29 patches.334frozen inputs verified.
+- Independent reviewers reconciled actual full records (tiers0–5 held, tier6
+  first attempt2/3) and12physical-board result/source identities. The UART/FIFO
+  and AES oracle failures remain explicit. Historical2258test aggregate is
+  separated from the latest2022harness receipt. No new test pass claimed.
+- Added docs/ACTION_PLAN.md with acceptance criteria, fair benchmark arms,
+  budget/grader controls, a finite release/CV package and agent responsibilities.
+  START_HERE and the current handoff now point at the actual November6 state.
+- Completed archive validation/publication receipts are retained under
+  evidence/2026-11-06/resume-status-01. The live tier6 outcome remains pending.

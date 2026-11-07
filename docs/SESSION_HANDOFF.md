@@ -1,8 +1,40 @@
 # Current AutoRTL checkpoint
 
-Updated November 1, 2026 (America/New_York). Verify files, Git, ownership and
+Updated November 6, 2026 (America/New_York). Verify files, Git, ownership and
 actual jobs before acting. Canonical checkout: Downloads/autortl-work. Preserve
 the separate Downloads/autortl copy. User choice: command-line Vivado.
+
+## Current — November6: release plan and existing sign-off supervision
+
+User requested continued work, an action plan and subagents where useful.
+Codex claimed the expired lease normally for supervision/documentation. The
+existing signoff4 tree remains untouched: Python19924 runs signoff,5980 runs
+signoff4-t6-02,18808 was its regression process at inspection. Re-query actual
+processes/results rather than assuming those IDs are still running.
+
+Base e61665c5; remote development matched it, remote main ca61dbc. All334
+inputs in signoff4-t6-02-source-freeze.json match at this checkpoint. No runtime
+implementation or experiment configuration was changed.
+
+Actual latest full records: tiers0–5 held; tier3 is4/5 with uart_fifo_build
+failing. Tier6 is2/3/notheld: AES golden generation failed; CORDIC/RV32I passed.
+Current tier6-02 has no completed test/bench receipt at initial inspection.
+The latest completed regression records2022passes; README2258 is the historical
+2021harness+237tooling total at8abd6eb9, not a new test result on this HEAD.
+Twelve archived designs have50k/50k hardware results each; independent reviews
+checked positive/negative controls and source identities. Board FIR16 is100MHz;
+150MHz is separate out-of-context timing evidence.
+
+Authoritative finite plan: docs/ACTION_PLAN.md. First preserve/publish completed
+signoff evidence and observe current tier6 result. Diagnose AES/UART failures
+from actual logs before changing code. Preserve the user rule against mid-project
+re-holding completed tiers. Then freeze the release candidate, run a predeclared
+public-task comparison with an independent grader, and produce the release/CV
+package. Earlier PLAN_24H and sections below are historical, not current orders.
+
+Subagents completed independent signoff and hardware/release-claim reviews; no
+worker launched another tool/model queue. No old October29 patch should be
+reapplied: the earlier hardening work has since been integrated.
 
 ## Latest - November 1 (Claude Code): harder tiers, roles taught by tiers 3-5
 
