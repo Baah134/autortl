@@ -1599,3 +1599,8 @@ Only then continue higher curricula and the CV-oriented board/public-task plan.
   START_HERE and the current handoff now point at the actual November6 state.
 - Completed archive validation/publication receipts are retained under
   evidence/2026-11-06/resume-status-01. The live tier6 outcome remains pending.
+- Parallel diagnoses completed: AES failures are genuine oracle errors; UART
+  latency sampling mismatch independently reproduces recorded assertions.
+  Proposed benchmark:40tasks/6disjoint pilots/360runs; no trials executed.
+  Reports and pure probe retained in parallel-diagnoses-01. A minimal UART
+  prompt correction is being prepared off-tree pending the live gate.

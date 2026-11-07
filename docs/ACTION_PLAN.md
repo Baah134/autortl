@@ -88,3 +88,14 @@ The release is complete when another person can clone it, run the documented
 software checks/example, reproduce the retained hardware image/test protocol,
 inspect benchmark results and distinguish measured results from assumptions.
 Git activity, more agents and a larger tier number are not completion criteria.
+
+## Parallel diagnosis results — November6
+
+Evidence: evidence/2026-11-06/parallel-diagnoses-01. AES's three oracles were
+correctly rejected; a bounded previous-source/error repair study is conditional
+on recurrence. UART failures show a pre-edge latency0 versus post-edge stateful
+model mismatch; an independent Python probe explains the recorded assertions.
+A planner sampling-clarity correction is being prepared in isolation, with
+controls, while the active implementation remains frozen. The benchmark protocol
+proposes40tasks plus6disjoint pilots and360scored runs; it is not yet registered
+or executed and requires a real independent grading boundary and adapter.
