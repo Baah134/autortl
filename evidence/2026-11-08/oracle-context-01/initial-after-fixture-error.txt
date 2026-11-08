@@ -1,0 +1,24 @@
+.....F.................................................................. [ 70%]
+..............................                                           [100%]
+================================== FAILURES ===================================
+_____ test_replay_restores_rejected_sources_without_new_generation_calls ______
+
+tmp_path = WindowsPath('C:/Users/prince.baah/Documents/Codex/2026-10-15/hey/work/nov8-oracle-context-after-tmp/test_replay_restores_rejected_0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000029890B6D2B0>
+
+    def test_replay_restores_rejected_sources_without_new_generation_calls(tmp_path,monkeypatch):
+        o,folder=make_orchestrator(tmp_path,monkeypatch,journal=True)
+        model=Mock(side_effect=[BAD1,BAD2,GOOD]);monkeypatch.setattr(o.generator,'golden_model',model)
+>       assert o._build_module(module(),folder)==RTL
+E       assert None == "module m(input [7:0] a, output [7:0] y); assign y=a+1'b1; endmodule"
+E        +  where None = _build_module(ModuleSpec(name='m', behavior='Increment the authoritative external input a modulo256.', ports=[Port(name='a', directi...nputs={'a': 254}, expected={'y': 255}, after_cycles=1)], golden_model='', interface_signature=None, latency_known=True), WindowsPath('C:/Users/prince.baah/Documents/Codex/2026-10-15/hey/work/nov8-oracle-context-after-tmp/test_replay_restores_rejected_0/one_module'))
+E        +    where _build_module = <autortl.fsm.Orchestrator object at 0x0000029890B6CFE0>._build_module
+E        +    and   ModuleSpec(name='m', behavior='Increment the authoritative external input a modulo256.', ports=[Port(name='a', directi...nputs={'a': 254}, expected={'y': 255}, after_cycles=1)], golden_model='', interface_signature=None, latency_known=True) = module()
+
+tests\test_oracle_context.py:117: AssertionError
+---------------------------- Captured stdout call -----------------------------
+[module m] golden model + testbench...
+[module m] tb qualification: qualification control did not pass: xvlog not found: [WinError 2] The system cannot find the file specified
+=========================== short test summary info ===========================
+FAILED tests/test_oracle_context.py::test_replay_restores_rejected_sources_without_new_generation_calls
+1 failed, 101 passed in 48.94s

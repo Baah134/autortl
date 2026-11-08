@@ -1,3 +1,45 @@
+## Latest — oracle context validated
+
+Bounded oracle-context change validated: 2087 passed in 467.00s (0:07:47); 323 passed, 1 skipped in 63.86s (0:01:03); 342 frozen inputs unchanged.
+Public contract examples are included as complete bounded records, with explicit
+omissions and fresh-init/repeated-step semantics. Repairs receive the exact
+immediately preceding same-module source, raw-file digest and error; normalized
+text has a separately labelled digest and explicit truncation. Empty failed
+artifacts retain their hash/context. Three attempts, qualifiers, sandbox and
+all budgets remain unchanged.104focused tests and independent review passed.
+AES02 remains a failed run, not evidence of improvement. Next: one fresh AES03
+on this committed source with original budgets. No board access or programming.
+
+## Current live stage — bounded oracle context validation
+
+Phase2 roles/FSM context correction is integrated;104focused tests and
+independent review passed. Before:5failed4passed. Full tests run in session57475,
+workspace work/nov8-context-full-tests-01, with 342 frozen selected inputs.
+Do not edit runtime sources or launch duplicate jobs.
+
+Supervisor session74485 runs work/nov8_context_pipeline.py. It waits for both
+successful unchanged-input receipts, commits/audits/verifies/pushes, then starts
+one fresh explore-aes-20261108-03 with original limits. It stops on failure. Status is
+work/nov8-context-pipeline-status.json. No AES03 success is inferred in advance.
+Current qualified CLI0.167 SHA4b3286e35d7fe866c6b0eb3f07d7a4cdb5e96489576170dfd6b3a15aa1c67382.
+If CLI changes, preserve the stopped preflight and requalify; do not drop guards.
+All earlier running/pending notes below are historical. Board remains untouched.
+
+## Current — bounded oracle context stage
+
+Published df056cc:2078 harness+323 tooling passed,1 native Windows symlink skip;
+341 frozen inputs unchanged; archive/audit/remote verified. AES02 subsequently
+failed aes_ctrl oracle generation (extend/setup/setup); no design success or
+board access.44-entry archive is retained under evidence/2026-11-07.
+CLI had updated to0.167 and was independently requalified before AES02; this
+prevents controlled attribution to the Phase1 prompt change alone.
+
+No model/vendor job is active. New acceptance/taxonomy for bounded public
+examples and matching failed-source/error context is recorded in
+evidence/2026-11-08/oracle-context-01. Isolated work is being prepared under
+workspace work/nov8-oracle-context-stage. Do not copy without review/testing.
+All earlier live-test/pipeline/running-AES notes below are historical.
+
 ## Latest — oracle clarification validated
 
 Oracle clarification validation: 2078 passed in 518.77s (0:08:38); 323 passed, 1 skipped in 59.24s; 341 frozen inputs unchanged.

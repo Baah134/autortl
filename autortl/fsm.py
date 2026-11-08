@@ -787,6 +787,8 @@ class Orchestrator:
             return None
         golden_path = mdir / "golden.py"
         feedback = ""
+        previous_source = ""
+        previous_source_sha256 = ""
         tb = None
         # Per rejected attempt: its example-mismatch lines, or None for any other error
         # (oracle_example_dispute_ends_build).
@@ -798,7 +800,9 @@ class Orchestrator:
             if attempt == 1:
                 golden_src = self._model("generator", "golden_model", m, self.budget)
             else:
-                golden_src = self._model("generator", "golden_model", m, self.budget, feedback=feedback)
+                golden_src = self._model("generator", "golden_model", m, self.budget, feedback=feedback,
+                                         previous_source=previous_source,
+                                         previous_source_sha256=previous_source_sha256)
             golden_path.write_text(golden_src, encoding="utf-8")
             digest = hashlib.sha256(golden_path.read_bytes()).hexdigest()
             mismatches = None
@@ -816,6 +820,8 @@ class Orchestrator:
                 return None
             except (SyntaxError, ValueError, KeyError, TypeError) as exc:
                 feedback = f"{type(exc).__name__}: {str(exc)[:2000]}"
+                previous_source = golden_src
+                previous_source_sha256 = digest
                 mismatch_attempts.append(mismatches)
                 atomic_write_text(mdir / f"golden_attempt_{attempt}.log", json.dumps({
                     "attempt": attempt, "source_sha256": digest, "status": "oracle_rejected",

@@ -1,0 +1,59 @@
+"""Reconstruct frozen application stdin; this is not a retained server trace."""
+import ast,hashlib,json,os,sys
+from pathlib import Path
+from types import SimpleNamespace
+root=Path('C:/Users/prince.baah/Downloads/autortl-work');work=Path(__file__).resolve().parent
+sys.path.insert(0,str(root))
+from autortl import roles
+from autortl.spec import DesignSpec
+from llm import client
+from llm.backends import codex_cli
+run=root/'logs/explore-aes-20261107-02/aes128_core_build'
+runtime=json.loads((run/'runtime.json').read_text(encoding='utf-8'))
+bound={p:hashlib.sha256((root/p).read_bytes()).hexdigest()==runtime['implementation'][p]
+       for p in ('autortl/prompts.py','autortl/roles.py','autortl/fsm.py','llm/client.py','llm/backends/codex_cli.py')}
+assert all(bound.values()),bound
+spec=DesignSpec.from_json((run/'inputs/spec_path.json').read_text(encoding='utf-8')).module('aes_ctrl')
+entries={}
+for p in (run/'journal').glob('*/completed.json'):
+    d=json.loads(p.read_text(encoding='utf-8'))
+    if 'model:generator.golden_model:' in d['stage']:
+        entries[int(d['stage'].rsplit(':',1)[1])]=(p,d)
+captures=[]
+os.environ['AUTORTL_CODEX_BIN']='mock-codex.exe'
+scratch=work/'nov8-oracle-reconstruction-tmp';scratch.mkdir(exist_ok=True)
+codex_cli.tempfile.tempdir=str(scratch)
+client._record=lambda *a,**k:None
+codex_cli.subprocess.run=lambda *a,**k:SimpleNamespace(returncode=0,stdout='[]',stderr='')
+class Process:
+    returncode=0;pid=12345
+    def __init__(self,cmd,**kwargs):
+        self.cmd=cmd
+    def communicate(self,input,timeout):
+        i=len(captures);captures.append(input)
+        source=entries[i][1]['result']
+        Path(self.cmd[self.cmd.index('--output-last-message')+1]).write_text(source,encoding='utf-8')
+        return '{"type":"turn.completed"}\n',''
+codex_cli.subprocess.Popen=Process
+generator=roles.Generator();generator.model='gpt-6-luna'
+for i in sorted(entries):
+    started=json.loads((entries[i][0].parent/'started.json').read_text(encoding='utf-8'))
+    kwargs=ast.literal_eval(started['kwargs'])
+    assert set(kwargs)<= {'feedback'}
+    generator.golden_model(spec,None,**kwargs)
+out=work/'nov8-oracle-request-reconstruction';out.mkdir(exist_ok=True)
+records=[]
+for i,text in enumerate(captures):
+    (out/f'reconstructed-stdin-{i+1}.txt').write_text(text,encoding='utf-8')
+    records.append({'attempt':i+1,'utf8_bytes':len(text.encode()),'characters':len(text),
+        'has_module_boundary':'Declared input ports are authoritative' in text,
+        'has_top_level_helpers':'Helper functions must be defined at module top level' in text,
+        'has_neighbor_ports':all(p in text for p in ('round_out','key_next')),
+        'has_expected_neighbor_example':str(spec.examples[1].expected['ct']) in text,
+        'has_failed_source':entries[max(0,i-1)][1]['result'] in text,
+        'instruction_sha256':hashlib.sha256(text.encode()).hexdigest()})
+report={'frozen_implementation_files_match':bound,'requests':records,'model_calls':0,
+ 'raw_wire_prompt_retained':False,'source_findings':'No application-side truncation or prompt cache in golden_model/client/Codex backend path.',
+ 'limits':'Mocked client/backend execution reconstructs current frozen application stdin. Original CLI JSONL/stdin/server receipt is not retained; cannot establish server receipt or attention.'}
+(out/'result.json').write_text(json.dumps(report,indent=2)+'\n',encoding='utf-8')
+print(json.dumps(report))

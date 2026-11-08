@@ -1072,3 +1072,33 @@ Research rechecked: Anthropic Building effective agents,2024-12-19,
 https://www.anthropic.com/research/building-effective-agents . Its simple-pattern
 and explicit-feedback guidance supports this choice; it does not establish that
 AutoRTL's proposed clarification improves model success. The fresh run must.
+
+
+# Bounded oracle context — acceptance before implementation
+
+AES02 again rejected all three controller oracles (extend/setup/setup), with
+341 unchanged inputs, no RTL implementation and no board access.44 archive
+entries verify. It used a newly qualified CLI0.167 after an app update; no
+controlled causal claim about the prompt-only change is possible. That change
+remains accurate contract/language documentation but has no measured success
+benefit. Source commit df056cc is published and audited.
+
+The application request can be deterministically reconstructed from frozen
+code/journal inputs: all three requests contain the Phase1 instructions and
+neighbor ports, but no public contract examples or failed source. No raw wire
+request was retained; do not claim server receipt or model attention is proved.
+
+Implement public examples as bounded complete entries, with omission counts and
+fresh init/held-input semantics. Add optional immediately previous source and
+raw-file SHA parameters to the existing role. Pair latest source/error/digest
+in the module-local retry loop; explicitly distinguish normalized rendered text
+from raw file bytes. Treat source as untrusted diagnostic data, never law.
+Keep attempts, all budgets, sandbox, qualifiers, hidden tests and role count.
+
+Tests: before/after delivery; complete example omission rather than broken JSON;
+source bounding and raw-hash labeling; successive-source/error matching,
+no cross-module/stale state, no extra journal replay calls, unchanged timeout,
+provider/storage propagation and spec dispute behavior. Then full software
+suites; publish/freeze; one new current-tier AES trial with original budgets.
+All prior failures remain failed. Handwritten diagnostic code must not reach
+the production model. No automatic model upgrade or extra attempts.

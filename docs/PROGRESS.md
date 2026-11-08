@@ -1643,3 +1643,17 @@ Only generic module-boundary and top-level-helper instructions changed; no
 roles/FSM/sandbox/budget changes. AES01 remains a failed oracle build, with
 three rejected attempts and no new hardware or curriculum verdict. The next
 fresh run is AES02 on the published correction with original limits.
+
+Phase2 bounded oracle context integrated after acceptance and independent review.104focused tests passed; original5failed4passed. Full software checks and fresh same-budget trial pending. No sandbox/budget/role-count changes, no board access.
+
+## November8 bounded oracle repair context
+
+Bounded oracle-context change validated: 2087 passed in 467.00s (0:07:47); 323 passed, 1 skipped in 63.86s (0:01:03); 342 frozen inputs unchanged.
+Public contract examples are included as complete bounded records, with explicit
+omissions and fresh-init/repeated-step semantics. Repairs receive the exact
+immediately preceding same-module source, raw-file digest and error; normalized
+text has a separately labelled digest and explicit truncation. Empty failed
+artifacts retain their hash/context. Three attempts, qualifiers, sandbox and
+all budgets remain unchanged.104focused tests and independent review passed.
+AES02 remains a failed run, not evidence of improvement. Next: one fresh AES03
+on this committed source with original budgets. No board access or programming.

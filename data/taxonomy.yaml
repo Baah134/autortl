@@ -86,6 +86,12 @@ messages:
 # Methodology violations (report_methodology, UG1292 IDs). ADVISORY ONLY:
 # these never kill candidates; they are digested into the planner's context.
 harness_failures:
+  oracle_contract_examples_omitted:
+    meaning: "Oracle generation omitted public ModuleSpec examples; AES02's controller models again recomputed neighbor logic while the independently driven example inputs that disambiguate the boundary were never included in their prompt"
+    repair: "Serialize bounded public examples with explicit index, expected outputs, held-input cycle count and fresh-init semantics; mark omitted content without silently truncating JSON; never expose hidden testbenches or reference implementations"
+  oracle_repair_without_matching_source:
+    meaning: "The repair prompt asked to repair a specific oracle failure but supplied only its error, so repeated AES oracle retries regenerated unrelated whole-AES programs without the failed source"
+    repair: "Pass the immediately preceding module-local source and matching raw-file digest with its latest error; bound and explicitly label untrusted/truncated source text, preserve three attempts and journal replay, and keep provider/storage/timeout failures out of repair"
   oracle_reimplements_neighbor_inputs:
     meaning: "AES exploration01's three controller oracles ignored supplied round_out/key_next inputs and recomputed neighboring AES logic, causing example mismatches and unnecessary setup-budget exhaustion"
     repair: "State generic module-local semantics: consume declared input values, including values supplied by neighbors, rather than replacing inputs with internal computations of those neighbors; preserve the immutable behavior and example checks"
