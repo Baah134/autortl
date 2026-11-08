@@ -330,6 +330,10 @@ GOLDEN_MODEL = """Write a Python golden model for this module.
 Behavior: {behavior}
 Ports: {ports_table}
 Public parameter defaults: {parameters}
+Model only this module's behavior and state. Declared input ports are authoritative
+external values, including results supplied by neighboring modules. Consume those
+inputs when the contract uses them; do not recompute a neighbor's function or
+infer hidden upstream state. Legitimately unused inputs may remain unused.
 Inputs and outputs remain masked nonnegative bit patterns even for signed ports.
 For signed arithmetic, explicitly interpret two's-complement operands at their
 specified widths, then mask outputs. Signed declarations do not change this API.
@@ -356,7 +360,9 @@ not type long tables from memory. A loop of hundreds of operations per table
 entry is too slow: for GF(2^8) inverses build log/antilog tables with one
 255-step loop or use square-and-multiply, and check the table against any
 values the behavior text states.
-Helper functions are allowed. No imports, classes, try/except, raise, lambda,
+Helper functions must be defined at module top level; pass required state/table
+values as explicit arguments. Nested helper calls are unsupported by this sandbox.
+No imports, classes, try/except, raise, lambda,
 f-strings, list/dict/set comprehensions, floats, decorators or default arguments.
 Generator expressions are supported. Do not use private names starting with '_'.
 Use literal port names, for example inputs.get("port_name", 0), replacing the

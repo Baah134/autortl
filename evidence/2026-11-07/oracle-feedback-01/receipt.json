@@ -1,0 +1,32 @@
+{
+  "scope": "Phase1 prompt-only. No roles/FSM/sandbox/budget change.",
+  "files": [
+    "autortl/prompts.py",
+    "tests/test_oracle_repair_context.py"
+  ],
+  "sha256": {
+    "autortl/prompts.py": "e3f1e5e2110b19fa5ce32bdee884fc8b0203ed7a07c3396d3e5688c7d7db4b6e",
+    "tests/test_oracle_repair_context.py": "a152ac5743fd193e3bdfe3b5931ba79efeca8ea258f969ab931309c1ad14b743",
+    "proposal.patch": "dd7b64ce39bce5310f15a84c243a6f48c3e2acc69a48f1776bdaa410e6df7b01"
+  },
+  "before": {
+    "exit_code": 1,
+    "summary": "1 failed, 3 passed in 2.67s",
+    "log": "before-tests.txt"
+  },
+  "after": {
+    "exit_code": 0,
+    "summary": "95 passed in 52.39s",
+    "log": "after-tests.txt",
+    "command": "python -m pytest tests/test_oracle_repair_context.py tests/test_golden_prompt.py tests/test_golden_recovery.py tests/test_golden_hardening.py tests/test_golden_reset_protocol.py tests/test_role_conformance.py tests/test_spec_dispute.py -q -p no:cacheprovider --basetemp <workspace>/nov7-oracle-phase1-after-tmp"
+  },
+  "canonical_prompts_roles_fsm_unchanged": true,
+  "expected_coordinator_owned_drift": [
+    "data/taxonomy.yaml",
+    "coordinator docs"
+  ],
+  "model_calls": 0,
+  "vendor_calls": 0,
+  "board_access": false,
+  "limits": "Prompt delivery plus deterministic handwritten contract/sandbox controls. Not observed LLM improvement."
+}

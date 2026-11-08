@@ -1,3 +1,44 @@
+## Latest — oracle clarification validated
+
+Oracle clarification validation: 2078 passed in 518.77s (0:08:38); 323 passed, 1 skipped in 59.24s; 341 frozen inputs unchanged.
+Only generic module-boundary and top-level-helper instructions changed; no
+roles/FSM/sandbox/budget changes. AES01 remains a failed oracle build, with
+three rejected attempts and no new hardware or curriculum verdict. The next
+fresh run is AES02 on the published correction with original limits.
+
+## Current live stage — oracle prompt correction
+
+Minimal prompt-only change is integrated with four new regression cases;
+95 focused tests passed and independent review approved it. Source scope is
+autortl/prompts.py plus tests/test_oracle_repair_context.py and recorded taxonomy.
+No roles/FSM/sandbox/budget change. Full software tests run in tool session92018,
+with receipts in workspace work/nov7-oracle-full-tests-01.
+
+Supervised tool session60432 runs work/nov7_oracle_pipeline.py: wait for both
+successful unchanged-input software receipts; finalize/audit/verify/push; then
+one fresh AES02 exploration. It stops on test/publication failure. Read
+work/nov7-oracle-pipeline-status.json before acting. Do not launch duplicates
+or edit frozen source. The child AES wrapper records actual outcome/source
+drift and archives it; an outer launcher0 does not mean successful design.
+No board, JTAG, serial, programming or reset operation is part of this stage.
+Earlier pending notes below are historical; query actual jobs and SQLite lease.
+
+## Latest November7 — AES attempt completed; oracle diagnosis
+
+Published worker milestone26e18f4:2074 harness+323 tooling passed,1 Windows
+symlink-privilege skip;340 frozen inputs unchanged; audit and remote verified.
+The AES exploration finished in110.8s (child103s,exit1) with module_failed
+aes_ctrl. No synthesis or board access. Original340 source inputs unchanged.
+The outer launcher exit0 is not success; the actual child failed. Archive
+evidence/2026-11-07/explore-aes-20261107-01 has 43 verified entries.
+No model/vendor job is active. Do not restart this completed attempt in place.
+
+Diagnose oracle failures: attempt1 ct/rk mismatch;2setup-budget;3nestedhelper
+sub_word unsupported. Model appears to recompute neighbor logic instead of
+reading round_out/key_next inputs. Prompt omits public examples; repair lacks
+failed source. Independent reports are being prepared before scoped changes.
+Earlier pending/running notes below are historical. Check SQLite ownership.
+
 # AutoRTL shared project memory
 
 Canonical checkout: `C:/Users/prince.baah/Downloads/autortl-work`.

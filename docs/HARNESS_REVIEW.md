@@ -743,3 +743,11 @@ qualification when updating. This is a bounded configuration restriction, not
 a complete runtime-tool-catalog or universal OS/device isolation guarantee.
 Event rejection after execution cannot prevent or undo earlier side effects.
 The public benchmark requires its own independently qualified grader boundary.
+
+## November7 oracle module-boundary clarification
+
+Oracle clarification validation: 2078 passed in 518.77s (0:08:38); 323 passed, 1 skipped in 59.24s; 341 frozen inputs unchanged.
+Only generic module-boundary and top-level-helper instructions changed; no
+roles/FSM/sandbox/budget changes. AES01 remains a failed oracle build, with
+three rejected attempts and no new hardware or curriculum verdict. The next
+fresh run is AES02 on the published correction with original limits.

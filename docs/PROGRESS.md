@@ -1635,3 +1635,11 @@ Only then continue higher curricula and the CV-oriented board/public-task plan.
   no new vendor campaign or board access.
 
 November7 worker milestone: 2074 passed in 646.94s (0:10:46); 323 passed, 1 skipped in 110.73s (0:01:50); 340 frozen inputs unchanged. Restricted text control passed; model identity unobserved, no board access. Evidence: evidence/2026-11-07/worker-boundary-01. Previous worker-stage pending notes are superseded by this receipt. Next is one fresh tier6 AES exploration with original budgets, no lower-tier reholds.
+
+## November7 oracle module-boundary clarification
+
+Oracle clarification validation: 2078 passed in 518.77s (0:08:38); 323 passed, 1 skipped in 59.24s; 341 frozen inputs unchanged.
+Only generic module-boundary and top-level-helper instructions changed; no
+roles/FSM/sandbox/budget changes. AES01 remains a failed oracle build, with
+three rejected attempts and no new hardware or curriculum verdict. The next
+fresh run is AES02 on the published correction with original limits.

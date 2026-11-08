@@ -1,0 +1,22 @@
+F...                                                                     [100%]
+================================== FAILURES ===================================
+________ test_actual_golden_prompt_keeps_neighbor_inputs_authoritative ________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000002835B75AB10>
+
+    def test_actual_golden_prompt_keeps_neighbor_inputs_authoritative(monkeypatch):
+        request=Mock(return_value='def init(): return {}\ndef step(s,i): return s,{}')
+        monkeypatch.setattr(roles,'ask',request)
+        monkeypatch.setattr(roles,'conventions',lambda:'')
+        spec=ModuleSpec('renamed_controller','When busy, latch mixed_input and successor_input.',
+                        [Port('mixed_input','input',16),Port('successor_input','input',16),
+                         Port('held','output',16)],latency=1)
+        roles.Generator().golden_model(spec,None,feedback='ValueError: controlled retry')
+        prompt=' '.join(request.call_args.args[1].split())
+>       assert "Model only this module's behavior and state" in prompt
+E       assert "Model only this module's behavior and state" in 'Write a Python golden model for this module. Behavior: When busy, latch mixed_input and successor_input. Ports: input...thon fence. The previous Python reference failed validation. Repair this specific failure ValueError: controlled retry'
+
+tests\test_oracle_repair_context.py:23: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_oracle_repair_context.py::test_actual_golden_prompt_keeps_neighbor_inputs_authoritative
+1 failed, 3 passed in 2.67s

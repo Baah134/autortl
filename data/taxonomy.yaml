@@ -86,6 +86,12 @@ messages:
 # Methodology violations (report_methodology, UG1292 IDs). ADVISORY ONLY:
 # these never kill candidates; they are digested into the planner's context.
 harness_failures:
+  oracle_reimplements_neighbor_inputs:
+    meaning: "AES exploration01's three controller oracles ignored supplied round_out/key_next inputs and recomputed neighboring AES logic, causing example mismatches and unnecessary setup-budget exhaustion"
+    repair: "State generic module-local semantics: consume declared input values, including values supplied by neighbors, rather than replacing inputs with internal computations of those neighbors; preserve the immutable behavior and example checks"
+  oracle_helper_scope_ambiguous:
+    meaning: "Golden prompt allowed helper functions without saying their definitions must be top-level; nested sub_word calls in AES exploration01 were correctly rejected by the callable-name whitelist"
+    repair: "Document top-level helper definitions and explicit data/state arguments in the prompt; keep the sandbox callable whitelist, budgets and verification unchanged"
   codex_worker_inherits_tool_capabilities:
     meaning: "The text-generation backend inherited enabled local MCP tools despite read-only cwd and a no-tools instruction; empty MCP overrides still left node_repl enabled in model-free checks"
     repair: "Restrict child execution capabilities and web, ignore user config for execution while preserving auth/security environment, replace configured MCP entries with inert disabled transports and verify none remain enabled before a turn; reject tool/unknown response items as protocol infrastructure failures. This is a checked CLI configuration boundary, not universal OS isolation or a way to undo side effects after execution"
