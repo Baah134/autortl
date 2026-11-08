@@ -360,6 +360,12 @@ not type long tables from memory. A loop of hundreds of operations per table
 entry is too slow: for GF(2^8) inverses build log/antilog tables with one
 255-step loop or use square-and-multiply, and check the table against any
 values the behavior text states.
+Log/antilog tables require a primitive generator for the specified field:
+verify that its powers visit every nonzero field element before repeating
+(255 distinct nonzero elements for GF(2^8)).
+Irreducibility alone does not guarantee that x is a primitive generator. Verify
+that field multiplication of the element and its computed inverse gives one
+for every nonzero element, and check the anchors stated in the behavior.
 Helper functions must be defined at module top level; pass required state/table
 values as explicit arguments. Nested helper calls are unsupported by this sandbox.
 No imports, classes, try/except, raise, lambda,

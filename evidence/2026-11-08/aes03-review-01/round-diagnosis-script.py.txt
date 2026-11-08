@@ -1,0 +1,66 @@
+import ast,hashlib,json,sys
+from pathlib import Path
+root=Path('C:/Users/prince.baah/Downloads/autortl-work');work=Path(__file__).resolve().parent
+sys.path.insert(0,str(root))
+from autortl.spec import DesignSpec
+from autortl.roles import golden_examples_context,golden_failed_source_context
+run=root/'logs/explore-aes-20261108-03/aes128_core_build'
+spec=DesignSpec.from_json((run/'inputs/spec_path.json').read_text(encoding='utf-8')).module('aes_round')
+entries={}
+for p in (run/'journal').glob('*/completed.json'):
+    d=json.loads(p.read_text(encoding='utf-8'))
+    if d['stage'].startswith('module_aes_round:model:generator.golden_model:'):
+        entries[int(d['stage'].rsplit(':',1)[1])]=(p,d)
+out=work/'nov8-aes03-round-probe';out.mkdir(exist_ok=True)
+records=[]
+for i,(p,data) in sorted(entries.items()):
+    source=data['result']
+    (out/f'attempt-{i+1}-source.txt').write_text(source,encoding='utf-8')
+    started=json.loads((p.parent/'started.json').read_text(encoding='utf-8'))
+    kwargs=ast.literal_eval(started['kwargs'])
+    rejection=json.loads((run/f'modules/aes_round/golden_attempt_{i+1}.log').read_text())
+    raw_sha=hashlib.sha256(source.replace('\r\n','\n').replace('\n','\r\n').encode()).hexdigest()
+    record={'attempt':i+1,'source_characters':len(source),'diagnostic':rejection['diagnostic'],
+            'raw_source_sha256':rejection['source_sha256'],'journal_text_reconstructs_raw_CRLF':raw_sha==rejection['source_sha256'],
+            'kwargs_keys':list(kwargs)}
+    if i:
+        prior=entries[i-1][1]['result']
+        prior_error=json.loads((run/f'modules/aes_round/golden_attempt_{i}.log').read_text())
+        record.update(previous_source_matches=kwargs.get('previous_source')==prior,
+                      previous_raw_sha_matches=kwargs.get('previous_source_sha256')==prior_error['source_sha256'],
+                      feedback_matches=kwargs.get('feedback')==prior_error['diagnostic'])
+        context=golden_failed_source_context(kwargs['previous_source'],kwargs['previous_source_sha256'])
+        rendered=json.loads(context.splitlines()[-1])
+        record.update(source_context_truncated=rendered['truncated'],
+                      source_context_prefix_matches=rendered['source_text_prefix']==prior,
+                      source_context_json_characters=len(context.splitlines()[-1]))
+    records.append(record)
+# Independent arithmetic transcription of ONLY the saved power-table recurrence;
+# never execute the generated program, and never pass a corrected AES oracle back.
+value=1;seen=[];logs=[0]*256;powers=[0]*512
+for exponent in range(255):
+    seen.append(value);powers[exponent]=value;logs[value]=exponent
+    value<<=1
+    if value&256:value^=283
+for exponent in range(255,512):powers[exponent]=powers[exponent-255]
+anchors=[]
+for byte,expected in ((0,0x63),(1,0x7c),(0x53,0xed)):
+    inverse=0 if byte==0 else powers[(255-logs[byte])%255]
+    result=inverse
+    for n in range(1,5):result^=((inverse<<n)|(inverse>>(8-n)))&255
+    result^=99
+    anchors.append({'input':byte,'expected_from_public_behavior':expected,'saved_recurrence_gives':result})
+public_context=golden_examples_context(spec)
+examples=[json.loads(line) for line in public_context.splitlines() if line.startswith('{"after_cycles"')]
+report={'attempts':records,'public_examples':len(spec.examples),'rendered_examples':len(examples),
+ 'public_context_omission_line':public_context.splitlines()[-1],
+ 'power_table_distinct_nonzero_values':len(set(seen)),'first_repeat_index':next(i for i in range(1,len(seen)) if seen[i]==seen[0]),
+ 'unfilled_log_entries':sum(n not in set(seen) for n in range(1,256)),
+ 'sbox_anchor_comparison':anchors,'model_calls':0,'vendor_calls':0,'generated_python_executed':False,
+ 'limits':'Journal argument/source binding verified; role context reconstructed. Original wire prompt not retained. Independent recurrence arithmetic, not a repaired AES implementation.'}
+runtime=json.loads((run/'runtime.json').read_text(encoding='utf-8'))
+report['context_worker_sources_match_runtime']={p:hashlib.sha256((root/p).read_bytes()).hexdigest()==runtime['implementation'][p]
+    for p in ('autortl/roles.py','autortl/fsm.py','autortl/golden_worker.py')}
+assert all(report['context_worker_sources_match_runtime'].values())
+(out/'result.json').write_text(json.dumps(report,indent=2)+'\n',encoding='utf-8')
+print(json.dumps(report))

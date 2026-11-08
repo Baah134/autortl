@@ -1,3 +1,60 @@
+## Latest — finite field guidance validated
+
+Finite-field guidance validated: 2095 passed in 857.66s (0:14:17); 323 passed, 1 skipped in 93.31s (0:01:33); 343 selected inputs unchanged.
+Existing log/antilog advice now states its primitive-generator prerequisite,
+complete nonzero-element coverage and inverse-product checks.255 is explicitly
+scoped to GF(2^8). No generator number, reference program, S-box table or AES
+round output was added to production instructions. Gates, roles, attempts,
+budgets and sandbox are unchanged. Historical V1 focus112passed; final V2
+affected8passed; independent review and current full suites passed.
+
+One fresh AES04 is declared on this committed source with the original limits.
+After that trial, stop AES-specific prompt tuning regardless of outcome;
+assess and move to release/public benchmark work. No automatic AES05.
+Software/math controls do not establish model improvement or full AES success.
+No board programming, reset, JTAG, hardware-server or serial action occurred.
+
+## Current — GF regression and finite AES04 supervisor
+
+Final V2 field guidance is integrated and independently reviewed. Full software
+regression runs as PID23756 (pytest15792); supervisor23364 waits for its results.
+Read workspace work/nov8-gf-full-tests-01/results.json and
+work/nov8-gf-pipeline-status.json; recheck actual processes before acting.
+Supervisor commits, audits, verifies and pushes only on successful unchanged-input
+results, then launches one fresh AES04 with the original limits. Preserve the
+frozen runtime and do not launch a duplicate. After AES04, stop AES-specific
+prompt tuning regardless of outcome and move to benchmark/release work.
+No board programming, JTAG, serial, reset or hardware-server action is included.
+Earlier live-job notes below are historical.
+
+## Current — AES03 completed; controller recovered, round still fails
+
+Published source defd87f passed2087 harness+323 tooling tests,1 Windows privilege
+skip,342inputsunchanged and committedaudit. AES03completed119.7s/5modelcalls/
+32.954vendorseconds: controlleroracle firsttry, RTL/unitpositive/mutation gates
+passed; aes_round rejected2setup-budget programs and1wrong-output program.
+All342runinputsunchanged; no top/PPA/curriculum/board success.116-entry archive
+retained at evidence/2026-11-08/explore-aes-20261108-03. No active campaign.
+
+Context pairing/examples are verified in roundrepairs; lastmodeluses a51-cycle
+GFgenerator where255distinct nonzero values are required. This is a modelmath
+failure correctly rejected. Assessment: docs/CASE_STUDY_ORACLE_CONTEXT.md.
+Any further domain guidance is a separate finite, preregistered decision;
+no budgets, sandbox, expected values or role count are to be relaxed.
+Current review/archive files await publication. Earlier live notes are historical.
+
+## Current — AES03 running on published context repair
+
+Published defd87f with2087 harness+323 tooling passes,one native Windows
+symlink-privilege skip;342 inputsunchanged; committedaudit/72archiveblobsverified.
+AES03 is active: parent16668,explorer23132,supervisor tool74485. Requery actual
+processes/launch-result; sourcefreeze is logs/explore-aes-20261108-03-source-freeze.json.
+Controlleroracle passedfirstattempt SHA31bcce019523f4b0528095f9ebb4ccb7c41415e03eb16e1ce0239d3346928ef2.
+This covers specification examples/generatedstimulus only; RTL/wholeAES/PPA are
+stillpending. No board operation. Do not modifyfrozen source or duplicatejobs.
+The wrapper archives finaloutcome; outerexit0 alone is notdesignsuccess.
+Earlier pending/running notes below are historical.
+
 ## Latest — oracle context validated
 
 Bounded oracle-context change validated: 2087 passed in 467.00s (0:07:47); 323 passed, 1 skipped in 63.86s (0:01:03); 342 frozen inputs unchanged.

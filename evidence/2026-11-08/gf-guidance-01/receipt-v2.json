@@ -1,0 +1,80 @@
+{
+  "version": 2,
+  "scope": "Generic coverage with255 explicitly qualified toGF(2^8); no other semantic/code change",
+  "files": [
+    "autortl/prompts.py",
+    "tests/test_golden_field_guidance.py"
+  ],
+  "sha256": {
+    "autortl/prompts.py": "a1b8fcfd88d10aa344249d8f50a45b6559ffc3f473afa3312f81877b1a25b8c3",
+    "tests/test_golden_field_guidance.py": "4d727e91004f82cc1b45fef478fb674536c8e8e135e2537780a24556e9ea9858",
+    "proposal-v2.patch": "afc66a5fa51741d49721deb9b9849ca1221f9e529bc047b50545c39c0eaa2e56"
+  },
+  "v1_before": {
+    "command": [
+      "C:\\Users\\prince.baah\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+      "-m",
+      "pytest",
+      "tests/test_golden_field_guidance.py",
+      "-q",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=C:\\Users\\prince.baah\\Documents\\Codex\\2026-10-15\\hey\\work\\nov8-gf-guidance-before-v2-tmp"
+    ],
+    "exit_code": 1,
+    "seconds": 4.061999999998079,
+    "summary": "2 failed, 6 passed in 1.39s",
+    "log": "before-tests-v2.txt"
+  },
+  "v1_focus": {
+    "command": [
+      "C:\\Users\\prince.baah\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+      "-m",
+      "pytest",
+      "tests/test_golden_field_guidance.py",
+      "tests/test_golden_prompt.py",
+      "tests/test_oracle_context.py",
+      "tests/test_oracle_repair_context.py",
+      "tests/test_golden_recovery.py",
+      "tests/test_golden_hardening.py",
+      "tests/test_golden_reset_protocol.py",
+      "tests/test_role_conformance.py",
+      "tests/test_spec_dispute.py",
+      "-q",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=C:\\Users\\prince.baah\\Documents\\Codex\\2026-10-15\\hey\\work\\nov8-gf-guidance-after-tmp"
+    ],
+    "exit_code": 0,
+    "seconds": 91.20300000000134,
+    "summary": "112 passed in 88.50s (0:01:28)",
+    "log": "after-tests.txt"
+  },
+  "v2_test": {
+    "command": [
+      "C:\\Users\\prince.baah\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+      "-m",
+      "pytest",
+      "tests/test_golden_field_guidance.py",
+      "-q",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp=C:\\Users\\prince.baah\\Documents\\Codex\\2026-10-15\\hey\\work\\nov8-gf-guidance-v2-tmp"
+    ],
+    "exit_code": 0,
+    "summary": "8 passed in 0.92s",
+    "log": "v2-tests.txt"
+  },
+  "v1_preserved": {
+    "proposal-v1.patch": "1dd5ebca5fee998ad08fc2bc9be2a1404965d1cdf4be7adab36a8a2266881669",
+    "proposal-readable-v1.patch": "fc8b1c005e859ed4b5bbbe8f1ecb5d6c3942fbcc44a7c0946af6e47876828ea2",
+    "receipt-v1.json": "eccd818ae000ed5a67f994f0369b904d7031f1e7958d9aacf40c5c73b802b6e8",
+    "prompt-v1.py.txt": "f221322149d9b5df4ae8e04dfa1c034d5c3936d3f788b3d41fd370173e0a39ea",
+    "test-v1.py.txt": "da0fff41707944c1786df4564d03ee257bdf0b8f1aef7b2ca3118d07832ca888"
+  },
+  "canonical_runtime_drift": [],
+  "model_calls": 0,
+  "vendor_calls": 0,
+  "board_access": false,
+  "limits": "V1 fullfocused112 passed; V2 eight affected tests only; parent complete software regression and single finite AES04 remain required."
+}
