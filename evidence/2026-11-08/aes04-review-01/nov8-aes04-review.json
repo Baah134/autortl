@@ -1,0 +1,500 @@
+{
+  "review_status": "completed",
+  "source_commit": "8c59efb6289330b6ac1433c50da59f58e8b59f95",
+  "launch_result": {
+    "launcher_exit": 0,
+    "seconds": 322.6100000000006,
+    "run_status": "module_failed",
+    "failure_kind": null,
+    "source_changed": [],
+    "board_access": false,
+    "curriculum_verdict": null
+  },
+  "run_summary": {
+    "status": "module_failed",
+    "module": "aes_round",
+    "error": "Testbench failures:\nFAIL index=1 signal=state_out  (x102)"
+  },
+  "budget": {
+    "llm_calls": 9,
+    "vivado_seconds": 121.04983480000192,
+    "elapsed": 313.1083486999996,
+    "tokens": {
+      "input_tokens": 106606,
+      "cached_input_tokens": 48384,
+      "output_tokens": 8043
+    },
+    "calls_without_token_usage": 0
+  },
+  "configuration": {
+    "max_iterations": 4,
+    "best_of_n": 1,
+    "max_fix_attempts": 3,
+    "max_infra_retries": 1,
+    "max_llm_calls": 30,
+    "max_vivado_minutes": 150.0,
+    "max_wall_minutes": 240.0,
+    "generate_golden": true,
+    "implementation": "out_of_context",
+    "target_part": "xc7a35tcpg236-1",
+    "target_freq_mhz": 100.0,
+    "model": "gpt-6-luna"
+  },
+  "frozen_inputs": 343,
+  "changed_inputs": [],
+  "aes03_comparison": {
+    "declared_limits_equal": true,
+    "different_config_keys": [],
+    "frozen_spec_bytes_equal": true,
+    "frozen_integration_tb_bytes_equal": true
+  },
+  "archive_files": 219,
+  "archive_hash_mismatches": [],
+  "oracle_attempts": {
+    "aes_ctrl": [
+      {
+        "attempt": 1,
+        "source_sha256": "37a160bb5aca894e1559bd39f3fd2b1d1cd7729a4aaba245c9788b94bec00606",
+        "status": "oracle_qualified",
+        "scope": "Specification examples and generated stimulus; not formal equivalence or reset-kind proof."
+      }
+    ],
+    "aes_round": [
+      {
+        "attempt": 1,
+        "source_sha256": "32c16a0b5aefce8cc69ffe7a7e4c161414cf80c23d878d7b8490a2cfa3bf6629",
+        "status": "oracle_rejected",
+        "example_mismatch_only": false,
+        "diagnostic": "ValueError: ValueError: golden instruction budget exhausted (setup)"
+      },
+      {
+        "attempt": 2,
+        "source_sha256": "f2a10098ce19b2990dd6bbbe12a8e4baecd54622ef1e7c7afce17cfc13636f8a",
+        "status": "oracle_rejected",
+        "example_mismatch_only": false,
+        "diagnostic": "ValueError: ValueError: golden instruction budget exhausted (setup)"
+      },
+      {
+        "attempt": 3,
+        "source_sha256": "555ca746e3bc1505557c0b7d5c22b596f0271a1f1143d58eece550c5e6c80612",
+        "status": "oracle_qualified",
+        "scope": "Specification examples and generated stimulus; not formal equivalence or reset-kind proof."
+      }
+    ]
+  },
+  "controller_qualification": {
+    "schema_version": 1,
+    "status": "qualified",
+    "qualified": true,
+    "testbench_sha256": "59502aea7eab335f191ab00357523a9a3c71d5270a6aa644fb49adf194cca6de",
+    "attempts": [
+      {
+        "label": "control",
+        "description": "unmodified control",
+        "passed": true,
+        "failure_kind": "design",
+        "error": "",
+        "assertion_detected": false,
+        "proof_reason": "simulation passed",
+        "source_sha256": "b2a39beaa9ea0866503d4a402915565cd2d12ccd8749c2ee8860a25d5e17a9ad",
+        "raw_log_sha256": "ba882fee346e936d07892e9388b892075f3d550bc5dcc378513ca1c7d7a78b6d"
+      },
+      {
+        "label": "mutant",
+        "description": "flip == to !=",
+        "passed": false,
+        "failure_kind": "design",
+        "error": "Testbench failures:\nFAIL index=0 signal=last  (x103)",
+        "assertion_detected": true,
+        "proof_reason": "raw assertion detail and failure verdict retained",
+        "source_sha256": "00bc704991dff7dea9e43671fe1a99ff09273a325ce519c3761eda9d6f626897",
+        "raw_log_sha256": "f7ad8eda4acf1112bccc6ae8bef551dbfd84edabcadbfd7ef5c138288dcf8013"
+      }
+    ],
+    "missed": [],
+    "scope": "Minimum assertion sensitivity; missed faults remain coverage limits."
+  },
+  "simulation_cases": [
+    {
+      "directory": "modules/aes_ctrl/candidate_standard_0",
+      "exits": [
+        {
+          "tool": "xvlog",
+          "status": "exited",
+          "returncode": 0,
+          "driver_returncode": 0,
+          "latest_output_hash_matches": true
+        },
+        {
+          "tool": "xelab",
+          "status": "exited",
+          "returncode": 0,
+          "driver_returncode": 0,
+          "latest_output_hash_matches": true
+        },
+        {
+          "tool": "xsim",
+          "status": "exited",
+          "returncode": 0,
+          "driver_returncode": 0,
+          "latest_output_hash_matches": true
+        }
+      ],
+      "assertion_count": 0,
+      "first_assertion": null,
+      "failure_summary": [],
+      "passed_marker": true
+    },
+    {
+      "directory": "modules/aes_ctrl/tbqual/control",
+      "exits": [
+        {
+          "tool": "xvlog",
+          "status": "exited",
+          "returncode": 0,
+          "driver_returncode": 0,
+          "latest_output_hash_matches": true
+        },
+        {
+          "tool": "xelab",
+          "status": "exited",
+          "returncode": 0,
+          "driver_returncode": 0,
+          "latest_output_hash_matches": true
+        },
+        {
+          "tool": "xsim",
+          "status": "exited",
+          "returncode": 0,
+          "driver_returncode": 0,
+          "latest_output_hash_matches": true
+        }
+      ],
+      "assertion_count": 0,
+      "first_assertion": null,
+      "failure_summary": [],
+      "passed_marker": true
+    },
+    {
+      "directory": "modules/aes_ctrl/tbqual/mutant",
+      "exits": [
+        {
+          "tool": "xvlog",
+          "status": "exited",
+          "returncode": 0,
+          "driver_returncode": 0,
+          "latest_output_hash_matches": true
+        },
+        {
+          "tool": "xelab",
+          "status": "exited",
+          "returncode": 0,
+          "driver_returncode": 0,
+          "latest_output_hash_matches": true
+        },
+        {
+          "tool": "xsim",
+          "status": "exited",
+          "returncode": 0,
+          "driver_returncode": 0,
+          "latest_output_hash_matches": true
+        }
+      ],
+      "assertion_count": 103,
+      "first_assertion": [
+        "0",
+        "last"
+      ],
+      "failure_summary": [
+        "103"
+      ],
+      "passed_marker": false
+    },
+    {
+      "directory": "modules/aes_round/candidate_standard_0",
+      "exits": [
+        {
+          "tool": "xvlog",
+          "status": "exited",
+          "returncode": 0,
+          "driver_returncode": 0,
+          "latest_output_hash_matches": true
+        },
+        {
+          "tool": "xelab",
+          "status": "exited",
+          "returncode": 0,
+          "driver_returncode": 0,
+          "latest_output_hash_matches": true
+        },
+        {
+          "tool": "xsim",
+          "status": "exited",
+          "returncode": 0,
+          "driver_returncode": 0,
+          "latest_output_hash_matches": true
+        }
+      ],
+      "assertion_count": 102,
+      "first_assertion": [
+        "1",
+        "state_out"
+      ],
+      "failure_summary": [
+        "102"
+      ],
+      "passed_marker": false
+    },
+    {
+      "directory": "modules/aes_round/candidate_standard_1",
+      "exits": [
+        {
+          "tool": "xvlog",
+          "status": "exited",
+          "returncode": 0,
+          "driver_returncode": 0,
+          "latest_output_hash_matches": true
+        },
+        {
+          "tool": "xelab",
+          "status": "exited",
+          "returncode": 0,
+          "driver_returncode": 0,
+          "latest_output_hash_matches": true
+        },
+        {
+          "tool": "xsim",
+          "status": "exited",
+          "returncode": 0,
+          "driver_returncode": 0,
+          "latest_output_hash_matches": true
+        }
+      ],
+      "assertion_count": 102,
+      "first_assertion": [
+        "1",
+        "state_out"
+      ],
+      "failure_summary": [
+        "102"
+      ],
+      "passed_marker": false
+    },
+    {
+      "directory": "modules/aes_round/candidate_standard_2",
+      "exits": [
+        {
+          "tool": "xvlog",
+          "status": "exited",
+          "returncode": 0,
+          "driver_returncode": 0,
+          "latest_output_hash_matches": true
+        },
+        {
+          "tool": "xelab",
+          "status": "exited",
+          "returncode": 0,
+          "driver_returncode": 0,
+          "latest_output_hash_matches": true
+        },
+        {
+          "tool": "xsim",
+          "status": "exited",
+          "returncode": 0,
+          "driver_returncode": 0,
+          "latest_output_hash_matches": true
+        }
+      ],
+      "assertion_count": 102,
+      "first_assertion": [
+        "1",
+        "state_out"
+      ],
+      "failure_summary": [
+        "102"
+      ],
+      "passed_marker": false
+    },
+    {
+      "directory": "modules/aes_round/candidate_standard_3",
+      "exits": [
+        {
+          "tool": "xvlog",
+          "status": "exited",
+          "returncode": 0,
+          "driver_returncode": 0,
+          "latest_output_hash_matches": true
+        },
+        {
+          "tool": "xelab",
+          "status": "exited",
+          "returncode": 0,
+          "driver_returncode": 0,
+          "latest_output_hash_matches": true
+        },
+        {
+          "tool": "xsim",
+          "status": "exited",
+          "returncode": 0,
+          "driver_returncode": 0,
+          "latest_output_hash_matches": true
+        }
+      ],
+      "assertion_count": 102,
+      "first_assertion": [
+        "1",
+        "state_out"
+      ],
+      "failure_summary": [
+        "102"
+      ],
+      "passed_marker": false
+    }
+  ],
+  "round_prompt_reconstruction": [
+    {
+      "attempt": 1,
+      "prompt_utf8_sha256": "6e9809747ed515726bdf017c45be3c18969a409b4e59a76b55694b7220ac7dab",
+      "characters": 6155,
+      "generic_gf_hint_present": true,
+      "gf8_count_qualified": true,
+      "public_examples_present": true,
+      "behavior_anchor_present": true,
+      "repair_error_present": true,
+      "previous_source_present": true,
+      "previous_source_matches_prior_journal": true,
+      "previous_file_hash_matches_rejection": true,
+      "previous_source_truncated": false
+    },
+    {
+      "attempt": 2,
+      "prompt_utf8_sha256": "517f27cb5a5f867e66a6f73d05a9d045036c674ef81aae05503a0d2f490713a7",
+      "characters": 9445,
+      "generic_gf_hint_present": true,
+      "gf8_count_qualified": true,
+      "public_examples_present": true,
+      "behavior_anchor_present": true,
+      "repair_error_present": true,
+      "previous_source_present": true,
+      "previous_source_matches_prior_journal": true,
+      "previous_file_hash_matches_rejection": true,
+      "previous_source_truncated": false
+    },
+    {
+      "attempt": 3,
+      "prompt_utf8_sha256": "f911369fc4663a6683b43e92d890fc8bbdc65d5841784c6d665b85a602215aa8",
+      "characters": 9233,
+      "generic_gf_hint_present": true,
+      "gf8_count_qualified": true,
+      "public_examples_present": true,
+      "behavior_anchor_present": true,
+      "repair_error_present": true,
+      "previous_source_present": true,
+      "previous_source_matches_prior_journal": true,
+      "previous_file_hash_matches_rejection": true,
+      "previous_source_truncated": false
+    }
+  ],
+  "round_rtl_static_review": [
+    {
+      "candidate": 0,
+      "descending_fe_bits_with_repeated_base_square": true
+    },
+    {
+      "candidate": 1,
+      "descending_fe_bits_with_repeated_base_square": true
+    },
+    {
+      "candidate": 2,
+      "descending_fe_bits_with_repeated_base_square": true
+    },
+    {
+      "candidate": 3,
+      "descending_fe_bits_with_repeated_base_square": true
+    }
+  ],
+  "round_rtl_repair_feedback": [
+    {
+      "repair": 1,
+      "error": "Testbench failures:\nFAIL index=1 signal=state_out  (x102)",
+      "source_matches_failed_candidate": true,
+      "tb_argument_characters": 28444,
+      "tb_rendered_characters": 2000,
+      "failing_expected_assignment_in_rendered_tb": false,
+      "previous_error_history_count": 0
+    },
+    {
+      "repair": 2,
+      "error": "Testbench failures:\nFAIL index=1 signal=state_out  (x102)",
+      "source_matches_failed_candidate": true,
+      "tb_argument_characters": 28444,
+      "tb_rendered_characters": 2000,
+      "failing_expected_assignment_in_rendered_tb": false,
+      "previous_error_history_count": 0
+    },
+    {
+      "repair": 3,
+      "error": "Testbench failures:\nFAIL index=1 signal=state_out  (x102)",
+      "source_matches_failed_candidate": true,
+      "tb_argument_characters": 28444,
+      "tb_rendered_characters": 2000,
+      "failing_expected_assignment_in_rendered_tb": false,
+      "previous_error_history_count": 0
+    }
+  ],
+  "prompt_evidence_limit": "Trusted role rendering reconstructed from frozen source/spec and journal kwargs with dispatch stubbed; not an independent wire capture.",
+  "stages": {
+    "key_step_reached": false,
+    "round_mutation_qualification_reached": false,
+    "integration_reached": false,
+    "optimization_reached": false
+  },
+  "critical_sha256": {
+    "logs/explore-aes-20261108-04-launch.json": "8793df7246bc276b971a9b98090309a4050a37661576684e4fbceefcb10c937b",
+    "logs/explore-aes-20261108-04-launch-result.json": "5fd82edcde18bc53789ec008eb1d3fd32aad39138113bfc5a75a70ffa19f6eeb",
+    "logs/explore-aes-20261108-04/aes128_core_build/run_summary.json": "8f16dd1eee164ecc5977f997cc5783c7912c93d13eb350e80dc63821e0a5e7c0",
+    "logs/explore-aes-20261108-04/aes128_core_build/budget.json": "863b2c46cfdaa03402c1619fb6ef2a60ed1434a248664db904ddce5e643cc4bd",
+    "logs/explore-aes-20261108-04/aes128_core_build/config.json": "7183a326c5b1dac8133dcc7358019ccee907da6e084b58aecd99eb9d3a23492d",
+    "logs/explore-aes-20261108-04/aes128_core_build/runtime.json": "fc9f7e6aec06d1f9192bc6510492e3128aa1daaeeb3f9c3eda7d8f1758dfbe3c",
+    "logs/explore-aes-20261108-04-source-freeze.json": "dbd263528de7feb8b12d5d1d4e26ea8b91f6f5b531febc2fa303263a5d5b7a4f",
+    "evidence/2026-11-08/explore-aes-20261108-04/archive-manifest.json": "c9c5130c4a38981856fa73de99167cb6f1f85c1a0f0bc5a9d56bdf1b40733244",
+    "logs/explore-aes-20261108-04/aes128_core_build/modules/aes_ctrl/golden_attempt_1.log": "2a136394228abb13f30a93d8a38771d78a5604f76f18ac341fd16bfa777eb7cc",
+    "logs/explore-aes-20261108-04/aes128_core_build/modules/aes_round/golden_attempt_1.log": "2c936e02d69c62a1b4da5c70b8601d24cacdfad397663ddfe947325f8d661fa2",
+    "logs/explore-aes-20261108-04/aes128_core_build/modules/aes_round/golden_attempt_2.log": "b28f707ff0b339ecadf0e18a2c70c98626c36b583ae5dd1a7a160facc7c557b8",
+    "logs/explore-aes-20261108-04/aes128_core_build/modules/aes_round/golden_attempt_3.log": "df15bdf83425f410ee447e9549703a5331acd7575eb6f9977cd55203545f498d",
+    "logs/explore-aes-20261108-04/aes128_core_build/modules/aes_ctrl/candidate_standard_0/tool_exit_records.log": "74ac374785c3dfac692483fa2f6507182400a6161632acf04fd740af081c844a",
+    "logs/explore-aes-20261108-04/aes128_core_build/modules/aes_ctrl/candidate_standard_0/sim_log.txt": "1c6fe062a7b638d02975cc7f7bb67ae0585e4b94c5d7779b0e5dc62045c8641f",
+    "logs/explore-aes-20261108-04/aes128_core_build/modules/aes_ctrl/tbqual/control/tool_exit_records.log": "7fbff3a62bee86380cd6723ef0ec5a0f946f403a807edae0e33db4d7dd279af4",
+    "logs/explore-aes-20261108-04/aes128_core_build/modules/aes_ctrl/tbqual/control/sim_log.txt": "ba882fee346e936d07892e9388b892075f3d550bc5dcc378513ca1c7d7a78b6d",
+    "logs/explore-aes-20261108-04/aes128_core_build/modules/aes_ctrl/tbqual/mutant/tool_exit_records.log": "e538d11a5638b5c99ce328b67ae92f77fc939b646533a9aef2c9d982c93edaf8",
+    "logs/explore-aes-20261108-04/aes128_core_build/modules/aes_ctrl/tbqual/mutant/sim_log.txt": "f7ad8eda4acf1112bccc6ae8bef551dbfd84edabcadbfd7ef5c138288dcf8013",
+    "logs/explore-aes-20261108-04/aes128_core_build/modules/aes_round/candidate_standard_0/tool_exit_records.log": "97f3f00738f9e5c2ba043cd594abd6a50cb843f4e64b5d978e2b2ea2d2f1ffe3",
+    "logs/explore-aes-20261108-04/aes128_core_build/modules/aes_round/candidate_standard_0/sim_log.txt": "c8380680699b38c8d0c560a3d63dcb68379d2e58ff5f60d20679f9adb4cc0ab5",
+    "logs/explore-aes-20261108-04/aes128_core_build/modules/aes_round/candidate_standard_1/tool_exit_records.log": "ebd9e3d4fa77e52c6310ff8d43b6b541c9b83184bc8373821be76146a3649f11",
+    "logs/explore-aes-20261108-04/aes128_core_build/modules/aes_round/candidate_standard_1/sim_log.txt": "b961eb9e4f1dfb1526eac1204d404eb5b9d0b4dca3314bebbd31b5c9ac69957b",
+    "logs/explore-aes-20261108-04/aes128_core_build/modules/aes_round/candidate_standard_2/tool_exit_records.log": "2056d846c3fdee1b09878b6bf4598dd5389e7ade21153768d394b3f0dac13699",
+    "logs/explore-aes-20261108-04/aes128_core_build/modules/aes_round/candidate_standard_2/sim_log.txt": "3ca3f92aba1c5d8d3a7243691cc335da13da1d58ddab46677a93ea64a3f28208",
+    "logs/explore-aes-20261108-04/aes128_core_build/modules/aes_round/candidate_standard_3/tool_exit_records.log": "7503cd4e9cf3302eba9a605d1edfc0fe790012355bffee10e384fa1eac5c1678",
+    "logs/explore-aes-20261108-04/aes128_core_build/modules/aes_round/candidate_standard_3/sim_log.txt": "ddef134c27a6e342dfeaea598d18993ef76f7ca7a1ea9798f45354cabf258391",
+    "logs/explore-aes-20261108-04/aes128_core_build/modules/aes_ctrl/tbqual/qualification.json": "97feef2cd7f2776cb5fd50bd4fe6732ae299533f7b9870a081c0c63e1a911ea2",
+    "logs/explore-aes-20261108-04/aes128_core_build/journal/652811ad6ef9757e8700e222093aed7609924191d79f8285833dda3374d0967f/started.json": "337979049493349b555de8ba6e1e203094c69b0fa71f4962b92186541c497381",
+    "logs/explore-aes-20261108-04/aes128_core_build/journal/652811ad6ef9757e8700e222093aed7609924191d79f8285833dda3374d0967f/completed.json": "c2fef02e93e8d375376d7094dc4b217baa5d5e69065dadb855ac18ebca5165d4",
+    "logs/explore-aes-20261108-04/aes128_core_build/journal/6412a43697c7813712f473fe3cce4ee95cbff09c9e62e2c65691c524fdb9becb/started.json": "dcfc3ccc3cbac5630280d656417bcc14779e59fe75500aaf60d3e79460edec0c",
+    "logs/explore-aes-20261108-04/aes128_core_build/journal/6412a43697c7813712f473fe3cce4ee95cbff09c9e62e2c65691c524fdb9becb/completed.json": "30ad7c3cf9b655cf252c04ed69906f2b21acb1793cb14d2070a6a61759a1d384",
+    "logs/explore-aes-20261108-04/aes128_core_build/journal/9d1cc85f6623269d81371fd29b149c3ce5e032427aa9ba84b23b069e363a50ab/started.json": "72d9dd19836dd5e35ea75c32bce34cdfc9994d13903c2874e4aaba30259976f2",
+    "logs/explore-aes-20261108-04/aes128_core_build/journal/9d1cc85f6623269d81371fd29b149c3ce5e032427aa9ba84b23b069e363a50ab/completed.json": "3950d6bac87d08b3c7d2f697307f8e87993647aee132e8b39ddf5cbb05bfdf90",
+    "logs/explore-aes-20261108-04/aes128_core_build/modules/aes_round/candidate_standard_0/aes_round.v": "e3da36ff029fb9d35d83ea0063f11ee61483132d4af70cd038e354bd569204f0",
+    "logs/explore-aes-20261108-04/aes128_core_build/modules/aes_round/candidate_standard_1/aes_round.v": "654c706b2d60f29842875c64dc472e337da8abbc8cab5e5ee56cbc3a3d8a0443",
+    "logs/explore-aes-20261108-04/aes128_core_build/modules/aes_round/candidate_standard_2/aes_round.v": "654c706b2d60f29842875c64dc472e337da8abbc8cab5e5ee56cbc3a3d8a0443",
+    "logs/explore-aes-20261108-04/aes128_core_build/modules/aes_round/candidate_standard_3/aes_round.v": "654c706b2d60f29842875c64dc472e337da8abbc8cab5e5ee56cbc3a3d8a0443",
+    "logs/explore-aes-20261108-04/aes128_core_build/journal/530d07ee6ec39abe6a3cf5b1afdf0a9339ee34021647d640e61d70865b72c36f/started.json": "1f4b797810535ab06d5aca4527bbbc4c2e35cc18714fa2dfbf99a84ea5506935",
+    "logs/explore-aes-20261108-04/aes128_core_build/journal/67654480fcfc19827aa662ce46c42fd2e33531c4ae48d96b2cc8d5082aab1d0a/started.json": "fb73a7696fd245b476cc8ffc70c8d6b6072133d34d161741fff61491fd90ed2b",
+    "logs/explore-aes-20261108-04/aes128_core_build/journal/c5a0924da7dd16fa192eb0376319e9bc1cf70bec68d8b7d5ce6cbae8922439bc/started.json": "30d6e5742c869944eef85f729c246cfe4998b420f4d18204f7267337db317792"
+  },
+  "reviewer_actions": {
+    "canonical_edits": false,
+    "model_vendor_hardware_calls": 0,
+    "generated_code_execution": false,
+    "test_suite_reruns": 0
+  }
+}

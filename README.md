@@ -450,6 +450,7 @@ python run.py optimize --design curriculum/tier0/mux4/mux4.v \
 |---|---|
 | [`autortl/`](autortl/) | The harness: orchestrator (`fsm.py`), roles, prompts, verification ladder, Vivado driver |
 | [`llm/`](llm/) | Model client, backend adapter and role routing |
+| [`benchmark/`](benchmark/) | Strict public-input and sealed RTL artifact contracts for the planned independent comparison |
 | [`curriculum/`](curriculum/) | Tiered benchmark designs and the promotion rules |
 | [`data/taxonomy.yaml`](data/taxonomy.yaml) | Vivado message IDs and recorded harness failure modes |
 | [`hardware/basys3/`](hardware/basys3/) | Board shells, constraints, bitstream builds and PC-side checkers |
@@ -458,6 +459,8 @@ python run.py optimize --design curriculum/tier0/mux4/mux4.v \
 | [`docs/`](docs/) | Architecture, code tour, recovery guide and progress log |
 
 ## Development and evaluation
+
+The public-task comparison is in preparation. [Artifact contracts](docs/BENCHMARK_ARTIFACTS.md) preserve public-only inputs and hashed RTL submissions; no measured advantage over a single-call baseline is claimed yet.
 
 Continuous integration
 ([`.github/workflows/tests.yml`](.github/workflows/tests.yml)) runs the full

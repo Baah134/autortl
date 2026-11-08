@@ -1,6 +1,6 @@
 # What changed when oracle generation received its contract and failed source
 
-Three fresh AES-128 explorations exposed a module-boundary problem and then a
+Four fresh AES-128 explorations exposed a module-boundary problem and then a
 separate mathematical failure. All requested gpt-6-luna; actual served model
 identity and price were unobserved. These are adaptive engineering trials,
 not a controlled success-rate comparison or public benchmark.
@@ -10,6 +10,7 @@ not a controlled success-rate comparison or public benchmark.
 | AES01 |26e18f4|0.166|3|Three rejected oracles|module_failed|
 | AES02 |df056cc|0.167|3|Three rejected oracles|module_failed|
 | AES03 |defd87f|0.167|5|Oracle first try; RTL/unit simulation and mutation qualification passed|aes_round oracle failed|
+| AES04 |8c59efb|0.167|9|Oracle first try; RTL/unit and mutation qualification passed|Round oracle qualified on attempt3; all four round RTL candidates failed|
 
 The controller contract consumes round_out/key_next inputs supplied by
 neighboring modules. The earlier references recomputed those neighbors instead.
@@ -50,10 +51,34 @@ done for CLI0.167. Do not add roles, frameworks or extra attempts to manufacture
 a success. Context delivery is now verified; the remaining observed problem
 is generated arithmetic, not a demonstrated context-binding/qualifier bug.
 
-Any further domain guidance needs a separate narrow need and finite test.
-These results do not demonstrate general improvement over a single LLM call.
+One finite follow-up qualified the existing field-table advice with its
+primitive-generator and inverse-product prerequisites. It added no generator
+number, reference code, S-box table or expected round output. AES04 retained
+the same specification, independent integration TB, CLI and original budgets.
+Its first two round oracles exceeded the setup meter; the third qualified and
+used a suitable generator, without explicitly performing every suggested
+self-check. Controller verification passed again. All four generated/repaired
+round RTL candidates then failed102 assertions each with zero tool exits.
+
+Independent static review found the same exponentiation defect in every RTL
+candidate: descending exponent-bit traversal combined with ascending repeated
+squaring computes exponent127 where254 was intended. This explains a concrete
+defect, not all possible faults. No key-step, integration or PPA stage followed.
+The run used9 calls,106606 input/8043 output tokens,121.050 vendor-tool seconds
+and322.61 seconds overall. Actual served model/cost remain unknown. All343
+original inputs and219 archive entries were independently checked.
+
+RTL repair feedback exposes a separate generic limitation: index/signal/count
+only, no expected/actual values, a2000-character TB prefix that excludes the
+failing expected assignment, and empty prior-error history. Preserve this as
+an actionable diagnostics finding; richer feedback is not yet a measured fix.
+AES04 closes the declared study. Stop AES-specific tuning; no AES05, extra
+roles or budget increase. Move to reproducible benchmark/release work.
+These adaptive results do not demonstrate general improvement over a single LLM call.
 Historical board-verified AES results remain their own earlier evidence;
 these new failed trials do not regrade them. No board commands were issued.
 
 Evidence: ../evidence/2026-11-08/explore-aes-20261108-03 and
 ../evidence/2026-11-08/aes03-review-01. All prior failed trials remain retained.
+
+AES04 evidence: ../evidence/2026-11-08/explore-aes-20261108-04 and ../evidence/2026-11-08/aes04-review-01.

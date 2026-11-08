@@ -86,6 +86,9 @@ messages:
 # Methodology violations (report_methodology, UG1292 IDs). ADVISORY ONLY:
 # these never kill candidates; they are digested into the planner's context.
 harness_failures:
+  benchmark_artifact_contract_validation:
+    meaning: "Independent review of the staged benchmark artifact foundation reproduced UTF-16/32 acceptance under a UTF-8 contract, integer time conversion overflow, and fail-open inventory traversal"
+    repair: "Decode UTF-8 strictly, reject unsupported machine-time budgets with ArtifactError, fail closed on traversal errors, and require an externally retained artifact ID. Artifact sealing does not establish RTL correctness or OS isolation"
   oracle_log_table_generator_unchecked:
     meaning: "AES03 followed the existing log/antilog-table hint but used a nonprimitive generator, leaving 204 nonzero logarithms unfilled; the public examples correctly rejected its outputs"
     repair: "Qualify the existing advice with its general prerequisite: primitive generator, complete nonzero-element coverage before repetition and field-product inverse checks. Do not supply a generator constant, reference code, S-box table or expected round outputs; preserve all gates and budgets"

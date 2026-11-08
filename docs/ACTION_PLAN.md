@@ -120,3 +120,7 @@ explain FIR4's measured tradeoff and the verifier's18/27→22/27 correction.
 Before another model exploration, restrict inherited worker tool capabilities
 and validate the effective boundary; requesting no tools is insufficient.
 No board command is authorized by this work stage.
+
+## November8 execution boundary
+
+The finite AES study ended with AES04: round oracle qualified, all four round RTL candidates failed. No AES05/task-specific tuning follows. The independently reviewed benchmark artifact foundation is validated (see BENCHMARK_ARTIFACTS and its evidence). Candidate export/selection, actual mutation-only policy, grader isolation and failed-call accounting remain necessary before disjoint pilots and final registration. No benchmark result or final main integration is claimed.

@@ -1,0 +1,980 @@
+--- /dev/null
++++ b/benchmark/__init__.py
+@@ -0,0 +1 @@
++"""Benchmark provenance artifacts; no task execution or grading."""
+--- /dev/null
++++ b/benchmark/artifacts.py
+@@ -0,0 +1,401 @@
++"""Strict, public-only input exports and explicit RTL submission seals.
++
++These checks are provenance validation, not an OS sandbox, RTL safety parser,
++candidate selector, simulator, grader or benchmark registration system.
++"""
++from __future__ import annotations
++
++import hashlib
++import json
++import math
++import os
++from pathlib import Path
++import re
++import stat
++
++
++class ArtifactError(ValueError):
++    """Malformed, incomplete, changed or unsafe artifact input."""
++
++
++SCHEMA = 1
++ARMS = {'single_call', 'ablation', 'full'}
++POLICIES = {'full', 'skip_generated_tb_mutations'}
++TERMINATIONS = {'done', 'budget', 'model_blocked', 'failed', 'interrupted'}
++_IDENTIFIER = re.compile(r'[A-Za-z_][A-Za-z0-9_]*\Z')
++_TASK = re.compile(r'[A-Za-z0-9][A-Za-z0-9_-]*\Z')
++_RESERVED = {'CON', 'PRN', 'AUX', 'NUL', 'CONIN$', 'CONOUT$'} | {
++    f'{prefix}{n}' for prefix in ('COM', 'LPT') for n in '123456789¹²³'
++}
++
++
++def _fail(message):
++    raise ArtifactError(message)
++
++
++def _keys(value, expected, label):
++    if type(value) is not dict or set(value) != set(expected.split()):
++        _fail(f'{label}: expected exactly {expected}')
++
++
++def _text(value, label):
++    if type(value) is not str or not value.strip() or any(ord(c) < 32 or ord(c) == 127 for c in value):
++        _fail(f'{label}: expected nonempty text without control characters')
++
++
++def _one_of(value, choices, label):
++    if type(value) is not str or value not in choices:
++        _fail(f'unknown {label}')
++
++
++def _hash(value, size=64):
++    if type(value) is not str or re.fullmatch(f'[0-9a-f]{{{size}}}', value) is None:
++        _fail(f'expected full lowercase {size}-digit hexadecimal identity')
++
++
++def _path(value):
++    _text(value, 'path')
++    # Portable POSIX spelling, including on Windows. Forbid ADS, drive-relative
++    # paths, UNC, reserved devices, case aliases and Win32 trim aliases.
++    if '\\' in value or ':' in value or value.startswith('/'):
++        _fail('path must be portable and relative')
++    for part in value.split('/'):
++        if (part in ('', '.', '..') or part.endswith((' ', '.'))
++                or any(c in part for c in '<>"|?*')
++                or part.split('.')[0].rstrip(' .').upper() in _RESERVED):
++            _fail('unsafe path component')
++    return value
++
++
++def _files(records, role=None):
++    if type(records) is not list or not records:
++        _fail('expected nonempty explicit file list')
++    seen = set()
++    for record in records:
++        _keys(record, 'path sha256' if role is None else 'path sha256 role', 'file')
++        path = _path(record['path'])
++        if path.casefold() in seen:
++            _fail('duplicate or case-aliased file')
++        if any(path.casefold().startswith(old + '/') or old.startswith(path.casefold() + '/') for old in seen):
++            _fail('file/directory path collision')
++        seen.add(path.casefold())
++        _hash(record['sha256'])
++        if role is not None and record['role'] != role:
++            _fail(f'file role must be {role}')
++        if role == 'rtl' and Path(path).suffix.lower() not in {'.v', '.sv'}:
++            _fail('only explicitly declared .v/.sv RTL is supported')
++
++
++def _identity(identity):
++    _keys(identity, 'dataset source_commit runtime requested_model observed_model', 'identity')
++    _keys(identity['dataset'], 'commit format', 'dataset')
++    _hash(identity['dataset']['commit'], 40)
++    _one_of(identity['dataset']['format'], {'verilogeval', 'rtllm', 'synthetic'}, 'dataset format')
++    _hash(identity['source_commit'], 40)
++    _keys(identity['runtime'], 'commit sha256', 'runtime')
++    _hash(identity['runtime']['commit'], 40)
++    _hash(identity['runtime']['sha256'])
++    _text(identity['requested_model'], 'requested_model')
++    if identity['observed_model'] is not None:
++        _text(identity['observed_model'], 'observed_model')
++
++
++def _cell(cell):
++    _keys(cell, 'task trial arm budget verification_policy', 'cell')
++    if type(cell['task']) is not str or _TASK.fullmatch(cell['task']) is None:
++        _fail('invalid task identifier')
++    if type(cell['trial']) is not int or cell['trial'] < 0:
++        _fail('trial must be a nonnegative integer')
++    _one_of(cell['arm'], ARMS, 'arm')
++    _one_of(cell['verification_policy'], POLICIES, 'verification policy')
++    _keys(cell['budget'], 'model_calls tool_seconds wall_seconds', 'budget')
++    if type(cell['budget']['model_calls']) is not int or cell['budget']['model_calls'] <= 0:
++        _fail('model_calls must be a positive integer')
++    for key in ('tool_seconds', 'wall_seconds'):
++        value = cell['budget'][key]
++        if type(value) not in (int, float) or not math.isfinite(value) or value <= 0:
++            _fail(f'{key} must be finite and positive')
++    expected_policy = 'skip_generated_tb_mutations' if cell['arm'] == 'ablation' else 'full'
++    if cell['verification_policy'] != expected_policy:
++        _fail('arm and declared verification policy disagree')
++    if cell['arm'] == 'single_call' and cell['budget']['model_calls'] != 1:
++        _fail('single_call must declare exactly one model call')
++
++
++def _cells(cells, tasks):
++    if type(cells) is not list or not cells:
++        _fail('expected nonempty cells')
++    seen = set()
++    for cell in cells:
++        _cell(cell)
++        key = (cell['task'], cell['trial'], cell['arm'])
++        if key in seen or cell['task'] not in tasks:
++            _fail('duplicate cell or unknown task')
++        seen.add(key)
++
++
++def _manifest(manifest):
++    _keys(manifest, 'schema identity tasks cells', 'manifest')
++    if type(manifest['schema']) is not int or manifest['schema'] != SCHEMA:
++        _fail('unknown manifest schema')
++    _identity(manifest['identity'])
++    if type(manifest['tasks']) is not list or not manifest['tasks']:
++        _fail('expected nonempty tasks')
++    seen = set()
++    for task in manifest['tasks']:
++        _keys(task, 'id public_files private_files', 'task')
++        task_id = task['id']
++        if type(task_id) is not str or _TASK.fullmatch(task_id) is None or task_id.casefold() in seen:
++            _fail('invalid or duplicate task identifier')
++        seen.add(task_id.casefold())
++        _files(task['public_files'])
++        _files(task['private_files'])
++    _cells(manifest['cells'], {t['id'] for t in manifest['tasks']})
++
++
++def _plain(path):
++    info = path.lstat()
++    if stat.S_ISLNK(info.st_mode) or getattr(info, 'st_file_attributes', 0) & 0x400:
++        _fail('links and Windows reparse points are forbidden')
++    return info
++
++
++def _directory(path):
++    path = Path(os.path.abspath(path))
++    for part in [*reversed(path.parents), path]:
++        if not stat.S_ISDIR(_plain(part).st_mode):
++            _fail('expected ordinary directory')
++    return path
++
++
++def _source(root, relative):
++    root = _directory(root)
++    target = root
++    for part in _path(relative).split('/'):
++        target = target / part
++        _plain(target)
++    if not stat.S_ISREG(target.lstat().st_mode):
++        _fail('expected ordinary file')
++    return target
++
++
++def _read(root, record):
++    try:
++        path = _source(root, record['path'])
++        before = _plain(path)
++        flags = os.O_RDONLY | getattr(os, 'O_BINARY', 0) | getattr(os, 'O_NOFOLLOW', 0)
++        with os.fdopen(os.open(path, flags), 'rb') as stream:
++            opened = os.fstat(stream.fileno())
++            raw = stream.read()
++        after = _plain(path)
++        signature = lambda s: (s.st_dev, s.st_ino, s.st_size, s.st_mtime_ns)
++        if signature(before) != signature(opened) or signature(before) != signature(after):
++            _fail('file changed during read')
++        if hashlib.sha256(raw).hexdigest() != record['sha256']:
++            _fail('file hash mismatch')
++        return raw
++    except OSError as exc:
++        raise ArtifactError(f'file unavailable: {record["path"]}') from exc
++
++
++def _json(raw):
++    def pairs(items):
++        result = {}
++        for key, value in items:
++            if key in result:
++                _fail('duplicate JSON object key')
++            result[key] = value
++        return result
++    try:
++        return json.loads(raw, object_pairs_hook=pairs,
++                          parse_constant=lambda _: _fail('nonfinite JSON number'))
++    except (UnicodeError, json.JSONDecodeError) as exc:
++        raise ArtifactError('invalid UTF-8 JSON') from exc
++
++
++def _canonical(value):
++    return json.dumps(value, sort_keys=True, separators=(',', ':'),
++                      ensure_ascii=True, allow_nan=False).encode('utf-8')
++
++
++def load_manifest(path, *, public_root, private_root):
++    """Load strict schema v1 and verify both explicitly declared file groups."""
++    path = Path(path)
++    try:
++        _source(path.parent, path.name)
++        manifest = _json(path.read_bytes())
++        _manifest(manifest)
++        for task in manifest['tasks']:
++            for key, root in [('public_files', public_root), ('private_files', private_root)]:
++                for record in task[key]:
++                    _read(root, record)
++        return manifest
++    except OSError as exc:
++        raise ArtifactError('manifest unavailable') from exc
++
++
++def _receipt_files(receipt):
++    if receipt['kind'] == 'public':
++        return [record for task in receipt['tasks'] for record in task['files']]
++    return receipt.get('files', [])
++
++
++def _validate_receipt(receipt):
++    common = 'schema kind id identity '
++    kind = receipt.get('kind') if type(receipt) is dict else None
++    if kind == 'public':
++        _keys(receipt, common + 'tasks cells', 'public receipt')
++    elif kind == 'candidate':
++        _keys(receipt, common + 'cell files top internal_status selection_reason termination', 'candidate receipt')
++    elif kind == 'missing':
++        _keys(receipt, common + 'cell reason termination', 'missing receipt')
++    else:
++        _fail('unknown artifact kind')
++    if type(receipt['schema']) is not int or receipt['schema'] != SCHEMA:
++        _fail('unknown artifact schema')
++    _identity(receipt['identity'])
++    _hash(receipt['id'])
++    if receipt['id'] != hashlib.sha256(_canonical({k: v for k, v in receipt.items() if k != 'id'})).hexdigest():
++        _fail('receipt identity mismatch')
++    if kind == 'public':
++        if type(receipt['tasks']) is not list or not receipt['tasks']:
++            _fail('expected public tasks')
++        ids = set()
++        for task in receipt['tasks']:
++            _keys(task, 'id files', 'public task')
++            if type(task['id']) is not str or _TASK.fullmatch(task['id']) is None or task['id'].casefold() in ids:
++                _fail('invalid or duplicate public task')
++            ids.add(task['id'].casefold())
++            _files(task['files'], 'public')
++            if any(not f['path'].startswith(f'files/{task["id"]}/') for f in task['files']):
++                _fail('public file outside task prefix')
++        _files(_receipt_files(receipt), 'public')
++        _cells(receipt['cells'], {t['id'] for t in receipt['tasks']})
++    else:
++        _cell(receipt['cell'])
++        _one_of(receipt['termination'], TERMINATIONS, 'termination')
++        if kind == 'missing':
++            if receipt['reason'] != 'no_complete_candidate':
++                _fail('unknown missing reason')
++        else:
++            _files(receipt['files'], 'rtl')
++            if any(not f['path'].startswith('rtl/') for f in receipt['files']):
++                _fail('RTL outside declared prefix')
++            if type(receipt['top']) is not str or _IDENTIFIER.fullmatch(receipt['top']) is None:
++                _fail('invalid top identifier')
++            _one_of(receipt['internal_status'], {'accepted', 'rejected', 'unverified'}, 'internal status')
++            _one_of(receipt['selection_reason'], {'accepted_incumbent', 'latest_complete'}, 'selection reason')
++            if receipt['selection_reason'] == 'accepted_incumbent' and receipt['internal_status'] != 'accepted':
++                _fail('incumbent requires accepted internal status')
++
++
++def _write_file(destination, relative, raw):
++    target = destination / relative
++    target.parent.mkdir(parents=True, exist_ok=True)
++    _directory(target.parent)
++    with target.open('xb') as stream:
++        stream.write(raw)
++        stream.flush()
++        os.fsync(stream.fileno())
++
++
++def _publish(destination, payload, copies):
++    # A failed directory is deliberately retained; it cannot load without the
++    # final receipt and cannot be silently overwritten by another attempt.
++    payload = _json(_canonical(payload))  # detach mutable caller structures
++    payload['id'] = hashlib.sha256(_canonical(payload)).hexdigest()
++    _validate_receipt(payload)
++    destination = Path(os.path.abspath(destination))
++    try:
++        _directory(destination.parent)
++        destination.mkdir(exist_ok=False)
++        for root, source_record, target in copies:
++            _write_file(destination, target, _read(root, source_record))
++        for root, source_record, _ in copies:
++            _read(root, source_record)  # detect drift after earlier copies
++        for record in _receipt_files(payload):
++            _read(destination, record)  # verify copied bytes before final seal
++        _write_file(destination, 'receipt.pending', _canonical(payload) + b'\n')
++        os.replace(destination / 'receipt.pending', destination / 'receipt.json')
++        return load_artifact(destination, expected_id=payload['id'])
++    except OSError as exc:
++        raise ArtifactError('artifact write failed; destination is not reusable') from exc
++
++
++def export_public(manifest, *, public_root, destination):
++    """Copy public allowlisted bytes only; never traverse/read private input."""
++    _manifest(manifest)
++    tasks, copies = [], []
++    for task in manifest['tasks']:
++        records = []
++        for source in task['public_files']:
++            target = f'files/{task["id"]}/{source["path"]}'
++            records.append({'path': target, 'sha256': source['sha256'], 'role': 'public'})
++            copies.append((public_root, dict(source), target))
++        tasks.append({'id': task['id'], 'files': records})
++    return _publish(destination, {'schema': SCHEMA, 'kind': 'public',
++                    'identity': manifest['identity'], 'tasks': tasks, 'cells': manifest['cells']}, copies)
++
++
++def _selected_cell(manifest, cell):
++    _manifest(manifest)
++    _keys(cell, 'task trial arm', 'cell selector')
++    if (type(cell['task']) is not str or type(cell['trial']) is not int
++            or cell['trial'] < 0):
++        _fail('invalid cell selector')
++    _one_of(cell['arm'], ARMS, 'arm')
++    found = [c for c in manifest['cells'] if all(c[k] == v for k, v in cell.items())]
++    if len(found) != 1:
++        _fail('cell not registered in manifest')
++    return found[0]
++
++
++def seal_candidate(manifest, cell, *, source_root, files, destination, top,
++                   internal_status, selection_reason, termination):
++    """Seal the caller's complete ordered RTL list; make no selection/acceptance decision."""
++    selected = _selected_cell(manifest, cell)
++    _files(files, 'rtl')
++    records = [dict(f, path='rtl/' + f['path']) for f in files]
++    copies = [(source_root, dict(source), target['path']) for source, target in zip(files, records)]
++    return _publish(destination, {'schema': SCHEMA, 'kind': 'candidate',
++                    'identity': manifest['identity'], 'cell': selected, 'files': records,
++                    'top': top, 'internal_status': internal_status,
++                    'selection_reason': selection_reason, 'termination': termination}, copies)
++
++
++def record_missing(manifest, cell, *, destination, termination):
++    """Publish a terminal missing-output record, never an empty RTL submission."""
++    selected = _selected_cell(manifest, cell)
++    return _publish(destination, {'schema': SCHEMA, 'kind': 'missing',
++                    'identity': manifest['identity'], 'cell': selected,
++                    'reason': 'no_complete_candidate', 'termination': termination}, [])
++
++
++def load_artifact(destination, *, expected_id):
++    """Verify against a trusted external ID plus exact bytes and file inventory."""
++    _hash(expected_id)
++    try:
++        destination = _directory(destination)
++        receipt_path = _source(destination, 'receipt.json')
++        receipt = _json(receipt_path.read_bytes())
++        _validate_receipt(receipt)
++        if receipt['id'] != expected_id:
++            _fail('artifact differs from trusted expected identity')
++        expected = {'receipt.json'}
++        for record in _receipt_files(receipt):
++            _read(destination, record)
++            expected.add(record['path'])
++        actual = set()
++        for parent, directories, files in os.walk(destination, followlinks=False):
++            for name in directories + files:
++                path = Path(parent) / name
++                info = _plain(path)
++                if stat.S_ISREG(info.st_mode):
++                    actual.add(path.relative_to(destination).as_posix())
++                elif not stat.S_ISDIR(info.st_mode):
++                    _fail('unexpected artifact file type')
++        if actual != expected:
++            _fail('unlisted or missing artifact file')
++        return receipt
++    except OSError as exc:
++        raise ArtifactError('artifact incomplete or unavailable') from exc
+--- /dev/null
++++ b/tests/test_benchmark_artifacts.py
+@@ -0,0 +1,405 @@
++"""Real temporary artifact files; no benchmark, model, vendor or simulator runs."""
++import copy
++import hashlib
++import json
++import os
++from pathlib import Path
++import stat
++import subprocess
++from types import SimpleNamespace
++
++import pytest
++
++from benchmark import artifacts as a
++
++
++def sha(raw):
++    return hashlib.sha256(raw).hexdigest()
++
++
++@pytest.fixture
++def sample(tmp_path):
++    public = tmp_path / 'public'
++    private = tmp_path / 'private'
++    rtl = tmp_path / 'rtl-source'
++    for directory in (public, private, rtl):
++        directory.mkdir()
++    (public / 'statement.txt').write_bytes(b'Public task only\r\n')
++    (public / 'interface.v').write_bytes(b'module top(input a, output y); endmodule\n')
++    sentinel = b'PRIVATE_SENTINEL_MUST_NEVER_EXPORT_3948'
++    (private / 'secret-grader.py').write_bytes(sentinel)
++    # A private neighbor even in the public directory is not allowlisted.
++    (public / 'private-neighbor.txt').write_bytes(sentinel)
++    (rtl / 'child.v').write_bytes(b'module child(input a,output y); assign y=a; endmodule\r\n')
++    (rtl / 'top.sv').write_bytes(b'module top(input a,output y); child u(a,y); endmodule\n')
++    manifest = {
++        'schema': 1,
++        'identity': {
++            'dataset': {'commit': '1' * 40, 'format': 'synthetic'},
++            'source_commit': '2' * 40,
++            'runtime': {'commit': '3' * 40, 'sha256': '4' * 64},
++            'requested_model': 'synthetic-model', 'observed_model': None,
++        },
++        'tasks': [{
++            'id': 'fixture_task',
++            'public_files': [{'path': name, 'sha256': sha((public / name).read_bytes())}
++                             for name in ['statement.txt', 'interface.v']],
++            'private_files': [{'path': 'secret-grader.py', 'sha256': sha(sentinel)}],
++        }],
++        'cells': [{'task': 'fixture_task', 'trial': 0, 'arm': 'full',
++                   'budget': {'model_calls': 3, 'tool_seconds': 5.5, 'wall_seconds': 10},
++                   'verification_policy': 'full'}],
++    }
++    path = tmp_path / 'frozen.json'
++    path.write_text(json.dumps(manifest), encoding='utf-8')
++    files = [{'path': name, 'sha256': sha((rtl / name).read_bytes()), 'role': 'rtl'}
++             for name in ['child.v', 'top.sv']]
++    return SimpleNamespace(root=tmp_path, public=public, private=private, rtl=rtl,
++                           manifest=manifest, path=path, files=files, sentinel=sentinel,
++                           cell={'task': 'fixture_task', 'trial': 0, 'arm': 'full'})
++
++
++def seal(s, destination, **overrides):
++    options = dict(source_root=s.rtl, files=s.files, destination=destination, top='top',
++                   internal_status='accepted', selection_reason='accepted_incumbent', termination='done')
++    options.update(overrides)
++    return a.seal_candidate(s.manifest, s.cell, **options)
++
++
++def write_manifest(s):
++    s.path.write_text(json.dumps(s.manifest), encoding='utf-8')
++
++
++def test_manifest_verifies_both_exact_byte_groups(sample):
++    s = sample
++    assert a.load_manifest(s.path, public_root=s.public, private_root=s.private) == s.manifest
++    (s.private / 'secret-grader.py').write_bytes(b'changed')
++    with pytest.raises(a.ArtifactError, match='hash mismatch'):
++        a.load_manifest(s.path, public_root=s.public, private_root=s.private)
++
++
++@pytest.mark.parametrize('mutation', [
++    lambda m: m.update(schema=True), lambda m: m.update(schema=2),
++    lambda m: m.update(extra='unknown'),
++    lambda m: m['identity']['dataset'].update(commit='main'),
++    lambda m: m['identity']['dataset'].update(format='unknown'),
++    lambda m: m['identity'].update(source_commit='short'),
++    lambda m: m['identity']['runtime'].update(sha256='A' * 64),
++    lambda m: m['identity'].update(observed_model=''),
++    lambda m: m['cells'].append(copy.deepcopy(m['cells'][0])),
++    lambda m: m['tasks'].append(copy.deepcopy(m['tasks'][0])),
++    lambda m: m['cells'][0].update(trial=True),
++    lambda m: m['cells'][0].update(arm='unknown'),
++    lambda m: m['cells'][0].update(verification_policy='silent_skip'),
++    lambda m: m['cells'][0].update(task='not_registered'),
++    lambda m: m['cells'][0]['budget'].update(model_calls=True),
++    lambda m: m['cells'][0]['budget'].update(wall_seconds=0),
++    lambda m: m['cells'][0]['budget'].update(tool_seconds=float('inf')),
++    lambda m: m['tasks'][0]['public_files'].append(copy.deepcopy(m['tasks'][0]['public_files'][0])),
++])
++def test_strict_manifest_rejects_unfrozen_unknown_duplicate_and_nonfinite(sample, mutation):
++    mutation(sample.manifest)
++    write_manifest(sample)
++    with pytest.raises(a.ArtifactError):
++        a.load_manifest(sample.path, public_root=sample.public, private_root=sample.private)
++
++
++def test_duplicate_json_key_and_bad_json_rejected(sample):
++    for raw in [b'{"schema":1,"schema":1}', b'not json', b'\xff']:
++        sample.path.write_bytes(raw)
++        with pytest.raises(a.ArtifactError):
++            a.load_manifest(sample.path, public_root=sample.public, private_root=sample.private)
++
++
++def test_public_export_private_neighbor_and_private_metadata_never_export(sample, monkeypatch):
++    s = sample
++    loaded = a.load_manifest(s.path, public_root=s.public, private_root=s.private)
++    original_read = a._read
++    def public_reads_only(root, record):
++        assert Path(root) != s.private
++        assert 'private' not in record['path'] and 'secret' not in record['path']
++        return original_read(root, record)
++    monkeypatch.setattr(a, '_read', public_reads_only)
++    result = a.export_public(loaded, public_root=s.public, destination=s.root / 'export')
++    combined = b''.join(p.read_bytes() for p in (s.root / 'export').rglob('*') if p.is_file())
++    for forbidden in [s.sentinel, b'secret-grader.py', b'private_files', sha(s.sentinel).encode()]:
++        assert forbidden not in combined
++    assert result['identity']['observed_model'] is None
++    assert (s.root / 'export/files/fixture_task/statement.txt').read_bytes() == b'Public task only\r\n'
++
++
++def test_public_source_drift_prevents_completed_receipt(sample):
++    (sample.public / 'statement.txt').write_bytes(b'drift')
++    destination = sample.root / 'export'
++    with pytest.raises(a.ArtifactError, match='hash mismatch'):
++        a.export_public(sample.manifest, public_root=sample.public, destination=destination)
++    assert not (destination / 'receipt.json').exists()
++    with pytest.raises(a.ArtifactError):
++        a.load_artifact(destination, expected_id='0' * 64)
++
++
++def test_complete_ordered_multifile_bundle_and_destination_independent_identity(sample):
++    s = sample
++    first = seal(s, s.root / 'one')
++    second = seal(s, s.root / 'two')
++    assert first == second
++    assert [r['path'] for r in first['files']] == ['rtl/child.v', 'rtl/top.sv']
++    for record in s.files:
++        assert (s.root / 'one/rtl' / record['path']).read_bytes() == (s.rtl / record['path']).read_bytes()
++    reverse = seal(s, s.root / 'reverse', files=list(reversed(s.files)))
++    assert reverse['id'] != first['id']
++    with pytest.raises(a.ArtifactError):
++        seal(s, s.root / 'one')
++    assert a.load_artifact(s.root / 'one', expected_id=first['id']) == first
++
++
++def test_rejected_complete_is_preserved_without_acceptance(sample):
++    result = seal(sample, sample.root / 'rejected', internal_status='rejected',
++                  selection_reason='latest_complete', termination='budget')
++    assert result['kind'] == 'candidate' and result['internal_status'] == 'rejected'
++    assert len(result['files']) == 2 and result['termination'] == 'budget'
++    with pytest.raises(a.ArtifactError, match='incumbent'):
++        seal(sample, sample.root / 'false-incumbent', internal_status='rejected')
++
++
++def test_missing_is_separate_terminal_record_and_not_an_empty_candidate(sample):
++    result = a.record_missing(sample.manifest, sample.cell, destination=sample.root / 'missing',
++                              termination='model_blocked')
++    assert result['kind'] == 'missing' and 'files' not in result
++    assert result['reason'] == 'no_complete_candidate'
++    with pytest.raises(a.ArtifactError, match='nonempty'):
++        seal(sample, sample.root / 'empty', files=[])
++
++
++@pytest.mark.parametrize('change', ['absent', 'changed'])
++def test_missing_or_changed_dependency_blocks_whole_bundle(sample, change):
++    if change == 'absent':
++        (sample.rtl / 'top.sv').unlink()
++    else:
++        (sample.rtl / 'top.sv').write_bytes(b'changed after declaration')
++    destination = sample.root / change
++    with pytest.raises(a.ArtifactError):
++        seal(sample, destination)
++    assert (destination / 'rtl/child.v').exists()  # complete first copy is preserved
++    assert not (destination / 'receipt.json').exists()
++    with pytest.raises(a.ArtifactError):
++        a.load_artifact(destination, expected_id='0' * 64)
++
++
++def test_source_drift_after_copy_detected_before_final_receipt(sample, monkeypatch):
++    original = a._write_file
++    def write_then_change(destination, relative, raw):
++        original(destination, relative, raw)
++        if relative == 'rtl/top.sv':
++            (sample.rtl / 'child.v').write_bytes(b'changed during export')
++    monkeypatch.setattr(a, '_write_file', write_then_change)
++    destination = sample.root / 'drift'
++    with pytest.raises(a.ArtifactError, match='hash mismatch'):
++        seal(sample, destination)
++    assert not (destination / 'receipt.json').exists()
++
++
++def test_partial_copy_failure_does_not_publish_or_load(sample, monkeypatch):
++    original = a._write_file
++    def fail_second(destination, relative, raw):
++        if relative == 'rtl/top.sv':
++            raise OSError('synthetic disk failure')
++        original(destination, relative, raw)
++    monkeypatch.setattr(a, '_write_file', fail_second)
++    destination = sample.root / 'partial'
++    with pytest.raises(a.ArtifactError, match='write failed'):
++        seal(sample, destination)
++    assert (destination / 'rtl/child.v').exists()
++    assert not (destination / 'receipt.json').exists()
++    with pytest.raises(a.ArtifactError):
++        a.load_artifact(destination, expected_id='0' * 64)
++
++
++@pytest.mark.parametrize('unsafe', [
++    '/absolute.v', '../escape.v', 'a/../escape.v', './a.v', 'a//b.v',
++    r'C:\escape.v', 'C:relative.v', r'\\server\share\a.v', 'a.v:stream',
++    'CON.v', 'com1.sv', 'LPT9.v', 'aux .sv', 'bad./a.v', 'a.v ',
++    'a\x00.v', 'bad?/a.v', 'trailing/',
++])
++def test_portable_path_rejects_windows_and_traversal_forms(sample, unsafe):
++    files = [dict(sample.files[0], path=unsafe)]
++    with pytest.raises(a.ArtifactError):
++        seal(sample, sample.root / 'unsafe', files=files)
++
++
++@pytest.mark.parametrize('files', [
++    [{'path': 'a.v', 'sha256': '0' * 64, 'role': 'testbench'}],
++    [{'path': 'run.py', 'sha256': '0' * 64, 'role': 'rtl'}],
++    [{'path': 'a.v', 'sha256': '0' * 64, 'role': 'rtl'},
++     {'path': 'A.v', 'sha256': '0' * 64, 'role': 'rtl'}],
++    [{'path': 'a.v', 'sha256': '0' * 64, 'role': 'rtl'},
++     {'path': 'a.v/b.sv', 'sha256': '0' * 64, 'role': 'rtl'}],
++])
++def test_roles_extensions_duplicates_and_directory_collisions_rejected(sample, files):
++    with pytest.raises(a.ArtifactError):
++        seal(sample, sample.root / 'bad-files', files=files)
++
++
++def test_unknown_cell_and_bool_selector_do_not_alias_a_trial(sample):
++    for selector in [dict(sample.cell, task='unknown'), dict(sample.cell, trial=False)]:
++        with pytest.raises(a.ArtifactError):
++            a.record_missing(sample.manifest, selector, destination=sample.root / 'bad-cell', termination='failed')
++
++
++def test_link_file_directory_root_and_destination_parent_rejected(sample):
++    s = sample
++    link = s.root / 'linked-root'
++    try:
++        link.symlink_to(s.rtl, target_is_directory=True)
++    except (OSError, NotImplementedError) as exc:
++        pytest.skip(f'OS symlink privilege unavailable: {exc}')
++    with pytest.raises(a.ArtifactError, match='links|reparse'):
++        seal(s, s.root / 'linked-source', source_root=link)
++    with pytest.raises(a.ArtifactError, match='links|reparse'):
++        seal(s, link / 'destination')
++    original = (s.rtl / 'child.v').read_bytes()
++    (s.rtl / 'child.v').unlink()
++    outside = s.root / 'outside.v'
++    outside.write_bytes(original)
++    (s.rtl / 'child.v').symlink_to(outside)
++    with pytest.raises(a.ArtifactError, match='links|reparse'):
++        seal(s, s.root / 'linked-file')
++
++
++def test_windows_reparse_flag_rejected_even_without_symlink_mode(monkeypatch):
++    monkeypatch.setattr(Path, 'lstat', lambda _: SimpleNamespace(
++        st_mode=stat.S_IFDIR | 0o755, st_file_attributes=0x400))
++    with pytest.raises(a.ArtifactError, match='reparse'):
++        a._plain(Path('junction'))
++
++
++@pytest.mark.parametrize('tamper', ['bytes', 'receipt', 'extra', 'missing', 'schema'])
++def test_sealed_artifact_reload_rejects_tampering(sample, tamper):
++    destination = sample.root / 'sealed'
++    original_id = seal(sample, destination)['id']
++    if tamper == 'bytes':
++        (destination / 'rtl/child.v').write_bytes(b'bad')
++    elif tamper == 'extra':
++        (destination / 'hidden.py').write_bytes(b'not declared')
++    elif tamper == 'missing':
++        (destination / 'rtl/top.sv').unlink()
++    else:
++        path = destination / 'receipt.json'
++        receipt = json.loads(path.read_text())
++        if tamper == 'schema':
++            receipt['schema'] = 99
++            receipt['id'] = sha(a._canonical({k: v for k, v in receipt.items() if k != 'id'}))
++        else:
++            receipt['top'] = 'other_top'
++        path.write_text(json.dumps(receipt))
++    with pytest.raises(a.ArtifactError):
++        a.load_artifact(destination, expected_id=original_id)
++
++
++def test_receipt_rename_failure_leaves_only_incomplete_pending_record(sample, monkeypatch):
++    monkeypatch.setattr(a.os, 'replace', lambda *_: (_ for _ in ()).throw(OSError('atomic rename failed')))
++    destination = sample.root / 'pending'
++    with pytest.raises(a.ArtifactError):
++        seal(sample, destination)
++    assert (destination / 'receipt.pending').exists() and not (destination / 'receipt.json').exists()
++    with pytest.raises(a.ArtifactError):
++        a.load_artifact(destination, expected_id='0' * 64)
++
++
++def test_public_logical_identity_ignores_destination_and_json_key_order(sample):
++    s = sample
++    first = a.export_public(s.manifest, public_root=s.public, destination=s.root / 'public-one')
++    reversed_keys = dict(reversed(list(s.manifest.items())))
++    second = a.export_public(reversed_keys, public_root=s.public, destination=s.root / 'public-two')
++    assert first == second
++    assert str(s.root) not in json.dumps(first)
++
++
++def test_completed_receipt_is_absent_until_atomic_publish(sample, monkeypatch):
++    original = a.os.replace
++    observed = []
++    def inspect_then_publish(source, target):
++        assert Path(source).name == 'receipt.pending' and Path(target).name == 'receipt.json'
++        assert not Path(target).exists()
++        destination = Path(target).parent
++        for record in sample.files:
++            assert sha((destination / 'rtl' / record['path']).read_bytes()) == record['sha256']
++        observed.append('complete files, no receipt')
++        return original(source, target)
++    monkeypatch.setattr(a.os, 'replace', inspect_then_publish)
++    result = seal(sample, sample.root / 'last')
++    assert observed == ['complete files, no receipt'] and result['kind'] == 'candidate'
++
++
++def test_valid_digest_cannot_hide_unknown_receipt_fields(sample):
++    destination = sample.root / 'unknown-fields'
++    receipt = seal(sample, destination)
++    receipt['private_metadata'] = 'not an allowed field'
++    receipt['id'] = sha(a._canonical({k: v for k, v in receipt.items() if k != 'id'}))
++    (destination / 'receipt.json').write_text(json.dumps(receipt))
++    with pytest.raises(a.ArtifactError, match='expected exactly'):
++        a.load_artifact(destination, expected_id=receipt['id'])
++
++
++@pytest.mark.skipif(os.name != 'nt', reason='native Windows junction control')
++def test_real_windows_junction_cannot_escape_source_or_destination_root(sample):
++    s = sample
++    link = s.root / 'junction'
++    # Both paths stay within this fixture. mklink creates only a directory
++    # junction; cleanup uses nonrecursive rmdir and must preserve the target.
++    assert link.parent == s.root and s.rtl.parent == s.root
++    result = subprocess.run(['cmd.exe', '/d', '/c', 'mklink', '/J', str(link), str(s.rtl)],
++                            capture_output=True, text=True, check=False)
++    if result.returncode:
++        pytest.skip(f'native junction creation unavailable: {result.stderr.strip()}')
++    try:
++        assert link.lstat().st_file_attributes & 0x400
++        with pytest.raises(a.ArtifactError, match='reparse'):
++            seal(s, s.root / 'junction-input', source_root=link)
++        with pytest.raises(a.ArtifactError, match='reparse'):
++            seal(s, link / 'junction-output')
++    finally:
++        os.rmdir(link)
++    assert (s.rtl / 'child.v').is_file() and (s.rtl / 'top.sv').is_file()
++
++
++@pytest.mark.parametrize('arm,policy,calls', [
++    ('single_call', 'full', 2),
++    ('single_call', 'skip_generated_tb_mutations', 1),
++    ('full', 'skip_generated_tb_mutations', 3),
++    ('ablation', 'full', 3),
++])
++def test_declared_arm_budget_and_policy_cannot_disagree(sample, arm, policy, calls):
++    sample.manifest['cells'][0].update(arm=arm, verification_policy=policy)
++    sample.manifest['cells'][0]['budget']['model_calls'] = calls
++    write_manifest(sample)
++    with pytest.raises(a.ArtifactError, match='declare|disagree'):
++        a.load_manifest(sample.path, public_root=sample.public, private_root=sample.private)
++
++
++@pytest.mark.parametrize('arm,policy,calls', [
++    ('single_call', 'full', 1), ('ablation', 'skip_generated_tb_mutations', 3),
++])
++def test_consistent_alternative_arm_metadata_is_preserved(sample, arm, policy, calls):
++    sample.manifest['cells'][0].update(arm=arm, verification_policy=policy)
++    sample.manifest['cells'][0]['budget']['model_calls'] = calls
++    write_manifest(sample)
++    result = a.load_manifest(sample.path, public_root=sample.public, private_root=sample.private)
++    assert result['cells'][0]['budget']['model_calls'] == calls
++    assert result['cells'][0]['verification_policy'] == policy
++
++
++def test_coherent_file_and_receipt_rewrite_rejected_by_external_identity(sample):
++    destination = sample.root / 'rewritten'
++    original = seal(sample, destination)
++    rewritten = copy.deepcopy(original)
++    raw = b'module child(input a,output y); assign y=~a; endmodule\n'
++    (destination / 'rtl/child.v').write_bytes(raw)
++    rewritten['files'][0]['sha256'] = sha(raw)
++    rewritten['id'] = sha(a._canonical({k: v for k, v in rewritten.items() if k != 'id'}))
++    (destination / 'receipt.json').write_text(json.dumps(rewritten))
++    with pytest.raises(a.ArtifactError, match='trusted expected'):
++        a.load_artifact(destination, expected_id=original['id'])
++    # The checksum is not a signature. Substituting the external trust anchor
++    # too can bless replacement bytes, so that anchor must be retained separately.
++    assert a.load_artifact(destination, expected_id=rewritten['id']) == rewritten
+--- /dev/null
++++ b/docs/BENCHMARK_ARTIFACTS.md
+@@ -0,0 +1,161 @@
++# Benchmark artifact contracts (schema 1)
++
++`benchmark.artifacts` provides exact-byte input exports and submission seals.
++It does not select tasks or candidates, execute an arm, grade Verilog, enforce
++an ablation, or establish OS/filesystem/network isolation. No real dataset or
++trial is registered by the synthetic tests.
++
++## Frozen manifest
++
++`load_manifest(path, public_root=..., private_root=...)` reads UTF-8 JSON,
++rejects duplicate JSON keys and verifies every explicitly declared public and
++private file against its SHA-256. It returns a detached ordinary dictionary.
++All listed object keys are required; unknown keys and schema versions fail.
++
++```json
++{
++  "schema": 1,
++  "identity": {
++    "dataset": {"commit": "<40 lowercase hex>", "format": "synthetic"},
++    "source_commit": "<40 lowercase hex>",
++    "runtime": {"commit": "<40 lowercase hex>", "sha256": "<64 lowercase hex>"},
++    "requested_model": "fixture-model",
++    "observed_model": null
++  },
++  "tasks": [{
++    "id": "fixture_task",
++    "public_files": [{"path": "statement.txt", "sha256": "<64 lowercase hex>"}],
++    "private_files": [{"path": "official_tb.v", "sha256": "<64 lowercase hex>"}]
++  }],
++  "cells": [{
++    "task": "fixture_task", "trial": 0, "arm": "full",
++    "budget": {"model_calls": 3, "tool_seconds": 5.5, "wall_seconds": 10},
++    "verification_policy": "full"
++  }]
++}
++```
++
++Placeholder hashes above are explanatory, not valid input. Supported format
++labels are `synthetic`, `verilogeval` and `rtllm`; these labels do not prove a
++dataset's origin or compatibility. Commits must be full immutable SHA-1 strings;
++runtime SHA-256 names the caller's frozen runtime identity, not an executable
++automatically discovered by this module. Register and verify that identity in
++the later experiment launcher. Requested model is required; absent observed
++identity remains `null`, never an invented match.
++
++Tasks and both file lists must be nonempty. Task IDs use ASCII letters, digits,
++underscores and hyphens, beginning with a letter or digit; case aliases fail.
++Cells must reference a known task and have a unique `(task, trial, arm)` triple.
++Trials are nonnegative integers; arms are `single_call`, `ablation`, `full`.
++Each cell explicitly records its own budget: positive integer `model_calls`
++and finite positive numeric tool/wall seconds. Booleans are not numbers here.
++Policies are `full` and `skip_generated_tb_mutations`. These fields record
++declared budgets/policy, not evidence that execution enforced them. This module
++requires `single_call` to declare one model call and policy `full`, `full` to
++declare policy `full`, and `ablation` to declare `skip_generated_tb_mutations`.
++It does not enforce actual dispatch/ablation behavior or reserve cells globally.
++
++## Public input export
++
++`export_public(manifest, public_root=..., destination=...)` validates manifest
++shape again and copies only `public_files`, byte-for-byte, to
++`files/<task-id>/<declared-path>`. It never reads the private root, copies a
++dataset tree, adds an interface adapter or selects task files by discovery.
++Call `load_manifest` first to validate both source inventories. Public export
++then rechecks public bytes and does not depend on private files remaining
++accessible to the generation environment.
++
++The public receipt contains exactly `schema`, `kind="public"`, `id`, `identity`,
++`tasks` and `cells`. Its tasks contain only `id` and `files`; each file contains
++`path`, `sha256`, `role="public"`. No private path, byte, hash, count or
++whole-manifest digest is exported. Identity/cell fields are explicitly public
++experiment metadata: callers must not put secrets in model names or public
++identity fields. A private neighbor in the public directory is not copied.
++
++## Candidate and missing-output records
++
++```python
++from benchmark.artifacts import seal_candidate, record_missing
++
++cell = {"task": "fixture_task", "trial": 0, "arm": "full"}
++receipt = seal_candidate(
++    manifest, cell, source_root=run_directory, destination=fresh_destination,
++    files=[{"path": "child.v", "sha256": child_hash, "role": "rtl"},
++           {"path": "top.sv", "sha256": top_hash, "role": "rtl"}],
++    top="top", internal_status="rejected", selection_reason="latest_complete",
++    termination="budget",
++)
++# Or, when no complete bundle exists:
++missing = record_missing(manifest, cell, destination=another_fresh_destination,
++                         termination="model_blocked")
++```
++
++The caller supplies the complete ordered RTL list and exact hashes. No glob,
++mtime, hidden grader outcome or simulator result is used to select output.
++Files are copied under `rtl/` with their relative names and order preserved;
++there is no repair, rename or source conversion. Only explicitly declared
++`role="rtl"` `.v`/`.sv` files are supported; a declared testbench or executable
++dependency is rejected. This does **not** identify testbench behavior concealed
++in a file declared as RTL, find undeclared includes/dependencies, or prove that
++the design elaborates. The caller owns completeness and selection; later
++static checks and an independent restricted grader own semantic/safety checks.
++
++Candidate receipt fields are exactly `schema`, `kind="candidate"`, `id`,
++`identity`, `cell`, `files`, `top`, `internal_status`, `selection_reason`,
++`termination`. `cell` includes its registered budget and policy. Top uses a
++simple ASCII Verilog identifier (escaped identifiers are unsupported). Internal
++status is `accepted`, `rejected` or `unverified`; reason is `accepted_incumbent`
++or `latest_complete`. The former requires declared internal `accepted` status.
++Sealing rejected output preserves it as rejected and does not qualify it.
++
++Terminations are `done`, `budget`, `model_blocked`, `failed`, `interrupted`.
++Missing records have exactly `schema`, `kind="missing"`, `id`, `identity`,
++`cell`, `reason="no_complete_candidate"`, `termination`; they contain no files
++or top. An empty file list is never a completed candidate. These artifacts do
++not provide token/cost accounting, an external verdict or a curriculum hold.
++
++## Filesystem, identity and completion
++
++Paths use portable relative slash spelling. Absolute, drive-relative, UNC,
++traversing, ADS, Win32 reserved-device/trim aliases, case collisions, duplicate
++files and file/directory collisions fail. Existing roots and their ancestors
++must be ordinary directories; source components, roots and destination parents
++cannot be links or Windows reparse points. Sources must be regular files.
++Existing destination directories are never reused or overwritten, including
++incomplete failed attempts. The destination's parent must already exist.
++
++Every source is checked before copy and rechecked after all copies; destination
++hashes are verified before receipt publication. `receipt.pending` is flushed
++and synced, then atomically renamed to `receipt.json` last. Failure preserves
++partial files for diagnosis; without a valid final receipt they cannot load as
++completed. This is atomic final-record publication, not a crash-durable
++transaction across arbitrary filesystems or protection from malicious concurrent
++filesystem mutation. Keep source/destination trees under trusted exclusive
++ownership; Windows link-race resistance is not an OS security boundary.
++
++`load_artifact(destination, expected_id=trusted_id)` requires a separately
++retained expected ID, the strict final receipt, every listed exact file hash
++and the file inventory, rejecting links and extra files. Retain the returned
++export/seal ID in trusted experiment/publication storage outside this mutable
++artifact; never obtain `expected_id` by trusting the receipt being checked.
++Empty directories carry no identity. `id` is SHA-256 of sorted-key compact
++ASCII JSON for all receipt fields except `id`; file and task/cell list order is
++significant. IDs contain no output directory, timestamps or private manifest
++digest. Equivalent receipts at separate destinations therefore have identical
++IDs. An ID is an integrity checksum, not a signature: replacing RTL and
++recomputing the receipt is rejected against the original external ID, while
++replacement of that external trust anchor as well is outside this module's
++guarantees. Protect publication/source-freeze records and execution environments.
++
++The no-Vivado test suite covers public/private sentinel separation, two-file
++RTL order, missing/changed dependencies, failure before atomic receipt, source
++drift, rejected and missing output, malformed manifests and Windows path/reparse
++controls. Native symlink privilege failures are explicit skips; the Windows
++junction fixture creates link and target under one temporary root and removes
++only the junction with nonrecursive `os.rmdir`, preserving its target.
++
++Next integration work remains explicit: capture/select bundles at all FSM
++terminations; persist and enforce the mutation-only ablation after positive
++control; isolate/qualify the independent grader; account for every attempted
++backend call; qualify real tools and denied-access sentinels; then register
++disjoint pilot/final tasks. Artifact tests establish none of those outcomes.

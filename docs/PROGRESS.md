@@ -1675,3 +1675,45 @@ After that trial, stop AES-specific prompt tuning regardless of outcome;
 assess and move to release/public benchmark work. No automatic AES05.
 Software/math controls do not establish model improvement or full AES success.
 No board programming, reset, JTAG, hardware-server or serial action occurred.
+
+## November8: finite AES outcome and benchmark foundation
+
+Published8c59efb after2095harness+323tooling passes/one native Windows link
+privilege skip,343 unchanged frozen inputs, full committed audit and148 archive
+blob checks. AES04 completed322.61s/9modelcalls/121.050offline vendorseconds:
+controller qualified; round oracle qualified on3rd attempt; all4roundRTL
+candidates failed102assertions. All343originalinputs unchanged;219archive
+entries independently verified. No integration/PPA/hold/board result. The
+declared AES study is closed: no AES05 or more task-specific prompt tuning.
+Keep bounded contract/source context and gates; general RTL diagnostic loss is
+recorded separately, not repaired by injecting AES code or expanding budgets.
+
+Independent benchmark review motivated and approved a small artifact module:
+strict manifests/public-only export/externally anchored ordered RTL seals and
+missing records. Three staged review findings were reproduced and fixed:
+UTF8 enforcement, oversized time handling and fail-closed inventory traversal.
+Final staged75passed/two Windows permission skips; canonical full checks now
+active in workspace work/nov8-benchmark-full-tests-01,347inputs frozen. This is
+provenance foundation only: no task registration, arm execution, grader,
+isolation proof or benchmark superiority. No model/vendor job remains active.
+
+Shared memory now uses a stable START_HERE guide and one dated current
+SESSION_HANDOFF checkpoint. Superseded current sections are preserved in the
+AES04 review archive and Git. Final software/publication receipts are pending.
+
+## November8 benchmark artifact acceptance completed
+
+Canonical software validation: 2171 passed, 1 skipped in 744.46s (0:12:24); 323 passed, 1 skipped in 79.85s (0:01:19). All 347 explicitly
+selected inputs stayed unchanged. Source selection includes the new benchmark
+package, its tests and API document. Staged V2 separately passed75 tests with
+two native Windows permission skips; independent probes confirmed all three
+review corrections. Staged V1 is retained separately with its original scope.
+
+This slice supplies strict frozen metadata, public-only exact-byte export,
+ordered explicit RTL seals and separate missing records. Loading binds an
+externally retained ID and fails closed on inventory errors. It neither selects
+candidates nor executes arms, enforces ablation, grades Verilog, establishes
+OS/network isolation or supplies a public benchmark result. No actual tasks
+have been selected or scored; unknown observed model/cost stays unknown.
+
+AES04 is archived as failed; its finite study is closed. Shared memory has one current checkpoint. Next implementation is explicit FSM candidate bundles; no new AES trial or public benchmark result.
