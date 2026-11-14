@@ -36,9 +36,10 @@ PROVISIONAL_BUDGETS = {
 OUTER_GRACE_S = 300
 # Arm C pilot settings (November14). VerilogEval grades function only and RTL
 # optimization cannot change function under a fixed contract, so the build is
-# verified and synthesized once with no optimization iterations; out-of-context
+# verified and synthesized with the minimum one optimization iteration (run.py
+# rejects zero: pilot_runner_double_hid_cli_rejection); out-of-context
 # implementation avoids board pin-capacity stops unrelated to function.
-FULL_SETTINGS = {"best_of_n": 1, "iterations": 0, "implementation": "out_of_context"}
+FULL_SETTINGS = {"best_of_n": 1, "iterations": 1, "implementation": "out_of_context"}
 SINGLE_CALL_SYSTEM = (
     "You are a Verilog RTL designer. Implement exactly the module the user describes, "
     f"named {ve.TOP}, with exactly the described ports, widths and behavior. Return one "

@@ -117,7 +117,7 @@ def test_full_command_uses_public_prompt_only(manifest, task, tmp_path):
     assert cmd[cmd.index("--top") + 1] == "TopModule"
     assert cmd[cmd.index("--max-llm-calls") + 1] == "16"
     assert float(cmd[cmd.index("--max-wall-minutes") + 1]) == 35.0
-    assert cmd[cmd.index("--best-of-n") + 1] == "1" and cmd[cmd.index("--iterations") + 1] == "0"
+    assert cmd[cmd.index("--best-of-n") + 1] == "1" and cmd[cmd.index("--iterations") + 1] == "1"
     assert cmd[cmd.index("--implementation") + 1] == "out_of_context"
 
 
@@ -185,3 +185,20 @@ def test_cli_select_and_manifest(tmp_path, monkeypatch):
     with pytest.raises(FileExistsError):
         pilot.main(["manifest", "--dataset", str(DATA), "--commit", "a" * 40, "--tasks", "Prob900_inv",
                     "--runtime-sha256", "0" * 64, "--out", str(out)])
+
+
+def test_full_command_passes_real_run_py_validation(manifest, task, tmp_path):
+    """pilot_runner_double_hid_cli_rejection: execute the real parser and config.
+
+    A zero model-call budget stops the run at its first model call, after every
+    argument and RunConfig check, so no model or Vivado tool runs.
+    """
+    import sys
+    request = tmp_path / task.prompt.name
+    request.write_bytes(task.prompt.read_bytes())
+    budget = dict(manifest["cells"][0]["budget"], model_calls=0)
+    cmd = pilot.full_command(request, tmp_path / "run", budget, python=sys.executable)
+    done = subprocess.run(cmd, cwd=str(pilot.REPO), capture_output=True, text=True, timeout=120)
+    assert "must be positive" not in done.stderr and "error:" not in done.stderr, done.stderr
+    summary = json.loads((tmp_path / "run" / "run_summary.json").read_text(encoding="utf-8"))
+    assert summary["status"] == "budget_exhausted"

@@ -94,9 +94,20 @@ reported, never resolved silently. A simulator that cannot start raises
 
 ## Arm C pilot settings (November 14)
 
-`FULL_SETTINGS`: `--best-of-n 1 --iterations 0 --implementation out_of_context`.
+`FULL_SETTINGS`: `--best-of-n 1 --iterations 1 --implementation out_of_context`.
 VerilogEval grades function only and RTL optimization cannot change function
-under a fixed contract, so arm C builds, verifies and synthesizes once.
-Out-of-context implementation avoids board pin-capacity stops unrelated to
-function. Runs need `AUTORTL_CODEX_BIN` (Codex desktop CLI) and an interpreter
-with pyyaml.
+under a fixed contract, so arm C uses the minimum optimization (run.py rejects
+zero iterations). Out-of-context implementation avoids board pin-capacity stops
+unrelated to function. Runs need `AUTORTL_CODEX_BIN` (Codex desktop CLI) and an
+interpreter with pyyaml.
+
+## Pilot attempts
+
+- **pilot-01 (aborted, adapter defect).** Manifest frozen at 62bfa818. Arm A
+  on Prob036_ringer sealed a candidate (1 call, 7 s). Arm C on the same task
+  passed `--iterations 0`, which run.py rejects; the run ended in 1.5 s with no
+  summary and was sealed missing (`interrupted`). Taxonomy
+  `pilot_runner_double_hid_cli_rejection`; a test now executes the real run.py
+  parser. Both cells are retained in `autortl-private/pilot-01` and are not
+  rerun; the remaining ten were never started.
+- **pilot-02.** Refrozen at the corrected commit; all 12 cells run fresh.

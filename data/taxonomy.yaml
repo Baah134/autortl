@@ -92,6 +92,9 @@ harness_failures:
   complete_candidate_provenance_missing:
     meaning: "DONE-only winner files and module journals do not explicitly identify a complete ordered top-level submission after every failed or interrupted run"
     repair: "Record exact complete source bundles at generation and actual incumbent transitions, select deterministically without grader feedback, reject drift and legacy filename reconstruction, and bind export to frozen run metadata"
+  pilot_runner_double_hid_cli_rejection:
+    meaning: "The pilot arm C runner passed --iterations 0, which run.py rejects before any run (max_iterations must be positive); its unit tests used a process double, so the first real cell ended in 1.5 s with no run summary and was sealed missing"
+    repair: "Check every runner flag against run.py's own argument validation in a test that executes the real parser; treat a spent pilot attempt as aborted evidence and refreeze under the corrected runtime instead of rerunning its cells"
   benchmark_artifact_contract_validation:
     meaning: "Independent review of the staged benchmark artifact foundation reproduced UTF-16/32 acceptance under a UTF-8 contract, integer time conversion overflow, and fail-open inventory traversal"
     repair: "Decode UTF-8 strictly, reject unsupported machine-time budgets with ArtifactError, fail closed on traversal errors, and require an externally retained artifact ID. Artifact sealing does not establish RTL correctness or OS isolation"
