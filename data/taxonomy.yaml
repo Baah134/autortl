@@ -86,6 +86,12 @@ messages:
 # Methodology violations (report_methodology, UG1292 IDs). ADVISORY ONLY:
 # these never kill candidates; they are digested into the planner's context.
 harness_failures:
+  concurrent_run_export_unexcluded:
+    meaning: "Current Orchestrator.run has no whole-run process mutex; checkpoint replacement retries do not exclude a concurrent candidate exporter"
+    repair: "Use one cooperative OS file lock for generation and export, retain its inode/path, fail on contention and prove automatic release after process death; do not infer exclusion from a checkpoint marker"
+  complete_candidate_provenance_missing:
+    meaning: "DONE-only winner files and module journals do not explicitly identify a complete ordered top-level submission after every failed or interrupted run"
+    repair: "Record exact complete source bundles at generation and actual incumbent transitions, select deterministically without grader feedback, reject drift and legacy filename reconstruction, and bind export to frozen run metadata"
   benchmark_artifact_contract_validation:
     meaning: "Independent review of the staged benchmark artifact foundation reproduced UTF-16/32 acceptance under a UTF-8 contract, integer time conversion overflow, and fail-open inventory traversal"
     repair: "Decode UTF-8 strictly, reject unsupported machine-time budgets with ArtifactError, fail closed on traversal errors, and require an externally retained artifact ID. Artifact sealing does not establish RTL correctness or OS isolation"

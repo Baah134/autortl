@@ -1717,3 +1717,39 @@ OS/network isolation or supplies a public benchmark result. No actual tasks
 have been selected or scored; unknown observed model/cost stays unknown.
 
 AES04 is archived as failed; its finite study is closed. Shared memory has one current checkpoint. Next implementation is explicit FSM candidate bundles; no new AES trial or public benchmark result.
+
+## November 13: resumed candidate export after interruption
+
+Verified b98b6c4, preserved the unfinished acceptance/taxonomy changes and found
+no running project job or staged implementation. Normally reclaimed the expired
+lease. Isolated implementation and independent review are active. The missing
+run/export mutex requires a small cooperative OS lock, not checkpoint-file
+contention handling. Generation snapshots must precede later best-of-N calls
+and early rejection so failed runs retain their actual complete proposals.
+No implementation/test/benchmark success is claimed at this checkpoint; no
+model, vendor or board jobs were launched. Main remains unchanged.
+
+## November 14: coordinator switch to Claude; pilot-first plan recorded
+
+User directed Claude to coordinate and to prioritise the benchmark pilot.
+Verified b98b6c4, Codex lease expired, no repository change on Nov14 and no
+project job running; claimed the lease normally and preserved Codex's dirty
+acceptance/taxonomy files and the parked Nov13 export stage. Recorded the
+shortest path to a 12-run VerilogEval pilot (ACTION_PLAN Nov14) and the adapter
+acceptance (TASKS Nov14). No dataset download, Icarus install, model, vendor or
+board job in this step.
+
+Later Nov14: implemented the pilot adapter, grader and arm A/C runners
+(benchmark/verilogeval.py, benchmark/pilot.py, docs/BENCHMARK_PILOT.md) with
+synthetic fixtures. Harness 2208 passed/2 skipped, tooling 323 passed/1 skipped
+in a scratch venv (no pytest was installed in any local interpreter). The
+grader's upstream strings are reconstructed and must be confirmed against the
+pinned dataset; no dataset, Icarus, model, vendor or board activity yet.
+
+Later Nov14: with user approval, pinned VerilogEval c498220d0a52 outside the
+repository and installed Icarus 12.0 (MSYS2). Confirmed upstream compile flags,
+30 s timeout and analyzer rules; ported the analyzer. Controls 16/16; reference
+sweep 152/156, excluding lfsr32, count_clock, fancytimer (testbench watchdog
+prints TIMEOUT for the reference) and m2014_q6c (port mismatch). Drafted the
+category catalog (one reviewer) and selected the six pilot tasks. No model,
+Vivado or board run. Evidence: evidence/2026-11-14/pilot-grader-controls-01.

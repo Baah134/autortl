@@ -1186,3 +1186,114 @@ OS/network isolation or supplies a public benchmark result. No actual tasks
 have been selected or scored; unknown observed model/cost stays unknown.
 
 AES04 is archived as failed; its finite study is closed. Shared memory has one current checkpoint. Next implementation is explicit FSM candidate bundles; no new AES trial or public benchmark result.
+
+
+# Candidate bundle integration: acceptance before implementation
+
+Observed gap: current FSM journals retain module/candidate files, but complete
+ordered top-level submissions are not explicitly recorded at every termination.
+The DONE-only best file and filename/mtime discovery cannot implement the
+predeclared benchmark rule after budget, model or design failure. The existing
+artifact API deliberately requires an explicit complete bundle. Reuse current
+stage replay, atomic storage, frozen inputs and real incumbent decisions rather
+than add roles, a database, a grading feedback loop or functional-only mode.
+Prior primary-source rationale and the exact hooks/acceptance are recorded in
+docs/RESEARCH.md and the published benchmark-artifact next-review report.
+
+Implement a small source-bundle record plus FSM hooks and a separate benchmark
+bridge. Freeze exact ordered source/dependency bytes and top at complete
+mechanical integration, baseline/repair materialization, optimization repairs
+and RTL Doctor proposals before they face static gates. Partial module graphs
+are not complete designs. Do not discover candidates, repair RTL, regenerate a
+missing top, silently omit dependencies or select by grading/mtime/glob.
+
+Mark incumbents only at actual verified baseline and accepted-best transitions.
+Final selection is accepted incumbent, otherwise latest complete generation by
+explicit order, otherwise missing. Unsafe/rejected complete output stays selected
+and unaccepted; safety rejection must not choose a nicer earlier candidate.
+Records must survive resumable terminal outcomes and interruption, detect source
+or metadata drift, and replay idempotently without duplicate/reordered generation
+or resetting a later incumbent to the baseline. Reuse the existing run lock for
+external export; refuse an active generation run. Unsupported old runs without
+records remain unavailable, never reconstructed from filenames.
+
+Bridge the selected explicit snapshot to benchmark.artifacts. Bind registered
+runtime/configuration/model/budget and actual run termination rather than allow
+caller metadata to manufacture full verification or an enforced ablation. Current
+runtime is full verification; reject unsupported single-call/ablation exports.
+Do not infer an observed served model or source-commit provenance from a label.
+Document the launcher's remaining trust/registration responsibilities. Seal once
+before private grading; existing exact-ID validation/no-overwrite rules apply.
+
+Tests without model/vendor/board: real two-module bundles and order; DONE
+baseline/winner; budget/model blocks with incumbent; failed complete candidate;
+failed module before integration; repair/Doctor capture; static-rejected latest
+output; changed/missing companion; identical filenames in different generations;
+restart/resume/idempotence; active-run lock; metadata/runtime mismatch; missing
+legacy records; complete artifact loading using retained ID. Exercise real FSM
+paths with controlled tool/model doubles, not only pure recorder methods.
+Keep contracts, prompts, gates, budgets and curriculum rules unchanged. No AES05,
+real benchmark trials, grader installation or board commands. Parent integrates
+only independently reviewed stage bytes, runs full suites, audits and pushes
+development; main remains frozen. This is provenance plumbing, not a score or
+proof of hidden-grader isolation or HDL elaboration completeness.
+
+## November8 candidate-bundle acceptance amendment: run/export exclusion
+
+Repository inspection and independent review found no whole-run lock to reuse.
+CheckpointLockedError handles atomic checkpoint replacement contention, not
+concurrent generation/export. Add a small cooperative standard-library OS file
+lock shared by Orchestrator.run and benchmark export, automatically released on
+process death. Preserve the lock file, reject an active owner, and test genuine
+multiprocess exclusion/crash release. No PID-based automatic stale deletion or
+new service is needed. This corrects the earlier acceptance premise before
+implementation. It is cooperative exclusion, not malicious-process isolation.
+
+# VerilogEval pilot adapter and grader — acceptance before implementation (Nov14)
+
+Scope: `benchmark/verilogeval.py`, `benchmark/pilot.py`, their tests and
+`docs/BENCHMARK_PILOT.md`. No harness runtime, contract, prompt, gate, budget or
+curriculum change. Standard library only.
+
+- Load a spec-to-RTL task by ID from a pinned dataset root (`<id>_prompt.txt`,
+  `<id>_test.sv`, `<id>_ref.sv`); missing or duplicate files fail closed.
+- Build a benchmark.artifacts manifest: prompt public, test/ref private, full
+  dataset commit required, per-file SHA-256; cells only for arms implemented.
+- Pilot selection: rank families by SHA-256 of
+  `autortl-public-v1|<commit>|<family>`; choose six with category coverage
+  from an explicit reviewed category/family map; deterministic and tested.
+- Grader: compile candidate, test and reference with top `tb`; simulate under a
+  30 s timeout; classify pass, fail, compile_error, runtime_error, timeout,
+  no_result from real exit codes plus the mismatch summary. A "pass" requires
+  exit 0 and an explicit zero-mismatch summary with positive sample count.
+  Parser tested against fixture logs; upstream strings confirmed at pin time.
+- Arm A: one `llm.client.ask` call with the public prompt, extract the module,
+  seal it (unverified) or record missing on a model failure.
+- Arm C: `run.py build --spec <prompt> --top TopModule --generate-golden` with
+  declared budgets in a fresh output directory; seal `<top>_best.v` only for a
+  DONE run (accepted incumbent), otherwise record missing with mapped
+  termination. Never pass the official test as `--tb`.
+- Grading runs only on sealed receipts. Results file records verdicts and
+  run accounting; nothing is sent back to generation.
+
+Tests use synthetic fixtures and process doubles: no model, Vivado, Icarus or
+network. Real controls run only after the user-approved Icarus install.
+
+## November14 pilot adapter software acceptance completed
+
+Implemented as accepted above with fixtures and process doubles. New tests: 37
+(adapter/grader/selection 20 incl. one Icarus-only control skipped here; pilot
+runners 17). Full suites: harness 2208 passed, 2 skipped; tooling 323 passed,
+1 skipped. Not yet done: real Icarus controls, upstream string confirmation at
+a pinned commit, any model run. Arm B remains unimplemented.
+
+## November14 dataset pin, grader controls and pilot selection
+
+Approved by the user: VerilogEval c498220d0a52 cloned outside the repository;
+Icarus 12.0 via MSYS2. The upstream analyzer is ported line for line and
+recorded beside the strict exit-based status (disagreements reported). Real
+controls 16/16; reference sweep 152/156 (four dataset defects excluded under
+protocol rule 3). Pilot selection uses fixed slots 1/1/2/2, decided before any
+trial after round-robin and proportional rules were rejected. Catalog second
+review is required before final selection. Evidence:
+evidence/2026-11-14/pilot-grader-controls-01.

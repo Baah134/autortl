@@ -124,3 +124,26 @@ No board command is authorized by this work stage.
 ## November8 execution boundary
 
 The finite AES study ended with AES04: round oracle qualified, all four round RTL candidates failed. No AES05/task-specific tuning follows. The independently reviewed benchmark artifact foundation is validated (see BENCHMARK_ARTIFACTS and its evidence). Candidate export/selection, actual mutation-only policy, grader isolation and failed-call accounting remain necessary before disjoint pilots and final registration. No benchmark result or final main integration is claimed.
+
+## November14 shortest path to the pilot (user decision)
+
+The pilot (protocol: evidence/2026-11-06/parallel-diagnoses-01/
+nov6-benchmark-protocol.md) validates adapter, grading, accounting and budgets
+on six disjoint tasks excluded from results. Prerequisites are limited to what
+the pilot itself exercises; the rest moves to final registration.
+
+| Step | Work | Completion evidence |
+|---|---|---|
+| 0 | Park Nov13 candidate-export stage untouched | Handoff records its location and status; no deletion |
+| 1 | Pin VerilogEval spec-to-RTL commit outside model-visible paths | Full commit, licence, per-file SHA-256; six pilot IDs selected by the Nov6 hash rule with category/family map retained |
+| 2 | Icarus v12 grader in benchmark/verilogeval.py | Upstream compile/30 s semantics; real exits and mismatch counts; reference pass, broken fail, syntax compile_error and hang timeout controls recorded |
+| 3 | Arm A and C runners in benchmark/pilot.py | One-invocation arm and `run.py build` arm; outputs sealed with benchmark.artifacts before grading |
+| 4 | 12 sequential runs (6 tasks x A,C x 1 trial) | Sealed receipts, external verdicts, calls/tokens/time; failures retained |
+| 5 | Adapter review and freeze | Defect list; budgets/prompts tuned on pilot tasks only; frozen for registration |
+
+Deferred to final registration: OS-level hidden-grader isolation (pilot states
+it is unenforced), arm B ablation seam, failed-call cost accounting, the 40-task
+roster and exclusion table, candidate bundles and run lock for parallel jobs.
+A pilot run that ends without a DONE winner is recorded missing; latest-complete
+selection from non-DONE runs comes with candidate bundles. Pilot numbers are not
+benchmark results and are never pooled with final cells.
