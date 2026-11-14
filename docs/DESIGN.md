@@ -420,10 +420,20 @@ mode (taxonomy chip_top_flow_for_soc_block).
   between a port and its first or last register is not timed; behavior there
   is still checked by the testbench. Utilization excludes I/O buffers (Bonded
   IOB 0). `reg2reg_wns_ns` is the same register-to-register report. A design
-  with no internal clocked path reports no numeric WNS and fails the metrics
-  gate, as it would with missing reports. The clock and synthesis lines are
-  the same as `hardware/basys3/fmax/fmax.py`'s ooc mode, which closed timing
-  live on Vivado 2025.2; the complete harness script has not yet run live.
+  with a clock but no internal clocked path reports no numeric WNS and fails
+  the metrics gate, as it would with missing reports. The clock and synthesis
+  lines are the same as `hardware/basys3/fmax/fmax.py`'s ooc mode, which closed
+  timing live on Vivado 2025.2; the complete harness script ran live on
+  November 14 (pilot-03 count15 and evidence/2026-11-14/pilot-attempts-01).
+
+**Clockless designs (both flows).** A purely combinational design has no `clk`
+port, so the XDC clock matches nothing. When no clock exists after synthesis,
+the template creates a virtual clock named `clk` at the target period; chip_top
+then applies its usual zero port delays, and out_of_context constrains all
+inputs and outputs to it. Input-to-output paths therefore yield real WNS/WHS
+and the metrics gate is unchanged (taxonomy
+clockless_design_untimed_by_metrics_gate). Designs with a `clk` port are
+unaffected.
 
 ## Target capacity failures
 A `[Place 30-415]` ERROR line means the top has more I/O ports than the

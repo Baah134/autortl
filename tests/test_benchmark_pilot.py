@@ -96,8 +96,10 @@ def test_unregistered_or_unimplemented_arm_is_refused(manifest, task, tmp_path):
 
 # ------------------------------------------------------------------ arm C
 class FakeBuild:
-    def __init__(self, status="done", winner=True, timeout=False, kind=None):
+    def __init__(self, status="done", winner=True, timeout=False, kind=None, frozen=False,
+                 child=True, timeout_after_done=False):
         self.status, self.winner, self.timeout, self.cmd, self.kind = status, winner, timeout, None, kind
+        self.frozen, self.child, self.timeout_after_done = frozen, child, timeout_after_done
 
     def __call__(self, cmd, cwd, capture_output, text, errors, timeout):
         self.cmd = cmd
@@ -105,14 +107,28 @@ class FakeBuild:
             raise subprocess.TimeoutExpired(cmd, timeout)
         run_dir = Path(cmd[cmd.index("--output-dir") + 1])
         run_dir.mkdir(parents=True)
+        top = "TopModule_top" if self.frozen else "TopModule"
         if self.status:
-            summary = {"status": self.status, "top_module": "TopModule"}
+            summary = {"status": self.status, "top_module": top}
             if self.kind:
                 summary["failure_kind"] = self.kind
+            if self.frozen:
+                summary["edit_scope"] = "frozen_children"
             (run_dir / "run_summary.json").write_text(json.dumps(summary))
         (run_dir / "budget.json").write_text(json.dumps({"llm_calls": 9, "vivado_seconds": 300.0, "tokens": {}}))
-        if self.winner:
+        if self.frozen:
+            (run_dir / "design_spec.json").write_text(json.dumps({"top_name": top, "modules": [{"name": "TopModule"}]}))
+            if self.child:
+                (run_dir / "modules" / "TopModule").mkdir(parents=True)
+                (run_dir / "modules" / "TopModule" / "TopModule.v").write_text(
+                    "module TopModule(input a, output y); assign y=~a; endmodule\n")
+            if self.winner:
+                (run_dir / "TopModule_top_best.v").write_text(
+                    "module TopModule_top(input a, output y); TopModule u(.a(a),.y(y)); endmodule\n")
+        elif self.winner:
             (run_dir / "TopModule_best.v").write_text("module TopModule(input a, output y); assign y=~a; endmodule\n")
+        if self.timeout_after_done:
+            raise subprocess.TimeoutExpired(cmd, timeout)
         return subprocess.CompletedProcess(cmd, 0 if self.status == "done" else 1, "{}", "")
 
 
@@ -225,3 +241,23 @@ def test_unresolved_vivado_stops_before_the_cell_directory(manifest, task, tmp_p
     with pytest.raises(ve.GraderUnavailable):
         pilot.run_full(manifest, task, tmp_path / "c", runner=FakeBuild())
     assert not (tmp_path / "c").exists()
+
+
+def test_frozen_children_submission_includes_verified_children(manifest, task, tmp_path):
+    """pilot_submission_missing_children: the official test instantiates TopModule."""
+    _, receipt = load_after(pilot.run_full(manifest, task, tmp_path / "c", runner=FakeBuild(frozen=True)), tmp_path / "c")
+    assert [f["path"] for f in receipt["files"]] == ["rtl/modules/TopModule/TopModule.v", "rtl/TopModule_top_best.v"]
+    assert receipt["top"] == "TopModule_top" and receipt["internal_status"] == "accepted"
+
+
+def test_frozen_children_without_child_source_is_missing(manifest, task, tmp_path):
+    _, receipt = load_after(pilot.run_full(manifest, task, tmp_path / "c", runner=FakeBuild(frozen=True, child=False)),
+                            tmp_path / "c")
+    assert (receipt["kind"], receipt["termination"]) == ("missing", "failed")
+
+
+def test_done_summary_survives_outer_wall_clock_timeout(manifest, task, tmp_path):
+    """pilot_outer_timeout_discarded_done: the safety net counts sleep; DONE is final."""
+    record, receipt = load_after(pilot.run_full(manifest, task, tmp_path / "c",
+                                                runner=FakeBuild(timeout_after_done=True)), tmp_path / "c")
+    assert receipt["kind"] == "candidate" and record["accounting"]["outer_timeout"] is True

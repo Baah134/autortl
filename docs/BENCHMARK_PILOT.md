@@ -116,4 +116,13 @@ interpreter with pyyaml.
   `pilot_vivado_tools_unresolved`), sealed `failed` because the harness reported
   failure_kind unknown. Batch stopped after the third arm C cell; its process
   tree had already exited. These infrastructure stops are not design verdicts.
-- **pilot-03.** Refrozen with absolute tool paths; all 12 cells run fresh.
+- **pilot-03 (stopped, harness and adapter defects).** Frozen at b6f1cb4a.
+  Combinational arm C baselines were blocked by the metrics gate (no clock, no
+  timing: `clockless_design_untimed_by_metrics_gate`, fixed in
+  `autortl/vivado.py`); circuit10's planner repair returned partial spec JSON
+  (genuine failure); count15 reached DONE but was sealed interrupted by the
+  sleep-counting outer timeout and its submission lacked the frozen child
+  (`pilot_outer_timeout_discarded_done`, `pilot_submission_missing_children`).
+  Stopped before the last two arm C cells. Evidence:
+  `evidence/2026-11-14/pilot-attempts-01/`.
+- **pilot-04.** Refrozen with all fixes; all 12 cells run fresh, machine kept awake.

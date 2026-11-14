@@ -209,20 +209,42 @@ def run_full(manifest: dict, task: ve.Task, out_dir: Path, *, trial: int = 0, mo
                   "tokens": used.get("tokens"), "command": cmd}
     status = summary.get("status")
     winner = run_dir / f"{summary.get('top_module') or ve.TOP}_best.v"
-    if not timed_out and status == "done" and winner.is_file():
+    # A DONE summary is written last, after its winner, so it stands even when the
+    # outer wall-clock safety net fired (it counts sleep; the run's own budget does not).
+    files = submission_files(run_dir, summary, winner) if status == "done" and winner.is_file() else None
+    if files:
         receipt = artifacts.seal_candidate(
             manifest, _selector(cell), source_root=run_dir,
-            files=[{"path": winner.name, "sha256": _sha(winner), "role": "rtl"}],
-            destination=out_dir / "submission", top=ve.TOP, internal_status="accepted",
-            selection_reason="accepted_incumbent", termination="done")
+            files=[{"path": f, "sha256": _sha(run_dir / f), "role": "rtl"} for f in files],
+            destination=out_dir / "submission", top=summary.get("top_module") or ve.TOP,
+            internal_status="accepted", selection_reason="accepted_incumbent", termination="done")
     else:
         termination = ("interrupted" if timed_out or not summary or summary.get("failure_kind") == "infra"
                        else TERMINATION.get(status, "failed"))
-        if termination == "done":  # DONE without its winner file is not a submission
+        if termination == "done":  # DONE without its complete sources is not a submission
             termination = "failed"
         receipt = artifacts.record_missing(manifest, _selector(cell), destination=out_dir / "submission",
                                            termination=termination)
     return _finish(out_dir, cell, receipt, accounting)
+
+
+def submission_files(run_dir: Path, summary: dict, winner: Path) -> list[str] | None:
+    """Complete ordered RTL for a DONE build, relative to run_dir.
+
+    whole_design: the winner holds every module. frozen_children: the optimizer
+    edited only the mechanical top, so the verified children from the resolved
+    spec come first, then the winning top (pilot_submission_missing_children).
+    None when a declared child source is absent, or TopModule is never defined.
+    """
+    files = [winner.name]
+    if summary.get("edit_scope") == "frozen_children":
+        spec = json.loads((run_dir / "design_spec.json").read_text(encoding="utf-8"))
+        children = [f"modules/{m['name']}/{m['name']}.v" for m in spec["modules"]]
+        if any(not (run_dir / c).is_file() for c in children):
+            return None
+        files = children + files
+    text = "\n".join((run_dir / f).read_text(encoding="utf-8", errors="replace") for f in files)
+    return files if has_top_module(text) else None
 
 
 # ---------------------------------------------------------------- grading

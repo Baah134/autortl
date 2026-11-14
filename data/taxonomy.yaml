@@ -98,6 +98,15 @@ harness_failures:
   pilot_vivado_tools_unresolved:
     meaning: "A build launched with default bare tool names failed at once with xvlog not found ([WinError 2]): Windows cannot start a .bat by bare name. The run summary was build_blocked with failure_kind unknown, so triage did not recognise a missing simulator as infrastructure"
     repair: "Pass absolute Vivado tool paths resolved like run.py doctor and stop before the cell directory if any is missing; map infra summaries to interrupted, never failed. Triage still classifies xvlog not found as unknown: open harness repair"
+  clockless_design_untimed_by_metrics_gate:
+    meaning: "Synthesis TCL always constrains a port named clk; a purely combinational design has none, so no path is timed, WNS/WHS stay -999 and the metrics integrity gate stops the baseline as infra. Observed on VerilogEval Prob036_ringer and Prob033_ece241_2014_q1c (pilot-03); it blocks every clockless design"
+    repair: "When no clock exists after synthesis, create a virtual clock named clk at the target period and constrain all inputs and outputs against it, so input-to-output paths yield real WNS/WHS. Designs with a clk port are unchanged; the gate is not relaxed"
+  pilot_submission_missing_children:
+    meaning: "A build with edit_scope frozen_children names a mechanical top (TopModule_top) and keeps the requested module as a verified child; sealing only <top>_best.v omits the module the official testbench instantiates. Observed on Prob038_count15 (pilot-03)"
+    repair: "For frozen_children, submit the resolved spec's verified child sources in order, then the winning top; refuse a submission that never defines TopModule"
+  pilot_outer_timeout_discarded_done:
+    meaning: "The pilot's outer wall-clock timeout counts machine sleep; Prob038_count15 reached DONE (verified, timing met) after the host slept for hours, but the cell was sealed interrupted"
+    repair: "Seal a DONE summary with its complete sources even when the outer safety net fired, recording outer_timeout in accounting; keep the machine awake during pilots"
   benchmark_artifact_contract_validation:
     meaning: "Independent review of the staged benchmark artifact foundation reproduced UTF-16/32 acceptance under a UTF-8 contract, integer time conversion overflow, and fail-open inventory traversal"
     repair: "Decode UTF-8 strictly, reject unsupported machine-time budgets with ArtifactError, fail closed on traversal errors, and require an externally retained artifact ID. Artifact sealing does not establish RTL correctness or OS isolation"

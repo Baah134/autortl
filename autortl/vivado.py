@@ -241,6 +241,7 @@ close $fp
 read_xdc "{workdir}/timing.xdc"
 synth_design -top {top} -flatten_hierarchy rebuilt {extra_synth}
 set fp [open "{workdir}/timing_io.tcl" w]
+puts $fp {{if {{[llength [get_clocks -quiet]] == 0}} {{create_clock -period {period} -name clk}}}}
 puts $fp {{set data_inputs [get_ports -filter {{DIRECTION == IN && NAME != clk}}]}}
 puts $fp {{if {{[llength $data_inputs] > 0}} {{set_input_delay -clock clk -max 0.000 $data_inputs; set_input_delay -clock clk -min 0.000 $data_inputs}}}}
 puts $fp {{if {{[llength [all_outputs]] > 0}} {{set_output_delay -clock clk -max 0.000 [all_outputs]; set_output_delay -clock clk -min 0.000 [all_outputs]}}}}
@@ -273,6 +274,10 @@ puts "SYNTH_COMPLETE"
 # (register to register, including RAM/DSP registers); combinational logic
 # between a port and its first or last register is not timed. Same reports,
 # same metrics and the same SYNTH_COMPLETE marker as the chip-top flow.
+# A design with no clock port (purely combinational) gets a virtual clock
+# named clk at the target period with zero port delays, so its input-to-output
+# paths are timed (clockless_design_untimed_by_metrics_gate); the chip-top
+# flow creates the same virtual clock before its existing port delays.
 # The clock/HD.CLK_SRC/out_of_context lines match hardware/basys3/fmax/fmax.py's
 # ooc mode, which closed timing live on Vivado 2025.2 for xc7a35tcpg236-1.
 OOC_SYNTH_TCL = """\
@@ -285,6 +290,10 @@ puts $fp {{set_property HD.CLK_SRC BUFGCTRL_X0Y0 [get_ports clk]}}
 close $fp
 read_xdc "{workdir}/timing.xdc"
 synth_design -top {top} -flatten_hierarchy rebuilt -mode out_of_context {extra_synth}
+set fp [open "{workdir}/timing_virtual.tcl" w]
+puts $fp {{if {{[llength [get_clocks -quiet]] == 0}} {{create_clock -period {period} -name clk; if {{[llength [all_inputs]] > 0}} {{set_input_delay -clock clk 0.000 [all_inputs]}}; if {{[llength [all_outputs]] > 0}} {{set_output_delay -clock clk 0.000 [all_outputs]}}}}}}
+close $fp
+source "{workdir}/timing_virtual.tcl"
 report_utilization -file "{workdir}/utilization.rpt"
 report_timing_summary -file "{workdir}/timing.rpt"
 opt_design

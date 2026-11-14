@@ -37,6 +37,10 @@ puts $fp {set_property HD.CLK_SRC BUFGCTRL_X0Y0 [get_ports clk]}
 close $fp
 read_xdc "W/timing.xdc"
 synth_design -top m -flatten_hierarchy rebuilt -mode out_of_context\x20
+set fp [open "W/timing_virtual.tcl" w]
+puts $fp {if {[llength [get_clocks -quiet]] == 0} {create_clock -period 10.000 -name clk; if {[llength [all_inputs]] > 0} {set_input_delay -clock clk 0.000 [all_inputs]}; if {[llength [all_outputs]] > 0} {set_output_delay -clock clk 0.000 [all_outputs]}}}
+close $fp
+source "W/timing_virtual.tcl"
 report_utilization -file "W/utilization.rpt"
 report_timing_summary -file "W/timing.rpt"
 opt_design
@@ -77,7 +81,10 @@ def test_out_of_context_script_is_exactly_the_golden_template(tmp_path, monkeypa
 
 def test_out_of_context_has_no_io_buffers_or_io_delays(tmp_path, monkeypatch):
     text = script(tmp_path, monkeypatch, "out_of_context")
-    assert "set_input_delay" not in text and "set_output_delay" not in text
+    # Port delays exist only inside the clockless-design guard
+    # (clockless_design_untimed_by_metrics_gate); a clocked block's ports stay unconstrained.
+    delay_lines = [l for l in text.splitlines() if "set_input_delay" in l or "set_output_delay" in l]
+    assert len(delay_lines) == 1 and delay_lines[0].startswith("puts $fp {if {[llength [get_clocks -quiet]] == 0}")
     assert "timing_io.tcl" not in text  # no I/O constraint file: data ports stay unconstrained
     order = ["synth_design", "opt_design", "place_design", "route_design", "timing_routed.rpt",
              "timing_reg2reg.rpt", "SYNTH_COMPLETE"]
