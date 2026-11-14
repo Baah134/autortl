@@ -110,4 +110,10 @@ interpreter with pyyaml.
   `pilot_runner_double_hid_cli_rejection`; a test now executes the real run.py
   parser. Both cells are retained in `autortl-private/pilot-01` and are not
   rerun; the remaining ten were never started.
-- **pilot-02.** Refrozen at the corrected commit; all 12 cells run fresh.
+- **pilot-02 (aborted, infrastructure).** Frozen at 8a50a8ab. Arm A sealed
+  candidates for ringer, ece241_2014_q1c and circuit10. Arm C stopped in ~24 s
+  on each with `xvlog not found` (bare tool names; taxonomy
+  `pilot_vivado_tools_unresolved`), sealed `failed` because the harness reported
+  failure_kind unknown. Batch stopped after the third arm C cell; its process
+  tree had already exited. These infrastructure stops are not design verdicts.
+- **pilot-03.** Refrozen with absolute tool paths; all 12 cells run fresh.

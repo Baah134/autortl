@@ -14,6 +14,13 @@ DATA = Path(__file__).parent / "fixtures" / "verilogeval" / "dataset"
 GOOD = "Here it is:\n```verilog\nmodule TopModule(input a, output y);\n  assign y = ~a;\nendmodule\n```\n"
 
 
+@pytest.fixture(autouse=True)
+def fake_tools(monkeypatch):
+    tools = {name: f"C:/Vivado/bin/{name}.bat" for name in ("vivado", "xvlog", "xelab", "xsim")}
+    monkeypatch.setattr(pilot, "vivado_tools", lambda: tools)
+    return tools
+
+
 @pytest.fixture
 def manifest():
     return ve.build_manifest(DATA, ["Prob900_inv"], dataset_commit="a" * 40, source_commit="b" * 40,
@@ -89,8 +96,8 @@ def test_unregistered_or_unimplemented_arm_is_refused(manifest, task, tmp_path):
 
 # ------------------------------------------------------------------ arm C
 class FakeBuild:
-    def __init__(self, status="done", winner=True, timeout=False):
-        self.status, self.winner, self.timeout, self.cmd = status, winner, timeout, None
+    def __init__(self, status="done", winner=True, timeout=False, kind=None):
+        self.status, self.winner, self.timeout, self.cmd, self.kind = status, winner, timeout, None, kind
 
     def __call__(self, cmd, cwd, capture_output, text, errors, timeout):
         self.cmd = cmd
@@ -99,7 +106,10 @@ class FakeBuild:
         run_dir = Path(cmd[cmd.index("--output-dir") + 1])
         run_dir.mkdir(parents=True)
         if self.status:
-            (run_dir / "run_summary.json").write_text(json.dumps({"status": self.status, "top_module": "TopModule"}))
+            summary = {"status": self.status, "top_module": "TopModule"}
+            if self.kind:
+                summary["failure_kind"] = self.kind
+            (run_dir / "run_summary.json").write_text(json.dumps(summary))
         (run_dir / "budget.json").write_text(json.dumps({"llm_calls": 9, "vivado_seconds": 300.0, "tokens": {}}))
         if self.winner:
             (run_dir / "TopModule_best.v").write_text("module TopModule(input a, output y); assign y=~a; endmodule\n")
@@ -119,6 +129,8 @@ def test_full_command_uses_public_prompt_only(manifest, task, tmp_path):
     assert float(cmd[cmd.index("--max-wall-minutes") + 1]) == 35.0
     assert cmd[cmd.index("--best-of-n") + 1] == "1" and cmd[cmd.index("--iterations") + 1] == "1"
     assert cmd[cmd.index("--implementation") + 1] == "out_of_context"
+    for name in ("vivado", "xvlog", "xelab", "xsim"):  # pilot_vivado_tools_unresolved
+        assert cmd[cmd.index(f"--{name}") + 1] == f"C:/Vivado/bin/{name}.bat"
 
 
 def test_full_done_winner_is_sealed_as_accepted_incumbent(manifest, task, tmp_path):
@@ -132,6 +144,8 @@ def test_full_done_winner_is_sealed_as_accepted_incumbent(manifest, task, tmp_pa
     (FakeBuild(status="budget_exhausted", winner=False), "budget"),
     (FakeBuild(status="model_blocked", winner=False), "model_blocked"),
     (FakeBuild(status="infra_blocked", winner=False), "interrupted"),
+    (FakeBuild(status="build_blocked", winner=False, kind="infra"), "interrupted"),
+    (FakeBuild(status="build_blocked", winner=False), "failed"),
     (FakeBuild(status="baseline_failed", winner=False), "failed"),
     (FakeBuild(status="done", winner=False), "failed"),
     (FakeBuild(status=None, winner=False), "interrupted"),
@@ -202,3 +216,12 @@ def test_full_command_passes_real_run_py_validation(manifest, task, tmp_path):
     assert "must be positive" not in done.stderr and "error:" not in done.stderr, done.stderr
     summary = json.loads((tmp_path / "run" / "run_summary.json").read_text(encoding="utf-8"))
     assert summary["status"] == "budget_exhausted"
+
+
+def test_unresolved_vivado_stops_before_the_cell_directory(manifest, task, tmp_path, monkeypatch):
+    def missing():
+        raise ve.GraderUnavailable("Vivado tools not found on PATH: xvlog")
+    monkeypatch.setattr(pilot, "vivado_tools", missing)
+    with pytest.raises(ve.GraderUnavailable):
+        pilot.run_full(manifest, task, tmp_path / "c", runner=FakeBuild())
+    assert not (tmp_path / "c").exists()

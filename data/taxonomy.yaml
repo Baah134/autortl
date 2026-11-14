@@ -95,6 +95,9 @@ harness_failures:
   pilot_runner_double_hid_cli_rejection:
     meaning: "The pilot arm C runner passed --iterations 0, which run.py rejects before any run (max_iterations must be positive); its unit tests used a process double, so the first real cell ended in 1.5 s with no run summary and was sealed missing"
     repair: "Check every runner flag against run.py's own argument validation in a test that executes the real parser; treat a spent pilot attempt as aborted evidence and refreeze under the corrected runtime instead of rerunning its cells"
+  pilot_vivado_tools_unresolved:
+    meaning: "A build launched with default bare tool names failed at once with xvlog not found ([WinError 2]): Windows cannot start a .bat by bare name. The run summary was build_blocked with failure_kind unknown, so triage did not recognise a missing simulator as infrastructure"
+    repair: "Pass absolute Vivado tool paths resolved like run.py doctor and stop before the cell directory if any is missing; map infra summaries to interrupted, never failed. Triage still classifies xvlog not found as unknown: open harness repair"
   benchmark_artifact_contract_validation:
     meaning: "Independent review of the staged benchmark artifact foundation reproduced UTF-16/32 acceptance under a UTF-8 contract, integer time conversion overflow, and fail-open inventory traversal"
     repair: "Decode UTF-8 strictly, reject unsupported machine-time budgets with ArtifactError, fail closed on traversal errors, and require an externally retained artifact ID. Artifact sealing does not establish RTL correctness or OS isolation"

@@ -125,10 +125,25 @@ def run_single_call(manifest: dict, task: ve.Task, out_dir: Path, *, trial: int 
 
 
 # ------------------------------------------------------------------ arm C
+def vivado_tools() -> dict:
+    """Absolute Vivado tool paths, resolved like `run.py doctor` (name, .bat, .exe).
+
+    A bare name cannot launch a Windows .bat; an unresolved tool is an
+    infrastructure stop before any run (pilot_vivado_tools_unresolved).
+    """
+    from autortl.doctor import TOOLS, _resolve
+    found = {name: _resolve(None, name) for name in TOOLS}
+    missing = [name for name, path in found.items() if not path]
+    if missing:
+        raise ve.GraderUnavailable("Vivado tools not found on PATH: " + ", ".join(missing))
+    return found
+
+
 def full_command(request: Path, run_dir: Path, budget: dict, *, python: str = sys.executable,
                  model: str | None = None, best_of_n: int | None = FULL_SETTINGS["best_of_n"],
                  iterations: int | None = FULL_SETTINGS["iterations"],
-                 implementation: str | None = FULL_SETTINGS["implementation"]) -> list[str]:
+                 implementation: str | None = FULL_SETTINGS["implementation"],
+                 tools: dict | None = None) -> list[str]:
     """`run.py build` from the public prompt alone; never an official --tb."""
     cmd = [python, str(REPO / "run.py"), "build", "--spec", str(request), "--top", ve.TOP,
            "--generate-golden", "--output-dir", str(run_dir),
@@ -144,6 +159,8 @@ def full_command(request: Path, run_dir: Path, budget: dict, *, python: str = sy
         cmd += ["--iterations", str(iterations)]
     if implementation is not None:
         cmd += ["--implementation", implementation]
+    for name, path in (tools or {}).items():
+        cmd += [f"--{name}", path]
     return cmd
 
 
@@ -151,13 +168,14 @@ def run_full(manifest: dict, task: ve.Task, out_dir: Path, *, trial: int = 0, mo
              best_of_n: int | None = FULL_SETTINGS["best_of_n"],
              iterations: int | None = FULL_SETTINGS["iterations"],
              implementation: str | None = FULL_SETTINGS["implementation"],
-             runner=subprocess.run, python: str = sys.executable) -> dict:
+             runner=subprocess.run, python: str = sys.executable, tools: dict | None = None) -> dict:
     """Full AutoRTL build; only a DONE run's verified winner is sealed (accepted incumbent).
 
     A run without a DONE winner is recorded missing. Selecting the latest complete
     candidate from non-DONE runs needs candidate bundles (deferred).
     """
     cell = _cell(manifest, task.id, "full", trial)
+    tools = vivado_tools() if tools is None else tools  # fail before creating the cell directory
     out_dir = Path(out_dir)
     work = out_dir / "work"
     work.mkdir(parents=True, exist_ok=False)
@@ -168,7 +186,8 @@ def run_full(manifest: dict, task: ve.Task, out_dir: Path, *, trial: int = 0, mo
         raise ve.AdapterError("public prompt differs from the frozen manifest")
     run_dir = out_dir / "run"
     cmd = full_command(request, run_dir, cell["budget"], python=python, model=model,
-                       best_of_n=best_of_n, iterations=iterations, implementation=implementation)
+                       best_of_n=best_of_n, iterations=iterations, implementation=implementation,
+                       tools=tools)
     started = time.monotonic()
     outer_timeout = cell["budget"]["wall_seconds"] + OUTER_GRACE_S
     try:
@@ -197,7 +216,8 @@ def run_full(manifest: dict, task: ve.Task, out_dir: Path, *, trial: int = 0, mo
             destination=out_dir / "submission", top=ve.TOP, internal_status="accepted",
             selection_reason="accepted_incumbent", termination="done")
     else:
-        termination = "interrupted" if timed_out or not summary else TERMINATION.get(status, "failed")
+        termination = ("interrupted" if timed_out or not summary or summary.get("failure_kind") == "infra"
+                       else TERMINATION.get(status, "failed"))
         if termination == "done":  # DONE without its winner file is not a submission
             termination = "failed"
         receipt = artifacts.record_missing(manifest, _selector(cell), destination=out_dir / "submission",
