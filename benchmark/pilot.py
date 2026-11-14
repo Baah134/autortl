@@ -34,6 +34,11 @@ PROVISIONAL_BUDGETS = {
     "full": {"model_calls": 16, "tool_seconds": 1500.0, "wall_seconds": 2100},
 }
 OUTER_GRACE_S = 300
+# Arm C pilot settings (November14). VerilogEval grades function only and RTL
+# optimization cannot change function under a fixed contract, so the build is
+# verified and synthesized once with no optimization iterations; out-of-context
+# implementation avoids board pin-capacity stops unrelated to function.
+FULL_SETTINGS = {"best_of_n": 1, "iterations": 0, "implementation": "out_of_context"}
 SINGLE_CALL_SYSTEM = (
     "You are a Verilog RTL designer. Implement exactly the module the user describes, "
     f"named {ve.TOP}, with exactly the described ports, widths and behavior. Return one "
@@ -120,8 +125,9 @@ def run_single_call(manifest: dict, task: ve.Task, out_dir: Path, *, trial: int 
 
 # ------------------------------------------------------------------ arm C
 def full_command(request: Path, run_dir: Path, budget: dict, *, python: str = sys.executable,
-                 model: str | None = None, best_of_n: int | None = None,
-                 iterations: int | None = None) -> list[str]:
+                 model: str | None = None, best_of_n: int | None = FULL_SETTINGS["best_of_n"],
+                 iterations: int | None = FULL_SETTINGS["iterations"],
+                 implementation: str | None = FULL_SETTINGS["implementation"]) -> list[str]:
     """`run.py build` from the public prompt alone; never an official --tb."""
     cmd = [python, str(REPO / "run.py"), "build", "--spec", str(request), "--top", ve.TOP,
            "--generate-golden", "--output-dir", str(run_dir),
@@ -135,11 +141,15 @@ def full_command(request: Path, run_dir: Path, budget: dict, *, python: str = sy
         cmd += ["--best-of-n", str(best_of_n)]
     if iterations is not None:
         cmd += ["--iterations", str(iterations)]
+    if implementation is not None:
+        cmd += ["--implementation", implementation]
     return cmd
 
 
 def run_full(manifest: dict, task: ve.Task, out_dir: Path, *, trial: int = 0, model: str | None = None,
-             best_of_n: int | None = None, iterations: int | None = None,
+             best_of_n: int | None = FULL_SETTINGS["best_of_n"],
+             iterations: int | None = FULL_SETTINGS["iterations"],
+             implementation: str | None = FULL_SETTINGS["implementation"],
              runner=subprocess.run, python: str = sys.executable) -> dict:
     """Full AutoRTL build; only a DONE run's verified winner is sealed (accepted incumbent).
 
@@ -157,7 +167,7 @@ def run_full(manifest: dict, task: ve.Task, out_dir: Path, *, trial: int = 0, mo
         raise ve.AdapterError("public prompt differs from the frozen manifest")
     run_dir = out_dir / "run"
     cmd = full_command(request, run_dir, cell["budget"], python=python, model=model,
-                       best_of_n=best_of_n, iterations=iterations)
+                       best_of_n=best_of_n, iterations=iterations, implementation=implementation)
     started = time.monotonic()
     outer_timeout = cell["budget"]["wall_seconds"] + OUTER_GRACE_S
     try:
@@ -249,8 +259,9 @@ def main(argv=None) -> int:
     r.add_argument("--arm", required=True, choices=ARMS)
     r.add_argument("--trial", type=int, default=0)
     r.add_argument("--model")
-    r.add_argument("--best-of-n", type=int)
-    r.add_argument("--iterations", type=int)
+    r.add_argument("--best-of-n", type=int, default=FULL_SETTINGS["best_of_n"])
+    r.add_argument("--iterations", type=int, default=FULL_SETTINGS["iterations"])
+    r.add_argument("--implementation", default=FULL_SETTINGS["implementation"])
     r.add_argument("--out", required=True, type=Path)
     g.add_argument("--run", required=True, type=Path)
     g.add_argument("--out", required=True, type=Path)
@@ -277,7 +288,8 @@ def main(argv=None) -> int:
             result = run_single_call(manifest, task, a.out, trial=a.trial, model=a.model)
         else:
             result = run_full(manifest, task, a.out, trial=a.trial, model=a.model,
-                              best_of_n=a.best_of_n, iterations=a.iterations)
+                              best_of_n=a.best_of_n, iterations=a.iterations,
+                              implementation=a.implementation)
     else:
         manifest, root = _load(a)
         record = json.loads((a.run / "run.json").read_text(encoding="utf-8"))

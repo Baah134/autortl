@@ -91,3 +91,12 @@ reported, never resolved silently. A simulator that cannot start raises
   positive value; it uses no tools.
 - Failed or retried model calls inside arm C are counted by the run's own
   budget file only; full failed-call cost accounting is deferred.
+
+## Arm C pilot settings (November 14)
+
+`FULL_SETTINGS`: `--best-of-n 1 --iterations 0 --implementation out_of_context`.
+VerilogEval grades function only and RTL optimization cannot change function
+under a fixed contract, so arm C builds, verifies and synthesizes once.
+Out-of-context implementation avoids board pin-capacity stops unrelated to
+function. Runs need `AUTORTL_CODEX_BIN` (Codex desktop CLI) and an interpreter
+with pyyaml.

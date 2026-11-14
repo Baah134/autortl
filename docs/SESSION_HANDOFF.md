@@ -42,7 +42,7 @@ roster and exclusion table, candidate bundles/run lock if jobs run in parallel.
 Open user questions: Icarus via MSYS2 or WSL; whether arm C runs synthesis for
 a functional benchmark; best_of_n 4 (default) or 1 (Nov6 proposal).
 
-### Implemented this session (uncommitted)
+### Implemented this session (committed fb928002c)
 
 Steps 2 and 3 code, with synthetic fixtures and process doubles only:
 `benchmark/verilogeval.py` (task loading, Nov6 hash-rule pilot selection,

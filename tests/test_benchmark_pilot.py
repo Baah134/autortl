@@ -117,6 +117,8 @@ def test_full_command_uses_public_prompt_only(manifest, task, tmp_path):
     assert cmd[cmd.index("--top") + 1] == "TopModule"
     assert cmd[cmd.index("--max-llm-calls") + 1] == "16"
     assert float(cmd[cmd.index("--max-wall-minutes") + 1]) == 35.0
+    assert cmd[cmd.index("--best-of-n") + 1] == "1" and cmd[cmd.index("--iterations") + 1] == "0"
+    assert cmd[cmd.index("--implementation") + 1] == "out_of_context"
 
 
 def test_full_done_winner_is_sealed_as_accepted_incumbent(manifest, task, tmp_path):
