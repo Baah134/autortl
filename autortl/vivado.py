@@ -280,7 +280,7 @@ puts "SYNTH_COMPLETE"
 # delays. Out of context, a design with no register-to-register path (no
 # registers, or a single register stage) would have nothing timed, so its
 # data ports get zero delay to clk (single_register_design_untimed_ooc);
-# input hold is not checked there, because it depends on where the driving
+# input-to-register hold is not checked there, because it depends on where the driving
 # register sits (the same reason ports are otherwise unconstrained);
 # designs with an internal path keep unconstrained ports as before.
 # The clock/HD.CLK_SRC/out_of_context lines match hardware/basys3/fmax/fmax.py's
@@ -297,7 +297,7 @@ read_xdc "{workdir}/timing.xdc"
 synth_design -top {top} -flatten_hierarchy rebuilt -mode out_of_context {extra_synth}
 set fp [open "{workdir}/timing_virtual.tcl" w]
 puts $fp {{if {{[llength [get_clocks -quiet]] == 0}} {{create_clock -period {period} -name clk}}}}
-puts $fp {{set regs [all_registers]; if {{[llength $regs] == 0 || [llength [get_timing_paths -quiet -from $regs -to $regs -max_paths 1]] == 0}} {{set data_inputs [get_ports -quiet -filter {{DIRECTION == IN && NAME != clk}}]; if {{[llength $data_inputs] > 0}} {{set_input_delay -clock clk 0.000 $data_inputs; set_false_path -hold -from $data_inputs}}; if {{[llength [all_outputs]] > 0}} {{set_output_delay -clock clk 0.000 [all_outputs]}}; set autortl_ports_timed 1}}}}
+puts $fp {{set regs [all_registers]; if {{[llength $regs] == 0 || [llength [get_timing_paths -quiet -from $regs -to $regs -max_paths 1]] == 0}} {{set data_inputs [get_ports -quiet -filter {{DIRECTION == IN && NAME != clk}}]; if {{[llength $data_inputs] > 0}} {{set_input_delay -clock clk 0.000 $data_inputs; if {{[llength $regs] > 0}} {{set_false_path -hold -from $data_inputs -to $regs}}}}; if {{[llength [all_outputs]] > 0}} {{set_output_delay -clock clk 0.000 [all_outputs]}}; set autortl_ports_timed 1}}}}
 close $fp
 source "{workdir}/timing_virtual.tcl"
 report_utilization -file "{workdir}/utilization.rpt"

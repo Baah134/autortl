@@ -39,7 +39,7 @@ read_xdc "W/timing.xdc"
 synth_design -top m -flatten_hierarchy rebuilt -mode out_of_context\x20
 set fp [open "W/timing_virtual.tcl" w]
 puts $fp {if {[llength [get_clocks -quiet]] == 0} {create_clock -period 10.000 -name clk}}
-puts $fp {set regs [all_registers]; if {[llength $regs] == 0 || [llength [get_timing_paths -quiet -from $regs -to $regs -max_paths 1]] == 0} {set data_inputs [get_ports -quiet -filter {DIRECTION == IN && NAME != clk}]; if {[llength $data_inputs] > 0} {set_input_delay -clock clk 0.000 $data_inputs; set_false_path -hold -from $data_inputs}; if {[llength [all_outputs]] > 0} {set_output_delay -clock clk 0.000 [all_outputs]}; set autortl_ports_timed 1}}
+puts $fp {set regs [all_registers]; if {[llength $regs] == 0 || [llength [get_timing_paths -quiet -from $regs -to $regs -max_paths 1]] == 0} {set data_inputs [get_ports -quiet -filter {DIRECTION == IN && NAME != clk}]; if {[llength $data_inputs] > 0} {set_input_delay -clock clk 0.000 $data_inputs; if {[llength $regs] > 0} {set_false_path -hold -from $data_inputs -to $regs}}; if {[llength [all_outputs]] > 0} {set_output_delay -clock clk 0.000 [all_outputs]}; set autortl_ports_timed 1}}
 close $fp
 source "W/timing_virtual.tcl"
 report_utilization -file "W/utilization.rpt"

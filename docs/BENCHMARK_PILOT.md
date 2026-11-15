@@ -134,5 +134,10 @@ interpreter with pyyaml.
   (`single_register_design_untimed_ooc`, fixed) after the planner added a reset
   port the request lacks (`resetless_sequential_unrepresentable`, fixed).
   Evidence: `evidence/2026-11-14/pilot-04-results-01/`.
-- **pilot-05 (next).** Three arms (single_call, ablation, full) on the merged
-  runtime: resetless modules, arm B seam, out-of-context port timing, triage.
+- **pilot-05 (aborted, harness defect).** Frozen at ebaf7ad6, three arms.
+  Arm A ringer sealed; arm B ringer was blocked by the metrics gate (WHS -999):
+  the new out-of-context guard excluded all input hold, which removes every
+  hold path of a combinational design. Fixed by excluding input-to-register
+  hold only; the earlier live check had not rerun the combinational case.
+  The machine also slept 22:24-22:38 during this attempt.
+- **pilot-06 (next).** Three arms on the corrected runtime.

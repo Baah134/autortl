@@ -449,8 +449,9 @@ clockless_design_untimed_by_metrics_gate). Out of context, a design with no
 registers or no register-to-register path (a single register stage, such as a
 DFF) would otherwise have nothing timed, so its data ports get zero delay to
 `clk`: port-to-register, register-to-port and port-to-port paths are
-setup-timed. Input hold is not checked there, because it depends on where the
-driving register sits; a zero minimum delay against the BUFG-modelled clock gave
+setup-timed. Input-to-register hold is not checked there, because it depends on
+where the driving register sits (input-to-output hold of a combinational design
+stays checked: excluding all input hold left it with no hold path and WHS -999); a zero minimum delay against the BUFG-modelled clock gave
 an artificial -0.83 ns on a DFF (taxonomy single_register_design_untimed_ooc).
 With that guard active the advisory `report_qor_suggestions` is skipped, since
 it crashed Vivado 2025.2 with this constraint set (vivado_crash_classified_design).
