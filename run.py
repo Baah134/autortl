@@ -13,7 +13,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from autortl.config import IMPLEMENTATIONS, RunConfig
+from autortl.config import IMPLEMENTATIONS, VERIFICATION_POLICIES, RunConfig
 from autortl.fsm import Orchestrator
 from autortl.state import CheckpointLockedError
 
@@ -59,6 +59,11 @@ def main(argv=None):
     flow.add_argument("--synthesis-timeout-minutes", type=float, default=15.0,
                       help="limit for one synthesis/implementation call (default 15); the remaining "
                            "tool budget still caps it (fixed_synthesis_timeout_blocks_heavy_designs)")
+    # Experiment-only ablation (benchmark arm B, ablation_policy_seam_absent); not offered to bench.
+    flow.add_argument("--verification-policy", choices=list(VERIFICATION_POLICIES), default="full",
+                      help="full (default): qualify every testbench by bug injection; "
+                           "skip_generated_tb_mutations: experiment only, skip bug-injection qualification "
+                           "of generated module testbenches (recorded; simulation still gates)")
 
     p_opt = sub.add_parser("optimize", parents=[common, flow])
     p_opt.add_argument("--design", required=True, type=Path)
@@ -142,13 +147,15 @@ def main(argv=None):
     if a.cmd == "optimize":
         cfg = RunConfig(mode="optimize", top_module=a.top, design_path=a.design,
                         testbench_path=a.tb, implementation=a.implementation,
-                        synthesis_timeout_minutes=a.synthesis_timeout_minutes, **kw)
+                        synthesis_timeout_minutes=a.synthesis_timeout_minutes,
+                        verification_policy=a.verification_policy, **kw)
         orch = Orchestrator(cfg, run_dir=a.output_dir.resolve() if hasattr(a, "output_dir") else None)
     elif a.cmd == "build":
         cfg = RunConfig(mode="build", spec_path=a.spec, testbench_path=a.tb,
                         top_module=a.top, generate_golden=a.generate_golden,
                         implementation=a.implementation,
-                        synthesis_timeout_minutes=a.synthesis_timeout_minutes, **kw)
+                        synthesis_timeout_minutes=a.synthesis_timeout_minutes,
+                        verification_policy=a.verification_policy, **kw)
         orch = Orchestrator(cfg, run_dir=a.output_dir.resolve() if hasattr(a, "output_dir") else None)
 
     try:

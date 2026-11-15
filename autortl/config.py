@@ -7,6 +7,9 @@ from pathlib import Path
 from .state import atomic_write_text
 
 IMPLEMENTATIONS = ("chip_top", "out_of_context")
+# Benchmark arm B ablation (ablation_policy_seam_absent). "full" is the shipped
+# behaviour; the other value is an explicit experiment setting only.
+VERIFICATION_POLICIES = ("full", "skip_generated_tb_mutations")
 
 
 @dataclass
@@ -43,12 +46,17 @@ class RunConfig:
     # fixed_synthesis_timeout_blocks_heavy_designs: one synthesis/implementation call's
     # limit; the remaining tool budget still caps it.
     synthesis_timeout_minutes: float = 15.0
+    # Experiment-only ablation: skip_generated_tb_mutations skips bug-injection
+    # qualification of generated module testbenches; never inferred from other flags.
+    verification_policy: str = "full"
 
     def validate(self) -> None:
         if self.mode not in ("build", "optimize"):
             raise ValueError("invalid run mode")
         if self.implementation not in IMPLEMENTATIONS:
             raise ValueError("implementation must be one of: " + ", ".join(IMPLEMENTATIONS))
+        if self.verification_policy not in VERIFICATION_POLICIES:
+            raise ValueError("verification_policy must be one of: " + ", ".join(VERIFICATION_POLICIES))
         if type(self.proposal_feedback) is not bool:
             raise ValueError("proposal_feedback must be boolean")
         if type(self.generate_golden) is not bool:
@@ -113,6 +121,8 @@ class RunConfig:
         data.setdefault("implementation", "chip_top")
         # Runs saved before the setting used the fixed 900 s synthesis limit.
         data.setdefault("synthesis_timeout_minutes", 15.0)
+        # Runs saved before the arm B seam qualified every generated testbench.
+        data.setdefault("verification_policy", "full")
         allowed = {item.name for item in fields(cls)}
         if set(data) - allowed:
             raise ValueError("unknown run config fields: " + ", ".join(sorted(set(data) - allowed)))

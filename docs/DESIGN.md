@@ -106,6 +106,16 @@ supported schema and limits.
 ## The six defences (see handoff for verified status)
 7. Testbench qualification by bug injection (tbqual.py) — the oracle must
    FAIL a sabotaged design before it grades anything.
+   Experiment-only ablation (benchmark arm B, `ablation_policy_seam_absent`):
+   `RunConfig.verification_policy` / `run.py build|optimize
+   --verification-policy` is `full` by default and in every shipped flow.
+   `skip_generated_tb_mutations` skips only the bug-injection qualification
+   of a generated module testbench; it is never inferred from other flags,
+   is saved in config.json (resume refuses a change), and each skip is
+   recorded as a `tb_qualification` event with outcome `skipped_by_policy`
+   plus the policy in the run summary. Candidate simulation against that
+   testbench still gates promotion, and a supplied trusted or independent
+   testbench, immutable inputs, budgets and interface checks are unchanged.
 8. Reset/X discipline — reset per spec + 2-cycle settle before comparing.
 9. Infra-vs-design triage (triage.py) — infra failures never mutate the
    design or enter history. A third kind, target, covers an interface that

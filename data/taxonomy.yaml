@@ -110,6 +110,9 @@ harness_failures:
   missing_tool_classified_unknown:
     meaning: "A tool that cannot be started (xvlog/xelab/xsim/vivado: FileNotFoundError or PermissionError at launch, e.g. 'xvlog not found: [WinError 2] The system cannot find the file specified') matched no triage signature, so the build ended build_blocked with failure_kind unknown instead of infra"
     repair: "Classify launch failures from vivado._run ('<tool> not found: [WinError N]' / '<tool> could not launch: ...') as FailureKind.INFRA in triage; genuine VRFC/Synth design errors stay design"
+  ablation_policy_seam_absent:
+    meaning: "Benchmark arm B (same bounded loop as arm C with generated-testbench mutation qualification skipped) had no harness seam: removing that one safeguard would need code edits or inference from other flags, so the ablation could not be run as an explicit, recorded experiment setting"
+    repair: "RunConfig.verification_policy (full | skip_generated_tb_mutations, default full, saved in config.json, resume refuses a change, older configs load as full) and run.py --verification-policy for build/optimize only. Under skip_generated_tb_mutations the FSM skips only the bug-injection qualification of a generated module testbench, records a tb_qualification event with outcome skipped_by_policy and the policy in the run summary; candidate simulation against that testbench still gates, and a supplied trusted or independent testbench is qualified exactly as before"
   benchmark_artifact_contract_validation:
     meaning: "Independent review of the staged benchmark artifact foundation reproduced UTF-16/32 acceptance under a UTF-8 contract, integer time conversion overflow, and fail-open inventory traversal"
     repair: "Decode UTF-8 strictly, reject unsupported machine-time budgets with ArtifactError, fail closed on traversal errors, and require an externally retained artifact ID. Artifact sealing does not establish RTL correctness or OS isolation"

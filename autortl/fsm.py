@@ -238,6 +238,8 @@ class Orchestrator:
                     raise
                 result = self._baseline_stop("budget_exhausted", str(exc))
             if result.get("status") != "done":
+                if self.cfg.verification_policy != "full":
+                    result.setdefault("verification_policy", self.cfg.verification_policy)
                 atomic_write_text(self.state.run_dir / "run_summary.json", json.dumps(result, indent=2))
             return result
         finally:
@@ -851,8 +853,20 @@ class Orchestrator:
         if verilog is None:
             return None
         # testbench qualification against the now-good module (defence #7)
-        qual_ok, reason = (self._qualify_source(verilog, tb, m.name, mdir)
-                          if self._journal_enabled else qualify_tb(verilog, tb, m.name, self.cfg, mdir))
+        if self.cfg.verification_policy == "skip_generated_tb_mutations":
+            # Benchmark arm B ablation (ablation_policy_seam_absent): only the bug-injection
+            # qualification of this generated testbench is skipped, and the skip is recorded.
+            # Candidate simulation against it already gated in _generate_verified; a supplied
+            # independent testbench below is still qualified.
+            self.state.append_event({"stage": "tb_qualification", "module": m.name,
+                                     "testbench": str(Path(tb).resolve()),
+                                     "testbench_sha256": hashlib.sha256(Path(tb).read_bytes()).hexdigest(),
+                                     "outcome": "skipped_by_policy",
+                                     "verification_policy": self.cfg.verification_policy})
+            qual_ok, reason = True, "skipped_by_policy (verification_policy=skip_generated_tb_mutations)"
+        else:
+            qual_ok, reason = (self._qualify_source(verilog, tb, m.name, mdir)
+                              if self._journal_enabled else qualify_tb(verilog, tb, m.name, self.cfg, mdir))
         print(f"[module {m.name}] tb qualification: {reason}")
         if not qual_ok:
             return None  # infra/unqualified stimulus must not silently change its own grading
@@ -1307,6 +1321,8 @@ class Orchestrator:
                    "run_dir": str(state.run_dir)}
         if termination_reason is not None:
             summary["termination_reason"] = termination_reason
+        if cfg.verification_policy != "full":
+            summary["verification_policy"] = cfg.verification_policy
         final_artifacts = {str(path.resolve()): hashlib.sha256(path.read_bytes()).hexdigest()
                            for path in Path(best_artifact_dir).glob("*")
                            if path.is_file() and (path.suffix in (".v", ".sv", ".rpt", ".xdc", ".tcl", ".log")
