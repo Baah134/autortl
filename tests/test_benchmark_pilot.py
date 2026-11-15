@@ -89,7 +89,7 @@ def test_single_call_model_block_and_unusable_reply_are_missing(manifest, task, 
 
 def test_unregistered_or_unimplemented_arm_is_refused(manifest, task, tmp_path):
     with pytest.raises(ve.AdapterError, match="not implemented"):
-        pilot._cell(manifest, task.id, "ablation", 0)
+        pilot._cell(manifest, task.id, "bogus", 0)
     with pytest.raises(ve.AdapterError, match="not registered"):
         pilot.run_single_call(manifest, task, tmp_path / "x", trial=3, ask=lambda *a, **k: GOOD)
 
@@ -261,3 +261,38 @@ def test_done_summary_survives_outer_wall_clock_timeout(manifest, task, tmp_path
     record, receipt = load_after(pilot.run_full(manifest, task, tmp_path / "c",
                                                 runner=FakeBuild(timeout_after_done=True)), tmp_path / "c")
     assert receipt["kind"] == "candidate" and record["accounting"]["outer_timeout"] is True
+
+
+
+def test_ablation_arm_skips_only_mutation_qualification(manifest, task, tmp_path):
+    """ablation_policy_seam_absent: arm B is arm C plus one recorded policy flag."""
+    cell = next(c for c in manifest["cells"] if c["arm"] == "ablation")
+    assert cell["verification_policy"] == "skip_generated_tb_mutations"
+    full, ablation = FakeBuild(), FakeBuild()
+    pilot.run_full(manifest, task, tmp_path / "c", runner=full)
+    pilot.run_full(manifest, task, tmp_path / "b", runner=ablation, arm="ablation")
+    assert "--verification-policy" not in full.cmd
+    flag = ablation.cmd.index("--verification-policy")
+    assert ablation.cmd[flag + 1] == "skip_generated_tb_mutations"
+    rest = ablation.cmd[:flag] + ablation.cmd[flag + 2:]
+    assert len(rest) == len(full.cmd)  # nothing else differs in shape
+    _, receipt = load_after(None, tmp_path / "b")
+    assert receipt["cell"]["arm"] == "ablation"
+
+
+def test_run_full_refuses_single_call_arm(manifest, task, tmp_path):
+    with pytest.raises(ve.AdapterError, match="full or ablation"):
+        pilot.run_full(manifest, task, tmp_path / "x", runner=FakeBuild(), arm="single_call")
+
+
+def test_ablation_command_passes_real_run_py_validation(manifest, task, tmp_path):
+    import sys
+    request = tmp_path / task.prompt.name
+    request.write_bytes(task.prompt.read_bytes())
+    budget = dict(manifest["cells"][0]["budget"], model_calls=0)
+    cmd = pilot.full_command(request, tmp_path / "run", budget, python=sys.executable,
+                             verification_policy="skip_generated_tb_mutations")
+    done = subprocess.run(cmd, cwd=str(pilot.REPO), capture_output=True, text=True, timeout=120)
+    assert "error:" not in done.stderr, done.stderr
+    summary = json.loads((tmp_path / "run" / "run_summary.json").read_text(encoding="utf-8"))
+    assert summary["status"] == "budget_exhausted"

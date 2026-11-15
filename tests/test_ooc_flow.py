@@ -38,7 +38,8 @@ close $fp
 read_xdc "W/timing.xdc"
 synth_design -top m -flatten_hierarchy rebuilt -mode out_of_context\x20
 set fp [open "W/timing_virtual.tcl" w]
-puts $fp {if {[llength [get_clocks -quiet]] == 0} {create_clock -period 10.000 -name clk; if {[llength [all_inputs]] > 0} {set_input_delay -clock clk 0.000 [all_inputs]}; if {[llength [all_outputs]] > 0} {set_output_delay -clock clk 0.000 [all_outputs]}}}
+puts $fp {if {[llength [get_clocks -quiet]] == 0} {create_clock -period 10.000 -name clk}}
+puts $fp {set regs [all_registers]; if {[llength $regs] == 0 || [llength [get_timing_paths -quiet -from $regs -to $regs -max_paths 1]] == 0} {set data_inputs [get_ports -quiet -filter {DIRECTION == IN && NAME != clk}]; if {[llength $data_inputs] > 0} {set_input_delay -clock clk 0.000 $data_inputs; set_false_path -hold -from $data_inputs}; if {[llength [all_outputs]] > 0} {set_output_delay -clock clk 0.000 [all_outputs]}; set autortl_ports_timed 1}}
 close $fp
 source "W/timing_virtual.tcl"
 report_utilization -file "W/utilization.rpt"
@@ -53,7 +54,9 @@ catch { if {[llength [all_registers]] > 0} { report_timing -from [all_registers]
 report_design_analysis -logic_level_distribution -file "W/design_analysis.rpt"
 report_power -file "W/power.rpt"
 catch { report_methodology -file "W/methodology.rpt" }
-catch { report_qor_suggestions -file "W/qor_suggestions.rpt" }
+# report_qor_suggestions crashes Vivado 2025.2 (EXCEPTION_ACCESS_VIOLATION) once the
+# port guard above set an input-hold false path; it is advisory, so skip it then.
+if {![info exists autortl_ports_timed]} { catch { report_qor_suggestions -file "W/qor_suggestions.rpt" } }
 puts "SYNTH_COMPLETE"
 """
 
@@ -84,7 +87,8 @@ def test_out_of_context_has_no_io_buffers_or_io_delays(tmp_path, monkeypatch):
     # Port delays exist only inside the clockless-design guard
     # (clockless_design_untimed_by_metrics_gate); a clocked block's ports stay unconstrained.
     delay_lines = [l for l in text.splitlines() if "set_input_delay" in l or "set_output_delay" in l]
-    assert len(delay_lines) == 1 and delay_lines[0].startswith("puts $fp {if {[llength [get_clocks -quiet]] == 0}")
+    # (single_register_design_untimed_ooc: also when no register-to-register path exists.)
+    assert len(delay_lines) == 1 and delay_lines[0].startswith("puts $fp {set regs [all_registers]; if {[llength $regs] == 0 ||")
     assert "timing_io.tcl" not in text  # no I/O constraint file: data ports stay unconstrained
     order = ["synth_design", "opt_design", "place_design", "route_design", "timing_routed.rpt",
              "timing_reg2reg.rpt", "SYNTH_COMPLETE"]

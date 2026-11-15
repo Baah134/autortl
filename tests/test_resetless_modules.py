@@ -65,8 +65,8 @@ def resetless_json(**module_overrides):
 def test_taxonomy_entry_precedes_benchmark_contract_entry():
     text = (ROOT / "data/taxonomy.yaml").read_text(encoding="utf-8")
     entries = list(yaml.safe_load(text)["harness_failures"])
-    index = entries.index("resetless_sequential_unrepresentable")
-    assert entries[index + 1] == "benchmark_artifact_contract_validation"
+    # Recorded before the benchmark-contract entry (later entries may sit between them).
+    assert entries.index("resetless_sequential_unrepresentable") < entries.index("benchmark_artifact_contract_validation")
     assert "Prob147_circuit10" in text
 
 
@@ -262,3 +262,17 @@ def test_reset_based_spec_json_has_no_new_keys():
     data = json.loads(DesignSpec("adder_top", [module]).to_json())["modules"][0]
     assert "init_cycles" not in data and "init_inputs" not in data
     assert data["reset"] == {"signal": "rst", "kind": "sync", "active_high": True, "duration_cycles": 5}
+
+
+def test_role_prompts_describe_resetless_init_and_keep_reset_text():
+    """resetless_sequential_unrepresentable: generator/golden writers see the init prefix."""
+    from autortl.roles import _reset_desc
+    module = DesignSpec.from_json(resetless_json()).modules[0]
+    desc = _reset_desc(module)
+    assert desc.startswith("none: the interface has no reset port; do not add one")
+    assert "holds a=0, b=0" in desc and "for 1 rising clock edge(s)" in desc
+    raw = json.loads(resetless_json())
+    del raw["modules"][0]["reset"], raw["modules"][0]["init_cycles"], raw["modules"][0]["init_inputs"]
+    legacy = DesignSpec.from_json(json.dumps(raw)).modules[0]
+    r = legacy.reset
+    assert _reset_desc(legacy) == f"{r.kind}, active_{'high' if r.active_high else 'low'} '{r.signal}'"

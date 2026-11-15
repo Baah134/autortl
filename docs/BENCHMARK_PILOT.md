@@ -34,12 +34,12 @@ and `benchmark/pilot.py` (arm runners, grading, CLI). Standard library only.
 | Arm | Generation | Submission |
 |---|---|---|
 | `single_call` | One `llm.client.ask("generator", prompt)` under a one-call budget; a timeout cannot become a second attempt | Extracted `TopModule` sealed `unverified`/`latest_complete`; otherwise missing (`model_blocked`, `budget`, `failed`) |
-| `full` | `run.py build --spec <prompt> --top TopModule --generate-golden` with declared budgets in a fresh directory | DONE winner `<top>_best.v` sealed `accepted`/`accepted_incumbent`; otherwise missing |
+| `full` | `run.py build --spec <prompt> --top TopModule --generate-golden` with declared budgets in a fresh directory | DONE winner (plus verified children for frozen_children builds) sealed `accepted`/`accepted_incumbent`; otherwise missing |
+| `ablation` | Same as `full` plus `--verification-policy skip_generated_tb_mutations` (skips only generated-testbench mutation qualification; recorded in events and summary) | Same as `full` |
 
 Both arms receive the same public prompt bytes, checked against the frozen
 manifest. The official `_test.sv`/`_ref.sv` are private manifest files; they
-are never passed as `--tb` or shown to a model. Arm B (mutation-qualification
-ablation) is not implemented.
+are never passed as `--tb` or shown to a model.
 
 ## Steps
 
@@ -125,4 +125,14 @@ interpreter with pyyaml.
   (`pilot_outer_timeout_discarded_done`, `pilot_submission_missing_children`).
   Stopped before the last two arm C cells. Evidence:
   `evidence/2026-11-14/pilot-attempts-01/`.
-- **pilot-04.** Refrozen with all fixes; all 12 cells run fresh, machine kept awake.
+- **pilot-04 (complete).** Frozen at 2f06f206; 12 cells graded. Arm A 6/6
+  (6 calls); arm C 4/6 (36 calls, about 13x the input tokens, 5-17 min per
+  task). Prob135_m2014_q6b arm C was internally accepted but fails the official
+  test (6/100): the planner misderived the spec and oracle and RTL shared the
+  error (`planner_spec_error_shared_by_oracle_and_rtl`, open). Prob147_circuit10
+  arm C was blocked by an untimed single-register design
+  (`single_register_design_untimed_ooc`, fixed) after the planner added a reset
+  port the request lacks (`resetless_sequential_unrepresentable`, fixed).
+  Evidence: `evidence/2026-11-14/pilot-04-results-01/`.
+- **pilot-05 (next).** Three arms (single_call, ablation, full) on the merged
+  runtime: resetless modules, arm B seam, out-of-context port timing, triage.

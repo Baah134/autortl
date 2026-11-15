@@ -1,6 +1,35 @@
 # AutoRTL current checkpoint
 
-## Current — November 14, 2026: shortest path to the VerilogEval pilot
+## Current — November 14, 2026 (evening): pilot-04 graded, workers merged
+
+Coordinator: Claude. Branch `codex/contract-context` (local commits since
+b98b6c4, not pushed). VerilogEval c498220 at `C:/Users/prince.baah/autortl-private/
+verilog-eval`; pilot workspaces `autortl-private/pilot-0N`; Icarus 12.0 (MSYS2).
+
+- **pilot-04 graded** (runtime 2f06f206): arm A 6/6, arm C 4/6 with one false
+  acceptance (Prob135_m2014_q6b, planner spec error shared by oracle and RTL).
+  Evidence `evidence/2026-11-14/pilot-04-results-01`.
+- **Merged worker branches** (each reviewed, built in its own worktree off
+  2f06f206): triage of unstartable tools as infra; arm B
+  `--verification-policy skip_generated_tb_mutations`; `benchmark/registration.py`
+  (40-task quota selection, exclusions file); resetless sequential modules
+  (`reset: null` + `init_cycles`/`init_inputs`).
+- **Coordinator fixes:** pilot `ablation` arm; out-of-context port timing for
+  designs without a register-to-register path (input hold excluded; advisory
+  QoR report skipped there after it crashed Vivado); Vivado crash banner
+  classified as infra. Live checks in `evidence/2026-11-14/ooc-port-timing-01`.
+- **Catalog:** two-reviewer adjudicated (kappa 0.962), 106 families
+  (`evidence/2026-11-14/catalog-review-01`). Final selection (40 tasks,
+  quotas 21/3/10/6) is computed but not yet registered.
+
+Exact next action: after the full suites pass, commit; freeze pilot-05 (three
+arms x 6 pilot tasks = 18 cells) on the merged runtime, run, grade; then freeze
+the final registration and run the 40-task comparison (3 arms x 3 trials).
+Open: `planner_spec_error_shared_by_oracle_and_rtl` (no mitigation adopted),
+roles.py does not yet describe init_cycles to the golden/RTL writers, and the
+machine's sleep stalls long runs (keep it awake or plugged in, lid open).
+
+## Earlier — November 14, 2026: shortest path to the VerilogEval pilot
 
 Coordinator: Claude (user-directed, November 14). Codex's November 13 lease had
 expired; no repository file had changed on November 14 and no Vivado, xsim or

@@ -16,6 +16,25 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from llm.client import ask, extract_verilog
 
 
+
+def _reset_desc(module) -> str:
+    """Reset line for the generator and golden-model prompts.
+
+    Reset-based modules keep the original text exactly. A resetless module
+    (reset null) states its unchecked initialization prefix, which otherwise
+    reaches these writers only through the behavior text
+    (resetless_sequential_unrepresentable).
+    """
+    r = module.reset
+    if r.present:
+        return f"{r.kind}, active_{'high' if r.active_high else 'low'} '{r.signal}'"
+    if not module.init_cycles:
+        return "none: the interface has no reset port; do not add one"
+    held = ", ".join(f"{k}={v}" for k, v in sorted(module.init_inputs.items())) or "all data inputs 0"
+    return (f"none: the interface has no reset port; do not add one. Before any comparison the "
+            f"testbench holds {held} (other data inputs 0) for {module.init_cycles} rising clock "
+            f"edge(s), unchecked; after that prefix the state must equal the model's initial state")
+
 def default_timescale(source: str) -> str:
     """The harness simulation unit for sources that declare none (XSIM 43-4099)."""
     uncommented = re.sub(r"/\*.*?\*/|//[^\n]*", "", source, flags=re.DOTALL)
@@ -190,7 +209,7 @@ class Generator:
             ports_table=_ports_table(module), latency=latency, latency_header=latency_header,
             parameters=json.dumps(module.parameters),
             interface_signature=json.dumps(module.interface_signature, sort_keys=True),
-            reset_desc=f"{r.kind}, active_{'high' if r.active_high else 'low'} '{r.signal}'",
+            reset_desc=_reset_desc(module),
             mutation=mutation_text, instruction=instruction, verilog=verilog)
         resp = _ask(self, "generator", evidence_prompt(self, p, include_proposals=True), system=role_system(prompts.GENERATOR_SYSTEM),
                    budget=budget)
@@ -219,7 +238,7 @@ class Generator:
                                         ports_table=_ports_table(module),
                                         parameters=json.dumps(module.parameters),
                                         compare_mode=module.compare_mode, latency=module.latency,
-                                        reset_desc=f"{module.reset.kind}, active_{'high' if module.reset.active_high else 'low'} '{module.reset.signal}'",
+                                        reset_desc=_reset_desc(module),
                                         data_outputs=json.dumps([p.name for p in module.ports if p.direction == "output" and p.protocol == "none"]))
         p += golden_examples_context(module)
         if feedback and (previous_source or previous_source_sha256):

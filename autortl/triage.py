@@ -27,6 +27,8 @@ SETTLED_KINDS = (FailureKind.DESIGN, FailureKind.TARGET)
 
 
 _INFRA_SIGNATURES = [
+    # vivado_crash_classified_design: the tool process itself crashed.
+    r"Abnormal program termination \(EXCEPTION_[A-Z_]+\)",
     r"\[Common 17-53\].*No open design",
     # A license failure, not Vivado's routine "Attempting to get a license" / "Got license".
     r"(?:could not|cannot|unable to|failed to)\s+(?:obtain|get|check\s*out|find)[^\n]*license"

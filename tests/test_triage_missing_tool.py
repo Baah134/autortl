@@ -20,3 +20,12 @@ def test_genuine_xvlog_errors_stay_design():
            'ERROR: [VRFC 10-4982] syntax error near "endmodule" [top.v:3]\n')
     assert classify(log) == FailureKind.DESIGN
     assert classify("ERROR: [VRFC 10-2989] 'xvlog' is not declared [top.v:4]") == FailureKind.DESIGN
+
+
+def test_vivado_crash_banner_is_infrastructure():
+    """vivado_crash_classified_design: real banner from an out-of-context DFF run (Vivado 2025.2)."""
+    log = ('# catch { report_qor_suggestions -file "W/qor_suggestions.rpt" }\n'
+           "Command: report_qor_suggestions -file W/qor_suggestions.rpt\n"
+           "Abnormal program termination (EXCEPTION_ACCESS_VIOLATION)\n"
+           "Please check 'W/hs_err_pid12696.log' for details\n")
+    assert classify(log) == FailureKind.INFRA

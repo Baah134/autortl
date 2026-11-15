@@ -441,14 +441,22 @@ mode (taxonomy chip_top_flow_for_soc_block).
   timing live on Vivado 2025.2; the complete harness script ran live on
   November 14 (pilot-03 count15 and evidence/2026-11-14/pilot-attempts-01).
 
-**Clockless designs (both flows).** A purely combinational design has no `clk`
-port, so the XDC clock matches nothing. When no clock exists after synthesis,
-the template creates a virtual clock named `clk` at the target period; chip_top
-then applies its usual zero port delays, and out_of_context constrains all
-inputs and outputs to it. Input-to-output paths therefore yield real WNS/WHS
-and the metrics gate is unchanged (taxonomy
-clockless_design_untimed_by_metrics_gate). Designs with a `clk` port are
-unaffected.
+**Designs with no internal timed path.** A purely combinational design has no
+`clk` port, so the XDC clock matches nothing. When no clock exists after
+synthesis, both templates create a virtual clock named `clk` at the target
+period, and chip_top then applies its usual zero port delays (taxonomy
+clockless_design_untimed_by_metrics_gate). Out of context, a design with no
+registers or no register-to-register path (a single register stage, such as a
+DFF) would otherwise have nothing timed, so its data ports get zero delay to
+`clk`: port-to-register, register-to-port and port-to-port paths are
+setup-timed. Input hold is not checked there, because it depends on where the
+driving register sits; a zero minimum delay against the BUFG-modelled clock gave
+an artificial -0.83 ns on a DFF (taxonomy single_register_design_untimed_ooc).
+With that guard active the advisory `report_qor_suggestions` is skipped, since
+it crashed Vivado 2025.2 with this constraint set (vivado_crash_classified_design).
+Designs with a register-to-register path keep unconstrained ports and identical
+metrics; live check: evidence/2026-11-14/ooc-port-timing-01. The metrics gate
+is unchanged.
 
 ## Target capacity failures
 A `[Place 30-415]` ERROR line means the top has more I/O ports than the

@@ -275,9 +275,14 @@ puts "SYNTH_COMPLETE"
 # between a port and its first or last register is not timed. Same reports,
 # same metrics and the same SYNTH_COMPLETE marker as the chip-top flow.
 # A design with no clock port (purely combinational) gets a virtual clock
-# named clk at the target period with zero port delays, so its input-to-output
-# paths are timed (clockless_design_untimed_by_metrics_gate); the chip-top
-# flow creates the same virtual clock before its existing port delays.
+# named clk at the target period (clockless_design_untimed_by_metrics_gate);
+# the chip-top flow creates the same virtual clock before its existing port
+# delays. Out of context, a design with no register-to-register path (no
+# registers, or a single register stage) would have nothing timed, so its
+# data ports get zero delay to clk (single_register_design_untimed_ooc);
+# input hold is not checked there, because it depends on where the driving
+# register sits (the same reason ports are otherwise unconstrained);
+# designs with an internal path keep unconstrained ports as before.
 # The clock/HD.CLK_SRC/out_of_context lines match hardware/basys3/fmax/fmax.py's
 # ooc mode, which closed timing live on Vivado 2025.2 for xc7a35tcpg236-1.
 OOC_SYNTH_TCL = """\
@@ -291,7 +296,8 @@ close $fp
 read_xdc "{workdir}/timing.xdc"
 synth_design -top {top} -flatten_hierarchy rebuilt -mode out_of_context {extra_synth}
 set fp [open "{workdir}/timing_virtual.tcl" w]
-puts $fp {{if {{[llength [get_clocks -quiet]] == 0}} {{create_clock -period {period} -name clk; if {{[llength [all_inputs]] > 0}} {{set_input_delay -clock clk 0.000 [all_inputs]}}; if {{[llength [all_outputs]] > 0}} {{set_output_delay -clock clk 0.000 [all_outputs]}}}}}}
+puts $fp {{if {{[llength [get_clocks -quiet]] == 0}} {{create_clock -period {period} -name clk}}}}
+puts $fp {{set regs [all_registers]; if {{[llength $regs] == 0 || [llength [get_timing_paths -quiet -from $regs -to $regs -max_paths 1]] == 0}} {{set data_inputs [get_ports -quiet -filter {{DIRECTION == IN && NAME != clk}}]; if {{[llength $data_inputs] > 0}} {{set_input_delay -clock clk 0.000 $data_inputs; set_false_path -hold -from $data_inputs}}; if {{[llength [all_outputs]] > 0}} {{set_output_delay -clock clk 0.000 [all_outputs]}}; set autortl_ports_timed 1}}}}
 close $fp
 source "{workdir}/timing_virtual.tcl"
 report_utilization -file "{workdir}/utilization.rpt"
@@ -306,7 +312,9 @@ catch {{ if {{[llength [all_registers]] > 0}} {{ report_timing -from [all_regist
 report_design_analysis -logic_level_distribution -file "{workdir}/design_analysis.rpt"
 report_power -file "{workdir}/power.rpt"
 catch {{ report_methodology -file "{workdir}/methodology.rpt" }}
-catch {{ report_qor_suggestions -file "{workdir}/qor_suggestions.rpt" }}
+# report_qor_suggestions crashes Vivado 2025.2 (EXCEPTION_ACCESS_VIOLATION) once the
+# port guard above set an input-hold false path; it is advisory, so skip it then.
+if {{![info exists autortl_ports_timed]}} {{ catch {{ report_qor_suggestions -file "{workdir}/qor_suggestions.rpt" }} }}
 puts "SYNTH_COMPLETE"
 """
 

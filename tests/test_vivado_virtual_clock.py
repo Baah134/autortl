@@ -33,10 +33,15 @@ def test_chip_top_virtual_clock_precedes_existing_port_delays(tmp_path):
     assert text.index("get_clocks -quiet]] == 0") < text.index("set_input_delay -clock clk")
 
 
-def test_out_of_context_constrains_ports_only_for_clockless_designs(tmp_path):
+def test_out_of_context_times_ports_only_without_internal_paths(tmp_path):
+    """single_register_design_untimed_ooc: no registers or no reg-to-reg path -> time ports."""
     text = tcl(tmp_path, "out_of_context")
-    line = next(l for l in text.splitlines() if "get_clocks -quiet" in l)
-    assert "set_input_delay -clock clk 0.000 [all_inputs]" in line
+    line = next(l for l in text.splitlines() if "get_timing_paths" in l)
+    assert "[llength $regs] == 0 || [llength [get_timing_paths -quiet -from $regs -to $regs -max_paths 1]] == 0" in line
+    assert "NAME != clk" in line  # the clock port itself gets no data delay
+    assert "set_input_delay -clock clk 0.000 $data_inputs; set_false_path -hold -from $data_inputs" in line
     assert "set_output_delay -clock clk 0.000 [all_outputs]" in line
-    # Outside the guard, out-of-context ports stay untimed as before.
+    # Outside that guard, out-of-context ports stay untimed as before.
     assert sum("set_input_delay" in l for l in text.splitlines()) == 1
+    # The clock guard runs first so the port delays always have a clock.
+    assert text.index("get_clocks -quiet]] == 0") < text.index("get_timing_paths")

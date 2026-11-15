@@ -26,11 +26,12 @@ from . import artifacts
 from . import verilogeval as ve
 
 REPO = Path(__file__).resolve().parent.parent
-ARMS = ("single_call", "full")
+ARMS = ("single_call", "ablation", "full")
 # Nov6 provisional pilot ceilings. single_call uses no tool time; artifacts
 # needs a positive value, so it declares a nominal one second.
 PROVISIONAL_BUDGETS = {
     "single_call": {"model_calls": 1, "tool_seconds": 1.0, "wall_seconds": 2100},
+    "ablation": {"model_calls": 16, "tool_seconds": 1500.0, "wall_seconds": 2100},
     "full": {"model_calls": 16, "tool_seconds": 1500.0, "wall_seconds": 2100},
 }
 OUTER_GRACE_S = 300
@@ -143,8 +144,12 @@ def full_command(request: Path, run_dir: Path, budget: dict, *, python: str = sy
                  model: str | None = None, best_of_n: int | None = FULL_SETTINGS["best_of_n"],
                  iterations: int | None = FULL_SETTINGS["iterations"],
                  implementation: str | None = FULL_SETTINGS["implementation"],
-                 tools: dict | None = None) -> list[str]:
-    """`run.py build` from the public prompt alone; never an official --tb."""
+                 tools: dict | None = None, verification_policy: str = "full") -> list[str]:
+    """`run.py build` from the public prompt alone; never an official --tb.
+
+    Arm B passes verification_policy skip_generated_tb_mutations, which skips only
+    the generated testbench's mutation qualification (ablation_policy_seam_absent).
+    """
     cmd = [python, str(REPO / "run.py"), "build", "--spec", str(request), "--top", ve.TOP,
            "--generate-golden", "--output-dir", str(run_dir),
            "--max-llm-calls", str(budget["model_calls"]),
@@ -159,6 +164,8 @@ def full_command(request: Path, run_dir: Path, budget: dict, *, python: str = sy
         cmd += ["--iterations", str(iterations)]
     if implementation is not None:
         cmd += ["--implementation", implementation]
+    if verification_policy != "full":
+        cmd += ["--verification-policy", verification_policy]
     for name, path in (tools or {}).items():
         cmd += [f"--{name}", path]
     return cmd
@@ -168,13 +175,19 @@ def run_full(manifest: dict, task: ve.Task, out_dir: Path, *, trial: int = 0, mo
              best_of_n: int | None = FULL_SETTINGS["best_of_n"],
              iterations: int | None = FULL_SETTINGS["iterations"],
              implementation: str | None = FULL_SETTINGS["implementation"],
-             runner=subprocess.run, python: str = sys.executable, tools: dict | None = None) -> dict:
+             runner=subprocess.run, python: str = sys.executable, tools: dict | None = None,
+             arm: str = "full") -> dict:
     """Full AutoRTL build; only a DONE run's verified winner is sealed (accepted incumbent).
 
     A run without a DONE winner is recorded missing. Selecting the latest complete
     candidate from non-DONE runs needs candidate bundles (deferred).
     """
-    cell = _cell(manifest, task.id, "full", trial)
+    if arm not in ("full", "ablation"):
+        raise ve.AdapterError(f"run_full runs the full or ablation arm, not {arm!r}")
+    cell = _cell(manifest, task.id, arm, trial)
+    expected = "skip_generated_tb_mutations" if arm == "ablation" else "full"
+    if cell["verification_policy"] != expected:
+        raise ve.AdapterError(f"{arm} cell must declare verification_policy {expected}")
     tools = vivado_tools() if tools is None else tools  # fail before creating the cell directory
     out_dir = Path(out_dir)
     work = out_dir / "work"
@@ -187,7 +200,7 @@ def run_full(manifest: dict, task: ve.Task, out_dir: Path, *, trial: int = 0, mo
     run_dir = out_dir / "run"
     cmd = full_command(request, run_dir, cell["budget"], python=python, model=model,
                        best_of_n=best_of_n, iterations=iterations, implementation=implementation,
-                       tools=tools)
+                       tools=tools, verification_policy=cell["verification_policy"])
     started = time.monotonic()
     outer_timeout = cell["budget"]["wall_seconds"] + OUTER_GRACE_S
     try:
@@ -330,7 +343,7 @@ def main(argv=None) -> int:
         if a.arm == "single_call":
             result = run_single_call(manifest, task, a.out, trial=a.trial, model=a.model)
         else:
-            result = run_full(manifest, task, a.out, trial=a.trial, model=a.model,
+            result = run_full(manifest, task, a.out, trial=a.trial, model=a.model, arm=a.arm,
                               best_of_n=a.best_of_n, iterations=a.iterations,
                               implementation=a.implementation)
     else:

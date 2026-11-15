@@ -1753,3 +1753,14 @@ sweep 152/156, excluding lfsr32, count_clock, fancytimer (testbench watchdog
 prints TIMEOUT for the reference) and m2014_q6c (port mismatch). Drafted the
 category catalog (one reviewer) and selected the six pilot tasks. No model,
 Vivado or board run. Evidence: evidence/2026-11-14/pilot-grader-controls-01.
+
+Evening Nov14: pilot-04 graded against the official VerilogEval tests: arm A
+6/6 (6 calls), arm C 4/6 (36 calls) including the first measured false
+acceptance (Prob135_m2014_q6b: planner misderived the next-state table; the
+generated oracle and RTL shared the error). Earlier attempts pilot-01..03
+stopped on adapter/harness defects, each recorded in taxonomy and evidence.
+Subagents in separate worktrees delivered the triage fix, the arm B seam, final
+registration and resetless-module support; a blind second catalog review
+agreed on 152/156 categories (kappa 0.962). Coordinator added out-of-context
+port timing for single-register designs (live-checked) and crash triage. The
+host slept 18:37-20:30, stalling runs and agents; recovered without data loss.
