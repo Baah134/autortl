@@ -1,7 +1,7 @@
 # VerilogEval pilot-06 results — November 14, 2026 (pilot gate)
 
 Pilot only: six tasks excluded from final results, three arms, one trial each.
-Runtime `e61a09827` (`runtime-identity.txt`), manifest `manifest.json`, dataset
+Runtime `e61a09827` (`runtime-identity.txt`), manifest `benchmark_registration.json` (the frozen benchmark manifest; its file hashes refer to the external VerilogEval checkout, not to this folder), dataset
 NVlabs/verilog-eval c498220d0a52, Codex CLI 0.167 (requested model: unobserved
 CLI default), Vivado 2025.2, Icarus 12.0. Arms B and C: best_of_n 1, one
 iteration, out_of_context, 16 calls / 25 tool-min / 35 wall-min. Every run was

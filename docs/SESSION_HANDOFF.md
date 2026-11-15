@@ -10,7 +10,7 @@ Coordinator: Claude. Branch `codex/contract-context`, pushed (MIT licence).
 `main` frozen at `ca61dbc`; no PR yet.
 
 **Running:** `final-02`, the registered comparison (40 tasks x 3 arms x 3
-trials = 360 cells, runtime `7731a66d2`), started November 15 15:00 with
+trials = 360 cells, runtime `7731a66d2`), started November 15 14:30 with
 
     python -m benchmark.campaign --manifest <final-02>/manifest.json --dataset <D> --attempt <final-02>
 

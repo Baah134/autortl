@@ -5,7 +5,7 @@ backend invocation) and C (`full`, `run.py build`), one trial each. Pilot number
 validate the pipeline; they are not benchmark results and are never pooled.
 
 Identity: runtime `2f06f2063` (`runtime-identity.txt`), manifest
-`manifest.json`, dataset NVlabs/verilog-eval c498220d0a52, Codex CLI 0.167
+`benchmark_registration.json` (the frozen benchmark manifest; its file hashes refer to the external VerilogEval checkout, not to this folder), dataset NVlabs/verilog-eval c498220d0a52, Codex CLI 0.167
 (requested model: unobserved CLI default), Vivado 2025.2, Icarus 12.0. Arm C:
 best_of_n 1, one iteration, out_of_context, 16 calls / 25 tool-min / 35 wall-min.
 Every run was sealed before grading against the official testbench and

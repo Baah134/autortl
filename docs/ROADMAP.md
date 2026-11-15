@@ -54,7 +54,7 @@ tagged release exists on `main` with a licence.
 - Benchmark machinery is complete and tested: `benchmark/verilogeval.py`
   (dataset, selection, grader), `pilot.py` (arms A/B/C), `registration.py`
   (final selection), `campaign.py` (runner), `report.py` (grading gate and
-  statistics). Runbook: `docs/BENCHMARK_PILOT.md`.
+  statistics), `archive.py` (evidence folder). Runbook: `docs/BENCHMARK_PILOT.md`.
 - Pilot gate passed (pilot-06: 6/6 in all three arms). Final registration
   frozen: 40 tasks, `evidence/2026-11-14/final-registration-01`.
 - `final-01` was aborted after 5 cells (`empty_netlist_unplaceable`, fixed).
@@ -106,13 +106,13 @@ criteria; a task is not done until all are met and committed.
 - When the log's last event has reason `all cells attempted`:
   1. `python -m benchmark.report grade --manifest <final-02>/manifest.json --dataset <D> --attempt <final-02> --iverilog C:/msys64/ucrt64/bin/iverilog.exe --vvp C:/msys64/ucrt64/bin/vvp.exe`
   2. `python -m benchmark.report render --summary <final-02>/grades/summary.json --catalog benchmark/catalogs/verilogeval-c498220.json --title "VerilogEval spec-to-RTL: single call vs AutoRTL (40 tasks x 3 trials)" --out <scratch>/report.md`
-  3. Archive to `evidence/<date>/final-02-results/`: `report.md`, `report.json`,
-     `summary.json`, `manifest.json`, `runtime-identity.txt`, the run log, a
-     `cells.json` (per cell: run record without the command, verdict, run
-     summary status) and the sealed RTL. Replace home paths with `<home>`
-     (see `evidence/2026-11-14/pilot-06-results-01` for the layout). Write a
-     README stating identity, protocol, the tables, every false acceptance by
-     task, every non-`done` termination and the limits.
+  3. Archive: `python -m benchmark.archive --attempt <final-02> --out evidence/<date>/final-02-results --catalog benchmark/catalogs/verilogeval-c498220.json --title "<same title>" --forbid <user name>`
+     (copies the registration, identity, log, summary, cells, sealed RTL and
+     report with home paths replaced). Write the folder's README (identity,
+     protocol, the tables, every false acceptance by task, every non-`done`
+     termination, limits), then `python -m benchmark.archive --out <folder> --seal`.
+     Run `python tools/evidence_audit.py --worktree` before committing: a copied
+     file whose name contains "manifest" is audited as an archive manifest.
   4. Read every false-acceptance and every harness-fail/single-pass task; add a
      taxonomy entry for each new cause (after the campaign, rule 4).
 - Acceptance: all 360 cells sealed and graded once; report committed with
