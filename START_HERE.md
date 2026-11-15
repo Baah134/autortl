@@ -3,6 +3,8 @@
 Canonical checkout: `C:/Users/prince.baah/Downloads/autortl-work`.
 `Downloads/autortl` is a separate copy. User choice: command-line Vivado.
 
+**The plan of record is [docs/ROADMAP.md](docs/ROADMAP.md)** (tasks, order, commands, acceptance criteria;
+review: [docs/REVIEW_2026-11-15.md](docs/REVIEW_2026-11-15.md)).
 **The sole current checkpoint is [docs/SESSION_HANDOFF.md](docs/SESSION_HANDOFF.md).**
 Read its dated state and exact next action; do not infer live work from older
 chat summaries, mailbox requests or progress entries. This entry guide was

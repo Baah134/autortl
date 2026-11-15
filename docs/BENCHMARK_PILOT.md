@@ -140,4 +140,15 @@ interpreter with pyyaml.
   hold path of a combinational design. Fixed by excluding input-to-register
   hold only; the earlier live check had not rerun the combinational case.
   The machine also slept 22:24-22:38 during this attempt.
-- **pilot-06 (next).** Three arms on the corrected runtime.
+- **pilot-06 (gate passed).** Frozen at e61a0982: single_call, ablation and
+  full each 6/6, every cell done. Evidence `evidence/2026-11-14/pilot-06-results-01/`.
+
+## Final comparison
+
+Registration: `evidence/2026-11-14/final-registration-01/` (40 tasks). Run and
+restart with `python -m benchmark.campaign --manifest M --dataset D --attempt DIR`
+(trial-major order, never reruns a cell, stops on a model block or three
+consecutive interrupted cells). Grade once every cell is sealed with
+`python -m benchmark.report grade`, then `python -m benchmark.report render`
+for rates with task-clustered 95% intervals, paired differences, false
+acceptance and cost. Steps and acceptance: `docs/ROADMAP.md` task B1.

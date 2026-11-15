@@ -460,7 +460,7 @@ python run.py optimize --design curriculum/tier0/mux4/mux4.v \
 
 ## Development and evaluation
 
-The public-task comparison is in preparation. [Artifact contracts](docs/BENCHMARK_ARTIFACTS.md) preserve public-only inputs and hashed RTL submissions; no measured advantage over a single-call baseline is claimed yet.
+A registered comparison on 40 public VerilogEval tasks (single model call, the harness without testbench mutation qualification, and the full harness; three trials each) is running; its tasks were frozen before any trial ([registration](evidence/2026-11-14/final-registration-01/README.md), [runbook](docs/BENCHMARK_PILOT.md)). A six-task pilot, excluded from results, passed in all three arms after exposing and fixing five harness defects ([pilot](evidence/2026-11-14/pilot-06-results-01/README.md)); an earlier pilot recorded one design the harness accepted that the official test rejects ([details](evidence/2026-11-14/pilot-04-results-01/README.md)). No advantage over a single-call baseline is claimed yet.
 
 Continuous integration
 ([`.github/workflows/tests.yml`](.github/workflows/tests.yml)) runs the full
@@ -505,3 +505,7 @@ and [engineering evidence log](docs/PROGRESS.md).
 Prince Baah-Mensah. AutoRTL is a personal FPGA and verification project.
 
 Development uses AI coding agents under the author's direction. The repository retains verification evidence, rejected attempts and known limits.
+
+## License
+
+MIT, see [LICENSE](LICENSE). The VerilogEval benchmark (NVIDIA, MIT) is not redistributed here; three short simulator logs produced with its testbenches are kept as parser fixtures with attribution ([note](tests/fixtures/verilogeval/README.md)).

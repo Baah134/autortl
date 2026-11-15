@@ -1,0 +1,103 @@
+"""Campaign ordering, restart safety and stop guards with a runner double."""
+import json
+from pathlib import Path
+
+import pytest
+
+from benchmark import campaign, pilot
+from benchmark import verilogeval as ve
+
+DATA = Path(__file__).parent / "fixtures" / "verilogeval" / "dataset"
+
+
+@pytest.fixture
+def manifest():
+    return ve.build_manifest(DATA, ["Prob901_and2", "Prob900_inv"], dataset_commit="a" * 40,
+                             source_commit="b" * 40, runtime_commit="c" * 40, runtime_sha256="d" * 64,
+                             requested_model="unobserved-cli-default", budgets=pilot.PROVISIONAL_BUDGETS,
+                             trials=2)
+
+
+class Runner:
+    def __init__(self, terminations=None):
+        self.calls, self.terminations = [], terminations or {}
+
+    def __call__(self, manifest, task, cell, out_dir, model):
+        self.calls.append(cell)
+        out_dir.mkdir(parents=True)
+        assert task.id == cell[0]
+        return {"kind": "candidate", "termination": self.terminations.get(cell, "done"),
+                "receipt_id": "0" * 64}
+
+
+def test_order_is_trial_major_manifest_tasks_fixed_arms(manifest):
+    cells = campaign.ordered_cells(manifest)
+    assert len(cells) == 12
+    assert cells[:6] == [("Prob901_and2", "single_call", 0), ("Prob901_and2", "ablation", 0),
+                         ("Prob901_and2", "full", 0), ("Prob900_inv", "single_call", 0),
+                         ("Prob900_inv", "ablation", 0), ("Prob900_inv", "full", 0)]
+    assert {c[2] for c in cells[:6]} == {0} and {c[2] for c in cells[6:]} == {1}
+
+
+def test_only_registered_arms_are_scheduled():
+    two = ve.build_manifest(DATA, ["Prob900_inv"], dataset_commit="a" * 40, source_commit="b" * 40,
+                            runtime_commit="c" * 40, runtime_sha256="d" * 64, requested_model="m",
+                            budgets={k: pilot.PROVISIONAL_BUDGETS[k] for k in ("single_call", "full")})
+    assert [c[1] for c in campaign.ordered_cells(two)] == ["single_call", "full"]
+
+
+def test_runs_all_then_restart_runs_nothing(manifest, tmp_path):
+    runner = Runner()
+    first = campaign.run_campaign(manifest, DATA, tmp_path, runner=runner)
+    assert first == {"exit": 0, "ran": 12, "skipped": 0, "pending": 0, "reason": "all cells attempted"}
+    assert runner.calls == campaign.ordered_cells(manifest)
+    again = Runner()
+    second = campaign.run_campaign(manifest, DATA, tmp_path, runner=again)
+    assert second["ran"] == 0 and second["skipped"] == 12 and again.calls == []
+
+
+def test_existing_directory_is_never_rerun_even_if_unsealed(manifest, tmp_path):
+    spent = campaign.cell_dir(tmp_path, ("Prob901_and2", "ablation", 0))
+    spent.mkdir(parents=True)  # e.g. a launch killed before sealing
+    runner = Runner()
+    result = campaign.run_campaign(manifest, DATA, tmp_path, runner=runner)
+    assert ("Prob901_and2", "ablation", 0) not in runner.calls and result["skipped"] == 1 and result["ran"] == 11
+
+
+def test_model_block_stops_before_spending_more_cells(manifest, tmp_path):
+    blocked = ("Prob901_and2", "full", 0)
+    runner = Runner({blocked: "model_blocked"})
+    result = campaign.run_campaign(manifest, DATA, tmp_path, runner=runner)
+    assert result["exit"] == campaign.EXIT_MODEL_BLOCKED and runner.calls[-1] == blocked
+    assert result["ran"] == 3 and result["pending"] == 9
+    assert not campaign.cell_dir(tmp_path, ("Prob900_inv", "single_call", 0)).exists()
+    events = [json.loads(line) for line in (tmp_path / "campaign.log").read_text().splitlines()]
+    assert events[-1]["event"] == "stop" and "model blocked" in events[-1]["reason"]
+    assert [e["event"] for e in events[:2]] == ["start", "sealed"]
+
+
+def test_consecutive_interruptions_stop_but_isolated_ones_do_not(manifest, tmp_path):
+    cells = campaign.ordered_cells(manifest)
+    isolated = Runner({cells[0]: "interrupted", cells[2]: "interrupted", cells[4]: "interrupted"})
+    assert campaign.run_campaign(manifest, DATA, tmp_path / "a", runner=isolated)["exit"] == 0
+    streak = Runner({cells[1]: "interrupted", cells[2]: "interrupted", cells[3]: "interrupted"})
+    result = campaign.run_campaign(manifest, DATA, tmp_path / "b", runner=streak)
+    assert result["exit"] == campaign.EXIT_INTERRUPTED and result["ran"] == 4 and len(streak.calls) == 4
+
+
+def test_max_cells_limits_a_session(manifest, tmp_path):
+    runner = Runner()
+    result = campaign.run_campaign(manifest, DATA, tmp_path, runner=runner, max_cells=5)
+    assert result == {"exit": 0, "ran": 5, "skipped": 0, "pending": 7, "reason": "max_cells reached"}
+    rest = campaign.run_campaign(manifest, DATA, tmp_path, runner=Runner())
+    assert rest["skipped"] == 5 and rest["ran"] == 7 and rest["pending"] == 0
+
+
+def test_run_cell_dispatches_by_arm(manifest, tmp_path, monkeypatch):
+    seen = []
+    monkeypatch.setattr(pilot, "run_single_call", lambda m, t, o, trial, model: seen.append(("A", trial, model)) or {})
+    monkeypatch.setattr(pilot, "run_full", lambda m, t, o, trial, model, arm: seen.append((arm, trial, model)) or {})
+    task = ve.load_task(DATA, "Prob900_inv")
+    for arm in ("single_call", "ablation", "full"):
+        campaign.run_cell(manifest, task, ("Prob900_inv", arm, 1), tmp_path / arm, "pinned")
+    assert seen == [("A", 1, "pinned"), ("ablation", 1, "pinned"), ("full", 1, "pinned")]

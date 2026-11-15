@@ -1,5 +1,7 @@
 # AutoRTL action plan — November 6, 2026
 
+> Superseded on November 15, 2026 by [ROADMAP.md](ROADMAP.md). Kept as history.
+
 Goal: ship a reproducible FPGA/EDA portfolio release with working hardware,
 independent verification and a defensible comparison against simpler workflows.
 The harness is the contribution; its demonstrations and evidence establish scope.
