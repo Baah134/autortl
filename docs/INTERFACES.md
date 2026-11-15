@@ -58,6 +58,22 @@ by packed bounds. Fallback qualification mutants use the same interface stub
 and replace output behavior with stuck-zero assignments. A compilation failure
 is not evidence that a testbench detected the intended behavioral defect.
 
+## Resetless modules
+
+`"reset": null` in design_spec JSON loads as `ResetSpec.none()` (signal `""`,
+kind `none`, `present` false). An omitted `reset` keeps the legacy default
+`rst` contract. A given reset keeps every existing check: valid identifier,
+sync/async kind, duration 1..1000, and for sequential verification a matching
+port. A resetless module with a `clk` port or nonzero latency must declare
+`init_cycles` (1..64); `init_inputs` maps data inputs to masked values held
+during initialization (omitted inputs 0). Both fields are rejected on modules
+with a reset port or without a clock. The generated testbench drives no reset;
+it holds `init_inputs` for `init_cycles` rising edges without comparing, then
+compares as in fixed_latency. The oracle stream and each spec example start
+with the same prefix rows, so examples describe the post-initialization state.
+Resetless scoreboard is rejected, because the scoreboard driver pulses reset.
+Reset-based specs keep identical testbench text, JSON and contract hashes.
+
 ## Signed golden models
 
 The oracle API still uses nonnegative masked bit patterns, from zero through

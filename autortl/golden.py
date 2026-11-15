@@ -85,6 +85,8 @@ def validate_examples(spec: ModuleSpec, *, require_anchors=False) -> list[str]:
         return ["generated oracle requires at least one concrete specification example"]
     inputs = {p.name:p for p in spec.ports if p.direction == "input" and p.name != "clk"}
     outputs = {p.name:p for p in spec.ports if p.direction == "output" and p.protocol == "none"}
+    # Each example of a resetless module first replays its init prefix.
+    prefix = len(spec.init_rows())
     steps = 0
     for index, example in enumerate(examples):
         label = f"example {index}"
@@ -92,7 +94,7 @@ def validate_examples(spec: ModuleSpec, *, require_anchors=False) -> list[str]:
         if type(cycles) is not int or not 1 <= cycles <= 10000:
             errors.append(label + ": after_cycles must be an integer in 1..10000")
         else:
-            steps += cycles
+            steps += cycles + prefix
         given, expected = getattr(example, "inputs", None), getattr(example, "expected", None)
         if not isinstance(given, dict) or not set(given).issubset(inputs):
             # unnamed_example_input_error: name the stray keys and the allowed ones.
@@ -116,12 +118,18 @@ def validate_examples(spec: ModuleSpec, *, require_anchors=False) -> list[str]:
 
 
 def qualify_against_examples(gm: GoldenModel, spec: ModuleSpec) -> list[str]:
-    """Run the spec's concrete IO examples through the golden model."""
+    """Run the spec's concrete IO examples through the golden model.
+
+    Examples start from the reset state: fresh init(), or for a module without a
+    reset port, fresh init() followed by the unchecked init_cycles prefix that the
+    generated testbench also drives (resetless_sequential_unrepresentable).
+    """
     errs = validate_examples(spec)
     if errs:
         return errs
+    prefix = spec.init_rows()
     for i, ex in enumerate(spec.examples):
-        stim = [dict(ex.inputs)] + [dict(ex.inputs)] * max(0, ex.after_cycles - 1)
+        stim = prefix + [dict(ex.inputs)] + [dict(ex.inputs)] * max(0, ex.after_cycles - 1)
         outs = gm.run(stim)
         final = outs[-1] if outs else {}
         for k, v in ex.expected.items():

@@ -117,6 +117,11 @@ supported schema and limits.
    testbench still gates promotion, and a supplied trusted or independent
    testbench, immutable inputs, budgets and interface checks are unchanged.
 8. Reset/X discipline — reset per spec + 2-cycle settle before comparing.
+   A requested interface without a reset port is typed as `"reset": null`
+   (never an invented rst port); a clocked resetless module declares
+   `init_cycles` (1..64) and optional `init_inputs`, driven unchecked before
+   comparison and replayed by the oracle and every example. Resetless
+   scoreboard modules are rejected (resetless_sequential_unrepresentable).
 9. Infra-vs-design triage (triage.py) — infra failures never mutate the
    design or enter history. A third kind, target, covers an interface that
    cannot fit the configured device (see target capacity failures).

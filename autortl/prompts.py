@@ -59,7 +59,8 @@ Output ONLY JSON matching this schema (no commentary):
                 "clock_domain": "clk", "protocol": "none|valid_ready"}}],
      "latency": int, "compare_mode": "fixed_latency|scoreboard",
      "reset": {{"signal": "rst", "kind": "sync", "active_high": true,
-               "duration_cycles": 5}},
+               "duration_cycles": 5}} or null,
+     "init_cycles": int (only when reset is null), "init_inputs": {{}},
      "clock_domains": ["clk"], "parameters": {{}},
      "examples": [{{"inputs": {{}}, "expected": {{}}, "after_cycles": int}}] }}],
   "connections": [{{"src_module": str, "src_port": str,
@@ -104,6 +105,17 @@ of eventual Verilog each; split anything bigger.
 Each example holds its inputs constant for after_cycles clock steps, starting
 from the reset state, then checks the expected outputs; every inputs and
 expected value is a single integer, never a per-cycle list.
+Reset follows the requested interface exactly. NEVER add a reset port (rst,
+reset, rst_n or any other) that the request's interface does not have, and
+never drop one it has. When the requested interface has a clock but no reset
+port, write "reset": null and declare "init_cycles" (1..64) and optionally
+"init_inputs" (data input values, omitted inputs 0): the testbench drives
+init_inputs for init_cycles rising edges without checking, then compares;
+examples start from the state after that initialization. Choose init_inputs
+that make every state bit defined (for example one rising edge with a=0, b=0
+sets state=0), and say in behavior exactly how the state becomes defined.
+init_cycles and init_inputs are only for "reset": null; a module with a reset
+port omits them. A module without a reset port uses compare_mode fixed_latency.
 Each example runs the Python reference for after_cycles steps inside a fixed
 sandbox budget, so keep every after_cycles at or below 2000. For long-period
 designs (for example a UART bit lasting hundreds of cycles), make each example
@@ -239,7 +251,8 @@ Frozen source interface signature: {interface_signature}
 The signature is authoritative when present: retain public parameter types/default
 expressions and symbolic port dimensions, not just their resolved default widths.
 Internal localparams may change only when the external contract remains identical.
-Latency: {latency}. Reset: {reset_desc}.
+Latency: {latency}. Reset: {reset_desc}. Reset none means the interface has no
+reset port: do not add one; the behavior states how inputs define the state.
 
 **Approach for this candidate:** {mutation}
 
@@ -378,7 +391,10 @@ Comparison mode: {compare_mode}. Declared RTL latency: {latency}. Reset: {reset_
 Output keys must be exactly these data outputs: {data_outputs}; do not return
 valid/ready control outputs. Values are masked plain integers. The clock edge
 is implicit; do not read clk. Handle reset input explicitly when supplied;
-init() must represent reset state. Generated comparisons begin with asserted
+init() must represent reset state. Reset none means there is no reset port:
+every comparison and every example first runs the initialization steps the
+behavior describes (the spec's init_inputs for init_cycles steps, unchecked),
+so step() must compute the state those steps define, whatever init() returns. Generated comparisons begin with asserted
 reset steps, followed by deasserted reset and data stimulus. Spec examples may
 supply controls explicitly; use suitable inactive defaults for omitted controls.
 For fixed_latency, model one logical input/state transition per step and return

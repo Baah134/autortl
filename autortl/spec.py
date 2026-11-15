@@ -13,6 +13,8 @@ PROTOCOLS = {"none", "valid_ready", "pulse", "level"}
 DIRECTIONS = {"input", "output", "inout"}
 RESET_KINDS = {"sync", "async"}
 COMPARE_MODES = {"fixed_latency", "scoreboard"}   # pulse mode intentionally stubbed
+NO_RESET_KIND = "none"    # ResetSpec.none(): the requested interface has no reset port
+MAX_INIT_CYCLES = 64
 
 
 def valid_identifier(value) -> bool:
@@ -83,7 +85,27 @@ class ResetSpec:
     active_high: bool = True
     duration_cycles: int = 5
 
+    @staticmethod
+    def none() -> "ResetSpec":
+        """Explicit no-reset contract, spelled "reset": null in design_spec JSON.
+
+        resetless_sequential_unrepresentable: a requested interface without a
+        reset port is law; the harness must never invent one.
+        """
+        return ResetSpec(signal="", kind=NO_RESET_KIND, active_high=True, duration_cycles=0)
+
+    @property
+    def present(self) -> bool:
+        return not (self.signal == "" and self.kind == NO_RESET_KIND)
+
     def validate(self) -> list[str]:
+        if self.kind == NO_RESET_KIND:
+            # Only the exact canonical form means "no reset"; anything else is a
+            # half-specified reset and stays an error.
+            if self != ResetSpec.none():
+                return ["reset kind 'none' is only valid as \"reset\": null (no reset port); "
+                        "a module with a reset port names it with kind sync or async"]
+            return []
         errors = [] if self.kind in RESET_KINDS else [f"reset kind '{self.kind}' invalid"]
         if not valid_identifier(self.signal): errors.append("invalid reset signal identifier")
         if type(self.active_high) is not bool: errors.append("reset polarity must be boolean")
@@ -113,17 +135,67 @@ class ModuleSpec:
     golden_model: str = ""
     interface_signature: dict | None = None
     latency_known: bool = True
+    # Resetless clocked modules only: hold init_inputs (omitted data inputs 0)
+    # for init_cycles rising edges, unchecked, before any comparison or example.
+    init_cycles: int | None = None
+    init_inputs: dict = field(default_factory=dict)
 
     def contract_hash(self) -> str:
         import hashlib
-        blob = json.dumps({
+        contract = {
             "name": self.name, "behavior": self.behavior,
             "ports": [asdict(p) for p in self.ports],
             "latency": self.latency, "latency_known": self.latency_known, "compare_mode": self.compare_mode,
             "reset": asdict(self.reset), "params": list(self.parameters.items()),
             "interface_signature": self.interface_signature,
-        }, sort_keys=True)
+        }
+        if self.init_cycles is not None or self.init_inputs:
+            # Absent for every reset-based spec, so existing hashes are unchanged.
+            contract["init"] = {"cycles": self.init_cycles, "inputs": self.init_inputs}
+        blob = json.dumps(contract, sort_keys=True)
         return hashlib.sha256(blob.encode()).hexdigest()[:16]
+
+    def init_rows(self) -> list[dict]:
+        """The unchecked initialization prefix of a resetless module, as oracle rows."""
+        if self.reset.present or not self.init_cycles:
+            return []
+        data = [p.name for p in self.ports
+                if p.direction == "input" and p.protocol == "none" and p.name != "clk"]
+        row = {name: self.init_inputs.get(name, 0) for name in data}
+        return [dict(row) for _ in range(self.init_cycles)]
+
+    def _init_errors(self) -> list[str]:
+        errs = []
+        label = f"module {self.name}"
+        names = {p.name for p in self.ports}
+        if self.reset.present:
+            if self.init_cycles is not None or self.init_inputs:
+                errs.append(f"{label}: init_cycles/init_inputs apply only to a module without a reset "
+                            "port (\"reset\": null); a reset port initializes state")
+            return errs
+        clocked = "clk" in names
+        if self.compare_mode == "scoreboard":
+            errs.append(f"{label}: scoreboard compare_mode requires a reset port; a resetless module "
+                        "uses fixed_latency with init_cycles")
+        if clocked or self.latency != 0:
+            if type(self.init_cycles) is not int or not 1 <= self.init_cycles <= MAX_INIT_CYCLES:
+                errs.append(f"{label}: a clocked module without a reset port (\"reset\": null) must declare "
+                            f"init_cycles 1..{MAX_INIT_CYCLES}: rising edges that drive init_inputs, "
+                            "unchecked, until the state is defined; behavior must say how")
+        elif self.init_cycles is not None or self.init_inputs:
+            errs.append(f"{label}: init_cycles/init_inputs need a clk port")
+        if not isinstance(self.init_inputs, dict):
+            errs.append(f"{label}: init_inputs must be an object of input port values")
+            return errs
+        data = {p.name: p for p in self.ports
+                if p.direction == "input" and p.protocol == "none" and p.name != "clk"}
+        stray = sorted(set(self.init_inputs) - set(data))
+        if stray:
+            errs.append(f"{label}: init_inputs names non-data-input ports {stray}; allowed: {sorted(data)}")
+        for name, value in self.init_inputs.items():
+            if name in data and (type(value) is not int or not 0 <= value < (1 << data[name].width)):
+                errs.append(f"{label}: init_inputs {name} must be a masked port integer")
+        return errs
 
     def validate(self) -> list[str]:
         errs = []
@@ -143,6 +215,7 @@ class ModuleSpec:
                 errs.append(f"module {self.name}: port {p.name} references "
                             f"unknown clock domain '{p.clock_domain}'")
         errs.extend(self.reset.validate())
+        errs.extend(self._init_errors())
         if type(self.latency) is not int or not 0 <= self.latency <= 1024:
             errs.append(f"module {self.name}: latency must be an integer in 0..1024")
         if type(self.latency_known) is not bool:
@@ -179,7 +252,15 @@ class DesignSpec:
         return next((m for m in self.modules if m.name == name), None)
 
     def to_json(self) -> str:
-        return json.dumps(asdict(self), indent=2)
+        raw = asdict(self)
+        for module, data in zip(self.modules, raw["modules"]):
+            if not module.reset.present:
+                data["reset"] = None
+            if module.init_cycles is None and not module.init_inputs:
+                # Reset-based specs serialize exactly as before.
+                data.pop("init_cycles")
+                data.pop("init_inputs")
+        return json.dumps(raw, indent=2)
 
     @staticmethod
     def from_json(text: str) -> "DesignSpec":
@@ -187,7 +268,10 @@ class DesignSpec:
         mods = []
         for m in raw["modules"]:
             ports = [Port(**p) for p in m.pop("ports")]
-            reset = ResetSpec(**m.pop("reset", {}))
+            # An omitted reset keeps the legacy default; only an explicit null
+            # means "this interface has no reset port".
+            given = m.pop("reset", {})
+            reset = ResetSpec.none() if given is None else ResetSpec(**given)
             examples = [IOExample(**e) for e in m.pop("examples", [])]
             mods.append(ModuleSpec(ports=ports, reset=reset, examples=examples, **m))
         conns = [Connection(**c) for c in raw.get("connections", [])]
