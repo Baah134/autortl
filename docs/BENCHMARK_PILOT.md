@@ -145,6 +145,19 @@ interpreter with pyyaml.
 
 ## Final comparison
 
+Attempts:
+
+- **final-01 (aborted, harness defect).** Runtime 77582058, stopped after 5 of
+  360 cells. Wiring-only designs (Prob015_vector1, Prob042_vector4) synthesize
+  to no cells and the out-of-context placer rejected them, so harness arms
+  failed for a reason unrelated to function (`empty_netlist_unplaceable`,
+  `vivado_exit_crash_after_completion`). The five sealed cells are retained in
+  `autortl-private/final-01` and summarized in
+  `evidence/2026-11-15/empty-netlist-01`; none is rerun there or reported.
+- **final-02.** Same registered 40 tasks, runtime with the fix, all 360 cells
+  fresh. Before launch, the official reference of every final task was
+  synthesized through the harness flow as a tool control (no model output).
+
 Registration: `evidence/2026-11-14/final-registration-01/` (40 tasks). Run and
 restart with `python -m benchmark.campaign --manifest M --dataset D --attempt DIR`
 (trial-major order, never reruns a cell, stops on a model block or three

@@ -456,8 +456,23 @@ an artificial -0.83 ns on a DFF (taxonomy single_register_design_untimed_ooc).
 With that guard active the advisory `report_qor_suggestions` is skipped, since
 it crashed Vivado 2025.2 with this constraint set (vivado_crash_classified_design).
 Designs with a register-to-register path keep unconstrained ports and identical
-metrics; live check: evidence/2026-11-14/ooc-port-timing-01. The metrics gate
+metrics; live check: evidence/2026-11-14/ooc-port-timing-02. The metrics gate
 is unchanged.
+
+**Empty and path-free netlists.** A wiring-only design (outputs are bit selects
+or copies of inputs) has no primitive cells after `opt_design`; out of context
+the placer rejects it ("The design is empty"), so the script writes the
+utilization and timing reports and completes without place and route. When
+Vivado itself reports no timing path at all (such a design, or constant
+outputs), the script writes `no_timing_paths.txt` with the target period; the
+parser then records WNS equal to the period and WHS 0, vacuously met, and only
+if the timing report has no numeric WNS and WHS, so measured slack is never
+overridden. The marker is deleted at the start of every script. Vivado 2025.2
+can crash during shutdown after such a run; a crash that follows the
+`SYNTH_COMPLETE` line and Vivado's own "Exiting Vivado" line does not discard
+the completed run, while a crash at any earlier point stays an infrastructure
+failure (taxonomy empty_netlist_unplaceable,
+vivado_exit_crash_after_completion; evidence/2026-11-15/empty-netlist-01).
 
 ## Target capacity failures
 A `[Place 30-415]` ERROR line means the top has more I/O ports than the
