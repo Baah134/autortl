@@ -1,6 +1,27 @@
 # AutoRTL current checkpoint
 
-## Current — November 14, 2026 (evening): pilot-04 graded, workers merged
+## Current — November 14, 2026 (late): pilot gate passed, final run ready
+
+Coordinator: Claude. Branch `codex/contract-context` at 775820583 (local, not
+pushed). pilot-06 (runtime e61a09827) passed the gate: single_call, ablation and
+full each 6/6, every cell done (evidence/2026-11-14/pilot-06-results-01). pilot-05
+was aborted on a hold-exclusion defect, fixed in e61a09827. The final 40-task
+registration is frozen (evidence/2026-11-14/final-registration-01, selection
+c85666ff).
+
+Final comparison prepared, not launched: `C:/Users/prince.baah/autortl-private/
+final-01/manifest.json` (360 cells: 40 tasks x 3 arms x 3 trials, runtime
+775820583) and `final-01/run_all.sh` (trial-major; never reruns a cell). Launch:
+`bash C:/Users/prince.baah/autortl-private/final-01/run_all.sh <venv python>`
+from any shell; grade only after all cells are sealed with
+`autortl-private/grade_pilot.py <repo> <final-01> <dataset> <iverilog> <vvp>`.
+Expected from pilot-06 rates: about 19 h awake time, about 1,700 Codex calls and
+40M input tokens (much of it cached). The host must not sleep.
+
+Open: `planner_spec_error_shared_by_oracle_and_rtl` (not reproduced in pilot-06),
+no push yet, main still frozen at ca61dbc.
+
+## Earlier — November 14, 2026 (evening): pilot-04 graded, workers merged
 
 Coordinator: Claude. Branch `codex/contract-context` (local commits since
 b98b6c4, not pushed). VerilogEval c498220 at `C:/Users/prince.baah/autortl-private/
