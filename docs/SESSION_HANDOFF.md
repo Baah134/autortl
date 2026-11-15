@@ -22,6 +22,14 @@ interrupted cells (exit 4); rerunning the same command resumes and never
 reruns a cell. About 19 hours of awake machine time; the first task
 (Prob042_vector4) sealed a candidate in all three arms.
 
+**Quota.** Codex hit its usage limit on November 15 at 17:09 after 58 cells
+(one single-call cell sealed `model_blocked`, two harness cells sealed
+`interrupted`; all three are infrastructure and excluded from report rates).
+The campaign was resumed with `--wait-minutes 20 --max-wait-hours 12`: it probes
+every 20 minutes without spending cells and continues when the model answers.
+Expect about seven usage windows for all 360 cells. If the process is gone
+(reboot), run the same command again.
+
 **Do not edit while it runs:** `autortl/`, `llm/`, `data/`, `.claude/skills/`,
 `run.py`, `benchmark/pilot.py`, `benchmark/verilogeval.py`. Use a worktree.
 

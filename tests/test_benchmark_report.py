@@ -51,15 +51,44 @@ def test_summary_counts_rates_missing_and_cost():
     rows = grid({"single_call": {"t1": [True, True], "t2": [False, True]},
                  "full": {"t1": [True, True], "t2": [True, True]}})
     rows[-1].update(status="missing", upstream_pass=False, upstream_code=None, internal=None,
-                    termination="model_blocked")
+                    termination="failed")  # the harness produced nothing: a real failure
     s = report.summarize(rows, samples=500)
     a, c = s["arms"]["single_call"], s["arms"]["full"]
     assert (a["passes"], a["cells"], a["pass_rate"]) == (3, 4, 0.75)
     assert (c["passes"], c["missing"], c["pass_rate"]) == (3, 1, 0.75)  # missing counts as failure
-    assert c["terminations"] == {"done": 3, "model_blocked": 1}
+    assert c["terminations"] == {"done": 3, "failed": 1} and c["not_evaluable"] == 0
     assert a["llm_calls"] == 4 and c["llm_calls"] == 24 and c["calls_per_pass"] == 8.0
     assert a["tasks_always_pass"] == 1 and a["tasks_never_pass"] == 0
     assert s["tasks"] == 2 and s["cells"] == 8 and s["bootstrap"]["unit"] == "task"
+
+
+@pytest.mark.parametrize("termination", report.INFRA_TERMINATIONS)
+def test_infrastructure_stops_are_not_verdicts(termination):
+    """Hard rule: quota blocks and interruptions never count as design failures."""
+    rows = grid({"single_call": {"t1": [True, True], "t2": [True, True]},
+                 "full": {"t1": [True, True], "t2": [True, True]}})
+    rows[1].update(status="missing", upstream_pass=False, upstream_code=None, internal=None,
+                   termination=termination)  # single_call, t1, trial 1
+    s = report.summarize(rows, samples=300)
+    a = s["arms"]["single_call"]
+    assert (a["passes"], a["cells"], a["pass_rate"], a["missing"]) == (3, 3, 1.0, 0)
+    assert a["not_evaluable"] == 1 and a["not_evaluable_cells"] == ["t1#1"]
+    assert a["terminations"][termination] == 1 and a["llm_calls"] == 4  # cost is still charged
+    assert s["paired"]["full-single_call"]["mean_difference"] == 0.0
+    assert "| A single call | 3/3 | 100.0% |" in report.render_markdown(s) and "| 0 | 1 |" in report.render_markdown(s)
+
+
+def test_task_with_no_verdict_in_one_arm_is_dropped_from_that_pair_only():
+    rows = grid({"single_call": {"t1": [True], "t2": [False]}, "full": {"t1": [True], "t2": [True]}})
+    rows[1].update(status="missing", upstream_pass=False, termination="model_blocked", internal=None)  # A, t2
+    s = report.summarize(rows, samples=200)
+    pair = s["paired"]["full-single_call"]
+    assert pair["tasks_compared"] == 1 and pair["mean_difference"] == 0.0
+    assert s["arms"]["full"]["cells"] == 2 and s["arms"]["single_call"]["cells"] == 1
+    only_blocked = grid({"single_call": {"t1": [True]}})
+    only_blocked[0]["termination"] = "interrupted"
+    with pytest.raises(report.ReportError, match="no evaluable cell"):
+        report.summarize(only_blocked, samples=50)
 
 
 def test_false_acceptance_uses_internally_accepted_denominator():

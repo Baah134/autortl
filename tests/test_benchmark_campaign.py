@@ -101,3 +101,71 @@ def test_run_cell_dispatches_by_arm(manifest, tmp_path, monkeypatch):
     for arm in ("single_call", "ablation", "full"):
         campaign.run_cell(manifest, task, ("Prob900_inv", arm, 1), tmp_path / arm, "pinned")
     assert seen == [("A", 1, "pinned"), ("ablation", 1, "pinned"), ("full", 1, "pinned")]
+
+
+# ------------------------------------------------------------ model availability
+class Probe:
+    def __init__(self, answers):
+        self.answers, self.calls = list(answers), 0
+
+    def __call__(self):
+        self.calls += 1
+        return self.answers.pop(0) if self.answers else (True, "")
+
+
+def test_blocked_probe_stops_before_spending_any_cell(manifest, tmp_path):
+    runner, probe = Runner(), Probe([(False, "CODEX_QUOTA: limit")])
+    result = campaign.run_campaign(manifest, DATA, tmp_path, runner=runner, probe=probe)
+    assert result["exit"] == campaign.EXIT_MODEL_BLOCKED and result["ran"] == 0 and result["pending"] == 12
+    assert runner.calls == [] and not any((tmp_path / "runs").iterdir())
+    assert "CODEX_QUOTA" in result["reason"] and "before Prob901_and2 single_call" in result["reason"]
+
+
+def test_wait_mode_probes_until_available_then_runs_everything(manifest, tmp_path):
+    runner, sleeps = Runner(), []
+    probe = Probe([(False, "quota"), (False, "quota"), (True, "")])
+    result = campaign.run_campaign(manifest, DATA, tmp_path, runner=runner, probe=probe,
+                                   wait_seconds=1200, sleep=sleeps.append)
+    assert result["exit"] == 0 and result["ran"] == 12 and sleeps == [1200, 1200] and probe.calls == 3
+    events = [json.loads(line)["event"] for line in (tmp_path / "campaign.log").read_text().splitlines()]
+    assert events[:3] == ["waiting_for_model", "waiting_for_model", "model_available"]
+
+
+def test_block_mid_campaign_waits_and_resumes_spending_only_that_cell(manifest, tmp_path):
+    cells = campaign.ordered_cells(manifest)
+    runner, sleeps = Runner({cells[2]: "model_blocked"}), []
+    probe = Probe([(True, ""), (False, "quota"), (True, "")])  # start ok; blocked after cell 2; then back
+    result = campaign.run_campaign(manifest, DATA, tmp_path, runner=runner, probe=probe,
+                                   wait_seconds=600, sleep=sleeps.append)
+    assert result["exit"] == 0 and result["ran"] == 12 and runner.calls == cells and sleeps == [600]
+
+
+def test_wait_gives_up_after_max_wait(manifest, tmp_path):
+    sleeps = []
+    result = campaign.run_campaign(manifest, DATA, tmp_path, runner=Runner(), probe=Probe([(False, "q")] * 50),
+                                   wait_seconds=1800, max_wait_seconds=3600, sleep=sleeps.append)
+    assert result["exit"] == campaign.EXIT_MODEL_BLOCKED and sleeps == [1800, 1800] and result["ran"] == 0
+
+
+def test_model_available_maps_block_and_success():
+    from llm import client
+
+    def blocked(*args, **kwargs):
+        raise client.ModelCallError("generator", "CODEX_QUOTA", message="usage limit")
+
+    assert campaign.model_available(ask=lambda *a, **k: "OK") == (True, "")
+    ok, reason = campaign.model_available(ask=blocked)
+    assert not ok and reason.startswith("CODEX_QUOTA")
+
+
+def test_interrupted_cell_also_triggers_a_probe_and_wait(manifest, tmp_path):
+    """A harness cell stopped by quota is sealed interrupted; do not start the next cell blind."""
+    cells = campaign.ordered_cells(manifest)
+    runner, sleeps = Runner({cells[1]: "interrupted"}), []
+    probe = Probe([(True, ""), (False, "quota"), (True, "")])
+    result = campaign.run_campaign(manifest, DATA, tmp_path, runner=runner, probe=probe,
+                                   wait_seconds=900, sleep=sleeps.append)
+    assert result["exit"] == 0 and result["ran"] == 12 and sleeps == [900] and probe.calls == 3
+    stop_now = campaign.run_campaign(manifest, DATA, tmp_path / "b", runner=Runner({cells[1]: "interrupted"}),
+                                     probe=Probe([(True, ""), (False, "quota")]))
+    assert stop_now["exit"] == campaign.EXIT_MODEL_BLOCKED and stop_now["ran"] == 2

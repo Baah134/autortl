@@ -15,7 +15,10 @@ Statistics (protocol: evidence/2026-11-06/parallel-diagnoses-01):
 - Arm differences are paired by task (same tasks in every arm).
 - The primary endpoint is the upstream-compatible verdict (`upstream_pass`);
   the strict exit-based status and their disagreements are reported beside it.
-- A missing submission counts as a failure in pass rates (intention to treat).
+- A missing submission counts as a failure in pass rates (intention to treat),
+  except cells stopped by infrastructure (model quota or authentication block,
+  interruption): those are not verdicts, are excluded from every rate and are
+  counted separately. Their cost is still charged.
 - False acceptance: internally accepted but externally failing, over all
   internally accepted submissions of that arm.
 """
@@ -33,6 +36,9 @@ ARMS = ("single_call", "ablation", "full")
 ARM_LABEL = {"single_call": "A single call", "ablation": "B ablation", "full": "C full harness"}
 BOOTSTRAP_SAMPLES = 10_000
 BOOTSTRAP_SEED = 20261115
+# Infrastructure never counts as a design verdict (AGENTS.md hard rule 4): cells that
+# ended on a model quota/auth block or an interruption are excluded from rates.
+INFRA_TERMINATIONS = ("model_blocked", "interrupted")
 ROW_KEYS = ("task", "arm", "trial", "termination", "internal", "status", "upstream_code",
             "upstream_pass", "mismatches", "samples", "run_status", "llm_calls", "input_tokens",
             "output_tokens", "seconds", "tool_seconds")
@@ -125,7 +131,7 @@ def _check_rows(rows: list[dict]) -> None:
 
 
 def _task_rates(rows: list[dict], arm: str) -> dict[str, float]:
-    """Per-task pass fraction over that arm's trials (missing counts as failure)."""
+    """Per-task pass fraction over that arm's evaluable trials (missing counts as failure)."""
     by_task: dict[str, list[int]] = {}
     for row in rows:
         if row["arm"] == arm:
@@ -141,13 +147,18 @@ def summarize(rows: list[dict], catalog: dict | None = None, samples: int = BOOT
     out: dict = {"tasks": len(tasks), "cells": len(rows), "arms": {}, "paired": {}, "categories": {},
                  "bootstrap": {"samples": samples, "seed": BOOTSTRAP_SEED, "unit": "task"}}
     rates = {}
+    registered = {}
     for arm in arms:
-        mine = [r for r in rows if r["arm"] == arm]
-        rates[arm] = _task_rates(rows, arm)
+        every = [r for r in rows if r["arm"] == arm]
+        registered[arm] = {r["task"] for r in every}
+        mine = [r for r in every if r.get("termination") not in INFRA_TERMINATIONS]
+        if not mine:
+            raise ReportError(f"arm {arm} has no evaluable cell")
+        rates[arm] = _task_rates(mine, arm)
         passes = sum(r["upstream_pass"] for r in mine)
         accepted = [r for r in mine if r.get("internal") == "accepted"]
         false_accepts = [r for r in accepted if not r["upstream_pass"]]
-        calls = sum(r.get("llm_calls") or 0 for r in mine)
+        calls = sum(r.get("llm_calls") or 0 for r in every)
         out["arms"][arm] = {
             "cells": len(mine), "passes": passes, "pass_rate": passes / len(mine),
             "ci95_task_bootstrap": cluster_bootstrap(rates[arm], samples),
@@ -156,23 +167,29 @@ def summarize(rows: list[dict], catalog: dict | None = None, samples: int = BOOT
             "grader_disagreements": sum((r["status"] == "pass") != bool(r["upstream_pass"])
                                         for r in mine if r["status"] != "missing"),
             "missing": sum(r["status"] == "missing" for r in mine),
-            "terminations": _count(r.get("termination") for r in mine),
+            "not_evaluable": len(every) - len(mine),
+            "not_evaluable_cells": sorted(f"{r['task']}#{r['trial']}" for r in every if r not in mine),
+            "terminations": _count(r.get("termination") for r in every),
             "internally_accepted": len(accepted), "false_acceptances": len(false_accepts),
             "false_acceptance_rate": len(false_accepts) / len(accepted) if accepted else None,
             "false_acceptance_cells": sorted(f"{r['task']}#{r['trial']}" for r in false_accepts),
             "tasks_always_pass": sum(v == 1.0 for v in rates[arm].values()),
             "tasks_never_pass": sum(v == 0.0 for v in rates[arm].values()),
-            "llm_calls": calls, "input_tokens": sum(r.get("input_tokens") or 0 for r in mine),
-            "output_tokens": sum(r.get("output_tokens") or 0 for r in mine),
-            "seconds": sum(r.get("seconds") or 0 for r in mine),
+            "llm_calls": calls, "input_tokens": sum(r.get("input_tokens") or 0 for r in every),
+            "output_tokens": sum(r.get("output_tokens") or 0 for r in every),
+            "seconds": sum(r.get("seconds") or 0 for r in every),
             "calls_per_pass": calls / passes if passes else None,
         }
     for better, base in (("full", "single_call"), ("full", "ablation"), ("ablation", "single_call")):
         if better in rates and base in rates:
-            if set(rates[better]) != set(rates[base]):
+            if registered[better] != registered[base]:
                 raise ReportError(f"arms {better} and {base} cover different tasks")
-            diff = {t: rates[better][t] - rates[base][t] for t in rates[better]}
+            common = set(rates[better]) & set(rates[base])  # tasks with a verdict in both arms
+            if not common:
+                raise ReportError(f"arms {better} and {base} share no evaluable task")
+            diff = {t: rates[better][t] - rates[base][t] for t in common}
             out["paired"][f"{better}-{base}"] = {
+                "tasks_compared": len(common),
                 "mean_difference": sum(diff.values()) / len(diff),
                 "ci95_task_bootstrap": cluster_bootstrap(diff, samples),
                 "tasks_better": sum(v > 0 for v in diff.values()),
@@ -212,10 +229,11 @@ def render_markdown(summary: dict, title: str = "VerilogEval comparison") -> str
     lines = [f"# {title}", "",
              f"{summary['tasks']} tasks, {summary['cells']} graded cells. Intervals are 95% task-clustered "
              f"bootstrap ({summary['bootstrap']['samples']} resamples, seed {summary['bootstrap']['seed']}); "
-             "trials of one task are not independent. Missing submissions count as failures.", "",
+             "trials of one task are not independent. Missing submissions count as failures; cells stopped "
+             "by infrastructure (model quota, interruption) are not verdicts and are excluded from rates.", "",
              "## Functional correctness (official testbench, upstream-compatible verdict)", "",
-             "| Arm | Pass | Rate | 95% CI | Always / never pass (tasks) | Missing |",
-             "|---|---|---|---|---|---|"]
+             "| Arm | Pass | Rate | 95% CI | Always / never pass (tasks) | Missing | Excluded (infrastructure) |",
+             "|---|---|---|---|---|---|---|"]
     degenerate = False
     for arm, a in summary["arms"].items():
         interval = _ci(a["ci95_task_bootstrap"])
@@ -223,7 +241,8 @@ def render_markdown(summary: dict, title: str = "VerilogEval comparison") -> str
             # Every task has the same rate: resampling cannot vary. Show the per-cell Wilson bound instead.
             interval, degenerate = _ci(a["ci95_wilson_per_cell_reference"]) + " (Wilson*)", True
         lines.append(f"| {ARM_LABEL[arm]} | {a['passes']}/{a['cells']} | {_pct(a['pass_rate'])} | "
-                     f"{interval} | {a['tasks_always_pass']} / {a['tasks_never_pass']} | {a['missing']} |")
+                     f"{interval} | {a['tasks_always_pass']} / {a['tasks_never_pass']} | {a['missing']} | "
+                     f"{a['not_evaluable']} |")
     if degenerate:
         lines += ["", "*All tasks had the same rate, so the bootstrap cannot vary; the per-cell Wilson interval "
                   "is shown and is optimistic if trials of a task are correlated."]

@@ -102,7 +102,10 @@ criteria; a task is not done until all are met and committed.
   sealed `model_blocked` and is reported as missing). `3 consecutive
   interrupted cells` means infrastructure: diagnose before restarting.
 - Restart command (skips existing cells):
-  `python -m benchmark.campaign --manifest <final-02>/manifest.json --dataset <D> --attempt <final-02>`.
+  `python -m benchmark.campaign --manifest <final-02>/manifest.json --dataset <D> --attempt <final-02>` --wait-minutes 20`.
+  With `--wait-minutes` the campaign probes the model before spending a cell and
+  waits out quota blocks itself. Measured on November 15: one Codex usage window
+  covers about 58 cells (2.6 hours), so 360 cells need about seven windows.
 - When the log's last event has reason `all cells attempted`:
   1. `python -m benchmark.report grade --manifest <final-02>/manifest.json --dataset <D> --attempt <final-02> --iverilog C:/msys64/ucrt64/bin/iverilog.exe --vvp C:/msys64/ucrt64/bin/vvp.exe`
   2. `python -m benchmark.report render --summary <final-02>/grades/summary.json --catalog benchmark/catalogs/verilogeval-c498220.json --title "VerilogEval spec-to-RTL: single call vs AutoRTL (40 tasks x 3 trials)" --out <scratch>/report.md`
@@ -245,6 +248,41 @@ run as a fixture and a taxonomy entry.
 **C5. Evidence weight** — `todo`: document `git sparse-checkout` for a
 code-only clone in the README; measure checkout time before and after. Do not
 rewrite history.
+
+**C6. Remove repetition** — `todo` (measured November 15; do after the campaign)
+Literal copy-paste is rare (a 6-line-window scan of `autortl/`, `llm/`, `run.py`
+and `curriculum/` finds only the two synthesis templates). The repetition is in
+idioms and parallel paths:
+1. `autortl/vivado.py`: `SYNTH_TCL` and `OOC_SYNTH_TCL` share 24 of 31 lines and
+   every fix must be made twice (three times this week). Build both from one
+   list of named blocks (preamble, clock, synth, constraints, implement,
+   reports, completion). Acceptance: the two generated scripts are
+   byte-identical to today's (golden tests unchanged).
+2. File hashing: `hashlib.sha256(path.read_bytes()).hexdigest()` appears 30
+   times in `fsm.py` and in 17 other files. Add `autortl/hashing.py`
+   (`file_sha256`, `text_sha256`) and use it everywhere.
+3. JSON file reads: `json.loads(path.read_text(encoding="utf-8"))` 12 times in
+   `fsm.py`, 6 in `benchmark/pilot.py`; one `read_json` helper next to
+   `atomic_write_text`.
+4. Evidence retention in `fsm.py`: about 25 `retain_identity`/`identity(...)`
+   call sites and hand-written loops at DONE. Collect them in one
+   `EvidenceRegister` object (add, verify unchanged, export) used by build,
+   optimize and Doctor paths. Do this together with C1.
+5. `scripts/check_*.py`: five scripts that each parse Vivado paths, build a
+   RunConfig and hash outputs. Fold the shared part into one module or into
+   `run.py doctor --live`.
+6. Tests: 16 test files define their own spec/config builders. Move the common
+   ones to `tests/conftest.py` fixtures; no assertion changes.
+7. `data/taxonomy.yaml` has about 200 `harness_failures` entries; many are
+   one-incident records. Keep entries that code or tests reference by name in
+   the taxonomy and move the rest, verbatim, to `docs/archive/INCIDENTS.md`
+   with a pointer. Check references with a search before moving any entry.
+8. `benchmark/pilot.py`: a harness cell stopped by model quota is sealed
+   `interrupted` because the generic infra check runs before the status map.
+   Map `status == "model_blocked"` first. (Both labels are already excluded
+   from report rates; the campaign probes after either.)
+Rule for all of C6: no behaviour change; full suites and golden outputs
+identical before and after; one item per commit.
 
 ### Track H — hardware (owner-gated)
 
