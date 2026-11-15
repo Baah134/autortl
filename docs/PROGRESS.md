@@ -1975,3 +1975,15 @@ Main stays frozen until the final release validation/rehold. Do not repeatedly
 rehold completed tiers during development. The connected Basys3 is outside
 this stage: no JTAG, serial, programming, flash, reset or hardware-server calls.
 Keep history in PROGRESS and Git; keep the README focused on public results.
+
+## November 15: review, roadmap, cleanup, final-01 abort and final-02 launch
+
+Owner approved MIT and pushing the branch. Wrote the expert review and the
+agent roadmap; added the in-repo campaign runner, report module and lease
+keeper. Launched final-01 and stopped it after 5 cells when wiring-only designs
+failed out-of-context placement ("The design is empty"); fixed with an
+empty-netlist path, a tool-written no-timing-paths marker and a narrow
+shutdown-crash rule, each with taxonomy, tests and live Vivado checks, plus a
+39/40 synthesis sweep of the final-task references. Compacted the repository:
+one agent guide, 149-line README, superseded docs archived. Full suites: 2,330
+harness and 323 tooling tests. final-02 launched at runtime 7731a66d2.

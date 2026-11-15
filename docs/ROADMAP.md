@@ -57,10 +57,10 @@ tagged release exists on `main` with a licence.
   statistics). Runbook: `docs/BENCHMARK_PILOT.md`.
 - Pilot gate passed (pilot-06: 6/6 in all three arms). Final registration
   frozen: 40 tasks, `evidence/2026-11-14/final-registration-01`.
-- **Final comparison `final-01` is running** (360 cells, runtime `775820583`)
-  from `C:/Users/prince.baah/autortl-private/final-01` via `run_all.sh` (a
-  shell equivalent of `benchmark.campaign`, with the same stop guards). Its
-  log is `final-01/run_all.log`. See task B1.
+- `final-01` was aborted after 5 cells (`empty_netlist_unplaceable`, fixed).
+  **Final comparison `final-02` is running** (360 cells, runtime `7731a66d2`)
+  from `C:/Users/prince.baah/autortl-private/final-02` via
+  `python -m benchmark.campaign`. Progress: `final-02/campaign.log`. See task B1.
 
 ## 3. Environment facts (this machine)
 
@@ -95,19 +95,18 @@ criteria; a task is not done until all are met and committed.
 
 ### Track B — the registered comparison
 
-**B1. Finish, grade and report `final-01`** — `doing` (campaign running)
-- Watch: `tail final-01/run_all.log`. A line `=== STOPPED: model blocked`
+**B1. Finish, grade and report `final-02`** — `doing` (campaign running)
+- Watch: `tail final-02/campaign.log`. A `stop` event with reason `model blocked`
   means Codex quota or login: wait for quota, then restart the same command
   (cells with an output directory are skipped; the one blocked cell stays
   sealed `model_blocked` and is reported as missing). `3 consecutive
   interrupted cells` means infrastructure: diagnose before restarting.
-- Restart command (either form; both skip existing cells):
-  `bash C:/Users/prince.baah/autortl-private/final-01/run_all.sh <venv python>` or
-  `python -m benchmark.campaign --manifest <final-01>/manifest.json --dataset <D> --attempt <final-01>`.
-- When the log says `all cells attempted`:
-  1. `python -m benchmark.report grade --manifest <final-01>/manifest.json --dataset <D> --attempt <final-01> --iverilog C:/msys64/ucrt64/bin/iverilog.exe --vvp C:/msys64/ucrt64/bin/vvp.exe`
-  2. `python -m benchmark.report render --summary <final-01>/grades/summary.json --catalog benchmark/catalogs/verilogeval-c498220.json --title "VerilogEval spec-to-RTL: single call vs AutoRTL (40 tasks x 3 trials)" --out <scratch>/report.md`
-  3. Archive to `evidence/<date>/final-01-results/`: `report.md`, `report.json`,
+- Restart command (skips existing cells):
+  `python -m benchmark.campaign --manifest <final-02>/manifest.json --dataset <D> --attempt <final-02>`.
+- When the log's last event has reason `all cells attempted`:
+  1. `python -m benchmark.report grade --manifest <final-02>/manifest.json --dataset <D> --attempt <final-02> --iverilog C:/msys64/ucrt64/bin/iverilog.exe --vvp C:/msys64/ucrt64/bin/vvp.exe`
+  2. `python -m benchmark.report render --summary <final-02>/grades/summary.json --catalog benchmark/catalogs/verilogeval-c498220.json --title "VerilogEval spec-to-RTL: single call vs AutoRTL (40 tasks x 3 trials)" --out <scratch>/report.md`
+  3. Archive to `evidence/<date>/final-02-results/`: `report.md`, `report.json`,
      `summary.json`, `manifest.json`, `runtime-identity.txt`, the run log, a
      `cells.json` (per cell: run record without the command, verdict, run
      summary status) and the sealed RTL. Replace home paths with `<home>`
@@ -181,7 +180,7 @@ confirm CI is green (`.github/workflows/tests.yml`: harness, evidence audit,
 tooling); open a PR to `main`. The release gate in START_HERE applies: full
 suites, evidence audit, and the final re-hold the owner decides on.
 
-**P3. README rewrite** — `blocked(B1)` for numbers; structure can start now
+**P3. README rewrite** — structure `done` (November 15, 149 lines); numbers `blocked(B1)`
 - Target about 150 lines: one-sentence pitch; a results table with three rows
   (hardware, verifier qualification, benchmark) each linking to evidence; the
   loop diagram; 10-line quick start (`doctor`, `demo.py`, one `build`); what
@@ -199,14 +198,14 @@ notes drawn from PROGRESS; attach the benchmark report.
 
 ### Track D — documentation and process
 
-**D1. One agent guide** — `todo`: merge START_HERE, AGENTS, CLAUDE, GEMINI and
+**D1. One agent guide** — `done` (November 15): merge START_HERE, AGENTS, CLAUDE, GEMINI and
 AGENT_HANDOFF into `AGENTS.md` (rules, arrival, lease, departure) of at most
 150 lines. Keep `CLAUDE.md` and `GEMINI.md` as three-line pointers so each
 tool still finds its file. `START_HERE.md` becomes a pointer to AGENTS.md,
 this roadmap and SESSION_HANDOFF. Acceptance: no rule lost (check each hard
 rule and lease rule survives), no duplicated paragraph across the files.
 
-**D2. Single current checkpoint** — `todo`: rewrite `docs/SESSION_HANDOFF.md`
+**D2. Single current checkpoint** — `done` (November 15): rewrite `docs/SESSION_HANDOFF.md`
 to one current section of at most 60 lines; move the stacked "Earlier" and
 "Paused" sections to PROGRESS (the Codex candidate-export stage stays recorded
 as parked, with its path). Acceptance: one `## Current` heading.
@@ -216,7 +215,7 @@ as parked, with its path). Acceptance: one `## Current` heading.
 the timeless architecture. Add the benchmark architecture (arms, sealing,
 grading gate) as a section. Acceptance: no month names in DESIGN headings.
 
-**D4. TASKS.md archive** — `todo`: move completed acceptance records to
+**D4. TASKS.md archive** — `done` (November 15; the whole file is archived, this roadmap is the task board): move completed acceptance records to
 `docs/archive/TASKS-2026.md`; TASKS keeps only open items and points here.
 
 **D5. Lease ergonomics** — `done` (keeper script) / `todo` (duration): the

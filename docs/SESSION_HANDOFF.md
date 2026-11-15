@@ -4,42 +4,50 @@ One current section only. History lives in `docs/PROGRESS.md` and Git. The plan
 of record is `docs/ROADMAP.md`; the review behind it is
 `docs/REVIEW_2026-11-15.md`.
 
-## Current — November 15, 2026: final-01 aborted, empty-netlist fix awaiting full validation
+## Current — November 15, 2026 (afternoon): final-02 running
 
-Coordinator: Claude (session ended at a usage limit). Branch
-`codex/contract-context`, pushed. `main` frozen at `ca61dbc`; MIT licence added.
+Coordinator: Claude. Branch `codex/contract-context`, pushed (MIT licence).
+`main` frozen at `ca61dbc`; no PR yet.
 
-**No campaign is running.** `final-01` was stopped after 5 of 360 cells: wiring-only
-designs (Prob015_vector1, Prob042_vector4) synthesize to zero cells and the
-out-of-context placer fails with "The design is empty" (taxonomy
-`empty_netlist_unplaceable`). Its five cells are kept in
-`C:/Users/prince.baah/autortl-private/final-01` and must not be rerun there.
+**Running:** `final-02`, the registered comparison (40 tasks x 3 arms x 3
+trials = 360 cells, runtime `7731a66d2`), started November 15 15:00 with
 
-**Uncommitted-then-committed in the last commit, NOT fully validated:**
-- `autortl/vivado.py`: empty netlist skips place/route; `no_timing_paths.txt`
-  marker; `crashed_only_at_exit` (Vivado crashed during shutdown after
-  SYNTH_COMPLETE on the empty design). `autortl/report_parser.py`:
-  `apply_no_timing_paths`. Tests: `tests/test_empty_netlist.py` (pass).
-- Live check was in progress (`empty-live` in the session scratchpad): vector1
-  out of context gave real timing WNS 9.002 / WHS 0.385 with 0 LUTs, then the
-  exit crash. Constant-output, notgate, chip_top and the three regression
-  kinds (ringer, dff, count15) were NOT confirmed. The full test suites were
-  NOT rerun after these changes or after the docs cleanup.
+    python -m benchmark.campaign --manifest <final-02>/manifest.json --dataset <D> --attempt <final-02>
 
-**Exact next action**
-1. Run the full suites (ROADMAP section 3). Fix anything the cleanup broke.
-2. Rerun the live check on Prob015_vector1, Prob002_m2014_q4i, Prob005_notgate,
-   Prob036_ringer, Prob031_dff, Prob038_count15 (out_of_context) with
-   `autortl.vivado.run_synthesis`; all must return ok with the metrics gate
-   passing; archive as `evidence/2026-11-15/empty-netlist-01`.
-3. Commit, freeze `final-02` (same 40 tasks, new runtime) with
-   `python -m benchmark.pilot manifest`-style code used for final-01 (3 trials),
-   run with `python -m benchmark.campaign`, then ROADMAP task B1.
-4. Record final-01 as aborted in `docs/BENCHMARK_PILOT.md`.
+where `<final-02>` is `C:/Users/prince.baah/autortl-private/final-02` and `<D>`
+is the VerilogEval `dataset_spec-to-rtl` folder (ROADMAP section 3; needs
+`AUTORTL_CODEX_BIN` set). Progress: `<final-02>/campaign.log` (JSON lines).
+It stops by itself on a model block (quota; exit 3) or three consecutive
+interrupted cells (exit 4); rerunning the same command resumes and never
+reruns a cell. About 19 hours of awake machine time; the first task
+(Prob042_vector4) sealed a candidate in all three arms.
 
-**Docs cleanup done this session:** one `AGENTS.md`; slim `CLAUDE.md`,
-`GEMINI.md`, `START_HERE.md`; README 149 lines with `docs/RESULTS.md` and
-`docs/USAGE.md`; superseded docs in `docs/archive/`. ROADMAP tasks D1, D2, D4,
-P1 are done; P3 structure is done (numbers wait for B1).
+**Do not edit while it runs:** `autortl/`, `llm/`, `data/`, `.claude/skills/`,
+`run.py`, `benchmark/pilot.py`, `benchmark/verilogeval.py`. Use a worktree.
 
-**Environment:** ROADMAP section 3. Keep the machine awake during campaigns.
+**Exact next action:** ROADMAP task B1. When `campaign.log` ends with
+`"reason": "all cells attempted"`: `python -m benchmark.report grade`, then
+`render`, archive under `evidence/<date>/final-02-results/`, decide the claim
+(B2) and put the numbers in the README table (P3). On a stop event, follow
+B1's restart notes.
+
+**Done this session**
+- `final-01` aborted after 5 cells on `empty_netlist_unplaceable`; fixed with
+  tests and live checks; a synthesis sweep of all 40 final references passes
+  39/40 (the exception is a reference with latches). Evidence
+  `evidence/2026-11-15/empty-netlist-01`.
+- Full suites green after the fix and cleanup: 2,330 harness, 323 tooling.
+- Review (`docs/REVIEW_2026-11-15.md`), roadmap, `benchmark/campaign.py`,
+  `benchmark/report.py`, `scripts/lease_keeper.py`.
+- Repository cleanup: one `AGENTS.md`; slim `CLAUDE.md`, `GEMINI.md`,
+  `START_HERE.md`; README 149 lines with `docs/RESULTS.md` and
+  `docs/USAGE.md`; superseded docs in `docs/archive/`.
+
+**Open:** owner decisions (PR and merge to `main`, B3 task source, pinned
+model, board authorisation); research risk
+`planner_spec_error_shared_by_oracle_and_rtl` (ROADMAP V1); Codex's parked
+November 13 candidate-export stage in
+`C:/Users/prince.baah/Documents/Codex/2026-10-15/hey/work/nov13-candidate-bundle-stage`.
+
+**Environment:** ROADMAP section 3. Keep the machine awake; renew the lease
+with `python scripts/lease_keeper.py --token-file <private file>`.
