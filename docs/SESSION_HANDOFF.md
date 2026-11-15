@@ -4,45 +4,42 @@ One current section only. History lives in `docs/PROGRESS.md` and Git. The plan
 of record is `docs/ROADMAP.md`; the review behind it is
 `docs/REVIEW_2026-11-15.md`.
 
-## Current — November 15, 2026: final comparison running
+## Current — November 15, 2026: final-01 aborted, empty-netlist fix awaiting full validation
 
-Coordinator: Claude. Branch `codex/contract-context`, pushed to `origin` on
-November 15 (MIT licence added). `main` frozen at `ca61dbc`; no PR yet.
+Coordinator: Claude (session ended at a usage limit). Branch
+`codex/contract-context`, pushed. `main` frozen at `ca61dbc`; MIT licence added.
 
-**Running:** `final-01`, the registered comparison (40 tasks x 3 arms x 3
-trials = 360 cells, runtime `775820583`), launched November 15 08:47 from
-`C:/Users/prince.baah/autortl-private/final-01` with `run_all.sh`. Log:
-`final-01/run_all.log`. It stops by itself on a model block (quota) or three
-consecutive interrupted cells, and can be restarted with the same command;
-cells are never rerun. Expected about 19 hours of awake machine time.
+**No campaign is running.** `final-01` was stopped after 5 of 360 cells: wiring-only
+designs (Prob015_vector1, Prob042_vector4) synthesize to zero cells and the
+out-of-context placer fails with "The design is empty" (taxonomy
+`empty_netlist_unplaceable`). Its five cells are kept in
+`C:/Users/prince.baah/autortl-private/final-01` and must not be rerun there.
 
-**Do not edit while it runs:** `autortl/`, `llm/`, `data/`, `.claude/skills/`,
-`run.py`, `benchmark/pilot.py`, `benchmark/verilogeval.py` (each cell records
-the runtime it launched). Use a worktree for code changes.
+**Uncommitted-then-committed in the last commit, NOT fully validated:**
+- `autortl/vivado.py`: empty netlist skips place/route; `no_timing_paths.txt`
+  marker; `crashed_only_at_exit` (Vivado crashed during shutdown after
+  SYNTH_COMPLETE on the empty design). `autortl/report_parser.py`:
+  `apply_no_timing_paths`. Tests: `tests/test_empty_netlist.py` (pass).
+- Live check was in progress (`empty-live` in the session scratchpad): vector1
+  out of context gave real timing WNS 9.002 / WHS 0.385 with 0 LUTs, then the
+  exit crash. Constant-output, notgate, chip_top and the three regression
+  kinds (ringer, dff, count15) were NOT confirmed. The full test suites were
+  NOT rerun after these changes or after the docs cleanup.
 
-**Exact next action:** ROADMAP task B1. When the log ends with `all cells
-attempted`, grade with `python -m benchmark.report grade`, render the report,
-archive it under `evidence/<date>/final-01-results/`, then B2 (decide the
-claim) and P3 (README numbers). If the log shows `=== STOPPED`, follow B1's
-restart notes.
+**Exact next action**
+1. Run the full suites (ROADMAP section 3). Fix anything the cleanup broke.
+2. Rerun the live check on Prob015_vector1, Prob002_m2014_q4i, Prob005_notgate,
+   Prob036_ringer, Prob031_dff, Prob038_count15 (out_of_context) with
+   `autortl.vivado.run_synthesis`; all must return ok with the metrics gate
+   passing; archive as `evidence/2026-11-15/empty-netlist-01`.
+3. Commit, freeze `final-02` (same 40 tasks, new runtime) with
+   `python -m benchmark.pilot manifest`-style code used for final-01 (3 trials),
+   run with `python -m benchmark.campaign`, then ROADMAP task B1.
+4. Record final-01 as aborted in `docs/BENCHMARK_PILOT.md`.
 
-**State of the work**
-- Pilot gate passed (pilot-06: single call, ablation and full each 6/6);
-  final registration frozen (`evidence/2026-11-14/final-registration-01`).
-- Benchmark code complete and tested: `benchmark/{verilogeval,pilot,
-  registration,campaign,report}.py`; runbook `docs/BENCHMARK_PILOT.md`.
-- Harness fixes from the pilots are merged with tests and live checks:
-  clockless and single-register timing, resetless modules, arm B policy seam,
-  missing-tool and crash triage. Full suites were green at 2,287 harness and
-  323 tooling tests before the November 15 additions (benchmark report,
-  campaign and lease-keeper tests, all passing).
-- Open research risk: `planner_spec_error_shared_by_oracle_and_rtl` (ROADMAP V1).
-- Parked, untouched: Codex's November 13 candidate-export stage in
-  `C:/Users/prince.baah/Documents/Codex/2026-10-15/hey/work/nov13-candidate-bundle-stage`
-  (needed only for latest-complete selection and parallel campaigns).
+**Docs cleanup done this session:** one `AGENTS.md`; slim `CLAUDE.md`,
+`GEMINI.md`, `START_HERE.md`; README 149 lines with `docs/RESULTS.md` and
+`docs/USAGE.md`; superseded docs in `docs/archive/`. ROADMAP tasks D1, D2, D4,
+P1 are done; P3 structure is done (numbers wait for B1).
 
-**Owner decisions pending:** PR and merge to `main`, benchmark B3
-task source, pinned model name, board authorisation (ROADMAP section 7).
-
-**Environment:** see ROADMAP section 3. Keep the machine awake; renew the
-lease with `python scripts/lease_keeper.py --token-file <private file>`.
+**Environment:** ROADMAP section 3. Keep the machine awake during campaigns.

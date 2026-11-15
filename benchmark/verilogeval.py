@@ -1,6 +1,6 @@
 """VerilogEval spec-to-RTL adapter, pilot selection and Icarus grader.
 
-Pilot scope (docs/ACTION_PLAN.md, November14; docs/BENCHMARK_PILOT.md). This
+Runbook: docs/BENCHMARK_PILOT.md; plan: docs/ROADMAP.md. This
 module reads a pinned VerilogEval checkout, builds a benchmark.artifacts
 manifest, deterministically selects pilot tasks and grades sealed candidates
 with the official test and reference. It never runs generation, never feeds a

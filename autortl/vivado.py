@@ -233,6 +233,7 @@ def xsim_run(design_files: list[Path], tb_file: Path, tb_top: str,
 
 SYNTH_TCL = """\
 {promotions}
+file delete -force "{workdir}/no_timing_paths.txt"
 set_part {part}
 read_verilog {sources}
 set fp [open "{workdir}/timing.xdc" w]
@@ -260,6 +261,7 @@ report_design_analysis -logic_level_distribution -file "{workdir}/design_analysi
 report_power -file "{workdir}/power.rpt"
 catch {{ report_methodology -file "{workdir}/methodology.rpt" }}
 catch {{ report_qor_suggestions -file "{workdir}/qor_suggestions.rpt" }}
+if {{[llength [get_timing_paths -quiet -max_paths 1]] == 0}} {{ set fp [open "{workdir}/no_timing_paths.txt" w]; puts $fp "no_paths period_ns {period}"; close $fp }}
 puts "SYNTH_COMPLETE"
 """
 
@@ -283,10 +285,14 @@ puts "SYNTH_COMPLETE"
 # input-to-register hold is not checked there, because it depends on where the driving
 # register sits (the same reason ports are otherwise unconstrained);
 # designs with an internal path keep unconstrained ports as before.
+# empty_netlist_unplaceable: a wiring-only design has no primitive cells, so
+# place and route are skipped; a design with no timing path at all (wiring or
+# constants) leaves no_timing_paths.txt for the parser (vacuously met).
 # The clock/HD.CLK_SRC/out_of_context lines match hardware/basys3/fmax/fmax.py's
 # ooc mode, which closed timing live on Vivado 2025.2 for xc7a35tcpg236-1.
 OOC_SYNTH_TCL = """\
 {promotions}
+file delete -force "{workdir}/no_timing_paths.txt"
 set_part {part}
 read_verilog {sources}
 set fp [open "{workdir}/timing.xdc" w]
@@ -303,6 +309,13 @@ source "{workdir}/timing_virtual.tcl"
 report_utilization -file "{workdir}/utilization.rpt"
 report_timing_summary -file "{workdir}/timing.rpt"
 opt_design
+if {{[llength [get_cells -quiet -hierarchical -filter {{IS_PRIMITIVE}}]] == 0}} {{
+    report_utilization -file "{workdir}/utilization_routed.rpt"
+    report_timing_summary -file "{workdir}/timing_routed.rpt"
+    if {{[llength [get_timing_paths -quiet -max_paths 1]] == 0}} {{ set fp [open "{workdir}/no_timing_paths.txt" w]; puts $fp "empty_netlist period_ns {period}"; close $fp }}
+    puts "SYNTH_COMPLETE"
+    exit 0
+}}
 place_design
 {phys_opt}
 route_design
@@ -315,6 +328,7 @@ catch {{ report_methodology -file "{workdir}/methodology.rpt" }}
 # report_qor_suggestions crashes Vivado 2025.2 (EXCEPTION_ACCESS_VIOLATION) once the
 # port guard above set an input-hold false path; it is advisory, so skip it then.
 if {{![info exists autortl_ports_timed]}} {{ catch {{ report_qor_suggestions -file "{workdir}/qor_suggestions.rpt" }} }}
+if {{[llength [get_timing_paths -quiet -max_paths 1]] == 0}} {{ set fp [open "{workdir}/no_timing_paths.txt" w]; puts $fp "no_paths period_ns {period}"; close $fp }}
 puts "SYNTH_COMPLETE"
 """
 
@@ -341,6 +355,23 @@ def synthesis_tcl(design_files: list[Path], top: str, cfg: RunConfig, work_dir: 
     )
 
 
+def crashed_only_at_exit(out: str) -> bool:
+    """True when Vivado crashed during shutdown after the script completed.
+
+    Requires, in order: a SYNTH_COMPLETE output line (not the echoed `# puts`
+    source line), Vivado's own "[Common 17-206] Exiting Vivado" line, then the
+    "Abnormal program termination" banner, with no crash banner earlier.
+    """
+    lines = out.splitlines()
+    done = next((i for i, line in enumerate(lines) if line.strip() == "SYNTH_COMPLETE"), None)
+    if done is None:
+        return False
+    crash = next((i for i, line in enumerate(lines) if "Abnormal program termination" in line), None)
+    exiting = next((i for i, line in enumerate(lines[done:], done)
+                    if "[Common 17-206] Exiting Vivado" in line), None)
+    return crash is not None and exiting is not None and done < exiting < crash
+
+
 def run_synthesis(design_files: list[Path], top: str, cfg: RunConfig,
                   work_dir: Path, promotions: dict[str, str] | None = None,
                   retiming: bool = False, phys_opt: bool = False,
@@ -351,6 +382,8 @@ def run_synthesis(design_files: list[Path], top: str, cfg: RunConfig,
     rc, out = _run([cfg.vivado_bin, "-mode", "batch", "-source", _tcl_path(script),
                     "-nojournal", "-nolog"], work_dir, timeout,
                    work_dir / "vivado_synth_output.log")
+    if rc != 0 and crashed_only_at_exit(out):
+        rc = 0  # vivado_exit_crash_after_completion: every command ran; shutdown crashed
     kind = classify(out)
     if rc != 0 and kind == FailureKind.INFRA:
         return False, _error_lines(out), kind

@@ -1,7 +1,7 @@
 # AutoRTL v4 — Design Document (single source of truth)
 
 This document describes the intended architecture. Runtime code and retained
-verification evidence establish implemented behavior; docs/HARNESS_REVIEW.md
+verification evidence establish implemented behavior; docs/archive/HARNESS_REVIEW.md
 records feature coverage, limits and simplification decisions.
 
 ## Thesis

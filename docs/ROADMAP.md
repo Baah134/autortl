@@ -1,7 +1,7 @@
 # AutoRTL roadmap — the working plan for any agent
 
 Written November 15, 2026 from `docs/REVIEW_2026-11-15.md`. This file replaces
-`docs/ACTION_PLAN.md` as the plan of record (that file stays as history). Update
+`docs/archive/ACTION_PLAN.md` as the plan of record (that file stays as history). Update
 task status here when a task's acceptance criteria are met; put history in
 `docs/PROGRESS.md`, never here.
 

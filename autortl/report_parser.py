@@ -133,6 +133,25 @@ def parse_timing_text(text: str, m: VivadoMetrics) -> None:
     m.timing_met = m.wns_ns >= 0.0 and m.whs_ns >= 0.0
 
 
+def apply_no_timing_paths(marker: Path, m: VivadoMetrics) -> None:
+    """Vacuous timing for a design Vivado itself reported as having no timing path.
+
+    The synthesis script writes the marker ("<reason> period_ns <P>") only when
+    get_timing_paths returns nothing (wiring-only or constant designs,
+    empty_netlist_unplaceable). It applies only if the timing report really has
+    no numeric WNS and WHS, so it can never override measured slack: WNS becomes
+    the full period, WHS 0. A malformed marker changes nothing and the metrics
+    gate then fails as before.
+    """
+    if not marker.exists() or m.wns_ns != -999.0 or m.whs_ns != -999.0:
+        return
+    match = re.fullmatch(r"(?:empty_netlist|no_paths) period_ns (\d+(?:\.\d+)?)\s*",
+                         marker.read_text(encoding="utf-8", errors="replace"))
+    if not match or float(match.group(1)) <= 0:
+        return
+    m.wns_ns, m.whs_ns, m.timing_met = float(match.group(1)), 0.0, True
+
+
 def parse_reg2reg(rpt_path: Path, m: VivadoMetrics) -> None:
     """Slack of the first path in a report_timing -from/-to [all_registers] report."""
     if not rpt_path.exists():
@@ -166,6 +185,7 @@ def parse_all(work_dir: Path) -> VivadoMetrics:
     if not timing.exists():
         timing = work_dir / "timing.rpt"
     parse_timing(timing, m)
+    apply_no_timing_paths(work_dir / "no_timing_paths.txt", m)
     parse_reg2reg(work_dir / "timing_reg2reg.rpt", m)
     parse_power(work_dir / "power.rpt", m)
     return m

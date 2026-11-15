@@ -29,6 +29,7 @@ FIXTURES = Path(__file__).resolve().parent / "fixtures" / "ooc"
 # (the synth_design line ends in the empty knob slot's space, written \x20).
 OOC_GOLDEN = """\
 
+file delete -force "W/no_timing_paths.txt"
 set_part xc7a35tcpg236-1
 read_verilog "S/m.v"
 set fp [open "W/timing.xdc" w]
@@ -45,6 +46,13 @@ source "W/timing_virtual.tcl"
 report_utilization -file "W/utilization.rpt"
 report_timing_summary -file "W/timing.rpt"
 opt_design
+if {[llength [get_cells -quiet -hierarchical -filter {IS_PRIMITIVE}]] == 0} {
+    report_utilization -file "W/utilization_routed.rpt"
+    report_timing_summary -file "W/timing_routed.rpt"
+    if {[llength [get_timing_paths -quiet -max_paths 1]] == 0} { set fp [open "W/no_timing_paths.txt" w]; puts $fp "empty_netlist period_ns 10.000"; close $fp }
+    puts "SYNTH_COMPLETE"
+    exit 0
+}
 place_design
 
 route_design
@@ -57,6 +65,7 @@ catch { report_methodology -file "W/methodology.rpt" }
 # report_qor_suggestions crashes Vivado 2025.2 (EXCEPTION_ACCESS_VIOLATION) once the
 # port guard above set an input-hold false path; it is advisory, so skip it then.
 if {![info exists autortl_ports_timed]} { catch { report_qor_suggestions -file "W/qor_suggestions.rpt" } }
+if {[llength [get_timing_paths -quiet -max_paths 1]] == 0} { set fp [open "W/no_timing_paths.txt" w]; puts $fp "no_paths period_ns 10.000"; close $fp }
 puts "SYNTH_COMPLETE"
 """
 
@@ -92,7 +101,9 @@ def test_out_of_context_has_no_io_buffers_or_io_delays(tmp_path, monkeypatch):
     assert "timing_io.tcl" not in text  # no I/O constraint file: data ports stay unconstrained
     order = ["synth_design", "opt_design", "place_design", "route_design", "timing_routed.rpt",
              "timing_reg2reg.rpt", "SYNTH_COMPLETE"]
-    assert [text.index(step) for step in order] == sorted(text.index(step) for step in order)
+    # Last occurrences: the empty-netlist block (empty_netlist_unplaceable) repeats the
+    # report names and the completion marker before place_design.
+    assert [text.rindex(step) for step in order] == sorted(text.rindex(step) for step in order)
 
 
 def test_chip_top_script_is_unchanged(tmp_path, monkeypatch):
