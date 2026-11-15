@@ -107,6 +107,9 @@ harness_failures:
   pilot_outer_timeout_discarded_done:
     meaning: "The pilot's outer wall-clock timeout counts machine sleep; Prob038_count15 reached DONE (verified, timing met) after the host slept for hours, but the cell was sealed interrupted"
     repair: "Seal a DONE summary with its complete sources even when the outer safety net fired, recording outer_timeout in accounting; keep the machine awake during pilots"
+  missing_tool_classified_unknown:
+    meaning: "A tool that cannot be started (xvlog/xelab/xsim/vivado: FileNotFoundError or PermissionError at launch, e.g. 'xvlog not found: [WinError 2] The system cannot find the file specified') matched no triage signature, so the build ended build_blocked with failure_kind unknown instead of infra"
+    repair: "Classify launch failures from vivado._run ('<tool> not found: [WinError N]' / '<tool> could not launch: ...') as FailureKind.INFRA in triage; genuine VRFC/Synth design errors stay design"
   benchmark_artifact_contract_validation:
     meaning: "Independent review of the staged benchmark artifact foundation reproduced UTF-16/32 acceptance under a UTF-8 contract, integer time conversion overflow, and fail-open inventory traversal"
     repair: "Decode UTF-8 strictly, reject unsupported machine-time budgets with ArtifactError, fail closed on traversal errors, and require an externally retained artifact ID. Artifact sealing does not establish RTL correctness or OS isolation"

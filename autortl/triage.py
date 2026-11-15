@@ -37,6 +37,8 @@ _INFRA_SIGNATURES = [
     r"Connection (?:refused|reset|timed out)",
     r"No space left on device",
     r"vivado(?:\.bat)? .*not (?:found|recognized)",
+    # vivado._run could not start the tool at all (FileNotFoundError/PermissionError).
+    r"(?m)^\s*[^\n]*?\b(?:vivado|xvlog|xelab|xsim)(?:\.bat|\.exe|\.cmd)?\s+(?:not found|could not launch):\s*\[(?:WinError|Errno)\s*\d+\]",
     r"timed out after \d+(?:\.\d+)?s",
     r"HTTP (?:429|5\d\d)",
 ]
