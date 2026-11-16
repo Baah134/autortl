@@ -9,7 +9,6 @@ Message severity promotion (never demotion) is applied from the taxonomy.
 from __future__ import annotations
 import re
 import json
-import hashlib
 import os
 import signal
 import subprocess
@@ -20,6 +19,7 @@ from .config import RunConfig
 from .state import atomic_write_text
 from .report_parser import VivadoMetrics, parse_sim_log, parse_all, extract_message_ids
 from .triage import classify, FailureKind, target_capacity, describe_target
+from .fileio import file_sha256
 
 
 def _tcl_path(p: Path) -> str:
@@ -151,7 +151,7 @@ def _run(cmd: list[str], cwd: Path, timeout: int, log_path: Path) -> tuple[int, 
                       "returncode": actual_rc if type(actual_rc) is int else None,
                       "driver_returncode": driver_rc, "elapsed_seconds": _run.last_seconds,
                       "output_log_path": str(Path(log_path).resolve()),
-                      "output_log_sha256": hashlib.sha256(log_path.read_bytes()).hexdigest()
+                      "output_log_sha256": file_sha256(log_path)
                                            if log_written else None}
             _append_tool_exit_record(cwd, record)
         except BaseException as receipt_error:

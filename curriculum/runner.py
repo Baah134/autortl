@@ -18,6 +18,7 @@ from autortl.fsm import Orchestrator
 from autortl.metrics_gate import validate, MetricsGateError
 from autortl.report_parser import VivadoMetrics
 from autortl.state import CheckpointLockedError, atomic_write_text
+from autortl.fileio import file_sha256, read_json
 
 ROOT = Path(__file__).resolve().parent
 RESULTS = ROOT / "results.jsonl"
@@ -60,14 +61,14 @@ def _run_entry(cfg, run_dir):
 
 
 def _hash(path):
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+    return file_sha256(path)
 
 
 def _runtime_identity(run_dir):
     """Read evidence frozen by Orchestrator, without guessing the CLI model."""
     path = run_dir / "runtime.json"
     try:
-        runtime = json.loads(path.read_text(encoding="utf-8"))
+        runtime = read_json(path)
         if not isinstance(runtime, dict) or runtime.get("schema_version") != 1:
             raise ValueError("unsupported runtime manifest")
         implementation = runtime.get("implementation")

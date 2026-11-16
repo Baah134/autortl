@@ -17,13 +17,13 @@ coordinator, who must state identity, protocol, results and limits.
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import re
 import sys
 from pathlib import Path
 
 from . import report
+from autortl.fileio import file_sha256, read_json
 
 HOME = re.compile(r"[A-Za-z]:[\\/]+Users[\\/]+[^\\/\"' ]+|/(?:home|Users)/[^/\"' ]+")
 SUMMARY_KEYS = ("status", "failure_kind", "error", "errors", "edit_scope", "top_module", "timing_closed",
@@ -46,7 +46,7 @@ def archive_attempt(attempt: Path, out: Path, *, catalog: dict | None = None,
     summary_path = attempt / "grades" / "summary.json"
     if not summary_path.is_file():
         raise ArchiveError("attempt has no grades/summary.json; grade it first")
-    rows = json.loads(summary_path.read_text(encoding="utf-8"))
+    rows = read_json(summary_path)
     out.mkdir(parents=True, exist_ok=False)
 
     def put(name: str, text: str) -> None:
@@ -69,15 +69,15 @@ def archive_attempt(attempt: Path, out: Path, *, catalog: dict | None = None,
     cells = {}
     for run in sorted((attempt / "runs").glob("*/run.json")):
         name = run.parent.name
-        record = json.loads(run.read_text(encoding="utf-8"))
+        record = read_json(run)
         record.get("accounting", {}).pop("command", None)
         entry = {"run": record}
         verdict = attempt / "grades" / name / "verdict.json"
         if verdict.is_file():
-            entry["verdict"] = json.loads(verdict.read_text(encoding="utf-8"))
+            entry["verdict"] = read_json(verdict)
         run_summary = run.parent / "run" / "run_summary.json"
         if run_summary.is_file():
-            data = json.loads(run_summary.read_text(encoding="utf-8"))
+            data = read_json(run_summary)
             entry["run_summary"] = {key: data.get(key) for key in SUMMARY_KEYS if key in data}
         cells[name] = entry
         rtl_root = run.parent / "submission" / "rtl"
@@ -90,7 +90,7 @@ def archive_attempt(attempt: Path, out: Path, *, catalog: dict | None = None,
     stats = report.summarize(rows, catalog)
     put("report.md", report.render_markdown(stats, title))
     put("report.json", json.dumps(stats, indent=1) + "\n")
-    manifest = {p.relative_to(out).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()
+    manifest = {p.relative_to(out).as_posix(): file_sha256(p)
                 for p in sorted(out.rglob("*")) if p.is_file()}
     (out / "archive-manifest.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8", newline="\n")
     return manifest
@@ -99,7 +99,7 @@ def archive_attempt(attempt: Path, out: Path, *, catalog: dict | None = None,
 def seal(out: Path) -> dict:
     """Rewrite archive-manifest.json after the coordinator adds README.md."""
     out = Path(out)
-    manifest = {p.relative_to(out).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()
+    manifest = {p.relative_to(out).as_posix(): file_sha256(p)
                 for p in sorted(out.rglob("*")) if p.is_file() and p.name != "archive-manifest.json"}
     (out / "archive-manifest.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8", newline="\n")
     return manifest
@@ -119,7 +119,7 @@ def main(argv=None) -> int:
         return 0
     if a.attempt is None:
         parser.error("--attempt is required unless --seal is given")
-    catalog = json.loads(a.catalog.read_text(encoding="utf-8")) if a.catalog else None
+    catalog = read_json(a.catalog) if a.catalog else None
     manifest = archive_attempt(a.attempt, a.out, catalog=catalog, title=a.title, forbidden=tuple(a.forbid))
     print(json.dumps({"files": len(manifest), "out": str(a.out)}))
     return 0

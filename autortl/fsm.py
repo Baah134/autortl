@@ -49,6 +49,7 @@ from .tbqual import qualify as qualify_tb, assertion_failure_proof, qualificatio
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from llm.client import declared_latency, ModelCallError
+from .fileio import file_sha256, read_json
 
 
 # golden_attempts_too_few_for_table_math: a module's oracle gets three attempts
@@ -69,7 +70,7 @@ class VerificationEvidenceError(ValueError):
 def _verification_inputs(sources, tb):
     def identity(path):
         path = Path(path)
-        return {"path": str(path.resolve()), "sha256": hashlib.sha256(path.read_bytes()).hexdigest()}
+        return {"path": str(path.resolve()), "sha256": file_sha256(path)}
     return {"schema_version": 1, "sources": [identity(path) for path in sources],
             "testbench": identity(tb) if tb is not None else None}
 
@@ -77,7 +78,7 @@ def _verification_inputs(sources, tb):
 def _verification_dependencies(manifest: Path) -> dict[str, str]:
     """Bind simulated sources and TB to their recorded identities, not current guesses."""
     try:
-        data = json.loads(Path(manifest).read_text(encoding="utf-8"))
+        data = read_json(Path(manifest))
         if (not isinstance(data, dict) or type(data.get("schema_version")) is not int or
                 data.get("schema_version") != 1 or
                 not isinstance(data.get("sources"), list) or not data["sources"] or
@@ -91,7 +92,7 @@ def _verification_dependencies(manifest: Path) -> dict[str, str]:
                     not re.fullmatch(r"[a-f0-9]{64}", entry["sha256"])):
                 raise ValueError("invalid verification dependency identity")
             path = Path(entry["path"])
-            if not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest() != entry["sha256"]:
+            if not path.is_file() or file_sha256(path) != entry["sha256"]:
                 raise VerificationEvidenceError("Completed verification dependency missing or modified: " + str(path))
             dependencies[str(path.resolve())] = entry["sha256"]
         return dependencies
@@ -121,7 +122,7 @@ def _process_exit_gate(directory, provenance=None):
             log = Path(latest["output_log_path"])
             if Path(latest["cwd"]).resolve() != root.resolve():
                 reasons.append(f"{root}: {name} receipt belongs to another work directory")
-            if not log.is_file() or hashlib.sha256(log.read_bytes()).hexdigest() != latest["output_log_sha256"]:
+            if not log.is_file() or file_sha256(log) != latest["output_log_sha256"]:
                 reasons.append(f"{root}: {name} output evidence is missing or modified")
     return {"passed": not reasons, "reasons": reasons,
             "policy": "Every required tool's latest actual process exit must be zero with retained matching output; physical-only Doctor may reuse source-bound prior compile/simulation."}
@@ -194,15 +195,15 @@ class Orchestrator:
         saved = self.state.load_fsm()
         if saved and saved.get("phase") == "DONE":
             summary_path = self.state.run_dir / "run_summary.json"
-            if hashlib.sha256(summary_path.read_bytes()).hexdigest() != saved.get("summary_sha256"):
+            if file_sha256(summary_path) != saved.get("summary_sha256"):
                 raise ValueError("Completed summary evidence is missing or modified")
-            summary = json.loads(summary_path.read_text(encoding="utf-8"))
+            summary = read_json(summary_path)
             winner = self.state.run_dir / f"{summary.get('top_module', self.cfg.top_module)}_best.v"
-            if not winner.exists() or hashlib.sha256(winner.read_bytes()).hexdigest() != saved.get("best_sha256"):
+            if not winner.exists() or file_sha256(winner) != saved.get("best_sha256"):
                 raise ValueError("Completed winner artifact is missing or modified")
             for name, digest in saved.get("final_artifacts", {}).items():
                 path = Path(name)
-                if not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest() != digest:
+                if not path.is_file() or file_sha256(path) != digest:
                     raise ValueError("Completed report evidence is missing or modified")
             return summary
         if saved and saved.get("phase") not in (None, "DONE"):
@@ -252,12 +253,12 @@ class Orchestrator:
         for directory in (root / "autortl", root / "llm", root / "data", root / ".claude" / "skills"):
             for path in sorted(directory.rglob("*")):
                 if path.is_file() and path.suffix in (".py", ".yaml", ".md", ".v"):
-                    implementation[path.relative_to(root).as_posix()] = hashlib.sha256(path.read_bytes()).hexdigest()
+                    implementation[path.relative_to(root).as_posix()] = file_sha256(path)
         runtime_path = self.state.run_dir / "runtime.json"
         runtime = {"schema_version": 1, "python": sys.version, "implementation": implementation,
                    "tools": self._cache_context(None, [])["tools"]}
         if runtime_path.exists():
-            if json.loads(runtime_path.read_text(encoding="utf-8")) != runtime:
+            if read_json(runtime_path) != runtime:
                 raise ValueError("Harness or Python changed since checkpoint; do not silently regrade an existing run")
         else:
             atomic_write_text(runtime_path, json.dumps(runtime, indent=2))
@@ -273,10 +274,10 @@ class Orchestrator:
                     raise ValueError("Resume configuration changed: " + name)
             for name in mutable_paths:
                 setattr(self.cfg, name, getattr(frozen_config, name))
-            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            manifest = read_json(manifest_path)
             for name, item in manifest.items():
                 path = Path(item["path"])
-                if not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest() != item["sha256"]:
+                if not path.is_file() or file_sha256(path) != item["sha256"]:
                     raise ValueError("Frozen input modified: " + name)
                 setattr(self.cfg, name, path)
             return
@@ -288,7 +289,7 @@ class Orchestrator:
             if original is not None and Path(original).is_file():
                 target = directory / (name + Path(original).suffix)
                 target.write_bytes(Path(original).read_bytes())
-                manifest[name] = {"path": str(target), "sha256": hashlib.sha256(target.read_bytes()).hexdigest()}
+                manifest[name] = {"path": str(target), "sha256": file_sha256(target)}
                 setattr(self.cfg, name, target)
         self.cfg.save(self.state.run_dir / "config.json")
         atomic_write_text(manifest_path, json.dumps(manifest, indent=2))
@@ -331,10 +332,10 @@ class Orchestrator:
         directory = self.state.run_dir / "journal" / hashlib.sha256(identity.encode()).hexdigest()
         completion = directory / "completed.json"
         if completion.exists():
-            saved = json.loads(completion.read_text(encoding="utf-8"))
+            saved = read_json(completion)
             for relative, digest in saved.get("artifacts", {}).items():
                 path = directory / "artifacts" / relative
-                if not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest() != digest:
+                if not path.is_file() or file_sha256(path) != digest:
                     raise ValueError("Stage evidence modified: " + identity)
                 if work:
                     target = Path(work) / relative
@@ -343,7 +344,7 @@ class Orchestrator:
             return self._unpack(saved["result"])
         directory.mkdir(parents=True, exist_ok=True)
         for attempt in range(attempts):
-            previous = json.loads((directory / "started.json").read_text(encoding="utf-8")) if (directory / "started.json").exists() else {}
+            previous = read_json((directory / "started.json")) if (directory / "started.json").exists() else {}
             count = previous.get("attempt", 0) + 1
             atomic_write_text(directory / "started.json", json.dumps({"stage": identity,
                 "args": repr(args), "kwargs": repr(kwargs), "attempt": count}, indent=2))
@@ -376,7 +377,7 @@ class Orchestrator:
                     target = directory / "artifacts" / relative
                     target.parent.mkdir(parents=True, exist_ok=True)
                     target.write_bytes(source.read_bytes())
-                    artifacts[relative] = hashlib.sha256(target.read_bytes()).hexdigest()
+                    artifacts[relative] = file_sha256(target)
         atomic_write_text(completion, json.dumps({"stage": identity, "result": self._pack(result),
                                                  "artifacts": artifacts}, indent=2))
         return result
@@ -440,7 +441,7 @@ class Orchestrator:
             if not manifest.is_file():
                 raise VerificationEvidenceError("Simulation verified input manifest is missing")
             try:
-                verified_inputs = json.loads(manifest.read_text(encoding="utf-8"))
+                verified_inputs = read_json(manifest)
                 current_inputs = _verification_inputs(args[0], args[1])
             except (OSError, ValueError) as exc:
                 raise VerificationEvidenceError("Simulation verified input manifest is invalid") from exc
@@ -459,7 +460,7 @@ class Orchestrator:
         attempts, missed = [], []
         root = work / "tbqual"
         root.mkdir(parents=True, exist_ok=True)
-        tb_hash = hashlib.sha256(Path(tb).read_bytes()).hexdigest() if Path(tb).is_file() else None
+        tb_hash = file_sha256(Path(tb)) if Path(tb).is_file() else None
 
         def save(status, qualified=False):
             atomic_write_text(root / "qualification.json", json.dumps({
@@ -476,8 +477,8 @@ class Orchestrator:
             log = directory / "sim_log.txt"
             attempts.append({"label": label, "description": description, "passed": passed,
                 "failure_kind": kind.value, "error": str(error)[:2000], "assertion_detected": proof,
-                "proof_reason": detail, "source_sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
-                "raw_log_sha256": hashlib.sha256(log.read_bytes()).hexdigest() if log.is_file() else None})
+                "proof_reason": detail, "source_sha256": file_sha256(path),
+                "raw_log_sha256": file_sha256(log) if log.is_file() else None})
             return passed, error, kind, proof, detail
 
         if not faults:
@@ -690,7 +691,7 @@ class Orchestrator:
         unit.write_text("".join(part if part.endswith("\n") else part + "\n" for part in parts),
                         encoding="utf-8")
         # DONE binds the unit to the verified children it was assembled from.
-        self._unit_inputs = {str(path.resolve()): hashlib.sha256(path.read_bytes()).hexdigest()
+        self._unit_inputs = {str(path.resolve()): file_sha256(path)
                              for path in [*module_files.values(), top_file, unit]}
         self.cfg.design_path = unit
         print(f"[build] editable unit: {', '.join(module_files)} + {spec.top_name}; "
@@ -806,7 +807,7 @@ class Orchestrator:
                                          previous_source=previous_source,
                                          previous_source_sha256=previous_source_sha256)
             golden_path.write_text(golden_src, encoding="utf-8")
-            digest = hashlib.sha256(golden_path.read_bytes()).hexdigest()
+            digest = file_sha256(golden_path)
             mismatches = None
             try:
                 gm = GoldenModel(golden_path)
@@ -860,7 +861,7 @@ class Orchestrator:
             # independent testbench below is still qualified.
             self.state.append_event({"stage": "tb_qualification", "module": m.name,
                                      "testbench": str(Path(tb).resolve()),
-                                     "testbench_sha256": hashlib.sha256(Path(tb).read_bytes()).hexdigest(),
+                                     "testbench_sha256": file_sha256(Path(tb)),
                                      "outcome": "skipped_by_policy",
                                      "verification_policy": self.cfg.verification_policy})
             qual_ok, reason = True, "skipped_by_policy (verification_policy=skip_generated_tb_mutations)"
@@ -1212,12 +1213,12 @@ class Orchestrator:
             provenance = None
             provenance_path = Path(wdir) / "verification_provenance.json"
             if provenance_path.is_file():
-                provenance = json.loads(provenance_path.read_text(encoding="utf-8"))
-                if provenance.get("source_sha256") != hashlib.sha256(candidate_path.read_bytes()).hexdigest():
+                provenance = read_json(provenance_path)
+                if provenance.get("source_sha256") != file_sha256(candidate_path):
                     raise ValueError("Reused verification source does not match candidate evidence")
                 for evidence in provenance["evidence"]:
                     path = Path(evidence["path"])
-                    if not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest() != evidence["sha256"]:
+                    if not path.is_file() or file_sha256(path) != evidence["sha256"]:
                         raise ValueError("Reused verification evidence is missing or modified")
                 candidate_facts["verification_reuse"] = provenance
             receipt_gate = _process_exit_gate(wdir, provenance)
@@ -1323,7 +1324,7 @@ class Orchestrator:
             summary["termination_reason"] = termination_reason
         if cfg.verification_policy != "full":
             summary["verification_policy"] = cfg.verification_policy
-        final_artifacts = {str(path.resolve()): hashlib.sha256(path.read_bytes()).hexdigest()
+        final_artifacts = {str(path.resolve()): file_sha256(path)
                            for path in Path(best_artifact_dir).glob("*")
                            if path.is_file() and (path.suffix in (".v", ".sv", ".rpt", ".xdc", ".tcl", ".log")
                                                  or path.name in ("tool_exit_records.log", "verification_provenance.json", "verification_inputs.log", "sim_log.txt"))}
@@ -1351,10 +1352,10 @@ class Orchestrator:
             raise VerificationEvidenceError("Completed verification dependency manifest is missing: " + str(best_manifest))
         for provenance_path in provenance_paths:
             retained.append(provenance_path)
-            provenance = json.loads(provenance_path.read_text(encoding="utf-8"))
+            provenance = read_json(provenance_path)
             for evidence in provenance["evidence"]:
                 path = Path(evidence["path"])
-                if not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest() != evidence["sha256"]:
+                if not path.is_file() or file_sha256(path) != evidence["sha256"]:
                     raise ValueError("Reused verification evidence is missing or modified")
                 retained.append(path)
                 if path.name == "verification_inputs.log":
@@ -1370,7 +1371,7 @@ class Orchestrator:
                     not re.fullmatch(r"[a-f0-9]{64}", identity["sha256"])):
                 raise VerificationEvidenceError(label + " identity is invalid")
             path = Path(identity["path"])
-            if not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest() != identity["sha256"]:
+            if not path.is_file() or file_sha256(path) != identity["sha256"]:
                 raise VerificationEvidenceError(label + " missing or modified: " + str(path))
             final_artifacts[str(path.resolve())] = identity["sha256"]
 
@@ -1381,7 +1382,7 @@ class Orchestrator:
         # Rejected Doctor reports still informed later plans. Retain their
         # originally observed digests, never freshly bless changed trial files.
         for evaluation_path in state.run_dir.glob("iter_*/evaluation_facts.json"):
-            trial = json.loads(evaluation_path.read_text(encoding="utf-8")).get("doctor_trial")
+            trial = read_json(evaluation_path).get("doctor_trial")
             if trial is None:
                 continue
             identities = [trial[key] for key in ("input_source", "trial_source", "prior_flow_script", "trial_flow_script") if key in trial]
@@ -1401,15 +1402,15 @@ class Orchestrator:
                         retain_identity(candidate[key], "Standard proposal evidence")
         for evidence_path in [state.contract_path, state.run_dir / "harness_facts.json", *state.run_dir.glob("iter_*/evaluation_facts.json"), *state.run_dir.glob("iter_*/proposal_*.json"), *retained]:
             if evidence_path.is_file():
-                final_artifacts[str(evidence_path.resolve())] = hashlib.sha256(evidence_path.read_bytes()).hexdigest()
+                final_artifacts[str(evidence_path.resolve())] = file_sha256(evidence_path)
         atomic_write_text(best_path, best_v)
         atomic_write_text(state.run_dir / "run_summary.json",
                           json.dumps(summary, indent=2, default=str))
         print(f"\nDONE — best from iter {best_iter}: LUTs={best_m.lut_used} "
               f"FFs={best_m.ff_used} WNS={best_m.wns_ns}")
         self._snapshot(phase="DONE", best_iteration=best_iter,
-                       best_sha256=hashlib.sha256(best_path.read_bytes()).hexdigest(),
-                       summary_sha256=hashlib.sha256((state.run_dir / "run_summary.json").read_bytes()).hexdigest(),
+                       best_sha256=file_sha256(best_path),
+                       summary_sha256=file_sha256((state.run_dir / "run_summary.json")),
                        final_artifacts=final_artifacts)
         return summary
 
@@ -1485,7 +1486,7 @@ class Orchestrator:
             if not _process_exit_gate(origin)["passed"]:
                 return False
             manifest = origin / "verification_inputs.log"
-            if json.loads(manifest.read_text(encoding="utf-8")) != _verification_inputs([vfile, *extra], tb):
+            if read_json(manifest) != _verification_inputs([vfile, *extra], tb):
                 return False
             expected = vivado.synthesis_tcl([vfile, *extra], self.cfg.top_module, self.cfg, origin,
                                             promotions=self.taxonomy.promotions())
@@ -1566,13 +1567,13 @@ class Orchestrator:
             if not input_manifest.is_file():
                 raise VerificationEvidenceError("Doctor prior simulation input manifest is missing")
             try:
-                verified_inputs = json.loads(input_manifest.read_text(encoding="utf-8"))
+                verified_inputs = read_json(input_manifest)
                 current_inputs = _verification_inputs([origin_source, *extra], tb)
             except (OSError, ValueError) as exc:
                 raise VerificationEvidenceError("Doctor prior simulation input evidence is invalid") from exc
             if verified_inputs != current_inputs:
                 raise VerificationEvidenceError("Doctor prior simulation sources/testbench changed after verification")
-            if hashlib.sha256(vfile.read_bytes()).hexdigest() != verified_inputs["sources"][0]["sha256"]:
+            if file_sha256(vfile) != verified_inputs["sources"][0]["sha256"]:
                 raise VerificationEvidenceError("Doctor trial bytes differ from verified source")
             prior_flow = flow_evidence(origin)
             evidence_paths = [input_manifest, origin_source, *extra]
@@ -1582,14 +1583,14 @@ class Orchestrator:
                 (path.name == "tool_exit_records.log" or path.name.endswith("_log.txt") or path.name.endswith(".log"))]
             provenance = {
                 "schema_version": 1, "mode": "source_identical_prior_verification",
-                "source_sha256": hashlib.sha256(vfile.read_bytes()).hexdigest(),
-                "prior_source_sha256": hashlib.sha256(origin_source.read_bytes()).hexdigest(),
+                "source_sha256": file_sha256(vfile),
+                "prior_source_sha256": file_sha256(origin_source),
                 "prior_directory": str(origin.resolve()),
                 "statement": "Only physical tool options changed. Compile/simulation were not rerun "
                              "in this directory; their actual prior evidence is reused for identical RTL, "
                              "testbench and companion sources. Missing prior exit receipts remain unknown.",
                 "prior_flow_evidence": prior_flow,
-                "evidence": [{"path": str(path.resolve()), "sha256": hashlib.sha256(path.read_bytes()).hexdigest()}
+                "evidence": [{"path": str(path.resolve()), "sha256": file_sha256(path)}
                              for path in dict.fromkeys(evidence_paths)],
             }
             save_evidence(work / "verification_provenance.json", provenance)
@@ -1730,7 +1731,7 @@ class Orchestrator:
     def _cache_context(self, tb, extra):
         def identity(path):
             path = Path(path)
-            return {"path": str(path.resolve()), "sha256": hashlib.sha256(path.read_bytes()).hexdigest()} if path.is_file() else {"executable": str(path)}
+            return {"path": str(path.resolve()), "sha256": file_sha256(path)} if path.is_file() else {"executable": str(path)}
         return {"tb": identity(tb) if tb else None,
                 "dependencies": [identity(p) for p in extra],
                 "top": self.cfg.top_module, "part": self.cfg.target_part,

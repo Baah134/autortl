@@ -5,6 +5,7 @@ import math
 import re
 from pathlib import Path
 from .state import atomic_write_text
+from .fileio import read_json
 
 IMPLEMENTATIONS = ("chip_top", "out_of_context")
 # Benchmark arm B ablation (ablation_policy_seam_absent). "full" is the shipped
@@ -146,7 +147,7 @@ class RunConfig:
 
     @classmethod
     def load(cls, path: Path) -> "RunConfig":
-        return cls.from_dict(json.loads(Path(path).read_text(encoding="utf-8")))
+        return cls.from_dict(read_json(Path(path)))
 
     @property
     def target_period_ns(self) -> float:

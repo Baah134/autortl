@@ -10,6 +10,7 @@ import re
 import copy
 from pathlib import Path
 from .state import atomic_write_text
+from .fileio import file_sha256, read_json
 
 
 def code_hash(verilog: str) -> str:
@@ -27,7 +28,7 @@ class MetricsCache:
         self._data: dict = {}
         if self.path.exists():
             try:
-                loaded = json.loads(self.path.read_text(encoding="utf-8"))
+                loaded = read_json(self.path)
                 self._data = loaded if isinstance(loaded, dict) else {}
             except json.JSONDecodeError:
                 self._data = {}
@@ -93,7 +94,7 @@ class MetricsCache:
                                            or path.name in ("tool_exit_records.log", "verification_provenance.json", "verification_inputs.log", "sim_log.txt")):
                         if not path.resolve().is_relative_to(root):
                             continue
-                        artifacts[path.relative_to(root).as_posix()] = hashlib.sha256(path.read_bytes()).hexdigest()
+                        artifacts[path.relative_to(root).as_posix()] = file_sha256(path)
             updated[self._context_key(verilog, context)] = {
                 "schema_version": 2, "source_hash": hashlib.sha256(verilog.encode()).hexdigest(),
                 "context": copy.deepcopy(context), "metrics": copy.deepcopy(metrics),
@@ -110,7 +111,7 @@ class ArtifactCache:
         self._data: dict = {}
         if self.path.exists():
             try:
-                loaded = json.loads(self.path.read_text(encoding="utf-8"))
+                loaded = read_json(self.path)
                 self._data = loaded if isinstance(loaded, dict) else {}
             except json.JSONDecodeError:
                 self._data = {}

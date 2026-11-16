@@ -7,6 +7,7 @@ import re
 from pathlib import Path
 from .state import atomic_write_text
 from .timing_doctor import first_violated_path
+from .fileio import file_sha256
 
 
 def file_evidence(path: Path, limit: int = 16000) -> dict:
@@ -102,7 +103,7 @@ def tool_exit_evidence(directory: Path) -> dict:
                 log_status = "missing"
             else:
                 try:
-                    digest = hashlib.sha256(output.read_bytes()).hexdigest()
+                    digest = file_sha256(output)
                     log_status = "verified" if digest == item["output_log_sha256"] else "mismatch"
                 except OSError:
                     log_status = "unreadable"

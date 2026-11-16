@@ -20,6 +20,7 @@ import subprocess
 import time
 from dataclasses import dataclass
 from pathlib import Path
+from autortl.fileio import file_sha256
 
 SUFFIXES = {"prompt": "_prompt.txt", "test": "_test.sv", "ref": "_ref.sv"}
 TOP = "TopModule"
@@ -57,7 +58,7 @@ class Task:
 
 
 def sha256_file(path: Path) -> str:
-    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+    return file_sha256(Path(path))
 
 
 def _check_id(task_id: str) -> str:

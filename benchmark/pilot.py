@@ -14,7 +14,6 @@ to generation. Arm B (mutation-qualification ablation) is not implemented.
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import re
 import subprocess
@@ -24,6 +23,7 @@ from pathlib import Path
 
 from . import artifacts
 from . import verilogeval as ve
+from autortl.fileio import file_sha256, read_json
 
 REPO = Path(__file__).resolve().parent.parent
 ARMS = ("single_call", "ablation", "full")
@@ -52,7 +52,7 @@ TERMINATION = {"done": "done", "budget_exhausted": "budget", "model_blocked": "m
 
 
 def _sha(path: Path) -> str:
-    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+    return file_sha256(Path(path))
 
 
 def _cell(manifest: dict, task: str, arm: str, trial: int) -> dict:
@@ -213,9 +213,9 @@ def run_full(manifest: dict, task: ve.Task, out_dir: Path, *, trial: int = 0, mo
         output = out.decode("utf-8", "replace") if isinstance(out, bytes) else out
     (out_dir / "build_output.log").write_text(output, encoding="utf-8")
     summary_path = run_dir / "run_summary.json"
-    summary = json.loads(summary_path.read_text(encoding="utf-8")) if summary_path.is_file() else {}
+    summary = read_json(summary_path) if summary_path.is_file() else {}
     budget_path = run_dir / "budget.json"
-    used = json.loads(budget_path.read_text(encoding="utf-8")) if budget_path.is_file() else {}
+    used = read_json(budget_path) if budget_path.is_file() else {}
     accounting = {"seconds": round(time.monotonic() - started, 3), "exit": exit_code,
                   "outer_timeout": timed_out, "run_status": summary.get("status"),
                   "llm_calls": used.get("llm_calls"), "tool_seconds": used.get("vivado_seconds"),
@@ -251,7 +251,7 @@ def submission_files(run_dir: Path, summary: dict, winner: Path) -> list[str] | 
     """
     files = [winner.name]
     if summary.get("edit_scope") == "frozen_children":
-        spec = json.loads((run_dir / "design_spec.json").read_text(encoding="utf-8"))
+        spec = read_json((run_dir / "design_spec.json"))
         children = [f"modules/{m['name']}/{m['name']}.v" for m in spec["modules"]]
         if any(not (run_dir / c).is_file() for c in children):
             return None
@@ -263,7 +263,7 @@ def submission_files(run_dir: Path, summary: dict, winner: Path) -> list[str] | 
 # ---------------------------------------------------------------- grading
 def grade_run(manifest: dict, task: ve.Task, run_dir: Path, grade_dir: Path, **tools) -> dict:
     """Grade one sealed run against the official test; a missing record is ungraded."""
-    record = json.loads((Path(run_dir) / "run.json").read_text(encoding="utf-8"))
+    record = read_json((Path(run_dir) / "run.json"))
     submission = Path(run_dir) / "submission"
     receipt = artifacts.load_artifact(submission, expected_id=record["receipt_id"])
     if receipt["identity"] != manifest["identity"] or receipt["cell"]["task"] != task.id:
@@ -326,7 +326,7 @@ def main(argv=None) -> int:
     a = p.parse_args(argv)
 
     if a.cmd == "select":
-        catalog = json.loads(a.catalog.read_text(encoding="utf-8"))
+        catalog = read_json(a.catalog)
         result = ve.select_pilot(catalog, a.commit)
         a.out.write_text(json.dumps(result, indent=2), encoding="utf-8")
     elif a.cmd == "manifest":
@@ -348,7 +348,7 @@ def main(argv=None) -> int:
                               implementation=a.implementation)
     else:
         manifest, root = _load(a)
-        record = json.loads((a.run / "run.json").read_text(encoding="utf-8"))
+        record = read_json((a.run / "run.json"))
         iverilog, vvp = ve.tool_paths(a.iverilog, a.vvp)
         result = grade_run(manifest, ve.load_task(root, record["cell"]["task"]), a.run, a.out,
                            iverilog=iverilog, vvp=vvp)

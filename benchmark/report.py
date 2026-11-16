@@ -31,6 +31,7 @@ import math
 import random
 import sys
 from pathlib import Path
+from autortl.fileio import read_json
 
 ARMS = ("single_call", "ablation", "full")
 ARM_LABEL = {"single_call": "A single call", "ablation": "B ablation", "full": "C full harness"}
@@ -64,7 +65,7 @@ def grade_attempt(manifest: dict, dataset: Path, attempt: Path, **tools) -> list
     grades.mkdir(exist_ok=False)
     rows = []
     for (task_id, arm, trial), run_dir in runs.items():
-        record = json.loads((run_dir / "run.json").read_text(encoding="utf-8"))
+        record = read_json((run_dir / "run.json"))
         verdict = pilot.grade_run(manifest, ve.load_task(dataset, task_id), run_dir,
                                   grades / f"{task_id}-{arm}-{trial}", **tools)
         accounting = record["accounting"]
@@ -311,10 +312,10 @@ def main(argv=None) -> int:
         rows = grade_attempt(manifest, a.dataset, a.attempt, iverilog=iverilog, vvp=vvp)
         print(json.dumps({"graded": len(rows), "summary": str(a.attempt / "grades" / "summary.json")}))
         return 0
-    rows = json.loads(a.summary.read_text(encoding="utf-8"))
+    rows = read_json(a.summary)
     for row in rows:
         row.setdefault("trial", 0)  # pilot summaries graded before trials were recorded
-    catalog = json.loads(a.catalog.read_text(encoding="utf-8")) if a.catalog else None
+    catalog = read_json(a.catalog) if a.catalog else None
     summary = summarize(rows, catalog)
     with a.out.open("x", encoding="utf-8", newline="\n") as stream:
         stream.write(render_markdown(summary, a.title))
