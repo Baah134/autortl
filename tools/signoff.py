@@ -13,12 +13,12 @@ Re-running skips campaigns already archived, so an interrupted pass resumes.
 """
 from __future__ import annotations
 import argparse
-import hashlib
 import json
 import shutil
 import subprocess
 import sys
 from pathlib import Path
+from autortl.fileio import file_sha256
 
 ROOT = Path(__file__).resolve().parents[1]
 HISTORY = ROOT / "curriculum" / "results.jsonl"
@@ -61,7 +61,7 @@ def archive(name, dest, root=ROOT, python=sys.executable):
         report = subprocess.run([python, str(root / "tools" / "role_report.py"), str(dest / "run")],
                                 capture_output=True, text=True, encoding="utf-8", errors="replace")
         (dest / "role-report.md").write_text(report.stdout or report.stderr, encoding="utf-8", newline="\n")
-    files = {p.relative_to(dest).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()
+    files = {p.relative_to(dest).as_posix(): file_sha256(p)
              for p in sorted(dest.rglob("*")) if p.is_file() and p.name != "archive-manifest.json"}
     (dest / "archive-manifest.json").write_text(json.dumps({"files": files}, indent=2) + "\n",
                                                 encoding="utf-8", newline="\n")

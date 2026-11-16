@@ -46,12 +46,14 @@ def _load_cli():
 
 
 def test_counter_cli_prefers_bat_and_falls_back_to_bare_tool_names(tmp_path):
+    # The rule lives in autortl.doctor.tool_bins, shared by every check script.
     cli, _ = _load_cli()
-    assert cli.tool_path(tmp_path, "xsim") == str(tmp_path.resolve() / "xsim.bat")
+    assert cli.tool_bins(tmp_path)["xsim_bin"] == str(tmp_path.resolve() / "xsim.bat")
     (tmp_path / "xsim").write_text("")
-    assert cli.tool_path(tmp_path, "xsim") == str(tmp_path.resolve() / "xsim")
+    assert cli.tool_bins(tmp_path)["xsim_bin"] == str(tmp_path.resolve() / "xsim")
     (tmp_path / "xsim.bat").write_text("")
-    assert cli.tool_path(tmp_path, "xsim") == str(tmp_path.resolve() / "xsim.bat")
+    assert cli.tool_bins(tmp_path)["xsim_bin"] == str(tmp_path.resolve() / "xsim.bat")
+    assert set(cli.tool_bins(tmp_path)) == {"vivado_bin", "xvlog_bin", "xelab_bin", "xsim_bin"}
 
 
 def test_counter_cli_bin_dir_defaults_to_the_environment(tmp_path, monkeypatch):

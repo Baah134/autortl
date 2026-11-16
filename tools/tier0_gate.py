@@ -38,6 +38,7 @@ import subprocess
 import sys
 import time
 from datetime import datetime, timezone
+from autortl.fileio import file_sha256, read_json
 
 ROOT = Path(__file__).resolve().parents[1]
 SELECTION = ("autortl", "llm", "tests", "curriculum", "scripts", "data", ".claude")
@@ -58,7 +59,7 @@ TIER_BUDGETS.update({tier: dict(TIER_BUDGETS[1]) for tier in range(2, 7)})
 
 
 def sha(path):
-    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+    return file_sha256(Path(path))
 
 
 def identities(root=ROOT):
@@ -120,7 +121,7 @@ def recorded_implementation(record):
     for result in record.get("results") or []:
         path = Path(str(result.get("evidence_dir") or "")) / "runtime.json"
         try:
-            return json.loads(path.read_text(encoding="utf-8"))["implementation"]
+            return read_json(path)["implementation"]
         except (OSError, ValueError, KeyError, TypeError):
             continue
     return None
