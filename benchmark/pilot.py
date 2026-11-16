@@ -232,8 +232,14 @@ def run_full(manifest: dict, task: ve.Task, out_dir: Path, *, trial: int = 0, mo
             destination=out_dir / "submission", top=summary.get("top_module") or ve.TOP,
             internal_status="accepted", selection_reason="accepted_incumbent", termination="done")
     else:
-        termination = ("interrupted" if timed_out or not summary or summary.get("failure_kind") == "infra"
-                       else TERMINATION.get(status, "failed"))
+        # A model block is named before the generic infrastructure check, so a quota
+        # stop is not mislabelled interrupted (both are excluded from report rates).
+        if not timed_out and status == "model_blocked":
+            termination = "model_blocked"
+        elif timed_out or not summary or summary.get("failure_kind") == "infra":
+            termination = "interrupted"
+        else:
+            termination = TERMINATION.get(status, "failed")
         if termination == "done":  # DONE without its complete sources is not a submission
             termination = "failed"
         receipt = artifacts.record_missing(manifest, _selector(cell), destination=out_dir / "submission",

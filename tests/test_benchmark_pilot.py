@@ -159,6 +159,7 @@ def test_full_done_winner_is_sealed_as_accepted_incumbent(manifest, task, tmp_pa
 @pytest.mark.parametrize("build, termination", [
     (FakeBuild(status="budget_exhausted", winner=False), "budget"),
     (FakeBuild(status="model_blocked", winner=False), "model_blocked"),
+    (FakeBuild(status="model_blocked", winner=False, kind="infra"), "model_blocked"),  # as run.py writes it
     (FakeBuild(status="infra_blocked", winner=False), "interrupted"),
     (FakeBuild(status="build_blocked", winner=False, kind="infra"), "interrupted"),
     (FakeBuild(status="build_blocked", winner=False), "failed"),
