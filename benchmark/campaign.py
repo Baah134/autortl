@@ -5,7 +5,10 @@
 
 Order is trial-major (a complete trial 0 over every task before trial 1), tasks
 in manifest order, arms single_call, ablation, full. A cell whose output
-directory exists is never rerun, so the command is safe to restart.
+directory exists is never rerun, so the command is safe to restart. A cell
+left with a directory but no sealed record (its process died mid-run) is sealed
+`interrupted` with no submission, so grading is never blocked and the cell is
+excluded from rates as infrastructure; it is never rerun.
 
 Model availability. Before the first pending cell, and again after any cell
 ends `model_blocked`, the campaign sends one tiny probe call. While the model
@@ -57,6 +60,35 @@ def run_cell(manifest: dict, task: ve.Task, cell: tuple[str, str, int], out_dir:
     if arm == "single_call":
         return pilot.run_single_call(manifest, task, out_dir, trial=trial, model=model)
     return pilot.run_full(manifest, task, out_dir, trial=trial, model=model, arm=arm)
+
+
+def seal_spent(manifest: dict, cell: tuple[str, str, int], out_dir: Path) -> dict | None:
+    """Seal a cell whose run died before sealing; None if it is already sealed.
+
+    Reuses a receipt that was published before the process died; otherwise
+    records a missing submission with termination `interrupted`. The run's own
+    partial files stay in place for inspection.
+    """
+    out_dir = Path(out_dir)
+    if (out_dir / "run.json").is_file():
+        return None
+    selected = pilot._cell(manifest, cell[0], cell[1], cell[2])
+    submission = out_dir / "submission"
+    receipt_file = submission / "receipt.json"
+    if receipt_file.is_file():
+        receipt = json.loads(receipt_file.read_text(encoding="utf-8"))
+        receipt = artifacts.load_artifact(submission, expected_id=receipt["id"])
+    else:
+        if submission.exists():  # a half-written receipt directory cannot be reused
+            submission = out_dir / "submission-interrupted"
+        receipt = artifacts.record_missing(manifest, {"task": cell[0], "trial": cell[2], "arm": cell[1]},
+                                           destination=submission, termination="interrupted")
+    record = pilot._finish(out_dir, selected, receipt, {"spent_unsealed": True,
+                                                        "note": "process ended before the cell was sealed"})
+    if submission.name != "submission":
+        record["submission_dir"] = submission.name
+        (out_dir / "run.json").write_text(json.dumps(record, indent=2), encoding="utf-8")
+    return record
 
 
 def model_available(model: str | None = None, ask=None) -> tuple[bool, str]:
@@ -120,6 +152,10 @@ def run_campaign(manifest: dict, dataset: Path, attempt: Path, *, model: str | N
     for cell in cells:
         out_dir = cell_dir(attempt, cell)
         if out_dir.exists():  # sealed, or spent by an interrupted launch: never rerun
+            sealed = seal_spent(manifest, cell, out_dir)
+            if sealed is not None:
+                note(event="sealed_spent", task=cell[0], arm=cell[1], trial=cell[2],
+                     kind=sealed["kind"], termination=sealed["termination"], receipt_id=sealed["receipt_id"])
             skipped += 1
             continue
         if max_cells is not None and ran >= max_cells:

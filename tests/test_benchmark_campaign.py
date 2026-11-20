@@ -169,3 +169,40 @@ def test_interrupted_cell_also_triggers_a_probe_and_wait(manifest, tmp_path):
     stop_now = campaign.run_campaign(manifest, DATA, tmp_path / "b", runner=Runner({cells[1]: "interrupted"}),
                                      probe=Probe([(True, ""), (False, "quota")]))
     assert stop_now["exit"] == campaign.EXIT_MODEL_BLOCKED and stop_now["ran"] == 2
+
+
+# ------------------------------------------------------------ spent, unsealed cells
+def test_spent_unsealed_cell_is_sealed_interrupted_not_rerun(manifest, tmp_path):
+    from benchmark import artifacts
+    cell = ("Prob901_and2", "ablation", 0)
+    spent = campaign.cell_dir(tmp_path, cell)
+    (spent / "run").mkdir(parents=True)  # the process died mid-build
+    runner = Runner()
+    result = campaign.run_campaign(manifest, DATA, tmp_path, runner=runner)
+    assert cell not in runner.calls and result["skipped"] == 1 and result["ran"] == 11
+    record = json.loads((spent / "run.json").read_text())
+    assert (record["kind"], record["termination"]) == ("missing", "interrupted")
+    assert record["accounting"]["spent_unsealed"] is True and (spent / "run").is_dir()
+    receipt = artifacts.load_artifact(spent / "submission", expected_id=record["receipt_id"])
+    assert receipt["termination"] == "interrupted" and receipt["cell"]["arm"] == "ablation"
+    events = [json.loads(line) for line in (tmp_path / "campaign.log").read_text().splitlines()]
+    spent_events = [e for e in events if e["event"] == "sealed_spent"]
+    assert len(spent_events) == 1 and spent_events[0]["arm"] == "ablation"
+    assert spent_events[0]["termination"] == "interrupted"
+
+
+def test_sealed_cell_is_left_untouched_and_published_receipt_is_reused(manifest, tmp_path):
+    from benchmark import artifacts
+    sealed = ("Prob901_and2", "single_call", 0)
+    done_dir = campaign.cell_dir(tmp_path, sealed)
+    done_dir.mkdir(parents=True)
+    (done_dir / "run.json").write_text('{"kept": true}')
+    assert campaign.seal_spent(manifest, sealed, done_dir) is None
+    assert json.loads((done_dir / "run.json").read_text()) == {"kept": True}
+    half = ("Prob900_inv", "full", 0)  # the receipt was published, run.json was not written
+    half_dir = campaign.cell_dir(tmp_path, half)
+    half_dir.mkdir(parents=True)
+    receipt = artifacts.record_missing(manifest, {"task": half[0], "trial": 0, "arm": "full"},
+                                       destination=half_dir / "submission", termination="budget")
+    record = campaign.seal_spent(manifest, half, half_dir)
+    assert record["receipt_id"] == receipt["id"] and record["termination"] == "budget"
