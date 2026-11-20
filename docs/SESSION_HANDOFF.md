@@ -4,31 +4,27 @@ One current section only. History lives in `docs/PROGRESS.md` and Git. The plan
 of record is `docs/ROADMAP.md`; the review behind it is
 `docs/REVIEW_2026-11-15.md`.
 
-## Current — November 15, 2026 (afternoon): final-02 running
+## Current — November 20, 2026: final-02 restarted
 
-Coordinator: Claude. Branch `codex/contract-context`, pushed (MIT licence).
+Coordinator: Claude. Branch `codex/contract-context`, pushed (`c39826103`).
 `main` frozen at `ca61dbc`; no PR yet.
 
 **Running:** `final-02`, the registered comparison (40 tasks x 3 arms x 3
-trials = 360 cells, runtime `7731a66d2`), started November 15 14:30 with
+trials = 360 cells, runtime `7731a66d2`). It stalled from November 16 to 20
+because the session that launched it ended; it was restarted November 20
+08:55 with
 
-    python -m benchmark.campaign --manifest <final-02>/manifest.json --dataset <D> --attempt <final-02>
+    python -m benchmark.campaign --manifest <final-02>/manifest.json --dataset <D> --attempt <final-02> --wait-minutes 20 --max-wait-hours 12
 
 where `<final-02>` is `C:/Users/prince.baah/autortl-private/final-02` and `<D>`
-is the VerilogEval `dataset_spec-to-rtl` folder (ROADMAP section 3; needs
-`AUTORTL_CODEX_BIN` set). Progress: `<final-02>/campaign.log` (JSON lines).
-It stops by itself on a model block (quota; exit 3) or three consecutive
-interrupted cells (exit 4); rerunning the same command resumes and never
-reruns a cell. About 19 hours of awake machine time; the first task
-(Prob042_vector4) sealed a candidate in all three arms.
-
-**Quota.** Codex hit its usage limit on November 15 at 17:09 after 58 cells
-(one single-call cell sealed `model_blocked`, two harness cells sealed
-`interrupted`; all three are infrastructure and excluded from report rates).
-The campaign was resumed with `--wait-minutes 20 --max-wait-hours 12`: it probes
-every 20 minutes without spending cells and continues when the model answers.
-Expect about seven usage windows for all 360 cells. If the process is gone
-(reboot), run the same command again.
+the VerilogEval `dataset_spec-to-rtl` folder (needs `AUTORTL_CODEX_BIN`; ROADMAP
+section 3). Progress: `<final-02>/campaign.log`. At restart 66 cells were
+sealed; the cell in flight when the session ended (Prob055_conditional full,
+trial 0) was sealed `interrupted` and is excluded from rates. The campaign
+waits out Codex quota by itself (about 58 cells per usage window); it does
+not survive the launching session ending or a reboot. **If
+`campaign.log` stops growing and no `waiting_for_model` events appear, run
+the same command again.** Expect about 2 to 3 days of awake machine time.
 
 **Do not edit while it runs:** `autortl/`, `llm/`, `data/`, `.claude/skills/`,
 `run.py`, `benchmark/pilot.py`, `benchmark/verilogeval.py`. Use a worktree.
