@@ -1306,6 +1306,24 @@ class Orchestrator:
                 stall, knobs_tried = 0, False
                 print(f"[restart {replans}/{cfg.max_replans}] new direction planned")
 
+        return self._finish_optimize(
+            baseline=baseline,
+            best_artifact_dir=best_artifact_dir,
+            best_iter=best_iter,
+            best_m=best_m,
+            best_v=best_v,
+            cfg=cfg,
+            facts=facts,
+            proposal_records=proposal_records,
+            state=state,
+            termination_reason=termination_reason)
+
+    def _finish_optimize(self, *, baseline, best_artifact_dir, best_iter, best_m, best_v, cfg, facts, proposal_records, state, termination_reason) -> dict:
+        """Write the winner, the DONE summary and every retained evidence digest.
+
+        The finish phase of _run_optimize, unchanged: it never re-blesses changed
+        bytes, only records digests observed when each artifact was verified.
+        """
         # ---- finish ----
         best_path = state.run_dir / f"{cfg.top_module}_best.v"
         summary = {"status": "done", "best_iteration": best_iter,
