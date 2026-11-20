@@ -5,7 +5,6 @@ and skips replans instead of dying mid-run.
 """
 from __future__ import annotations
 import json
-import time
 import math
 from pathlib import Path
 from .awake_clock import awake_seconds

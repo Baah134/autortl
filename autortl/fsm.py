@@ -12,7 +12,6 @@ from __future__ import annotations
 import json
 import shutil
 import hashlib
-import time
 import re
 import os
 from dataclasses import asdict
@@ -22,7 +21,7 @@ from pathlib import Path
 from .awake_clock import awake_seconds
 from .config import RunConfig
 from .contract_context import run_evidence, file_evidence, flow_evidence, save_evidence, render_fixed_optimize_contract, tool_exit_evidence
-from .spec import DesignSpec, ModuleSpec, Port, ResetSpec
+from .spec import DesignSpec, ModuleSpec
 from .linter import lint_spec, write_stub_project, top_verilog
 from .static_checks import check as static_check
 from .state import RunState, atomic_write_text
@@ -945,7 +944,7 @@ class Orchestrator:
         baseline = self._full_flow([base_v] + extra_sources, tb_path,
                                    cfg.top_module, idir)
         if not baseline.sim_passed or baseline.synth_error:
-            print(f"[iter 0] baseline failed verification")
+            print("[iter 0] baseline failed verification")
             v, baseline = self._fix_loop(original, baseline, tb_path,
                                          base_v, idir, extra_sources)
             if baseline.sim_passed and not baseline.synth_error:
