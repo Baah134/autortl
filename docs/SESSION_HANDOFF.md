@@ -39,12 +39,17 @@ and parallel tests (`-n auto`: 2,345 tests in 4 m 43 s instead of 15 to 22
 min). Both suites green on the branch.
 
 **Exact next action:** ROADMAP task B1. When `campaign.log` ends with
-`"reason": "all cells attempted"`: `python -m benchmark.report grade`, then
-`render`, archive under `evidence/<date>/final-02-results/`, decide the claim
-(B2) and put the numbers in the README table (P3). On a stop event, follow
-B1's restart notes.
+`"reason": "all cells attempted"`, run `python -m benchmark.finish` (full
+command in B1): it grades, reports, applies the claim rule registered
+November 20 (`docs/DECISIONS.md`, `benchmark/claim.py`), archives to
+`evidence/<date>/final-02-results/`, writes the README, seals, audits and
+prints the README row (P3). Then follow `docs/RELEASE.md`. On a stop event,
+follow B1's restart notes.
 
 **Done this session**
+- Decision rule registered before grading (123 of 360 cells sealed, none
+  graded); `benchmark/claim.py`, `benchmark/finish.py` with tests;
+  release checklist, PR and release-note drafts in `docs/RELEASE.md`.
 - `final-01` aborted after 5 cells on `empty_netlist_unplaceable`; fixed with
   tests and live checks; a synthesis sweep of all 40 final references passes
   39/40 (the exception is a reference with latches). Evidence

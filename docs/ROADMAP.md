@@ -102,31 +102,31 @@ criteria; a task is not done until all are met and committed.
   sealed `model_blocked` and is reported as missing). `3 consecutive
   interrupted cells` means infrastructure: diagnose before restarting.
 - Restart command (skips existing cells):
-  `python -m benchmark.campaign --manifest <final-02>/manifest.json --dataset <D> --attempt <final-02>` --wait-minutes 20`.
+  `python -m benchmark.campaign --manifest <final-02>/manifest.json --dataset <D> --attempt <final-02> --wait-minutes 20 --max-wait-hours 12`.
   With `--wait-minutes` the campaign probes the model before spending a cell and
   waits out quota blocks itself. Measured on November 15: one Codex usage window
   covers about 58 cells (2.6 hours), so 360 cells need about seven windows.
-- When the log's last event has reason `all cells attempted`:
-  1. `python -m benchmark.report grade --manifest <final-02>/manifest.json --dataset <D> --attempt <final-02> --iverilog C:/msys64/ucrt64/bin/iverilog.exe --vvp C:/msys64/ucrt64/bin/vvp.exe`
-  2. `python -m benchmark.report render --summary <final-02>/grades/summary.json --catalog benchmark/catalogs/verilogeval-c498220.json --title "VerilogEval spec-to-RTL: single call vs AutoRTL (40 tasks x 3 trials)" --out <scratch>/report.md`
-  3. Archive: `python -m benchmark.archive --attempt <final-02> --out evidence/<date>/final-02-results --catalog benchmark/catalogs/verilogeval-c498220.json --title "<same title>" --forbid <user name>`
-     (copies the registration, identity, log, summary, cells, sealed RTL and
-     report with home paths replaced). Write the folder's README (identity,
-     protocol, the tables, every false acceptance by task, every non-`done`
-     termination, limits), then `python -m benchmark.archive --out <folder> --seal`.
-     Run `python tools/evidence_audit.py --worktree` before committing: a copied
-     file whose name contains "manifest" is audited as an archive manifest.
-  4. Read every false-acceptance and every harness-fail/single-pass task; add a
-     taxonomy entry for each new cause (after the campaign, rule 4).
+- When the log's last event has reason `all cells attempted`, one command
+  grades, reports, applies the registered claim rule, archives, writes the
+  README, seals and audits (`benchmark/finish.py`):
+  `python -m benchmark.finish --manifest <final-02>/manifest.json --dataset <D> --attempt <final-02> --out evidence/<date>/final-02-results --catalog benchmark/catalogs/verilogeval-c498220.json --title "VerilogEval spec-to-RTL: single call vs AutoRTL (40 tasks x 3 trials)" --forbid <user name> --iverilog C:/msys64/ucrt64/bin/iverilog.exe --vvp C:/msys64/ucrt64/bin/vvp.exe --links "[results](evidence/<date>/final-02-results/README.md)"`
+  It prints the README table row (task P3). The steps it runs are
+  `benchmark.report grade`/`render`, `benchmark.claim`, `benchmark.archive`
+  and `tools/evidence_audit.py --worktree`; each also runs alone.
+- Then read every false acceptance and every harness-fail/single-pass task;
+  add a taxonomy entry for each new cause (after the campaign, rule 4), note
+  findings in the README and re-seal (`python -m benchmark.archive --out <folder> --seal`).
 - Acceptance: all 360 cells sealed and graded once; report committed with
   intervals, paired differences, false-acceptance rate and cost; audit passes;
   no cell rerun; README (task P3) quotes only numbers from this report.
 
 **B2. Decide the claim from the data** — `blocked(B1)`
-- If C beats A with an interval excluding 0: state it with the interval. If
-  not: state that on these tasks one call is as good at a fraction of the
-  cost, and that the harness's measured value is in B3/B4 and on hardware.
-  Record the decision in `docs/DECISIONS.md`. No post-hoc task removal.
+- The rule was registered November 20 before grading (`docs/DECISIONS.md`,
+  `benchmark/claim.py`): verdict from the C-minus-A paired interval
+  (above 0, below 0, inside ±10 pp, or inconclusive), downgraded if more than
+  10% of an arm's cells were stopped by infrastructure, false acceptances named.
+  B2 is now: quote `claim.json` from B1, and if it shows a recurring planner
+  failure, open the follow-up (former C4). No post-hoc task removal.
 
 **B3. Optimisation benchmark (where the harness should differ)** — `todo`
 - Question: on designs that are functionally correct in both arms, does the
@@ -313,8 +313,9 @@ fast quality item that can run beside it, or post-release work.
 
 1. **B1** finish, grade, report, archive `final-02` (running; about 2 to 3
    days of awake time at about 58 cells per Codex window).
-2. **B2** decide the claim from the data (one paragraph in DECISIONS.md).
-3. **P3** put the report's numbers in the README results table.
+2. **B2** quote the claim the registered rule produced (`claim.json`).
+3. **P3** paste the README row `benchmark.finish` prints; release text is
+   drafted in `docs/RELEASE.md`.
 4. **Merge** `c6-dedupe` (full suites first), then **P2** PR to `main` and
    **P5** tag `v1.0.0` (owner approval).
 

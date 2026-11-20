@@ -48,6 +48,36 @@ No schema, lease rule or harness runtime changed. Revisit by folding it into
 the coordination store once the frozen campaigns are resolved, if both agents
 use it.
 
+## 2026-11-20 — Pre-registered decision rule for the final comparison
+
+Fixed before any final-02 cell was graded (123 of 360 cells sealed;
+`benchmark.report grade` refuses to run until all are sealed, so no verdict
+existed). Implemented as `benchmark/claim.py` and applied by
+`python -m benchmark.finish`; the published claim is that module's output.
+
+- **Primary endpoint:** upstream-compatible pass on the official testbench.
+- **Primary comparison:** arm C (full harness) minus arm A (single call),
+  mean of per-task differences with the 95% task-clustered bootstrap interval
+  over the 40 registered tasks.
+- **Verdict:** interval above 0 → `harness_better`; below 0 →
+  `single_call_better`; inside ±10 percentage points → `no_material_difference`;
+  otherwise `inconclusive` ("no difference shown; cannot rule out 10 pp").
+- **Completeness:** if more than 10% of any arm's cells were stopped by
+  infrastructure (model quota, interruption), the verdict is downgraded to
+  `inconclusive` and the result is reported as descriptive only.
+- **False acceptance:** every internally accepted design that fails the
+  official testbench is named. Above 5% of an arm's accepted designs, the
+  claim must say internal acceptance is not a reliable correctness signal on
+  these tasks.
+- **Always reported:** C minus B and B minus A as secondary, descriptive
+  readings; model calls per pass, C over A; every non-`done` termination.
+- **Not allowed:** removing tasks or cells, rerunning cells, changing a
+  threshold after grading. A later change needs a new dated decision and the
+  original verdict reported beside it.
+
+ROADMAP B2 now reduces to recording this rule's output and, if it shows a
+recurring planner failure, the follow-up (former task C4).
+
 ## Continuing contracts
 
 Use command-line Vivado. Specifications and independent verification control
