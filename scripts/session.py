@@ -1,4 +1,9 @@
-"""Provider-neutral coordinator leases, task ownership and durable handoffs."""
+"""Provider-neutral coordinator leases, task ownership and durable handoffs.
+
+The default lease lasts four hours (DEFAULT_TTL): a one-hour lease lapsed
+repeatedly during long tool runs and machine sleep. The store accepts 60 s
+to 8 h; `scripts/lease_keeper.py` renews it during long work.
+"""
 import argparse
 import json
 import sys
@@ -8,6 +13,8 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from autortl.coordination import CoordinationStore, CoordinationError
 
+DEFAULT_TTL = 4 * 3600
+
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
@@ -15,11 +22,11 @@ def main(argv=None):
     sub.add_parser("status")
     start = sub.add_parser("start")
     start.add_argument("--owner", required=True)
-    start.add_argument("--ttl", type=int, default=3600)
+    start.add_argument("--ttl", type=int, default=DEFAULT_TTL)
     start.add_argument("--takeover-reason")
     renew = sub.add_parser("renew")
     renew.add_argument("--token", required=True)
-    renew.add_argument("--ttl", type=int, default=3600)
+    renew.add_argument("--ttl", type=int, default=DEFAULT_TTL)
     claim = sub.add_parser("claim-task")
     claim.add_argument("--token", required=True)
     claim.add_argument("--id", required=True)

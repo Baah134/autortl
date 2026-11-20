@@ -147,7 +147,7 @@ criteria; a task is not done until all are met and committed.
 - Acceptance: registered before any trial; report with paired ratios and
   intervals; evidence folder; taxonomy entries for new failures.
 
-**B4. External-task tier in the curriculum** — `todo`
+**B4. External-task tier in the curriculum** — `dropped` (November 20; replaced by section 5 R1)
 - Add `curriculum/tier_ext/` with the six pilot tasks as build entries (prompt
   as the spec request, the official test only as the held-out grader through
   `benchmark.pilot`). Purpose: regressions like F4 are caught by the normal
@@ -213,7 +213,7 @@ to one current section of at most 60 lines; move the stacked "Earlier" and
 "Paused" sections to PROGRESS (the Codex candidate-export stage stays recorded
 as parked, with its path). Acceptance: one `## Current` heading.
 
-**D3. DESIGN.md without dated notes** — `todo`: move the dated sections
+**D3. DESIGN.md without dated notes** — `dropped` (November 20; cosmetic): move the dated sections
 ("November7 ...", "November8 ...") into `docs/DECISIONS.md`, leaving DESIGN as
 the timeless architecture. Add the benchmark architecture (arms, sealing,
 grading gate) as a section. Acceptance: no month names in DESIGN headings.
@@ -221,19 +221,19 @@ grading gate) as a section. Acceptance: no month names in DESIGN headings.
 **D4. TASKS.md archive** — `done` (November 15; the whole file is archived, this roadmap is the task board): move completed acceptance records to
 `docs/archive/TASKS-2026.md`; TASKS keeps only open items and points here.
 
-**D5. Lease ergonomics** — `done` (keeper script) / `todo` (duration): the
+**D5. Lease ergonomics** — `done` (keeper script; 4-hour default November 20): the
 lease lapsed five times on November 14. `scripts/lease_keeper.py` renews it.
 Still to do: make the default lease 4 hours in `scripts/session.py`
 (`coordination` tests must cover it) so a sleeping machine does not drop it.
 
 ### Track C — code health (after B1; these touch the harness)
 
-**C1. Split `_run_optimize`** — `todo`: extract baseline, iteration, selection,
+**C1. Split `_run_optimize`** — `merged into C6` (finish phase extracted November 20): extract baseline, iteration, selection,
 doctor and finish phases into methods or a small `optimize/` package, with no
 behaviour change. Acceptance: full suites unchanged, byte-identical run
 summaries on the recorded FSM tests, no function over 120 lines in `fsm.py`.
 
-**C2. Public interfaces** — `todo`: export `doctor.resolve_tool` and
+**C2. Public interfaces** — `merged into C6`: export `doctor.resolve_tool` and
 `artifacts.validate_manifest`; stop importing private names in `benchmark/`.
 
 **C3. Tooling** — `todo`: `pyproject.toml` (ruff with a small rule set, no
@@ -241,15 +241,15 @@ reformat of history), pinned `requirements.txt`, CI Python matched to
 development (3.12 or 3.14, one of them), a `ruff check` CI job. Acceptance:
 CI green, no behaviour change.
 
-**C4. Planner prompt for external requests** — `todo`: from B1 failures, add
+**C4. Planner prompt for external requests** — `folded into B2`: from B1 failures, add
 only general guidance (never task-specific). Each change needs the failing
 run as a fixture and a taxonomy entry.
 
-**C5. Evidence weight** — `todo`: document `git sparse-checkout` for a
+**C5. Evidence weight** — `merged into C3`: document `git sparse-checkout` for a
 code-only clone in the README; measure checkout time before and after. Do not
 rewrite history.
 
-**C6. Remove repetition** — `todo` (measured November 15; do after the campaign)
+**C6. Remove repetition** — `doing` in worktree `c6-dedupe` (items 1, 2, 3, 5, 8 and the `_finish_optimize` split done November 15-20; merge after B1)
 Literal copy-paste is rare (a 6-line-window scan of `autortl/`, `llm/`, `run.py`
 and `curriculum/` finds only the two synthesis templates). The repetition is in
 idioms and parallel paths:
@@ -290,25 +290,75 @@ identical before and after; one item per commit.
 flow (`hardware/basys3/harness_winners`), 50,000 transactions against an
 independent model. Needs explicit owner authorisation for board access.
 
-## 5. Order of work
+## 5. Order of work (revised November 20, 2026)
 
-1. B1 (running) — do not disturb it. In parallel, only safe-file work: D1, D2,
-   D3, D4, P3 structure, B3 design and `benchmark/ppa.py` in a worktree.
-2. When B1 is sealed: grade, report, archive, B2 decision, then P3 numbers.
-3. Owner decisions: P1 licence, P2 push/PR, P4 recording, H1 board.
-4. Merge worktree work, then C1 to C5 and B4.
-5. V1, then B3 (both use the same campaign machinery and a pinned model).
-6. P5 release.
+The project is **finished** when the registered comparison is reported and a
+tagged release on `main` shows it. Everything else is either on that path, a
+fast quality item that can run beside it, or post-release work.
+
+### Plan review: what was cut or merged, and why
+
+| Task | Decision | Reason |
+|---|---|---|
+| C1 split `_run_optimize` | merged into C6 | Same code as C6.4 (evidence bookkeeping); first step done (finish phase extracted) |
+| C2 public interfaces | merged into C6 | Two renames; belongs with the other repetition fixes |
+| C5 sparse-checkout docs | merged into C3 | One README line; the worktree recipe is already in AGENTS.md |
+| B4 curriculum external tier | **dropped** | Redundant: the six pilot tasks with `benchmark.campaign` already are an external regression run (R1 below makes it one command) |
+| D3 DESIGN.md dated notes | **dropped** | Cosmetic; the dated sections are correct and linked |
+| C4 planner prompt fixes | folded into B2 | Only if B1 shows a recurring planner failure; otherwise no change |
+| B3 PPA benchmark, V1 false acceptance | moved after release | Each is a new multi-day campaign; neither is needed to finish |
+| H1 board run, P4 demo video | optional, owner-gated | Hardware evidence already exists (12 cores) |
+
+### Critical path (finish)
+
+1. **B1** finish, grade, report, archive `final-02` (running; about 2 to 3
+   days of awake time at about 58 cells per Codex window).
+2. **B2** decide the claim from the data (one paragraph in DECISIONS.md).
+3. **P3** put the report's numbers in the README results table.
+4. **Merge** `c6-dedupe` (full suites first), then **P2** PR to `main` and
+   **P5** tag `v1.0.0` (owner approval).
+
+### Beside the critical path (safe while B1 runs)
+
+- **C6** remove repetition, in worktree `c6-dedupe` (items 1, 2, 3, 5, 8 and
+  the finish-phase split done; merge after B1 because it changes the runtime).
+- **C3** tooling: ruff in CI, pinned requirements, **parallel tests**
+  (pytest-xdist; see R2).
+- **D5** lease default 4 hours: done November 20 (`scripts/session.py`).
+
+### Scaling testing
+
+- **R1. One-command external regression.** `pilot-06`'s manifest (six
+  VerilogEval tasks, three arms) reruns with `python -m benchmark.campaign`
+  against any harness change, then `benchmark.report`; about 30 minutes and
+  about 90 model calls. Use it before merging harness changes that touch
+  generation, verification or synthesis. This replaces B4.
+- **R2. Parallel unit tests.** The 2,300-test harness suite runs serially in
+  15 to 22 minutes on this 12-core machine; with pytest-xdist it runs in
+  parallel (see C3 for the measured time). CI uses the same flag.
+- **R3. Benchmark throughput.** The binding limit is the Codex usage window,
+  not CPU: about 58 cells per window. Running cells in parallel would only
+  reach the limit sooner. Options that do raise throughput, in order:
+  (a) a second model backend for a separately registered run (`--model
+  openai.<name>` or a local endpoint; never mixed into final-02);
+  (b) a higher Codex plan; (c) fewer harness calls per cell (already at the
+  minimum: one candidate, one iteration).
+
+### After release (v1.1)
+
+B3 optimisation benchmark (where the harness should differ), V1 false
+acceptance mitigation, then the remaining C6 items if any.
 
 ## 6. Risks and how to handle them
 
 | Risk | Handling |
 |---|---|
-| Codex quota ends mid-campaign | The runner stops at the first `model_blocked` cell; restart the same command later |
+| Codex quota ends mid-campaign | With `--wait-minutes` the runner probes and waits without spending cells, then continues |
 | Machine sleeps | Harness retries infra failures; keep the lid open; check `Get-WinEvent` Kernel-Power 42/107 if a cell takes hours |
 | A harness bug appears mid-campaign | Do not patch the checkout. Let the campaign finish, report the failures, fix afterwards, and say so in the report |
-| Ceiling results (all arms near 100%) | Report them; the answer to "does it add value" then comes from B3 and V1 |
-| Lease lapses | `python scripts/session.py start` again and reclaim scopes; nobody else may have claimed (check `status` first) |
+| Ceiling results (all arms near 100%) | Report them; the answer to "does it add value" then comes from B3 and V1 after release |
+| Lease lapses | Default is now 4 hours; if it lapses, check `status`, `start` again and reclaim scopes |
+| The launching session ends | The campaign process ends with it; rerun the same command (never reruns a cell; seals a cell that died mid-run as interrupted) |
 | Vivado crash banner | Classified as infra; rerun is safe; add a taxonomy entry if the trigger is new |
 
 ## 7. Open decisions for the owner

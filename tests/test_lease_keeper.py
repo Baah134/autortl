@@ -64,3 +64,30 @@ def test_cli_rejects_tight_interval(tmp_path):
         assert exc.code == 2
     else:
         raise AssertionError("interval below 30 s must be rejected")
+
+
+
+def test_session_cli_default_lease_is_four_hours(monkeypatch):
+    """A one-hour lease lapsed during long runs and sleep; start and renew default to 4 h."""
+    spec2 = importlib.util.spec_from_file_location("session_cli", ROOT / "scripts" / "session.py")
+    session = importlib.util.module_from_spec(spec2)
+    spec2.loader.exec_module(session)
+    seen = []
+
+    class Store:
+        def __init__(self, root):
+            pass
+
+        def claim(self, owner, ttl, reason):
+            seen.append(("claim", ttl))
+            return "t"
+
+        def renew(self, token, ttl):
+            seen.append(("renew", ttl))
+
+    monkeypatch.setattr(session, "CoordinationStore", Store)
+    assert session.main(["start", "--owner", "me"]) == 0
+    assert session.main(["renew", "--token", "t"]) == 0
+    assert session.main(["renew", "--token", "t", "--ttl", "600"]) == 0
+    assert seen == [("claim", 14400), ("renew", 14400), ("renew", 600)]
+    assert session.DEFAULT_TTL == 14400
