@@ -236,7 +236,7 @@ summaries on the recorded FSM tests, no function over 120 lines in `fsm.py`.
 **C2. Public interfaces** — `merged into C6`: export `doctor.resolve_tool` and
 `artifacts.validate_manifest`; stop importing private names in `benchmark/`.
 
-**C3. Tooling** — `todo`: `pyproject.toml` (ruff with a small rule set, no
+**C3. Tooling** — `done` on branch `c6-dedupe` (November 20: ruff F rules in CI, pinned requirements, `-n auto`; 2,345 tests in 4 m 43 s): `pyproject.toml` (ruff with a small rule set, no
 reformat of history), pinned `requirements.txt`, CI Python matched to
 development (3.12 or 3.14, one of them), a `ruff check` CI job. Acceptance:
 CI green, no behaviour change.
@@ -322,8 +322,8 @@ fast quality item that can run beside it, or post-release work.
 
 - **C6** remove repetition, in worktree `c6-dedupe` (items 1, 2, 3, 5, 8 and
   the finish-phase split done; merge after B1 because it changes the runtime).
-- **C3** tooling: ruff in CI, pinned requirements, **parallel tests**
-  (pytest-xdist; see R2).
+- **C3** tooling: done on `c6-dedupe` (ruff, pinned requirements, parallel
+  tests: 4 m 43 s instead of 15 to 22 min).
 - **D5** lease default 4 hours: done November 20 (`scripts/session.py`).
 
 ### Scaling testing
@@ -334,8 +334,8 @@ fast quality item that can run beside it, or post-release work.
   about 90 model calls. Use it before merging harness changes that touch
   generation, verification or synthesis. This replaces B4.
 - **R2. Parallel unit tests.** The 2,300-test harness suite runs serially in
-  15 to 22 minutes on this 12-core machine; with pytest-xdist it runs in
-  parallel (see C3 for the measured time). CI uses the same flag.
+  15 to 22 minutes on this 12-core machine; with pytest-xdist (`-n 6`) it runs
+  in 4 m 43 s, all passing. CI uses `-n auto` (on `c6-dedupe`).
 - **R3. Benchmark throughput.** The binding limit is the Codex usage window,
   not CPU: about 58 cells per window. Running cells in parallel would only
   reach the limit sooner. Options that do raise throughput, in order:

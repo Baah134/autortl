@@ -29,6 +29,15 @@ the same command again.** Expect about 2 to 3 days of awake machine time.
 **Do not edit while it runs:** `autortl/`, `llm/`, `data/`, `.claude/skills/`,
 `run.py`, `benchmark/pilot.py`, `benchmark/verilogeval.py`. Use a worktree.
 
+**Cleanup branch `c6-dedupe`** (worktree `.claude/worktrees/c6-dedupe`, local
+only, 9 commits on `0852295e2`; merge after the campaign because it changes
+the runtime): shared synthesis-template blocks (64 scripts byte-identical),
+`autortl/fileio.py` helpers for 74 repeated hash/JSON lines, shared tool-path
+setup for check scripts, quota-stop label fix, `_finish_optimize` extracted
+from `_run_optimize` (491 to 400 lines), ruff lint in CI, pinned requirements
+and parallel tests (`-n auto`: 2,345 tests in 4 m 43 s instead of 15 to 22
+min). Both suites green on the branch.
+
 **Exact next action:** ROADMAP task B1. When `campaign.log` ends with
 `"reason": "all cells attempted"`: `python -m benchmark.report grade`, then
 `render`, archive under `evidence/<date>/final-02-results/`, decide the claim
