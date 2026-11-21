@@ -133,3 +133,19 @@ def test_raw_module_fallback():
 def test_declared_latency():
     assert declared_latency("// @latency 3\nmodule m; endmodule") == 3
     assert declared_latency("module m; endmodule") is None
+
+
+def test_tool_use_never_falls_through_to_the_next_backend(monkeypatch, tmp_path):
+    # agy_endpoint_uses_tools: the model answered with tools; another backend must not answer instead.
+    monkeypatch.setattr(client, "_STATS_PATH", tmp_path / "stats.jsonl")
+    monkeypatch.setattr(client, "_load_routing", lambda: {
+        "roles": {"generator": {"chain": ["first.default", "second.default"]}},
+        "defaults": {"max_retries_per_backend": 2, "timeout_s": 180}})
+    first, second = Mock(), Mock()
+    first.ask.side_effect = CodexError("MODEL_TOOL_USE", "agy used tools")
+    second.ask.return_value = ("RTL", {})
+    monkeypatch.setattr(client, "_BACKENDS", {"first": first, "second": second})
+    with pytest.raises(client.ModelCallError) as err:
+        client.ask("generator", "request", budget=Budget(3, 10, 10))
+    assert err.value.code == "MODEL_TOOL_USE" and first.ask.call_count == 1
+    second.ask.assert_not_called()

@@ -154,7 +154,9 @@ def ask(role: str, prompt: str, system: str = "",
                 last_error = e
                 _record(role, entry, False, time.time() - t0,
                         getattr(e, "metadata", None), type(e).__name__)
-                if isinstance(e, codex_cli.CodexError) and e.code in ("CODEX_AUTH", "CODEX_QUOTA"):
+                # MODEL_TOOL_USE never falls through to another backend: the pinned model
+                # answered, but with tools, and that answer is its own failure.
+                if isinstance(e, codex_cli.CodexError) and e.code in ("CODEX_AUTH", "CODEX_QUOTA", "MODEL_TOOL_USE"):
                     raise ModelCallError(role, e.code, e.metadata, str(e)) from e
                 if not isinstance(e, codex_cli.CodexError) or e.code not in ("CODEX_TIMEOUT", "CODEX_NETWORK"):
                     break     # non-retryable on this backend: next chain entry

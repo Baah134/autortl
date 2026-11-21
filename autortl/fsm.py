@@ -225,14 +225,18 @@ class Orchestrator:
                 checkpoint = self.state.load_fsm() or {}
                 # Baseline planning can fail before the first iteration snapshot.
                 best = self._verified_best_iteration()
-                result = {"status": "model_blocked", "failure_kind": FailureKind.INFRA.value,
+                # agy_endpoint_uses_tools: a tool-using reply is the model's failure and
+                # counts in rates; every other model error stays infrastructure.
+                tool_use = exc.code == "MODEL_TOOL_USE"
+                result = {"status": "model_tool_use" if tool_use else "model_blocked",
+                          "failure_kind": (FailureKind.DESIGN if tool_use else FailureKind.INFRA).value,
                           "role": exc.role, "error_code": exc.code, "error": str(exc),
                           "diagnostics": exc.metadata, "run_dir": str(self.state.run_dir),
                           "best_iteration": best, "llm_calls": self.budget.llm_calls}
                 self._snapshot(phase="MODEL_BLOCKED", blocked_phase=checkpoint.get("phase"),
                                best_iteration=best, error_code=exc.code, role=exc.role)
                 self.state.append_event({"stage": "model_worker", "scope": self._scope,
-                                         "outcome": "INFRA_FAIL", **result})
+                                         "outcome": "MODEL_TOOL_USE" if tool_use else "INFRA_FAIL", **result})
             except RuntimeError as exc:
                 if not str(exc).startswith(("LLM_BUDGET:", "TOOL_BUDGET:")):
                     raise

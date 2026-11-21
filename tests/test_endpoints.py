@@ -60,6 +60,10 @@ def test_command_failures_map_onto_the_retry_codes(script):
     with pytest.raises(CodexError) as empty:
         command_cli.ask("default", "p", timeout_s=30, argv=[sys.executable, silent], label="s")
     assert empty.value.code == "CODEX_PROTOCOL"
+    tooled = script("import sys; sys.stderr.write('MODEL_TOOL_USE: agy used tools [search_web]'); sys.exit(1)")
+    with pytest.raises(CodexError) as tool_use:  # agy_endpoint_uses_tools
+        command_cli.ask("default", "p", timeout_s=30, argv=[sys.executable, tooled], label="t")
+    assert tool_use.value.code == "MODEL_TOOL_USE"
     with pytest.raises(CodexError, match="no model_flag"):
         command_cli.ask("named", "p", timeout_s=30, argv=[sys.executable, silent], label="s")
 

@@ -7,6 +7,8 @@ import json
 from pathlib import Path
 from unittest.mock import Mock
 
+import pytest
+
 from autortl import prompts
 from tests.test_fsm_build import ROOT, create
 
@@ -226,3 +228,16 @@ def test_multi_module_plan_with_trusted_testbench_is_not_flagged(tmp_path, monke
     result = o.run()
     assert result["status"] == "spec_lint_failed"
     assert not any("no trusted integration testbench" in e for e in result["errors"])
+
+
+@pytest.mark.parametrize("code, status, kind", [("MODEL_TOOL_USE", "model_tool_use", "design"),
+                                                ("CODEX_QUOTA", "model_blocked", "infra")])
+def test_tool_using_reply_is_a_model_failure_not_infrastructure(tmp_path, monkeypatch, code, status, kind):
+    # agy_endpoint_uses_tools: only a tool-using reply leaves the infrastructure class
+    from llm.client import ModelCallError
+    o, synthesis = create(tmp_path, monkeypatch)
+    prose(tmp_path, o)
+    monkeypatch.setattr(o.planner, "make_spec", Mock(side_effect=ModelCallError("planner", code)))
+    result = o.run()
+    assert (result["status"], result["failure_kind"], result["error_code"]) == (status, kind, code)
+    synthesis.assert_not_called()
