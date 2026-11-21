@@ -116,6 +116,14 @@ that make every state bit defined (for example one rising edge with a=0, b=0
 sets state=0), and say in behavior exactly how the state becomes defined.
 init_cycles and init_inputs are only for "reset": null; a module with a reset
 port omits them. A module without a reset port uses compare_mode fixed_latency.
+Behavior states only what the request states; never add behavior it does not
+state. Reset clears exactly the outputs and state the request says it clears:
+a register that the request describes as following an input (for example the
+previous input value used to detect an edge) keeps following it during reset
+unless the request says reset clears it. Keep the request's own timing words
+("at the next rising edge", "the following cycle") in behavior next to the
+rule you derive from them, and when the request leaves an output unspecified,
+say so in behavior rather than inventing a requirement.
 Each example runs the Python reference for after_cycles steps inside a fixed
 sandbox budget, so keep every after_cycles at or below 2000. For long-period
 designs (for example a UART bit lasting hundreds of cycles), make each example

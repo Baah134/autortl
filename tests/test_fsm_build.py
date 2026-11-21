@@ -83,9 +83,14 @@ def test_multi_module_build_requires_independent_top_testbench(tmp_path, monkeyp
     path = tmp_path / "spec.json"; path.write_text(json.dumps(data))
     o.cfg.spec_path = path
     o.cfg.testbench_path = None
-    monkeypatch.setattr(o, "_build_module", Mock(return_value=RTL))
+    build = Mock(return_value=RTL)
+    monkeypatch.setattr(o, "_build_module", build)
     result = o.run()
-    assert result["status"] == "build_blocked"
+    # multi_module_plan_without_trusted_tb: a supplied spec now fails at lint, before any
+    # module is generated, instead of as build_blocked after every module was built.
+    assert result["status"] == "spec_lint_failed"
+    assert any("no trusted integration testbench" in e and "this spec has 2" in e for e in result["errors"])
+    build.assert_not_called()
     synthesis.assert_not_called()
 
 

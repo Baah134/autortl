@@ -555,13 +555,15 @@ class Orchestrator:
                                 len(spec.modules) == 1 and spec.modules[0].name == self.cfg.top_module):
                             errs.append(f"top_name must be '{self.cfg.top_module}' as the request fixes it "
                                         f"(the trusted testbench instantiates it), not '{spec.top_name}'")
-                        # multi_module_plan_without_trusted_tb: only a trusted integration testbench
-                        # can verify a multi-module build, so without one the plan must be one module.
-                        if not self.cfg.testbench_path and len(spec.modules) != 1:
-                            errs.append(f"no trusted integration testbench is supplied, so the design must be "
-                                        f"exactly one module holding all the logic (its generated testbench is "
-                                        f"the only verification); this spec has {len(spec.modules)}: "
-                                        f"{[m.name for m in spec.modules]}")
+                    # multi_module_plan_without_trusted_tb: only a trusted integration testbench
+                    # can verify a multi-module build, so without one the spec must be one module.
+                    # A planner spec gets this back for repair; a supplied spec fails here, before
+                    # any module is generated, instead of as build_blocked after all of them.
+                    if not self.cfg.testbench_path and len(spec.modules) != 1:
+                        errs.append(f"no trusted integration testbench is supplied, so the design must be "
+                                    f"exactly one module holding all the logic (its generated testbench is "
+                                    f"the only verification); this spec has {len(spec.modules)}: "
+                                    f"{[m.name for m in spec.modules]}")
                 except (ValueError, KeyError, TypeError, AttributeError) as exc:
                     if not generated:
                         raise

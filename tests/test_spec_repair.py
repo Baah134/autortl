@@ -111,6 +111,15 @@ def test_spec_prompt_states_example_values_are_held_integers():
     assert "never a per-cycle list" in prompts.SPEC_PROMPT
 
 
+def test_spec_prompt_forbids_behavior_the_request_does_not_state():
+    # planner_spec_error_shared_by_oracle_and_rtl (final-02 Prob066 reset, Prob139 sampling phase)
+    text = " ".join(prompts.SPEC_PROMPT.split())
+    assert "never add behavior it does not state" in text
+    assert "keeps following it during reset unless the request says reset clears it" in text
+    assert "Keep the request's own timing words" in text
+    prompts.SPEC_PROMPT.format(intent="x", target_part="p", target_freq_mhz=1, objective="minimize_luts")
+
+
 def test_example_error_names_the_data_outputs_and_the_prompt_states_the_tagging_rule():
     # payload_ports_tagged_valid_ready (explore-tier3-02 uart_fifo_build)
     from autortl.golden import validate_examples
