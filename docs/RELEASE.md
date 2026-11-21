@@ -34,9 +34,14 @@ commands once it finishes. Text in `<angle brackets>` comes from the
 > - **Registered comparison** on 40 public VerilogEval tasks, three arms
 >   (single call, harness without mutation qualification, full harness),
 >   three trials. A single model call passes more tasks than the full harness: C 86.1% vs A 94.1%, difference -9.2 pp (95% CI -19.2 to -0.8 pp, 40 tasks); the harness used 7.4x the model calls per pass. About one in ten harness-accepted designs
->   failed the official test, mostly from planner misreadings the oracle
->   shared. Evidence: `evidence/2026-11-21/final-02-results`. Tasks and decision rule were fixed
+>   failed the official test: planner misreadings that the oracle shared,
+>   and two official references that contradict their own prose. Evidence: `evidence/2026-11-21/final-02-results`. Tasks and decision rule were fixed
 >   before grading (`docs/DECISIONS.md`, `benchmark/claim.py`).
+> - **Fixes from the failure review** (after grading; not counted in the
+>   result): single-module plans when no trusted testbench is supplied, the
+>   golden model's latency-0 observation phase, a planner rule against
+>   behaviour the request does not state, and tool-using model replies
+>   counted as failures rather than infrastructure.
 > - **Hardware:** twelve harness-optimized cores (RV32I, AES-128, CORDIC,
 >   16-tap FIR and others) passed 50,000 transactions each on a Basys 3
 >   against independent models.
