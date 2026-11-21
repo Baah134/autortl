@@ -1,6 +1,6 @@
 # AutoRTL: start here
 
-Canonical checkout: `C:/Users/prince.baah/Downloads/autortl-work`
+Canonical checkout: `C:/Users/<user>/Downloads/autortl-work`
 (`Downloads/autortl` is an older separate copy; do not edit it).
 
 1. Rules for every agent: [AGENTS.md](AGENTS.md).

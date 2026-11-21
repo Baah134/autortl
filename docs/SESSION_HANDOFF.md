@@ -16,7 +16,7 @@ because the session that launched it ended; it was restarted November 20
 
     python -m benchmark.campaign --manifest <final-02>/manifest.json --dataset <D> --attempt <final-02> --wait-minutes 20 --max-wait-hours 12
 
-where `<final-02>` is `C:/Users/prince.baah/autortl-private/final-02` and `<D>`
+where `<final-02>` is `C:/Users/<user>/autortl-private/final-02` and `<D>`
 the VerilogEval `dataset_spec-to-rtl` folder (needs `AUTORTL_CODEX_BIN`; ROADMAP
 section 3). Progress: `<final-02>/campaign.log`. At restart 66 cells were
 sealed; the cell in flight when the session ended (Prob055_conditional full,
@@ -88,7 +88,7 @@ per-call timeout; they count as failures, as for any arm.
 model, board authorisation); research risk
 `planner_spec_error_shared_by_oracle_and_rtl` (ROADMAP V1); Codex's parked
 November 13 candidate-export stage in
-`C:/Users/prince.baah/Documents/Codex/2026-10-15/hey/work/nov13-candidate-bundle-stage`.
+`C:/Users/<user>/Documents/Codex/2026-10-15/hey/work/nov13-candidate-bundle-stage`.
 
 **Environment:** ROADMAP section 3. Keep the machine awake; renew the lease
 with `python scripts/lease_keeper.py --token-file <private file>`.
