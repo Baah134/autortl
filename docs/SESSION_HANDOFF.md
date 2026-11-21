@@ -45,6 +45,14 @@ November 20 (`docs/DECISIONS.md`, `benchmark/claim.py`), archives to
 `evidence/<date>/final-02-results/`, writes the README, seals, audits and
 prints the README row (P3). Then follow `docs/RELEASE.md`. On a stop event,
 follow B1's restart notes.
+`flash-02` (registered, 240 cells,
+`evidence/2026-11-20/flash-02-registration-01`) starts by itself when `final-02` logs "all cells attempted" (detached watcher `<home>/autortl-private/flash-02/start_after_final02.ps1`; it refuses to start twice). If the watcher is gone (reboot), run this before merging
+`c6-dedupe`:
+
+    python -m benchmark.campaign --manifest <home>/autortl-private/flash-02/manifest.json --dataset <D> --attempt <home>/autortl-private/flash-02 --model antigravity.gemini-3.8-flash-high --wait-minutes 20 --max-wait-hours 12
+
+(needs the local `endpoints.local.yaml` antigravity endpoint, docs/USAGE.md).
+The release (P2/P5) does not wait for it; merge `c6-dedupe` after it ends.
 
 **Done this session**
 - Decision rule registered before grading (123 of 360 cells sealed, none
@@ -80,9 +88,10 @@ in arms B and C, so the comparison is unaffected between them:
   the golden-model prompt (latency 0 means outputs from the pre-edge state and
   current inputs), not only the planner.
 
-**flash-01** (Gemini 3.8 Flash, arm A, 120 cells; detached process): 3 of
-the first 74 cells ended `budget` because one call ran past the 180 s
-per-call timeout; they count as failures, as for any arm.
+**flash-01 done:** Gemini 3.8 Flash, single call, 110/120 (91.7%, CI 83.3 to
+98.3); 5 cells hit the 180 s per-call timeout and count as failures.
+Evidence `evidence/2026-11-20/flash-01-results`. Compare with `final-02` arm A
+via `python -m benchmark.compare` once `final-02` is graded.
 
 **Open:** owner decisions (PR and merge to `main`, B3 task source, pinned
 model, board authorisation); research risk
