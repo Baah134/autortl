@@ -86,7 +86,7 @@ are fixed on branch `bench-fixes`: `multi_module_plan_without_trusted_tb`
 (Prob153_gshare). Both are general (a structural check and a prompt
 clarification); neither weakens a check.
 
-- They merge only after final-02 and flash-02 finish, so neither registered
+- They merge only after final-02 finishes (flash-02 was later withdrawn), so no registered
   runtime changes.
 - final-02 is reported as run. No cell is rerun with the fixes.
 - Any later number on the same 40 tasks is tuned on them. It is reported as
