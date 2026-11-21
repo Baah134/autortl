@@ -1,0 +1,48 @@
+{
+ "rule": "docs/DECISIONS.md 2026-11-20",
+ "primary": "full-single_call",
+ "verdict": "single_call_better",
+ "sentence": "A single model call passes more tasks than the full harness: C 86.1% vs A 94.1%, difference -9.2 pp (95% CI -19.2 to -0.8 pp, 40 tasks); the harness used 7.4x the model calls per pass.",
+ "mean_difference": -0.09166666666666667,
+ "ci95": [
+  -0.19166666666666668,
+  -0.008333333333333335
+ ],
+ "calls_per_pass_ratio": 7.3999999999999995,
+ "secondary": {
+  "full-ablation": {
+   "mean_difference": 0.004166666666666668,
+   "ci95_task_bootstrap": [
+    -0.05,
+    0.058333333333333334
+   ],
+   "reading": "no_material_difference"
+  },
+  "ablation-single_call": {
+   "mean_difference": -0.09583333333333334,
+   "ci95_task_bootstrap": [
+    -0.18333333333333332,
+    -0.025
+   ],
+   "reading": "single_call_better"
+  }
+ },
+ "flags": [
+  "unreliable_acceptance:ablation",
+  "unreliable_acceptance:full"
+ ],
+ "disclosures": [
+  "2 cell(s) of single_call were stopped by infrastructure and are excluded from rates.",
+  "2 cell(s) of ablation were stopped by infrastructure and are excluded from rates.",
+  "5 cell(s) of full were stopped by infrastructure and are excluded from rates.",
+  "ablation: 10 of 110 internally accepted designs fail the official testbench (Prob066_edgecapture#1, Prob070_ece241_2013_q2#1, Prob093_ece241_2014_q3#0, Prob093_ece241_2014_q3#1, Prob093_ece241_2014_q3#2, Prob139_2013_q2bfsm#0, Prob139_2013_q2bfsm#1, Prob149_ece241_2013_q4#0, Prob149_ece241_2013_q4#1, Prob149_ece241_2013_q4#2).",
+  "ablation: false acceptance above 5%, so internal acceptance is not a reliable correctness signal on these tasks.",
+  "full: 11 of 110 internally accepted designs fail the official testbench (Prob027_fadd#2, Prob066_edgecapture#0, Prob066_edgecapture#1, Prob066_edgecapture#2, Prob093_ece241_2014_q3#0, Prob093_ece241_2014_q3#1, Prob093_ece241_2014_q3#2, Prob139_2013_q2bfsm#0, Prob139_2013_q2bfsm#1, Prob149_ece241_2013_q4#0, Prob149_ece241_2013_q4#2).",
+  "full: false acceptance above 5%, so internal acceptance is not a reliable correctness signal on these tasks."
+ ],
+ "thresholds": {
+  "equivalence_margin": 0.1,
+  "max_not_evaluable": 0.1,
+  "false_acceptance_limit": 0.05
+ }
+}

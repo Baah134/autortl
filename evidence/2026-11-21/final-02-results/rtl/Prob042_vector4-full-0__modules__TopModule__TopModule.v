@@ -1,0 +1,8 @@
+`timescale 1ns/1ps
+// @latency 0
+module TopModule (
+    input wire [7:0] in,
+    output wire [31:0] out
+);
+    assign out = {{24{in[7]}}, in[7:0]};
+endmodule
