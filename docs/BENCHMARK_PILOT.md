@@ -13,7 +13,7 @@ and `benchmark/pilot.py` (arm runners, grading, CLI). Standard library only.
 
 - Dataset: NVlabs/verilog-eval `c498220d0a52248f8e3fdffe279075215bde2da6`,
   `dataset_spec-to-rtl` (156 tasks), cloned to
-  `C:/Users/prince.baah/autortl-private/verilog-eval` (outside the repository).
+  `C:/Users/<user>/autortl-private/verilog-eval` (outside the repository).
 - Icarus Verilog 12.0 at `C:/msys64/ucrt64/bin/{iverilog,vvp}.exe` (MSYS2);
   set `AUTORTL_IVERILOG`/`AUTORTL_VVP` or put that folder on PATH.
 - Upstream flags, `timeout 30`/`TIMEOUT` handling and the analyzer's

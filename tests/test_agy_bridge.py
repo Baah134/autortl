@@ -65,6 +65,21 @@ def test_parse_handles_missing_and_empty_results():
     assert bridge.parse(OK) == (True, "module m; endmodule", {"input_tokens": 7, "output_tokens": 3})
 
 
+def test_reply_produced_with_tools_is_refused(monkeypatch, capsys):
+    # agy_endpoint_uses_tools: Flash-high web-searched the task name before answering
+    monkeypatch.setenv("AUTORTL_AGY_BIN", "agy-test")
+    searched = events({"event": "step_update", "step_update": {"state": "ACTIVE", "tool_name": "search_web",
+                                                               "tool_info": {"parameters": {"query": "q"}}}},
+                      {"event": "step_update", "step_update": {"state": "DONE", "tool_name": "search_web"}},
+                      {"event": "step_update", "step_update": {"state": "DONE", "tool_name": "run_command"}},
+                      {"event": "result", "result": {"status": "SUCCESS", "response": "module m; endmodule"}})
+    assert bridge.parse(searched)[:2] == (False, "agy used tools ['search_web', 'run_command']; "
+                                                 "a model endpoint must answer without tools")
+    assert bridge.main([], stdin=io.StringIO("x"), run=Fake(searched)) == 1
+    out = capsys.readouterr()
+    assert out.out == "" and "agy used tools" in out.err
+
+
 def test_empty_stdin_is_refused_without_calling_agy(capsys):
     fake = Fake(OK)
     assert bridge.main([], stdin=io.StringIO("  \n"), run=fake) == 2 and fake.calls == []

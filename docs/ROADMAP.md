@@ -59,7 +59,7 @@ tagged release exists on `main` with a licence.
   frozen: 40 tasks, `evidence/2026-11-14/final-registration-01`.
 - `final-01` was aborted after 5 cells (`empty_netlist_unplaceable`, fixed).
   **Final comparison `final-02` is running** (360 cells, runtime `7731a66d2`)
-  from `C:/Users/prince.baah/autortl-private/final-02` via
+  from `C:/Users/<user>/autortl-private/final-02` via
   `python -m benchmark.campaign`. Progress: `final-02/campaign.log`. See task B1.
 
 ## 3. Environment facts (this machine)
@@ -70,8 +70,8 @@ tagged release exists on `main` with a licence.
 | Vivado | `C:/AMDDesignTools/2025.2/Vivado/bin` (2025.2); `run.py doctor` resolves `.bat` paths |
 | Codex CLI | set `AUTORTL_CODEX_BIN` to `%LOCALAPPDATA%/OpenAI/Codex/bin/<hash>/codex.exe`; `python run.py doctor` must print "ready" |
 | Icarus Verilog 12.0 | `C:/msys64/ucrt64/bin/{iverilog,vvp}.exe`; or set `AUTORTL_IVERILOG`/`AUTORTL_VVP` |
-| VerilogEval | `C:/Users/prince.baah/autortl-private/verilog-eval` at `c498220d0a52248f8e3fdffe279075215bde2da6`, folder `dataset_spec-to-rtl` |
-| Benchmark attempts | `C:/Users/prince.baah/autortl-private/<attempt>/` (outside the repository, never model-visible) |
+| VerilogEval | `C:/Users/<user>/autortl-private/verilog-eval` at `c498220d0a52248f8e3fdffe279075215bde2da6`, folder `dataset_spec-to-rtl` |
+| Benchmark attempts | `C:/Users/<user>/autortl-private/<attempt>/` (outside the repository, never model-visible) |
 
 Commands:
 

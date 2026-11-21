@@ -142,7 +142,7 @@ changes, commands, outcomes, evidence locations, limitations, and next action.
 - User decision: continue while usage is available; another provider can take
   over when needed, and returning agents resume from the latest repository.
   Checkpointing must not itself release the active coordinator or stop work.
-- Canonical clone moved to C:/Users/prince.baah/Downloads/autortl-work;
+- Canonical clone moved to C:/Users/<user>/Downloads/autortl-work;
   317 file hashes matched. The separate existing Downloads/autortl was preserved.
 - Published earlier tested milestones through 68fc5e6 to origin/codex/cli-bringup.
   This checkpoint is committed and pushed to the same development branch.
@@ -1776,10 +1776,10 @@ was aborted on a hold-exclusion defect, fixed in e61a09827. The final 40-task
 registration is frozen (evidence/2026-11-14/final-registration-01, selection
 c85666ff).
 
-Final comparison prepared, not launched: `C:/Users/prince.baah/autortl-private/
+Final comparison prepared, not launched: `C:/Users/<user>/autortl-private/
 final-01/manifest.json` (360 cells: 40 tasks x 3 arms x 3 trials, runtime
 775820583) and `final-01/run_all.sh` (trial-major; never reruns a cell). Launch:
-`bash C:/Users/prince.baah/autortl-private/final-01/run_all.sh <venv python>`
+`bash C:/Users/<user>/autortl-private/final-01/run_all.sh <venv python>`
 from any shell; grade only after all cells are sealed with
 `autortl-private/grade_pilot.py <repo> <final-01> <dataset> <iverilog> <vvp>`.
 Expected from pilot-06 rates: about 19 h awake time, about 1,700 Codex calls and
@@ -1791,7 +1791,7 @@ no push yet, main still frozen at ca61dbc.
 ### Earlier — November 14, 2026 (evening): pilot-04 graded, workers merged
 
 Coordinator: Claude. Branch `codex/contract-context` (local commits since
-b98b6c4, not pushed). VerilogEval c498220 at `C:/Users/prince.baah/autortl-private/
+b98b6c4, not pushed). VerilogEval c498220 at `C:/Users/<user>/autortl-private/
 verilog-eval`; pilot workspaces `autortl-private/pilot-0N`; Icarus 12.0 (MSYS2).
 
 - **pilot-04 graded** (runtime 2f06f206): arm A 6/6, arm C 4/6 with one false
@@ -1874,7 +1874,7 @@ rerun: no runtime change, and finished tiers are not re-held mid-development.
 
 ### Pinned, controlled and selected (user approved downloads, Nov14)
 
-VerilogEval c498220d0a52 cloned to `C:/Users/prince.baah/autortl-private/
+VerilogEval c498220d0a52 cloned to `C:/Users/<user>/autortl-private/
 verilog-eval`; Icarus 12.0 installed via MSYS2. Upstream flags and analyzer
 confirmed and ported (`upstream_passfail`, recorded beside the strict status).
 Grader controls 16/16; reference sweep 152/156 with four dataset defects
@@ -1899,7 +1899,7 @@ No model, vendor or board job has run in this session.
 
 ### Paused — November 13, 2026: candidate-export implementation (Codex)
 
-Canonical checkout: `C:/Users/prince.baah/Downloads/autortl-work`.
+Canonical checkout: `C:/Users/<user>/Downloads/autortl-work`.
 Branch: `codex/contract-context`; last published commit:
 `b98b6c4f82035144cb0c1e09ffc0126edaa36db2`. Main remains
 `ca61dbcb6620914c8928c460d9aaf92aca608183` pending final release validation.
@@ -1918,7 +1918,7 @@ Worker candidate_export_nov13_stage implements it; independent worker
 candidate_export_nov13_review checks exact hooks, resume and export integrity.
 Canonical runtime code is not yet integrated. No model/vendor/board jobs run.
 The active coordinator is Codex; query SQLite ownership before editing.
-Workspace root: `C:/Users/prince.baah/Documents/Codex/2026-10-15/hey`.
+Workspace root: `C:/Users/<user>/Documents/Codex/2026-10-15/hey`.
 
 ### Scope and exact next action
 

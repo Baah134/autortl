@@ -16,7 +16,7 @@ because the session that launched it ended; it was restarted November 20
 
     python -m benchmark.campaign --manifest <final-02>/manifest.json --dataset <D> --attempt <final-02> --wait-minutes 20 --max-wait-hours 12
 
-where `<final-02>` is `C:/Users/prince.baah/autortl-private/final-02` and `<D>`
+where `<final-02>` is `C:/Users/<user>/autortl-private/final-02` and `<D>`
 the VerilogEval `dataset_spec-to-rtl` folder (needs `AUTORTL_CODEX_BIN`; ROADMAP
 section 3). Progress: `<final-02>/campaign.log`. At restart 66 cells were
 sealed; the cell in flight when the session ended (Prob055_conditional full,
@@ -30,7 +30,7 @@ the same command again.** Expect about 2 to 3 days of awake machine time.
 `run.py`, `benchmark/pilot.py`, `benchmark/verilogeval.py`. Use a worktree.
 
 **Cleanup branch `c6-dedupe`** (worktree `.claude/worktrees/c6-dedupe`, local
-only, 9 commits on `0852295e2`; merge after the campaign because it changes
+only; brought up to date with this branch November 20 (merge `ce4fc4c93`, suites green: 2,369 harness, 323 tooling, lint clean); merge after the campaign because it changes
 the runtime): shared synthesis-template blocks (64 scripts byte-identical),
 `autortl/fileio.py` helpers for 74 repeated hash/JSON lines, shared tool-path
 setup for check scripts, quota-stop label fix, `_finish_optimize` extracted
@@ -45,6 +45,13 @@ November 20 (`docs/DECISIONS.md`, `benchmark/claim.py`), archives to
 `evidence/<date>/final-02-results/`, writes the README, seals, audits and
 prints the README row (P3). Then follow `docs/RELEASE.md`. On a stop event,
 follow B1's restart notes.
+**`flash-02` is withdrawn (0 cells run) and its watcher was stopped on
+November 21. Do not start it.** `agy` gives Gemini web search and shell tools,
+and Flash-high's planner calls exceed the 180 s limit (`docs/DECISIONS.md`
+2026-11-21). The bridge now refuses tool-using replies. A new Flash run needs
+a new registration with Flash-low or medium. Merge `c6-dedupe` and then
+`bench-fixes` once final-02 is graded; the release (P2/P5) does not wait for
+any Flash run.
 
 **Done this session**
 - Decision rule registered before grading (123 of 360 cells sealed, none
@@ -61,11 +68,59 @@ follow B1's restart notes.
   `START_HERE.md`; README 149 lines with `docs/RESULTS.md` and
   `docs/USAGE.md`; superseded docs in `docs/archive/`.
 
+**Failure review so far (internal logs only, no official verdicts; file the
+taxonomy entries after the campaign, `data/` is frozen):** of 169 sealed
+final-02 cells, 6 harness cells ended `failed`, from two causes, each the same
+in arms B and C, so the comparison is unaffected between them:
+- `Prob131_mt2015_q4` (4 cells): the planner splits the request into
+  submodules and `fsm.py` stops with "Multi-module build requires trusted
+  integration testbench" (`build_blocked`); VerilogEval supplies no trusted
+  testbench to the harness. A harness limit, already disclosed; recurs every
+  trial. Candidate fix after release: force a single-module plan when the
+  request names one top and no submodules.
+- `Prob153_gshare` (2 cells): the generated golden model computes
+  `predict_taken`/`predict_history` from the state after the clock edge,
+  while the testbench (fixed_latency 0) samples before it; outputs are Mealy
+  (current `predict_pc` with pre-edge history). Every RTL fix then fails the
+  oracle from sample 1 (identical 17 + 89 mismatches in both arms).
+  Recurrence of `fixed_latency_observation_ambiguous`; the repair must reach
+  the golden-model prompt (latency 0 means outputs from the pre-edge state and
+  current inputs), not only the planner.
+
+**Both causes fixed on local branch `bench-fixes`** (worktree
+`.claude/worktrees/bench-fixes`, `2b5caf87a`, built on `c6-dedupe`; suites
+green, 2,371 harness and 323 tooling, lint clean). It includes the taxonomy
+entries and `docs/DECISIONS.md` 2026-11-21: final-02 is reported as run, and
+later numbers on its tasks are labelled tuned. A live check with Flash-high
+(`autortl-private/fixcheck-01`) never reached either fix because both planner
+calls timed out. A second check with Flash-low through the guarded bridge
+(`fixcheck-02`; exploratory, tuned, never reported) exercised both fixes live:
+- **Prob131:** the planner proposed 3 modules, got the new error back,
+  replanned as one module and reached DONE; that design passes the official
+  test (0 of 200 mismatches).
+- **gshare:** the golden model now computes outputs from the state before the
+  update, so the phase fix took effect. The module still failed, for another
+  reason: the golden model forwarded a same-cycle misprediction recovery into
+  the current prediction, and the RTL disagreed (prompt lines 47 to 50 say
+  only that training wins the history update).
+
+Merge it after `c6-dedupe`,
+once flash-02 ends. On November 21, 19 stale agent worktrees (already merged,
+nothing uncommitted) were removed and their branches kept;
+`agent-a68f849245229e7f6` has uncommitted changes and was left in place.
+
+**flash-01 done, but not closed-book:** Gemini 3.8 Flash through the
+Antigravity agent, 110/120 (91.7%, CI 83.3 to 98.3); 5 cells hit the 180 s
+call timeout. Web search was available to the model, so it is not compared
+with Codex arm A (`docs/DECISIONS.md` 2026-11-21). Evidence
+`evidence/2026-11-20/flash-01-results`. `benchmark/compare.py` remains for
+a future valid run.
+
 **Open:** owner decisions (PR and merge to `main`, B3 task source, pinned
 model, board authorisation); research risk
 `planner_spec_error_shared_by_oracle_and_rtl` (ROADMAP V1); Codex's parked
 November 13 candidate-export stage in
-`C:/Users/prince.baah/Documents/Codex/2026-10-15/hey/work/nov13-candidate-bundle-stage`.
+`C:/Users/<user>/Documents/Codex/2026-10-15/hey/work/nov13-candidate-bundle-stage`.
 
 **Environment:** ROADMAP section 3. Keep the machine awake; renew the lease
 with `python scripts/lease_keeper.py --token-file <private file>`.

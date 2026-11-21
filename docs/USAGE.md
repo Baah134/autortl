@@ -123,10 +123,17 @@ endpoints:
     model_flag: --model
 ```
 
-then, for example, `--model antigravity.gemini-3.8-flash-high`. The bridge
+then, for example, `--model antigravity.gemini-3.8-flash-low`. The bridge
 sends the prompt on stdin through `agy`'s stream-json mode with `--sandbox`
 and prints only the final answer; a failed result exits 1 so quota and login
 errors are classified like any other CLI.
+
+`agy` is an agent, not a plain model call. `--sandbox` restricts its terminal,
+not its tools: on November 21 Flash-high web-searched the task name and ran
+shell commands while planning, taking 6 minutes for one planner prompt, and
+permission deny rules did not stop it. The bridge therefore refuses any reply
+produced with a tool call (exit 1). Prefer the `-low` variants: on the same
+planner prompt Flash-low used no tools and answered in 18 seconds.
 
 Resume an interrupted experiment using its saved configuration:
 
