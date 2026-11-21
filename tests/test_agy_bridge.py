@@ -73,11 +73,23 @@ def test_reply_produced_with_tools_is_refused(monkeypatch, capsys):
                       {"event": "step_update", "step_update": {"state": "DONE", "tool_name": "search_web"}},
                       {"event": "step_update", "step_update": {"state": "DONE", "tool_name": "run_command"}},
                       {"event": "result", "result": {"status": "SUCCESS", "response": "module m; endmodule"}})
-    assert bridge.parse(searched)[:2] == (False, "agy used tools ['search_web', 'run_command']; "
+    assert bridge.parse(searched)[:2] == (False, "MODEL_TOOL_USE: agy used tools ['search_web', 'run_command']; "
                                                  "a model endpoint must answer without tools")
     assert bridge.main([], stdin=io.StringIO("x"), run=Fake(searched)) == 1
     out = capsys.readouterr()
-    assert out.out == "" and "agy used tools" in out.err
+    assert out.out == "" and "MODEL_TOOL_USE" in out.err  # command backend: failed cell, not infra
+
+
+def test_quota_error_wins_over_tool_use_and_odd_shapes_are_tolerated():
+    quota_after_tool = events({"event": "step_update", "step_update": {"tool_name": "search_web"}},
+                              {"event": "result", "result": {"status": "ERROR", "error": "RESOURCE_EXHAUSTED"}})
+    assert bridge.parse(quota_after_tool)[:2] == (False, "RESOURCE_EXHAUSTED")
+    odd = events({"event": "step_update", "step_update": "text"}, ["list"],
+                 {"event": "result", "result": {"status": "SUCCESS", "response": "ok"}})
+    assert bridge.parse(odd)[:2] == (True, "ok")
+    other_shapes = events({"event": "tool_call", "name": "x"},
+                          {"event": "result", "result": {"status": "SUCCESS", "response": "ok"}})
+    assert bridge.parse(other_shapes)[0] is False
 
 
 def test_empty_stdin_is_refused_without_calling_agy(capsys):

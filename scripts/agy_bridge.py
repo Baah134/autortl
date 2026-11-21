@@ -56,6 +56,21 @@ def command(agy: str, model: str | None) -> list[str]:
     return [agy, *(["--model", model] if model else []), *FLAGS]
 
 
+def tool_names(event: dict) -> list[str]:
+    """Tool names an agy event shows: step_update.tool_name, or any event or key naming a tool."""
+    names = []
+    step = event.get("step_update")
+    if isinstance(step, dict):
+        if step.get("tool_name"):
+            names.append(str(step["tool_name"]))
+        elif any("tool" in key for key in step if key != "tools"):
+            names.append(str(step.get("step_type") or "unnamed tool"))
+    kind = str(event.get("event") or "")
+    if "tool" in kind:
+        names.append(kind)
+    return names
+
+
 def parse(stdout: str) -> tuple[bool, str, dict]:
     """(ok, response or error, usage) from agy's stream-json output; the last result event wins.
 
@@ -73,18 +88,22 @@ def parse(stdout: str) -> tuple[bool, str, dict]:
             event = json.loads(line)
         except json.JSONDecodeError:
             continue
-        if event.get("event") == "result":
-            result = event.get("result") or {}
-        name = (event.get("step_update") or {}).get("tool_name")
-        if name and name not in tools:
-            tools.append(name)
+        if not isinstance(event, dict):
+            continue
+        if event.get("event") == "result" and isinstance(event.get("result"), dict):
+            result = event["result"]
+        for name in tool_names(event):
+            if name not in tools:
+                tools.append(name)
+    usage = (result or {}).get("usage") or {}
+    if result is not None and result.get("status") != "SUCCESS":
+        # A quota or auth error is reported as such even if tools ran first.
+        return False, result.get("error") or f"agy status {result.get('status')}", usage
     if tools:
-        return False, f"agy used tools {tools}; a model endpoint must answer without tools", {}
+        # MODEL_TOOL_USE: the command backend maps it to a failed cell, never infrastructure.
+        return False, f"MODEL_TOOL_USE: agy used tools {tools}; a model endpoint must answer without tools", {}
     if result is None:
         return False, "agy printed no result event", {}
-    usage = result.get("usage") or {}
-    if result.get("status") != "SUCCESS":
-        return False, result.get("error") or f"agy status {result.get('status')}", usage
     response = (result.get("response") or "").strip()
     return (True, response, usage) if response else (False, "agy returned an empty response", usage)
 
