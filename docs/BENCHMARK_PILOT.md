@@ -161,7 +161,9 @@ Attempts:
 Registration: `evidence/2026-11-14/final-registration-01/` (40 tasks). Run and
 restart with `python -m benchmark.campaign --manifest M --dataset D --attempt DIR`
 (trial-major order, never reruns a cell, stops on a model block or three
-consecutive interrupted cells). Grade once every cell is sealed with
-`python -m benchmark.report grade`, then `python -m benchmark.report render`
-for rates with task-clustered 95% intervals, paired differences, false
-acceptance and cost. Steps and acceptance: `docs/ROADMAP.md` task B1.
+consecutive interrupted cells). Once every cell is sealed,
+`python -m benchmark.finish` grades once, renders rates with task-clustered 95%
+intervals, paired differences, false acceptance and cost, applies the
+pre-registered claim rule (`benchmark/claim.py`, `docs/DECISIONS.md`
+2026-11-20), archives and audits. Steps and acceptance: `docs/ROADMAP.md`
+task B1.

@@ -4,42 +4,52 @@ One current section only. History lives in `docs/PROGRESS.md` and Git. The plan
 of record is `docs/ROADMAP.md`; the review behind it is
 `docs/REVIEW_2026-11-15.md`.
 
-## Current — November 15, 2026 (afternoon): final-02 running
+## Current — November 20, 2026: final-02 restarted
 
-Coordinator: Claude. Branch `codex/contract-context`, pushed (MIT licence).
+Coordinator: Claude. Branch `codex/contract-context`, pushed (`c39826103`).
 `main` frozen at `ca61dbc`; no PR yet.
 
 **Running:** `final-02`, the registered comparison (40 tasks x 3 arms x 3
-trials = 360 cells, runtime `7731a66d2`), started November 15 14:30 with
+trials = 360 cells, runtime `7731a66d2`). It stalled from November 16 to 20
+because the session that launched it ended; it was restarted November 20
+08:55 with
 
-    python -m benchmark.campaign --manifest <final-02>/manifest.json --dataset <D> --attempt <final-02>
+    python -m benchmark.campaign --manifest <final-02>/manifest.json --dataset <D> --attempt <final-02> --wait-minutes 20 --max-wait-hours 12
 
 where `<final-02>` is `C:/Users/prince.baah/autortl-private/final-02` and `<D>`
-is the VerilogEval `dataset_spec-to-rtl` folder (ROADMAP section 3; needs
-`AUTORTL_CODEX_BIN` set). Progress: `<final-02>/campaign.log` (JSON lines).
-It stops by itself on a model block (quota; exit 3) or three consecutive
-interrupted cells (exit 4); rerunning the same command resumes and never
-reruns a cell. About 19 hours of awake machine time; the first task
-(Prob042_vector4) sealed a candidate in all three arms.
-
-**Quota.** Codex hit its usage limit on November 15 at 17:09 after 58 cells
-(one single-call cell sealed `model_blocked`, two harness cells sealed
-`interrupted`; all three are infrastructure and excluded from report rates).
-The campaign was resumed with `--wait-minutes 20 --max-wait-hours 12`: it probes
-every 20 minutes without spending cells and continues when the model answers.
-Expect about seven usage windows for all 360 cells. If the process is gone
-(reboot), run the same command again.
+the VerilogEval `dataset_spec-to-rtl` folder (needs `AUTORTL_CODEX_BIN`; ROADMAP
+section 3). Progress: `<final-02>/campaign.log`. At restart 66 cells were
+sealed; the cell in flight when the session ended (Prob055_conditional full,
+trial 0) was sealed `interrupted` and is excluded from rates. The campaign
+waits out Codex quota by itself (about 58 cells per usage window); it does
+not survive the launching session ending or a reboot. **If
+`campaign.log` stops growing and no `waiting_for_model` events appear, run
+the same command again.** Expect about 2 to 3 days of awake machine time.
 
 **Do not edit while it runs:** `autortl/`, `llm/`, `data/`, `.claude/skills/`,
 `run.py`, `benchmark/pilot.py`, `benchmark/verilogeval.py`. Use a worktree.
 
+**Cleanup branch `c6-dedupe`** (worktree `.claude/worktrees/c6-dedupe`, local
+only, 9 commits on `0852295e2`; merge after the campaign because it changes
+the runtime): shared synthesis-template blocks (64 scripts byte-identical),
+`autortl/fileio.py` helpers for 74 repeated hash/JSON lines, shared tool-path
+setup for check scripts, quota-stop label fix, `_finish_optimize` extracted
+from `_run_optimize` (491 to 400 lines), ruff lint in CI, pinned requirements
+and parallel tests (`-n auto`: 2,345 tests in 4 m 43 s instead of 15 to 22
+min). Both suites green on the branch.
+
 **Exact next action:** ROADMAP task B1. When `campaign.log` ends with
-`"reason": "all cells attempted"`: `python -m benchmark.report grade`, then
-`render`, archive under `evidence/<date>/final-02-results/`, decide the claim
-(B2) and put the numbers in the README table (P3). On a stop event, follow
-B1's restart notes.
+`"reason": "all cells attempted"`, run `python -m benchmark.finish` (full
+command in B1): it grades, reports, applies the claim rule registered
+November 20 (`docs/DECISIONS.md`, `benchmark/claim.py`), archives to
+`evidence/<date>/final-02-results/`, writes the README, seals, audits and
+prints the README row (P3). Then follow `docs/RELEASE.md`. On a stop event,
+follow B1's restart notes.
 
 **Done this session**
+- Decision rule registered before grading (123 of 360 cells sealed, none
+  graded); `benchmark/claim.py`, `benchmark/finish.py` with tests;
+  release checklist, PR and release-note drafts in `docs/RELEASE.md`.
 - `final-01` aborted after 5 cells on `empty_netlist_unplaceable`; fixed with
   tests and live checks; a synthesis sweep of all 40 final references passes
   39/40 (the exception is a reference with latches). Evidence

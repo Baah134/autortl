@@ -111,6 +111,23 @@ a new cohort. Commands run without a shell from an empty temporary folder and
 only ever receive the prompt on stdin; AutoRTL does not sandbox them, so give
 them no tools they do not need.
 
+**Antigravity models.** [`scripts/agy_bridge.py`](../scripts/agy_bridge.py)
+puts the Antigravity CLI (`agy`) behind a command endpoint, so the models it
+offers (`agy models`: Gemini, Claude, GPT-OSS) can run every role:
+
+```yaml
+endpoints:
+  antigravity:
+    kind: command
+    argv: [python, C:/absolute/path/to/scripts/agy_bridge.py]
+    model_flag: --model
+```
+
+then, for example, `--model antigravity.gemini-3.8-flash-high`. The bridge
+sends the prompt on stdin through `agy`'s stream-json mode with `--sandbox`
+and prints only the final answer; a failed result exits 1 so quota and login
+errors are classified like any other CLI.
+
 Resume an interrupted experiment using its saved configuration:
 
 ```powershell
