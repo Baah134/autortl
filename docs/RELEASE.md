@@ -33,8 +33,9 @@ commands once it finishes. Text in `<angle brackets>` comes from the
 >
 > - **Registered comparison** on 40 public VerilogEval tasks, three arms
 >   (single call, harness without mutation qualification, full harness),
->   three trials: `<verdict sentence>` Evidence:
->   `evidence/<date>/final-02-results`. Tasks and decision rule were fixed
+>   three trials. A single model call passes more tasks than the full harness: C 86.1% vs A 94.1%, difference -9.2 pp (95% CI -19.2 to -0.8 pp, 40 tasks); the harness used 7.4x the model calls per pass. About one in ten harness-accepted designs
+>   failed the official test, mostly from planner misreadings the oracle
+>   shared. Evidence: `evidence/2026-11-21/final-02-results`. Tasks and decision rule were fixed
 >   before grading (`docs/DECISIONS.md`, `benchmark/claim.py`).
 > - **Hardware:** twelve harness-optimized cores (RV32I, AES-128, CORDIC,
 >   16-tap FIR and others) passed 50,000 transactions each on a Basys 3
@@ -48,7 +49,7 @@ commands once it finishes. Text in `<angle brackets>` comes from the
 >   infrastructure stops never counted as verdicts.
 > - **Repository:** MIT licence, one agent guide, compact README, shared
 >   synthesis-template blocks and file helpers, ruff lint and parallel tests
->   in CI (about 2,350 harness and 320 tooling tests).
+>   in CI (about 2,380 harness and 325 tooling tests).
 >
 > Known limits: public tasks do not exclude training contamination; one model
 > and backend; one FPGA family and Vivado version; a request the planner
@@ -59,8 +60,9 @@ commands once it finishes. Text in `<angle brackets>` comes from the
 **AutoRTL v1.0.0** — an LLM harness for Verilog in which the model proposes and
 deterministic checks decide.
 
-- `<verdict sentence>` (40 VerilogEval tasks x 3 arms x 3 trials, pre-registered
-  rule; `<link to evidence README>`).
+- A single model call passes more tasks than the full harness: C 86.1% vs A 94.1%, difference -9.2 pp (95% CI -19.2 to -0.8 pp, 40 tasks); the harness used 7.4x the model calls per pass. (40 VerilogEval tasks x 3 arms x 3 trials, pre-registered
+  rule; `evidence/2026-11-21/final-02-results/README.md`). The harness's value
+  is in optimization and hardware-proven builds, not single-module functional tasks.
 - Twelve generated and optimized cores verified on a Basys 3 board, 50,000
   transactions each, 0 mismatches.
 - Optimization through Vivado feedback: AES-128 9,108 to 614 LUTs; FIR16 closes

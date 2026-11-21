@@ -72,6 +72,22 @@ without mutation qualification of its generated testbenches scored 84.7%, no
 material difference from the full harness (+0.4 pp, 95% CI -5.0 to +5.8). About one in ten designs the harness accepted failed the official
 testbench ([results](../evidence/2026-11-21/final-02-results/README.md)).
 
+Failure review (after grading; the registered verdict stands unchanged):
+- Most of the gap comes from the extra step of rewriting the prose into a
+  typed spec. On Prob066 and Prob139 the planner added or shifted behaviour
+  the request never stated (a reset that clears a history register, an input
+  sampled one cycle early), and the oracle, generated testbench and RTL all
+  followed it, so the wrong designs were accepted. Arm A read the prose
+  directly and passed. Taxonomy: `planner_spec_error_shared_by_oracle_and_rtl`.
+- Prob131 (multi-module plan without a trusted testbench) and Prob153
+  (golden-model observation phase) ended without a design in most harness
+  trials; both are fixed and tested since, but not counted here.
+- Two tasks, Prob093 and Prob149, have official references that contradict
+  their own prose; every arm fails them, and they account for 5 of the full
+  harness's 11 false acceptances (`official_reference_contradicts_request`).
+- One correct design (Prob027, full) failed only because the Icarus-based
+  grader rejects a Vivado synthesis attribute (`grader_rejects_vendor_attribute`).
+
 **Fmax.** Out of context, the six winners close at 181.8 MHz (FIR) to
 425.5 MHz (packet FIFO). The harness reports both the board-level
 I/O-constrained slack it accepts on and the register-to-register slack of the

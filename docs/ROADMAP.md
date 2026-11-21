@@ -58,9 +58,9 @@ tagged release exists on `main` with a licence.
 - Pilot gate passed (pilot-06: 6/6 in all three arms). Final registration
   frozen: 40 tasks, `evidence/2026-11-14/final-registration-01`.
 - `final-01` was aborted after 5 cells (`empty_netlist_unplaceable`, fixed).
-  **Final comparison `final-02` is running** (360 cells, runtime `7731a66d2`)
-  from `C:/Users/<user>/autortl-private/final-02` via
-  `python -m benchmark.campaign`. Progress: `final-02/campaign.log`. See task B1.
+  **Final comparison `final-02` is done and graded** (360 cells, runtime
+  `7731a66d2`): single call 94.1%, full harness 86.1%, verdict
+  `single_call_better` (`evidence/2026-11-21/final-02-results`). See task B1.
 
 ## 3. Environment facts (this machine)
 
@@ -95,7 +95,7 @@ criteria; a task is not done until all are met and committed.
 
 ### Track B — the registered comparison
 
-**B1. Finish, grade and report `final-02`** — `doing` (campaign running)
+**B1. Finish, grade and report `final-02`** — `done` November 21 (verdict `single_call_better`)
 - Watch: `tail final-02/campaign.log`. A `stop` event with reason `model blocked`
   means Codex quota or login: wait for quota, then restart the same command
   (cells with an output directory are skipped; the one blocked cell stays
@@ -311,8 +311,7 @@ fast quality item that can run beside it, or post-release work.
 
 ### Critical path (finish)
 
-1. **B1** finish, grade, report, archive `final-02` (running; about 2 to 3
-   days of awake time at about 58 cells per Codex window).
+1. **B1** finish, grade, report, archive `final-02` (done November 21).
 2. **B2** quote the claim the registered rule produced (`claim.json`).
 3. **P3** paste the README row `benchmark.finish` prints; release text is
    drafted in `docs/RELEASE.md`.
