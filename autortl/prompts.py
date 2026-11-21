@@ -400,7 +400,7 @@ supply controls explicitly; use suitable inactive defaults for omitted controls.
 For fixed_latency, model one logical input/state transition per step and return
 its behavioral result. The testbench handles the declared pipeline delay; do
 not add a separate pipeline-delay queue in the Python model.
-Observation phase: with latency 0 the outputs are sampled before this step's
+For fixed_latency, observation phase: with latency 0 the outputs are sampled before this step's
 clock edge, so compute every returned output from the state at the start of
 step() and this step's inputs, and only then update the state for the next
 step (a registered output therefore shows its old value). With latency 1 or

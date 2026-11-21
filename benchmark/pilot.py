@@ -100,7 +100,9 @@ def run_single_call(manifest: dict, task: ve.Task, out_dir: Path, *, trial: int 
         text = ask("generator", task.prompt.read_text(encoding="utf-8"), system=SINGLE_CALL_SYSTEM,
                    budget=budget, model=model)
     except client.ModelCallError as exc:
-        termination, error = "model_blocked", f"{exc.code}: {exc}"
+        # agy_endpoint_uses_tools: a tool-using reply is a failed cell, not an excluded one.
+        termination = "failed" if exc.code == "MODEL_TOOL_USE" else "model_blocked"
+        error = f"{exc.code}: {exc}"
     except RuntimeError as exc:
         if not str(exc).startswith("LLM_BUDGET:"):
             raise
