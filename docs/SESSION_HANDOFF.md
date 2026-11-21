@@ -30,7 +30,7 @@ the same command again.** Expect about 2 to 3 days of awake machine time.
 `run.py`, `benchmark/pilot.py`, `benchmark/verilogeval.py`. Use a worktree.
 
 **Cleanup branch `c6-dedupe`** (worktree `.claude/worktrees/c6-dedupe`, local
-only, 9 commits on `0852295e2`; merge after the campaign because it changes
+only; brought up to date with this branch November 20 (merge `ce4fc4c93`, suites green: 2,369 harness, 323 tooling, lint clean); merge after the campaign because it changes
 the runtime): shared synthesis-template blocks (64 scripts byte-identical),
 `autortl/fileio.py` helpers for 74 repeated hash/JSON lines, shared tool-path
 setup for check scripts, quota-stop label fix, `_finish_optimize` extracted
@@ -60,6 +60,29 @@ follow B1's restart notes.
 - Repository cleanup: one `AGENTS.md`; slim `CLAUDE.md`, `GEMINI.md`,
   `START_HERE.md`; README 149 lines with `docs/RESULTS.md` and
   `docs/USAGE.md`; superseded docs in `docs/archive/`.
+
+**Failure review so far (internal logs only, no official verdicts; file the
+taxonomy entries after the campaign, `data/` is frozen):** of 169 sealed
+final-02 cells, 6 harness cells ended `failed`, from two causes, each the same
+in arms B and C, so the comparison is unaffected between them:
+- `Prob131_mt2015_q4` (4 cells): the planner splits the request into
+  submodules and `fsm.py` stops with "Multi-module build requires trusted
+  integration testbench" (`build_blocked`); VerilogEval supplies no trusted
+  testbench to the harness. A harness limit, already disclosed; recurs every
+  trial. Candidate fix after release: force a single-module plan when the
+  request names one top and no submodules.
+- `Prob153_gshare` (2 cells): the generated golden model computes
+  `predict_taken`/`predict_history` from the state after the clock edge,
+  while the testbench (fixed_latency 0) samples before it; outputs are Mealy
+  (current `predict_pc` with pre-edge history). Every RTL fix then fails the
+  oracle from sample 1 (identical 17 + 89 mismatches in both arms).
+  Recurrence of `fixed_latency_observation_ambiguous`; the repair must reach
+  the golden-model prompt (latency 0 means outputs from the pre-edge state and
+  current inputs), not only the planner.
+
+**flash-01** (Gemini 3.8 Flash, arm A, 120 cells; detached process): 3 of
+the first 74 cells ended `budget` because one call ran past the 180 s
+per-call timeout; they count as failures, as for any arm.
 
 **Open:** owner decisions (PR and merge to `main`, B3 task source, pinned
 model, board authorisation); research risk
