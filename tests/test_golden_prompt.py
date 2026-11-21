@@ -35,6 +35,9 @@ def test_initial_and_repair_prompt_preserve_api_policy_and_context(monkeypatch, 
     assert 'data outputs: ["answer"]' in prompt
     assert 'two\'s-complement' in prompt and 'ONE ACCEPTED input transaction' in prompt
     assert 'do\nnot add a separate pipeline-delay queue' in prompt
+    # fixed_latency_observation_ambiguous (final-02 Prob153_gshare): latency 0 samples pre-edge state
+    assert "with latency 0 the outputs are sampled before this step's" in prompt
+    assert 'from the state at the start of\nstep()' in prompt
     assert ('previous Python reference failed validation' in prompt) == bool(feedback)
     if feedback:
         assert prompt.endswith(feedback)
