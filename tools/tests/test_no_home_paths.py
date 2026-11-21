@@ -12,7 +12,7 @@ import pytest
 
 ROOT = Path(__file__).resolve().parents[2]
 HOME = re.compile(r"(?:[A-Za-z]:(?:\\\\|\\|/)+Users(?:\\\\|\\|/)+|/home/|/Users/)([A-Za-z0-9._-]+)")
-ALLOWED = {"someone", "user", "runner", "runneradmin", "me", "you", "name", "username", "example", "secret.txt"}
+ALLOWED = {"someone", "user", "runner", "runneradmin", "me", "you", "name", "username", "example", "secret.txt", "alice"}  # alice: this file's own samples
 
 
 def tracked_files():
