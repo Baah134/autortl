@@ -63,8 +63,14 @@ otherwise; FIR16's 150 MHz result is out of context. Physical-board checks use
 a 100 MHz shell with board pin constraints. The dot products use DSP slices.
 Details: [hardware targets](TARGETS.md).
 
-A controlled public-task comparison against a single model invocation has not
-yet been completed.
+A controlled public-task comparison against a single model invocation
+(`final-02`, registered November 20, 2026, before grading) found the single
+call better: on 40 VerilogEval spec-to-RTL tasks with three trials, one call
+passed 94.1% and the full harness 86.1% (difference -9.2 pp, 95% CI -19.2 to
+-0.8), with 7.4 times the model calls per pass for the harness. The harness
+without mutation qualification of its generated testbenches scored 84.7%, no
+material difference from the full harness (+0.4 pp, 95% CI -5.0 to +5.8). About one in ten designs the harness accepted failed the official
+testbench ([results](../evidence/2026-11-21/final-02-results/README.md)).
 
 **Fmax.** Out of context, the six winners close at 181.8 MHz (FIR) to
 425.5 MHz (packet FIFO). The harness reports both the board-level

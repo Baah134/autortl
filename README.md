@@ -27,7 +27,7 @@ standalone implementation, simulation and hardware results.
 | **Agent-built UART echo.** Receiver and transmitter built by the roles echoed 1,000,000 of 1,000,000 bytes at full line rate. | [echo](evidence/2026-11-01/basys3-harness-echo-01/README.md) |
 | **Real optimization.** AES-128: 9,108 to 614 LUTs, from missing timing by 9.8 ns to +2.2 ns. FIR16 closes 150 MHz (394 to 148 LUTs). Dot product: 328 to 20 LUTs through DSP inference. | [results in detail](docs/RESULTS.md) |
 | **Verifiers are tested.** A testbench must pass a correct design and fail injected faults before it grades anything; an audit of 27 FIR faults went from 18 to 22 caught by generated testbenches, 27 by the independent checker. | [case study](docs/CASE_STUDY_VERIFIER.md) |
-| **Registered comparison with a single model call.** 40 public VerilogEval tasks, three arms, three trials, tasks frozen before any run. In progress; the six-task pilot passed in all arms after exposing five harness defects, and an earlier pilot recorded one wrong design the harness accepted. No advantage is claimed yet. | [registration](evidence/2026-11-14/final-registration-01/README.md), [pilot](evidence/2026-11-14/pilot-06-results-01/README.md), [false acceptance](evidence/2026-11-14/pilot-04-results-01/README.md), [runbook](docs/BENCHMARK_PILOT.md) |
+| **Registered comparison with a single model call: the single call wins.** 40 public VerilogEval tasks, three arms, three trials; tasks and decision rule fixed before grading. A single model call passes more tasks than the full harness: 94.1% vs 86.1%, difference -9.2 pp (95% CI -19.2 to -0.8), at 1/7.4 of the model calls per pass. 9.1% and 10.0% of the designs the harness arms accepted fail the official testbench, so internal acceptance is not a reliable correctness signal on these tasks. Infrastructure stops (2, 2 and 5 cells) are excluded from rates. | [results](evidence/2026-11-21/final-02-results/README.md), [registration](evidence/2026-11-14/final-registration-01/README.md), [decision rule](docs/DECISIONS.md) |
 | **Reproducible.** About 2,300 harness tests and 320 tooling tests run in CI without Vivado, a model or a board; CI audits every evidence hash against committed bytes. | [tests](.github/workflows/tests.yml), [publication policy](docs/PUBLICATION.md) |
 
 Measured with Vivado 2025.2 for the Basys 3 FPGA (`xc7a35tcpg236-1`). Board
@@ -107,8 +107,9 @@ command. Full instructions, model selection and the evaluation commands are in
 
 ## Known limits
 
-- On easy functional tasks a single model call does as well as the harness at
-  a fraction of the cost (pilot). The harness's measured value is in
+- On single-module functional tasks a single model call beats the harness:
+  94.1% vs 86.1% on 40 VerilogEval tasks, at about a seventh of the model
+  calls (registered comparison). The harness's measured value is in
   optimization, multi-module builds and hardware-proven results.
 - Internal verification checks RTL against the planner's reading of the
   request; a misread request can be verified and accepted
