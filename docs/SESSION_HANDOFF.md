@@ -88,6 +88,15 @@ in arms B and C, so the comparison is unaffected between them:
   the golden-model prompt (latency 0 means outputs from the pre-edge state and
   current inputs), not only the planner.
 
+**Both causes fixed on local branch `bench-fixes`** (worktree
+`.claude/worktrees/bench-fixes`, `2b5caf87a`, built on `c6-dedupe`; suites
+green, 2,371 harness and 323 tooling, lint clean). It includes the taxonomy
+entries and `docs/DECISIONS.md` 2026-11-21: final-02 is reported as run, and
+later numbers on its tasks are labelled tuned. Merge it after `c6-dedupe`,
+once flash-02 ends. On November 21, 19 stale agent worktrees (already merged,
+nothing uncommitted) were removed and their branches kept;
+`agent-a68f849245229e7f6` has uncommitted changes and was left in place.
+
 **flash-01 done:** Gemini 3.8 Flash, single call, 110/120 (91.7%, CI 83.3 to
 98.3); 5 cells hit the 180 s per-call timeout and count as failures.
 Evidence `evidence/2026-11-20/flash-01-results`. Compare with `final-02` arm A
