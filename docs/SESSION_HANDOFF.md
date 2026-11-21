@@ -38,6 +38,14 @@ from `_run_optimize` (491 to 400 lines), ruff lint in CI, pinned requirements
 and parallel tests (`-n auto`: 2,345 tests in 4 m 43 s instead of 15 to 22
 min). Both suites green on the branch.
 
+**Merge-ready (November 21):** `c6-dedupe` (`283768f2d`) already contains this
+branch and `bench-fixes`, including the MODEL_TOOL_USE classification (a
+tool-using reply is a failed cell, never excluded infrastructure). Suites
+green: 2,384 harness, 325 tooling, lint clean. After final-02 is graded:
+`git merge c6-dedupe` here, then remap `docs/WALKTHROUGH.md`'s ~69 stale
+`file:line` references, preferably to symbol names (docs audit: 17 of 19
+spot-checked were wrong).
+
 **Exact next action:** ROADMAP task B1. When `campaign.log` ends with
 `"reason": "all cells attempted"`, run `python -m benchmark.finish` (full
 command in B1): it grades, reports, applies the claim rule registered
