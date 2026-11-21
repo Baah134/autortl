@@ -78,6 +78,30 @@ existed). Implemented as `benchmark/claim.py` and applied by
 ROADMAP B2 now reduces to recording this rule's output and, if it shows a
 recurring planner failure, the follow-up (former task C4).
 
+## 2026-11-21 — flash-01 had tools; flash-02 withdrawn before any cell
+
+A live check of the Antigravity bridge found that `agy` runs Gemini as an agent
+with web search, shell commands and file tools; `--sandbox` restricts only its
+terminal, and permission deny rules did not stop `search_web`. On the
+Prob131 planner prompt Flash-high made 46 web searches (one for
+`"VerilogEval" "mt2015_q4"`) and 14 commands and took 6 minutes, more than
+the harness's 180-second call limit. Flash-low used no tools there and took
+18 seconds.
+
+- **flash-01** (Flash-high, single call, 110/120) ran with these tools
+  available, and the bridge recorded no tool events. The published references
+  are on the web, so it is not a closed-book single call and is not compared
+  with Codex arm A. It stays archived as run, described as "Gemini 3.8 Flash
+  through the Antigravity agent, web search available". Call times are
+  consistent with tool use in many cells (median 18 s against 7 s for a
+  trivial prompt) but cannot show which cells used tools.
+- **flash-02** (registered November 20, 0 cells run) is withdrawn: as
+  registered, its planner calls would exceed the call limit, and its replies
+  could use the web. Its auto-start watcher was stopped.
+- The bridge now refuses any reply produced with a tool call
+  (`agy_endpoint_uses_tools`). Any new Flash run needs a new registration that
+  uses the guarded bridge and a model variant that fits the call limit.
+
 ## Continuing contracts
 
 Use command-line Vivado. Specifications and independent verification control

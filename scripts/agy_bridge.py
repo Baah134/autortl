@@ -57,8 +57,14 @@ def command(agy: str, model: str | None) -> list[str]:
 
 
 def parse(stdout: str) -> tuple[bool, str, dict]:
-    """(ok, response or error, usage) from agy's stream-json output; the last result event wins."""
-    result = None
+    """(ok, response or error, usage) from agy's stream-json output; the last result event wins.
+
+    agy is an agent: `--sandbox` restricts its terminal, not its tools, and permission
+    deny rules did not stop `search_web` (November 21 probe). A reply produced with any
+    tool call (web search, commands, file reads) is refused, so a model endpoint
+    answers from the prompt alone, as the Codex backend does (agy_endpoint_uses_tools).
+    """
+    result, tools = None, []
     for line in stdout.splitlines():
         line = line.strip()
         if not line.startswith("{"):
@@ -69,6 +75,11 @@ def parse(stdout: str) -> tuple[bool, str, dict]:
             continue
         if event.get("event") == "result":
             result = event.get("result") or {}
+        name = (event.get("step_update") or {}).get("tool_name")
+        if name and name not in tools:
+            tools.append(name)
+    if tools:
+        return False, f"agy used tools {tools}; a model endpoint must answer without tools", {}
     if result is None:
         return False, "agy printed no result event", {}
     usage = result.get("usage") or {}

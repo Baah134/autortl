@@ -45,14 +45,13 @@ November 20 (`docs/DECISIONS.md`, `benchmark/claim.py`), archives to
 `evidence/<date>/final-02-results/`, writes the README, seals, audits and
 prints the README row (P3). Then follow `docs/RELEASE.md`. On a stop event,
 follow B1's restart notes.
-`flash-02` (registered, 240 cells,
-`evidence/2026-11-20/flash-02-registration-01`) starts by itself when `final-02` logs "all cells attempted" (detached watcher `<home>/autortl-private/flash-02/start_after_final02.ps1`; it refuses to start twice). If the watcher is gone (reboot), run this before merging
-`c6-dedupe`:
-
-    python -m benchmark.campaign --manifest <home>/autortl-private/flash-02/manifest.json --dataset <D> --attempt <home>/autortl-private/flash-02 --model antigravity.gemini-3.8-flash-high --wait-minutes 20 --max-wait-hours 12
-
-(needs the local `endpoints.local.yaml` antigravity endpoint, docs/USAGE.md).
-The release (P2/P5) does not wait for it; merge `c6-dedupe` after it ends.
+**`flash-02` is withdrawn (0 cells run) and its watcher was stopped on
+November 21. Do not start it.** `agy` gives Gemini web search and shell tools,
+and Flash-high's planner calls exceed the 180 s limit (`docs/DECISIONS.md`
+2026-11-21). The bridge now refuses tool-using replies. A new Flash run needs
+a new registration with Flash-low or medium. Merge `c6-dedupe` and then
+`bench-fixes` once final-02 is graded; the release (P2/P5) does not wait for
+any Flash run.
 
 **Done this session**
 - Decision rule registered before grading (123 of 360 cells sealed, none
@@ -92,15 +91,19 @@ in arms B and C, so the comparison is unaffected between them:
 `.claude/worktrees/bench-fixes`, `2b5caf87a`, built on `c6-dedupe`; suites
 green, 2,371 harness and 323 tooling, lint clean). It includes the taxonomy
 entries and `docs/DECISIONS.md` 2026-11-21: final-02 is reported as run, and
-later numbers on its tasks are labelled tuned. Merge it after `c6-dedupe`,
+later numbers on its tasks are labelled tuned. A live check with Flash-high
+(`autortl-private/fixcheck-01`) never reached either fix because both planner
+calls timed out, so the fixes are not yet checked live. Merge it after `c6-dedupe`,
 once flash-02 ends. On November 21, 19 stale agent worktrees (already merged,
 nothing uncommitted) were removed and their branches kept;
 `agent-a68f849245229e7f6` has uncommitted changes and was left in place.
 
-**flash-01 done:** Gemini 3.8 Flash, single call, 110/120 (91.7%, CI 83.3 to
-98.3); 5 cells hit the 180 s per-call timeout and count as failures.
-Evidence `evidence/2026-11-20/flash-01-results`. Compare with `final-02` arm A
-via `python -m benchmark.compare` once `final-02` is graded.
+**flash-01 done, but not closed-book:** Gemini 3.8 Flash through the
+Antigravity agent, 110/120 (91.7%, CI 83.3 to 98.3); 5 cells hit the 180 s
+call timeout. Web search was available to the model, so it is not compared
+with Codex arm A (`docs/DECISIONS.md` 2026-11-21). Evidence
+`evidence/2026-11-20/flash-01-results`. `benchmark/compare.py` remains for
+a future valid run.
 
 **Open:** owner decisions (PR and merge to `main`, B3 task source, pinned
 model, board authorisation); research risk
