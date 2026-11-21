@@ -269,6 +269,9 @@ harness_failures:
   requested_top_not_enforced:
     meaning: "A build request fixes the top module name (meta.yaml top, run.py --top) because its trusted testbench instantiates it, but a planner-written spec could choose another top_name and the mismatch surfaced only at elaboration (found while qualifying tier3 uart_fifo_build)"
     repair: "In the planner spec-repair loop, require top_name to equal the requested top (or, for a single-module build, the only module's name) and say why"
+  agy_endpoint_uses_tools:
+    meaning: "The Antigravity CLI runs models as agents: with --sandbox and permission deny rules, Gemini 3.8 Flash-high still web-searched the task name ('VerilogEval mt2015_q4'), ran shell commands and took 6 minutes for one planner prompt (November 21 probe); flash-01 ran with these tools available"
+    repair: "scripts/agy_bridge.py refuses any reply whose stream contains a tool call (exit 1), so a command endpoint answers from the prompt alone; flash-01 is described as tool-enabled and not compared with Codex arm A; flash-02 withdrawn before any cell"
   multi_module_plan_without_trusted_tb:
     meaning: "A prose build with no trusted integration testbench (VerilogEval final-02, Prob131_mt2015_q4, 4 harness cells) got a multi-module plan; every module was generated and verified, then the build stopped with build_blocked 'Multi-module build requires trusted integration testbench'"
     repair: "Check it in the planner spec-repair loop: without a supplied testbench the spec must have exactly one module, and the error names the modules; repairs stay bounded by max_fix_attempts and a supplied testbench still allows multi-module plans"
