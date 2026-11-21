@@ -93,7 +93,18 @@ green, 2,371 harness and 323 tooling, lint clean). It includes the taxonomy
 entries and `docs/DECISIONS.md` 2026-11-21: final-02 is reported as run, and
 later numbers on its tasks are labelled tuned. A live check with Flash-high
 (`autortl-private/fixcheck-01`) never reached either fix because both planner
-calls timed out, so the fixes are not yet checked live. Merge it after `c6-dedupe`,
+calls timed out. A second check with Flash-low through the guarded bridge
+(`fixcheck-02`; exploratory, tuned, never reported) exercised both fixes live:
+- **Prob131:** the planner proposed 3 modules, got the new error back,
+  replanned as one module and reached DONE; that design passes the official
+  test (0 of 200 mismatches).
+- **gshare:** the golden model now computes outputs from the state before the
+  update, so the phase fix took effect. The module still failed, for another
+  reason: the golden model forwarded a same-cycle misprediction recovery into
+  the current prediction, and the RTL disagreed (prompt lines 47 to 50 say
+  only that training wins the history update).
+
+Merge it after `c6-dedupe`,
 once flash-02 ends. On November 21, 19 stale agent worktrees (already merged,
 nothing uncommitted) were removed and their branches kept;
 `agent-a68f849245229e7f6` has uncommitted changes and was left in place.
