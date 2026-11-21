@@ -1,6 +1,5 @@
 """Run positive and fault-injected generated-testbench cases with real Vivado."""
 import argparse
-import hashlib
 import json
 import sys
 import time
@@ -12,6 +11,8 @@ from autortl.config import RunConfig
 from autortl.triage import FailureKind
 from autortl.vivado import xsim_run
 from tests.tbgen_live_cases import save
+from autortl.doctor import tool_bins
+from autortl.fileio import file_sha256
 
 
 def main():
@@ -21,9 +22,7 @@ def main():
     args = parser.parse_args()
     out = args.output.resolve()
     out.mkdir(parents=True, exist_ok=False)
-    config = RunConfig(mode="optimize", **{
-        name + "_bin": str(args.bin_dir.resolve() / (name + ".bat"))
-        for name in ("vivado", "xvlog", "xelab", "xsim")})
+    config = RunConfig(mode="optimize", **tool_bins(args.bin_dir))
     results = []
     for case in save(out):
         work = out / case["case"]
@@ -34,8 +33,8 @@ def main():
         ok = passed if case["expected_pass"] else detected
         record = {**case, "ok": ok, "passed": passed, "error": error,
                   "failure_kind": kind.value, "seconds": time.monotonic() - started,
-                  "source_sha256": hashlib.sha256((work / "dut.v").read_bytes()).hexdigest(),
-                  "tb_sha256": hashlib.sha256((work / "tb.v").read_bytes()).hexdigest()}
+                  "source_sha256": file_sha256((work / "dut.v")),
+                  "tb_sha256": file_sha256((work / "tb.v"))}
         results.append(record)
         (out / "results.json").write_text(json.dumps(results, indent=2), encoding="utf-8")
         print(json.dumps(record), flush=True)

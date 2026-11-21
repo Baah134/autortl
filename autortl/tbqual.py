@@ -5,7 +5,6 @@ before it is allowed to grade anything. Mutation operators are simple; qualifica
 """
 from __future__ import annotations
 import re
-import hashlib
 import json
 from pathlib import Path
 from .config import RunConfig
@@ -14,6 +13,7 @@ from .triage import FailureKind
 from .verilog_interface import infer_module
 from .linter import stub_verilog
 from .state import atomic_write_text
+from .fileio import file_sha256
 
 _MUTATIONS = [
     (r"(?<![<>=!])<(?![<=])", ">", "flip < to >"),
@@ -108,7 +108,7 @@ def qualify(good_verilog: str, tb_path: Path, module_name: str,
     qdir.mkdir(parents=True, exist_ok=True)
     def identity(path):
         path = Path(path)
-        return {"path": str(path.resolve()), "sha256": hashlib.sha256(path.read_bytes()).hexdigest()
+        return {"path": str(path.resolve()), "sha256": file_sha256(path)
                 if path.is_file() else None}
     report = {"schema_version": 1, "module": module_name,
               "testbench": identity(tb_path), "reference_source_sha256": None,

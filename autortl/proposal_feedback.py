@@ -8,6 +8,7 @@ import re
 from pathlib import Path
 
 from .cache import code_hash
+from .fileio import file_sha256
 
 _METRICS = ("sim_passed", "timing_met", "wns_ns", "whs_ns", "lut_used", "ff_used",
             "dsp_used", "bram_used", "dynamic_power_w", "total_power_w")
@@ -68,7 +69,7 @@ def _file_identity(path):
     try:
         if path.is_file():
             return {"path": str(path.resolve()),
-                    "sha256": hashlib.sha256(path.read_bytes()).hexdigest()}
+                    "sha256": file_sha256(path)}
     except (OSError, ValueError):
         pass
     return None

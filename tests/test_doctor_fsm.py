@@ -97,7 +97,7 @@ def test_loop_exposes_prior_receipts_and_done_rejects_their_tampering(lineage,mo
     fsm.vivado.full_metrics.side_effect=[candidate,repaired]
     monkeypatch.setattr(fsm,"diagnose",Mock(return_value=SimpleNamespace(action="tool_knobs",
                         wns_ns=-1,category=SimpleNamespace(value="logic"))))
-    result=o.run()
+    o.run()
     facts=json.loads((parent/"evaluation_facts.json").read_text())
     assert facts["verification_reuse"]["mode"]=="source_identical_prior_verification"
     assert fsm.vivado.xsim_run.call_count==1  # candidate only; physical Doctor reuses this verification

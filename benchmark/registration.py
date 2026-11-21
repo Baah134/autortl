@@ -16,6 +16,7 @@ import sys
 from pathlib import Path
 
 from benchmark import verilogeval as ve
+from autortl.fileio import read_json
 
 RULE = ("largest-remainder quotas over eligible family counts per category; families ranked by "
         f"{ve.RANK_PREFIX}|<commit>|<family> (tie: family name); each family contributes its "
@@ -134,8 +135,8 @@ def main(argv=None) -> int:
     if a.out.exists():
         print(f"refusing to overwrite {a.out}", file=sys.stderr)
         return 2
-    catalog = json.loads(a.catalog.read_text(encoding="utf-8"))
-    exclusions = json.loads(a.exclusions.read_text(encoding="utf-8"))
+    catalog = read_json(a.catalog)
+    exclusions = read_json(a.exclusions)
     result = register(catalog, a.commit, a.pilot_tasks, exclusions)
     with a.out.open("x", encoding="utf-8") as fh:
         fh.write(json.dumps(result, indent=1, sort_keys=True) + "\n")

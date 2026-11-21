@@ -7,8 +7,8 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from . import prompts
-from .spec import ModuleSpec, DesignSpec, port_declaration
-from .skill_loader import (conventions, select_for_module, select_for_timing, inject, load_skill)
+from .spec import ModuleSpec, port_declaration
+from .skill_loader import (conventions, select_for_module, select_for_timing, inject)
 from .device import budget_text
 from .report_parser import VivadoMetrics
 import sys
@@ -196,7 +196,6 @@ class Generator:
     def generate(self, module: ModuleSpec, verilog: str, instruction: str,
                  mutation_text: str, budget) -> str:
         skills = inject(select_for_module(module))
-        r = module.reset
         latency = (f"{module.latency} cycles (fixed numeric contract)" if module.latency_known else
                    "UNKNOWN numeric latency: preserve the exact frozen source's observable cycles; "
                    "an absent annotation does not mean zero cycles")

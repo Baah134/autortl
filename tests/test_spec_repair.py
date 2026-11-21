@@ -7,6 +7,8 @@ import json
 from pathlib import Path
 from unittest.mock import Mock
 
+import pytest
+
 from autortl import prompts
 from tests.test_fsm_build import ROOT, create
 
@@ -195,3 +197,47 @@ def test_load_error_asks_for_the_complete_spec(tmp_path, monkeypatch):
     monkeypatch.setattr(o.planner, "make_spec", planner)
     assert o.run()["status"] == "done"
     assert "return the complete design_spec JSON object" in planner.call_args_list[1].kwargs["feedback"]
+
+
+MULTI = (ROOT / "curriculum/tier3/dot4_pipeline_build/design_spec.json").read_text(encoding="utf-8")
+
+
+def test_multi_module_plan_without_trusted_testbench_goes_back_to_the_planner(tmp_path, monkeypatch):
+    # multi_module_plan_without_trusted_tb (final-02 Prob131_mt2015_q4): without a trusted
+    # integration testbench the plan must be one module; it used to stop late as build_blocked
+    # after every module had been generated and verified.
+    o, synthesis = create(tmp_path, monkeypatch)
+    prose(tmp_path, o)
+    o.cfg.testbench_path = None
+    planner = Mock(return_value=MULTI)
+    monkeypatch.setattr(o.planner, "make_spec", planner)
+    result = o.run()
+    assert result["status"] == "spec_lint_failed"
+    assert any("no trusted integration testbench" in e for e in result["errors"])
+    feedback = planner.call_args_list[1].kwargs["feedback"]
+    assert "exactly one module" in feedback and "this spec has 3" in feedback
+    assert planner.call_count == 1 + o.cfg.max_fix_attempts
+    synthesis.assert_not_called()
+
+
+def test_multi_module_plan_with_trusted_testbench_is_not_flagged(tmp_path, monkeypatch):
+    o, _ = create(tmp_path, monkeypatch)
+    prose(tmp_path, o)
+    o.cfg.top_module = "counter8"  # MULTI's top differs, so lint fails without building
+    monkeypatch.setattr(o.planner, "make_spec", Mock(return_value=MULTI))
+    result = o.run()
+    assert result["status"] == "spec_lint_failed"
+    assert not any("no trusted integration testbench" in e for e in result["errors"])
+
+
+@pytest.mark.parametrize("code, status, kind", [("MODEL_TOOL_USE", "model_tool_use", "design"),
+                                                ("CODEX_QUOTA", "model_blocked", "infra")])
+def test_tool_using_reply_is_a_model_failure_not_infrastructure(tmp_path, monkeypatch, code, status, kind):
+    # agy_endpoint_uses_tools: only a tool-using reply leaves the infrastructure class
+    from llm.client import ModelCallError
+    o, synthesis = create(tmp_path, monkeypatch)
+    prose(tmp_path, o)
+    monkeypatch.setattr(o.planner, "make_spec", Mock(side_effect=ModelCallError("planner", code)))
+    result = o.run()
+    assert (result["status"], result["failure_kind"], result["error_code"]) == (status, kind, code)
+    synthesis.assert_not_called()

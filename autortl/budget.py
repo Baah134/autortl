@@ -5,11 +5,11 @@ and skips replans instead of dying mid-run.
 """
 from __future__ import annotations
 import json
-import time
 import math
 from pathlib import Path
 from .awake_clock import awake_seconds
 from .state import atomic_write_text
+from .fileio import read_json
 
 TOKEN_KEYS = ("input_tokens", "cached_input_tokens", "output_tokens")
 
@@ -34,7 +34,7 @@ class Budget:
         self.start = awake_seconds()
         self.state_path = Path(state_path) if state_path else None
         if self.state_path and self.state_path.exists():
-            d = json.loads(self.state_path.read_text(encoding="utf-8"))
+            d = read_json(self.state_path)
             self.llm_calls = d["llm_calls"]
             self.vivado_seconds = d["vivado_seconds"]
             elapsed = d["elapsed"]

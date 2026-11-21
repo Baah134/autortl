@@ -78,6 +78,20 @@ existed). Implemented as `benchmark/claim.py` and applied by
 ROADMAP B2 now reduces to recording this rule's output and, if it shows a
 recurring planner failure, the follow-up (former task C4).
 
+## 2026-11-21 — Fixes found on final-02 tasks stay out of its claim
+
+Two harness failure causes seen in final-02's internal logs (before grading)
+are fixed on branch `bench-fixes`: `multi_module_plan_without_trusted_tb`
+(Prob131) and a recurrence of `fixed_latency_observation_ambiguous`
+(Prob153_gshare). Both are general (a structural check and a prompt
+clarification); neither weakens a check.
+
+- They merge only after final-02 finishes (flash-02 was later withdrawn), so no registered
+  runtime changes.
+- final-02 is reported as run. No cell is rerun with the fixes.
+- Any later number on the same 40 tasks is tuned on them. It is reported as
+  such, beside the registered result, never in place of it.
+
 ## 2026-11-21 — flash-01 had tools; flash-02 withdrawn before any cell
 
 A live check of the Antigravity bridge found that `agy` runs Gemini as an agent

@@ -15,6 +15,7 @@ import time
 import hashlib
 from datetime import datetime
 from pathlib import Path
+from .fileio import read_json
 
 
 _WINDOWS = os.name == "nt"
@@ -202,5 +203,5 @@ class RunState:
 
     def load_fsm(self) -> dict | None:
         if self.fsm_path.exists():
-            return json.loads(self.fsm_path.read_text(encoding="utf-8"))
+            return read_json(self.fsm_path)
         return None

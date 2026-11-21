@@ -6,7 +6,6 @@ file exists (Windows), else <name> (Linux).
 Uses a fresh output directory and retains inputs, hashes, logs and reports.
 """
 import argparse
-import hashlib
 import json
 import os
 import sys
@@ -18,12 +17,8 @@ from autortl.config import RunConfig
 from autortl.tbqual import qualify
 from autortl.vivado import xsim_run, run_synthesis, full_metrics
 from autortl.metrics_gate import validate
-
-
-def tool_path(bin_dir, name):
-    bat = bin_dir.resolve() / (name + ".bat")
-    bare = bin_dir.resolve() / name
-    return str(bare if bare.exists() and not bat.exists() else bat)
+from autortl.doctor import tool_bins
+from autortl.fileio import file_sha256
 
 
 def main():
@@ -41,10 +36,8 @@ def main():
         path = out / name
         path.write_bytes((source / name).read_bytes())
         files.append(path)
-        hashes[name] = hashlib.sha256(path.read_bytes()).hexdigest()
-    cfg = RunConfig(mode="optimize", **{
-        name + "_bin": tool_path(args.bin_dir, name)
-        for name in ("vivado", "xvlog", "xelab", "xsim")})
+        hashes[name] = file_sha256(path)
+    cfg = RunConfig(mode="optimize", **tool_bins(args.bin_dir))
     result = {"source_sha256": hashes, "part": cfg.target_part,
               "period_ns": cfg.target_period_ns, "passed": False}
     try:

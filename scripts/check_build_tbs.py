@@ -5,7 +5,6 @@ Run serially through the coordinator's Vivado queue in a fresh output directory.
 """
 from __future__ import annotations
 import argparse
-import hashlib
 import json
 import re
 import sys
@@ -18,6 +17,8 @@ from autortl.config import RunConfig
 from autortl.state import atomic_write_text
 from autortl.triage import FailureKind
 from autortl.vivado import xsim_run
+from autortl.doctor import tool_bins
+from autortl.fileio import file_sha256
 
 COUNTER = """`timescale 1ns/1ps
 module counter8(input clk, rst, enable, output reg [7:0] count);
@@ -94,7 +95,7 @@ def verdict(expected_pass, passed, error, kind, raw_log=None):
 
 
 def _sha(path):
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+    return file_sha256(path)
 
 
 def save_cases(output):
@@ -162,8 +163,7 @@ def main(argv=None):
     args=parser.parse_args(argv)
     output=args.output.resolve()
     output.mkdir(parents=True,exist_ok=False)
-    config=RunConfig(mode="optimize",**{name+"_bin":str(args.bin_dir.resolve()/(name+".bat"))
-                                    for name in ("vivado","xvlog","xelab","xsim")})
+    config=RunConfig(mode="optimize",**tool_bins(args.bin_dir))
     results=[]
     prepare = {"build": save_cases, "skid": save_skid_cases, "fifo": save_fifo_cases,
                "packet": save_packet_cases, "divider": save_divider_cases}[args.suite]

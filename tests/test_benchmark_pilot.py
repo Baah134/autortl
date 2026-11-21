@@ -80,6 +80,12 @@ def test_single_call_model_block_and_unusable_reply_are_missing(manifest, task, 
 
     _, receipt = load_after(pilot.run_single_call(manifest, task, tmp_path / "q", ask=blocked), tmp_path / "q")
     assert (receipt["kind"], receipt["termination"]) == ("missing", "model_blocked")
+
+    def tools(*args, **kwargs):  # agy_endpoint_uses_tools: counted as failed, never excluded
+        raise client.ModelCallError("generator", "MODEL_TOOL_USE", message="agy used tools")
+
+    _, receipt = load_after(pilot.run_single_call(manifest, task, tmp_path / "t", ask=tools), tmp_path / "t")
+    assert (receipt["kind"], receipt["termination"]) == ("missing", "failed")
     prose = lambda *a, **k: "I cannot write that module."
     record, receipt = load_after(pilot.run_single_call(manifest, task, tmp_path / "p", ask=prose), tmp_path / "p")
     assert (receipt["kind"], receipt["termination"]) == ("missing", "failed")
@@ -159,9 +165,11 @@ def test_full_done_winner_is_sealed_as_accepted_incumbent(manifest, task, tmp_pa
 @pytest.mark.parametrize("build, termination", [
     (FakeBuild(status="budget_exhausted", winner=False), "budget"),
     (FakeBuild(status="model_blocked", winner=False), "model_blocked"),
+    (FakeBuild(status="model_blocked", winner=False, kind="infra"), "model_blocked"),  # as run.py writes it
     (FakeBuild(status="infra_blocked", winner=False), "interrupted"),
     (FakeBuild(status="build_blocked", winner=False, kind="infra"), "interrupted"),
     (FakeBuild(status="build_blocked", winner=False), "failed"),
+    (FakeBuild(status="model_tool_use", winner=False, kind="design"), "failed"),  # agy_endpoint_uses_tools
     (FakeBuild(status="baseline_failed", winner=False), "failed"),
     (FakeBuild(status="done", winner=False), "failed"),
     (FakeBuild(status=None, winner=False), "interrupted"),

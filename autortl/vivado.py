@@ -9,7 +9,6 @@ Message severity promotion (never demotion) is applied from the taxonomy.
 from __future__ import annotations
 import re
 import json
-import hashlib
 import os
 import signal
 import subprocess
@@ -20,6 +19,7 @@ from .config import RunConfig
 from .state import atomic_write_text
 from .report_parser import VivadoMetrics, parse_sim_log, parse_all, extract_message_ids
 from .triage import classify, FailureKind, target_capacity, describe_target
+from .fileio import file_sha256
 
 
 def _tcl_path(p: Path) -> str:
@@ -151,7 +151,7 @@ def _run(cmd: list[str], cwd: Path, timeout: int, log_path: Path) -> tuple[int, 
                       "returncode": actual_rc if type(actual_rc) is int else None,
                       "driver_returncode": driver_rc, "elapsed_seconds": _run.last_seconds,
                       "output_log_path": str(Path(log_path).resolve()),
-                      "output_log_sha256": hashlib.sha256(log_path.read_bytes()).hexdigest()
+                      "output_log_sha256": file_sha256(log_path)
                                            if log_written else None}
             _append_tool_exit_record(cwd, record)
         except BaseException as receipt_error:
@@ -231,39 +231,80 @@ def xsim_run(design_files: list[Path], tb_file: Path, tb_top: str,
 
 # ---------------- Rung 5: synthesis + implementation ----------------
 
-SYNTH_TCL = """\
+# The two implementation flows are assembled from the shared blocks below, so a
+# change to a step both flows run is made once. Each block is a str.format
+# template (doubled braces are literal TCL braces). The assembled SYNTH_TCL and
+# OOC_SYNTH_TCL are pinned byte for byte by tests/test_ooc_flow.py.
+
+# Promotions, stale-marker removal, part and sources.
+_PREAMBLE = """\
 {promotions}
 file delete -force "{workdir}/no_timing_paths.txt"
 set_part {part}
 read_verilog {sources}
+"""
+
+# The clock on a port named clk; a design without one gets a virtual clock later.
+_XDC_OPEN = """\
 set fp [open "{workdir}/timing.xdc" w]
 puts $fp {{create_clock -period {period} -name clk [get_ports clk]}}
+"""
+_XDC_CLOSE = """\
 close $fp
 read_xdc "{workdir}/timing.xdc"
+"""
+
+# clockless_design_untimed_by_metrics_gate: written into each flow's constraint file.
+_VIRTUAL_CLOCK = """\
+puts $fp {{if {{[llength [get_clocks -quiet]] == 0}} {{create_clock -period {period} -name clk}}}}
+"""
+
+_POST_SYNTH_REPORTS = """\
+report_utilization -file "{workdir}/utilization.rpt"
+report_timing_summary -file "{workdir}/timing.rpt"
+opt_design
+"""
+
+_ROUTED_REPORTS = """\
+report_utilization -file "{workdir}/utilization_routed.rpt"
+report_timing_summary -file "{workdir}/timing_routed.rpt"
+"""
+
+_IMPLEMENT = """\
+place_design
+{phys_opt}
+route_design
+""" + _ROUTED_REPORTS + """\
+catch {{ if {{[llength [all_registers]] > 0}} {{ report_timing -from [all_registers] -to [all_registers] -max_paths 1 -file "{workdir}/timing_reg2reg.rpt" }} }}
+report_design_analysis -logic_level_distribution -file "{workdir}/design_analysis.rpt"
+report_power -file "{workdir}/power.rpt"
+catch {{ report_methodology -file "{workdir}/methodology.rpt" }}
+"""
+
+
+def _no_paths_marker(reason: str) -> str:
+    """empty_netlist_unplaceable: record that Vivado found no timing path at all."""
+    return ('if {{[llength [get_timing_paths -quiet -max_paths 1]] == 0}} {{ set fp [open "{workdir}/no_timing_paths.txt" w]; '
+            'puts $fp "' + reason + ' period_ns {period}"; close $fp }}\n')
+
+
+_COMPLETE = 'puts "SYNTH_COMPLETE"\n'
+
+# Chip top: every port on a package pin through an I/O buffer, zero port delays to clk.
+SYNTH_TCL = (
+    _PREAMBLE + _XDC_OPEN + _XDC_CLOSE
+    + """\
 synth_design -top {top} -flatten_hierarchy rebuilt {extra_synth}
 set fp [open "{workdir}/timing_io.tcl" w]
-puts $fp {{if {{[llength [get_clocks -quiet]] == 0}} {{create_clock -period {period} -name clk}}}}
+""" + _VIRTUAL_CLOCK + """\
 puts $fp {{set data_inputs [get_ports -filter {{DIRECTION == IN && NAME != clk}}]}}
 puts $fp {{if {{[llength $data_inputs] > 0}} {{set_input_delay -clock clk -max 0.000 $data_inputs; set_input_delay -clock clk -min 0.000 $data_inputs}}}}
 puts $fp {{if {{[llength [all_outputs]] > 0}} {{set_output_delay -clock clk -max 0.000 [all_outputs]; set_output_delay -clock clk -min 0.000 [all_outputs]}}}}
 close $fp
 source "{workdir}/timing_io.tcl"
-report_utilization -file "{workdir}/utilization.rpt"
-report_timing_summary -file "{workdir}/timing.rpt"
-opt_design
-place_design
-{phys_opt}
-route_design
-report_utilization -file "{workdir}/utilization_routed.rpt"
-report_timing_summary -file "{workdir}/timing_routed.rpt"
-catch {{ if {{[llength [all_registers]] > 0}} {{ report_timing -from [all_registers] -to [all_registers] -max_paths 1 -file "{workdir}/timing_reg2reg.rpt" }} }}
-report_design_analysis -logic_level_distribution -file "{workdir}/design_analysis.rpt"
-report_power -file "{workdir}/power.rpt"
-catch {{ report_methodology -file "{workdir}/methodology.rpt" }}
+""" + _POST_SYNTH_REPORTS + _IMPLEMENT + """\
 catch {{ report_qor_suggestions -file "{workdir}/qor_suggestions.rpt" }}
-if {{[llength [get_timing_paths -quiet -max_paths 1]] == 0}} {{ set fp [open "{workdir}/no_timing_paths.txt" w]; puts $fp "no_paths period_ns {period}"; close $fp }}
-puts "SYNTH_COMPLETE"
-"""
+""" + _no_paths_marker("no_paths") + _COMPLETE)
 
 # Out-of-context implementation of a block that is not a chip top
 # (chip_top_flow_for_soc_block). synth_design -mode out_of_context inserts no
@@ -290,47 +331,26 @@ puts "SYNTH_COMPLETE"
 # constants) leaves no_timing_paths.txt for the parser (vacuously met).
 # The clock/HD.CLK_SRC/out_of_context lines match hardware/basys3/fmax/fmax.py's
 # ooc mode, which closed timing live on Vivado 2025.2 for xc7a35tcpg236-1.
-OOC_SYNTH_TCL = """\
-{promotions}
-file delete -force "{workdir}/no_timing_paths.txt"
-set_part {part}
-read_verilog {sources}
-set fp [open "{workdir}/timing.xdc" w]
-puts $fp {{create_clock -period {period} -name clk [get_ports clk]}}
+OOC_SYNTH_TCL = (
+    _PREAMBLE + _XDC_OPEN + """\
 puts $fp {{set_property HD.CLK_SRC BUFGCTRL_X0Y0 [get_ports clk]}}
-close $fp
-read_xdc "{workdir}/timing.xdc"
+""" + _XDC_CLOSE + """\
 synth_design -top {top} -flatten_hierarchy rebuilt -mode out_of_context {extra_synth}
 set fp [open "{workdir}/timing_virtual.tcl" w]
-puts $fp {{if {{[llength [get_clocks -quiet]] == 0}} {{create_clock -period {period} -name clk}}}}
+""" + _VIRTUAL_CLOCK + """\
 puts $fp {{set regs [all_registers]; if {{[llength $regs] == 0 || [llength [get_timing_paths -quiet -from $regs -to $regs -max_paths 1]] == 0}} {{set data_inputs [get_ports -quiet -filter {{DIRECTION == IN && NAME != clk}}]; if {{[llength $data_inputs] > 0}} {{set_input_delay -clock clk 0.000 $data_inputs; if {{[llength $regs] > 0}} {{set_false_path -hold -from $data_inputs -to $regs}}}}; if {{[llength [all_outputs]] > 0}} {{set_output_delay -clock clk 0.000 [all_outputs]}}; set autortl_ports_timed 1}}}}
 close $fp
 source "{workdir}/timing_virtual.tcl"
-report_utilization -file "{workdir}/utilization.rpt"
-report_timing_summary -file "{workdir}/timing.rpt"
-opt_design
+""" + _POST_SYNTH_REPORTS + """\
 if {{[llength [get_cells -quiet -hierarchical -filter {{IS_PRIMITIVE}}]] == 0}} {{
-    report_utilization -file "{workdir}/utilization_routed.rpt"
-    report_timing_summary -file "{workdir}/timing_routed.rpt"
-    if {{[llength [get_timing_paths -quiet -max_paths 1]] == 0}} {{ set fp [open "{workdir}/no_timing_paths.txt" w]; puts $fp "empty_netlist period_ns {period}"; close $fp }}
-    puts "SYNTH_COMPLETE"
+""" + "".join("    " + line + "\n" for line in (_ROUTED_REPORTS + _no_paths_marker("empty_netlist") + _COMPLETE).splitlines()) + """\
     exit 0
 }}
-place_design
-{phys_opt}
-route_design
-report_utilization -file "{workdir}/utilization_routed.rpt"
-report_timing_summary -file "{workdir}/timing_routed.rpt"
-catch {{ if {{[llength [all_registers]] > 0}} {{ report_timing -from [all_registers] -to [all_registers] -max_paths 1 -file "{workdir}/timing_reg2reg.rpt" }} }}
-report_design_analysis -logic_level_distribution -file "{workdir}/design_analysis.rpt"
-report_power -file "{workdir}/power.rpt"
-catch {{ report_methodology -file "{workdir}/methodology.rpt" }}
+""" + _IMPLEMENT + """\
 # report_qor_suggestions crashes Vivado 2025.2 (EXCEPTION_ACCESS_VIOLATION) once the
 # port guard above set an input-hold false path; it is advisory, so skip it then.
 if {{![info exists autortl_ports_timed]}} {{ catch {{ report_qor_suggestions -file "{workdir}/qor_suggestions.rpt" }} }}
-if {{[llength [get_timing_paths -quiet -max_paths 1]] == 0}} {{ set fp [open "{workdir}/no_timing_paths.txt" w]; puts $fp "no_paths period_ns {period}"; close $fp }}
-puts "SYNTH_COMPLETE"
-"""
+""" + _no_paths_marker("no_paths") + _COMPLETE)
 
 TEMPLATES = {"chip_top": SYNTH_TCL, "out_of_context": OOC_SYNTH_TCL}
 

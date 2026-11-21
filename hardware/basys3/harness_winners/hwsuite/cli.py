@@ -401,8 +401,6 @@ EVIDENCE_FILES = {
 
 def cmd_evidence(args, table):
     """Copy every archived output into one folder with a summary and SHA-256 manifest."""
-    import hashlib
-    from . import reports
     if not args.out:
         raise SuiteError("--out is required")
     final = Path(args.out).resolve()
