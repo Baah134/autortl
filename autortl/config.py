@@ -11,6 +11,10 @@ IMPLEMENTATIONS = ("chip_top", "out_of_context")
 # Benchmark arm B ablation (ablation_policy_seam_absent). "full" is the shipped
 # behaviour; the other value is an explicit experiment setting only.
 VERIFICATION_POLICIES = ("full", "skip_generated_tb_mutations")
+# planner_spec_error_shared_by_oracle_and_rtl: an independent second reading of a
+# prose request checks a planner-written spec (autortl/cross_check.py). A supplied
+# JSON spec is law and is never cross-checked. See docs/DECISIONS.md for the default.
+SPEC_CROSS_CHECK_POLICIES = ("request_traces", "off")
 
 
 @dataclass
@@ -50,6 +54,11 @@ class RunConfig:
     # Experiment-only ablation: skip_generated_tb_mutations skips bug-injection
     # qualification of generated module testbenches; never inferred from other flags.
     verification_policy: str = "full"
+    # request_traces: a planner-written spec's golden model must agree with traces an
+    # independent role call writes from the original request (one replan at most).
+    # off (default until ROADMAP V1 measures it on fresh tasks): v1.0.0 behaviour,
+    # recorded in config, events and summary so both settings can be benchmark arms.
+    spec_cross_check: str = "off"
 
     def validate(self) -> None:
         if self.mode not in ("build", "optimize"):
@@ -58,6 +67,8 @@ class RunConfig:
             raise ValueError("implementation must be one of: " + ", ".join(IMPLEMENTATIONS))
         if self.verification_policy not in VERIFICATION_POLICIES:
             raise ValueError("verification_policy must be one of: " + ", ".join(VERIFICATION_POLICIES))
+        if self.spec_cross_check not in SPEC_CROSS_CHECK_POLICIES:
+            raise ValueError("spec_cross_check must be one of: " + ", ".join(SPEC_CROSS_CHECK_POLICIES))
         if type(self.proposal_feedback) is not bool:
             raise ValueError("proposal_feedback must be boolean")
         if type(self.generate_golden) is not bool:
@@ -124,6 +135,8 @@ class RunConfig:
         data.setdefault("synthesis_timeout_minutes", 15.0)
         # Runs saved before the arm B seam qualified every generated testbench.
         data.setdefault("verification_policy", "full")
+        # Runs saved before the request cross-check never ran it.
+        data.setdefault("spec_cross_check", "off")
         allowed = {item.name for item in fields(cls)}
         if set(data) - allowed:
             raise ValueError("unknown run config fields: " + ", ".join(sorted(set(data) - allowed)))

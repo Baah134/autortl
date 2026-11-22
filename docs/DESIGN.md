@@ -345,6 +345,61 @@ revision than the checkpoint records, so a resumed run never silently uses a
 pre-dispute spec. A replayed oracle timeout stays build_blocked (infra) and is
 retried by the next resume.
 
+**Request cross-check** (planner_spec_error_shared_by_oracle_and_rtl). Lint and
+disputes only find a spec that disagrees with itself; a spec that misreads the
+request is consistent, so its oracle, generated testbench and RTL all agree and
+the design is accepted (VerilogEval Prob066, Prob139, Prob135). With
+`RunConfig.spec_cross_check` / `run.py build --spec-cross-check request_traces`,
+a second, independent derivation checks a planner-written spec
+(`autortl/cross_check.py`, `Planner.request_traces`). It is `off` by default
+until ROADMAP V1 measures it on fresh tasks (docs/DECISIONS.md); it is saved in
+config.json (resume refuses a change; configs written before it load as `off`),
+and every planner-written build records `spec_cross_check: {policy, checks}` in
+its run summary and a `spec_cross_check` event per check (`skipped_by_policy`
+when off). A supplied JSON spec is law and is never checked.
+
+- *Independence.* One journaled planner-route call, made once per run in the
+  build_spec scope and reused by every revision and resume, receives the
+  original request and the module's interface only: port declarations, the
+  reset port and how the harness drives it (or a resetless module's
+  initialization prefix). It never sees the spec's behavior text, latency,
+  examples, golden model or harness facts. It returns 2-4 traces, each quoting
+  the request sentence it relies on. An unusable answer gets one repair call.
+- *Semantics.* Trace rows are physical clock cycles, independent of the spec's
+  latency: row k holds the inputs during cycle k and the outputs visible before
+  the rising edge that ends it; row 0 follows reset; omitted inputs hold;
+  `expected` may name only the outputs the request determines. Golden step i is
+  observed in cycle i + latency (the generated testbench's own phase), so row k
+  is compared with step k - latency; a planner that samples a cycle early or
+  late (Prob139) disagrees.
+- *Where.* After a module's oracle qualifies against the spec examples and
+  before any RTL is generated, for a single-module fixed_latency spec built
+  with a generated oracle. A trusted-testbench build writes no oracle and needs
+  no check (the testbench already reads the request); multi-module and
+  scoreboard specs are recorded as `skipped`.
+- *Outcomes.* `agree`; `replanned` (comparable rows disagree: the spec goes back
+  to the planner with SPEC_CROSS_CHECK_INSTRUCTION, the disagreeing traces up
+  to their last mismatch row with the quoted request text, at most 1,500
+  characters, and the previous spec; the planner may correct the spec or return
+  it unchanged); `disagreement_kept` (the one cross-check replan per run is
+  spent and the new revision still disagrees) and `repairs_exhausted` (the
+  shared counter is spent) are recorded and the build continues;
+  `unusable`, `traces_incompatible` (a replan changed the interface),
+  `no_comparable_rows`, `golden_error` and `skipped` are recorded and the build
+  continues. The traces are an unverified second reading: they can make the
+  planner look again but never fail a design themselves.
+- *Bounds.* A replan spends one unit of the shared `max_fix_attempts` counter
+  and at most one comes from this check per run. Extra model calls: 1 per
+  planner-written generated-oracle build (2 if the first answer is unusable);
+  on a disagreement, 1 planner call plus a full rebuild of the new revision
+  (oracle, generation and repairs, as for a dispute).
+- *Evidence and resume.* `spec_cross_checks/traces.json` holds the traces and
+  `spec_cross_checks/rev<N>.json` each revision's record (also
+  `spec_cross_checks` in state.json). A resume replays the journaled calls and
+  ends as infra_blocked when a replayed record differs from the checkpoint. An
+  oracle timeout during the check is build_blocked (infra) with no record and
+  no repair; a provider failure is model_blocked.
+
 ## Per-run token accounting
 Backends report usage as `input_tokens`, `cached_input_tokens` and
 `output_tokens` when they can. After a successful call the client adds them to

@@ -1,0 +1,15 @@
+Here are the traces derived from the request.
+{"traces": [
+  {"quote": "enable increments count modulo 256, else hold",
+   "rows": [{"inputs": {"enable": 1}, "expected": {}},
+            {"expected": {"count": 1}},
+            {"expected": {"count": 2}},
+            {"inputs": {"enable": 0}, "expected": {"count": 3}},
+            {"expected": {"count": 3}}]},
+  {"quote": "synchronous active-high rst sets count=0",
+   "rows": [{"inputs": {"enable": 1}, "expected": {}},
+            {"expected": {"count": 1}},
+            {"inputs": {"rst": 1}, "expected": {"count": 2}},
+            {"inputs": {"rst": 0}, "expected": {"count": 0}},
+            {"expected": {"count": 1}}]}
+]}

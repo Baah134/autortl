@@ -13,7 +13,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from autortl.config import IMPLEMENTATIONS, VERIFICATION_POLICIES, RunConfig
+from autortl.config import IMPLEMENTATIONS, SPEC_CROSS_CHECK_POLICIES, VERIFICATION_POLICIES, RunConfig
 from autortl.fsm import Orchestrator
 from autortl.state import CheckpointLockedError
 
@@ -77,6 +77,12 @@ def main(argv=None):
     p_bld.add_argument("--top", default="")
     p_bld.add_argument("--generate-golden", action="store_true",
                        help="generate and qualify a unit oracle even when an independent --tb is supplied")
+    # planner_spec_error_shared_by_oracle_and_rtl; not offered to bench (supplied specs are law).
+    p_bld.add_argument("--spec-cross-check", choices=list(SPEC_CROSS_CHECK_POLICIES), default="off",
+                       help="off (default until measured): v1.0.0 behaviour, recorded; request_traces: check a "
+                            "planner-written spec's golden model against traces an independent role call "
+                            "writes from the prose request (one replan at most). A supplied JSON spec is "
+                            "never cross-checked")
 
     p_res = sub.add_parser("resume", help="load config.json; no configuration overrides")
     p_res.add_argument("--run", required=True, type=Path)
@@ -155,7 +161,8 @@ def main(argv=None):
                         top_module=a.top, generate_golden=a.generate_golden,
                         implementation=a.implementation,
                         synthesis_timeout_minutes=a.synthesis_timeout_minutes,
-                        verification_policy=a.verification_policy, **kw)
+                        verification_policy=a.verification_policy,
+                        spec_cross_check=a.spec_cross_check, **kw)
         orch = Orchestrator(cfg, run_dir=a.output_dir.resolve() if hasattr(a, "output_dir") else None)
 
     try:

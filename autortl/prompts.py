@@ -418,3 +418,43 @@ its eventual output payload. Do not simulate buffer occupancy, valid/ready
 scheduling, bubbles or backpressure; the testbench independently schedules and
 checks those RTL behaviors. Supplied handshake inputs are 1 for accepted
 transactions and 0 during reset. Output ONLY python in one ```python fence."""
+
+# planner_spec_error_shared_by_oracle_and_rtl: an independent second reading of
+# the request. The writer sees the request and the port list only, never the
+# planner's behavior text, latency, examples or reference model.
+TRACE_WRITER_SYSTEM = """You check hardware requirements by writing concrete test traces straight
+from the request text. You never write Verilog or Python. You see only the request
+and the module interface, not anyone else's interpretation of it."""
+
+REQUEST_TRACES_PROMPT = """Write short cycle-by-cycle test traces for this hardware request, derived only
+from the request text.
+
+**Request:** {intent}
+
+**Interface (fixed by the harness):**
+{interface}
+
+Row semantics (exact; read carefully):
+- Row k gives the input values held during clock cycle k and the output values
+  visible during cycle k: after the inputs settle and before the rising clock
+  edge that ends cycle k. A register loaded by that edge first shows its new
+  value in row k+1; a combinational output follows row k's inputs in row k.
+- Row 0 is the first cycle after the harness's reset or initialization.
+- An input omitted from a row keeps its value from the previous row (0 in row 0;
+  the reset port starts deasserted).
+- In "expected", list only outputs whose value the request determines in that
+  row; omit an output the request leaves unspecified or that depends on state
+  before row 0 that the request does not define.
+
+Write 2 to 4 traces of at most 16 rows each. Each trace checks one rule the
+request states, and its "quote" copies the request sentence it relies on. Cover
+the request's timing words ("on the next clock edge", "the cycle after") with a
+row on each side of the change. If the module has a reset port, include a trace
+that asserts reset in a later row while other inputs are nonzero, deasserts it,
+and checks the following rows: reset clears only what the request says it
+clears. Do not assume behavior the request does not state.
+
+Output ONLY JSON, no commentary:
+{{"traces": [{{"quote": str, "rows": [{{"inputs": {{port: int}}, "expected": {{port: int}}}}]}}]}}
+Values are unsigned integers within the port width (two's-complement bit
+patterns for signed ports)."""

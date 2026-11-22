@@ -156,7 +156,8 @@ criteria; a task is not done until all are met and committed.
 
 ### Track V — verification research
 
-**V1. Measure and reduce false acceptance** — `todo`
+**V1. Measure and reduce false acceptance** — `todo` (mitigation implemented
+on `claude/spec-cross-check`, not yet measured)
 - Baseline: the false-acceptance rate and cells from B1.
 - Mitigation to test (one, measured): *independent example derivation*. A
   second planner call, given only the original request (not the first spec),
@@ -165,6 +166,13 @@ criteria; a task is not done until all are met and committed.
   dispute path (`spec_disputes`, DESIGN.md "Disputed examples") is the hook.
   Implement behind a recorded config field (like `verification_policy`), off
   by default until measured.
+  *Implemented (November 21):* `spec_cross_check=request_traces`
+  (`run.py build --spec-cross-check request_traces`; DESIGN.md "Request
+  cross-check"). It writes cycle traces rather than constant-input examples,
+  and a disagreement replans once instead of failing lint (a second
+  disagreement is recorded and the build continues), so the experiment also
+  reports `disagreement_kept` cells. The benchmark runner does not set the
+  field yet; the registration for this experiment must.
 - Experiment: rerun the B1 false-acceptance tasks plus Prob135_m2014_q6b, 5
   trials each, with and without the mitigation; report false acceptances,
   added calls and any true designs wrongly blocked.

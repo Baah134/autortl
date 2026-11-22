@@ -45,6 +45,7 @@ from .golden import (GoldenModel, GoldenTimeoutError, qualify_against_examples, 
                      only_example_mismatches)
 from .tbgen import generate as generate_tb, shape_errors as tb_shape_errors
 from .tbqual import qualify as qualify_tb, assertion_failure_proof, qualification_mutations
+from . import cross_check
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from llm.client import declared_latency, ModelCallError
@@ -60,6 +61,17 @@ SPEC_DISPUTE_INSTRUCTION = (
     "Two independent reference models written from this module's behavior text disagree with its "
     "examples. Make the behavior text and the examples agree (fix whichever is wrong) and keep every "
     "other module unchanged unless it must change.")
+
+# planner_spec_error_shared_by_oracle_and_rtl: the planner's instruction when its spec's
+# reference model disagrees with traces written independently from the request.
+SPEC_CROSS_CHECK_INSTRUCTION = (    "an independent reading of the original request, made without your design_spec, wrote the "
+    "input/output traces below, each relying on the quoted request text. Your spec's reference "
+    "model disagrees with them. Row k holds the inputs during clock cycle k and the outputs "
+    "visible before the rising edge that ends cycle k (a register loaded by that edge shows "
+    "in row k+1); row 0 is the first cycle after reset. Re-read the quoted request text. If it "
+    "supports the traces, correct behavior, latency, reset and examples so they agree with it, "
+    "keeping the requested interface. If it supports your spec instead, return your spec "
+    "unchanged. Never add behavior the request does not state.")
 
 
 class VerificationEvidenceError(ValueError):
@@ -244,6 +256,8 @@ class Orchestrator:
             if result.get("status") != "done":
                 if self.cfg.verification_policy != "full":
                     result.setdefault("verification_policy", self.cfg.verification_policy)
+                if getattr(self, "_cross_check_summary", None) is not None:
+                    result.setdefault("spec_cross_check", self._cross_check_summary)
                 atomic_write_text(self.state.run_dir / "run_summary.json", json.dumps(result, indent=2))
             return result
         finally:
@@ -530,11 +544,19 @@ class Orchestrator:
         # A supplied JSON spec is law and fails at once. A planner-written spec gets its
         # lint errors (spec_lint_failure_skips_planner_repair) and any oracle-example
         # dispute (oracle_example_dispute_ends_build) back for repair; both share one
-        # counter of at most max_fix_attempts journaled planner repairs.
+        # counter of at most max_fix_attempts journaled planner repairs. So does a
+        # request cross-check disagreement (planner_spec_error_shared_by_oracle_and_rtl).
         recorded = saved or {}
         revisions = list(recorded.get("spec_revisions", []))
         disputes = list(recorded.get("spec_disputes", []))
-        repairs = revision = 0
+        repairs = revision = cross_replans = 0
+        self._cross_check_active = generated and self.cfg.spec_cross_check == "request_traces"
+        self._cross_check_intent = intent
+        self._cross_check_traces = None
+        self._cross_check_records = list(recorded.get("spec_cross_checks", []))
+        # Recorded in every summary of a planner-written build, whichever policy ran.
+        self._cross_check_summary = ({"policy": self.cfg.spec_cross_check,
+                                      "checks": self._cross_check_records} if generated else None)
         while True:  # one pass per accepted spec revision
             while True:
                 raw = raw[raw.find("{"): raw.rfind("}") + 1]
@@ -612,7 +634,17 @@ class Orchestrator:
             # Every module is rebuilt for a new revision: a module verified against an
             # earlier spec is never reused.
             module_files: dict[str, Path] = {}
-            dispute = None
+            dispute = disagreement = None
+            # A request cross-check disagreement may replan once per run, from the shared counter.
+            if repairs >= self.cfg.max_fix_attempts:
+                kept = "repairs_exhausted"
+            elif cross_replans >= cross_check.MAX_REPLANS:
+                kept = "disagreement_kept"
+            else:
+                kept = None
+            self._cross_check_context = {"revision": revision, "spec_sha256": spec_sha,
+                                         "spec_repair": None if kept else repairs + 1, "kept": kept,
+                                         "single_module": len(spec.modules) == 1}
             for m in spec.modules:
                 self._scope = "module_" + m.name + ("" if revision == 0 else f"@rev{revision}")
                 mdir = modules_root / m.name
@@ -626,16 +658,32 @@ class Orchestrator:
                     if blocker:
                         return {"status": "build_blocked", "module": m.name, **blocker}
                     dispute = getattr(self, "_oracle_dispute", None) if generated else None
-                    if dispute is None:
+                    disagreement = getattr(self, "_cross_check_dispute", None) if generated else None
+                    if dispute is None and disagreement is None:
                         self._check_spec_revision_reached(generated, revision, revisions)
                         return {"status": "module_failed", "module": m.name,
                                 "error": getattr(self, "_build_failure", "module verification did not complete")}
                     break
                 vfile.write_text(result, encoding="utf-8")
                 module_files[m.name] = vfile
-            if dispute is None:
+            if dispute is None and disagreement is None:
                 self._check_spec_revision_reached(generated, revision, revisions)
                 break
+            if disagreement is not None:
+                # planner_spec_error_shared_by_oracle_and_rtl: the spec's reference model
+                # disagrees with traces written independently from the request. The record
+                # (outcome replanned) is already in state.json and spec_cross_checks/.
+                repairs += 1
+                cross_replans += 1
+                self._record_spec_repairs(repairs)
+                print(f"[spec] planner spec repair {repairs}: module {m.name} disagrees with request traces")
+                self._scope = "build_spec"
+                raw = self._model("planner", "make_spec", intent, self.cfg, self.budget,
+                                  feedback=f"Repair attempt {repairs}.\nmodule {m.name}: " + SPEC_CROSS_CHECK_INSTRUCTION
+                                  + "\n" + disagreement["feedback"]
+                                  + "\nYour previous design_spec was:\n" + raw[:6000])
+                revision += 1
+                continue
             # oracle_example_dispute_ends_build: the planner wrote behavior text and
             # examples that two runnable reference models could not both satisfy.
             exhausted = repairs >= self.cfg.max_fix_attempts
@@ -738,6 +786,105 @@ class Orchestrator:
                           json.dumps(record, indent=2))
         self._snapshot(spec_disputes=disputes)
 
+    # ------------------------------------------- request cross-check (build mode)
+    def _request_traces(self, module: ModuleSpec) -> dict:
+        """The run's independent request traces, written once from the original request.
+
+        planner_spec_error_shared_by_oracle_and_rtl: the trace writer sees the request
+        and this module's port list only. The call is journaled in the build_spec scope,
+        so every revision and every resume uses the same traces. An unusable answer gets
+        one repair call; provider failures propagate as infrastructure.
+        """
+        if self._cross_check_traces is not None:
+            return self._cross_check_traces
+        scope, self._scope = self._scope, "build_spec"
+        try:
+            interface = cross_check.interface_text(module)
+            text = self._model("planner", "request_traces", self._cross_check_intent, interface, self.budget)
+            traces, errors = cross_check.parse_traces(text, module)
+            calls = 1
+            if not traces:
+                text = self._model("planner", "request_traces", self._cross_check_intent, interface, self.budget,
+                                   feedback="\n".join(errors))
+                traces, errors = cross_check.parse_traces(text, module)
+                calls = 2
+        finally:
+            self._scope = scope
+        self._cross_check_traces = {"module": module.name, "interface": interface, "model_calls": calls,
+                                    "traces": traces, "errors": errors}
+        atomic_write_text(self.state.run_dir / "spec_cross_checks" / "traces.json",
+                          json.dumps(self._cross_check_traces, indent=2))
+        return self._cross_check_traces
+
+    def _record_cross_check(self, record: dict) -> None:
+        """One record per checked revision in state.json and spec_cross_checks/; a replay must match it."""
+        records = self._cross_check_records
+        keys = ("revision", "module", "spec_sha256", "outcome")
+        for existing in records:
+            if existing.get("revision") == record["revision"]:
+                if {k: existing.get(k) for k in keys} != {k: record[k] for k in keys}:
+                    raise VerificationEvidenceError(
+                        f"Replayed spec cross-check {record['revision']} differs from the checkpoint")
+                return
+        records.append(record)
+        atomic_write_text(self.state.run_dir / "spec_cross_checks" / f"rev{record['revision']}.json",
+                          json.dumps(record, indent=2))
+        self._snapshot(spec_cross_checks=records)
+        self.state.append_event({"stage": "spec_cross_check", "policy": self.cfg.spec_cross_check,
+                                 **{k: v for k, v in record.items() if k != "mismatches"},
+                                 "mismatch_count": len(record.get("mismatches", []))})
+
+    def _cross_check_module(self, m: ModuleSpec, golden: GoldenModel) -> str:
+        """Check a qualified oracle against the request traces: "ok", "replan" or "blocked".
+
+        Only a disagreement with comparable rows, while the shared counter and the one
+        cross-check replan remain, sends the spec back. Every other outcome is recorded
+        and the build continues: the traces are an unverified second reading, so they
+        never fail a design themselves.
+        """
+        context = self._cross_check_context
+        record = {"revision": context["revision"], "module": m.name, "spec_sha256": context["spec_sha256"]}
+        reason = ("the spec has several modules; traces describe the requested interface"
+                  if not context["single_module"] else cross_check.skip_reason(m))
+        if reason:
+            self._record_cross_check({**record, "outcome": "skipped", "reason": reason})
+            return "ok"
+        written = self._request_traces(m)
+        record["trace_model_calls"] = written["model_calls"]
+        if not written["traces"]:
+            self._record_cross_check({**record, "outcome": "unusable", "errors": written["errors"][:10]})
+            return "ok"
+        # A replanned spec may have changed the interface the traces were written for.
+        traces, errors = cross_check.parse_traces(json.dumps({"traces": written["traces"]}), m)
+        if errors:
+            self._record_cross_check({**record, "outcome": "traces_incompatible", "errors": errors[:10]})
+            return "ok"
+        try:
+            mismatches, compared = cross_check.run_traces(golden, m, traces)
+        except GoldenTimeoutError as exc:
+            # Infrastructure: no record, no repair; the next resume retries.
+            self._record_build_tool_block(exc, FailureKind.INFRA, "spec cross-check golden execution")
+            return "blocked"
+        except ValueError as exc:
+            self._record_cross_check({**record, "outcome": "golden_error", "error": str(exc)[:500]})
+            return "ok"
+        record.update(traces=len(traces), compared=compared, mismatches=mismatches[:20])
+        if not compared:
+            self._record_cross_check({**record, "outcome": "no_comparable_rows"})
+            return "ok"
+        if not mismatches:
+            self._record_cross_check({**record, "outcome": "agree"})
+            return "ok"
+        if context["kept"]:
+            self._record_cross_check({**record, "outcome": context["kept"]})
+            print(f"[module {m.name}] request traces still disagree ({len(mismatches)} values); "
+                  f"recorded as {context['kept']}, build continues")
+            return "ok"
+        self._record_cross_check({**record, "outcome": "replanned", "spec_repair": context["spec_repair"]})
+        self._cross_check_dispute = {"module": m.name,
+                                     "feedback": cross_check.feedback_text(m, traces, mismatches)}
+        return "replan"
+
     def _build_edit_scope(self, spec: DesignSpec, supplied_tb: Path | None, children: list[str]) -> dict:
         """Decide what the post-build optimizer may edit; recorded in harness facts.
 
@@ -776,6 +923,7 @@ class Orchestrator:
         """Generate one module through the ladder with best-of-N. Returns verilog."""
         self._build_blocker = None
         self._oracle_dispute = None
+        self._cross_check_dispute = None
         self._build_failure = "module verification did not complete"
         print(f"[module {m.name}] golden model + testbench...")
         independent_tb = None
@@ -861,6 +1009,14 @@ class Orchestrator:
                 # with the examples: the specification disputes itself.
                 self._oracle_dispute = {"module": m.name, "attempts": mismatch_attempts[-2:]}
             return None
+        # planner_spec_error_shared_by_oracle_and_rtl: before any RTL is generated, a
+        # planner-written spec's qualified oracle meets traces written from the request.
+        if getattr(self, "_cross_check_active", False):
+            if self._cross_check_module(m, gm) != "ok":
+                return None
+        elif getattr(self, "_spec_generated", False):
+            self.state.append_event({"stage": "spec_cross_check", "module": m.name,
+                                     "outcome": "skipped_by_policy", "policy": self.cfg.spec_cross_check})
         verilog = self._generate_verified(m, "(initial implementation)",
                                           "", tb, mdir, independent_tb=independent_tb)
         if verilog is None:
@@ -1354,6 +1510,8 @@ class Orchestrator:
             summary["termination_reason"] = termination_reason
         if cfg.verification_policy != "full":
             summary["verification_policy"] = cfg.verification_policy
+        if getattr(self, "_cross_check_summary", None) is not None:
+            summary["spec_cross_check"] = self._cross_check_summary
         final_artifacts = {str(path.resolve()): file_sha256(path)
                            for path in Path(best_artifact_dir).glob("*")
                            if path.is_file() and (path.suffix in (".v", ".sv", ".rpt", ".xdc", ".tcl", ".log")
