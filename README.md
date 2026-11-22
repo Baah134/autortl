@@ -120,6 +120,7 @@ command. Full instructions, model selection and the evaluation commands are in
 
 [Results in detail](docs/RESULTS.md) · [usage](docs/USAGE.md) ·
 [architecture](docs/DESIGN.md) · [guided code tour](docs/WALKTHROUGH.md) ·
+[benchmark case study](docs/CASE_STUDY_BENCHMARK.md) ·
 [benchmark runbook](docs/BENCHMARK_PILOT.md) ·
 [review](docs/REVIEW_2026-11-15.md) and [roadmap](docs/ROADMAP.md) ·
 [engineering log](docs/PROGRESS.md)

@@ -70,7 +70,8 @@ passed 94.1% and the full harness 86.1% (difference -9.2 pp, 95% CI -19.2 to
 -0.8), with 7.4 times the model calls per pass for the harness. The harness
 without mutation qualification of its generated testbenches scored 84.7%, no
 material difference from the full harness (+0.4 pp, 95% CI -5.0 to +5.8). About one in ten designs the harness accepted failed the official
-testbench ([results](../evidence/2026-11-21/final-02-results/README.md)).
+testbench ([results](../evidence/2026-11-21/final-02-results/README.md);
+[case study](CASE_STUDY_BENCHMARK.md)).
 
 Failure review (after grading; the registered verdict stands unchanged):
 - Most of the gap comes from the extra step of rewriting the prose into a
