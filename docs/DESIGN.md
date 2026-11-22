@@ -116,6 +116,14 @@ supported schema and limits.
    plus the policy in the run summary. Candidate simulation against that
    testbench still gates promotion, and a supplied trusted or independent
    testbench, immutable inputs, budgets and interface checks are unchanged.
+   Benchmark-only grader compile check (`grader_rejects_vendor_attribute`):
+   `RunConfig.grader_iverilog` / `run.py build|optimize --grader-iverilog`
+   is unset by default. When set, each `xvlog_check` stage that passes also
+   compiles the same design files with Icarus and the VerilogEval grader's
+   flags inside the same journaled stage. A rejection is a DESIGN error for
+   the caller's existing repair loop (bounded by `max_fix_attempts`); a launch
+   failure or timeout is INFRA. Testbench compiles inside `xsim_run` are not
+   checked, and no gate is relaxed.
 8. Reset/X discipline — reset per spec + 2-cycle settle before comparing.
    A requested interface without a reset port is typed as `"reset": null`
    (never an invented rst port); a clocked resetless module declares

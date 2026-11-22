@@ -65,6 +65,12 @@ def main(argv=None):
                            "skip_generated_tb_mutations: experiment only, skip bug-injection qualification "
                            "of generated module testbenches (recorded; simulation still gates)")
 
+    # Benchmark-only (grader_rejects_vendor_attribute): off unless a path is given.
+    flow.add_argument("--grader-iverilog", default=None, metavar="PATH",
+                      help="also compile design RTL with this Icarus Verilog executable and the "
+                           "VerilogEval grader's flags at every RTL compile check; a rejection goes "
+                           "to the bounded repair loop (default: off)")
+
     p_opt = sub.add_parser("optimize", parents=[common, flow])
     p_opt.add_argument("--design", required=True, type=Path)
     p_opt.add_argument("--tb", type=Path, default=None)
@@ -148,14 +154,16 @@ def main(argv=None):
         cfg = RunConfig(mode="optimize", top_module=a.top, design_path=a.design,
                         testbench_path=a.tb, implementation=a.implementation,
                         synthesis_timeout_minutes=a.synthesis_timeout_minutes,
-                        verification_policy=a.verification_policy, **kw)
+                        verification_policy=a.verification_policy,
+                        grader_iverilog=a.grader_iverilog, **kw)
         orch = Orchestrator(cfg, run_dir=a.output_dir.resolve() if hasattr(a, "output_dir") else None)
     elif a.cmd == "build":
         cfg = RunConfig(mode="build", spec_path=a.spec, testbench_path=a.tb,
                         top_module=a.top, generate_golden=a.generate_golden,
                         implementation=a.implementation,
                         synthesis_timeout_minutes=a.synthesis_timeout_minutes,
-                        verification_policy=a.verification_policy, **kw)
+                        verification_policy=a.verification_policy,
+                        grader_iverilog=a.grader_iverilog, **kw)
         orch = Orchestrator(cfg, run_dir=a.output_dir.resolve() if hasattr(a, "output_dir") else None)
 
     try:

@@ -195,6 +195,37 @@ def xvlog_check(files: list[Path], cfg: RunConfig, work_dir: Path,
     return False, _error_lines(out), kind
 
 
+# ---------------- Optional: evaluation-simulator compile ----------------
+
+# grader_rejects_vendor_attribute: the flags of benchmark.verilogeval's official
+# compile (COMPILE_FLAGS; a test keeps the two equal). Only design RTL is
+# compiled here, never a test or reference.
+GRADER_COMPILE_FLAGS = ("-Wall", "-Winfloop", "-Wno-timescale", "-g2012")
+GRADER_REJECTION = ("The evaluation simulator (Icarus Verilog, iverilog -g2012) rejected this RTL "
+                    "although Vivado accepted it. Keep the interface and behavior and use only "
+                    "constructs both tools accept. Icarus output:\n")
+
+
+def icarus_check(files: list[Path], iverilog: str, work_dir: Path,
+                 timeout: float = 60) -> tuple[bool, str, FailureKind]:
+    """Compile design RTL with the grader's Icarus flags; output goes to a scratch image.
+
+    A launch failure or timeout is infrastructure, never a design verdict.
+    """
+    work_dir = Path(work_dir)
+    image = work_dir / "icarus_check.vvp"
+    cmd = [iverilog, *GRADER_COMPILE_FLAGS, "-o", str(image), *[str(f) for f in files]]
+    rc, out = _run(cmd, work_dir, timeout, work_dir / "icarus_check.log")
+    launch_failed = rc in (126, 127) and out.startswith(f"{iverilog} ")
+    timed_out = rc == 124 and f"timed out after {timeout}s" in out
+    if launch_failed or timed_out:
+        return False, f"icarus check could not complete (exit {rc}): " + out.strip()[:1000], FailureKind.INFRA
+    if rc == 0:
+        return True, "", FailureKind.DESIGN
+    lines = [line.rstrip() for line in out.splitlines() if line.strip()]
+    return False, GRADER_REJECTION + "\n".join(lines[:20])[:2000], FailureKind.DESIGN
+
+
 # ---------------- Rung 3/4: xelab + xsim batch simulation ----------------
 
 def xsim_run(design_files: list[Path], tb_file: Path, tb_top: str,

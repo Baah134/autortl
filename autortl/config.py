@@ -50,6 +50,11 @@ class RunConfig:
     # Experiment-only ablation: skip_generated_tb_mutations skips bug-injection
     # qualification of generated module testbenches; never inferred from other flags.
     verification_policy: str = "full"
+    # grader_rejects_vendor_attribute: benchmark-only. When set, every xvlog_check
+    # of design RTL also compiles it with this Icarus Verilog executable and the
+    # evaluation grader's flags; a rejection is a design error for the existing
+    # bounded repair loop. None (the default) runs no extra compiler.
+    grader_iverilog: str | None = None
 
     def validate(self) -> None:
         if self.mode not in ("build", "optimize"):
@@ -91,6 +96,9 @@ class RunConfig:
             raise ValueError("model must be a plain model alias (letters, digits, . _ : / -)")
         if self.model == "default":
             raise ValueError("model 'default' would be the unpinned CLI default; omit --model instead")
+        if self.grader_iverilog is not None and (not isinstance(self.grader_iverilog, str)
+                                                 or not self.grader_iverilog.strip()):
+            raise ValueError("grader_iverilog must be a nonempty executable path or None")
         if self.work_dir is None:
             raise ValueError("work_dir is required")
         for name in ("target_part", "vivado_bin", "xvlog_bin", "xelab_bin", "xsim_bin"):
@@ -124,6 +132,8 @@ class RunConfig:
         data.setdefault("synthesis_timeout_minutes", 15.0)
         # Runs saved before the arm B seam qualified every generated testbench.
         data.setdefault("verification_policy", "full")
+        # Runs saved before the benchmark compile check ran no extra compiler.
+        data.setdefault("grader_iverilog", None)
         allowed = {item.name for item in fields(cls)}
         if set(data) - allowed:
             raise ValueError("unknown run config fields: " + ", ".join(sorted(set(data) - allowed)))

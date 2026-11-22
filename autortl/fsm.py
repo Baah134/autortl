@@ -424,6 +424,12 @@ class Orchestrator:
             started = awake_seconds()
             try:
                 result = getattr(vivado, name)(*args, **kwargs)
+                if name == "xvlog_check" and result[0] and self.cfg.grader_iverilog:
+                    # grader_rejects_vendor_attribute: the same design files must also
+                    # compile under the benchmark grader; a rejection is a design error
+                    # for the caller's existing bounded repair loop.
+                    result = vivado.icarus_check(args[0], self.cfg.grader_iverilog, work,
+                                                 timeout=min(60, kwargs.get("timeout", 60)))
                 if name == "xsim_run" and result[0]:
                     # Commit verified inputs before the journal snapshots this stage.
                     if _verification_inputs(args[0], args[1]) != inputs_before:
