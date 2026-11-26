@@ -116,6 +116,18 @@ the harness's 180-second call limit. Flash-low used no tools there and took
   (`agy_endpoint_uses_tools`). Any new Flash run needs a new registration that
   uses the guarded bridge and a model variant that fits the call limit.
 
+## 2026-11-25 — flash-03: closed-book Flash-low single call, registered before any cell
+
+A second model on arm A, done properly this time: Gemini 3.8 Flash-low through
+the guarded bridge (tool-using replies refused and counted as failures), the
+same 40 tasks and 120 single-call cells as `flash-01`, runtime `1c341f798`.
+Registration: `evidence/2026-11-25/flash-03-registration-01`. The comparison
+with `final-02` arm A is descriptive (different model, different week), never
+a harness claim. The run starts only when the host has headroom: on the loaded
+host a trivial Flash-low call took 105 s against the 180 s limit, so timeouts
+would measure the machine, not the model. Harness arms with Flash need their
+own registration later, when Vivado time is free.
+
 ## Continuing contracts
 
 Use command-line Vivado. Specifications and independent verification control
