@@ -105,6 +105,10 @@ of eventual Verilog each; split anything bigger.
 Each example holds its inputs constant for after_cycles clock steps, starting
 from the reset state, then checks the expected outputs; every inputs and
 expected value is a single integer, never a per-cycle list.
+With fixed_latency 0 an example checks the outputs before the edge of its last
+step, so a registered output that changes on the k-th rising edge first shows
+its new value with after_cycles k+1 (with after_cycles k it still shows the old
+value); with latency 1 it shows at after_cycles k.
 Reset follows the requested interface exactly. NEVER add a reset port (rst,
 reset, rst_n or any other) that the request's interface does not have, and
 never drop one it has. When the requested interface has a clock but no reset

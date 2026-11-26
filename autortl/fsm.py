@@ -805,8 +805,11 @@ class Orchestrator:
         previous_source = ""
         previous_source_sha256 = ""
         tb = None
-        # Per rejected attempt: its example-mismatch lines, or None for any other error
-        # (oracle_example_dispute_ends_build).
+        # Per rejected attempt that ran the examples to completion: its example-mismatch
+        # lines, or None for any other error (oracle_example_dispute_ends_build). An attempt
+        # that fails to load or crashes before producing outputs is no evidence about the
+        # spec and is left out, so it cannot break a dispute pair
+        # (dispute_pair_broken_by_malformed_oracle, release re-hold tier 1 debouncer_build).
         mismatch_attempts = []
         qualified = False
         for attempt in range(1, ORACLE_ATTEMPTS + 1):
@@ -821,9 +824,11 @@ class Orchestrator:
             golden_path.write_text(golden_src, encoding="utf-8")
             digest = file_sha256(golden_path)
             mismatches = None
+            ran = False
             try:
                 gm = GoldenModel(golden_path)
                 errors = qualify_against_examples(gm, m)
+                ran = True
                 if errors:
                     if only_example_mismatches(errors, m):
                         mismatches = [line[:300] for line in errors[:10]]
@@ -837,10 +842,11 @@ class Orchestrator:
                 feedback = f"{type(exc).__name__}: {str(exc)[:2000]}"
                 previous_source = golden_src
                 previous_source_sha256 = digest
-                mismatch_attempts.append(mismatches)
+                if ran:
+                    mismatch_attempts.append(mismatches)
                 atomic_write_text(mdir / f"golden_attempt_{attempt}.log", json.dumps({
                     "attempt": attempt, "source_sha256": digest, "status": "oracle_rejected",
-                    "example_mismatch_only": mismatches is not None,
+                    "example_mismatch_only": mismatches is not None, "ran_examples": ran,
                     "diagnostic": feedback}, indent=2))
                 # A planner-written spec whose last two oracles both disagree only with
                 # its examples goes back to the planner at once; a third oracle would be

@@ -130,6 +130,21 @@ def test_non_mismatch_oracle_failure_is_not_a_dispute(tmp_path, monkeypatch, ora
     synthesis.assert_not_called()
 
 
+@pytest.mark.parametrize("between", ["def init(:", SANDBOX])
+def test_a_malformed_oracle_between_two_mismatches_does_not_break_the_dispute(tmp_path, monkeypatch, between):
+    # dispute_pair_broken_by_malformed_oracle (release re-hold tier 1 debouncer_build): an
+    # attempt that never ran the examples is no evidence about the spec.
+    o, planner, golden, synthesis = generated_oracle_build(
+        tmp_path, monkeypatch, [disputed(), GOOD], [ORACLE, between, ORACLE, ORACLE])
+    result = o.run()
+    assert planner.call_count == 2 and "Repair attempt 1" in planner.call_args_list[1].kwargs["feedback"]
+    assert checkpoint(o)["spec_disputes"][0]["attempts"] == [[MISMATCH], [MISMATCH]]
+    logs = [json.loads(p.read_text(encoding="utf-8"))
+            for p in sorted((o.state.run_dir / "modules").rglob("golden_attempt_*.log"))]
+    assert [log["ran_examples"] for log in logs] == [True, False, True]
+    assert result["status"] == "done"
+
+
 def test_lint_repairs_and_disputes_share_one_counter(tmp_path, monkeypatch):
     # max_fix_attempts is 1: the lint repair spends it, so the dispute cannot replan.
     o, planner, golden, synthesis = generated_oracle_build(

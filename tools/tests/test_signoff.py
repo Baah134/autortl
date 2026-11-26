@@ -150,3 +150,61 @@ def test_an_infrastructure_no_verdict_is_retried(tmp_path, monkeypatch):
     monkeypatch.setattr(signoff, "archive", lambda name, dest, **k: dest.mkdir(parents=True) or 1)
     assert signoff.main(["--tiers", "0", "--date", "d", "--prefix", "p"]) == 0
     assert calls == ["p-t0-01", "p-t0-02"]
+
+
+def _infra_then(tmp_path, monkeypatch, infra_runs):
+    """A gate that is blocked by infrastructure for the first infra_runs calls, then holds."""
+    monkeypatch.setattr(signoff, "ROOT", tmp_path)
+    (tmp_path / "logs").mkdir()
+    history = tmp_path / "results.jsonl"
+    monkeypatch.setattr(signoff, "HISTORY", history)
+    write_history(history, [])
+    calls = []
+    def run(cmd, **kwargs):
+        calls.append(cmd[cmd.index("--name") + 1])
+        if len(calls) <= infra_runs:
+            return subprocess.CompletedProcess(cmd, 3)  # quota: no verdict, no record
+        write_history(history, [{"tier": 0, "full_tier": True, "qualified": True, "held": True}])
+        return subprocess.CompletedProcess(cmd, 0)
+    monkeypatch.setattr(signoff.subprocess, "run", run)
+    return calls
+
+
+def test_infrastructure_no_verdicts_never_use_up_the_campaign_cap(tmp_path, monkeypatch):
+    # signoff_cap_counts_infra_no_verdicts (release re-hold, November 26): Codex quota stops
+    # could otherwise end a tier as "not held" on infrastructure alone.
+    calls = _infra_then(tmp_path, monkeypatch, infra_runs=3)
+    marks = {}
+    def fake_archive(name, dest, verdict=None, **kwargs):
+        dest.mkdir(parents=True)
+        marks[name] = verdict
+        return 1
+    monkeypatch.setattr(signoff, "archive", fake_archive)
+    assert signoff.main(["--tiers", "0", "--date", "d", "--prefix", "p", "--max-campaigns", "1"]) == 0
+    assert calls == ["p-t0-01", "p-t0-02", "p-t0-03", "p-t0-04"]
+    assert marks == {"p-t0-01": False, "p-t0-02": False, "p-t0-03": False, "p-t0-04": True}
+
+
+def test_too_many_no_verdicts_end_with_no_verdict_not_not_held(tmp_path, monkeypatch):
+    calls = _infra_then(tmp_path, monkeypatch, infra_runs=99)
+    monkeypatch.setattr(signoff, "archive", lambda name, dest, **k: dest.mkdir(parents=True) or 1)
+    assert signoff.main(["--tiers", "0", "1", "--date", "d", "--prefix", "p", "--max-no-verdicts", "2"]) == 3
+    assert calls == ["p-t0-01", "p-t0-02"]
+
+
+def test_resume_reads_the_verdict_mark_and_old_archives_count_as_verdicts(tmp_path):
+    old, infra, real = (tmp_path / n for n in ("old", "infra", "real"))
+    for d in (old, infra, real):
+        d.mkdir()
+    (infra / signoff.VERDICT_MARK).write_text('{"verdict": false}\n', encoding="utf-8")
+    (real / signoff.VERDICT_MARK).write_text('{"verdict": true}\n', encoding="utf-8")
+    assert signoff.archived_had_verdict(old) and signoff.archived_had_verdict(real)
+    assert not signoff.archived_had_verdict(infra)
+
+
+def test_archive_writes_the_verdict_mark_inside_the_manifest(tmp_path):
+    (tmp_path / "logs").mkdir()
+    dest = tmp_path / "evidence" / "c"
+    signoff.archive("c", dest, root=tmp_path, verdict=False)
+    files = json.loads((dest / "archive-manifest.json").read_text(encoding="utf-8"))["files"]
+    assert signoff.VERDICT_MARK in files and not signoff.archived_had_verdict(dest)
