@@ -28,6 +28,15 @@ prose and fail every arm (`official_reference_contradicts_request`, 5 of C's
 11 false acceptances); Prob027 full#2 is a correct design the Icarus grader
 rejects for a Vivado attribute (`grader_rejects_vendor_attribute`).
 
+**flash-03 done (November 26):** closed-book Gemini 3.8 Flash-low single call
+on the final-02 tasks, registered before any cell (re-frozen once, before any
+cell, after the agy CLI update lingered ~100 s after each result; bridge fixed,
+`agy_exits_late_after_result`). 103/120 (85.8%, CI 75.8 to 94.2), no
+infrastructure stops; paired with Codex arm A -8.3 pp (CI -15.8 to -1.7),
+descriptive. Fails Prob066/Prob139 like the harness planner did. Evidence
+`evidence/2026-11-26/flash-03-results`. Pinned worktree
+`.claude/worktrees/flash03-runtime` can be removed.
+
 **Merged:** `c6-dedupe` (with bench-fixes) into this branch (`1d841a53e`).
 Suites green on the merge: 2,384 harness, 325 tooling, ruff clean, evidence
 audit PASS. `docs/WALKTHROUGH.md` line references replaced by symbol names.

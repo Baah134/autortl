@@ -79,6 +79,10 @@ Failure review (after grading; the registered verdict stands unchanged):
   sampled one cycle early), and the oracle, generated testbench and RTL all
   followed it, so the wrong designs were accepted. Arm A read the prose
   directly and passed. Taxonomy: `planner_spec_error_shared_by_oracle_and_rtl`.
+  A later closed-book single call with Gemini 3.8 Flash-low (`flash-03`,
+  85.8%) failed both tasks with the same mismatch counts, so these readings
+  are ambiguities of the task text, not errors only the harness makes
+  ([results](../evidence/2026-11-26/flash-03-results/README.md)).
 - Prob131 (multi-module plan without a trusted testbench) and Prob153
   (golden-model observation phase) ended without a design in most harness
   trials; both are fixed and tested since, but not counted here.
