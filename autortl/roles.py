@@ -148,11 +148,24 @@ class Planner:
                                        target_freq_mhz=cfg.target_freq_mhz,
                                        objective=cfg.objective)
         if feedback:
-            p += ("\n\nYour previous design_spec failed a harness check (structural lint, or reference "
-                  "models that disagree with its examples). Fix exactly these errors and output the "
-                  "complete corrected JSON only:\n" + str(feedback)[:8000])
+            p += ("\n\nYour previous design_spec failed a harness check (structural lint, reference "
+                  "models that disagree with its examples, or an independent reading of the request "
+                  "that disagrees with its reference model). Address exactly this feedback and output "
+                  "the complete JSON only:\n" + str(feedback)[:8000])
         return _ask(self, "planner", evidence_prompt(self, p), system=role_system(prompts.PLANNER_SYSTEM),
                    budget=budget)
+
+    def request_traces(self, intent: str, interface: str, budget, feedback: str = "") -> str:
+        """Independent request traces (planner_spec_error_shared_by_oracle_and_rtl).
+
+        Sees the original request and the port list only: never the planner's spec,
+        behavior text, latency, examples or the run's harness facts.
+        """
+        p = prompts.REQUEST_TRACES_PROMPT.format(intent=intent, interface=interface)
+        if feedback:
+            p += ("\n\nYour previous answer could not be used. Fix exactly these problems and output "
+                  "the complete JSON only:\n" + str(feedback)[:3000])
+        return _ask(self, "planner", p, system=role_system(prompts.TRACE_WRITER_SYSTEM), budget=budget)
 
     def propose_contract(self, mode, cfg, baseline: VivadoMetrics,
                          design_context: str, budget) -> str:

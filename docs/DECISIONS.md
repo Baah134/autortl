@@ -116,6 +116,43 @@ the harness's 180-second call limit. Flash-low used no tools there and took
   (`agy_endpoint_uses_tools`). Any new Flash run needs a new registration that
   uses the guarded bridge and a model variant that fits the call limit.
 
+## 2026-11-21 — Request cross-check: built behind a switch, off by default
+
+Taxonomy `planner_spec_error_shared_by_oracle_and_rtl` caused most of the
+final-02 gap between the harness and a single model call. v1.1 adds
+`spec_cross_check` (DESIGN.md "Request cross-check"): an independent role call
+writes cycle traces from the original request and the port list only, the
+harness runs them through the planner spec's qualified golden model, and a
+disagreement replans once from the shared `max_fix_attempts` counter.
+
+- **Default `off`.** ROADMAP V1 already fixed the rule: off until measured, and
+  the default changes only if false acceptances fall without blocking correct
+  designs. The check is untested live; every final-02 task counts as tuned, so
+  its effect can only be measured on fresh tasks, and the trace writer can
+  misread the request too. `request_traces` is one flag away for that
+  measurement, and both settings are recorded as benchmark arms.
+- **Traces, not "examples".** The spec's examples hold constant inputs from
+  reset, which cannot express the observed failures (a reset that should not
+  clear an edge register; an input sampled one cycle early). Short traces with
+  per-row inputs, written in physical cycles independent of the planner's
+  latency, can. Comparing them in the generated testbench's own observation
+  phase makes a latency misreading visible.
+- **Second derivation reaches only the oracle.** It runs after oracle
+  qualification and before RTL generation, so a disagreement costs no
+  generator calls, and nothing derived from the trace writer enters the spec
+  except through the planner.
+- **Never fails a design itself.** A disagreement makes the planner re-read the
+  quoted request once; the planner may keep its spec. A second disagreement is
+  recorded (`disagreement_kept`) and the build continues. Turning an unverified
+  second reading into a gate would trade false acceptances for false
+  rejections of correct designs; whether to gate is a later, measured decision.
+- **Interface is shared.** The writer sees the planner's port list (names are
+  needed to write traces). The behavioral reading stays independent; an
+  interface misreading is outside this check.
+- **Benchmark wiring is separate.** `benchmark/pilot.py` (edited by another
+  session) does not set the field, so registered arms keep v1.0.0 behaviour
+  until a new registration names it.
+
 ## 2026-11-25 — flash-03: closed-book Flash-low single call, registered before any cell
 
 A second model on arm A, done properly this time: Gemini 3.8 Flash-low through

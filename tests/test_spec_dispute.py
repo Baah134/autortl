@@ -33,6 +33,10 @@ def generated_oracle_build(tmp_path, monkeypatch, planner_outputs, oracle=ORACLE
     o, synthesis = create(tmp_path, monkeypatch)
     prose(tmp_path, o)
     o.cfg.testbench_path = None
+    # These tests pin the oracle-dispute loop alone, whatever the default policy;
+    # tests/test_spec_cross_check.py covers the request cross-check
+    # (planner_spec_error_shared_by_oracle_and_rtl) and both together.
+    o.cfg.spec_cross_check = "off"
     planner = Mock(side_effect=planner_outputs)
     monkeypatch.setattr(o.planner, "make_spec", planner)
     golden = Mock(side_effect=oracle) if isinstance(oracle, list) else Mock(return_value=oracle)
