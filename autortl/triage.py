@@ -35,9 +35,10 @@ _INFRA_SIGNATURES = [
     r"|\blicense\b[^\n]*(?:not (?:found|available|valid)|expired|denied|unavailable|checkout failed)",
     r"cannot (?:open|create|write).*\.(?:pb|wdb|jou|log)",  # file locks (xsim holds handles)
     # xelab_c_compile_failure_classified_design: xelab's own C compile of the
-    # generated snapshot failed on the host after the Verilog elaborated; a rerun
-    # of the same sources compiles. The 43-3915 "fatal error" line that follows
-    # is a consequence and alone decides nothing.
+    # generated snapshot failed on the host after the Verilog elaborated (seen
+    # when its object path reached Windows MAX_PATH; vivado.xsim_run now checks
+    # that first). The 43-3915 "fatal error" line that follows is a consequence
+    # and alone decides nothing.
     r"\[XSIM\s+43-3409\]|Failed to compile generated C file",
     r"Permission denied",
     r"used by another process",
