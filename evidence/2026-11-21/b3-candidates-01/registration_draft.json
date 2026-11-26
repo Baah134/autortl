@@ -1,0 +1,210 @@
+{
+ "status": "DRAFT - not frozen; awaiting the owner approval. No trial may run until frozen.",
+ "experiment": "ROADMAP B3 optimisation benchmark",
+ "drafted": "2026-11-21, completed 2026-11-25",
+ "question": "On designs functionally correct in both arms, does the harness with optimisation produce smaller or faster routed designs than a single model call?",
+ "arms": {
+  "A": {
+   "cell_arm": "single_call",
+   "prompt": "task prompt unchanged, as in final-02",
+   "budget": {
+    "model_calls": 1,
+    "tool_seconds": 1.0,
+    "wall_seconds": 2100
+   }
+  },
+  "C-opt": {
+   "cell_arm": "full",
+   "command": "run.py build",
+   "settings": {
+    "iterations": 5,
+    "best_of_n": 4,
+    "implementation": "out_of_context",
+    "objective": "minimize_luts",
+    "target_freq_mhz": 100.0
+   },
+   "budget": {
+    "model_calls": 64,
+    "tool_seconds": 7200.0,
+    "wall_seconds": 10800
+   }
+  }
+ },
+ "trials": 3,
+ "model": "OWNER TO PIN (--model, same in both arms)",
+ "ppa_flow": {
+  "implementation": "out_of_context",
+  "part": "xc7a35tcpg236-1",
+  "period_ns": 10.0,
+  "template_sha256": "e615255b99d0c19fdcd48b2bdabf8cfd7f5c91e505a253669907862df0234e97",
+  "vivado": "2025.2",
+  "measured_by": "benchmark/ppa.py",
+  "reported_by": "benchmark/ppa_report.py"
+ },
+ "decision_rule": "docs/DECISIONS.md, DRAFT B3 entry (benchmark/ppa_report.decide)",
+ "tasks": {
+  "verilogeval": {
+   "dataset_commit": "c498220d0a52248f8e3fdffe279075215bde2da6",
+   "rule": "arm A and arm C each pass at least one of three final-02 trials, and the official reference has at least 20 LUTs after out-of-context synthesis and routing",
+   "tasks": [
+    {
+     "task": "Prob018_mux256to1",
+     "ref_sha256": "37d01a6fa065caf1a85812663ece9ef99dbf4b403b173da9992fae65f9414f4d",
+     "reference_lut": 68
+    },
+    {
+     "task": "Prob043_vector5",
+     "ref_sha256": "c87441bb7c8161e84f79972e59c395c2c3f67c604de4572d212f835b3765af98",
+     "reference_lut": 20
+    },
+    {
+     "task": "Prob055_conditional",
+     "ref_sha256": "5fcad522775af472dc39e81d214689a092bbcc08b1ab089cbfe39c9086e0c622",
+     "reference_lut": 36
+    },
+    {
+     "task": "Prob097_mux9to1v",
+     "ref_sha256": "1d3abee192ac3e21e9279edd49b2c6fb932bfcf819aef79c6fb05718373aa963",
+     "reference_lut": 49
+    },
+    {
+     "task": "Prob108_rule90",
+     "ref_sha256": "68731f5d6ef5b5a7d8007c600ab2750b477aa0a270f16b59dc3507ae4d29817b",
+     "reference_lut": 510
+    },
+    {
+     "task": "Prob115_shift18",
+     "ref_sha256": "a81fa17a7005bf6c9b73277fa116021804ec6fd5e49f04ea096f9b1e35f6cd73",
+     "reference_lut": 97
+    },
+    {
+     "task": "Prob144_conwaylife",
+     "ref_sha256": "d3fd519e2c2e1904ac453e41c59f1c381aeb158596ae8a3f8d85effe441d2b2b",
+     "reference_lut": 1018
+    },
+    {
+     "task": "Prob153_gshare",
+     "ref_sha256": "b0aac9a82412e50ff2e33bc356f2dc2eacda7e5c212af7bb24684be20951eedf",
+     "reference_lut": 560
+    }
+   ]
+  },
+  "rtllm": {
+   "repository": "https://github.com/hkust-zhiyao/RTLLM",
+   "commit": "51ed553d0ffd32797a1a0a13e051656bf302c81f",
+   "licence": "MIT",
+   "rule": "pass own test, one clock port named clk or none, reference >= 20 LUTs; the 12 largest by reference LUTs (at least 8)",
+   "tasks": [
+    {
+     "design": "Arithmetic/Divider/div_16bit",
+     "top": "div_16bit",
+     "ref_sha256": "689db4df93bcd5f6b6a5c4a11d58b374e7ff9bbd32cf484d42c1349cf2e186c1",
+     "testbench_sha256": "6fb3bcb03463c374e7c9bde3966bbda08cf247e5b6b1ccb791759e402c100dc9",
+     "description_sha256": "0db390f2a16b39abc626065d7064971da18fb0f8c54671071847eac1c2f5b0ad",
+     "reference_lut": 790
+    },
+    {
+     "design": "Miscellaneous/RISC-V/alu",
+     "top": "alu",
+     "ref_sha256": "54cfb2b2a9db2318aa3610c29a61723cda3684a4798d2cc04820f6f5d95fed6e",
+     "testbench_sha256": "adb9ec60ed1196959e14de8376c7cc4c709177da97ade183553635c33a37af71",
+     "description_sha256": "a50f6a95927b58f0daadfde5d6d4da70091031ba26f2cb39dfa9f74cc1c09805",
+     "reference_lut": 685
+    },
+    {
+     "design": "Arithmetic/Other/fixed_point_adder",
+     "top": "fixed_point_adder",
+     "ref_sha256": "22ceb88330804cfb3e71503dbabf231f1b79e18c38bf86ffdd22902f959c23b0",
+     "testbench_sha256": "0363e474c124a7b7cd518b973d091add026ea61a33b20eb3add707e558f9c625",
+     "description_sha256": "f7f26070cd3b7222ff20d35e253806ece164210cb77b9fb4b742cce61abcf9c4",
+     "reference_lut": 152
+    },
+    {
+     "design": "Arithmetic/Other/fixed_point_substractor",
+     "top": "fixed_point_subtractor",
+     "ref_sha256": "548bf3a85f2023a2dc0975f2ea3e35eda37edc0a6cf983035761739ee90592c4",
+     "testbench_sha256": "967d4b197101211e6c94b4024faceb3b2a3f24e5c43789fb065c13281108642e",
+     "description_sha256": "9456a3646becc0999e8316c808d9f1887223d635e5e36803462a7ff6dff7fbef",
+     "reference_lut": 118
+    },
+    {
+     "design": "Arithmetic/Multiplier/multi_16bit",
+     "top": "multi_16bit",
+     "ref_sha256": "7cdf38dd95a7a38582679bc02f844bdd9f5a7d61441d9db554a157fa2353543e",
+     "testbench_sha256": "80b1fc3113cf6237aff2793083f5dec4a1704373903b4dc95f632d07a32226a3",
+     "description_sha256": "8c34001f191fb846abc8fcf877f08a3d5a452e62137985f19b49c4c326da28be",
+     "reference_lut": 95
+    },
+    {
+     "design": "Arithmetic/Adder/adder_32bit",
+     "top": "adder_32bit",
+     "ref_sha256": "09e516fe8a678b350169447a7071ea063178c10bb7c0de81e22477bb1115c48c",
+     "testbench_sha256": "acc53536661a63eba6267decd86487fc8171555006a0801028217884b3c37c08",
+     "description_sha256": "238adedfbffe348b8d0dcf0fc82b4a1d312ecac11ed7c9168e3ec8db90fa7013",
+     "reference_lut": 77
+    },
+    {
+     "design": "Arithmetic/Multiplier/multi_pipe_8bit",
+     "top": "multi_pipe_8bit",
+     "ref_sha256": "6512310d7889ddb59c992ef6c92766c3a400333fe0f51b5e748a05a41a2357ef",
+     "testbench_sha256": "2465c907fba0a7717e406afef124b7a21907fb6ab4ccf574976f6eba8911aa02",
+     "description_sha256": "d785da51d214c7d69418889a1dabd84ef039829ff2787683c7a5a0766efdf70b",
+     "reference_lut": 74
+    },
+    {
+     "design": "Arithmetic/Multiplier/multi_booth_8bit",
+     "top": "multi_booth_8bit",
+     "ref_sha256": "ec44eb55d46418df5aceff041a25479e4e3c7945dbcf098a320d96a3ca663c72",
+     "testbench_sha256": "1eb680425ce277fcbbd8e92be4085484477b247e93366eef8b5e909584694392",
+     "description_sha256": "a88e367acba7191a5ea31908faa0f24b2de6a79b70d088a0895d41c8d58cf384",
+     "reference_lut": 68
+    },
+    {
+     "design": "Arithmetic/Substractor/sub_64bit",
+     "top": "sub_64bit",
+     "ref_sha256": "17710f6267a1523d10103214f29894bbcbc2b2af94225c8338b22eed162fe7a8",
+     "testbench_sha256": "fabac9dcec033d92fdcdab9a9d3495c418c90cb5c84274dce4a8c3b81634ba7f",
+     "description_sha256": "c0300a0009e2aac774705ddf84b2c23229e8d0371788807949c07ca9b7b6683a",
+     "reference_lut": 65
+    },
+    {
+     "design": "Miscellaneous/RISC-V/pe",
+     "top": "pe",
+     "ref_sha256": "f4c2ad613bd5e8c69509b00fcff91c637c0962604f207982cf7f53485e20a39d",
+     "testbench_sha256": "608b9c8548f0089210316d2fdbf6e6fa0893df30974d297d771a0fc57d90d9e8",
+     "description_sha256": "e94e63cb851b4ef7c54ed0a245425ae52a1fe5b84ad201b13045b3b9eb5015ad",
+     "reference_lut": 47
+    },
+    {
+     "design": "Control/Counter/up_down_counter",
+     "top": "up_down_counter",
+     "ref_sha256": "70206ee2a1f35f1c72479b2c1041b9a6e69b26ebeecd06e3974b1030d42af4cf",
+     "testbench_sha256": "0ae9ee28c5d02ef26caf2834ef378c58849b5cdbaabaa9515e93712802fdcebd",
+     "description_sha256": "4bec727b7f5254b39cce38ca3a991ec6dc2f3a420fe408e75206d004d01b8b5b",
+     "reference_lut": 37
+    },
+    {
+     "design": "Miscellaneous/RISC-V/RAM",
+     "top": "RAM",
+     "ref_sha256": "7003afdb8bb6daa53d288a47818d7ecc2cbbba90a43e3f645dcdac50ef3335ce",
+     "testbench_sha256": "7bf2b2180c7a48d39d868cc6219b0bd54e30cb3a57f189f37a12a428ec5f6cd9",
+     "description_sha256": "bcfb9d8d9d465777f4fd30281c36464ac3703ca88970fa3de6c2bcf99fcbd2ae",
+     "reference_lut": 34
+    }
+   ]
+  }
+ },
+ "prerequisites_before_freeze": [
+  "per-cell arm settings in manifest and campaign (pilot.py FULL_SETTINGS is iterations 1, best-of-1)",
+  "benchmark/rtllm.py adapter: public design_description.txt, private testbench/reference/data, top from testbench, Icarus pass string",
+  "benchmark.finish runs ppa measure and ppa_report render",
+  "two-task C-opt pilot to confirm budgets",
+  "decide how PPA treats a passing design whose routed timing is NA (inferred latches; ppa.py refuses today)"
+ ],
+ "open_decisions": [
+  "task set",
+  "model name",
+  "arm A prompt hint or not",
+  "decision-rule thresholds"
+ ]
+}

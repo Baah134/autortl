@@ -128,7 +128,7 @@ criteria; a task is not done until all are met and committed.
   B2 is now: quote `claim.json` from B1, and if it shows a recurring planner
   failure, open the follow-up (former C4). No post-hoc task removal.
 
-**B3. Optimisation benchmark (where the harness should differ)** — `todo`
+**B3. Optimisation benchmark (where the harness should differ)** — `doing` (machinery and DRAFT registration ready, awaiting the owner: `docs/B3_REGISTRATION_DRAFT.md`)
 - Question: on designs that are functionally correct in both arms, does the
   harness produce smaller or faster routed designs than a single call?
 - Design: take tasks from B1 where arm A and arm C both pass in at least one
