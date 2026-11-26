@@ -37,6 +37,18 @@ and `benchmark/pilot.py` (arm runners, grading, CLI). Standard library only.
 | `full` | `run.py build --spec <prompt> --top TopModule --generate-golden` with declared budgets in a fresh directory | DONE winner (plus verified children for frozen_children builds) sealed `accepted`/`accepted_incumbent`; otherwise missing |
 | `ablation` | Same as `full` plus `--verification-policy skip_generated_tb_mutations` (skips only generated-testbench mutation qualification; recorded in events and summary) | Same as `full` |
 
+Grader compile check (opt-in, `grader_rejects_vendor_attribute`; off in
+final-02 and earlier). `python -m benchmark.pilot run --grader-check` or
+`python -m benchmark.campaign --grader-check` (Icarus from `--iverilog`,
+`AUTORTL_IVERILOG` or PATH, resolved before any cell runs) passes
+`--grader-iverilog <abs path>` to the harness arms' `run.py build`. Every RTL
+compile check then also compiles the candidate's own RTL with the grader's
+Icarus flags, never the official test or reference; a rejection goes back to
+the generator through the existing repair loop within `max_fix_attempts`, and
+a compiler launch failure or timeout is infrastructure. `single_call` is
+unchanged. The flag is in each cell's recorded `accounting.command`; a new
+registration must state whether its harness arms use it.
+
 Both arms receive the same public prompt bytes, checked against the frozen
 manifest. The official `_test.sv`/`_ref.sv` are private manifest files; they
 are never passed as `--tb` or shown to a model.

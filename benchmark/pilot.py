@@ -16,6 +16,7 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import shutil
 import subprocess
 import sys
 import time
@@ -142,15 +143,33 @@ def vivado_tools() -> dict:
     return found
 
 
+def grader_compiler(iverilog: str | None = None) -> str:
+    """Absolute Icarus path for the pre-seal grader compile check.
+
+    Resolved like grading (explicit path, else AUTORTL_IVERILOG, else PATH); an
+    unresolved compiler is an infrastructure stop before any run.
+    """
+    name = ve.tool_paths(iverilog)[0]
+    found = shutil.which(name)
+    if not found:
+        raise ve.GraderUnavailable(f"Icarus compiler not found for the grader compile check: {name}")
+    return str(Path(found).resolve())
+
+
 def full_command(request: Path, run_dir: Path, budget: dict, *, python: str = sys.executable,
                  model: str | None = None, best_of_n: int | None = FULL_SETTINGS["best_of_n"],
                  iterations: int | None = FULL_SETTINGS["iterations"],
                  implementation: str | None = FULL_SETTINGS["implementation"],
-                 tools: dict | None = None, verification_policy: str = "full") -> list[str]:
+                 tools: dict | None = None, verification_policy: str = "full",
+                 grader_iverilog: str | None = None) -> list[str]:
     """`run.py build` from the public prompt alone; never an official --tb.
 
     Arm B passes verification_policy skip_generated_tb_mutations, which skips only
     the generated testbench's mutation qualification (ablation_policy_seam_absent).
+    grader_iverilog (opt-in, grader_rejects_vendor_attribute) makes every RTL compile
+    check also compile with the grader's Icarus flags, so a rejection reaches the
+    build's bounded repair loop before the winner exists; it compiles only the
+    candidate's own RTL, never the official test or reference.
     """
     cmd = [python, str(REPO / "run.py"), "build", "--spec", str(request), "--top", ve.TOP,
            "--generate-golden", "--output-dir", str(run_dir),
@@ -170,6 +189,8 @@ def full_command(request: Path, run_dir: Path, budget: dict, *, python: str = sy
         cmd += ["--verification-policy", verification_policy]
     for name, path in (tools or {}).items():
         cmd += [f"--{name}", path]
+    if grader_iverilog:
+        cmd += ["--grader-iverilog", grader_iverilog]
     return cmd
 
 
@@ -178,7 +199,7 @@ def run_full(manifest: dict, task: ve.Task, out_dir: Path, *, trial: int = 0, mo
              iterations: int | None = FULL_SETTINGS["iterations"],
              implementation: str | None = FULL_SETTINGS["implementation"],
              runner=subprocess.run, python: str = sys.executable, tools: dict | None = None,
-             arm: str = "full") -> dict:
+             arm: str = "full", grader_check: bool = False, iverilog: str | None = None) -> dict:
     """Full AutoRTL build; only a DONE run's verified winner is sealed (accepted incumbent).
 
     A run without a DONE winner is recorded missing. Selecting the latest complete
@@ -191,6 +212,7 @@ def run_full(manifest: dict, task: ve.Task, out_dir: Path, *, trial: int = 0, mo
     if cell["verification_policy"] != expected:
         raise ve.AdapterError(f"{arm} cell must declare verification_policy {expected}")
     tools = vivado_tools() if tools is None else tools  # fail before creating the cell directory
+    grader_iverilog = grader_compiler(iverilog) if grader_check else None
     out_dir = Path(out_dir)
     work = out_dir / "work"
     work.mkdir(parents=True, exist_ok=False)
@@ -202,7 +224,8 @@ def run_full(manifest: dict, task: ve.Task, out_dir: Path, *, trial: int = 0, mo
     run_dir = out_dir / "run"
     cmd = full_command(request, run_dir, cell["budget"], python=python, model=model,
                        best_of_n=best_of_n, iterations=iterations, implementation=implementation,
-                       tools=tools, verification_policy=cell["verification_policy"])
+                       tools=tools, verification_policy=cell["verification_policy"],
+                       grader_iverilog=grader_iverilog)
     started = time.monotonic()
     outer_timeout = cell["budget"]["wall_seconds"] + OUTER_GRACE_S
     try:
@@ -327,6 +350,10 @@ def main(argv=None) -> int:
     r.add_argument("--iterations", type=int, default=FULL_SETTINGS["iterations"])
     r.add_argument("--implementation", default=FULL_SETTINGS["implementation"])
     r.add_argument("--out", required=True, type=Path)
+    r.add_argument("--grader-check", action="store_true",
+                   help="full/ablation: also compile RTL with the grader's Icarus flags at every "
+                        "compile check, repairing rejections within the build budget (default: off)")
+    r.add_argument("--iverilog", help="Icarus executable for --grader-check (default: AUTORTL_IVERILOG or PATH)")
     g.add_argument("--run", required=True, type=Path)
     g.add_argument("--out", required=True, type=Path)
     g.add_argument("--iverilog")
@@ -353,7 +380,8 @@ def main(argv=None) -> int:
         else:
             result = run_full(manifest, task, a.out, trial=a.trial, model=a.model, arm=a.arm,
                               best_of_n=a.best_of_n, iterations=a.iterations,
-                              implementation=a.implementation)
+                              implementation=a.implementation, grader_check=a.grader_check,
+                              iverilog=a.iverilog)
     else:
         manifest, root = _load(a)
         record = read_json((a.run / "run.json"))
