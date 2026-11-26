@@ -197,6 +197,30 @@ def xvlog_check(files: list[Path], cfg: RunConfig, work_dir: Path,
 
 # ---------------- Rung 3/4: xelab + xsim batch simulation ----------------
 
+# xelab_c_compile_failure_classified_design: xelab compiles its generated C into
+# xsim.dir/<snapshot>/obj/xsim_<n>.win64.obj; when that absolute path reaches
+# Windows MAX_PATH (260 including the terminator) every attempt fails with
+# [XSIM 43-3409], so it depends on the checkout location, never on the design.
+WINDOWS_MAX_PATH = 260
+
+
+def xelab_object_path(work_dir: Path, snapshot: str) -> str:
+    """The longest object path xelab writes for this snapshot (two-digit file index)."""
+    return str(Path(work_dir).resolve() / "xsim.dir" / snapshot / "obj" / "xsim_99.win64.obj")
+
+
+def xelab_path_too_long(work_dir: Path, snapshot: str) -> str:
+    """An infrastructure message when xelab's object path cannot fit on Windows, else ''."""
+    if os.name != "nt":
+        return ""
+    path = xelab_object_path(work_dir, snapshot)
+    if len(path) < WINDOWS_MAX_PATH:
+        return ""
+    return (f"host path too long: xelab's object path would be {len(path)} characters, Windows "
+            f"MAX_PATH is {WINDOWS_MAX_PATH} ([XSIM 43-3409] on every attempt); run from a shorter "
+            f"root directory: {path}")
+
+
 def xsim_run(design_files: list[Path], tb_file: Path, tb_top: str,
              cfg: RunConfig, work_dir: Path,
              timeout: int = 300) -> tuple[bool, str, FailureKind]:
@@ -204,11 +228,14 @@ def xsim_run(design_files: list[Path], tb_file: Path, tb_top: str,
     deadline = time.monotonic() + timeout
     if timeout <= 0:
         return False, "timed out after 0s", FailureKind.INFRA
+    snap = f"{tb_top}_snap"
+    too_long = xelab_path_too_long(work_dir, snap)
+    if too_long:
+        return False, too_long, FailureKind.INFRA
     ok, err, kind = xvlog_check(design_files + [tb_file], cfg, work_dir,
                                 timeout=min(120, timeout))
     if not ok:
         return False, err, kind
-    snap = f"{tb_top}_snap"
     remaining = deadline - time.monotonic()
     if remaining <= 0:
         return False, f"timed out after {timeout}s", FailureKind.INFRA

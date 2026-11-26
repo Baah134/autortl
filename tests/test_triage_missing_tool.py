@@ -27,7 +27,7 @@ XELAB_C_COMPILE = ("ERROR: [XSIM 43-3409] Failed to compile generated C file xsi
 
 
 def test_xelab_c_compile_failure_is_infrastructure():
-    """xelab_c_compile_failure_classified_design: release-rehold-t2-01, transient on rerun."""
+    """xelab_c_compile_failure_classified_design: release-rehold tier 2 (MAX_PATH object path)."""
     assert classify(XELAB_C_COMPILE) == FailureKind.INFRA
     assert classify("INFO: [XSIM 43-3496] Using init file\n" + XELAB_C_COMPILE) == FailureKind.INFRA
 

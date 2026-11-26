@@ -42,3 +42,41 @@ def test_expired_simulation_deadline_stops_before_elaboration(tmp_path, monkeypa
 @pytest.mark.parametrize("seconds", ["0.001", "5", "12.3456"])
 def test_fractional_timeout_is_infrastructure(seconds):
     assert classify(f"timed out after {seconds}s") == FailureKind.INFRA
+
+
+windows_only = pytest.mark.skipif(__import__("os").name != "nt", reason="MAX_PATH applies to Windows")
+
+
+def _work_dir_with_object_path_length(tmp_path, length):
+    """A work directory whose xelab object path for snapshot tb_snap has this many characters."""
+    base = len(vivado.xelab_object_path(tmp_path / "w", "tb_snap"))
+    return tmp_path / ("w" + "x" * (length - base))
+
+
+@windows_only
+def test_an_xelab_object_path_at_max_path_is_infrastructure_before_any_tool(tmp_path, monkeypatch):
+    """xelab_c_compile_failure_classified_design: 260 characters failed every time in the re-hold."""
+    run = Mock(return_value=(0, "TEST PASSED\n"))
+    monkeypatch.setattr(vivado, "_run", run)
+    work = _work_dir_with_object_path_length(tmp_path, vivado.WINDOWS_MAX_PATH)
+    assert len(vivado.xelab_object_path(work, "tb_snap")) == 260
+    passed, error, kind = vivado.xsim_run([], tmp_path / "tb.v", "tb", RunConfig(mode="optimize"), work)
+    assert not passed and kind == FailureKind.INFRA
+    assert error.startswith("host path too long") and "260 characters" in error
+    assert run.call_count == 0
+
+
+@windows_only
+def test_an_xelab_object_path_one_below_max_path_runs(tmp_path, monkeypatch):
+    run = Mock(return_value=(0, "TEST PASSED\n"))
+    monkeypatch.setattr(vivado, "_run", run)
+    work = _work_dir_with_object_path_length(tmp_path, vivado.WINDOWS_MAX_PATH - 1)
+    work.mkdir()
+    assert vivado.xelab_path_too_long(work, "tb_snap") == ""
+    assert vivado.xsim_run([], tmp_path / "tb.v", "tb", RunConfig(mode="optimize"), work)[0]
+    assert run.call_count == 3
+
+
+@pytest.mark.skipif(__import__("os").name == "nt", reason="non-Windows hosts have no MAX_PATH limit")
+def test_no_path_limit_off_windows(tmp_path):
+    assert vivado.xelab_path_too_long(tmp_path / ("x" * 300), "tb_snap") == ""
