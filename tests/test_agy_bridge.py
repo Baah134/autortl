@@ -92,6 +92,36 @@ def test_quota_error_wins_over_tool_use_and_odd_shapes_are_tolerated():
     assert bridge.parse(other_shapes)[0] is False
 
 
+LINGER = r'''
+import json, sys, time
+sys.stdin.read()
+print(json.dumps({"event": "step_update", "step_update": {"text_delta": "ok"}}), flush=True)
+print(json.dumps({"event": "result", "result": {"status": "SUCCESS", "response": "ok"}}), flush=True)
+time.sleep(60)  # agy_exits_late_after_result: the November 25 agy build lingered ~100 s
+'''
+
+
+def test_bridge_returns_at_the_result_event_and_stops_a_lingering_agy(tmp_path):
+    import sys
+    import time
+    script = tmp_path / "lingering_agy.py"
+    script.write_text(LINGER, encoding="utf-8")
+    start = time.monotonic()
+    done = bridge.run_until_result([sys.executable, str(script)], input="x\n")
+    assert time.monotonic() - start < 30
+    assert done.returncode == 0 and bridge.parse(done.stdout)[:2] == (True, "ok")
+
+
+def test_agy_exiting_without_a_result_is_reported_not_hung(tmp_path):
+    import sys
+    script = tmp_path / "failing_agy.py"
+    script.write_text("import sys; sys.stdin.read(); sys.stderr.write('auth required'); sys.exit(3)",
+                      encoding="utf-8")
+    done = bridge.run_until_result([sys.executable, str(script)], input="x\n")
+    assert done.returncode == 3 and "auth required" in done.stderr
+    assert bridge.parse(done.stdout)[0] is False
+
+
 def test_empty_stdin_is_refused_without_calling_agy(capsys):
     fake = Fake(OK)
     assert bridge.main([], stdin=io.StringIO("  \n"), run=fake) == 2 and fake.calls == []

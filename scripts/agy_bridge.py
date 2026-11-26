@@ -33,6 +33,7 @@ import os
 import shutil
 import subprocess
 import sys
+import threading
 from pathlib import Path
 
 FLAGS = ["--sandbox", "--disable-slash-commands", "--input-format", "stream-json",
@@ -108,7 +109,63 @@ def parse(stdout: str) -> tuple[bool, str, dict]:
     return (True, response, usage) if response else (False, "agy returned an empty response", usage)
 
 
-def main(argv=None, *, stdin=None, run=subprocess.run) -> int:
+def _is_result(line: str) -> bool:
+    try:
+        event = json.loads(line)
+    except json.JSONDecodeError:
+        return False
+    return isinstance(event, dict) and event.get("event") == "result"
+
+
+def _stop(proc: subprocess.Popen) -> None:
+    """End agy and anything it started; on Windows only taskkill /T reaches the children."""
+    if proc.poll() is not None:
+        return
+    if os.name == "nt":
+        subprocess.run(["taskkill", "/F", "/T", "/PID", str(proc.pid)], capture_output=True)
+    else:
+        proc.kill()
+    try:
+        proc.wait(timeout=10)
+    except subprocess.TimeoutExpired:
+        proc.kill()
+
+
+def run_until_result(cmd, *, input, encoding="utf-8", errors="replace", **_ignored):
+    """Like subprocess.run, but returns as soon as agy prints its result event.
+
+    agy_exits_late_after_result: the agy build installed November 25 printed its result
+    about 3 s into a trivial call and then kept running for about 100 s before exiting,
+    so waiting for exit pushed calls toward the 180 s limit. Nothing agy prints after
+    the result changes the answer (tool events precede it), so the process is stopped
+    once the result line has been read.
+    """
+    proc = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                            text=True, encoding=encoding, errors=errors)
+    err: list[str] = []
+    reader = threading.Thread(target=lambda: err.append(proc.stderr.read()), daemon=True)
+    reader.start()
+    try:
+        proc.stdin.write(input)
+        proc.stdin.close()
+    except OSError:
+        pass  # agy exited early; its stdout and stderr say why
+    out, seen = [], False
+    for line in proc.stdout:
+        out.append(line)
+        if _is_result(line.strip()):
+            seen = True
+            break
+    if seen:
+        _stop(proc)
+    else:
+        proc.wait()
+    reader.join(timeout=5)
+    code = 0 if seen else proc.returncode
+    return subprocess.CompletedProcess(cmd, code, "".join(out), "".join(err))
+
+
+def main(argv=None, *, stdin=None, run=run_until_result) -> int:
     parser = argparse.ArgumentParser(prog="agy_bridge")
     parser.add_argument("--model")
     a = parser.parse_args(argv)
