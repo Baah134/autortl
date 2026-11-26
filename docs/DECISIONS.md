@@ -121,11 +121,15 @@ the harness's 180-second call limit. Flash-low used no tools there and took
 A second model on arm A, done properly this time: Gemini 3.8 Flash-low through
 the guarded bridge (tool-using replies refused and counted as failures), the
 same 40 tasks and 120 single-call cells as `flash-01`, runtime `1c341f798`.
-Registration: `evidence/2026-11-25/flash-03-registration-01`. The comparison
+Registration: `evidence/2026-11-25/flash-03-registration-02`, which
+supersedes `-01` (re-frozen the same evening, before any cell ran, on runtime
+`202a6daa6`). A trivial Flash-low call took 105 to 138 s even on an idle host:
+the Antigravity CLI updated that day lingers about 100 s after its result and
+the bridge waited for it (`agy_exits_late_after_result`); the fixed bridge
+returns at the result in 6 s. Only the runtime commit changed. The comparison
 with `final-02` arm A is descriptive (different model, different week), never
-a harness claim. The run starts only when the host has headroom: on the loaded
-host a trivial Flash-low call took 105 s against the 180 s limit, so timeouts
-would measure the machine, not the model. Harness arms with Flash need their
+a harness claim. The run starts once a trivial probe answers within 30 s, so
+timeouts measure the model, not the CLI. Harness arms with Flash need their
 own registration later, when Vivado time is free.
 
 ## Continuing contracts
