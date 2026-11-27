@@ -19,8 +19,12 @@ class ArtifactError(ValueError):
 
 
 SCHEMA = 1
-ARMS = {'single_call', 'ablation', 'full'}
+ARMS = {'single_call', 'ablation', 'full', 'full_xcheck'}
 POLICIES = {'full', 'skip_generated_tb_mutations'}
+# Request cross-check (run.py build --spec-cross-check). A cell may declare it; only
+# the opt-in full_xcheck arm runs request_traces, and a cell without the key is off,
+# so manifests written before the arm existed validate exactly as before.
+CROSS_CHECK_POLICIES = {'off', 'request_traces'}
 TERMINATIONS = {'done', 'budget', 'model_blocked', 'failed', 'interrupted'}
 _IDENTIFIER = re.compile(r'[A-Za-z_][A-Za-z0-9_]*\Z')
 _TASK = re.compile(r'[A-Za-z0-9][A-Za-z0-9_-]*\Z')
@@ -101,7 +105,8 @@ def _identity(identity):
 
 
 def _cell(cell):
-    _keys(cell, 'task trial arm budget verification_policy', 'cell')
+    declared = type(cell) is dict and 'spec_cross_check' in cell
+    _keys(cell, 'task trial arm budget verification_policy' + (' spec_cross_check' if declared else ''), 'cell')
     if type(cell['task']) is not str or _TASK.fullmatch(cell['task']) is None:
         _fail('invalid task identifier')
     if type(cell['trial']) is not int or cell['trial'] < 0:
@@ -124,6 +129,11 @@ def _cell(cell):
     expected_policy = 'skip_generated_tb_mutations' if cell['arm'] == 'ablation' else 'full'
     if cell['verification_policy'] != expected_policy:
         _fail('arm and declared verification policy disagree')
+    if declared:
+        _one_of(cell['spec_cross_check'], CROSS_CHECK_POLICIES, 'spec cross-check policy')
+    expected_check = 'request_traces' if cell['arm'] == 'full_xcheck' else 'off'
+    if cell.get('spec_cross_check', 'off') != expected_check:
+        _fail('arm and declared spec cross-check disagree')
     if cell['arm'] == 'single_call' and cell['budget']['model_calls'] != 1:
         _fail('single_call must declare exactly one model call')
 

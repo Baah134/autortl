@@ -130,7 +130,8 @@ def decide(summary: dict) -> dict:
 
 
 ARM_LABELS = {"single_call": "A (single call)", "ablation": "B (harness without generated-testbench "
-              "mutation qualification)", "full": "C (full harness)"}
+              "mutation qualification)", "full": "C (full harness)",
+              "full_xcheck": "C-xcheck (full harness with the request cross-check)"}
 
 
 def has_registered_comparison(summary: dict) -> bool:

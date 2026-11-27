@@ -4,7 +4,9 @@
                                  [--wait-minutes 20] [--max-wait-hours 12] [--max-cells N]
 
 Order is trial-major (a complete trial 0 over every task before trial 1), tasks
-in manifest order, arms single_call, ablation, full. A cell whose output
+in manifest order, arms single_call, ablation, full, then full_xcheck when the
+manifest registers it (adjacent to full, so both arms of a task share host
+load and quota waits). A cell whose output
 directory exists is never rerun, so the command is safe to restart. A cell
 left with a directory but no sealed record (its process died mid-run) is sealed
 `interrupted` with no submission, so grading is never blocked and the cell is
@@ -36,7 +38,9 @@ from pathlib import Path
 from . import artifacts, pilot
 from . import verilogeval as ve
 
-ARM_ORDER = ("single_call", "ablation", "full")
+# Only registered arms are scheduled, so the opt-in full_xcheck changes nothing for
+# a manifest without it.
+ARM_ORDER = ("single_call", "ablation", "full", "full_xcheck")
 EXIT_DONE, EXIT_MODEL_BLOCKED, EXIT_INTERRUPTED = 0, 3, 4
 PROBE_PROMPT = "Reply with the single word OK."
 

@@ -9,7 +9,9 @@ Steps, each refusing rather than guessing:
 3. archive to `--out` (`benchmark.archive`; refuses an existing folder);
 4. apply the pre-registered rule (`benchmark.claim`) and write `claim.json`; a run
    without arms A and C (one arm, like flash-03) gets `claim.describe`: rates and
-   disclosures, verdict `descriptive_only`, never a comparison claim;
+   disclosures, verdict `descriptive_only`, never a comparison claim; a run
+   without arms A and C but with C-off and C-xcheck (`full`, `full_xcheck`) gets
+   the V1 rule instead (`benchmark.v1_claim`, a proposal until frozen);
 5. write `README.md` from the report, the claim and the cell records;
 6. seal `archive-manifest.json` and run `tools/evidence_audit.py --worktree`.
 
@@ -27,7 +29,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from . import archive, claim, report
+from . import archive, claim, report, v1_claim
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -77,7 +79,9 @@ def render_readme(*, title: str, registration: dict, stats: dict, decision: dict
         lines += ["## Result (descriptive; no pre-registered comparison applies)", "",
                   decision["sentence"], ""]
     else:
-        lines += ["## Claim (pre-registered rule, docs/DECISIONS.md 2026-11-20)", "",
+        # A proposed rule (frozen False) is never called pre-registered.
+        prefix = "pre-registered rule, " if decision.get("frozen", True) else ""
+        lines += [f"## Claim ({prefix}{decision['rule']})", "",
                   f"**Verdict: `{decision['verdict']}`.** {decision['sentence']}", ""]
     if decision["disclosures"]:
         lines += ["Disclosures required by the rule:", ""] + [f"- {d}" for d in decision["disclosures"]] + [""]
@@ -125,8 +129,15 @@ def finish(manifest_path: Path, dataset: Path, attempt: Path, out: Path, *, cata
         grade(manifest_path, dataset, attempt)
     archive.archive_attempt(attempt, out, catalog=catalog, title=title, forbidden=forbidden)
     stats = json.loads((out / "report.json").read_text(encoding="utf-8"))
-    # A run without arms A and C (flash-03: one arm) gets a descriptive result, never a verdict.
-    decision = claim.decide(stats) if claim.has_registered_comparison(stats) else claim.describe(stats)
+    # A run without arms A and C (flash-03: one arm) gets a descriptive result, never a verdict,
+    # unless it is a V1 run (C-off and C-xcheck), which gets the V1 rule.
+    readme_row = claim.readme_row
+    if claim.has_registered_comparison(stats):
+        decision = claim.decide(stats)
+    elif v1_claim.applies(stats):
+        decision, readme_row = v1_claim.decide(stats), v1_claim.readme_row
+    else:
+        decision = claim.describe(stats)
     readme = render_readme(title=title, stats=stats, decision=decision,
                            registration=json.loads((out / "benchmark_registration.json").read_text(encoding="utf-8")),
                            cells=json.loads((out / "cells.json").read_text(encoding="utf-8")),
@@ -140,7 +151,7 @@ def finish(manifest_path: Path, dataset: Path, attempt: Path, out: Path, *, cata
     archive.seal(out)
     if audit:
         (run_audit or _audit)()
-    return {"out": str(out), "verdict": decision["verdict"], "readme_row": claim.readme_row(decision, stats, links)}
+    return {"out": str(out), "verdict": decision["verdict"], "readme_row": readme_row(decision, stats, links)}
 
 
 def _audit() -> None:

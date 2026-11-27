@@ -72,30 +72,64 @@ adjacent, so quota waits and host load fall on both arms alike. A cell is
 attempted once and never rerun; grading starts only after every cell is
 sealed.
 
-## Prerequisites (code changes, described here, not made)
+## Prerequisites
 
-1. **Runner wiring.** `benchmark/pilot.py` does not set `spec_cross_check`
-   (DECISIONS 2026-11-21, "Benchmark wiring is separate"). `full_command` and
-   `run_full` need a `spec_cross_check` argument passed as
-   `--spec-cross-check`; each registered cell declares it, and `run_full`
-   refuses a cell whose arm and declared value disagree, as it already does
-   for `verification_policy`.
-2. **Arms in the campaign and report.** `benchmark/campaign.py`
-   (`ARM_ORDER`) and `benchmark/report.py` (`ARMS`, paired comparisons) know
-   only `single_call`, `ablation` and `full`. They need the `full_xcheck` arm
-   and the paired comparison `full_xcheck` minus `full`.
-3. **Rows carry the check's outcomes.** Every planner-written build records
-   `spec_cross_check: {policy, checks}` in its run summary; the graded rows
-   need the per-cell outcome (`agree`, `replanned`, `disagreement_kept`,
-   `repairs_exhausted`, `skipped`, `unusable`, `traces_incompatible`,
-   `no_comparable_rows`, `golden_error`) so the report can count them.
-4. **Decision rule as code.** A module like `benchmark/claim.py` (proposed
-   `benchmark/v1_claim.py`) with the thresholds below as constants and pytest
-   fixtures, committed before the first cell, applied by `benchmark.finish`.
-5. **Smoke run before freezing.** One trial of each arm on two pilot tasks
-   (proposed Prob038_count15 and Prob107_fsm1s; already seen, so outside every
-   claim) to confirm the flag reaches the run, the records appear and the
-   per-cell cost is near the estimate. Archived as a smoke check, not a result.
+Items 1 to 4 are implemented and tested (November 27, uncommitted at the time
+of writing; `tests/test_benchmark_v1_arm.py`, `tests/test_benchmark_v1_claim.py`).
+Every existing arm is unchanged: default manifests, commands, run records,
+campaign order, graded rows and reports are produced as before, and the
+committed final-02 and flash-03 reports re-render byte-identically from their
+`summary.json` (tested). Item 5 remains.
+
+1. **Runner wiring — implemented.** `benchmark/pilot.py`: `full_command(...,
+   spec_cross_check="off")` adds `--spec-cross-check <policy>` only when it is
+   not `off`; `HARNESS_ARMS` maps each harness arm to the
+   `(verification_policy, spec_cross_check)` its cells must declare, and
+   `run_full` refuses a cell whose arm and declared value disagree (as for
+   `verification_policy`). The arm is opt-in: `OPT_IN_BUDGETS["full_xcheck"]`
+   (the `full` caps), never in `PROVISIONAL_BUDGETS`; `python -m
+   benchmark.pilot manifest ... --arms full full_xcheck` registers it.
+   `benchmark/verilogeval.py` `build_manifest` writes
+   `spec_cross_check: request_traces` on `full_xcheck` cells only, and
+   `benchmark/artifacts.py` `_cell` accepts the key as optional (absent means
+   `off`) and refuses any arm/value mismatch.
+2. **Arms in the campaign and report — implemented.** `benchmark/campaign.py`
+   `ARM_ORDER` ends with `full_xcheck` (right after `full`, so both arms of a
+   task are adjacent); `benchmark/report.py` `ARMS`, `ARM_LABEL` and `PAIRS`
+   add `full_xcheck` and the paired comparison `full_xcheck-full`, each only
+   when its rows exist. `summarize` then also adds
+   `paired_false_acceptance["full_xcheck-full"]` (the primary endpoint: per
+   task, accepted-and-failing over evaluable cells; mean difference, task
+   bootstrap, and `tasks_with_false_acceptance` per arm) and `cross_check`
+   (outcome counts, cells checked, replanned and disagreement-kept cells,
+   cells without a record, `blocked_tasks`, replans that pass or fail where
+   C-off passed); `render_markdown` shows them.
+3. **Rows carry the check's outcomes — implemented.** For `full_xcheck` cells
+   only, `run_full` copies the run summary's `spec_cross_check`
+   (`{policy, checks}`, written by `autortl/fsm.py`) into the run record's
+   accounting, and `report.grade_attempt` adds `cross_check_policy` and
+   `cross_check_outcomes` (each check's `outcome`, in revision order; `None`
+   when the run wrote no record) through `report.cross_check_fields`.
+4. **Decision rule as code — implemented, still a proposal.**
+   `benchmark/v1_claim.py` `decide(summary)` applies the rule below with its
+   numbers as constants (`FROZEN = False`; every result carries
+   `rule_not_frozen` until the owner freezes the rule and the module is
+   updated). `benchmark.finish` applies it to a run with `full` and
+   `full_xcheck` and without arms A and C; runs with arms A and C still get
+   `benchmark.claim`. Readings the owner should confirm when freezing:
+   "entirely below/above 0" is strict and "inside ±3 pp / ±10 pp" and
+   "≥ −10 pp" are inclusive (as in `benchmark.claim`); rule 1 checks only the
+   two V1 arms and, like `benchmark.claim`, records the verdict rules 2 to 7
+   would have given as `downgraded_from:<verdict>`; rule 4 counts C-off tasks
+   with at least one false acceptance over all its evaluable cells; a blocked
+   task counts a `replanned` or `disagreement_kept` outcome in any C-xcheck
+   cell of the task, including one stopped by infrastructure; and the module
+   refuses a summary not computed with 10,000 resamples and seed 20261115.
+5. **Smoke run before freezing — not run.** One trial of each arm on two
+   pilot tasks (proposed Prob038_count15 and Prob107_fsm1s; already seen, so
+   outside every claim) to confirm the flag reaches the run, the records
+   appear and the per-cell cost is near the estimate. Archived as a smoke
+   check, not a result.
 
 `pilot.py`, `campaign.py` and `report.py` are no-edit zones while any
 campaign runs (AGENTS.md).
