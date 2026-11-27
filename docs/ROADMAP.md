@@ -46,11 +46,14 @@ tagged release exists on `main` with a licence.
    LF-normalised bytes). No home-directory paths or personal data in committed
    files. `python tools/evidence_audit.py --rev HEAD` must pass.
 
-## 2. Current state (November 15, 2026)
+## 2. Current state (November 27, 2026)
 
-- Branch `codex/contract-context`, local commits ahead of `origin` (not
-  pushed). `main` frozen at `ca61dbc`.
-- Harness: all suites green at the last full run (2,287 harness, 323 tooling).
+- Release PR Baah134/autortl#1 (`codex/contract-context` -> `main`) is open,
+  CI green, awaiting the owner's merge; `main` frozen at `ca61dbc`. The
+  release re-hold of the curriculum tiers runs on the release runtime
+  (tiers 0 and 1 held; tiers 2 to 5 remain; `docs/SESSION_HANDOFF.md`).
+- Post-release work is on `claude/v1.1-integration` (pushed, no PR): suites
+  green there (2,470 harness, 329 tooling, ruff, evidence audit).
 - Benchmark machinery is complete and tested: `benchmark/verilogeval.py`
   (dataset, selection, grader), `pilot.py` (arms A/B/C), `registration.py`
   (final selection), `campaign.py` (runner), `report.py` (grading gate and
@@ -120,7 +123,7 @@ criteria; a task is not done until all are met and committed.
   intervals, paired differences, false-acceptance rate and cost; audit passes;
   no cell rerun; README (task P3) quotes only numbers from this report.
 
-**B2. Decide the claim from the data** — `blocked(B1)`
+**B2. Decide the claim from the data** — `done` November 21 (`claim.json` quoted in README and `docs/RESULTS.md`; recurring planner failure opened as V1)
 - The rule was registered November 20 before grading (`docs/DECISIONS.md`,
   `benchmark/claim.py`): verdict from the C-minus-A paired interval
   (above 0, below 0, inside ±10 pp, or inconclusive), downgraded if more than
@@ -157,7 +160,7 @@ criteria; a task is not done until all are met and committed.
 ### Track V — verification research
 
 **V1. Measure and reduce false acceptance** — `todo` (mitigation implemented
-on `claude/spec-cross-check`, not yet measured)
+on `claude/v1.1-integration`, not yet measured)
 - Baseline: the false-acceptance rate and cells from B1.
 - Mitigation to test (one, measured): *independent example derivation*. A
   second planner call, given only the original request (not the first spec),
@@ -185,13 +188,11 @@ on `claude/spec-cross-check`, not yet measured)
 **P1. Licence** — `done` (November 15): MIT, owner-approved; `LICENSE`, README
 section, VerilogEval attribution kept in `tests/fixtures/verilogeval/README.md`.
 
-**P2. Push and integrate** — `doing`: branch push approved and done November 15;
-remaining (owner approval needed for the merge):
-confirm CI is green (`.github/workflows/tests.yml`: harness, evidence audit,
-tooling); open a PR to `main`. The release gate in START_HERE applies: full
+**P2. Push and integrate** — `doing`: PR Baah134/autortl#1 opened November 21,
+CI green; remaining: the owner's merge. The release gate in START_HERE applies: full
 suites, evidence audit, and the final re-hold the owner decides on.
 
-**P3. README rewrite** — structure `done` (November 15, 149 lines); numbers `blocked(B1)`
+**P3. README rewrite** — `done` (structure November 15; numbers November 21 from `benchmark.finish`)
 - Target about 150 lines: one-sentence pitch; a results table with three rows
   (hardware, verifier qualification, benchmark) each linking to evidence; the
   loop diagram; 10-line quick start (`doctor`, `demo.py`, one `build`); what
@@ -204,8 +205,8 @@ suites, evidence audit, and the final re-hold the owner decides on.
 recording of one build and the UART echo. Board access needs the owner's
 explicit authorisation (no JTAG/programming by agents without it).
 
-**P5. Release** — `blocked(P1,P2,P3)`: tag `v1.0.0` on `main` with release
-notes drawn from PROGRESS; attach the benchmark report.
+**P5. Release** — `blocked(P2, re-hold)`: tag `v1.0.0` on the merge commit once
+the re-hold has held every tier; release notes from `docs/RELEASE.md`.
 
 ### Track D — documentation and process
 
@@ -244,7 +245,7 @@ summaries on the recorded FSM tests, no function over 120 lines in `fsm.py`.
 **C2. Public interfaces** — `merged into C6`: export `doctor.resolve_tool` and
 `artifacts.validate_manifest`; stop importing private names in `benchmark/`.
 
-**C3. Tooling** — `done` on branch `c6-dedupe` (November 20: ruff F rules in CI, pinned requirements, `-n auto`; 2,345 tests in 4 m 43 s): `pyproject.toml` (ruff with a small rule set, no
+**C3. Tooling** — `done`, merged with `c6-dedupe` (November 20: ruff F rules in CI, pinned requirements, `-n auto`; 2,345 tests in 4 m 43 s): `pyproject.toml` (ruff with a small rule set, no
 reformat of history), pinned `requirements.txt`, CI Python matched to
 development (3.12 or 3.14, one of them), a `ruff check` CI job. Acceptance:
 CI green, no behaviour change.
@@ -257,7 +258,7 @@ run as a fixture and a taxonomy entry.
 code-only clone in the README; measure checkout time before and after. Do not
 rewrite history.
 
-**C6. Remove repetition** — `doing` in worktree `c6-dedupe` (items 1, 2, 3, 5, 8 and the `_finish_optimize` split done November 15-20; merge after B1)
+**C6. Remove repetition** — `doing` (items 1, 2, 3, 5, 8 and the `_finish_optimize` split merged with `c6-dedupe`, `1d841a53e`; items 4, 6 and 7 remain)
 Literal copy-paste is rare (a 6-line-window scan of `autortl/`, `llm/`, `run.py`
 and `curriculum/` finds only the two synthesis templates). The repetition is in
 idioms and parallel paths:
@@ -320,18 +321,19 @@ fast quality item that can run beside it, or post-release work.
 ### Critical path (finish)
 
 1. **B1** finish, grade, report, archive `final-02` (done November 21).
-2. **B2** quote the claim the registered rule produced (`claim.json`).
-3. **P3** paste the README row `benchmark.finish` prints; release text is
-   drafted in `docs/RELEASE.md`.
-4. **Merge** `c6-dedupe` (full suites first), then **P2** PR to `main` and
-   **P5** tag `v1.0.0` (owner approval).
+2. **B2** quote the claim the registered rule produced (done).
+3. **P3** paste the README row `benchmark.finish` prints (done); release text
+   is drafted in `docs/RELEASE.md`.
+4. **Merge** `c6-dedupe` (done, `1d841a53e`), **P2** PR to `main` (open,
+   awaiting the owner's merge), the release re-hold (running), then **P5** tag
+   `v1.0.0`.
 
 ### Beside the critical path (safe while B1 runs)
 
-- **C6** remove repetition, in worktree `c6-dedupe` (items 1, 2, 3, 5, 8 and
-  the finish-phase split done; merge after B1 because it changes the runtime).
-- **C3** tooling: done on `c6-dedupe` (ruff, pinned requirements, parallel
-  tests: 4 m 43 s instead of 15 to 22 min).
+- **C6** remove repetition: items 1, 2, 3, 5, 8 and the finish-phase split
+  merged with `c6-dedupe` (`1d841a53e`); items 4, 6 and 7 remain.
+- **C3** tooling: merged with `c6-dedupe` (ruff, pinned requirements,
+  parallel tests: 4 m 43 s instead of 15 to 22 min).
 - **D5** lease default 4 hours: done November 20 (`scripts/session.py`).
 
 ### Scaling testing
