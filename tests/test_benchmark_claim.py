@@ -115,3 +115,49 @@ def test_finish_grades_only_when_ungraded_and_never_overwrites(tmp_path):
     assert calls == []  # an existing summary is reused, never regraded
     with pytest.raises(finish.FinishError, match="already exists"):
         finish.finish(tmp_path / "m.json", tmp_path, graded, tmp_path / "o2", catalog=None, title="t", audit=False)
+
+
+def single_arm_attempt(tmp_path):
+    """make_attempt with only the single-call arm (a flash-03 style run)."""
+    import shutil
+    attempt = make_attempt(tmp_path)
+    shutil.rmtree(attempt / "runs" / "t1-full-0")
+    shutil.rmtree(attempt / "grades" / "t1-full-0")
+    rows = [r for r in json.loads((attempt / "grades" / "summary.json").read_text()) if r["arm"] == "single_call"]
+    (attempt / "grades" / "summary.json").write_text(json.dumps(rows))
+    return attempt
+
+
+def test_a_run_without_arms_a_and_c_is_described_never_given_a_verdict():
+    summary = report.summarize(grid({"single_call": {t: [True, i % 4 != 0] for i, t in enumerate(TASKS)}}),
+                               samples=200)
+    assert not claim.has_registered_comparison(summary)
+    with pytest.raises(claim.ClaimError):
+        claim.decide(summary)
+    described = claim.describe(summary)
+    assert described["verdict"] == "descriptive_only" and described["rule"] is None
+    assert "No pre-registered comparison applies" in described["sentence"]
+    assert "arm A (single call) passes 35 of 40 graded cells (87.5%" in described["sentence"]
+    row = claim.readme_row(described, summary, "[e](x)")
+    assert row.startswith("| **Registered descriptive run.** 20 public VerilogEval tasks, 1 arm(s)")
+    assert "three arms" not in row and row.endswith("| [e](x) |")
+
+
+def test_finish_archives_a_single_arm_run_with_a_descriptive_readme(tmp_path):
+    """flash-03: finish refused 'arm full is missing' and the README was written by hand."""
+    attempt, out = single_arm_attempt(tmp_path), tmp_path / "evidence" / "single"
+    result = finish.finish(tmp_path / "m.json", tmp_path, attempt, out, catalog=None, title="Single arm",
+                           forbidden=("someone",), audit=False)
+    assert result["verdict"] == "descriptive_only"
+    readme = (out / "README.md").read_text()
+    assert "## Result (descriptive; no pre-registered comparison applies)" in readme
+    assert "Verdict:" not in readme and "Arms A" not in readme
+    assert "Arm A (single call), 1 trial per task" in readme
+    assert json.loads((out / "claim.json").read_text())["verdict"] == "descriptive_only"
+    assert "claim.json" in json.loads((out / "archive-manifest.json").read_text())
+
+
+def test_the_three_arm_protocol_sentence_names_every_arm_and_the_trial_count(tmp_path):
+    attempt, out = make_attempt(tmp_path), tmp_path / "evidence" / "two"
+    finish.finish(tmp_path / "m.json", tmp_path, attempt, out, catalog=None, title="t", audit=False)
+    assert "Arms A (single call) and C (full harness), 1 trial per task" in (out / "README.md").read_text()

@@ -132,7 +132,11 @@ supported schema and limits.
    scoreboard modules are rejected (resetless_sequential_unrepresentable).
 9. Infra-vs-design triage (triage.py) — infra failures never mutate the
    design or enter history. A third kind, target, covers an interface that
-   cannot fit the configured device (see target capacity failures).
+   cannot fit the configured device (see target capacity failures). xelab's
+   failed C compile ([XSIM 43-3409]) is infra; on Windows `xsim_run` first
+   checks that xelab's object path stays under MAX_PATH (260) and otherwise
+   returns infra "host path too long" before running any tool
+   (xelab_c_compile_failure_classified_design).
 10. Metrics integrity gates (metrics_gate.py) — the lut_total:0 class of bug
     is fatal, never a silent score.
 11. TCL injection boundary — LLM output only in .v files; paths sanitised.
@@ -325,11 +329,15 @@ the structural rules, such as a top_name that differs from every module name
 **Disputed examples.** A planner-written spec can pass lint while its behavior
 text and its own examples disagree; both generated oracles then follow the text
 and fail the examples (oracle_example_dispute_ends_build, explore-tier3-05
-uart_tx). When a module's oracle attempts are exhausted and the last two both
-ran and failed only with example mismatches from `qualify_against_examples`
-(`golden.only_example_mismatches`: the spec's examples are valid and every
-line is a mismatch line), the spec is disputed. A sandbox, validation or
-generate_tb error in either attempt is not a dispute. Infrastructure is never
+uart_tx). When a module's oracle attempts are exhausted and the last two that
+ran the examples both failed only with example mismatches from
+`qualify_against_examples` (`golden.only_example_mismatches`: the spec's
+examples are valid and every line is a mismatch line), the spec is disputed.
+An attempt whose oracle does not load never ran the examples: it is logged
+(`ran_examples: false`) and skipped, so it cannot separate two mismatching
+attempts (dispute_pair_broken_by_malformed_oracle, release re-hold tier 1
+debouncer). A sandbox, validation or generate_tb error in an attempt that ran
+is not a mismatch, so it does break the pair and is not a dispute. Infrastructure is never
 a dispute: a GoldenTimeoutError ends the build as build_blocked and a provider
 failure as model_blocked, and neither replans. A disputed spec goes back to the
 planner with the module name, at most 10 distinct mismatch lines (1,500

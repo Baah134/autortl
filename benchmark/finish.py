@@ -7,7 +7,9 @@ Steps, each refusing rather than guessing:
 1. every registered cell is sealed (`benchmark.report.grade_attempt` checks);
 2. grade once (an existing `grades/summary.json` is reused, never regraded);
 3. archive to `--out` (`benchmark.archive`; refuses an existing folder);
-4. apply the pre-registered rule (`benchmark.claim`) and write `claim.json`;
+4. apply the pre-registered rule (`benchmark.claim`) and write `claim.json`; a run
+   without arms A and C (one arm, like flash-03) gets `claim.describe`: rates and
+   disclosures, verdict `descriptive_only`, never a comparison claim;
 5. write `README.md` from the report, the claim and the cell records;
 6. seal `archive-manifest.json` and run `tools/evidence_audit.py --worktree`.
 
@@ -44,17 +46,39 @@ def _cell_lines(cells: dict, predicate) -> list[str]:
     return out
 
 
+def _arms_sentence(arms: list[str]) -> str:
+    labels = ["Arm " + claim.ARM_LABELS.get(arm, f"`{arm}`") for arm in arms] or ["No arm"]
+    if len(labels) == 1:
+        return labels[0]
+    return "Arms " + ", ".join(label[4:] for label in labels[:-1]) + " and " + labels[-1][4:]
+
+
+def _trials_text(stats: dict) -> str:
+    """Registered trials per task: the graded and infrastructure-stopped cells of one arm over tasks."""
+    counts = {a["cells"] + a["not_evaluable"] for a in stats.get("arms", {}).values()}
+    tasks = stats.get("tasks") or 0
+    if len(counts) == 1 and tasks and next(iter(counts)) % tasks == 0:
+        trials = next(iter(counts)) // tasks
+        return f"{trials} trial{'s' if trials != 1 else ''}"
+    return "trials as registered"
+
+
 def render_readme(*, title: str, registration: dict, stats: dict, decision: dict, cells: dict,
                   report_md: str) -> str:
     identity = registration.get("identity", {})
     runtime = identity.get("runtime", {})
     dataset = identity.get("dataset", {})
     not_done = _cell_lines(cells, lambda run, e: run.get("termination") != "done")
+    arms = list(stats.get("arms", {}))
     lines = [f"# {title}", "",
              "Archived by `python -m benchmark.finish`. Numbers, claim and tables below are generated from "
-             "the sealed cells; nothing was rerun or removed.", "",
-             "## Claim (pre-registered rule, docs/DECISIONS.md 2026-11-20)", "",
-             f"**Verdict: `{decision['verdict']}`.** {decision['sentence']}", ""]
+             "the sealed cells; nothing was rerun or removed.", ""]
+    if decision["verdict"] == "descriptive_only":
+        lines += ["## Result (descriptive; no pre-registered comparison applies)", "",
+                  decision["sentence"], ""]
+    else:
+        lines += ["## Claim (pre-registered rule, docs/DECISIONS.md 2026-11-20)", "",
+                  f"**Verdict: `{decision['verdict']}`.** {decision['sentence']}", ""]
     if decision["disclosures"]:
         lines += ["Disclosures required by the rule:", ""] + [f"- {d}" for d in decision["disclosures"]] + [""]
     if decision["secondary"]:
@@ -71,8 +95,8 @@ def render_readme(*, title: str, registration: dict, stats: dict, decision: dict
               f"- Tasks {stats['tasks']}, graded cells {stats['cells']}; registration copied as "
               "`benchmark_registration.json`", "",
               "## Protocol", "",
-              "Arms A (single call), B (harness without generated-testbench mutation qualification) and C (full "
-              "harness), three trials per task, run trial-major by `benchmark.campaign`; a cell is attempted "
+              f"{_arms_sentence(arms)}, {_trials_text(stats)} per task, run trial-major by "
+              "`benchmark.campaign`; a cell is attempted "
               "once and never rerun. Grading with the official testbench (Icarus Verilog 12, upstream-compatible "
               "verdict) started only after every cell was sealed. Intervals are task-clustered bootstrap.", "",
               "## Non-`done` terminations", ""]
@@ -101,7 +125,8 @@ def finish(manifest_path: Path, dataset: Path, attempt: Path, out: Path, *, cata
         grade(manifest_path, dataset, attempt)
     archive.archive_attempt(attempt, out, catalog=catalog, title=title, forbidden=forbidden)
     stats = json.loads((out / "report.json").read_text(encoding="utf-8"))
-    decision = claim.decide(stats)
+    # A run without arms A and C (flash-03: one arm) gets a descriptive result, never a verdict.
+    decision = claim.decide(stats) if claim.has_registered_comparison(stats) else claim.describe(stats)
     readme = render_readme(title=title, stats=stats, decision=decision,
                            registration=json.loads((out / "benchmark_registration.json").read_text(encoding="utf-8")),
                            cells=json.loads((out / "cells.json").read_text(encoding="utf-8")),

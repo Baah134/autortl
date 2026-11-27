@@ -129,9 +129,52 @@ def decide(summary: dict) -> dict:
                            "false_acceptance_limit": FALSE_ACCEPTANCE_LIMIT}}
 
 
+ARM_LABELS = {"single_call": "A (single call)", "ablation": "B (harness without generated-testbench "
+              "mutation qualification)", "full": "C (full harness)"}
+
+
+def has_registered_comparison(summary: dict) -> bool:
+    """True when the summary holds both arms of the pre-registered primary endpoint."""
+    arms = summary.get("arms", {})
+    return "single_call" in arms and "full" in arms and PRIMARY in summary.get("paired", {})
+
+
+def describe(summary: dict) -> dict:
+    """Descriptive result for a run without the registered comparison (e.g. one arm only).
+
+    No verdict is drawn: the pre-registered rule needs arms A and C. Pass rates,
+    infrastructure stops and false acceptances are still stated per arm.
+    """
+    arms = summary.get("arms", {})
+    if not arms:
+        raise ClaimError("the summary has no arms")
+    parts, disclosures = [], []
+    for arm, a in arms.items():
+        low, high = a["ci95_task_bootstrap"]
+        parts.append(f"arm {ARM_LABELS.get(arm, arm)} passes {a['passes']} of {a['cells']} graded cells "
+                     f"({100 * a['pass_rate']:.1f}%, 95% task-clustered CI {100 * low:.1f}% to "
+                     f"{100 * high:.1f}%)")
+        if a["not_evaluable"]:
+            disclosures.append(f"{a['not_evaluable']} cell(s) of {arm} were stopped by infrastructure and are "
+                               "excluded from rates.")
+        if a.get("false_acceptances"):
+            disclosures.append(f"{arm}: {a['false_acceptances']} of {a['internally_accepted']} internally "
+                               f"accepted designs fail the official testbench "
+                               f"({', '.join(a['false_acceptance_cells'])}).")
+    sentence = ("No pre-registered comparison applies (it needs arms A and C); descriptive only: "
+                + "; ".join(parts) + ".")
+    return {"rule": None, "primary": None, "verdict": "descriptive_only", "sentence": sentence,
+            "secondary": {}, "flags": ["no_registered_comparison"], "disclosures": disclosures}
+
+
 def readme_row(claim: dict, summary: dict, links: str) -> str:
     """The README results-table row for the comparison (task P3)."""
     tail = " ".join(claim["disclosures"])
+    if claim["verdict"] == "descriptive_only":
+        text = (f"**Registered descriptive run.** {summary['tasks']} public VerilogEval tasks, "
+                f"{len(summary['arms'])} arm(s), tasks fixed before any cell. {claim['sentence']}"
+                + (f" {tail}" if tail else ""))
+        return f"| {text} | {links} |"
     text = (f"**Registered comparison with a single model call.** {summary['tasks']} public VerilogEval "
             f"tasks, three arms, three trials, tasks and decision rule fixed before grading. "
             f"{claim['sentence']}" + (f" {tail}" if tail else ""))

@@ -275,6 +275,9 @@ harness_failures:
   requested_top_not_enforced:
     meaning: "A build request fixes the top module name (meta.yaml top, run.py --top) because its trusted testbench instantiates it, but a planner-written spec could choose another top_name and the mismatch surfaced only at elaboration (found while qualifying tier3 uart_fifo_build)"
     repair: "In the planner spec-repair loop, require top_name to equal the requested top (or, for a single-module build, the only module's name) and say why"
+  finish_refuses_single_arm_run:
+    meaning: "python -m benchmark.finish applied the pre-registered A-versus-C rule to every run, so the single-arm flash-03 run stopped with 'arm full is missing' (exit 2) after grading and archiving; its README and comparison were written by hand and the folder resealed"
+    repair: "finish applies claim.decide only when arms A and C and their paired comparison exist; otherwise claim.describe writes per-arm rates, task-clustered intervals and disclosures with verdict descriptive_only and no comparison claim, and the protocol sentence names the arms and trial count actually run. The rule and its thresholds are unchanged"
   agy_exits_late_after_result:
     meaning: "The Antigravity CLI build installed November 25 printed its result event about 3 s into a trivial Flash-low call, then kept running for about 100 s before exiting; the bridge waited for exit, so a trivial call took 105 to 138 s against the 180 s call limit, and real prompts would have timed out as infrastructure stops measuring the CLI, not the model"
     repair: "scripts/agy_bridge.py reads agy's stream line by line and returns at the result event, then ends agy and its children (taskkill /T on Windows); an agy that exits without a result is still reported with its stderr. Live: the same trivial call takes 6 s and leaves no agy process. flash-03 was re-frozen on the fixed runtime before any cell ran"
