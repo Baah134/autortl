@@ -263,7 +263,7 @@ run as a fixture and a taxonomy entry.
 code-only clone in the README; measure checkout time before and after. Do not
 rewrite history.
 
-**C6. Remove repetition** — `doing` (items 1, 2, 3, 5, 8 and the `_finish_optimize` split merged with `c6-dedupe`, `1d841a53e`; items 4, 6 and 7 remain)
+**C6. Remove repetition** — `doing` (items 1, 2, 3, 5, 8 and the `_finish_optimize` split merged with `c6-dedupe`, `1d841a53e`; item 6 done November 27; items 4 and 7 remain)
 Literal copy-paste is rare (a 6-line-window scan of `autortl/`, `llm/`, `run.py`
 and `curriculum/` finds only the two synthesis templates). The repetition is in
 idioms and parallel paths:
@@ -286,7 +286,11 @@ idioms and parallel paths:
    RunConfig and hash outputs. Fold the shared part into one module or into
    `run.py doctor --live`.
 6. Tests: 16 test files define their own spec/config builders. Move the common
-   ones to `tests/conftest.py` fixtures; no assertion changes.
+   ones to `tests/conftest.py` fixtures; no assertion changes. *Done November
+   27:* the spec/config builders all differ, so they stay; the real copies
+   (module file loaders, tier entry loaders, a text-oracle builder; 28 copies
+   in 16 files) moved to `tests/helpers.py`. Same 2,472 tests collected, same
+   results.
 7. `data/taxonomy.yaml` has about 200 `harness_failures` entries; many are
    one-incident records. Keep entries that code or tests reference by name in
    the taxonomy and move the rest, verbatim, to `docs/archive/INCIDENTS.md`
@@ -336,7 +340,7 @@ fast quality item that can run beside it, or post-release work.
 ### Beside the critical path (safe while B1 runs)
 
 - **C6** remove repetition: items 1, 2, 3, 5, 8 and the finish-phase split
-  merged with `c6-dedupe` (`1d841a53e`); items 4, 6 and 7 remain.
+  merged with `c6-dedupe` (`1d841a53e`); item 6 done; items 4 and 7 remain.
 - **C3** tooling: merged with `c6-dedupe` (ruff, pinned requirements,
   parallel tests: 4 m 43 s instead of 15 to 22 min).
 - **D5** lease default 4 hours: done November 20 (`scripts/session.py`).

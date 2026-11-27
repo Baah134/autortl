@@ -1,6 +1,5 @@
 """Pure fixture invariants; these tests do not compile or simulate RTL."""
 import hashlib
-import importlib.util
 import json
 from pathlib import Path
 
@@ -10,6 +9,7 @@ import yaml
 from autortl.linter import lint_spec, top_verilog
 from autortl.spec import DesignSpec
 from autortl.verilog_interface import infer_module
+from tests.helpers import load_module
 
 ROOT = Path(__file__).resolve().parents[1] / "curriculum/tier3/dot4_pipeline_build"
 CHILDREN = ["dot4_pair01", "dot4_pair23", "dot4_merge"]
@@ -24,10 +24,7 @@ def spec():
 
 
 def qualification():
-    loader = importlib.util.spec_from_file_location("dot4_fixture_cases", ROOT / "qualification/cases.py")
-    module = importlib.util.module_from_spec(loader)
-    loader.loader.exec_module(module)
-    return module
+    return load_module(ROOT / "qualification/cases.py", "dot4_fixture_cases")
 
 
 def shape(ports):

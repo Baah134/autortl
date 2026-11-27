@@ -1,13 +1,12 @@
 """Signed FIR fixture structure and restricted oracle; no vendor/model calls."""
 import hashlib
-import importlib.util
 import json
 import re
 from pathlib import Path
 
 import pytest
 import yaml
-from autortl.golden import GoldenModel, qualify_against_examples, validate_examples
+from autortl.golden import qualify_against_examples, validate_examples
 from autortl.linter import lint_spec, top_verilog
 from autortl.spec import DesignSpec
 from autortl.static_checks import check
@@ -15,6 +14,7 @@ from autortl.tbgen import expected_outputs
 from autortl.verilog_interface import infer_module
 from autortl.triage import FailureKind
 from scripts.check_build_tbs import verdict
+from tests.helpers import load_module, text_oracle
 
 ROOT = Path(__file__).resolve().parents[1] / 'curriculum/tier3/signed_fir4_build'
 FAULTS = '''current_coefficient history_coefficient swapped_taps unsigned_input
@@ -42,19 +42,12 @@ def spec():
 
 
 def cases():
-    loader = importlib.util.spec_from_file_location('signed_fir_cases', ROOT/'qualification/cases.py')
-    module = importlib.util.module_from_spec(loader)
-    loader.loader.exec_module(module)
-    return module
+    return load_module(ROOT/'qualification/cases.py', 'signed_fir_cases')
 
 
 @pytest.fixture
 def oracle(tmp_path):
-    path = tmp_path/'test_only_oracle.py'
-    path.write_text(ORACLE, encoding='utf-8')
-    model = GoldenModel(path)
-    model.work_parent = tmp_path
-    return model
+    return text_oracle(tmp_path, 'test_only_oracle.py', ORACLE)
 
 
 def test_metadata_and_signed_contract():

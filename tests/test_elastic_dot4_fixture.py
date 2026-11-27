@@ -1,6 +1,5 @@
 """Pure fixture contracts and assertion framing; no RTL compilation/simulation."""
 import hashlib
-import importlib.util
 import json
 import re
 from pathlib import Path
@@ -12,6 +11,7 @@ from autortl.linter import lint_spec, top_verilog
 from autortl.spec import DesignSpec
 from autortl.tbqual import assertion_failure_proof
 from autortl.verilog_interface import infer_module
+from tests.helpers import load_module
 
 ROOT = Path(__file__).resolve().parents[1] / "curriculum/tier3/elastic_dot4_build"
 FAULTS = ["dropped_product", "signed_arithmetic", "pair_carry_truncation",
@@ -27,10 +27,7 @@ def spec():
 
 
 def qualification():
-    loader = importlib.util.spec_from_file_location("elastic_dot4_cases", ROOT / "qualification/cases.py")
-    module = importlib.util.module_from_spec(loader)
-    loader.loader.exec_module(module)
-    return module
+    return load_module(ROOT / "qualification/cases.py", "elastic_dot4_cases")
 
 
 def shape(ports):

@@ -1,6 +1,5 @@
 """Divider fixture regressions; these never simulate or establish RTL correctness."""
 import hashlib
-import importlib.util
 import json
 import re
 from pathlib import Path
@@ -14,6 +13,7 @@ from autortl.spec import DesignSpec
 from autortl.static_checks import check
 from autortl.tbgen import expected_outputs, gen_stimulus, generate
 from autortl.verilog_interface import infer_module
+from tests.helpers import load_module
 
 ROOT = Path(__file__).resolve().parents[1] / "curriculum/tier3/iterative_divider_build"
 MATRIX = [8, 1, 2, 4, 13, 16]
@@ -34,11 +34,7 @@ def spec():
 
 
 def qualification():
-    loaded = importlib.util.spec_from_file_location(
-        "iterative_divider_qualification_cases", ROOT / "qualification/cases.py")
-    module = importlib.util.module_from_spec(loaded)
-    loaded.loader.exec_module(module)
-    return module
+    return load_module(ROOT / "qualification/cases.py", "iterative_divider_qualification_cases")
 
 
 def arithmetic(dividend, divisor, width=8):
