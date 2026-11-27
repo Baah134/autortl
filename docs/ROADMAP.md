@@ -281,7 +281,10 @@ idioms and parallel paths:
 4. Evidence retention in `fsm.py`: about 25 `retain_identity`/`identity(...)`
    call sites and hand-written loops at DONE. Collect them in one
    `EvidenceRegister` object (add, verify unchanged, export) used by build,
-   optimize and Doctor paths. Do this together with C1.
+   optimize and Doctor paths. Do this together with C1. *Deferred:* it
+   rewrites the evidence bookkeeping of the verifier itself; do it only with
+   a byte-identical replay of recorded runs as the acceptance test, not
+   beside a running re-hold or benchmark.
 5. `scripts/check_*.py`: five scripts that each parse Vivado paths, build a
    RunConfig and hash outputs. Fold the shared part into one module or into
    `run.py doctor --live`.
@@ -295,6 +298,12 @@ idioms and parallel paths:
    one-incident records. Keep entries that code or tests reference by name in
    the taxonomy and move the rest, verbatim, to `docs/archive/INCIDENTS.md`
    with a pointer. Check references with a search before moving any entry.
+   *Dropped November 27:* `harness_failures` is never loaded by code (the
+   `Taxonomy` class reads only `messages` and `methodology`), so its size
+   costs nothing at run time. 94 of its 209 entries are cited by name in
+   code, tests or DESIGN.md, 6 more only in other docs, and 109 are
+   one-incident records cited nowhere else. Moving those to an archive file is cosmetic and would split
+   one searchable incident log in two.
 8. `benchmark/pilot.py`: a harness cell stopped by model quota is sealed
    `interrupted` because the generic infra check runs before the status map.
    Map `status == "model_blocked"` first. (Both labels are already excluded
