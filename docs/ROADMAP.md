@@ -160,8 +160,10 @@ criteria; a task is not done until all are met and committed.
 ### Track V — verification research
 
 **V1. Measure and reduce false acceptance** — `todo` (mitigation implemented
-on `claude/v1.1-integration`, not yet measured)
-- Baseline: the false-acceptance rate and cells from B1.
+on `claude/v1.1-integration`, not yet measured; DRAFT registration
+`docs/V1_REGISTRATION_DRAFT.md` awaits the owner)
+- Baseline: the same run's `spec_cross_check=off` arm on the same tasks (B1's
+  rate is context only: different harness prompt since November 21).
 - Mitigation to test (one, measured): *independent example derivation*. A
   second planner call, given only the original request (not the first spec),
   produces input/output examples; the build fails spec lint with a dispute if
@@ -176,9 +178,12 @@ on `claude/v1.1-integration`, not yet measured)
   disagreement is recorded and the build continues), so the experiment also
   reports `disagreement_kept` cells. The benchmark runner does not set the
   field yet; the registration for this experiment must.
-- Experiment: rerun the B1 false-acceptance tasks plus Prob135_m2014_q6b, 5
-  trials each, with and without the mitigation; report false acceptances,
-  added calls and any true designs wrongly blocked.
+- Experiment: fresh VerilogEval tasks only (DECISIONS 2026-11-21: final-02
+  tasks are tuned), with and without the mitigation; report false acceptances,
+  added calls and any true designs wrongly blocked. The B1 false-acceptance
+  tasks plus Prob135_m2014_q6b run only as a labelled, descriptive "tuned"
+  set. Task rule, arms, decision rule, power and budget:
+  `docs/V1_REGISTRATION_DRAFT.md`.
 - Acceptance: taxonomy entry updated from "open" to the measured outcome;
   default changed only if false acceptances fall without blocking correct
   designs.
