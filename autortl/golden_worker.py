@@ -11,6 +11,11 @@ import itertools
 import sys
 
 _allocation_left = 100000
+INIT_INSTRUCTION_BUDGET = 2000000  # module body + init(): constant tables are built here
+# Every step() of one run together. An AES round oracle needs ~5,600 traced lines
+# per step (670,000 for 120 steps in 0.28 s), so 200,000 was the binding limit while
+# the worker's 5 s wall timeout allows ~10M; 2M keeps a wide margin under it.
+STEP_INSTRUCTION_BUDGET = 2000000
 
 
 def reserve_allocation(count):
@@ -242,10 +247,22 @@ def execute(source: str, stimulus: list[dict]) -> list[dict]:
 
         def visit_AugAssign(self, node):
             # Augmented arithmetic otherwise bypasses the same size guards.
-            if not isinstance(node.target, ast.Name):
-                raise ValueError("augmented subscript assignment is unsupported; use plain assignment")
-            replacement = ast.Assign([node.target], ast.BinOp(
-                ast.Name(node.target.id, ast.Load()), node.op, node.value))
+            target = node.target
+            if isinstance(target, ast.Name):
+                current = ast.Name(target.id, ast.Load())
+            elif (isinstance(target, ast.Subscript) and isinstance(target.value, ast.Name)
+                  and isinstance(target.slice, (ast.Constant, ast.Name))):
+                # golden_augmented_subscript_rejected: state["count"] -= 1 reads and
+                # writes one side-effect-free location, so it rewrites like a name.
+                current = ast.Subscript(ast.Name(target.value.id, ast.Load()),
+                                        ast.copy_location(type(target.slice)(**{f: getattr(target.slice, f)
+                                            for f in target.slice._fields}), target.slice), ast.Load())
+                if isinstance(current.slice, ast.Name):
+                    current.slice.ctx = ast.Load()
+            else:
+                raise ValueError("augmented assignment is supported only on a name or "
+                                 "name[constant]/name[name]; use plain assignment")
+            replacement = ast.Assign([target], ast.BinOp(current, node.op, node.value))
             return ast.copy_location(self.visit(replacement), node)
 
         @staticmethod
@@ -284,19 +301,23 @@ def execute(source: str, stimulus: list[dict]) -> list[dict]:
     namespace = {"__builtins__": SAFE_BUILTINS.copy(), "_bounded_binary": bounded_binary,
                  "_bounded_slice": bounded_slice, "_bounded_slice_assign": bounded_slice_assign,
                  "_bounded_copy": bounded_copy}
-    remaining = 200000
+    # golden_table_setup_exhausts_step_budget: one-time setup (module body and
+    # init, where constant tables such as an AES S-box are built) gets its own
+    # budget; the per-run step budget is unchanged.
+    remaining, phase = INIT_INSTRUCTION_BUDGET, "setup"
 
     def instruction_limit(frame, event, arg):
         nonlocal remaining
         remaining -= 1
         if remaining <= 0:
-            raise ValueError("golden instruction budget exhausted")
+            raise ValueError(f"golden instruction budget exhausted ({phase})")
         return instruction_limit
 
     sys.settrace(instruction_limit)
     try:
         exec(compile(tree, "<restricted-golden>", "exec"), namespace)
         state = namespace["init"]()
+        remaining, phase = STEP_INSTRUCTION_BUDGET, "steps"
         outputs = []
         for inputs in stimulus:
             state, out = namespace["step"](state, inputs)

@@ -7,8 +7,8 @@ if {[llength $argv] != 4} {
 }
 lassign $argv source_list out in_bytes out_bytes
 foreach value [list $in_bytes $out_bytes] {
-    if {![string is integer -strict $value] || $value < 1 || $value > 8} {
-        error "byte widths must be integers 1..8"
+    if {![string is integer -strict $value] || $value < 1 || $value > 32} {
+        error "byte widths must be integers 1..32"
     }
 }
 set root [file normalize [file join [file dirname [info script]] ..]]

@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_3:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 3\n## Contract check\n- Defined behavior: PASS \u2014 authoritative ladder is ALIVE at all 5 rungs and simulation passed.\n- Interface and declared latency: PASS \u2014 top ports are preserved and `// @latency 0` matches the known value.\n- Compile, elaboration, simulation, and synthesis gates: PASS \u2014 required tools exited successfully; simulation reported `TEST PASSED` and synthesis reported `SYNTH_COMPLETE`.\n- Routed metrics and report integrity: PASS \u2014 retained routed evidence is present and consistent.\n- Timing closure: PASS \u2014 timing is met with WNS 0.57 ns and WHS 0.167 ns.\n- Objective improvement: FAIL \u2014 candidate and previous best both use 3 LUTs and 4 FFs, so the `minimize_luts` objective has no strict improvement.\n\n## Summary\n- Passed: 5 of 6\n- Failed: 1 of 6\n- Improved over previous best: NO\n\n## Recommendation\nREJECT\n\n## Reason\nThe candidate passes behavioral, implementation, metric, and timing gates, but both it and the timing-feasible previous best measure 3 LUTs and 4 FFs. Because `minimize_luts` requires a strict lexicographic improvement once both designs are timing-feasible, this candidate cannot replace the previous best.",
+      "recommendation": "REJECT",
+      "passed": 5,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

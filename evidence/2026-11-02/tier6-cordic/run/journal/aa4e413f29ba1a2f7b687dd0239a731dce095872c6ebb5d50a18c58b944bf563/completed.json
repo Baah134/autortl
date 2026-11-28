@@ -1,0 +1,81 @@
+{
+  "stage": "iteration_1:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 1,
+    "instruction": "Add registered cosine and sine output values in `cordic_engine`, computed from the same next `x` and `y` values used for each state update; connect the top outputs directly to these registers and remove the combinational rounding path in `cordic_out`. Set them to zero on synchronous reset, update them on input acceptance and every busy iteration using the specified signed 19-bit sum and low 16 result bits, and hold them whenever `x` and `y` hold. Preserve output values on every cycle, including idle, invalid, and stalled cycles; do not change handshakes, iteration timing, or the top\u2019s annotati",
+    "candidates": [
+      {
+        "iteration": 1,
+        "mutation": "standard",
+        "instruction": "Add registered cosine and sine output values in `cordic_engine`, computed from the same next `x` and `y` values used for each state update; connect the top outputs directly to these registers and remove the combinational rounding path in `cordic_out`. Set them to zero on synchronous reset, update them on input acceptance and every busy iteration using the specified signed 19-bit sum and low 16 result bits, and hold them whenever `x` and `y` hold. Preserve output values on every cycle, including idle, invalid, and stalled cycles; do not change handshakes, iteration timing, or the top\u2019s annotati",
+        "generated_source_sha256": "1630c707e48ab11b0fbdc02910cfd97057a3ec29dc53f5e54df50b76a545bfcd",
+        "final_source_sha256": "1630c707e48ab11b0fbdc02910cfd97057a3ec29dc53f5e54df50b76a545bfcd",
+        "generated_code_hash": "2d1f7b75a8d66204",
+        "final_code_hash": "2d1f7b75a8d66204",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": false,
+          "wns_ns": -0.279,
+          "whs_ns": 0.129,
+          "lut_used": 195,
+          "ff_used": 94,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.051,
+          "total_power_w": 0.121
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-09\\cordic_build\\iter_001\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-09\\cordic_build\\iter_001\\cand_standard\\synth.tcl",
+          "sha256": "4d09098f3471485d0fcf7f48009fc4e421006fa3488c171246899b3807bd9c36"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-09\\cordic_build\\iter_001\\cand_standard\\cordic_sincos.v",
+          "sha256": "227a8e10cb44001f9c34925bf68f509d197977861e08c15fdfd4912b98fa885e"
+        }
+      }
+    ],
+    "doctor": {
+      "status": "ADOPTED",
+      "action": "rtl_surgery",
+      "reason": "policy_improvement",
+      "tools_ran": true,
+      "measured_metrics": {
+        "sim_passed": true,
+        "timing_met": true,
+        "wns_ns": 0.076,
+        "whs_ns": 0.096,
+        "lut_used": 194,
+        "ff_used": 95,
+        "dsp_used": 0,
+        "bram_used": 0.0,
+        "dynamic_power_w": 0.051,
+        "total_power_w": 0.121
+      },
+      "adopted": true,
+      "input_source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-09\\cordic_build\\iter_001\\cand_standard\\cordic_sincos.v",
+        "sha256": "227a8e10cb44001f9c34925bf68f509d197977861e08c15fdfd4912b98fa885e"
+      },
+      "trial_source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-09\\cordic_build\\iter_001\\doctor_rtl_surgery_trial\\cordic_sincos.v",
+        "sha256": "bf0ab247d05618d930f69e1937ee98095745c4f62b49bc05612fe025bb65dab6"
+      },
+      "trial_flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-09\\cordic_build\\iter_001\\doctor_rtl_surgery_trial\\synth.tcl",
+        "sha256": "b85465f18bc94dd40b530f17d2fd59629570d539892b93a42528aae616be0891"
+      },
+      "identity_count": 3,
+      "proposed_source_text_sha256": "aa5fd82e8329371da619a451846fce9d38a19f2334772c350849be9448d6deff"
+    },
+    "recommendation": "ACCEPT",
+    "is_best": true,
+    "selected_source_sha256": "aa5fd82e8329371da619a451846fce9d38a19f2334772c350849be9448d6deff"
+  },
+  "artifacts": {}
+}

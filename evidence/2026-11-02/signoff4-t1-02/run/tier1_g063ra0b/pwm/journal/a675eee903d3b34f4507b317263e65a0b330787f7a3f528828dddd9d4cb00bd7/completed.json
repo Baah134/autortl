@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_4:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 4\n## Contract check\n- Interface, reset, and observable cycle behavior: PASS \u2014 ports and reset behavior are preserved; the 9-bit subtraction\u2019s borrow bit implements the original unsigned comparison.\n- Top latency annotation: PASS \u2014 authoritative latency is unknown, so no numeric annotation is required.\n- Compilation and simulation: PASS \u2014 required tool exits are zero and the fixed testbench reports `TEST PASSED`.\n- Routed metric integrity: PASS \u2014 retained routed reports and tool evidence are present and consistent.\n- Timing closure: PASS \u2014 timing is met; WNS is 0.737 ns and WHS is 0.232 ns.\n- Objective promotion: FAIL \u2014 both candidate and previous best are timing-feasible, but LUTs increased from 7 to 11; `improvement_kind` is null.\n\n## Summary\n- Passed: 5 of 6\n- Failed: 1 of 6\n- Improved over previous best: NO\n\n## Recommendation\nRESTART\n\n## Reason\nThe candidate preserves the defined behavior and meets timing, but it fails the `minimize_luts` objective against the feasible previous best. The stall count is 3, so the restart condition applies.",
+      "recommendation": "REJECT",
+      "passed": 5,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

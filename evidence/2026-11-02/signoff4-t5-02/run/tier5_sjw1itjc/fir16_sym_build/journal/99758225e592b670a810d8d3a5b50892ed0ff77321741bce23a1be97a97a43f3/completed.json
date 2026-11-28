@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_5:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 5\n## Contract check\n- Top interface and `// @latency 5`: PASS \u2014 candidate preserves the required top ports and has the matching annotation.\n- Defined behavior and deterministic verification: PASS \u2014 ladder is ALIVE and simulation passed.\n- Tool exits and routed metric integrity: PASS \u2014 required tool exits succeeded and candidate metrics are reported.\n- Timing feasibility: PASS \u2014 timing_met=true, WNS=1.549 ns and WHS=0.106 ns.\n- Improvement over previous best: FAIL \u2014 both designs are timing-feasible, but LUTs increased from 79 to 105; the `minimize_luts` objective did not improve.\n## Summary\n- Passed: 4 of 5\n- Failed: 1 of 5\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes behavioral, verification, metric and timing gates, but the previous best is already timing-feasible and uses fewer LUTs (79 versus 105). Since LUTs are the primary `minimize_luts` objective, this candidate does not qualify for promotion; stall count 1 does not warrant RESTART.",
+      "recommendation": "REJECT",
+      "passed": 4,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

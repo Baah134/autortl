@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Interface and static checks: PASS \u2014 Top name, ports, widths, and clock match the contract.\n- FIFO behavior: PASS \u2014 Deterministic ladder is ALIVE; candidate preserves the specified queue, handshakes, reset behavior, and minimum transfer age.\n- Top latency annotation: PASS \u2014 `// @latency 1` matches authoritative latency.\n- xvlog compile: PASS \u2014 Successful exit recorded.\n- xelab elaboration: PASS \u2014 Successful exit recorded.\n- xsim simulation: PASS \u2014 Exact `TEST PASSED` verdict; successful exit recorded.\n- Synthesis and routed metric integrity: PASS \u2014 Synthesis completed; retained routed reports and metrics are provided.\n- Timing feasibility: PASS \u2014 `timing_met=true`, WNS is 0.306 ns, and WHS is 0.217 ns.\n- Improvement over previous best: PASS \u2014 Verified timing recovery from the known timing-infeasible incumbent; higher LUT use is permitted for recovery.\n## Summary\n- Passed: 9 of 9\n- Failed: 0 of 9\n- Improved over previous best: YES\n## Recommendation\nACCEPT\n## Reason\nThe candidate passes the deterministic behavior and tool gates, declares the required top latency, and meets both setup and hold timing. The incumbent has known negative setup slack, so the recorded `timing_recovery` qualifies as an improvement even though LUT use increased from 14 to 15.",
+      "recommendation": "ACCEPT",
+      "passed": 9,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}

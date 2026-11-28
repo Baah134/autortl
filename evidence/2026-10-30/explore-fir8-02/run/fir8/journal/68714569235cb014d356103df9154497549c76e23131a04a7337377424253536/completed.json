@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Interface and cycle behavior: PASS \u2014 ports, parameters, reset, and output pipeline are preserved; the regrouped 32-bit sums retain modulo arithmetic behavior. Deterministic ladder reports 5 rungs ALIVE.\n- Top latency annotation: PASS \u2014 `// @latency 1` matches the authoritative top latency.\n- Compile, elaboration, and simulation: PASS \u2014 required tool exits succeeded and the fixed testbench reports `TEST PASSED`.\n- Routed metric evidence: PASS \u2014 retained routed reports and metric integrity evidence are present.\n- Timing progress: PASS \u2014 setup WNS improved from -9.918 ns to -2.95 ns; hold remains positive at 0.121 ns, 0.037 ns below the previous best. This qualifies as the recorded timing progress while both designs remain infeasible.\n- Promotion objective: PASS \u2014 timing progress may replace the infeasible previous best; increased LUTs and FFs do not invalidate it.\n## Summary\n- Passed: 6 of 6\n- Failed: 0\n- Improved over previous best: YES\n## Recommendation\nACCEPT\n## Reason\nThe candidate passes deterministic correctness and verification gates and makes valid setup timing progress over the still-infeasible previous best. Timing closure is not achieved, but the contract permits promotion as `timing_progress`; resource increases are advisory for this comparison.",
+      "recommendation": "ACCEPT",
+      "passed": 6,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}

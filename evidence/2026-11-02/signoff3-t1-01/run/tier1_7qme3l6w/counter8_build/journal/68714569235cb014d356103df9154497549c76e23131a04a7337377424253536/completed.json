@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Defined counter behavior and cycle preservation: PASS \u2014 deterministic ladder is ALIVE and simulation passed; synchronous reset priority, enabled increment, hold, and registered output are preserved.\n- Top interface and latency annotation: PASS \u2014 top ports are unchanged and `counter8` declares `// @latency 1`, matching authoritative latency.\n- Compilation and simulation gates: PASS \u2014 xvlog, xelab, and xsim exited successfully; simulation reported `TEST PASSED`.\n- Routed metric integrity: PASS \u2014 retained routed reports and successful synthesis evidence are present.\n- Timing feasibility: PASS \u2014 timing is met with WNS 0.555 ns and WHS 0.051 ns, both nonnegative.\n- Objective improvement over previous best: FAIL \u2014 with both designs timing-feasible, `minimize_luts` requires a strict lexicographic improvement; LUTs and FFs are unchanged at 6 and 8.\n## Summary\n- Passed: 5 of 6\n- Failed: 1 of 6\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate preserves the specified counter behavior and meets timing, but it does not improve the chosen objective: LUT and FF counts tie the previous best, and the recorded improvement kind is null. No strict objective gain is established.",
+      "recommendation": "REJECT",
+      "passed": 5,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

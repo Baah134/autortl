@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_2:decision:instruction:0",
+  "result": "In `sync_fifo_core`, change the full-depth `memory` ring so it stores only queued words behind `head`; write the tail on pushes into a nonempty FIFO, and load the next head from the tail on pops when more than one word is queued. Handle `DEPTH=1` explicitly, including simultaneous pop and push, and preserve arbitrary-depth wrap, full simultaneous transfers, stalls, reset behavior, and the one-cycle minimum transfer age. Keep the top interface and `// @latency 1` annotation; retain `sync_fifo_core` as a live child, then compare routed LUTs, FFs, WNS, and WHS against the incumbent.",
+  "artifacts": {}
+}

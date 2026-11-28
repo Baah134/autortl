@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_3:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 3\n## Contract check\n- Interface and cycle/reset behavior: PASS \u2014 ports and reset behavior are preserved; the counter update matches the frozen design, and the authoritative ladder is ALIVE.\n- Top latency annotation: PASS \u2014 authoritative latency is unknown, so no numeric annotation is required.\n- Compilation and simulation: PASS \u2014 required tool exits succeeded and the frozen testbench reports `TEST PASSED`.\n- Routed metric integrity: PASS \u2014 retained routed reports and metric evidence are present.\n- Timing closure: PASS \u2014 timing is feasible; WNS is 0.604 ns and WHS is 0.135 ns.\n- Objective improvement: FAIL \u2014 both designs are timing-feasible, but LUTs increased from 7 to 25 (and FFs from 9 to 33), so the `minimize_luts` objective did not improve.\n## Summary\n- Passed: 5 of 6\n- Failed: 1 of 6\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes behavioral, verification, metric-integrity, and timing gates, but the previous best was already timing-feasible and the candidate uses more LUTs, so it does not meet the required objective improvement. Stall count is 2, below the RESTART threshold.",
+      "recommendation": "REJECT",
+      "passed": 5,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

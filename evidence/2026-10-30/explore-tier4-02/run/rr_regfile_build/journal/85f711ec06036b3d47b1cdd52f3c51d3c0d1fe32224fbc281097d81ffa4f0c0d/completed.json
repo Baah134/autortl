@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_2:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 2\n## Contract check\n- Defined behavior and integration simulation: PASS \u2014 ladder reports 5 rungs ALIVE; the unchanged testbench reports TEST PASSED.\n- Interface and latency annotations: PASS \u2014 required child `@latency 1` annotations are present; top latency is unknown, so no numeric top annotation is required.\n- Tool and synthesis gates: PASS \u2014 xvlog, xelab, xsim, and Vivado exited successfully; Vivado log contains SYNTH_COMPLETE.\n- Routed metrics and timing feasibility: PASS \u2014 retained routed reports support the metrics; timing_met=true, WNS=0.554 ns, and WHS=0.062 ns.\n- Objective improvement over previous best: FAIL \u2014 both designs are timing-feasible, but LUTs increased from 42 to 63, failing the required strict LUT reduction.\n\n## Summary\n- Passed: 4 of 5\n- Failed: 1 of 5\n- Improved over previous best: NO\n\n## Recommendation\nREJECT\n\n## Reason\nThe candidate passes the behavioral, tool, and timing gates, but the previous best is already timing-feasible and the `minimize_luts` objective requires strictly fewer LUTs. This candidate uses 63 LUTs versus 42, and the recorded improvement kind is null, so it does not qualify for promotion.",
+      "recommendation": "REJECT",
+      "passed": 4,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

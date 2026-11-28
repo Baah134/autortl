@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_4:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 4,
+    "instruction": "Keep the `pwm` interface and synchronous active-high reset behavior, and retain the registered `pwm_out <= (counter < duty)` behavior. Replace the counter\u2019s terminal-count branch and `counter + 1` update with an 8-bit counter whose bit 0 toggles each active cycle and whose bit *i* toggles when all lower counter bits are 1, so it wraps naturally from 255 to 0; clear it on reset. Do not add pipeline stages or a numeric latency annotation; the candidate still must pass the frozen simulation and all routed metric, setup, and hold gates, and it improves the incumbent only if LUTs decrease or LUTs r",
+    "candidates": [
+      {
+        "iteration": 4,
+        "mutation": "standard",
+        "instruction": "Keep the `pwm` interface and synchronous active-high reset behavior, and retain the registered `pwm_out <= (counter < duty)` behavior. Replace the counter\u2019s terminal-count branch and `counter + 1` update with an 8-bit counter whose bit 0 toggles each active cycle and whose bit *i* toggles when all lower counter bits are 1, so it wraps naturally from 255 to 0; clear it on reset. Do not add pipeline stages or a numeric latency annotation; the candidate still must pass the frozen simulation and all routed metric, setup, and hold gates, and it improves the incumbent only if LUTs decrease or LUTs r",
+        "generated_source_sha256": "f07c86ca4e7ef76fe844f8125956c9a420f5e59fd524424b7fbe1516a2208acb",
+        "final_source_sha256": "f07c86ca4e7ef76fe844f8125956c9a420f5e59fd524424b7fbe1516a2208acb",
+        "generated_code_hash": "3f1b76d5fd4431dd",
+        "final_code_hash": "3f1b76d5fd4431dd",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.404,
+          "whs_ns": 0.186,
+          "lut_used": 11,
+          "ff_used": 9,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.01,
+          "total_power_w": 0.081
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff3-t1-01\\tier1_7qme3l6w\\pwm\\iter_004\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff3-t1-01\\tier1_7qme3l6w\\pwm\\iter_004\\cand_standard\\synth.tcl",
+          "sha256": "16fdc2c342ac669d503ec9b8ea2030875a5df04b09addbb93c0ffb4b673f5c83"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff3-t1-01\\tier1_7qme3l6w\\pwm\\iter_004\\cand_standard\\pwm.v",
+          "sha256": "b8839a73b33b1afb640e63d563aac9f09a0ff75f89291fe6a1f57b2ade64d1d7"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": "f07c86ca4e7ef76fe844f8125956c9a420f5e59fd524424b7fbe1516a2208acb"
+  },
+  "artifacts": {}
+}

@@ -1,0 +1,77 @@
+{
+  "candidates": [
+    {
+      "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-03\\tier5_m24_d80m\\uart_rx_fifo_build\\iter_001\\cand_standard",
+      "cache_hit": false,
+      "final_code_hash": "f3107b66c77509db",
+      "final_source_sha256": "126b077c8e71fdddc8b82803e1208cd490a2aad19a546abf20c544b84535f4dc",
+      "flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-03\\tier5_m24_d80m\\uart_rx_fifo_build\\iter_001\\cand_standard\\synth.tcl",
+        "sha256": "7e4b18a044f4bdd24ed8828ea0203c0835ee66250e15b8499a0b65bb5b045143"
+      },
+      "generated_code_hash": "f3107b66c77509db",
+      "generated_source_sha256": "126b077c8e71fdddc8b82803e1208cd490a2aad19a546abf20c544b84535f4dc",
+      "instruction": "In `rx_fifo`, replace `mem[rd_ptr]` output selection with a shift-register queue and drive `out_data` directly from its registered head, keeping that head zero whenever the FIFO is empty. Update the queue on push, pop, simultaneous push/pop, and full-FIFO replacement so byte order, same-edge empty push visibility, overflow pulses, and registered output behavior remain unchanged for every supported `ADDR_BITS` value. Preserve reset behavior and the existing top interface; do not add a cycle.",
+      "iteration": 1,
+      "metrics": {
+        "bram_used": 0.0,
+        "dsp_used": 0,
+        "dynamic_power_w": 0.005,
+        "ff_used": 83,
+        "lut_used": 80,
+        "sim_passed": true,
+        "timing_met": false,
+        "total_power_w": 0.075,
+        "whs_ns": 0.106,
+        "wns_ns": -0.155
+      },
+      "mutation": "standard",
+      "reason": "",
+      "rungs": 5,
+      "source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-03\\tier5_m24_d80m\\uart_rx_fifo_build\\iter_001\\cand_standard\\uart_rx_fifo.v",
+        "sha256": "573ad4c28983d3facb575de933fcf1fbc8522957bc342c75b0acecabdccef6f9"
+      },
+      "status": "measured"
+    }
+  ],
+  "doctor": {
+    "action": "rtl_surgery",
+    "adopted": true,
+    "identity_count": 3,
+    "input_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-03\\tier5_m24_d80m\\uart_rx_fifo_build\\iter_001\\cand_standard\\uart_rx_fifo.v",
+      "sha256": "573ad4c28983d3facb575de933fcf1fbc8522957bc342c75b0acecabdccef6f9"
+    },
+    "measured_metrics": {
+      "bram_used": 0.0,
+      "dsp_used": 0,
+      "dynamic_power_w": 0.005,
+      "ff_used": 64,
+      "lut_used": 70,
+      "sim_passed": true,
+      "timing_met": true,
+      "total_power_w": 0.075,
+      "whs_ns": 0.113,
+      "wns_ns": 0.55
+    },
+    "proposed_source_text_sha256": "efd832a641ab520304817b2e45abb79fbefb4ff2c60c69edd07c2837ef8eedd1",
+    "reason": "policy_improvement",
+    "status": "ADOPTED",
+    "tools_ran": true,
+    "trial_flow_script": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-03\\tier5_m24_d80m\\uart_rx_fifo_build\\iter_001\\doctor_rtl_surgery_trial\\synth.tcl",
+      "sha256": "4e675fc576d9d32ea4d26b0ab8f45d5757824f8b73270ee2832acd5c749cae1d"
+    },
+    "trial_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-03\\tier5_m24_d80m\\uart_rx_fifo_build\\iter_001\\doctor_rtl_surgery_trial\\uart_rx_fifo.v",
+      "sha256": "df78008070ed3cb1abb8b72ee8c1ee8a0392f3e1f752d279287fafb4df634c54"
+    }
+  },
+  "instruction": "In `rx_fifo`, replace `mem[rd_ptr]` output selection with a shift-register queue and drive `out_data` directly from its registered head, keeping that head zero whenever the FIFO is empty. Update the queue on push, pop, simultaneous push/pop, and full-FIFO replacement so byte order, same-edge empty push visibility, overflow pulses, and registered output behavior remain unchanged for every supported `ADDR_BITS` value. Preserve reset behavior and the existing top interface; do not add a cycle.",
+  "is_best": true,
+  "iteration": 1,
+  "recommendation": "ACCEPT",
+  "schema_version": 1,
+  "selected_source_sha256": "efd832a641ab520304817b2e45abb79fbefb4ff2c60c69edd07c2837ef8eedd1"
+}

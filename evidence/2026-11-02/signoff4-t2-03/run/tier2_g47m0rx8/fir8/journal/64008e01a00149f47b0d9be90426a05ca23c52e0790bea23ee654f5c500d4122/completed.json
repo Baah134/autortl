@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_5:model:planner.plan:0",
+  "result": "# PLAN \u2014 iteration 5\n## Current state assessment\nThe verified incumbent is still timing-infeasible at WNS \u22120.294 ns, with 0 DSPs and 351 LUTs. Iteration 4 worsened setup to \u22122.814 ns and hold to 0.080 ns, so it did not qualify as timing progress. The seed\u2019s serial shift-add multiplier accumulation is a concrete path to shorten without changing the one-cycle registered output.\n\n## Hypothesis\nBalancing each multiplier\u2019s partial-product additions should reduce serial carry-propagation depth and improve setup WNS, at a possible cost in LUTs and routing.\n\n## Instruction for generator\nKeep the delay line, `y_out` register, reset behavior, interface, parameters, `// @latency 1`, and final carry-save reduction unchanged. Replace the `mul_shift_add` function\u2019s serial `accum` loop with a balanced pairwise tree of 32-bit shifted terms, including the `b[15]` term as a subtraction; preserve signed 16-bit operands and the original modulo-32-bit result for every parameter value. Do not add registers or change cycle behavior.",
+  "artifacts": {}
+}

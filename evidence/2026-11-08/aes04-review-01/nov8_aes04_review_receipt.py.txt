@@ -1,0 +1,150 @@
+"""Read/hash retained evidence; capture trusted prompt rendering with dispatch stubbed.
+
+Never executes model-authored Python/RTL, calls a model/tool, or edits canonical files.
+"""
+import ast
+import hashlib
+import json
+import re
+import sys
+from pathlib import Path
+
+ROOT = Path('C:/Users/prince.baah/Downloads/autortl-work')
+WORK = Path(__file__).resolve().parent
+NAME = 'explore-aes-20261108-04'
+RUN = ROOT / 'logs' / NAME / 'aes128_core_build'
+ARCHIVE = ROOT / 'evidence/2026-11-08' / NAME
+def read(p): return json.loads(p.read_text(encoding='utf-8'))
+def digest(p): return hashlib.sha256(p.read_bytes()).hexdigest()
+critical = {}
+def retain(p):
+    critical[p.relative_to(ROOT).as_posix()] = digest(p)
+    return read(p)
+launch = retain(ROOT / 'logs' / (NAME + '-launch.json'))
+result = retain(ROOT / 'logs' / (NAME + '-launch-result.json'))
+summary = retain(RUN / 'run_summary.json')
+budget = retain(RUN / 'budget.json')
+config = retain(RUN / 'config.json')
+runtime = retain(RUN / 'runtime.json')
+freeze = retain(ROOT / 'logs' / (NAME + '-source-freeze.json'))
+drift = [p for p,h in freeze.items() if not (ROOT/p).is_file() or digest(ROOT/p) != h]
+manifest = retain(ARCHIVE / 'archive-manifest.json')
+bad_archive = [p for p,h in manifest['files'].items() if not (ARCHIVE/p).is_file() or digest(ARCHIVE/p) != h]
+oracles = {}
+for module in ('aes_ctrl','aes_round'):
+    oracles[module] = [retain(p) for p in sorted((RUN/'modules'/module).glob('golden_attempt_*.log'))]
+
+def tool_case(relative):
+    directory = RUN / relative
+    receipt = directory/'tool_exit_records.log'
+    log = directory/'sim_log.txt'
+    if not receipt.exists(): return {'missing': True}
+    critical[receipt.relative_to(ROOT).as_posix()] = digest(receipt)
+    rows = [json.loads(line) for line in receipt.read_text(encoding='utf-8').splitlines()]
+    latest = {row['tool']: row for row in rows}
+    evidence = []
+    for tool,row in latest.items():
+        output = Path(row['output_log_path'])
+        evidence.append({'tool':tool,'status':row['status'],'returncode':row['returncode'],
+                         'driver_returncode':row['driver_returncode'],
+                         'latest_output_hash_matches':output.is_file() and digest(output)==row['output_log_sha256']})
+    text = log.read_text(encoding='utf-8') if log.exists() else ''
+    if log.exists(): critical[log.relative_to(ROOT).as_posix()] = digest(log)
+    failures = re.findall(r'^FAIL index=(\d+) signal=(\w+)',text,re.M)
+    counts = re.findall(r'TEST FAILED: (\d+) errors',text)
+    return {'directory':relative,'exits':evidence,'assertion_count':len(failures),
+            'first_assertion':failures[0] if failures else None,
+            'failure_summary':counts,'passed_marker': 'TEST PASSED' in text}
+
+cases = [tool_case('modules/aes_ctrl/candidate_standard_0'),
+         tool_case('modules/aes_ctrl/tbqual/control'),tool_case('modules/aes_ctrl/tbqual/mutant')]
+cases += [tool_case(f'modules/aes_round/candidate_standard_{i}') for i in range(4)]
+qualification = retain(RUN/'modules/aes_ctrl/tbqual/qualification.json')
+
+# Trusted source imports cannot emit .pyc, and the actual role dispatch is replaced
+# before calling golden_model. The fake response is returned as text, never run.
+sys.dont_write_bytecode = True
+sys.path.insert(0,str(ROOT))
+from autortl import roles
+from autortl.spec import DesignSpec
+captured = []
+def fake_ask(role,name,prompt,**kwargs):
+    captured.append(prompt)
+    return 'def init(): return {}\ndef step(s,i): return s, {}'
+roles._ask = fake_ask
+spec = DesignSpec.load(RUN/'design_spec.json')
+round_spec = next(module for module in spec.modules if module.name=='aes_round')
+completed = []
+for p in (RUN/'journal').glob('*/completed.json'):
+    row = read(p)
+    if row['stage'].startswith('module_aes_round:model:generator.golden_model:'):
+        completed.append((int(row['stage'].rsplit(':',1)[1]),p,row))
+completed.sort(key=lambda item:item[0])
+prompts = []
+for index,p,row in completed:
+    started_path = p.with_name('started.json')
+    started = retain(started_path)
+    critical[p.relative_to(ROOT).as_posix()] = digest(p)
+    kwargs = ast.literal_eval(started['kwargs'])
+    roles.Generator().golden_model(round_spec,None,**kwargs)
+    prompt = captured[-1]
+    previous = kwargs.get('previous_source','')
+    previous_record = (json.loads(prompt.split('Truncation is explicit.\n',1)[1].splitlines()[0])
+                       if index else {})
+    prompts.append({'attempt':index+1,'prompt_utf8_sha256':hashlib.sha256(prompt.encode()).hexdigest(),
+                    'characters':len(prompt),
+                    'generic_gf_hint_present':'every nonzero field element before repeating' in prompt,
+                    'gf8_count_qualified':'(255 distinct nonzero elements for GF(2^8))' in prompt,
+                    'public_examples_present':'Omitted examples: 0 of 2' in prompt,
+                    'behavior_anchor_present':'S(53) = ed' in prompt,
+                    'repair_error_present':not index or kwargs.get('feedback','') in prompt,
+                    'previous_source_present':not index or previous_record.get('source_text_prefix')==previous,
+                    'previous_source_matches_prior_journal':not index or previous==completed[index-1][2]['result'],
+                    'previous_file_hash_matches_rejection':not index or kwargs.get('previous_source_sha256')==oracles['aes_round'][index-1]['source_sha256'],
+                    'previous_source_truncated': '"truncated": true' in prompt})
+events = [json.loads(line) for line in (RUN/'events.jsonl').read_text(encoding='utf-8').splitlines()]
+old_run = ROOT/'logs/explore-aes-20261108-03/aes128_core_build'
+old_config = read(old_run/'config.json')
+comparison_keys = ('max_iterations','best_of_n','max_fix_attempts','max_infra_retries','max_llm_calls','max_vivado_minutes','max_wall_minutes','generate_golden','implementation','target_part','target_freq_mhz','model','synthesis_timeout_minutes')
+rtl_static = []
+for i in range(4):
+    path = RUN/f'modules/aes_round/candidate_standard_{i}/aes_round.v'
+    critical[path.relative_to(ROOT).as_posix()] = digest(path)
+    source = path.read_text(encoding='utf-8')
+    rtl_static.append({'candidate':i,'descending_fe_bits_with_repeated_base_square':
+                       'for (i = 7; i >= 0; i = i - 1)' in source and "(8'hfe >> i) & 1" in source and 'base = gf_multiply(base, base);' in source})
+fix_feedback = []
+for path in (RUN/'journal').glob('*/started.json'):
+    row = read(path)
+    if row['stage'].startswith('module_aes_round:model:generator.fix:'):
+        args = ast.literal_eval(re.sub(r'<autortl\.budget\.Budget object at 0x[0-9A-Fa-f]+>', 'None', row['args']))
+        index = int(row['stage'].rsplit(':',1)[1])
+        critical[path.relative_to(ROOT).as_posix()] = digest(path)
+        fix_feedback.append({'repair':index+1,'error':args[2],
+                             'source_matches_failed_candidate':args[0]==(RUN/f'modules/aes_round/candidate_standard_{index}/aes_round.v').read_text(encoding='utf-8'),
+                             'tb_argument_characters':len(args[3]),'tb_rendered_characters':len(args[3][:2000]),
+                             'failing_expected_assignment_in_rendered_tb':bool(re.search(r'_autortl_exp_state_out\[1\]\s*=',args[3][:2000])),
+                             'previous_error_history_count':len(args[4])})
+fix_feedback.sort(key=lambda item:item['repair'])
+receipt = {'review_status':'completed','source_commit':launch['source_commit'],
+           'launch_result':result,'run_summary':summary,'budget':budget,
+           'configuration':{key:config[key] for key in ('max_iterations','best_of_n','max_fix_attempts','max_infra_retries','max_llm_calls','max_vivado_minutes','max_wall_minutes','generate_golden','implementation','target_part','target_freq_mhz','model')},
+           'frozen_inputs':len(freeze),'changed_inputs':drift,
+           'aes03_comparison':{'declared_limits_equal':all(config[k]==old_config[k] for k in comparison_keys),
+                               'different_config_keys':[k for k in comparison_keys if config[k]!=old_config[k]],
+                               'frozen_spec_bytes_equal':(RUN/'inputs/spec_path.json').read_bytes()==(old_run/'inputs/spec_path.json').read_bytes(),
+                               'frozen_integration_tb_bytes_equal':(RUN/'inputs/testbench_path.v').read_bytes()==(old_run/'inputs/testbench_path.v').read_bytes()},
+           'archive_files':len(manifest['files']),'archive_hash_mismatches':bad_archive,
+           'oracle_attempts':oracles,'controller_qualification':qualification,
+           'simulation_cases':cases,'round_prompt_reconstruction':prompts,
+           'round_rtl_static_review':rtl_static,
+           'round_rtl_repair_feedback':fix_feedback,
+           'prompt_evidence_limit':'Trusted role rendering reconstructed from frozen source/spec and journal kwargs with dispatch stubbed; not an independent wire capture.',
+           'stages':{'key_step_reached':any('module_aes_key_step:' in row.get('stage','') for row in events),
+                     'round_mutation_qualification_reached':(RUN/'modules/aes_round/tbqual').exists(),
+                     'integration_reached':any('build_integration:' in row.get('stage','') for row in events),
+                     'optimization_reached':any('baseline:' in row.get('stage','') for row in events)},
+           'critical_sha256':critical,
+           'reviewer_actions':{'canonical_edits':False,'model_vendor_hardware_calls':0,'generated_code_execution':False,'test_suite_reruns':0}}
+(WORK/'nov8-aes04-review.json').write_text(json.dumps(receipt,indent=2)+'\n',encoding='utf-8')
+print(json.dumps({key:receipt[key] for key in ('run_summary','frozen_inputs','changed_inputs','archive_files','archive_hash_mismatches','round_prompt_reconstruction','stages')},indent=2))

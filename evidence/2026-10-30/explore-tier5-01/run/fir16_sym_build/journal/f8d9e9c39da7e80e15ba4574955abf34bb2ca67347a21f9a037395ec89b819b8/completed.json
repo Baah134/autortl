@@ -1,0 +1,5 @@
+{
+  "stage": "module_fir16_sym_core:model:generator.golden_model:0",
+  "result": "def init():\n    return dict(history=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])\n\n\ndef step(state, inputs):\n    if inputs.get(\"rst\", 0):\n        state[\"history\"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]\n        return state, dict(out_sample=0)\n\n    sample = int(inputs.get(\"in_sample\", 0)) & 65535\n    if sample >= 32768:\n        sample -= 65536\n\n    coeffs = [-6, -20, -24, 18, 110, 226, 330, 390,\n              390, 330, 226, 110, 18, -24, -20, -6]\n    acc = coeffs[0] * sample\n    for k in range(1, 16):\n        acc += coeffs[k] * state[\"history\"][k - 1]\n\n    rounded = (acc + 1024) // 2048\n    if rounded > 32767:\n        rounded = 32767\n    elif rounded < -32768:\n        rounded = -32768\n\n    history = [sample]\n    for value in state[\"history\"][:14]:\n        history.append(value)\n    state[\"history\"] = history\n\n    return state, dict(out_sample=rounded & 65535)",
+  "artifacts": {}
+}

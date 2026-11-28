@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_3:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 3\n## Contract check\n- Interface and observable behavior: PASS \u2014 ports and widths are unchanged; the nibble comparison is equivalent to the original unsigned comparison, and counter, reset, and registered output behavior are preserved.\n- Top latency annotation: PASS \u2014 authoritative `declared_latency.known=false`; no numeric annotation is required.\n- Compile, elaboration, and simulation: PASS \u2014 required tools exited successfully and the unchanged testbench reported `TEST PASSED`.\n- Routed metric integrity: PASS \u2014 retained routed reports and verified process evidence are present.\n- Timing closure: PASS \u2014 `timing_met=true`, WNS is 0.594 ns, and WHS is 0.289 ns.\n- Objective improvement: FAIL \u2014 both designs meet timing, but LUTs increased from 7 to 8; FFs are unchanged, so the `minimize_luts` objective did not improve.\n## Summary\n- Passed: 5 of 6\n- Failed: 1 of 6\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate preserves the contract and passes the deterministic verification and timing gates, but the previous best was already timing-feasible. Under `minimize_luts`, the candidate must strictly improve the LUT/FF objective; it uses one more LUT with no FF reduction. With one failed mandatory criterion, ACCEPT is not warranted.",
+      "recommendation": "REJECT",
+      "passed": 5,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

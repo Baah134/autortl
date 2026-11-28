@@ -2,8 +2,8 @@
 
 This tour follows one `optimize` run from the command line to a verified
 winner, then covers build mode, crash-safe resume and the hardware suite. Each
-step points to the code that does it, as `file:line`, so you can open it and
-read it. It also answers the questions people ask most about the design.
+step points to the code that does it, by file and function, class or
+constant name, so you can open it and read it. It also answers the questions people ask most about the design.
 [DESIGN.md](DESIGN.md) explains the intent; this document shows where that
 intent lives in the code.
 
@@ -26,9 +26,9 @@ rejected, not negotiated with.
 
 | Area | File | Responsibility |
 |---|---|---|
-| CLI | `run.py` | `optimize`, `build`, `resume`, `bench` subcommands (`run.py:52`, `:57`, `:65`, `:68`) |
-| Orchestrator | `autortl/fsm.py` | The run loop, stage journal and verification ladder (`class Orchestrator`, `fsm.py:143`) |
-| Contract | `autortl/contract_context.py` | Renders the fixed, hash-bound optimization contract (`:267`) |
+| CLI | `run.py` | `optimize`, `build`, `resume`, `bench` and `doctor` subcommands (the `sub.add_parser` calls) |
+| Orchestrator | `autortl/fsm.py` | The run loop, stage journal and verification ladder (`class Orchestrator`) |
+| Contract | `autortl/contract_context.py` | Renders the fixed, hash-bound optimization contract (`run_evidence`, `render_fixed_optimize_contract`) |
 | Candidates | `autortl/bestofn.py` | Mutation portfolio, exact-source dedupe, deterministic selection |
 | Static checks | `autortl/static_checks.py`, `autortl/verilog_interface.py` | Ports, widths, signedness and declared latency, checked before any tool runs |
 | Tools | `autortl/vivado.py` | xvlog/xelab/xsim and synthesis from fixed TCL templates |
@@ -46,23 +46,24 @@ rejected, not negotiated with.
 ## One optimize run, step by step
 
 **1. Freeze the inputs and the harness itself.** `Orchestrator._prepare_inputs`
-(`fsm.py:231`) does two things:
+in `fsm.py` does two things:
 
 - It hashes every harness source file into `runtime.json`.
 - It copies the design, testbench and spec into the run folder with their
   hashes.
 
 On resume, a changed harness file or input aborts the run, so a result can
-never be silently regraded by different code (`fsm.py:243`, `fsm.py:262`).
+never be silently regraded by different code (the `runtime.json` and
+`inputs.json` checks in `_prepare_inputs`).
 
-**2. Verify the baseline.** Optimization is refused without a testbench
-(`fsm.py:708`). The original design goes through the full flow: compile,
-simulate, synthesize, place and route (`fsm.py:723`). Then two gates check the
-result:
+**2. Verify the baseline.** `Orchestrator._run_optimize` refuses to
+optimize without a testbench. The original design goes through the full flow:
+compile, simulate, synthesize, place and route (`_full_flow`). Then two gates
+check the result:
 
-- The metrics gate (`fsm.py:738`) rejects impossible numbers. A LUT total of
-  zero or a missing WNS raises `MetricsGateError` (`metrics_gate.py:15`).
-- Tool exit receipts must also pass (`fsm.py:741`).
+- The metrics gate rejects impossible numbers. A LUT total of zero or a
+  missing WNS raises `MetricsGateError` (`metrics_gate.py`, `validate`).
+- Tool exit receipts must also pass (`fsm.py`, `_process_exit_gate`).
 
 **3. Freeze the contract.** The harness collects facts it measured itself:
 
@@ -71,134 +72,135 @@ result:
 - baseline metrics and declared latency
 - constraints and report hashes
 
-It renders them into a contract (`fsm.py:750-765`,
-`contract_context.py:265`). The model sees this contract but cannot edit it.
-If the contract on disk ever differs from the re-rendered one, the run stops
-(`fsm.py:760`).
+It renders them into a contract (`contract_context.py`, `run_evidence` and
+`render_fixed_optimize_contract`, called from `_run_optimize`). The model sees
+this contract but cannot edit it. If the contract on disk ever differs from the
+re-rendered one, `_run_optimize` stops the run.
 
-**4. Plan.** When needed, the planner role writes a plan
-(`fsm.py:818-829`). It is bound to the hash of the exact design it was
-written for, and a plan for a different seed stops the iteration
-(`fsm.py:830`).
+**4. Plan.** When needed, the planner role writes a plan (the
+`allow_replan` decision in `_run_optimize`). It is bound to the hash of the
+exact design it was written for (the `plan_binding` evidence), and a plan for a
+different seed stops the run (`planning_stop`).
 
 **5. Generate best-of-N candidates.** Each candidate comes from a different
-mutation prompt for the objective (`bestofn.py:46`). `dedupe` drops
-byte-identical sources (`bestofn.py:51`), so the same design is never paid for
+mutation prompt for the objective (`bestofn.py`, `mutation_prompts`). `dedupe`
+drops byte-identical sources (`bestofn.py`, `dedupe`), so the same design is never paid for
 twice.
 
-**6. Climb the verification ladder** (`_verify_optimization_candidate`,
-`fsm.py:1168`). Each rung is cheaper than the next, so most bad candidates die
+**6. Climb the verification ladder** (`Orchestrator._verify_optimization_candidate`
+in `fsm.py`). Each rung is cheaper than the next, so most bad candidates die
 in milliseconds:
 
-1. Static check of ports, widths and signedness (`fsm.py:1184`). Then *spec is
-   law*: a declared `@latency` that differs from the contract is a failure,
-   not a negotiation (`fsm.py:1190-1193`).
-2. `xvlog` compile (`fsm.py:1200`).
-3. Simulation against the qualified testbench (`fsm.py:1206`).
+1. Static check of ports, widths and signedness (`static_checks.check`). Then
+   *spec is law*: a declared `@latency` that differs from the contract is a
+   failure, not a negotiation.
+2. `xvlog` compile (`vivado.xvlog_check`, through `_tool`).
+3. Simulation against the qualified testbench (`vivado.xsim_run`).
 
 A design failure gets a bounded number of repair attempts. Each repair prompt
 carries the taxonomy's hint for the Vivado message IDs found
-(`fsm.py:1219`). Every repaired answer re-enters the ladder from rung 1. An
+(`Taxonomy.repair_instruction`). Every repaired answer re-enters the ladder from rung 1. An
 infrastructure failure leaves the candidate *unverified*: it never triggers a
-repair and never changes the RTL (`fsm.py:1211`).
+repair and never changes the RTL (the `kind != FailureKind.DESIGN` branch).
 
-**7. Synthesize survivors** (`fsm.py:854-895`). A cached result is reused only
-if it is still for the same source, testbench and tool context, and if it
-passes the metrics gate again (`fsm.py:857-873`).
+**7. Synthesize survivors** (rung 5 in `_run_optimize`). A cached result is
+reused only if it is still for the same source, testbench and tool context
+(`_cache_context`), and if it passes the metrics gate again.
 
-**8. Select deterministically** (`bestofn.py:64`). Candidates are sorted by:
+**8. Select deterministically** (`bestofn.py`, `select`). Candidates are sorted
+by:
 
 1. rungs passed
 2. timing feasibility
 3. the objective metric
-4. source length
+4. a secondary metric for ties, when every feasible candidate reports it
+5. source length
 
 So a design that meets timing always beats a smaller one that doesn't.
 
 **9. Repeat** until the iteration count or the budget runs out. As the budget
 shrinks, best-of-N degrades from N to 2 to 1, and replanning stops below 30%
-remaining (`budget.py:91-101`). The budget can only be charged, never refunded
-(`budget.py:52-72`).
+remaining (`Budget.effective_best_of_n`, `Budget.allow_replan`). The budget can
+only be charged, never refunded (`Budget.charge_llm`, `Budget.charge_vivado`).
 
 ## The invariants, and where each is enforced
 
 | Invariant | Where |
 |---|---|
-| Spec is law (interface, latency) | `fsm.py:1184-1193`; contract re-render check `fsm.py:760` |
-| Model text never reaches TCL or a shell | Paths are sanitized for TCL (`vivado.py:24`); TCL comes only from templates (`vivado.py:1-5`); the model runs in a read-only sandbox (`codex_cli.py:187`) |
-| Severities are promoted, never demoted | `promotion_tcl` emits only `-new_severity ERROR` (`vivado.py:163-170`) |
-| Infrastructure failures never mutate the design or count as attempts | Classifier `triage.py:39`; ladder `fsm.py:1211`; journal keeps infrastructure outcomes uncommitted so a resume retries them (`fsm.py:348-350`) |
-| A testbench must catch bugs before it grades | `tbqual.py:53` builds an operator mutant plus stuck-at-0 and stuck-at-1 stubs; `_qualify_source` (`fsm.py:436`) requires a retained assertion failure |
-| Metrics must be plausible | `metrics_gate.py:15` |
-| Results cannot be silently regraded | Runtime and input freezing, `fsm.py:231-277` |
-| A testbench never grades a stale child | A candidate that stops instantiating a companion the trusted testbench tests directly is rejected before any tool runs (`fsm.py:1195`, `companions.py:77`) |
-| A locked checkpoint is infrastructure, not a crash | `CheckpointLockedError` (`state.py:24`) keeps the old checkpoint intact; `run.py` reports `infra_blocked` and the run resumes |
+| Spec is law (interface, latency) | `fsm.py` `_verify_optimization_candidate`; contract re-render check in `_run_optimize` |
+| Model text never reaches TCL or a shell | Paths are sanitized for TCL (`vivado.py`, `_tcl_path`); TCL comes only from templates (the `vivado.py` module docstring); the model runs in a read-only sandbox (`codex_cli.py`, `ask`) |
+| Severities are promoted, never demoted | `promotion_tcl` emits only `-new_severity ERROR` (`vivado.py`) |
+| Infrastructure failures never mutate the design or count as attempts | Classifier `triage.classify`; ladder `fsm.py` `_verify_optimization_candidate`; journal keeps infrastructure outcomes uncommitted so a resume retries them (`Orchestrator._stage`) |
+| A testbench must catch bugs before it grades | `tbqual.qualification_mutations` builds an operator mutant plus stuck-at-0 and stuck-at-1 stubs; `Orchestrator._qualify_source` requires a retained assertion failure |
+| Metrics must be plausible | `metrics_gate.validate` |
+| Results cannot be silently regraded | Runtime and input freezing, `Orchestrator._prepare_inputs` |
+| A testbench never grades a stale child | A candidate that stops instantiating a companion the trusted testbench tests directly is rejected before any tool runs (`Orchestrator._boundary_violation`, `companions.violation`) |
+| A locked checkpoint is infrastructure, not a crash | `CheckpointLockedError` (`state.py`) keeps the old checkpoint intact; `run.py` reports `infra_blocked` and the run resumes |
 
 ## How the testbenches work
 
-`tbgen.generate` (`tbgen.py:283`) picks one of two compare modes from the
+`tbgen.generate` picks one of two compare modes from the
 spec:
 
-- **Fixed latency** (`tbgen.py:203`): it drives one stimulus per cycle and
+- **Fixed latency** (`generate_fixed_latency_tb`): it drives one stimulus per cycle and
   compares each output `latency` cycles later.
-- **Scoreboard** (`tbgen.py:222`), for valid/ready designs. It:
-  - applies periodic backpressure on `out_ready` (`:240`)
-  - inserts input bubbles that carry changing invalid data (`:244-248`)
+- **Scoreboard** (`generate_scoreboard_tb`), for valid/ready designs. It:
+  - applies periodic backpressure on `out_ready`
+  - inserts input bubbles that carry changing invalid data
   - holds the producer stable while blocked
-  - adds off-edge reset pulses for synchronous-reset contracts (`:250-256`)
+  - adds off-edge reset pulses for synchronous-reset contracts
   - checks that `out_valid` never drops and the output stays stable while
-    stalled (`:261-263`)
+    stalled
   - checks that no result appears before the minimum transfer latency
-    (`:270-271`)
-  - checks that the scoreboard drains exactly (`:277-278`)
+  - checks that the scoreboard drains exactly
 
 Expected values come from the Python golden model under the same reset
-initialization as the RTL driver (`tbgen.py:128`).
+initialization as the RTL driver (`tbgen.expected_outputs`).
 
 ## Build mode
 
-`_run_build` (`fsm.py:495`) turns a typed spec into a design:
+`Orchestrator._run_build` in `fsm.py` turns a typed spec into a design:
 
-1. Lint the spec (`fsm.py:514`). A spec the planner wrote from a prose
+1. Lint the spec (`linter.lint_spec`). A spec the planner wrote from a prose
    request gets its lint or load errors back for a bounded repair; a supplied
-   JSON spec is law and fails at once (`fsm.py:519-525`).
+   JSON spec is law and fails at once.
 2. Elaborate stub modules, so a broken blueprint fails before any generation
-   (`fsm.py:533-537`).
+   (`linter.write_stub_project`).
 3. Generate and verify each module in turn against its own qualified
-   testbench (`fsm.py:539`).
+   testbench (`Orchestrator._build_module`).
 4. Write the top level mechanically, with no model involved
-   (`linter.top_verilog`, `fsm.py:558`).
+   (`linter.top_verilog`).
 
 The result then becomes the baseline for optimize mode.
 
 ## Crash-safe resume: the stage journal
 
-Every model call, tool run and decision goes through `_stage`
-(`fsm.py:307`):
+Every model call, tool run and decision goes through
+`Orchestrator._stage`:
 
 - Each stage gets a deterministic identity: scope, category, name and an
   occurrence index.
 - A completed stage saves its result and its artifact hashes
-  (`fsm.py:351-362`).
+  in `completed.json`.
 - On replay, a completed stage returns its saved result instead of running
-  again, and its artifacts must still match their hashes (`fsm.py:316-326`).
+  again, and its artifacts must still match their hashes.
   This is why `resume` costs no extra model calls for finished work.
 - Infrastructure failures are deliberately not committed, so the next resume
-  retries them (`fsm.py:348-350`).
+  retries them.
 
-The tool wrapper `_tool` (`fsm.py:388`) does two more things:
+The tool wrapper `Orchestrator._tool` does two more things:
 
 - It charges tool time to the budget and caps each timeout at the time
   remaining.
 - For simulation, it records the exact verified inputs and refuses a replay
-  if they changed (`fsm.py:415-428`).
+  if they changed (`verification_inputs.log`).
 
 ## The model call
 
-`codex_cli.py:187` runs `codex exec --sandbox read-only --ephemeral --json` in
+`ask` in `codex_cli.py` runs `codex exec --sandbox read-only --ephemeral --json` in
 a fresh temporary directory, with the prompt on stdin. A timeout kills the
 worker's whole process tree; on Windows that is `taskkill /T /F`
-(`codex_cli.py:100-104`). No API key is involved; it uses your existing Codex
+(`_terminate_worker`). No API key is involved; it uses your existing Codex
 login. The role-to-model routing lives in `llm/routing.yaml`.
 
 ## On real hardware
@@ -219,20 +221,20 @@ Every claim above is backed by a SHA-256 manifest under evidence/.
 `tools/evidence_audit.py` checks those digests against the bytes Git
 actually stores, at any revision, and CI runs it on every push:
 
-- `CommitSnapshot` (`evidence_audit.py:110`) reads blobs through one
+- `CommitSnapshot` reads blobs through one
   `git cat-file --batch`. A file that exists on disk but was never committed
   counts as missing, which is the failure a working-copy check would miss.
-- `claims` (`evidence_audit.py:281`) turns every manifest layout into claims:
+- `claims` turns every manifest layout into claims:
   archive entries, source bindings, and digests recorded without a path.
-  `unparsed_digests` (`:269`) fails a manifest holding a digest that no claim
+  `unparsed_digests` fails a manifest holding a digest that no claim
   accounts for.
-- `History.digests` (`:194`) gives source bindings every version a path
+- `History.digests` gives source bindings every version a path
   had in the audited revision's history, as stored and as a Windows CRLF
-  checkout. `claim_files_ever` (`:208`) makes a deleted or renamed manifest
+  checkout. `History.claim_files_ever` makes a deleted or renamed manifest
   fail.
-- `policy` (`:368`) loads the exceptions. Each one is pinned by digest and
+- `policy` loads the exceptions. Each one is pinned by digest and
   failure status, and must be proven by readable bytes, for example
-  `reconstruct` (`:421`) rebuilding a mixed-line-ending working copy, or else
+  `reconstruct` rebuilding a mixed-line-ending working copy, or else
   recorded as a loss.
 
 When it first ran, the audit found 837 claims the committed files did not
@@ -245,26 +247,27 @@ archives. The account is in
 **Why not let the model write the testbench or the contract?** Because then
 the model grades itself. Here the testbench is generated from the spec and
 golden model, and qualified by mutation. The contract is rendered from
-harness-measured facts (`contract_context.py:265`).
+harness-measured facts (`contract_context.py`,
+`render_fixed_optimize_contract`).
 
 **How do you know the testbench is any good?** Before grading, it must fail
-on a mutated design and on stuck-at outputs (`tbqual.py:53`). The verifier
+on a mutated design and on stuck-at outputs (`tbqual.qualification_mutations`). The verifier
 audit measured the gap anyway: the generated testbenches caught 18 of 27
 injected FIR faults. Better stimulus raised that to 22, and an independent
 checker catches all 27.
 
 **What stops a Vivado license hiccup from looking like a bad design?**
-`triage.classify` checks infrastructure signatures first (`triage.py:17-28`).
-Infrastructure outcomes never trigger repair (`fsm.py:1211`) and are never
-committed to the journal (`fsm.py:348`).
+`triage.classify` checks infrastructure signatures first (`_INFRA_SIGNATURES`).
+Infrastructure outcomes never trigger repair (`_verify_optimization_candidate`)
+and are never committed to the journal (`Orchestrator._stage`).
 
 **Could a smaller design that fails timing win?** No. Timing feasibility ranks
-above the objective in `select` (`bestofn.py:81-84`).
+above the objective in `select` (`bestofn.py`).
 
 **What happens if the run crashes halfway?** `resume` replays completed stages
 from the journal at no cost, verifies their artifact hashes, and retries only
 the unfinished or infrastructure-failed work. If the harness code itself
-changed, it refuses to continue (`fsm.py:243`).
+changed, it refuses to continue (`_prepare_inputs`).
 
 **How do you know the archived evidence wasn't edited or lost?** CI audits
 every recorded digest against the committed blobs on every push

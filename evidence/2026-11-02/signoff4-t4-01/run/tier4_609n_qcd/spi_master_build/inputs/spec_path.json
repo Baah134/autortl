@@ -1,0 +1,247 @@
+{
+  "top_name": "spi_master",
+  "modules": [
+    {
+      "name": "spi_master_core",
+      "behavior": "SPI master, mode 0 (CPOL=0, CPHA=0), 8-bit MSB-first full-duplex transfers, one outstanding command. Public parameter HALF_PERIOD=2 is the number of clk cycles per SCLK half period; supported domain integer 1..8. Preserve the actual HALF_PERIOD-dependent timing, not only the default. Let H = HALF_PERIOD. Idle bus (after reset and whenever no transfer is active, including while a response is held): cs_n = 1, sclk = 0, mosi = 0. cmd_ready = !busy && !rsp_valid, from registered state only (no combinational path from cmd_valid, rsp_ready or rst). A command is accepted at rising edge k when cmd_valid && cmd_ready before that edge and rst is low; cmd_data is captured then and later cmd_data/cmd_valid changes are ignored until the next acceptance. After edge k: busy, cs_n = 0, sclk = 0, mosi = cmd_data[7]. Counting from edge k, sclk toggles exactly at edges k + j*H for j = 1..16 and holds at every other edge. Odd j: sclk 0->1 (rising SCLK) and at that same clk edge the master samples miso (the value present before the edge) as received bit (j-1)/2, MSB first, so the first sample becomes rsp_data[7]; miso is ignored at every other edge. Even j < 16: sclk 1->0 and mosi changes to cmd_data[7 - j/2] at that edge; mosi changes only at falling SCLK edges, so each bit is stable for 2H cycles around its rising edge. At j = 16 (edge k + 16H): sclk = 0, cs_n = 1, mosi = 0, busy ends, rsp_data = the 8 received bits and rsp_valid = 1. rsp_valid and rsp_data stay stable until the edge where rsp_valid && rsp_ready, which clears rsp_valid; cmd_ready was 0 at that edge, so the next command is accepted at the following edge at the earliest. Minimum accepted-transfer age is 16H+1 cycles (latency 33 for the default H = 2); it is exact when rsp_ready is high. rsp_data is unspecified while rsp_valid = 0. Synchronous active-high rst at a rising edge aborts any transfer or held response (no response from it ever appears), returns the bus to idle and overrides acceptance. Reset has no effect between edges and outputs must not be gated combinationally by rst. All outputs change only at rising clk edges. Transaction-level examples hold miso constant for the whole transfer, so rsp_data is 0x00 or 0xFF; each example step is one accepted command and returns its eventual rsp_data together with the idle bus values sclk = 0, mosi = 0, cs_n = 1 that hold whenever a response is presented. The serial miso schedule is not a transaction payload, so the independent cycle-exact testbench (an SPI slave model) is the verification authority for this module.",
+      "ports": [
+        {
+          "name": "clk",
+          "direction": "input",
+          "width": 1,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "rst",
+          "direction": "input",
+          "width": 1,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "cmd_data",
+          "direction": "input",
+          "width": 8,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "cmd_valid",
+          "direction": "input",
+          "width": 1,
+          "protocol": "valid_ready",
+          "signed": false
+        },
+        {
+          "name": "cmd_ready",
+          "direction": "output",
+          "width": 1,
+          "protocol": "valid_ready",
+          "signed": false
+        },
+        {
+          "name": "rsp_data",
+          "direction": "output",
+          "width": 8,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "rsp_valid",
+          "direction": "output",
+          "width": 1,
+          "protocol": "valid_ready",
+          "signed": false
+        },
+        {
+          "name": "rsp_ready",
+          "direction": "input",
+          "width": 1,
+          "protocol": "valid_ready",
+          "signed": false
+        },
+        {
+          "name": "sclk",
+          "direction": "output",
+          "width": 1,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "mosi",
+          "direction": "output",
+          "width": 1,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "miso",
+          "direction": "input",
+          "width": 1,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "cs_n",
+          "direction": "output",
+          "width": 1,
+          "protocol": "none",
+          "signed": false
+        }
+      ],
+      "latency": 33,
+      "latency_known": true,
+      "compare_mode": "scoreboard",
+      "reset": {
+        "signal": "rst",
+        "kind": "sync",
+        "active_high": true,
+        "duration_cycles": 3
+      },
+      "parameters": {
+        "HALF_PERIOD": 2
+      },
+      "clock_domains": [
+        "clk"
+      ],
+      "examples": [
+        {
+          "inputs": {
+            "rst": 0,
+            "cmd_valid": 1,
+            "rsp_ready": 1,
+            "cmd_data": 165,
+            "miso": 1
+          },
+          "expected": {
+            "rsp_data": 255,
+            "sclk": 0,
+            "mosi": 0,
+            "cs_n": 1
+          },
+          "after_cycles": 1
+        },
+        {
+          "inputs": {
+            "rst": 0,
+            "cmd_valid": 1,
+            "rsp_ready": 1,
+            "cmd_data": 60,
+            "miso": 0
+          },
+          "expected": {
+            "rsp_data": 0,
+            "sclk": 0,
+            "mosi": 0,
+            "cs_n": 1
+          },
+          "after_cycles": 1
+        },
+        {
+          "inputs": {
+            "rst": 0,
+            "cmd_valid": 1,
+            "rsp_ready": 1,
+            "cmd_data": 255,
+            "miso": 1
+          },
+          "expected": {
+            "rsp_data": 255,
+            "sclk": 0,
+            "mosi": 0,
+            "cs_n": 1
+          },
+          "after_cycles": 2
+        }
+      ]
+    }
+  ],
+  "connections": [],
+  "external_ports": [
+    {
+      "name": "clk",
+      "direction": "input",
+      "width": 1,
+      "protocol": "none",
+      "signed": false
+    },
+    {
+      "name": "rst",
+      "direction": "input",
+      "width": 1,
+      "protocol": "none",
+      "signed": false
+    },
+    {
+      "name": "cmd_data",
+      "direction": "input",
+      "width": 8,
+      "protocol": "none",
+      "signed": false
+    },
+    {
+      "name": "cmd_valid",
+      "direction": "input",
+      "width": 1,
+      "protocol": "valid_ready",
+      "signed": false
+    },
+    {
+      "name": "cmd_ready",
+      "direction": "output",
+      "width": 1,
+      "protocol": "valid_ready",
+      "signed": false
+    },
+    {
+      "name": "rsp_data",
+      "direction": "output",
+      "width": 8,
+      "protocol": "none",
+      "signed": false
+    },
+    {
+      "name": "rsp_valid",
+      "direction": "output",
+      "width": 1,
+      "protocol": "valid_ready",
+      "signed": false
+    },
+    {
+      "name": "rsp_ready",
+      "direction": "input",
+      "width": 1,
+      "protocol": "valid_ready",
+      "signed": false
+    },
+    {
+      "name": "sclk",
+      "direction": "output",
+      "width": 1,
+      "protocol": "none",
+      "signed": false
+    },
+    {
+      "name": "mosi",
+      "direction": "output",
+      "width": 1,
+      "protocol": "none",
+      "signed": false
+    },
+    {
+      "name": "miso",
+      "direction": "input",
+      "width": 1,
+      "protocol": "none",
+      "signed": false
+    },
+    {
+      "name": "cs_n",
+      "direction": "output",
+      "width": 1,
+      "protocol": "none",
+      "signed": false
+    }
+  ]
+}

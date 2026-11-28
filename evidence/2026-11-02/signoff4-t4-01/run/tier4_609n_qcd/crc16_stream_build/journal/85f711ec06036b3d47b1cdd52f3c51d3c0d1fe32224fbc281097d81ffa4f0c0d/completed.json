@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_2:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 2\n## Contract check\n- Top interface and defined behavior: PASS \u2014 candidate preserves the specified ports, CRC behavior, one-slot handshake, reset behavior, registered outputs, and minimum transfer age; the authoritative ladder is ALIVE.\n- Top latency annotation: PASS \u2014 top declares `// @latency 1`, matching authoritative latency.\n- Deterministic verification: PASS \u2014 simulation passed; required tools exited successfully.\n- Routed metric integrity: PASS \u2014 retained routed reports and metric evidence are present and consistent.\n- Timing closure: PASS \u2014 timing is met with WNS 0.432 ns and WHS 0.217 ns.\n- Objective improvement: FAIL \u2014 LUTs are unchanged at 15, while FFs increased from 19 to 34; the candidate does not improve the `minimize_luts` lexicographic objective.\n## Summary\n- Passed: 5 of 6\n- Failed: 1 of 6\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes behavioral, verification, and timing gates, but the previous best is already timing-feasible and the candidate has the same LUT count with more FFs. It therefore fails the required strict objective improvement.",
+      "recommendation": "REJECT",
+      "passed": 5,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

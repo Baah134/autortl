@@ -1,0 +1,73 @@
+def init():
+    sbox = []
+    for value in range(256):
+        inverse = 0
+        if value != 0:
+            for candidate in range(1, 256):
+                product = 0
+                a = value
+                b = candidate
+                for bit in range(8):
+                    if b & 1:
+                        product = product ^ a
+                    high = a & 128
+                    a = (a << 1) & 255
+                    if high:
+                        a = a ^ 27
+                    b = b >> 1
+                if product == 1:
+                    inverse = candidate
+                    break
+
+        result = inverse
+        for shift in range(1, 5):
+            rotated = ((inverse << shift) | (inverse >> (8 - shift))) & 255
+            result = result ^ rotated
+        result = result ^ 99
+        sbox.append(result)
+
+    return dict(sbox=sbox)
+
+
+def step(state, inputs):
+    sbox = state.get("sbox", [])
+    state_in = int(inputs.get("state_in", 0)) & ((1 << 128) - 1)
+    round_key = int(inputs.get("round_key", 0)) & ((1 << 128) - 1)
+    final_round = int(inputs.get("final_round", 0)) & 1
+
+    bytes_in = []
+    for index in range(16):
+        shift = 120 - 8 * index
+        value = (state_in >> shift) & 255
+        bytes_in.append(sbox[value])
+
+    shifted = [0] * 16
+    for row in range(4):
+        for column in range(4):
+            source_column = (column + row) % 4
+            shifted[row + 4 * column] = bytes_in[row + 4 * source_column]
+
+    mixed = [0] * 16
+    for column in range(4):
+        a0 = shifted[4 * column]
+        a1 = shifted[1 + 4 * column]
+        a2 = shifted[2 + 4 * column]
+        a3 = shifted[3 + 4 * column]
+
+        doubled0 = ((a0 << 1) & 255) ^ (27 if a0 & 128 else 0)
+        doubled1 = ((a1 << 1) & 255) ^ (27 if a1 & 128 else 0)
+        doubled2 = ((a2 << 1) & 255) ^ (27 if a2 & 128 else 0)
+        doubled3 = ((a3 << 1) & 255) ^ (27 if a3 & 128 else 0)
+
+        mixed[4 * column] = doubled0 ^ (doubled1 ^ a1) ^ a2 ^ a3
+        mixed[1 + 4 * column] = a0 ^ doubled1 ^ (doubled2 ^ a2) ^ a3
+        mixed[2 + 4 * column] = a0 ^ a1 ^ doubled2 ^ (doubled3 ^ a3)
+        mixed[3 + 4 * column] = (doubled0 ^ a0) ^ a1 ^ a2 ^ doubled3
+
+    result_bytes = shifted if final_round else mixed
+    result = 0
+    for index in range(16):
+        result = (result << 8) | result_bytes[index]
+
+    outputs = dict(state_out=(result ^ round_key) & ((1 << 128) - 1))
+    return state, outputs

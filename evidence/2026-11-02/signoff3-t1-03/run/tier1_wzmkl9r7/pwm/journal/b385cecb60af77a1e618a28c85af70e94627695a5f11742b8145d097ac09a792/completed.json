@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_4:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 4,
+    "instruction": "Keep the 32-bit counter and its existing increment and terminal-count wrap behavior. Define a shared predicate for `counter[31:8] == 0`; use it in both the terminal-count check together with `counter[7:0] == 8'hff`, and the registered PWM comparison together with `counter[7:0] < duty`. Preserve reset and registered-output behavior, and do not add a numeric latency annotation because the authoritative top latency is unknown.",
+    "candidates": [
+      {
+        "iteration": 4,
+        "mutation": "standard",
+        "instruction": "Keep the 32-bit counter and its existing increment and terminal-count wrap behavior. Define a shared predicate for `counter[31:8] == 0`; use it in both the terminal-count check together with `counter[7:0] == 8'hff`, and the registered PWM comparison together with `counter[7:0] < duty`. Preserve reset and registered-output behavior, and do not add a numeric latency annotation because the authoritative top latency is unknown.",
+        "generated_source_sha256": "70f4bd7cf621bcf4b4c7ddea07ebcd8374b183e7fe0c847b026bf7d0d918748a",
+        "final_source_sha256": "70f4bd7cf621bcf4b4c7ddea07ebcd8374b183e7fe0c847b026bf7d0d918748a",
+        "generated_code_hash": "a6498d2ac6d47316",
+        "final_code_hash": "a6498d2ac6d47316",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.597,
+          "whs_ns": 0.207,
+          "lut_used": 13,
+          "ff_used": 33,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.01,
+          "total_power_w": 0.08
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff3-t1-03\\tier1_wzmkl9r7\\pwm\\iter_004\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff3-t1-03\\tier1_wzmkl9r7\\pwm\\iter_004\\cand_standard\\synth.tcl",
+          "sha256": "dc3a8616a4bb49c20f863c126f80370a0ec078338109b1d4a81ec3021376bb2a"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff3-t1-03\\tier1_wzmkl9r7\\pwm\\iter_004\\cand_standard\\pwm.v",
+          "sha256": "f5c03d28e1029767f1cd23a93becc1584228e685e6b4a7961f26f6414e561706"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": "70f4bd7cf621bcf4b4c7ddea07ebcd8374b183e7fe0c847b026bf7d0d918748a"
+  },
+  "artifacts": {}
+}

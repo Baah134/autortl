@@ -2,6 +2,9 @@
 
 Latency 0 is combinational; latency N samples after the Nth rising edge
 following falling-edge stimulus. Handshakes sample before NBA updates.
+A module without a reset port ("reset": null) is instead initialized by
+driving its init_inputs for init_cycles rising edges, unchecked; the oracle
+replays the same prefix (resetless_sequential_unrepresentable).
 """
 from __future__ import annotations
 import json
@@ -47,13 +50,22 @@ def _validate(spec, stimulus=None, expected=None):
         if name in by_name and (by_name[name].direction != "input" or by_name[name].width != 1
                                or by_name[name].protocol != "none"):
             raise ValueError("clock/reset must be scalar plain inputs")
-    if spec.reset.signal == "clk" or spec.reset.kind not in ("sync", "async"):
-        raise ValueError("unsupported reset contract")
-    if type(spec.reset.duration_cycles) is not int or not 1 <= spec.reset.duration_cycles <= 1000:
-        raise ValueError("unsupported reset duration")
-    if spec.latency > 0 or spec.compare_mode == "scoreboard":
-        if "clk" not in names or spec.reset.signal not in names:
-            raise ValueError("sequential verification requires clock and reset")
+    if spec.reset.present:
+        if spec.reset.signal == "clk" or spec.reset.kind not in ("sync", "async"):
+            raise ValueError("unsupported reset contract")
+        if type(spec.reset.duration_cycles) is not int or not 1 <= spec.reset.duration_cycles <= 1000:
+            raise ValueError("unsupported reset duration")
+        if spec.init_cycles is not None or spec.init_inputs:
+            raise ValueError("init_cycles/init_inputs apply only to a module without a reset port")
+        if spec.latency > 0 or spec.compare_mode == "scoreboard":
+            if "clk" not in names or spec.reset.signal not in names:
+                raise ValueError("sequential verification requires clock and reset")
+    else:
+        init_errors = spec.reset.validate() + spec._init_errors()
+        if init_errors:
+            raise ValueError("; ".join(init_errors))
+        if spec.latency > 0 and "clk" not in names:
+            raise ValueError("sequential verification requires a clock")
     if spec.compare_mode == "fixed_latency" and any(p.protocol != "none" for p in spec.ports):
         raise ValueError("fixed latency does not accept handshake ports")
     if any(type(v) is not int or abs(v) > 2**31 for v in spec.parameters.values()):
@@ -83,9 +95,42 @@ def _scoreboard_control(controls, direction, suffix):
     return found[0].name
 
 
+def shape_errors(spec: ModuleSpec) -> list[str]:
+    """The generated testbench's shape rules, checked before any oracle is written.
+
+    fixed_latency_handshake_found_at_oracle: a planner spec that pairs
+    fixed_latency with valid_ready ports used to fail only at oracle time.
+    """
+    try:
+        inputs, _ = _validate(spec)
+        if spec.compare_mode == "scoreboard":
+            controls = [p for p in spec.ports if p.protocol == "valid_ready"]
+            if len(controls) != 4 or not inputs:
+                raise ValueError("scoreboard needs exactly in_valid, in_ready, out_valid, out_ready "
+                                 "tagged valid_ready and at least one protocol none data input")
+            for direction, suffix in (("input", "valid"), ("output", "ready"),
+                                      ("output", "valid"), ("input", "ready")):
+                _scoreboard_control(controls, direction, suffix)
+    except ValueError as exc:
+        # one_sided_handshake_has_no_oracle_shape: name the shape that always fits.
+        hint = (" (scoreboard fits only one valid/ready input and one valid/ready output channel;"
+                " otherwise use fixed_latency with every port none, and tag the connected ports"
+                " on neighboring modules none too)"
+                if "handshake" in str(exc) or "scoreboard" in str(exc) else "")
+        return [str(exc) + hint]
+    return []
+
+
+def _prefix_steps(spec):
+    """Unchecked steps before comparison: the reset pulse, or a resetless init prefix."""
+    if any(p.name == spec.reset.signal for p in spec.ports):
+        return spec.reset.duration_cycles
+    return len(spec.init_rows())
+
+
 def gen_stimulus(spec: ModuleSpec, n_random=100, seed=1234):
     inputs, _ = _validate(spec)
-    reset_steps = spec.reset.duration_cycles if any(p.name == spec.reset.signal for p in spec.ports) else 0
+    reset_steps = _prefix_steps(spec)
     if type(n_random) is not int or not 0 <= n_random <= 9997 - reset_steps:
         raise ValueError("invalid stimulus count including reset prefix")
     if spec.compare_mode == "scoreboard":
@@ -136,13 +181,15 @@ def expected_outputs(spec, golden, stimulus):
     controls = [p for p in spec.ports if p.direction == "input" and p.protocol == "valid_ready"]
     reset_present = any(p.name == spec.reset.signal and p.direction == "input" for p in spec.ports)
     asserted = int(spec.reset.active_high)
-    if not isinstance(stimulus, list) or len(stimulus) + (spec.reset.duration_cycles if reset_present else 0) > 10000:
+    if not isinstance(stimulus, list) or len(stimulus) + _prefix_steps(spec) > 10000:
         raise ValueError("golden stimulus including reset exceeds 10000 steps")
     rows = []
     if reset_present:
         reset_row = {p.name: 0 for p in inputs + controls}
         reset_row[spec.reset.signal] = asserted
         rows = [dict(reset_row) for _ in range(spec.reset.duration_cycles)]
+    else:
+        rows = spec.init_rows()
     prefix = len(rows)
     for stimulus_row in stimulus:
         row = dict(stimulus_row)
@@ -182,6 +229,12 @@ def _header(spec, stimulus, expected, inputs, outputs, extra=""):
         lines += [f"{spec.reset.signal} = 1'b{asserted};",
                   f"repeat ({spec.reset.duration_cycles}) @(posedge _autortl_clk);",
                   "@(negedge _autortl_clk);", f"{spec.reset.signal} = 1'b{1-asserted};"]
+    elif spec.init_rows():
+        # No reset port: drive the declared initialization stimulus for
+        # init_cycles rising edges without comparing; the oracle replays it.
+        lines.append(f"// resetless init: {spec.init_cycles} unchecked rising edge(s)")
+        lines += [f"{p.name} = {p.width}'d{spec.init_inputs.get(p.name, 0)};" for p in inputs]
+        lines += [f"repeat ({spec.init_cycles}) @(posedge _autortl_clk);", "@(negedge _autortl_clk);"]
     else:
         lines.append("@(negedge _autortl_clk);")
     return lines
@@ -196,7 +249,7 @@ def _checks(outputs, index):
 def _footer(spec, cycles):
     return ['if (_autortl_errors == 0) $display("TEST PASSED");',
             'else $display("TEST FAILED: %0d errors", _autortl_errors);', '$finish;', 'end',
-            f'initial begin #{(cycles + spec.reset.duration_cycles + 20)*10}; '
+            f'initial begin #{(cycles + spec.reset.duration_cycles + len(spec.init_rows()) + 20)*10}; '
             '$display("TEST FAILED: watchdog timeout"); $finish; end', 'endmodule', '']
 
 

@@ -1,0 +1,392 @@
+FFFF..FF.......                                                          [100%]
+================================== FAILURES ===================================
+_ test_nonzero_exit_retains_only_sanitized_error_fields[codex_rate_limit.jsonl-CODEX_QUOTA] _
+
+worker = <Mock id='2335657266640'>, fixture = 'codex_rate_limit.jsonl'
+code = 'CODEX_QUOTA'
+
+    @pytest.mark.parametrize("fixture,code", [("codex_rate_limit.jsonl", "CODEX_QUOTA"),
+                                             ("codex_auth_failure.jsonl", "CODEX_AUTH")])
+    def test_nonzero_exit_retains_only_sanitized_error_fields(worker, fixture, code):
+        worker.communicate.return_value = ((FIXTURES / fixture).read_text(), "ERROR: api_key=sk-stderr-secret")
+        with pytest.raises(backend.CodexError) as caught:
+>           backend.ask("default", "private task")
+
+tests\test_provider_failures.py:30: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+llm\backends\codex_cli.py:266: in ask
+    config = _worker_config(executable, directory, deadline)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+llm\backends\codex_cli.py:80: in _worker_config
+    servers = _configured_mcp(executable, directory, [*overrides, "-c", "mcp_servers={}"], deadline)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+llm\backends\codex_cli.py:45: in _configured_mcp
+    result = subprocess.run([executable, "mcp", "list", "--json", *overrides], cwd=directory,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+input = None, capture_output = True, timeout = 10, check = False
+popenargs = (['fake-codex.exe', 'mcp', 'list', '--json', '--disable', 'shell_tool', ...],)
+kwargs = {'cwd': 'C:\\Users\\prince.baah\\Documents\\Codex\\2026-10-15\\hey\\work\\nov7-boundary-provider-before-tmp\\test_nonzero_exit_retains_only0\\autortl-codex-p0w9317a', 'text': True, 'encoding': 'utf-8', 'errors': 'replace', ...}
+
+    def run(*popenargs,
+            input=None, capture_output=False, timeout=None, check=False, **kwargs):
+        """Run command with arguments and return a CompletedProcess instance.
+    
+        The returned instance will have attributes args, returncode, stdout and
+        stderr. By default, stdout and stderr are not captured, and those attributes
+        will be None. Pass stdout=PIPE and/or stderr=PIPE in order to capture them,
+        or pass capture_output=True to capture both.
+    
+        If check is True and the exit code was non-zero, it raises a
+        CalledProcessError. The CalledProcessError object will have the return code
+        in the returncode attribute, and output & stderr attributes if those streams
+        were captured.
+    
+        If timeout (seconds) is given and the process takes too long,
+         a TimeoutExpired exception will be raised.
+    
+        There is an optional argument "input", allowing you to
+        pass bytes or a string to the subprocess's stdin.  If you use this argument
+        you may not also use the Popen constructor's "stdin" argument, as
+        it will be used internally.
+    
+        By default, all communication is in bytes, and therefore any "input" should
+        be bytes, and the stdout and stderr will be bytes. If in text mode, any
+        "input" should be a string, and stdout and stderr will be strings decoded
+        according to locale encoding, or by "encoding" if set. Text mode is
+        triggered by setting any of text, encoding, errors or universal_newlines.
+    
+        The other arguments are the same as for the Popen constructor.
+        """
+        if input is not None:
+            if kwargs.get('stdin') is not None:
+                raise ValueError('stdin and input arguments may not both be used.')
+            kwargs['stdin'] = PIPE
+    
+        if capture_output:
+            if kwargs.get('stdout') is not None or kwargs.get('stderr') is not None:
+                raise ValueError('stdout and stderr arguments may not be used '
+                                 'with capture_output.')
+            kwargs['stdout'] = PIPE
+            kwargs['stderr'] = PIPE
+    
+>       with Popen(*popenargs, **kwargs) as process:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: 'Mock' object does not support the context manager protocol
+
+..\..\..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\subprocess.py:548: TypeError
+_ test_nonzero_exit_retains_only_sanitized_error_fields[codex_auth_failure.jsonl-CODEX_AUTH] _
+
+worker = <Mock id='2335658692816'>, fixture = 'codex_auth_failure.jsonl'
+code = 'CODEX_AUTH'
+
+    @pytest.mark.parametrize("fixture,code", [("codex_rate_limit.jsonl", "CODEX_QUOTA"),
+                                             ("codex_auth_failure.jsonl", "CODEX_AUTH")])
+    def test_nonzero_exit_retains_only_sanitized_error_fields(worker, fixture, code):
+        worker.communicate.return_value = ((FIXTURES / fixture).read_text(), "ERROR: api_key=sk-stderr-secret")
+        with pytest.raises(backend.CodexError) as caught:
+>           backend.ask("default", "private task")
+
+tests\test_provider_failures.py:30: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+llm\backends\codex_cli.py:266: in ask
+    config = _worker_config(executable, directory, deadline)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+llm\backends\codex_cli.py:80: in _worker_config
+    servers = _configured_mcp(executable, directory, [*overrides, "-c", "mcp_servers={}"], deadline)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+llm\backends\codex_cli.py:45: in _configured_mcp
+    result = subprocess.run([executable, "mcp", "list", "--json", *overrides], cwd=directory,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+input = None, capture_output = True, timeout = 10, check = False
+popenargs = (['fake-codex.exe', 'mcp', 'list', '--json', '--disable', 'shell_tool', ...],)
+kwargs = {'cwd': 'C:\\Users\\prince.baah\\Documents\\Codex\\2026-10-15\\hey\\work\\nov7-boundary-provider-before-tmp\\test_nonzero_exit_retains_only1\\autortl-codex-lmsaafmv', 'text': True, 'encoding': 'utf-8', 'errors': 'replace', ...}
+
+    def run(*popenargs,
+            input=None, capture_output=False, timeout=None, check=False, **kwargs):
+        """Run command with arguments and return a CompletedProcess instance.
+    
+        The returned instance will have attributes args, returncode, stdout and
+        stderr. By default, stdout and stderr are not captured, and those attributes
+        will be None. Pass stdout=PIPE and/or stderr=PIPE in order to capture them,
+        or pass capture_output=True to capture both.
+    
+        If check is True and the exit code was non-zero, it raises a
+        CalledProcessError. The CalledProcessError object will have the return code
+        in the returncode attribute, and output & stderr attributes if those streams
+        were captured.
+    
+        If timeout (seconds) is given and the process takes too long,
+         a TimeoutExpired exception will be raised.
+    
+        There is an optional argument "input", allowing you to
+        pass bytes or a string to the subprocess's stdin.  If you use this argument
+        you may not also use the Popen constructor's "stdin" argument, as
+        it will be used internally.
+    
+        By default, all communication is in bytes, and therefore any "input" should
+        be bytes, and the stdout and stderr will be bytes. If in text mode, any
+        "input" should be a string, and stdout and stderr will be strings decoded
+        according to locale encoding, or by "encoding" if set. Text mode is
+        triggered by setting any of text, encoding, errors or universal_newlines.
+    
+        The other arguments are the same as for the Popen constructor.
+        """
+        if input is not None:
+            if kwargs.get('stdin') is not None:
+                raise ValueError('stdin and input arguments may not both be used.')
+            kwargs['stdin'] = PIPE
+    
+        if capture_output:
+            if kwargs.get('stdout') is not None or kwargs.get('stderr') is not None:
+                raise ValueError('stdout and stderr arguments may not be used '
+                                 'with capture_output.')
+            kwargs['stdout'] = PIPE
+            kwargs['stderr'] = PIPE
+    
+>       with Popen(*popenargs, **kwargs) as process:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: 'Mock' object does not support the context manager protocol
+
+..\..\..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\subprocess.py:548: TypeError
+__________ test_zero_exit_failed_turn_classified_and_no_final_needed __________
+
+worker = <Mock id='2335658704336'>
+
+    def test_zero_exit_failed_turn_classified_and_no_final_needed(worker):
+        worker.returncode = 0
+        worker.communicate.return_value = ((FIXTURES / "codex_auth_failure.jsonl").read_text(), "ERROR authentication failed")
+        with pytest.raises(backend.CodexError) as caught:
+>           backend.ask("default", "task")
+
+tests\test_provider_failures.py:45: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+llm\backends\codex_cli.py:266: in ask
+    config = _worker_config(executable, directory, deadline)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+llm\backends\codex_cli.py:80: in _worker_config
+    servers = _configured_mcp(executable, directory, [*overrides, "-c", "mcp_servers={}"], deadline)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+llm\backends\codex_cli.py:45: in _configured_mcp
+    result = subprocess.run([executable, "mcp", "list", "--json", *overrides], cwd=directory,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+input = None, capture_output = True, timeout = 10, check = False
+popenargs = (['fake-codex.exe', 'mcp', 'list', '--json', '--disable', 'shell_tool', ...],)
+kwargs = {'cwd': 'C:\\Users\\prince.baah\\Documents\\Codex\\2026-10-15\\hey\\work\\nov7-boundary-provider-before-tmp\\test_zero_exit_failed_turn_cla0\\autortl-codex-cbpmecl8', 'text': True, 'encoding': 'utf-8', 'errors': 'replace', ...}
+
+    def run(*popenargs,
+            input=None, capture_output=False, timeout=None, check=False, **kwargs):
+        """Run command with arguments and return a CompletedProcess instance.
+    
+        The returned instance will have attributes args, returncode, stdout and
+        stderr. By default, stdout and stderr are not captured, and those attributes
+        will be None. Pass stdout=PIPE and/or stderr=PIPE in order to capture them,
+        or pass capture_output=True to capture both.
+    
+        If check is True and the exit code was non-zero, it raises a
+        CalledProcessError. The CalledProcessError object will have the return code
+        in the returncode attribute, and output & stderr attributes if those streams
+        were captured.
+    
+        If timeout (seconds) is given and the process takes too long,
+         a TimeoutExpired exception will be raised.
+    
+        There is an optional argument "input", allowing you to
+        pass bytes or a string to the subprocess's stdin.  If you use this argument
+        you may not also use the Popen constructor's "stdin" argument, as
+        it will be used internally.
+    
+        By default, all communication is in bytes, and therefore any "input" should
+        be bytes, and the stdout and stderr will be bytes. If in text mode, any
+        "input" should be a string, and stdout and stderr will be strings decoded
+        according to locale encoding, or by "encoding" if set. Text mode is
+        triggered by setting any of text, encoding, errors or universal_newlines.
+    
+        The other arguments are the same as for the Popen constructor.
+        """
+        if input is not None:
+            if kwargs.get('stdin') is not None:
+                raise ValueError('stdin and input arguments may not both be used.')
+            kwargs['stdin'] = PIPE
+    
+        if capture_output:
+            if kwargs.get('stdout') is not None or kwargs.get('stderr') is not None:
+                raise ValueError('stdout and stderr arguments may not be used '
+                                 'with capture_output.')
+            kwargs['stdout'] = PIPE
+            kwargs['stderr'] = PIPE
+    
+>       with Popen(*popenargs, **kwargs) as process:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: 'Mock' object does not support the context manager protocol
+
+..\..\..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\subprocess.py:548: TypeError
+__________________ test_unknown_nonzero_exit_is_not_guessed ___________________
+
+worker = <Mock id='2335658755856'>
+
+    def test_unknown_nonzero_exit_is_not_guessed(worker):
+        worker.communicate.return_value = ('{"type":"item.completed","item":{"text":"PRIVATE"}}', "ordinary progress")
+        with pytest.raises(backend.CodexError) as caught:
+>           backend.ask("default", "task")
+
+tests\test_provider_failures.py:53: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+llm\backends\codex_cli.py:266: in ask
+    config = _worker_config(executable, directory, deadline)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+llm\backends\codex_cli.py:80: in _worker_config
+    servers = _configured_mcp(executable, directory, [*overrides, "-c", "mcp_servers={}"], deadline)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+llm\backends\codex_cli.py:45: in _configured_mcp
+    result = subprocess.run([executable, "mcp", "list", "--json", *overrides], cwd=directory,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+input = None, capture_output = True, timeout = 10, check = False
+popenargs = (['fake-codex.exe', 'mcp', 'list', '--json', '--disable', 'shell_tool', ...],)
+kwargs = {'cwd': 'C:\\Users\\prince.baah\\Documents\\Codex\\2026-10-15\\hey\\work\\nov7-boundary-provider-before-tmp\\test_unknown_nonzero_exit_is_n0\\autortl-codex-y611ktsg', 'text': True, 'encoding': 'utf-8', 'errors': 'replace', ...}
+
+    def run(*popenargs,
+            input=None, capture_output=False, timeout=None, check=False, **kwargs):
+        """Run command with arguments and return a CompletedProcess instance.
+    
+        The returned instance will have attributes args, returncode, stdout and
+        stderr. By default, stdout and stderr are not captured, and those attributes
+        will be None. Pass stdout=PIPE and/or stderr=PIPE in order to capture them,
+        or pass capture_output=True to capture both.
+    
+        If check is True and the exit code was non-zero, it raises a
+        CalledProcessError. The CalledProcessError object will have the return code
+        in the returncode attribute, and output & stderr attributes if those streams
+        were captured.
+    
+        If timeout (seconds) is given and the process takes too long,
+         a TimeoutExpired exception will be raised.
+    
+        There is an optional argument "input", allowing you to
+        pass bytes or a string to the subprocess's stdin.  If you use this argument
+        you may not also use the Popen constructor's "stdin" argument, as
+        it will be used internally.
+    
+        By default, all communication is in bytes, and therefore any "input" should
+        be bytes, and the stdout and stderr will be bytes. If in text mode, any
+        "input" should be a string, and stdout and stderr will be strings decoded
+        according to locale encoding, or by "encoding" if set. Text mode is
+        triggered by setting any of text, encoding, errors or universal_newlines.
+    
+        The other arguments are the same as for the Popen constructor.
+        """
+        if input is not None:
+            if kwargs.get('stdin') is not None:
+                raise ValueError('stdin and input arguments may not both be used.')
+            kwargs['stdin'] = PIPE
+    
+        if capture_output:
+            if kwargs.get('stdout') is not None or kwargs.get('stderr') is not None:
+                raise ValueError('stdout and stderr arguments may not be used '
+                                 'with capture_output.')
+            kwargs['stdout'] = PIPE
+            kwargs['stderr'] = PIPE
+    
+>       with Popen(*popenargs, **kwargs) as process:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: 'Mock' object does not support the context manager protocol
+
+..\..\..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\subprocess.py:548: TypeError
+________ test_timeout_preserves_partial_error_diagnostics_and_cleanup _________
+
+worker = <Mock id='2335658778528'>
+
+    def test_timeout_preserves_partial_error_diagnostics_and_cleanup(worker):
+        worker.communicate.side_effect = subprocess.TimeoutExpired("codex", 1,
+            output=(FIXTURES / "codex_rate_limit.jsonl").read_bytes(),
+            stderr=b"ERROR token=private-timeout-token")
+        with pytest.raises(backend.CodexError) as caught:
+>           backend.ask("default", "task", timeout_s=1)
+
+tests\test_provider_failures.py:83: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+llm\backends\codex_cli.py:266: in ask
+    config = _worker_config(executable, directory, deadline)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+llm\backends\codex_cli.py:80: in _worker_config
+    servers = _configured_mcp(executable, directory, [*overrides, "-c", "mcp_servers={}"], deadline)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+llm\backends\codex_cli.py:45: in _configured_mcp
+    result = subprocess.run([executable, "mcp", "list", "--json", *overrides], cwd=directory,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+input = None, capture_output = True, timeout = 1.0, check = False
+popenargs = (['fake-codex.exe', 'mcp', 'list', '--json', '--disable', 'shell_tool', ...],)
+kwargs = {'cwd': 'C:\\Users\\prince.baah\\Documents\\Codex\\2026-10-15\\hey\\work\\nov7-boundary-provider-before-tmp\\test_timeout_preserves_partial0\\autortl-codex-ysv9rv7l', 'text': True, 'encoding': 'utf-8', 'errors': 'replace', ...}
+
+    def run(*popenargs,
+            input=None, capture_output=False, timeout=None, check=False, **kwargs):
+        """Run command with arguments and return a CompletedProcess instance.
+    
+        The returned instance will have attributes args, returncode, stdout and
+        stderr. By default, stdout and stderr are not captured, and those attributes
+        will be None. Pass stdout=PIPE and/or stderr=PIPE in order to capture them,
+        or pass capture_output=True to capture both.
+    
+        If check is True and the exit code was non-zero, it raises a
+        CalledProcessError. The CalledProcessError object will have the return code
+        in the returncode attribute, and output & stderr attributes if those streams
+        were captured.
+    
+        If timeout (seconds) is given and the process takes too long,
+         a TimeoutExpired exception will be raised.
+    
+        There is an optional argument "input", allowing you to
+        pass bytes or a string to the subprocess's stdin.  If you use this argument
+        you may not also use the Popen constructor's "stdin" argument, as
+        it will be used internally.
+    
+        By default, all communication is in bytes, and therefore any "input" should
+        be bytes, and the stdout and stderr will be bytes. If in text mode, any
+        "input" should be a string, and stdout and stderr will be strings decoded
+        according to locale encoding, or by "encoding" if set. Text mode is
+        triggered by setting any of text, encoding, errors or universal_newlines.
+    
+        The other arguments are the same as for the Popen constructor.
+        """
+        if input is not None:
+            if kwargs.get('stdin') is not None:
+                raise ValueError('stdin and input arguments may not both be used.')
+            kwargs['stdin'] = PIPE
+    
+        if capture_output:
+            if kwargs.get('stdout') is not None or kwargs.get('stderr') is not None:
+                raise ValueError('stdout and stderr arguments may not be used '
+                                 'with capture_output.')
+            kwargs['stdout'] = PIPE
+            kwargs['stderr'] = PIPE
+    
+>       with Popen(*popenargs, **kwargs) as process:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: 'Mock' object does not support the context manager protocol
+
+..\..\..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\subprocess.py:548: TypeError
+____________________ test_protocol_event_count_is_bounded _____________________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000021FD01C4E60>
+
+    def test_protocol_event_count_is_bounded(monkeypatch):
+        monkeypatch.setattr(backend, "MAX_EVENTS", 3)
+>       with pytest.raises(backend.CodexError, match="event limit"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'event limit'
+E         Actual message: 'CODEX_PROTOCOL: tool or unsupported item in text-worker response'
+
+tests\test_provider_failures.py:92: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_provider_failures.py::test_nonzero_exit_retains_only_sanitized_error_fields[codex_rate_limit.jsonl-CODEX_QUOTA]
+FAILED tests/test_provider_failures.py::test_nonzero_exit_retains_only_sanitized_error_fields[codex_auth_failure.jsonl-CODEX_AUTH]
+FAILED tests/test_provider_failures.py::test_zero_exit_failed_turn_classified_and_no_final_needed
+FAILED tests/test_provider_failures.py::test_unknown_nonzero_exit_is_not_guessed
+FAILED tests/test_provider_failures.py::test_timeout_preserves_partial_error_diagnostics_and_cleanup
+FAILED tests/test_provider_failures.py::test_protocol_event_count_is_bounded
+6 failed, 9 passed in 1.93s

@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_3:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 3\n## Contract check\n- Defined behavior and interface: PASS \u2014 the candidate preserves the debouncer ports, synchronous active-high reset, and update after 8 consecutive cycles; the authoritative ladder is ALIVE.\n- Top latency annotation: PASS \u2014 `// @latency 0` matches the known top latency.\n- Simulation and tool gates: PASS \u2014 simulation passed, required tool exits are zero, and Vivado reported `SYNTH_COMPLETE`.\n- Routed metrics and timing closure: PASS \u2014 retained routed metrics are available; WNS is 0.578 ns and WHS is 0.188 ns, both nonnegative.\n- Objective improvement over previous best: FAIL \u2014 LUTs and FFs are unchanged at 3 and 4, so the `minimize_luts` lexicographic objective did not strictly improve.\n\n## Summary\n- Passed: 4 of 5\n- Failed: 1 of 5\n- Improved over previous best: NO\n\n## Recommendation\nREJECT\n\n## Reason\nThe candidate passes the behavioral, latency, verification, and timing gates, but both it and the previous best are timing-feasible, so promotion requires a strict objective improvement. The candidate has the same LUT and FF counts as the previous best; improved timing slack does not satisfy the selected `minimize_luts` objective.",
+      "recommendation": "REJECT",
+      "passed": 4,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

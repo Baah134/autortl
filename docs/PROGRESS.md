@@ -142,7 +142,7 @@ changes, commands, outcomes, evidence locations, limitations, and next action.
 - User decision: continue while usage is available; another provider can take
   over when needed, and returning agents resume from the latest repository.
   Checkpointing must not itself release the active coordinator or stop work.
-- Canonical clone moved to C:/Users/prince.baah/Downloads/autortl-work;
+- Canonical clone moved to C:/Users/<user>/Downloads/autortl-work;
   317 file hashes matched. The separate existing Downloads/autortl was preserved.
 - Published earlier tested milestones through 68fc5e6 to origin/codex/cli-bringup.
   This checkpoint is committed and pushed to the same development branch.
@@ -1584,3 +1584,406 @@ run the committed-blob audit. Do not spend on a third hold run of code scheduled
 for replacement. No new roles, services, model escalation or budget expansion.
 Only then continue higher curricula and the CV-oriented board/public-task plan.
 
+## November6 — reconcile current state and define the portfolio release
+
+- User authorized continued work, a concrete plan and bounded subagents.
+- Claimed expired coordinator lease for supervision; existing signoff4 retained.
+  No frozen runtime or configuration edits, duplicate vendor/model queue or
+  reapplication of superseded October29 patches.334frozen inputs verified.
+- Independent reviewers reconciled actual full records (tiers0–5 held, tier6
+  first attempt2/3) and12physical-board result/source identities. The UART/FIFO
+  and AES oracle failures remain explicit. Historical2258test aggregate is
+  separated from the latest2022harness receipt. No new test pass claimed.
+- Added docs/ACTION_PLAN.md with acceptance criteria, fair benchmark arms,
+  budget/grader controls, a finite release/CV package and agent responsibilities.
+  START_HERE and the current handoff now point at the actual November6 state.
+- Completed archive validation/publication receipts are retained under
+  evidence/2026-11-06/resume-status-01. The live tier6 outcome remains pending.
+- Parallel diagnoses completed: AES failures are genuine oracle errors; UART
+  latency sampling mismatch independently reproduces recorded assertions.
+  Proposed benchmark:40tasks/6disjoint pilots/360runs; no trials executed.
+  Reports and pure probe retained in parallel-diagnoses-01. A minimal UART
+  prompt correction is being prepared off-tree pending the live gate.
+- Completed signoff archive verification finished: 22 archives, 49,435 manifest entries all match retained bytes. Failed attempts remain included. No tier6-02 verdict is inferred.
+
+- November7: reclaimed the expired lease after verifying the original signoff
+  stopped; no Python/Vivado/hw_server jobs were active. b59d077 published all
+  22 completed archives (49,435 committed blobs checked). Tier6-02 is a
+  quota-blocked incomplete gate with no verdict, not three design failures.
+  Its96 manifest entries and334 original frozen inputs verified before edits.
+  Recorded two demonstrated reliability failures and acceptance before patches.
+  Connected FPGA is untouched; only software and simulator controls planned.
+
+- Reliability batch validation: 2028 harness tests passed in822.21s;323 tooling
+  passed in78.81s, with one explicit native Windows symlink-privilege skip.
+  Both actual exits0 and all337 frozen source inputs unchanged. Three actual
+  sampling controls and their portable archived replay met all declared
+  outcomes. No board access or new design/benchmark verdict.
+- Added evidence-checked FIR and verifier case studies; corrected front-page
+  timing, handwritten shell and historical-result claims. Public benchmark
+  review pins upstream/tool sources but no roster/trials or advantage claim.
+- Before next AES exploration, review found inherited MCP tools in the current
+  CLI worker. A scoped restriction is being investigated off-tree; no new model
+  campaign launched. Preserve auth, managed policies and sandbox/network guards.
+
+- Worker restriction integrated after independent review and pre-fix taxonomy.
+  Final staged focus:67 passed; original backend45failed/22passed with final
+  tests. Separate deadline regression failed before correction. Real CLI
+  configuration-only checks found no enabled MCP after complete inert disables
+  and ten targeted features false. Auth/security environment unchanged.
+  Full software and harmless model compatibility control remain pending;
+  no new vendor campaign or board access.
+
+November7 worker milestone: 2074 passed in 646.94s (0:10:46); 323 passed, 1 skipped in 110.73s (0:01:50); 340 frozen inputs unchanged. Restricted text control passed; model identity unobserved, no board access. Evidence: evidence/2026-11-07/worker-boundary-01. Previous worker-stage pending notes are superseded by this receipt. Next is one fresh tier6 AES exploration with original budgets, no lower-tier reholds.
+
+## November7 oracle module-boundary clarification
+
+Oracle clarification validation: 2078 passed in 518.77s (0:08:38); 323 passed, 1 skipped in 59.24s; 341 frozen inputs unchanged.
+Only generic module-boundary and top-level-helper instructions changed; no
+roles/FSM/sandbox/budget changes. AES01 remains a failed oracle build, with
+three rejected attempts and no new hardware or curriculum verdict. The next
+fresh run is AES02 on the published correction with original limits.
+
+Phase2 bounded oracle context integrated after acceptance and independent review.104focused tests passed; original5failed4passed. Full software checks and fresh same-budget trial pending. No sandbox/budget/role-count changes, no board access.
+
+## November8 bounded oracle repair context
+
+Bounded oracle-context change validated: 2087 passed in 467.00s (0:07:47); 323 passed, 1 skipped in 63.86s (0:01:03); 342 frozen inputs unchanged.
+Public contract examples are included as complete bounded records, with explicit
+omissions and fresh-init/repeated-step semantics. Repairs receive the exact
+immediately preceding same-module source, raw-file digest and error; normalized
+text has a separately labelled digest and explicit truncation. Empty failed
+artifacts retain their hash/context. Three attempts, qualifiers, sandbox and
+all budgets remain unchanged.104focused tests and independent review passed.
+AES02 remains a failed run, not evidence of improvement. Next: one fresh AES03
+on this committed source with original budgets. No board access or programming.
+
+AES03 completed: controller recovered through unit/mutation qualification; roundoracles rejected, fullAESfailed.116 archiveentriesverified;342runinputsunchanged; no board access. Contextmechanism works as recorded; no general/modelcausal claim. See CASE_STUDY_ORACLE_CONTEXT.
+
+## November8 finite field-guidance experiment
+
+Finite-field guidance validated: 2095 passed in 857.66s (0:14:17); 323 passed, 1 skipped in 93.31s (0:01:33); 343 selected inputs unchanged.
+Existing log/antilog advice now states its primitive-generator prerequisite,
+complete nonzero-element coverage and inverse-product checks.255 is explicitly
+scoped to GF(2^8). No generator number, reference program, S-box table or AES
+round output was added to production instructions. Gates, roles, attempts,
+budgets and sandbox are unchanged. Historical V1 focus112passed; final V2
+affected8passed; independent review and current full suites passed.
+
+One fresh AES04 is declared on this committed source with the original limits.
+After that trial, stop AES-specific prompt tuning regardless of outcome;
+assess and move to release/public benchmark work. No automatic AES05.
+Software/math controls do not establish model improvement or full AES success.
+No board programming, reset, JTAG, hardware-server or serial action occurred.
+
+## November8: finite AES outcome and benchmark foundation
+
+Published8c59efb after2095harness+323tooling passes/one native Windows link
+privilege skip,343 unchanged frozen inputs, full committed audit and148 archive
+blob checks. AES04 completed322.61s/9modelcalls/121.050offline vendorseconds:
+controller qualified; round oracle qualified on3rd attempt; all4roundRTL
+candidates failed102assertions. All343originalinputs unchanged;219archive
+entries independently verified. No integration/PPA/hold/board result. The
+declared AES study is closed: no AES05 or more task-specific prompt tuning.
+Keep bounded contract/source context and gates; general RTL diagnostic loss is
+recorded separately, not repaired by injecting AES code or expanding budgets.
+
+Independent benchmark review motivated and approved a small artifact module:
+strict manifests/public-only export/externally anchored ordered RTL seals and
+missing records. Three staged review findings were reproduced and fixed:
+UTF8 enforcement, oversized time handling and fail-closed inventory traversal.
+Final staged75passed/two Windows permission skips; canonical full checks now
+active in workspace work/nov8-benchmark-full-tests-01,347inputs frozen. This is
+provenance foundation only: no task registration, arm execution, grader,
+isolation proof or benchmark superiority. No model/vendor job remains active.
+
+Shared memory now uses a stable START_HERE guide and one dated current
+SESSION_HANDOFF checkpoint. Superseded current sections are preserved in the
+AES04 review archive and Git. Final software/publication receipts are pending.
+
+## November8 benchmark artifact acceptance completed
+
+Canonical software validation: 2171 passed, 1 skipped in 744.46s (0:12:24); 323 passed, 1 skipped in 79.85s (0:01:19). All 347 explicitly
+selected inputs stayed unchanged. Source selection includes the new benchmark
+package, its tests and API document. Staged V2 separately passed75 tests with
+two native Windows permission skips; independent probes confirmed all three
+review corrections. Staged V1 is retained separately with its original scope.
+
+This slice supplies strict frozen metadata, public-only exact-byte export,
+ordered explicit RTL seals and separate missing records. Loading binds an
+externally retained ID and fails closed on inventory errors. It neither selects
+candidates nor executes arms, enforces ablation, grades Verilog, establishes
+OS/network isolation or supplies a public benchmark result. No actual tasks
+have been selected or scored; unknown observed model/cost stays unknown.
+
+AES04 is archived as failed; its finite study is closed. Shared memory has one current checkpoint. Next implementation is explicit FSM candidate bundles; no new AES trial or public benchmark result.
+
+## November 13: resumed candidate export after interruption
+
+Verified b98b6c4, preserved the unfinished acceptance/taxonomy changes and found
+no running project job or staged implementation. Normally reclaimed the expired
+lease. Isolated implementation and independent review are active. The missing
+run/export mutex requires a small cooperative OS lock, not checkpoint-file
+contention handling. Generation snapshots must precede later best-of-N calls
+and early rejection so failed runs retain their actual complete proposals.
+No implementation/test/benchmark success is claimed at this checkpoint; no
+model, vendor or board jobs were launched. Main remains unchanged.
+
+## November 14: coordinator switch to Claude; pilot-first plan recorded
+
+User directed Claude to coordinate and to prioritise the benchmark pilot.
+Verified b98b6c4, Codex lease expired, no repository change on Nov14 and no
+project job running; claimed the lease normally and preserved Codex's dirty
+acceptance/taxonomy files and the parked Nov13 export stage. Recorded the
+shortest path to a 12-run VerilogEval pilot (ACTION_PLAN Nov14) and the adapter
+acceptance (TASKS Nov14). No dataset download, Icarus install, model, vendor or
+board job in this step.
+
+Later Nov14: implemented the pilot adapter, grader and arm A/C runners
+(benchmark/verilogeval.py, benchmark/pilot.py, docs/BENCHMARK_PILOT.md) with
+synthetic fixtures. Harness 2208 passed/2 skipped, tooling 323 passed/1 skipped
+in a scratch venv (no pytest was installed in any local interpreter). The
+grader's upstream strings are reconstructed and must be confirmed against the
+pinned dataset; no dataset, Icarus, model, vendor or board activity yet.
+
+Later Nov14: with user approval, pinned VerilogEval c498220d0a52 outside the
+repository and installed Icarus 12.0 (MSYS2). Confirmed upstream compile flags,
+30 s timeout and analyzer rules; ported the analyzer. Controls 16/16; reference
+sweep 152/156, excluding lfsr32, count_clock, fancytimer (testbench watchdog
+prints TIMEOUT for the reference) and m2014_q6c (port mismatch). Drafted the
+category catalog (one reviewer) and selected the six pilot tasks. No model,
+Vivado or board run. Evidence: evidence/2026-11-14/pilot-grader-controls-01.
+
+Evening Nov14: pilot-04 graded against the official VerilogEval tests: arm A
+6/6 (6 calls), arm C 4/6 (36 calls) including the first measured false
+acceptance (Prob135_m2014_q6b: planner misderived the next-state table; the
+generated oracle and RTL shared the error). Earlier attempts pilot-01..03
+stopped on adapter/harness defects, each recorded in taxonomy and evidence.
+Subagents in separate worktrees delivered the triage fix, the arm B seam, final
+registration and resetless-module support; a blind second catalog review
+agreed on 152/156 categories (kappa 0.962). Coordinator added out-of-context
+port timing for single-register designs (live-checked) and crash triage. The
+host slept 18:37-20:30, stalling runs and agents; recovered without data loss.
+
+# Archived handoff sections (moved from SESSION_HANDOFF on November 15, 2026)
+
+### Earlier — November 14, 2026 (late): pilot gate passed, final run ready
+
+Coordinator: Claude. Branch `codex/contract-context` at 775820583 (local, not
+pushed). pilot-06 (runtime e61a09827) passed the gate: single_call, ablation and
+full each 6/6, every cell done (evidence/2026-11-14/pilot-06-results-01). pilot-05
+was aborted on a hold-exclusion defect, fixed in e61a09827. The final 40-task
+registration is frozen (evidence/2026-11-14/final-registration-01, selection
+c85666ff).
+
+Final comparison prepared, not launched: `C:/Users/<user>/autortl-private/
+final-01/manifest.json` (360 cells: 40 tasks x 3 arms x 3 trials, runtime
+775820583) and `final-01/run_all.sh` (trial-major; never reruns a cell). Launch:
+`bash C:/Users/<user>/autortl-private/final-01/run_all.sh <venv python>`
+from any shell; grade only after all cells are sealed with
+`autortl-private/grade_pilot.py <repo> <final-01> <dataset> <iverilog> <vvp>`.
+Expected from pilot-06 rates: about 19 h awake time, about 1,700 Codex calls and
+40M input tokens (much of it cached). The host must not sleep.
+
+Open: `planner_spec_error_shared_by_oracle_and_rtl` (not reproduced in pilot-06),
+no push yet, main still frozen at ca61dbc.
+
+### Earlier — November 14, 2026 (evening): pilot-04 graded, workers merged
+
+Coordinator: Claude. Branch `codex/contract-context` (local commits since
+b98b6c4, not pushed). VerilogEval c498220 at `C:/Users/<user>/autortl-private/
+verilog-eval`; pilot workspaces `autortl-private/pilot-0N`; Icarus 12.0 (MSYS2).
+
+- **pilot-04 graded** (runtime 2f06f206): arm A 6/6, arm C 4/6 with one false
+  acceptance (Prob135_m2014_q6b, planner spec error shared by oracle and RTL).
+  Evidence `evidence/2026-11-14/pilot-04-results-01`.
+- **Merged worker branches** (each reviewed, built in its own worktree off
+  2f06f206): triage of unstartable tools as infra; arm B
+  `--verification-policy skip_generated_tb_mutations`; `benchmark/registration.py`
+  (40-task quota selection, exclusions file); resetless sequential modules
+  (`reset: null` + `init_cycles`/`init_inputs`).
+- **Coordinator fixes:** pilot `ablation` arm; out-of-context port timing for
+  designs without a register-to-register path (input hold excluded; advisory
+  QoR report skipped there after it crashed Vivado); Vivado crash banner
+  classified as infra. Live checks in `evidence/2026-11-14/ooc-port-timing-01`.
+- **Catalog:** two-reviewer adjudicated (kappa 0.962), 106 families
+  (`evidence/2026-11-14/catalog-review-01`). Final selection (40 tasks,
+  quotas 21/3/10/6) is computed but not yet registered.
+
+Exact next action: after the full suites pass, commit; freeze pilot-05 (three
+arms x 6 pilot tasks = 18 cells) on the merged runtime, run, grade; then freeze
+the final registration and run the 40-task comparison (3 arms x 3 trials).
+Open: `planner_spec_error_shared_by_oracle_and_rtl` (no mitigation adopted),
+roles.py does not yet describe init_cycles to the golden/RTL writers, and the
+machine's sleep stalls long runs (keep it awake or plugged in, lid open).
+
+### Earlier — November 14, 2026: shortest path to the VerilogEval pilot
+
+Coordinator: Claude (user-directed, November 14). Codex's November 13 lease had
+expired; no repository file had changed on November 14 and no Vivado, xsim or
+harness process was running. Codex desktop app processes started 08:06 were
+present but no project job was attributable to them. Lease claimed normally,
+without takeover. Branch `codex/contract-context`, base `b98b6c4`.
+
+### User decision
+
+Prioritise reaching the public benchmark pilot (ACTION_PLAN order 4/5) over
+further export plumbing. The pilot validates adapter, grader, accounting and
+budgets on six disjoint tasks excluded from results. Items only the final
+registration needs are not prerequisites for the pilot.
+
+### Plan (see ACTION_PLAN "November14 shortest path to the pilot")
+
+0. Park the November 13 candidate-export stage (below) untouched. The pilot
+   runs one job at a time, so it needs no run lock, and it takes each run's
+   final selected RTL from the run directory instead of full snapshot history.
+1. Pin VerilogEval spec-to-RTL to a full commit outside model-visible paths;
+   record licence and per-file SHA-256; select six pilot tasks with the Nov6
+   hash rule across the four categories.
+2. Grader: Icarus v12 (install needs user approval: MSYS2 or WSL) wrapped by
+   `benchmark/verilogeval.py`, matching upstream compile/30 s simulation
+   semantics, recording real exits and mismatch counts. Controls: reference
+   passes, broken copy fails, syntax error is compile_error, hang times out.
+3. Arm runners in `benchmark/pilot.py`: A = one backend invocation; C =
+   `run.py build --spec <prompt> --top TopModule --generate-golden` with the
+   Nov6 provisional budgets. Arm B (mutation-qualification ablation) is
+   deferred until before final registration. Seal with benchmark.artifacts.
+4. Run 6 tasks x arms A,C x 1 trial = 12 sequential runs; grade only after
+   every run is sealed. Check Codex quota headroom first.
+5. Record adapter defects; tune budgets/prompts on pilot tasks only; freeze.
+
+Final-registration-only items: OS-level hidden-grader isolation (pilot discloses
+that it is not enforced), arm B seam, failed-call cost accounting, 40-task
+roster and exclusion table, candidate bundles/run lock if jobs run in parallel.
+
+Open user questions: Icarus via MSYS2 or WSL; whether arm C runs synthesis for
+a functional benchmark; best_of_n 4 (default) or 1 (Nov6 proposal).
+
+### Implemented this session (committed fb928002c)
+
+Steps 2 and 3 code, with synthetic fixtures and process doubles only:
+`benchmark/verilogeval.py` (task loading, Nov6 hash-rule pilot selection,
+artifacts manifest, Icarus grader and summary parser), `benchmark/pilot.py`
+(arm A/C runners, grading of sealed receipts, CLI),
+`tests/test_benchmark_verilogeval.py`, `tests/test_benchmark_pilot.py`,
+`tests/fixtures/verilogeval/` and the runbook `docs/BENCHMARK_PILOT.md`. No
+harness runtime file changed. Full suites (scratch venv, Python 3.14, pytest
+9.2): harness 2208 passed, 2 skipped (Windows symlink privilege; Icarus not
+installed); tooling 323 passed, 1 skipped (symlink privilege). Tier bench not
+rerun: no runtime change, and finished tiers are not re-held mid-development.
+
+### Pinned, controlled and selected (user approved downloads, Nov14)
+
+VerilogEval c498220d0a52 cloned to `C:/Users/<user>/autortl-private/
+verilog-eval`; Icarus 12.0 installed via MSYS2. Upstream flags and analyzer
+confirmed and ported (`upstream_passfail`, recorded beside the strict status).
+Grader controls 16/16; reference sweep 152/156 with four dataset defects
+excluded. One-reviewer catalog committed-to-be at
+`benchmark/catalogs/verilogeval-c498220.json`; pilot (fixed slots 1/1/2/2):
+Prob036_ringer, Prob033_ece241_2014_q1c, Prob147_circuit10, Prob038_count15,
+Prob135_m2014_q6b, Prob107_fsm1s. Evidence:
+`evidence/2026-11-14/pilot-grader-controls-01/`. A session lease lapsed once
+mid-work (no other owner); it was reclaimed normally and scopes re-claimed.
+
+### Exact next action
+
+1. User: approve the commit (includes Codex's preserved taxonomy/
+   HARNESS_REVIEW/TASKS acceptance notes) and answer arm C settings
+   (synthesis on/off; best_of_n 4 or 1).
+2. Commit; `python -m benchmark.pilot manifest --dataset <D> --commit c498220d0a52248f8e3fdffe279075215bde2da6 --tasks <6 IDs> --runtime-sha256 <hash> --out <outside-repo>/manifest.json`.
+3. Check Codex quota; run the 12 cells sequentially per docs/BENCHMARK_PILOT.md;
+   grade only after all are sealed.
+
+Full suites after these changes (Icarus on PATH): harness 2226 passed, 1 skipped (symlink privilege); tooling 323 passed, 1 skipped.
+No model, vendor or board job has run in this session.
+
+### Paused — November 13, 2026: candidate-export implementation (Codex)
+
+Canonical checkout: `C:/Users/<user>/Downloads/autortl-work`.
+Branch: `codex/contract-context`; last published commit:
+`b98b6c4f82035144cb0c1e09ffc0126edaa36db2`. Main remains
+`ca61dbcb6620914c8928c460d9aaf92aca608183` pending final release validation.
+The separate `Downloads/autortl` copy must remain untouched.
+
+### Actual state
+
+The November 8 candidate-export session stopped at a usage limit before its
+implementation stage was created. Only acceptance/taxonomy changes survived
+in data/taxonomy.yaml, docs/TASKS.md and docs/HARNESS_REVIEW.md. These were
+preserved. On November 13, Git still showed b98b6c4 and no live project jobs;
+the expired coordinator lease was normally reclaimed without takeover.
+
+Current work is staged under workspace `work/nov13-candidate-bundle-stage`.
+Worker candidate_export_nov13_stage implements it; independent worker
+candidate_export_nov13_review checks exact hooks, resume and export integrity.
+Canonical runtime code is not yet integrated. No model/vendor/board jobs run.
+The active coordinator is Codex; query SQLite ownership before editing.
+Workspace root: `C:/Users/<user>/Documents/Codex/2026-10-15/hey`.
+
+### Scope and exact next action
+
+1. Review staged candidate_bundles.py, FSM hooks and benchmark/submissions.py,
+   their real FSM/process controls, raw logs and exact final source hashes.
+   Parent integrates only after independent approval and focused test success.
+2. Record ordered complete source snapshots at every materialization, including
+   raw best-of-N replies before later calls can block, repairs and Doctor RTL
+   rejected by early static gates. Separate replay-safe generation and accepted
+   incumbent decisions; never reset a later incumbent during baseline replay.
+3. Add a small cooperative OS file lock shared by public Orchestrator.run and
+   export. There was no existing run mutex: checkpoint replacement contention
+   is different. The lock persists on disk, excludes concurrent access, and is
+   released by the OS after process death. Prove this with actual child processes.
+4. Bind the export to frozen runtime/config/requested model/budgets and exact
+   run termination. Preserve unknown served-model identity and source-commit
+   registration limits. Full verification only; no fabricated ablation or
+   single-call acceptance. No catalog on a legacy run means unavailable.
+5. Freeze integrated inputs, run full software suites, archive exact evidence,
+   audit committed bytes and push development. Verify Git/remote/CI and update
+   this single checkpoint. Do not duplicate jobs or modify frozen sources.
+
+Acceptance: workspace work/nov8-candidate-bundle-acceptance.md, with the
+run-lock correction also recorded in TASKS/HARNESS_REVIEW/taxonomy. Latest
+published seam review: evidence/2026-11-08/benchmark-artifacts-01/
+nov8-benchmark-next-review.md. No candidate export result is claimed yet.
+
+### Previous measured results and limits
+
+Published b98b6c4: 2,171 harness and 323 tooling passes, two Windows privilege
+skips, 347 unchanged frozen inputs, committed audit passed, 283 new archive
+files verified, and CI run42530896878 succeeded. The artifact API supplies
+strict manifests, public-only exports and externally anchored RTL seals.
+It does not yet select FSM candidates, execute arms, grade RTL or prove
+OS/network isolation. No public tasks have been selected or scored.
+
+AES04 is closed: controller qualified; round oracle qualified on attempt3;
+all four round RTL candidates failed102 assertions. All343 original inputs
+and219 run archive entries were verified. No integration/PPA/hold/board
+success followed. No AES05 or further AES-specific prompt tuning. The missing
+expected/actual repair diagnostics remain a separately recorded general
+limitation, not a measured fix. Old tier holds belong to their original runtime.
+
+### Recovery and safety
+
+Coordinators take turns; follow AGENTS.md and docs/AGENT_HANDOFF.md, inspect
+actual jobs and dirty files, and claim exact scopes. Do not reset/clean/stash,
+switch branches, overwrite evidence, resume spent experiments on new runtime,
+terminate unfamiliar jobs or publish tokens. Old campaign14/mailbox merge
+requests are superseded. Checkpointing retains ownership; handoff is for a
+real switch. These files do not schedule future execution or provider changes.
+
+Main stays frozen until the final release validation/rehold. Do not repeatedly
+rehold completed tiers during development. The connected Basys3 is outside
+this stage: no JTAG, serial, programming, flash, reset or hardware-server calls.
+Keep history in PROGRESS and Git; keep the README focused on public results.
+
+## November 15: review, roadmap, cleanup, final-01 abort and final-02 launch
+
+Owner approved MIT and pushing the branch. Wrote the expert review and the
+agent roadmap; added the in-repo campaign runner, report module and lease
+keeper. Launched final-01 and stopped it after 5 cells when wiring-only designs
+failed out-of-context placement ("The design is empty"); fixed with an
+empty-netlist path, a tool-written no-timing-paths marker and a narrow
+shutdown-crash rule, each with taxonomy, tests and live Vivado checks, plus a
+39/40 synthesis sweep of the final-task references. Compacted the repository:
+one agent guide, 149-line README, superseded docs archived. Full suites: 2,330
+harness and 323 tooling tests. final-02 launched at runtime 7731a66d2.

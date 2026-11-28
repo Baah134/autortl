@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_3:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 3,
+    "instruction": "In `fir16_sym_core`, express the rounded result as a signed 17-bit quotient using the exact `acc4[27:11] + acc4[10]` identity, then replace comparisons against \u00b132767/32768 with checks of quotient bits `[16:15]`: `01` saturates positive, `10` saturates negative, and `00`/`11` pass through the low 16 bits. Preserve the existing registered `data5`, elastic-slot enables, reset behavior, and top `// @latency 5`; retain the current 28-bit accumulator because its full signed range is part of the exact arithmetic. This targets LUT reduction, but only matching routed reports and all required verificat",
+    "candidates": [
+      {
+        "iteration": 3,
+        "mutation": "standard",
+        "instruction": "In `fir16_sym_core`, express the rounded result as a signed 17-bit quotient using the exact `acc4[27:11] + acc4[10]` identity, then replace comparisons against \u00b132767/32768 with checks of quotient bits `[16:15]`: `01` saturates positive, `10` saturates negative, and `00`/`11` pass through the low 16 bits. Preserve the existing registered `data5`, elastic-slot enables, reset behavior, and top `// @latency 5`; retain the current 28-bit accumulator because its full signed range is part of the exact arithmetic. This targets LUT reduction, but only matching routed reports and all required verificat",
+        "generated_source_sha256": "49b298a122855838d4e6cb8d5af37d1586ab7713bbb2497a7a3e9e94345a3e9f",
+        "final_source_sha256": "49b298a122855838d4e6cb8d5af37d1586ab7713bbb2497a7a3e9e94345a3e9f",
+        "generated_code_hash": "7d0de548a5d03c43",
+        "final_code_hash": "7d0de548a5d03c43",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 1.645,
+          "whs_ns": 0.118,
+          "lut_used": 79,
+          "ff_used": 202,
+          "dsp_used": 10,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.017,
+          "total_power_w": 0.086
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-02\\tier5_sjw1itjc\\fir16_sym_build\\iter_003\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-02\\tier5_sjw1itjc\\fir16_sym_build\\iter_003\\cand_standard\\synth.tcl",
+          "sha256": "c15e18b1968d60100dc8abdd92ebefdd0b17281dcea44ec612ba50e2aa2399fb"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-02\\tier5_sjw1itjc\\fir16_sym_build\\iter_003\\cand_standard\\fir16_sym.v",
+          "sha256": "4ef0b9c353aa06660e5c14c3e9019fa4de9aa66093d38bf08be4db423d3f4743"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "ACCEPT",
+    "is_best": true,
+    "selected_source_sha256": "49b298a122855838d4e6cb8d5af37d1586ab7713bbb2497a7a3e9e94345a3e9f"
+  },
+  "artifacts": {}
+}

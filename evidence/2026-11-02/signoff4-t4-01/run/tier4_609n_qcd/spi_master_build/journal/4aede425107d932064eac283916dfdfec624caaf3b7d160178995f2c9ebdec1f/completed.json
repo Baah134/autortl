@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_1:decision:instruction:0",
+  "result": "In `spi_master_core`, replace the `rx_shift` receive path with shifts into `rsp_data_reg` on each rising SCLK sample edge, and remove `rx_shift` plus its reset and command-accept initialization. At the final falling edge, assert `rsp_valid_reg` without overwriting `rsp_data_reg`; the eighth bit must already have been captured on the preceding rising edge. Preserve all transfer timing, parameter behavior, reset and handshake behavior, and keep `spi_master_core` live-reached from `spi_master`; retain the top\u2019s `// @latency 33` annotation.",
+  "artifacts": {}
+}

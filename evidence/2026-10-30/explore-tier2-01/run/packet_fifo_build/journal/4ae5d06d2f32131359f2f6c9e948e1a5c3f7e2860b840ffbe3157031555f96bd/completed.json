@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_2:decision:instruction:0",
+  "result": "Replace the active child data path and the `output_queue` shift-register/`queue_count` block with top-level FIFO control: a registered head tuple, two tail slots addressed circularly, and occupancy logic for capacity three. Keep a `packet_fifo_core #( .WIDTH(8), .DEPTH(3) ) u_packet_fifo_core` instance, but hold it inactive so synthesis can remove its unused logic; drive top handshakes and outputs from the new FIFO. Preserve synchronous reset priority, full simultaneous pop/push, tuple ordering and stall stability, no empty bypass, and the exact `in_ready` rule; retain the latency annotation.",
+  "artifacts": {}
+}

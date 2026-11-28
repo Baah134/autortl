@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_5:model:generator.generate:0",
+  "result": "`timescale 1ns/1ps\nmodule pwm (\n    input  wire       clk,\n    input  wire       rst,\n    input  wire [7:0] duty,\n    output reg        pwm_out\n);\n    reg [7:0] counter;\n    wire [7:0] toggle;\n\n    assign toggle[0] = 1'b1;\n\n    genvar i;\n    generate\n        for (i = 1; i < 8; i = i + 1) begin : gen_toggle\n            assign toggle[i] = &counter[i-1:0];\n        end\n    endgenerate\n\n    always @(posedge clk) begin\n        if (rst) begin\n            counter <= 8'd0;\n            pwm_out <= 1'b0;\n        end else begin\n            counter <= counter ^ toggle;\n            pwm_out <= (counter < duty);\n        end\n    end\nendmodule",
+  "artifacts": {}
+}

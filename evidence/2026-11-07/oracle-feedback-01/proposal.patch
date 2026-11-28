@@ -1,0 +1,108 @@
+--- a/autortl/prompts.py
++++ b/autortl/prompts.py
+@@ -330,6 +330,10 @@
+ Behavior: {behavior}
+ Ports: {ports_table}
+ Public parameter defaults: {parameters}
++Model only this module's behavior and state. Declared input ports are authoritative
++external values, including results supplied by neighboring modules. Consume those
++inputs when the contract uses them; do not recompute a neighbor's function or
++infer hidden upstream state. Legitimately unused inputs may remain unused.
+ Inputs and outputs remain masked nonnegative bit patterns even for signed ports.
+ For signed arithmetic, explicitly interpret two's-complement operands at their
+ specified widths, then mask outputs. Signed declarations do not change this API.
+@@ -356,7 +360,9 @@
+ entry is too slow: for GF(2^8) inverses build log/antilog tables with one
+ 255-step loop or use square-and-multiply, and check the table against any
+ values the behavior text states.
+-Helper functions are allowed. No imports, classes, try/except, raise, lambda,
++Helper functions must be defined at module top level; pass required state/table
++values as explicit arguments. Nested helper calls are unsupported by this sandbox.
++No imports, classes, try/except, raise, lambda,
+ f-strings, list/dict/set comprehensions, floats, decorators or default arguments.
+ Generator expressions are supported. Do not use private names starting with '_'.
+ Use literal port names, for example inputs.get("port_name", 0), replacing the
+--- /dev/null
++++ b/tests/test_oracle_repair_context.py
+@@ -0,0 +1,81 @@
++"""Module-local oracle instructions and sandbox controls; no LLM benefit claim."""
++import json
++from pathlib import Path
++from unittest.mock import Mock
++
++import pytest
++
++from autortl import roles
++from autortl.golden import GoldenModel
++from autortl.golden_worker import validate_source
++from autortl.spec import ModuleSpec, Port
++
++
++def test_actual_golden_prompt_keeps_neighbor_inputs_authoritative(monkeypatch):
++    request=Mock(return_value='def init(): return {}\ndef step(s,i): return s,{}')
++    monkeypatch.setattr(roles,'ask',request)
++    monkeypatch.setattr(roles,'conventions',lambda:'')
++    spec=ModuleSpec('renamed_controller','When busy, latch mixed_input and successor_input.',
++                    [Port('mixed_input','input',16),Port('successor_input','input',16),
++                     Port('held','output',16)],latency=1)
++    roles.Generator().golden_model(spec,None,feedback='ValueError: controlled retry')
++    prompt=' '.join(request.call_args.args[1].split())
++    assert "Model only this module's behavior and state" in prompt
++    assert 'Declared input ports are authoritative external values' in prompt
++    assert "do not recompute a neighbor's function" in prompt
++    assert 'Consume those inputs when the contract uses them' in prompt
++    assert 'mixed_input' in prompt and 'successor_input' in prompt
++    assert 'Helper functions must be defined at module top level' in prompt
++    assert 'pass required state/table values as explicit arguments' in prompt
++    assert prompt.endswith('ValueError: controlled retry')
++
++
++def test_top_level_helpers_work_and_nested_calls_remain_rejected(tmp_path):
++    top='''def transfer(state, inputs):
++    return inputs.get("a", 0) & 65535
++def init():
++    return {}
++def step(state, inputs):
++    return state, {"y": transfer(state, inputs)}
++'''
++    validate_source(top)
++    path=tmp_path/'golden.py';path.write_text(top,encoding='utf-8')
++    assert GoldenModel(path).run([{'a':65537},{'a':65534}])==[{'y':1},{'y':65534}]
++    nested='''def init():
++    return {}
++def step(state, inputs):
++    def transfer(value):
++        return value
++    return state, {"y": transfer(inputs.get("a", 0))}
++'''
++    with pytest.raises(ValueError,match='unsupported golden call: transfer'):
++        validate_source(nested)
++
++
++@pytest.mark.parametrize('left,right',[('round_result','key_successor'),('mixed_input','successor_input')])
++def test_renamed_controller_consumes_arbitrary_neighbor_values(tmp_path,left,right):
++    # Handwritten local-control oracle, not generated RTL, hidden reference or
++    # AES implementation. Execute only through the normal metered GoldenModel.
++    source='''def init():
++    return {"busy": 0, "held": 0, "key": 0}
++def step(state, inputs):
++    if inputs.get("rst", 0):
++        state["busy"] = 0
++        state["held"] = 0
++        state["key"] = 0
++    elif state["busy"]:
++        state["held"] = inputs.get("LEFT", 0) & 65535
++        state["key"] = inputs.get("RIGHT", 0) & 65535
++        state["busy"] = 0
++    elif inputs.get("start", 0):
++        state["busy"] = 1
++    return state, {"held": state["held"], "key": state["key"]}
++'''.replace('LEFT',left).replace('RIGHT',right)
++    path=tmp_path/'golden.py';path.write_text(source,encoding='utf-8')
++    inputs=[{'rst':1},{'start':1,left:111,right:222},{left:65537,right:43981},
++            {'start':1,left:333,right:444},{left:4660,right:131070},
++            {left:999,right:888},{'rst':1}]
++    expected=[{'held':0,'key':0},{'held':0,'key':0},{'held':1,'key':43981},
++              {'held':1,'key':43981},{'held':4660,'key':65534},
++              {'held':4660,'key':65534},{'held':0,'key':0}]
++    assert GoldenModel(path).run(inputs)==expected

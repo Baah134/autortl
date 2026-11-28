@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_2:decision:instruction:0",
+  "result": "In `debouncer_top`, replace the `candidate`-based change detection with a saturating 3-bit counter that advances while `noisy != clean_reg` and clears while they match. Update `clean_reg` to `noisy` on the eighth consecutive differing sample, then clear the counter; keep the synchronous active-high reset, output registration, and `// @latency 0` annotation. Preserve exact sampled-cycle behavior for both input levels and reset, and promote only if the unchanged verification gates pass, routed WNS and WHS remain nonnegative, and the LUT/FF objective improves over iteration 1.",
+  "artifacts": {}
+}

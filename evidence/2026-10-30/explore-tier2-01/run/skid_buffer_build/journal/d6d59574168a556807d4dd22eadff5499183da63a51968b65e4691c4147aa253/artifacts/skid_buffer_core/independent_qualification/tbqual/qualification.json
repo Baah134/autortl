@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "status": "qualified",
+  "qualified": true,
+  "testbench_sha256": "437c3fd7b87859b4b0784722e3802ab952e6346cbf347ba1d789609cfdda9d23",
+  "attempts": [
+    {
+      "label": "control",
+      "description": "unmodified control",
+      "passed": true,
+      "failure_kind": "design",
+      "error": "",
+      "assertion_detected": false,
+      "proof_reason": "simulation passed",
+      "source_sha256": "566fd566b0d25062d1ce33ed4380ad9511eea5c47b242688b8a1a2a8e15422db",
+      "raw_log_sha256": "7e8cac2f15fa31fb7154ab3153e78f08afbf0855752f9453fe858b4422d6c992"
+    },
+    {
+      "label": "mutant",
+      "description": "flip < to >",
+      "passed": false,
+      "failure_kind": "design",
+      "error": "Testbench failures:\nFAIL cycle=0 queued=0: in_ready capacity/full-pop rule\nFAIL cycle=1 queued=0: in_ready capacity/full-pop rule\nFAIL cycle=1 queued=0: in_ready capacity/full-pop rule\nFAIL cycle=1 queued=0: in_ready capacity/full-pop rule\nFAIL cycle=2 queued=0: in_ready capacity/full-pop rule\nFAIL cycle=2 queued=0: in_ready capacity/full-pop rule\nFAIL cycle=2 queued=1: out_valid must equal nonempty queue\nFAIL cycle=2 queued=1: in_ready capacity/full-pop rule\nFAIL cycle=2 queued=1: oldest payload/order/stall stability\nFAIL cycle=3 queued=1: out_valid must equal nonempty queue\nFAIL cycle=3 queued=1: in_ready capacity/full-pop rule\nFAIL cycle=3 queued=1: oldest payload/order/stall stability",
+      "assertion_detected": true,
+      "proof_reason": "raw assertion detail and failure verdict retained",
+      "source_sha256": "34c625697074afbb189f6a29e075565e93596a25c569ea3a818ebad8e1fd945f",
+      "raw_log_sha256": "aca665dd64f535be920ad4c9bd78542a1d7a573b0d5088887f2391184d4cc602"
+    }
+  ],
+  "missed": [],
+  "scope": "Minimum assertion sensitivity; missed faults remain coverage limits."
+}

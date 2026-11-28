@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_4:decision:instruction:0",
+  "result": "Keep the `pwm` interface and synchronous active-high reset behavior, and retain the registered `pwm_out <= (counter < duty)` behavior. Replace the counter\u2019s terminal-count branch and `counter + 1` update with an 8-bit counter whose bit 0 toggles each active cycle and whose bit *i* toggles when all lower counter bits are 1, so it wraps naturally from 255 to 0; clear it on reset. Do not add pipeline stages or a numeric latency annotation; the candidate still must pass the frozen simulation and all routed metric, setup, and hold gates, and it improves the incumbent only if LUTs decrease or LUTs remain 7 with fewer FFs.",
+  "artifacts": {}
+}

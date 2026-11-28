@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_2:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 2\n## Contract check\n- Top interface and defined behavior: PASS \u2014 candidate preserves the specified ports, synchronous active-high reset, and 8-cycle debounce behavior; the authoritative ladder reports all 5 rungs ALIVE.\n- Top latency annotation: PASS \u2014 `// @latency 0` matches the authoritative known latency of 0.\n- Deterministic verification: PASS \u2014 simulation passed; xvlog, xelab, xsim, and Vivado exited successfully, and synthesis recorded `SYNTH_COMPLETE`.\n- Routed metrics and timing closure: PASS \u2014 retained routed metrics report WNS 0.57 ns and WHS 0.057 ns, both nonnegative.\n- Edit boundary: PASS \u2014 only `debouncer_top` is replaced; the frozen child remains a companion.\n- Objective and improvement over previous best: PASS \u2014 both designs are timing-feasible; LUTs improve from 4 to 3, with FFs improving from 5 to 4, consistent with `improvement_kind: objective`.\n## Summary\n- Passed: 6 of 6\n- Failed: 0 of 6\n- Improved over previous best: YES\n## Recommendation\nACCEPT\n## Reason\nThe candidate passes the authoritative correctness ladder and verification gates, meets setup and hold timing, and strictly improves the minimize_luts objective over the previous best.",
+      "recommendation": "ACCEPT",
+      "passed": 6,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}

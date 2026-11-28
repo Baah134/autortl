@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_1:decision:instruction:0",
+  "result": "In `rx_fifo`, replace the combinational `mem[rd_ptr]` output read with a resettable registered head-data value that directly drives `out_data` and is zero whenever the FIFO is empty. Update it on the existing push/pop transitions so an empty push exposes the new byte after that edge, a pop with remaining entries exposes the next oldest byte, and a simultaneous pop/push at occupancy one exposes the pushed byte; preserve FIFO order and full replacement behavior for every supported `ADDR_BITS` value. Keep `out_valid`, overflow, reset priority, and all observable cycles unchanged; do not add a pipeline stage or invent a top latency annotation.",
+  "artifacts": {}
+}

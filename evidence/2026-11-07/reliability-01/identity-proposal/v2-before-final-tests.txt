@@ -1,0 +1,26 @@
+.F.s..                                                                   [100%]
+================================== FAILURES ===================================
+____________ test_excluded_worktree_descendants_are_never_scanned _____________
+
+tmp_path = WindowsPath('C:/Users/prince.baah/Documents/Codex/2026-10-15/hey/work/nov6-identity-stage/v2-before-final-tmp/test_excluded_worktree_descend0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001680E961670>
+
+    def test_excluded_worktree_descendants_are_never_scanned(tmp_path, monkeypatch):
+        source_tree(tmp_path)
+        scans = []
+        original = os.scandir
+    
+        def counted(path):
+            scans.append(Path(path))
+            return original(path)
+    
+        monkeypatch.setattr(os, "scandir", counted)
+        gate.identities(tmp_path)
+        excluded = tmp_path / ".claude" / "worktrees"
+>       assert not [path for path in scans if path == excluded or excluded in path.parents]
+E       AssertionError: assert not [WindowsPath('C:/Users/prince.baah/Documents/Codex/2026-10-15/hey/work/nov6-identity-stage/v2-before-final-tmp/test_ex...hey/work/nov6-identity-stage/v2-before-final-tmp/test_excluded_worktree_descend0/.claude/worktrees/agent/nested'), ...]
+
+tools\tests\test_gate_identity_traversal.py:82: AssertionError
+=========================== short test summary info ===========================
+SKIPPED [1] tools\tests\test_gate_identity_traversal.py:20: OS does not permit creating this test link: [WinError 1314] A required privilege is not held by the client: 'C:\\Users\\prince.baah\\Documents\\Codex\\2026-10-15\\hey\\work\\nov6-identity-stage\\v2-before-final-tmp\\test_file_symlinks_are_hashed_0\\external\\outside.py' -> 'C:\\Users\\prince.baah\\Documents\\Codex\\2026-10-15\\hey\\work\\nov6-identity-stage\\v2-before-final-tmp\\test_file_symlinks_are_hashed_0\\checkout\\data\\linked.py'
+1 failed, 4 passed, 1 skipped in 0.82s

@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_2:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 2\n## Contract check\n- Interface and parameter behavior: PASS \u2014 top-level ports, widths, signed coefficients, and defaults are preserved; the pipelined products feed the corresponding tap delays.\n- Cycle behavior and reset: PASS \u2014 the candidate preserves the registered output and reset behavior; the impulse test passes.\n- Declared latency: PASS \u2014 the known top latency is 1 and the candidate declares `// @latency 1`.\n- Deterministic verification: PASS \u2014 ladder is ALIVE; compilation, elaboration, and simulation exit successfully, with the required `TEST PASSED` verdict.\n- Routed metrics and integrity: PASS \u2014 retained routed reports and successful tool exits support the candidate metrics; setup WNS is 0.329 ns and hold WHS is 0.076 ns.\n- Improvement over previous best: PASS \u2014 the previous best was timing-infeasible; this verified candidate closes timing, matching `timing_recovery`. Higher area and power do not fail recovery.\n\n## Summary\n- Passed: 6 of 6\n- Failed: 0\n- Improved over previous best: YES\n\n## Recommendation\nACCEPT\n\n## Reason\nThe candidate preserves the stated interface, latency annotation, reset, and cycle behavior, and passes the deterministic verification gates. Its routed setup and hold slack are both nonnegative, recovering timing feasibility from the known infeasible previous best; the accompanying increases in area and power do not invalidate that recovery.",
+      "recommendation": "ACCEPT",
+      "passed": 6,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}

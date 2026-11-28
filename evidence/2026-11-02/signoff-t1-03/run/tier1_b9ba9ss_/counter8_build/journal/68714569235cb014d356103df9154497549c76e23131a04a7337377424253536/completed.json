@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Defined counter behavior and reset priority: PASS \u2014 synchronous active-high reset takes priority; otherwise the count increments by `enable`, preserving hold and modulo-256 behavior.\n- Top interface and latency annotation: PASS \u2014 ports match the contract and the top has `// @latency 1`.\n- Compile, elaboration, and simulation: PASS \u2014 tool exits succeeded and the frozen testbench reported `TEST PASSED`.\n- Routed metric integrity: PASS \u2014 retained routed reports and metric evidence are provided.\n- Timing feasibility: PASS \u2014 timing is met, with WNS 0.555 ns and WHS 0.051 ns.\n- Required objective improvement: FAIL \u2014 both candidate and previous best use 6 LUTs and 8 FFs; with both timing-feasible, equal objective metrics do not qualify for promotion.\n## Summary\n- Passed: 5 of 6\n- Failed: 1 of 6\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate preserves the defined behavior, passes the deterministic verification and timing gates, and declares the required top latency. However, the previous best is already timing-feasible and the candidate does not strictly improve the `minimize_luts` objective: LUT and FF counts are unchanged. The improved full setup WNS and lower power do not replace the required objective gain.",
+      "recommendation": "REJECT",
+      "passed": 5,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Behavior and interface: PASS \u2014 ladder is ALIVE; the candidate preserves the top ports and the debouncer\u2019s defined behavior.\n- Top latency annotation: PASS \u2014 `// @latency 0` matches the authoritative current-top latency.\n- Deterministic verification: PASS \u2014 compile, elaboration, simulation, process exits, and the required `TEST PASSED` verdict are recorded as successful.\n- Routed timing and metric integrity: PASS \u2014 retained routed reports support LUT=6, WNS=0.731 ns, and WHS=0.077 ns; both timing slacks are nonnegative.\n- Optimization objective: FAIL \u2014 the previous best is also timing-feasible, and LUT use is unchanged at 6, so the candidate does not strictly improve the `minimize_luts` objective.\n## Summary\n- Passed: 4 of 5\n- Failed: 1 of 5\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes behavioral and verification gates and meets setup and hold timing, but it ties the timing-feasible previous best at 6 LUTs. The contract requires strictly fewer LUTs when both designs are timing-feasible, and the recorded improvement kind is null with no measured improvement.",
+      "recommendation": "REJECT",
+      "passed": 4,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

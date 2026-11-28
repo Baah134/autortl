@@ -1,0 +1,45 @@
+{
+  "candidates": [
+    {
+      "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-03\\tier4_pkqwcvyo\\crc16_stream_build\\iter_003\\cand_standard",
+      "cache_hit": false,
+      "final_code_hash": "c95ba7c5f4d1a762",
+      "final_source_sha256": "ec264259f14363219653062bbf3c984042f8728129404c980e1e4b8aac787429",
+      "flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-03\\tier4_pkqwcvyo\\crc16_stream_build\\iter_003\\cand_standard\\synth.tcl",
+        "sha256": "2ef42e7a2d616a08a277d2817821aa773202d89f47ce8ec01c71ae4b3670edac"
+      },
+      "generated_code_hash": "c95ba7c5f4d1a762",
+      "generated_source_sha256": "ec264259f14363219653062bbf3c984042f8728129404c980e1e4b8aac787429",
+      "instruction": "In `crc16_stream_core`, replace `crc_state = out_last_reg ? 16'hFFFF : out_crc_reg` followed by `crc16_update(crc_state, in_data)` with Boolean equations that compute the byte-data contribution and select between the transformed `out_crc_reg` and the fixed transformed frame-start value (`T(16'hFFFF) = 16'hE1F0`). Fold `out_last_reg` into those output equations rather than building a separate 16-bit state mux; preserve the CRC result for every accepted byte and the existing one-slot handshake, reset, registered-output, and cycle behavior. Keep the top `// @latency 1` annotation, and evaluate pr",
+      "iteration": 3,
+      "metrics": {
+        "bram_used": 0.0,
+        "dsp_used": 0,
+        "dynamic_power_w": 0.018,
+        "ff_used": 18,
+        "lut_used": 19,
+        "sim_passed": true,
+        "timing_met": true,
+        "total_power_w": 0.088,
+        "whs_ns": 0.222,
+        "wns_ns": 0.418
+      },
+      "mutation": "standard",
+      "reason": "",
+      "rungs": 5,
+      "source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-03\\tier4_pkqwcvyo\\crc16_stream_build\\iter_003\\cand_standard\\crc16_stream.v",
+        "sha256": "42354381e39fb9f2a8e1e5729fdf95ad49abb4b61fab2fbe80e5133f8ad8588e"
+      },
+      "status": "measured"
+    }
+  ],
+  "doctor": null,
+  "instruction": "In `crc16_stream_core`, replace `crc_state = out_last_reg ? 16'hFFFF : out_crc_reg` followed by `crc16_update(crc_state, in_data)` with Boolean equations that compute the byte-data contribution and select between the transformed `out_crc_reg` and the fixed transformed frame-start value (`T(16'hFFFF) = 16'hE1F0`). Fold `out_last_reg` into those output equations rather than building a separate 16-bit state mux; preserve the CRC result for every accepted byte and the existing one-slot handshake, reset, registered-output, and cycle behavior. Keep the top `// @latency 1` annotation, and evaluate pr",
+  "is_best": false,
+  "iteration": 3,
+  "recommendation": "REJECT",
+  "schema_version": 1,
+  "selected_source_sha256": "ec264259f14363219653062bbf3c984042f8728129404c980e1e4b8aac787429"
+}

@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_6:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 6\n## Contract check\n- Interface and parameter behavior: PASS \u2014 ports, widths, signedness, and parameter defaults are preserved; the delayed products and 32-bit sum preserve the defined arithmetic behavior.\n- Reset and cycle behavior: PASS \u2014 reset clears the product state and output; the registered output retains the one-cycle latency and FIR tap alignment.\n- Latency annotation: PASS \u2014 the top declares `// @latency 1`, matching authoritative latency.\n- Deterministic verification: PASS \u2014 the standard ladder is ALIVE; simulation passed, and compile, elaboration, and simulation tool exits succeeded.\n- Metric and receipt integrity: PASS \u2014 retained routed reports are present, process exits succeeded, and the synthesis log contains `SYNTH_COMPLETE`.\n- Timing feasibility: PASS \u2014 timing is met with WNS 0.571 ns and WHS 0.077 ns.\n- Objective improvement: PASS \u2014 both designs are timing-feasible, and register-to-register WNS improved from 0.329 ns to 0.571 ns at the same clock period.\n## Summary\n- Passed: 7 of 7\n- Failed: 0\n- Improved over previous best: YES\n## Recommendation\nACCEPT\n## Reason\nThe candidate passes the deterministic checks and preserves the required interface, latency, reset, and cycle behavior. It meets setup and hold timing and improves the `maximize_freq` objective over the previous feasible best. Increased LUT count and power do not fail this objective comparison.",
+      "recommendation": "ACCEPT",
+      "passed": 7,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}

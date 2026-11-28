@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Ports, reset behavior, and cycle behavior: FAIL \u2014 Narrowing the counter changes behavior from states above 255 if reset has not first initialized it; the contract does not specify a reset-before-use assumption.\n- Top latency annotation: PASS \u2014 Authoritative latency is unknown, so no numeric annotation is required.\n- Deterministic verification: PASS \u2014 Ladder is ALIVE; simulation passed, and required tool exits succeeded.\n- Routed metrics and integrity: PASS \u2014 Retained routed reports and metric evidence are present and consistent.\n- Timing feasibility: PASS \u2014 timing_met is true; WNS is 0.412 ns and WHS is 0.196 ns.\n- Objective improvement: FAIL \u2014 Both designs are timing-feasible, but LUTs increased from 7 to 10 with FFs unchanged; no objective improvement is recorded.\n## Summary\n- Passed: 4 of 6\n- Failed: 2 of 6\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes the deterministic gates and timing closure, and its missing latency annotation is permitted because current-top latency is unknown. However, the narrowed counter does not preserve behavior from all possible uninitialized states, and the candidate worsens the selected LUT objective against a timing-feasible previous best.",
+      "recommendation": "REJECT",
+      "passed": 4,
+      "failed": 2
+    }
+  },
+  "artifacts": {}
+}

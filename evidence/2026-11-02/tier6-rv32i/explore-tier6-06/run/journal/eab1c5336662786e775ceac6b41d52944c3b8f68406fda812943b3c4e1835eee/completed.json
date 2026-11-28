@@ -1,0 +1,5 @@
+{
+  "stage": "module_rv_dmem:model:generator.generate:0",
+  "result": "`timescale 1ns/1ps\n// @latency 1\nmodule rv_dmem (\n    input wire clk,\n    input wire rst,\n    input wire we,\n    input wire [4:0] addr,\n    input wire [31:0] wdata,\n    output wire [31:0] rdata\n);\n\n    reg [31:0] mem [0:31];\n    reg [31:0] rdata_reg;\n    integer i;\n\n    assign rdata = rdata_reg;\n\n    always @(posedge clk) begin\n        if (rst) begin\n            for (i = 0; i < 32; i = i + 1)\n                mem[i] <= 32'b0;\n            rdata_reg <= 32'b0;\n        end else begin\n            rdata_reg <= mem[addr];\n            if (we)\n                mem[addr] <= wdata;\n        end\n    end\n\nendmodule",
+  "artifacts": {}
+}

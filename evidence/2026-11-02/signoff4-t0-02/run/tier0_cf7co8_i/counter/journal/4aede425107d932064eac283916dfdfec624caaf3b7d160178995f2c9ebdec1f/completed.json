@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_1:decision:instruction:0",
+  "result": "Remove the unused `prev_count` declaration and all of its reset and update assignments. In the `enable` branch, use `count + 1'b1` at the `WIDTH`-bit count destination so overflow is detected from the pre-increment all-ones count while the count wraps naturally; remove the temporary `count_next` and its redundant assignment. Preserve reset-over-load-over-enable priority, overflow hold while disabled, overflow clear on load, and the registered flags\u2019 one-cycle-old count semantics, including reset values and behavior for supported `WIDTH` and threshold parameters.",
+  "artifacts": {}
+}

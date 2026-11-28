@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_4:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 4,
+    "instruction": "Keep the top interface and `// @latency 0`, but replace `previous_noisy` tracking with a 3-bit consecutive-difference counter: clear it when `noisy == clean`, increment it while `noisy != clean`, and update `clean` when the old count is 7. Clear the counter when `clean` updates, and retain the synchronous reset that sets both `clean` and the counter to zero. This should preserve the first update on the eighth consecutive sample differing from `clean`; verify reversals, reset, and the output hold behavior, then compare routed LUTs and FFs against the 3-LUT, 5-FF incumbent.",
+    "candidates": [
+      {
+        "iteration": 4,
+        "mutation": "standard",
+        "instruction": "Keep the top interface and `// @latency 0`, but replace `previous_noisy` tracking with a 3-bit consecutive-difference counter: clear it when `noisy == clean`, increment it while `noisy != clean`, and update `clean` when the old count is 7. Clear the counter when `clean` updates, and retain the synchronous reset that sets both `clean` and the counter to zero. This should preserve the first update on the eighth consecutive sample differing from `clean`; verify reversals, reset, and the output hold behavior, then compare routed LUTs and FFs against the 3-LUT, 5-FF incumbent.",
+        "generated_source_sha256": "24f1b7287d5a64153f60844e0d0928dc99020368a9d0989b9c1f67a370c5b4ef",
+        "final_source_sha256": "24f1b7287d5a64153f60844e0d0928dc99020368a9d0989b9c1f67a370c5b4ef",
+        "generated_code_hash": "82a07a209f1d258f",
+        "final_code_hash": "82a07a209f1d258f",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.57,
+          "whs_ns": 0.057,
+          "lut_used": 3,
+          "ff_used": 4,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.003,
+          "total_power_w": 0.073
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff3-t1-01\\tier1_7qme3l6w\\debouncer_build\\iter_004\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff3-t1-01\\tier1_7qme3l6w\\debouncer_build\\iter_004\\cand_standard\\synth.tcl",
+          "sha256": "d375839a9349e32e0c4b740579c2568e115b9d9e2db445702311e0f23cde1dd9"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff3-t1-01\\tier1_7qme3l6w\\debouncer_build\\iter_004\\cand_standard\\debouncer_top.v",
+          "sha256": "c05d4a0c9df5b2e571878a285f90646458517d0363446af0bab4adc7ea00908f"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "ACCEPT",
+    "is_best": true,
+    "selected_source_sha256": "24f1b7287d5a64153f60844e0d0928dc99020368a9d0989b9c1f67a370c5b4ef"
+  },
+  "artifacts": {}
+}

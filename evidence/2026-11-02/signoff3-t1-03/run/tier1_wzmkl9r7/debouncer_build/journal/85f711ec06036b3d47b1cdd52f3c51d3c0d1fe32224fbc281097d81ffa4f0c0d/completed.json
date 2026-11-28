@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_2:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 2\n## Contract check\n- Ports and defined behavior: PASS \u2014 the standard ladder is ALIVE through 5 rungs, and simulation passed.\n- Top latency annotation: PASS \u2014 the candidate declares `// @latency 0`, matching the authoritative value.\n- Compile, elaboration, and simulation gates: PASS \u2014 xvlog, xelab, and xsim exited successfully; the required `TEST PASSED` verdict is present.\n- Routed reports and metric integrity: PASS \u2014 retained routed timing and utilization reports are provided, with successful synthesis and valid tool exit evidence.\n- Timing closure: PASS \u2014 timing_met is true; setup WNS is 0.57 ns and hold WHS is 0.057 ns.\n- Objective improvement: PASS \u2014 both designs are timing-feasible; LUTs improved from 4 to 3 and FFs from 5 to 4.\n- Fixed flow and edit boundary: PASS \u2014 the candidate changes only `debouncer_top` and retains the specified device, clock, and constraints.\n## Summary\n- Passed: 7 of 7\n- Failed: 0 of 7\n- Improved over previous best: YES\n## Recommendation\nACCEPT\n## Reason\nThe candidate passes the deterministic correctness and promotion gates, preserves the specified behavior and top latency declaration, and strictly improves the `minimize_luts` objective over the timing-feasible previous best. The stall count is 1, below the restart threshold.",
+      "recommendation": "ACCEPT",
+      "passed": 7,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}

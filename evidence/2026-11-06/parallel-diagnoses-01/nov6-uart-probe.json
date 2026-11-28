@@ -1,0 +1,512 @@
+[
+  {
+    "run": "01",
+    "module": "sync_byte_fifo",
+    "latency": 0,
+    "budget": {
+      "llm_calls": 7,
+      "vivado_seconds": 30.250824400005513,
+      "elapsed": 199.27245940000284,
+      "tokens": {
+        "input_tokens": 128730,
+        "cached_input_tokens": 95616,
+        "output_tokens": 13935
+      },
+      "calls_without_token_usage": 0
+    },
+    "independent_post_edge_equals_saved_expected": true,
+    "pre_edge_mismatch_count": 62,
+    "saved_fail_count": 62,
+    "predicted_failures_equal_saved_first_candidate": true,
+    "unexpected_saved_failures": [],
+    "predicted_failures_not_saved": [],
+    "first_mismatches": [
+      {
+        "index": 1,
+        "signal": "out_valid",
+        "pre_edge": 0,
+        "expected_post_edge": 1
+      },
+      {
+        "index": 1,
+        "signal": "out_data",
+        "pre_edge": 0,
+        "expected_post_edge": 255
+      },
+      {
+        "index": 2,
+        "signal": "out_data",
+        "pre_edge": 255,
+        "expected_post_edge": 128
+      },
+      {
+        "index": 7,
+        "signal": "out_data",
+        "pre_edge": 128,
+        "expected_post_edge": 50
+      },
+      {
+        "index": 9,
+        "signal": "out_data",
+        "pre_edge": 50,
+        "expected_post_edge": 177
+      }
+    ],
+    "exits": [
+      {
+        "tool": "xvlog",
+        "returncode": 0,
+        "status": "exited"
+      },
+      {
+        "tool": "xvlog",
+        "returncode": 0,
+        "status": "exited"
+      },
+      {
+        "tool": "xelab",
+        "returncode": 0,
+        "status": "exited"
+      },
+      {
+        "tool": "xsim",
+        "returncode": 0,
+        "status": "exited"
+      }
+    ],
+    "model_stages": [
+      {
+        "path": "logs/signoff4-t3-01/tier3_6h_ol6d8/uart_fifo_build/journal/8c04a62ebf40216a50c956e43f611b9111d3bea54488c6eb8b430b6d8632f02a/completed.json",
+        "stage": "build_spec:model:planner.make_spec:0",
+        "keys": [
+          "stage",
+          "result",
+          "artifacts"
+        ],
+        "outcome": null
+      },
+      {
+        "path": "logs/signoff4-t3-01/tier3_6h_ol6d8/uart_fifo_build/journal/b47ac05b9fcc3c23830ecae62a72267156ac1d0bb910cfea02e0902eef18a0a0/completed.json",
+        "stage": "build_spec:model:planner.make_spec:1",
+        "keys": [
+          "stage",
+          "result",
+          "artifacts"
+        ],
+        "outcome": null
+      },
+      {
+        "path": "logs/signoff4-t3-01/tier3_6h_ol6d8/uart_fifo_build/journal/e0a6dec62bda91b242903726d45ed512138f272c365ffcfa79c384d9b0e553d6/completed.json",
+        "stage": "module_sync_byte_fifo:model:generator.fix:0",
+        "keys": [
+          "stage",
+          "result",
+          "artifacts"
+        ],
+        "outcome": null
+      },
+      {
+        "path": "logs/signoff4-t3-01/tier3_6h_ol6d8/uart_fifo_build/journal/4bdb1d2e33c3a241a55540008c0d8565f53db04f03528afc930db2be3c76d1ae/completed.json",
+        "stage": "module_sync_byte_fifo:model:generator.fix:1",
+        "keys": [
+          "stage",
+          "result",
+          "artifacts"
+        ],
+        "outcome": null
+      },
+      {
+        "path": "logs/signoff4-t3-01/tier3_6h_ol6d8/uart_fifo_build/journal/6acd53da4f2435a79296f28d3447aa2f1e0f8230ba2b73ba01596bc41232432d/completed.json",
+        "stage": "module_sync_byte_fifo:model:generator.fix:2",
+        "keys": [
+          "stage",
+          "result",
+          "artifacts"
+        ],
+        "outcome": null
+      },
+      {
+        "path": "logs/signoff4-t3-01/tier3_6h_ol6d8/uart_fifo_build/journal/4ad51cfb392c38a46b74eb222b2c82506964a4c698f55ae190930feb7f22dc9b/completed.json",
+        "stage": "module_sync_byte_fifo:model:generator.generate:0",
+        "keys": [
+          "stage",
+          "result",
+          "artifacts"
+        ],
+        "outcome": null
+      },
+      {
+        "path": "logs/signoff4-t3-01/tier3_6h_ol6d8/uart_fifo_build/journal/e263025f227634e0e2cdc9cd40efc230fff77abe311110ffa1f97144d705307a/completed.json",
+        "stage": "module_sync_byte_fifo:model:generator.golden_model:0",
+        "keys": [
+          "stage",
+          "result",
+          "artifacts"
+        ],
+        "outcome": null
+      }
+    ],
+    "input_sha256": {
+      "logs\\signoff4-t3-01\\tier3_6h_ol6d8\\uart_fifo_build\\design_spec.json": "56d9dfab2753ecdd6af42a253355819332230d26ecffd2cf01d57fb7170ef156",
+      "logs\\signoff4-t3-01\\tier3_6h_ol6d8\\uart_fifo_build\\modules\\sync_byte_fifo\\golden.py": "99ac1730df91abaa824df806b4406b7069aee6039b860cf3760262f3e7a0eaed",
+      "logs\\signoff4-t3-01\\tier3_6h_ol6d8\\uart_fifo_build\\modules\\sync_byte_fifo\\stimulus.json": "1d9560647fb51f6f3febff228e5cf5f4c51dcf68d645fe807b040848088e275e",
+      "logs\\signoff4-t3-01\\tier3_6h_ol6d8\\uart_fifo_build\\modules\\sync_byte_fifo\\sync_byte_fifo_tb.v": "dc2d03bc6fda0b9ef5bdfbd7ee96613c076498169d44dc90bd0f280601e3232d",
+      "logs\\signoff4-t3-01\\tier3_6h_ol6d8\\uart_fifo_build\\modules\\sync_byte_fifo\\candidate_standard_0\\sync_byte_fifo.v": "5a740acb4a2c6a5536174d9cafd917ad4eef2c0e9cf475c600cfb4b16f9256e3",
+      "logs\\signoff4-t3-01\\tier3_6h_ol6d8\\uart_fifo_build\\modules\\sync_byte_fifo\\candidate_standard_0\\sim_log.txt": "2c527b8475300f27a4f66bf92190e9c6a48833526a7d1f8fd41e230337b6aeb7",
+      "logs\\signoff4-t3-01\\tier3_6h_ol6d8\\uart_fifo_build\\modules\\sync_byte_fifo\\candidate_standard_0\\tool_exit_records.log": "00437acb9af4cb1932c3ba80696101944eea397e39f73e6fb4699c6148c03d51",
+      "logs\\signoff4-t3-01\\tier3_6h_ol6d8\\uart_fifo_build\\budget.json": "b32f457c812825fad0d794bef47854dacb3a90acb2f71f01452d71b40697d938"
+    }
+  },
+  {
+    "run": "02",
+    "module": "uart_tx",
+    "latency": 0,
+    "budget": {
+      "llm_calls": 11,
+      "vivado_seconds": 62.02352069999324,
+      "elapsed": 257.1391386000032,
+      "tokens": {
+        "input_tokens": 202350,
+        "cached_input_tokens": 155520,
+        "output_tokens": 17168
+      },
+      "calls_without_token_usage": 0
+    },
+    "independent_post_edge_equals_saved_expected": true,
+    "pre_edge_mismatch_count": 3,
+    "saved_fail_count": 3,
+    "predicted_failures_equal_saved_first_candidate": true,
+    "unexpected_saved_failures": [],
+    "predicted_failures_not_saved": [],
+    "first_mismatches": [
+      {
+        "index": 1,
+        "signal": "tx_ready",
+        "pre_edge": 1,
+        "expected_post_edge": 0
+      },
+      {
+        "index": 1,
+        "signal": "tx",
+        "pre_edge": 1,
+        "expected_post_edge": 0
+      },
+      {
+        "index": 17,
+        "signal": "tx",
+        "pre_edge": 0,
+        "expected_post_edge": 1
+      }
+    ],
+    "exits": [
+      {
+        "tool": "xvlog",
+        "returncode": 0,
+        "status": "exited"
+      },
+      {
+        "tool": "xvlog",
+        "returncode": 0,
+        "status": "exited"
+      },
+      {
+        "tool": "xelab",
+        "returncode": 0,
+        "status": "exited"
+      },
+      {
+        "tool": "xsim",
+        "returncode": 0,
+        "status": "exited"
+      }
+    ],
+    "model_stages": [
+      {
+        "path": "logs/signoff4-t3-02/tier3_cn0rc15p/uart_fifo_build/journal/8c04a62ebf40216a50c956e43f611b9111d3bea54488c6eb8b430b6d8632f02a/completed.json",
+        "stage": "build_spec:model:planner.make_spec:0",
+        "keys": [
+          "stage",
+          "result",
+          "artifacts"
+        ],
+        "outcome": null
+      },
+      {
+        "path": "logs/signoff4-t3-02/tier3_cn0rc15p/uart_fifo_build/journal/b47ac05b9fcc3c23830ecae62a72267156ac1d0bb910cfea02e0902eef18a0a0/completed.json",
+        "stage": "build_spec:model:planner.make_spec:1",
+        "keys": [
+          "stage",
+          "result",
+          "artifacts"
+        ],
+        "outcome": null
+      },
+      {
+        "path": "logs/signoff4-t3-02/tier3_cn0rc15p/uart_fifo_build/journal/bdc0414b5621e1fde17fc5aa8957c583f9b65fd0f0c3d545345ff836fbcfe3e3/completed.json",
+        "stage": "build_spec:model:planner.make_spec:2",
+        "keys": [
+          "stage",
+          "result",
+          "artifacts"
+        ],
+        "outcome": null
+      },
+      {
+        "path": "logs/signoff4-t3-02/tier3_cn0rc15p/uart_fifo_build/journal/e0a6dec62bda91b242903726d45ed512138f272c365ffcfa79c384d9b0e553d6/completed.json",
+        "stage": "module_sync_byte_fifo:model:generator.fix:0",
+        "keys": [
+          "stage",
+          "result",
+          "artifacts"
+        ],
+        "outcome": null
+      },
+      {
+        "path": "logs/signoff4-t3-02/tier3_cn0rc15p/uart_fifo_build/journal/4ad51cfb392c38a46b74eb222b2c82506964a4c698f55ae190930feb7f22dc9b/completed.json",
+        "stage": "module_sync_byte_fifo:model:generator.generate:0",
+        "keys": [
+          "stage",
+          "result",
+          "artifacts"
+        ],
+        "outcome": null
+      },
+      {
+        "path": "logs/signoff4-t3-02/tier3_cn0rc15p/uart_fifo_build/journal/e263025f227634e0e2cdc9cd40efc230fff77abe311110ffa1f97144d705307a/completed.json",
+        "stage": "module_sync_byte_fifo:model:generator.golden_model:0",
+        "keys": [
+          "stage",
+          "result",
+          "artifacts"
+        ],
+        "outcome": null
+      },
+      {
+        "path": "logs/signoff4-t3-02/tier3_cn0rc15p/uart_fifo_build/journal/b7d8e5014d9d3e4de7d6c754dda4491f0adfb286724f0e4778e62e4d2c22ef8f/completed.json",
+        "stage": "module_uart_tx:model:generator.fix:0",
+        "keys": [
+          "stage",
+          "result",
+          "artifacts"
+        ],
+        "outcome": null
+      },
+      {
+        "path": "logs/signoff4-t3-02/tier3_cn0rc15p/uart_fifo_build/journal/42c5d7a28bc4c7b26e82bf86983cb01b7af0d436468b3e1875615550da6a1f24/completed.json",
+        "stage": "module_uart_tx:model:generator.fix:1",
+        "keys": [
+          "stage",
+          "result",
+          "artifacts"
+        ],
+        "outcome": null
+      },
+      {
+        "path": "logs/signoff4-t3-02/tier3_cn0rc15p/uart_fifo_build/journal/692ffea5a727621b6ee30fcf44ebe28aec19ad44fc42a72384c0176b61a13888/completed.json",
+        "stage": "module_uart_tx:model:generator.fix:2",
+        "keys": [
+          "stage",
+          "result",
+          "artifacts"
+        ],
+        "outcome": null
+      },
+      {
+        "path": "logs/signoff4-t3-02/tier3_cn0rc15p/uart_fifo_build/journal/64182487ed4fb7914f140574576ce04bf809ea60409c5f849bcaf9184d54e718/completed.json",
+        "stage": "module_uart_tx:model:generator.generate:0",
+        "keys": [
+          "stage",
+          "result",
+          "artifacts"
+        ],
+        "outcome": null
+      },
+      {
+        "path": "logs/signoff4-t3-02/tier3_cn0rc15p/uart_fifo_build/journal/898c2691ff86cf5621ece9229bc2394a0b9ad42c81321887c68761c492f80ca3/completed.json",
+        "stage": "module_uart_tx:model:generator.golden_model:0",
+        "keys": [
+          "stage",
+          "result",
+          "artifacts"
+        ],
+        "outcome": null
+      }
+    ],
+    "input_sha256": {
+      "logs\\signoff4-t3-02\\tier3_cn0rc15p\\uart_fifo_build\\design_spec.json": "40d6edada043be485849b5ba9d0ddc045ebe64515871dcd77b5a4ae4a9288741",
+      "logs\\signoff4-t3-02\\tier3_cn0rc15p\\uart_fifo_build\\modules\\uart_tx\\golden.py": "8bdb7cd2bbc216b7a5a174bbd1225bdd1743a358092febb8e09b3e6e942559b6",
+      "logs\\signoff4-t3-02\\tier3_cn0rc15p\\uart_fifo_build\\modules\\uart_tx\\stimulus.json": "5b6502c94dc2addd4d28a9fc3aa9833e3b346d798023e28697fbd153e493216e",
+      "logs\\signoff4-t3-02\\tier3_cn0rc15p\\uart_fifo_build\\modules\\uart_tx\\uart_tx_tb.v": "d62d6dd0b2f57e038b737484e8c40a13f40f73c800b19f7f831411af4c6505ab",
+      "logs\\signoff4-t3-02\\tier3_cn0rc15p\\uart_fifo_build\\modules\\uart_tx\\candidate_standard_0\\uart_tx.v": "de6cfbd3f8aac4f8029802ecd5c1a3fb1b43d2404bb942b722f2c73e9316ed35",
+      "logs\\signoff4-t3-02\\tier3_cn0rc15p\\uart_fifo_build\\modules\\uart_tx\\candidate_standard_0\\sim_log.txt": "17ce78990220187e7bcec7675f5ed42a91b2dae76f4b6d4adb4b8bdabdd25026",
+      "logs\\signoff4-t3-02\\tier3_cn0rc15p\\uart_fifo_build\\modules\\uart_tx\\candidate_standard_0\\tool_exit_records.log": "a660efa26f509ade6b4a52f180e6892a39a375bab75c2603263a63c06106c158",
+      "logs\\signoff4-t3-02\\tier3_cn0rc15p\\uart_fifo_build\\budget.json": "d33cc21ee74ef37c5727a2e9df0589d970d7926ee2736128490ba214c047baae"
+    }
+  },
+  {
+    "run": "03",
+    "module": "sync_byte_fifo",
+    "latency": 0,
+    "budget": {
+      "llm_calls": 7,
+      "vivado_seconds": 27.929129600001033,
+      "elapsed": 179.47053629999573,
+      "tokens": {
+        "input_tokens": 128618,
+        "cached_input_tokens": 95616,
+        "output_tokens": 12824
+      },
+      "calls_without_token_usage": 0
+    },
+    "independent_post_edge_equals_saved_expected": true,
+    "pre_edge_mismatch_count": 62,
+    "saved_fail_count": 69,
+    "predicted_failures_equal_saved_first_candidate": false,
+    "unexpected_saved_failures": [
+      "FAIL index=0 signal=data_out",
+      "FAIL index=11 signal=data_out",
+      "FAIL index=12 signal=data_out",
+      "FAIL index=15 signal=data_out",
+      "FAIL index=16 signal=data_out",
+      "FAIL index=17 signal=data_out",
+      "FAIL index=31 signal=data_out"
+    ],
+    "predicted_failures_not_saved": [],
+    "first_mismatches": [
+      {
+        "index": 1,
+        "signal": "data_out",
+        "pre_edge": 0,
+        "expected_post_edge": 255
+      },
+      {
+        "index": 1,
+        "signal": "valid_out",
+        "pre_edge": 0,
+        "expected_post_edge": 1
+      },
+      {
+        "index": 2,
+        "signal": "data_out",
+        "pre_edge": 255,
+        "expected_post_edge": 128
+      },
+      {
+        "index": 7,
+        "signal": "data_out",
+        "pre_edge": 128,
+        "expected_post_edge": 50
+      },
+      {
+        "index": 9,
+        "signal": "data_out",
+        "pre_edge": 50,
+        "expected_post_edge": 177
+      }
+    ],
+    "exits": [
+      {
+        "tool": "xvlog",
+        "returncode": 0,
+        "status": "exited"
+      },
+      {
+        "tool": "xvlog",
+        "returncode": 0,
+        "status": "exited"
+      },
+      {
+        "tool": "xelab",
+        "returncode": 0,
+        "status": "exited"
+      },
+      {
+        "tool": "xsim",
+        "returncode": 0,
+        "status": "exited"
+      }
+    ],
+    "model_stages": [
+      {
+        "path": "logs/signoff4-t3-03/tier3_70q5kppw/uart_fifo_build/journal/8c04a62ebf40216a50c956e43f611b9111d3bea54488c6eb8b430b6d8632f02a/completed.json",
+        "stage": "build_spec:model:planner.make_spec:0",
+        "keys": [
+          "stage",
+          "result",
+          "artifacts"
+        ],
+        "outcome": null
+      },
+      {
+        "path": "logs/signoff4-t3-03/tier3_70q5kppw/uart_fifo_build/journal/b47ac05b9fcc3c23830ecae62a72267156ac1d0bb910cfea02e0902eef18a0a0/completed.json",
+        "stage": "build_spec:model:planner.make_spec:1",
+        "keys": [
+          "stage",
+          "result",
+          "artifacts"
+        ],
+        "outcome": null
+      },
+      {
+        "path": "logs/signoff4-t3-03/tier3_70q5kppw/uart_fifo_build/journal/e0a6dec62bda91b242903726d45ed512138f272c365ffcfa79c384d9b0e553d6/completed.json",
+        "stage": "module_sync_byte_fifo:model:generator.fix:0",
+        "keys": [
+          "stage",
+          "result",
+          "artifacts"
+        ],
+        "outcome": null
+      },
+      {
+        "path": "logs/signoff4-t3-03/tier3_70q5kppw/uart_fifo_build/journal/4bdb1d2e33c3a241a55540008c0d8565f53db04f03528afc930db2be3c76d1ae/completed.json",
+        "stage": "module_sync_byte_fifo:model:generator.fix:1",
+        "keys": [
+          "stage",
+          "result",
+          "artifacts"
+        ],
+        "outcome": null
+      },
+      {
+        "path": "logs/signoff4-t3-03/tier3_70q5kppw/uart_fifo_build/journal/6acd53da4f2435a79296f28d3447aa2f1e0f8230ba2b73ba01596bc41232432d/completed.json",
+        "stage": "module_sync_byte_fifo:model:generator.fix:2",
+        "keys": [
+          "stage",
+          "result",
+          "artifacts"
+        ],
+        "outcome": null
+      },
+      {
+        "path": "logs/signoff4-t3-03/tier3_70q5kppw/uart_fifo_build/journal/4ad51cfb392c38a46b74eb222b2c82506964a4c698f55ae190930feb7f22dc9b/completed.json",
+        "stage": "module_sync_byte_fifo:model:generator.generate:0",
+        "keys": [
+          "stage",
+          "result",
+          "artifacts"
+        ],
+        "outcome": null
+      },
+      {
+        "path": "logs/signoff4-t3-03/tier3_70q5kppw/uart_fifo_build/journal/e263025f227634e0e2cdc9cd40efc230fff77abe311110ffa1f97144d705307a/completed.json",
+        "stage": "module_sync_byte_fifo:model:generator.golden_model:0",
+        "keys": [
+          "stage",
+          "result",
+          "artifacts"
+        ],
+        "outcome": null
+      }
+    ],
+    "input_sha256": {
+      "logs\\signoff4-t3-03\\tier3_70q5kppw\\uart_fifo_build\\design_spec.json": "d730449270d7c9b39377d8ed0bc0e391fdb8921f863c958f7705ca5020ef78b1",
+      "logs\\signoff4-t3-03\\tier3_70q5kppw\\uart_fifo_build\\modules\\sync_byte_fifo\\golden.py": "837e9d6c5114f8ed9caa5b4bceed1f0cefd3146ea6d00c275a4b9cacec51ff08",
+      "logs\\signoff4-t3-03\\tier3_70q5kppw\\uart_fifo_build\\modules\\sync_byte_fifo\\stimulus.json": "c36c0a3fb2dad374ac4e2cf5e7c8da6bc43f3cf97a41272c239434f7f241f671",
+      "logs\\signoff4-t3-03\\tier3_70q5kppw\\uart_fifo_build\\modules\\sync_byte_fifo\\sync_byte_fifo_tb.v": "2b0c4ef0e1cde8217cb3dbec12375a3f3934283721b48bdbdb1618346d1539b5",
+      "logs\\signoff4-t3-03\\tier3_70q5kppw\\uart_fifo_build\\modules\\sync_byte_fifo\\candidate_standard_0\\sync_byte_fifo.v": "46158cca363247f4828777a22e76f2d900c624c6eb14e549288166bb164fdfdd",
+      "logs\\signoff4-t3-03\\tier3_70q5kppw\\uart_fifo_build\\modules\\sync_byte_fifo\\candidate_standard_0\\sim_log.txt": "49decd3fba316ecbf3fdbfb48e157d514ca3caee7bab881adf6b01c88c8ddd83",
+      "logs\\signoff4-t3-03\\tier3_70q5kppw\\uart_fifo_build\\modules\\sync_byte_fifo\\candidate_standard_0\\tool_exit_records.log": "ef54bdb9137069acd9e74098e60a2a2b6777cee98b452ce0651eeea5b4bf2d96",
+      "logs\\signoff4-t3-03\\tier3_70q5kppw\\uart_fifo_build\\budget.json": "d6cdaf87a50a6255f50d7dfa9621d3deb6faf8f4b2f8210f927c40d3652f53b7"
+    }
+  }
+]

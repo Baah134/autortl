@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_2:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 2,
+    "instruction": "Replace the `case (araddr[4:2])` assignment to `rdata_reg` with bit-sliced selection: select bits `[7:0]` from all eight register words, and bits `[31:8]` only from words 0, 1, 2, 5 and 7, yielding zero for indices 3, 4 and 6. Keep the existing registered read response, invalid-address behavior, handshake and stall holds unchanged. Preserve synchronous reset and sample the pre-edge `regs_flat` value on accepted reads; do not add a pipeline stage or top latency annotation.",
+    "candidates": [
+      {
+        "iteration": 2,
+        "mutation": "standard",
+        "instruction": "Replace the `case (araddr[4:2])` assignment to `rdata_reg` with bit-sliced selection: select bits `[7:0]` from all eight register words, and bits `[31:8]` only from words 0, 1, 2, 5 and 7, yielding zero for indices 3, 4 and 6. Keep the existing registered read response, invalid-address behavior, handshake and stall holds unchanged. Preserve synchronous reset and sample the pre-edge `regs_flat` value on accepted reads; do not add a pipeline stage or top latency annotation.",
+        "generated_source_sha256": "538dd34504feec8e3ade2932c5ade838ff5c849f8ed5d8c400aab67342dedaa5",
+        "final_source_sha256": "8ce4c20d7f698e7d429e65a0ac33fcd4ae27c3ab63af8255537335e0667b880a",
+        "generated_code_hash": "35f2f519d6da8f2c",
+        "final_code_hash": "68ed89672098efa1",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 5.441,
+          "whs_ns": 0.134,
+          "lut_used": 95,
+          "ff_used": 254,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.002,
+          "total_power_w": 0.071
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-01\\tier5_xsrzgjnx\\axil_regs_build\\iter_002\\cand_standard\\repair_001",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-01\\tier5_xsrzgjnx\\axil_regs_build\\iter_002\\cand_standard\\repair_001\\synth.tcl",
+          "sha256": "ef3afa36c1a8018e6eebbae438231514d0638e65d6a228028ad52b811692f338"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-01\\tier5_xsrzgjnx\\axil_regs_build\\iter_002\\cand_standard\\repair_001\\axil_regs.v",
+          "sha256": "b8215cff8804491d16796be02085f35298bad38cc2e65f2363c3b7f3fe8f5e66"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": "8ce4c20d7f698e7d429e65a0ac33fcd4ae27c3ab63af8255537335e0667b880a"
+  },
+  "artifacts": {}
+}

@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_2:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 2\n## Contract check\n- Top interface and latency annotation: PASS \u2014 top `fir16_sym` retains the required interface and declares `// @latency 5`.\n- Defined behavior and deterministic verification: PASS \u2014 authoritative ladder is ALIVE; simulation passed.\n- Tool exits and routed metric evidence: PASS \u2014 required tools exited successfully and routed metrics are present.\n- Timing closure: FAIL \u2014 setup WNS is -0.038 ns; hold WHS is +0.100 ns.\n- Promotion over previous best: FAIL \u2014 the previous best is timing-feasible, while this candidate is not; its LUT and FF reductions do not qualify it to replace that incumbent.\n## Summary\n- Passed: 3 of 5\n- Failed: 2 of 5\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes deterministic verification and has a matching top latency annotation, but it misses setup timing and cannot replace the timing-feasible previous best. Its lower LUT and FF counts do not change that comparison; the recorded improvement kind is null and no improvement was measured.",
+      "recommendation": "REJECT",
+      "passed": 3,
+      "failed": 2
+    }
+  },
+  "artifacts": {}
+}

@@ -13,7 +13,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from autortl.config import RunConfig
+from autortl.config import IMPLEMENTATIONS, VERIFICATION_POLICIES, RunConfig
 from autortl.fsm import Orchestrator
 from autortl.state import CheckpointLockedError
 
@@ -49,12 +49,28 @@ def main(argv=None):
                         "saved in config.json and part of the bench cohort")
     common.add_argument("--route", help="unsupported: routing is Codex-only")
 
-    p_opt = sub.add_parser("optimize", parents=[common])
+    # A harness choice from a fixed list, never model text (chip_top_flow_for_soc_block).
+    # Saved in config.json, part of the cohort and the fixed contract evidence.
+    flow = argparse.ArgumentParser(add_help=False)
+    flow.add_argument("--implementation", choices=list(IMPLEMENTATIONS), default="chip_top",
+                      help="chip_top (default): every port on a package pin through an I/O buffer; "
+                           "out_of_context: implement a block of a larger design without I/O buffers, "
+                           "timing its internal clocked paths only")
+    flow.add_argument("--synthesis-timeout-minutes", type=float, default=15.0,
+                      help="limit for one synthesis/implementation call (default 15); the remaining "
+                           "tool budget still caps it (fixed_synthesis_timeout_blocks_heavy_designs)")
+    # Experiment-only ablation (benchmark arm B, ablation_policy_seam_absent); not offered to bench.
+    flow.add_argument("--verification-policy", choices=list(VERIFICATION_POLICIES), default="full",
+                      help="full (default): qualify every testbench by bug injection; "
+                           "skip_generated_tb_mutations: experiment only, skip bug-injection qualification "
+                           "of generated module testbenches (recorded; simulation still gates)")
+
+    p_opt = sub.add_parser("optimize", parents=[common, flow])
     p_opt.add_argument("--design", required=True, type=Path)
     p_opt.add_argument("--tb", type=Path, default=None)
     p_opt.add_argument("--top", required=True)
 
-    p_bld = sub.add_parser("build", parents=[common])
+    p_bld = sub.add_parser("build", parents=[common, flow])
     p_bld.add_argument("--spec", required=True, type=Path)
     p_bld.add_argument("--tb", type=Path, default=None,
                        help="independent integration testbench")
@@ -111,6 +127,13 @@ def main(argv=None):
             if key in kw and (not math.isfinite(kw[key]) or kw[key] < 0):
                 ap.error(f"{key} cannot be negative")
 
+    # Resolve the model before anything runs (mistyped_endpoint_routes_to_codex).
+    from llm.client import check_model
+    try:
+        check_model(cfg.model if a.cmd == "resume" else kw.get("model"))
+    except ValueError as exc:
+        ap.error(str(exc))
+
     if a.cmd == "bench":
         from curriculum.runner import run_tier
         if hasattr(a, "output_dir"):
@@ -123,11 +146,16 @@ def main(argv=None):
 
     if a.cmd == "optimize":
         cfg = RunConfig(mode="optimize", top_module=a.top, design_path=a.design,
-                        testbench_path=a.tb, **kw)
+                        testbench_path=a.tb, implementation=a.implementation,
+                        synthesis_timeout_minutes=a.synthesis_timeout_minutes,
+                        verification_policy=a.verification_policy, **kw)
         orch = Orchestrator(cfg, run_dir=a.output_dir.resolve() if hasattr(a, "output_dir") else None)
     elif a.cmd == "build":
         cfg = RunConfig(mode="build", spec_path=a.spec, testbench_path=a.tb,
-                        top_module=a.top, generate_golden=a.generate_golden, **kw)
+                        top_module=a.top, generate_golden=a.generate_golden,
+                        implementation=a.implementation,
+                        synthesis_timeout_minutes=a.synthesis_timeout_minutes,
+                        verification_policy=a.verification_policy, **kw)
         orch = Orchestrator(cfg, run_dir=a.output_dir.resolve() if hasattr(a, "output_dir") else None)
 
     try:
@@ -138,7 +166,8 @@ def main(argv=None):
                           "run_dir": str(orch.state.run_dir)}, indent=2))
         return 3
     print(json.dumps({k: v for k, v in summary.items()
-                      if k in ("status", "best_iteration", "timing_closed", "improvement_kind", "run_dir")}, indent=2))
+                      if k in ("status", "best_iteration", "timing_closed", "improvement_kind", "run_dir",
+                               "target_capacity")}, indent=2))
     return 0 if summary.get("status") == "done" else 1
 
 

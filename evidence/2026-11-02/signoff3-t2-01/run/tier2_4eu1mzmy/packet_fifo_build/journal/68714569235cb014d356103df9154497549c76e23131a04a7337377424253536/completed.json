@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Top interface and parameterized FIFO behavior: PASS \u2014 candidate preserves the required top interface and child; the authoritative ladder reports all 5 rungs ALIVE.\n- Top latency annotation: PASS \u2014 top declares `// @latency 1`, matching the authoritative known latency.\n- Deterministic verification and tool gates: PASS \u2014 simulation passed; xvlog, xelab, xsim, and Vivado exits are successful.\n- Routed metrics and metric integrity: PASS \u2014 routed reports are retained and metrics are consistent: WNS 0.007 ns, WHS 0.030 ns, 107 LUTs, 102 FFs.\n- Timing closure: PASS \u2014 `timing_met=true` and both setup and hold slack are nonnegative.\n- Improvement over previous best: PASS \u2014 valid `timing_recovery` from a known timing-infeasible incumbent; LUTs also decrease from 146 to 107.\n\n## Summary\n- Passed: 6 of 6\n- Failed: 0 of 6\n- Improved over previous best: YES\n\n## Recommendation\nACCEPT\n\n## Reason\nThe candidate passes the deterministic verification and required build gates, declares the known top latency, and closes timing with positive setup and hold slack. The previous best was timing-infeasible, so this verified timing recovery qualifies for promotion; the lower LUT count is an additional improvement.",
+      "recommendation": "ACCEPT",
+      "passed": 6,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}

@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_2:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 2\n## Contract check\n- Interface, parameters, and defined FIFO behavior: PASS \u2014 The candidate preserves the required top interface and parameterized child behavior; the authoritative ladder reports 5 rungs ALIVE, and the trusted simulation passes.\n- Top latency annotation: PASS \u2014 The top has `// @latency 1`, matching the authoritative known latency of 1 cycle.\n- Compilation and simulation gates: PASS \u2014 `xvlog`, `xelab`, and `xsim -runall` exited successfully; simulation reports `TEST PASSED`.\n- Metric and report integrity: PASS \u2014 Required tool exits and retained routed metric evidence are recorded as successful.\n- Timing closure: PASS \u2014 `timing_met=true`, setup WNS is 0.009 ns, and hold WHS is 0.126 ns.\n- Improvement over previous best: PASS \u2014 LUTs are unchanged at 23 and FFs decrease from 15 to 13, a lexicographic improvement for `minimize_luts`.\n\n## Summary\n- Passed: 6 of 6\n- Failed: 0 of 6\n- Improved over previous best: YES\n\n## Recommendation\nACCEPT\n\n## Reason\nThe candidate passes the deterministic correctness and implementation gates, declares the required top latency, and meets setup and hold timing. It improves the chosen objective by reducing FFs while keeping LUTs equal to the previous feasible best; the recorded `objective` classification is consistent with the contract.",
+      "recommendation": "ACCEPT",
+      "passed": 6,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}

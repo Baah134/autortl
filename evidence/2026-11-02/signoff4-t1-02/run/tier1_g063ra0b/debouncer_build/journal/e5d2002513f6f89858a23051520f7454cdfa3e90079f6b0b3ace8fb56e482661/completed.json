@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_3:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 3,
+    "instruction": "In `debouncer_top`, keep `clean_reg` and the 3-bit debounce state, but replace the binary increment and saturation checks with a zero-idle, nonzero LFSR progression and terminal-state detection. Reset the LFSR state synchronously to zero; hold it at zero whenever `noisy == clean_reg`, and update `clean_reg` and clear the state at the same consecutive-sample age as the current implementation. Preserve the ports, synchronous active-high reset, registered output, and `// @latency 0`; do not add state or alter observable cycles.",
+    "candidates": [
+      {
+        "iteration": 3,
+        "mutation": "standard",
+        "instruction": "In `debouncer_top`, keep `clean_reg` and the 3-bit debounce state, but replace the binary increment and saturation checks with a zero-idle, nonzero LFSR progression and terminal-state detection. Reset the LFSR state synchronously to zero; hold it at zero whenever `noisy == clean_reg`, and update `clean_reg` and clear the state at the same consecutive-sample age as the current implementation. Preserve the ports, synchronous active-high reset, registered output, and `// @latency 0`; do not add state or alter observable cycles.",
+        "generated_source_sha256": "543a468ae2021fdcdd94ce5fa3f880147673a6f90405d7911b82aae227246ce2",
+        "final_source_sha256": "543a468ae2021fdcdd94ce5fa3f880147673a6f90405d7911b82aae227246ce2",
+        "generated_code_hash": "13c3b45c7da08eca",
+        "final_code_hash": "13c3b45c7da08eca",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.57,
+          "whs_ns": 0.167,
+          "lut_used": 3,
+          "ff_used": 4,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.003,
+          "total_power_w": 0.073
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t1-02\\tier1_g063ra0b\\debouncer_build\\iter_003\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t1-02\\tier1_g063ra0b\\debouncer_build\\iter_003\\cand_standard\\synth.tcl",
+          "sha256": "4b0a7f6d11c121da75b4973c21564cfd6ef3fc1d654e8a77b1579dfbc63ecc6f"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t1-02\\tier1_g063ra0b\\debouncer_build\\iter_003\\cand_standard\\debouncer_top.v",
+          "sha256": "d61b9781adce50d8bb0182d0451ab882af0a0b491285d547cd31d1eceadc3181"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": "543a468ae2021fdcdd94ce5fa3f880147673a6f90405d7911b82aae227246ce2"
+  },
+  "artifacts": {}
+}

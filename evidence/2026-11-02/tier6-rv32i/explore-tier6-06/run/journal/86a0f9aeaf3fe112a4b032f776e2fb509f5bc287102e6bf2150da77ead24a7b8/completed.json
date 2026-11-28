@@ -1,0 +1,5 @@
+{
+  "stage": "module_rv_dmem:model:generator.golden_model:0",
+  "result": "def init():\n    return dict(mem=[0] * 32, rdata=0)\n\n\ndef step(state, inputs):\n    outputs = dict()\n    if int(inputs.get(\"rst\", 0)) & 1:\n        i = 0\n        while i < 32:\n            state[\"mem\"][i] = 0\n            i += 1\n        state[\"rdata\"] = 0\n    else:\n        addr = int(inputs.get(\"addr\", 0)) & 31\n        old_data = state[\"mem\"][addr]\n        state[\"rdata\"] = old_data & 4294967295\n        if int(inputs.get(\"we\", 0)) & 1:\n            state[\"mem\"][addr] = int(inputs.get(\"wdata\", 0)) & 4294967295\n    outputs[\"rdata\"] = state[\"rdata\"] & 4294967295\n    return state, outputs",
+  "artifacts": {}
+}

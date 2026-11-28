@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_6:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 6,
+    "instruction": "Keep the eight signed 32-bit product registers and their multiplication assignments unchanged; do not pre-add raw samples or alter the product-register boundary. Change only the carry-save compressor grouping of `p0`\u2013`p7` to pair symmetric product indices (`p0/p7`, `p1/p6`, `p2/p5`, `p3/p4`), then reduce the same eight 32-bit values to `sum` with carry-save stages and one final adder. Preserve modulo-32-bit arithmetic, reset behavior, `y_out` registration, and `// @latency 1`; retain the candidate only if all verification gates pass, routed WNS/WHS are nonnegative, and register-to-register set",
+    "candidates": [
+      {
+        "iteration": 6,
+        "mutation": "standard",
+        "instruction": "Keep the eight signed 32-bit product registers and their multiplication assignments unchanged; do not pre-add raw samples or alter the product-register boundary. Change only the carry-save compressor grouping of `p0`\u2013`p7` to pair symmetric product indices (`p0/p7`, `p1/p6`, `p2/p5`, `p3/p4`), then reduce the same eight 32-bit values to `sum` with carry-save stages and one final adder. Preserve modulo-32-bit arithmetic, reset behavior, `y_out` registration, and `// @latency 1`; retain the candidate only if all verification gates pass, routed WNS/WHS are nonnegative, and register-to-register set",
+        "generated_source_sha256": "918624f684a3e2d46ef7ab3132bbe6aee8a936249248eeddcee6488d03a8df53",
+        "final_source_sha256": "918624f684a3e2d46ef7ab3132bbe6aee8a936249248eeddcee6488d03a8df53",
+        "generated_code_hash": "ef454bcb16ffb1ef",
+        "final_code_hash": "ef454bcb16ffb1ef",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.6,
+          "whs_ns": 0.414,
+          "lut_used": 201,
+          "ff_used": 32,
+          "dsp_used": 8,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.024,
+          "total_power_w": 0.092
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-fir8-03\\fir8\\iter_006\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-fir8-03\\fir8\\iter_006\\cand_standard\\synth.tcl",
+          "sha256": "cc2be348802a34536b165e76b51d2a95a0d1ebc32919e22e58ab561a54c3c82b"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-fir8-03\\fir8\\iter_006\\cand_standard\\fir8.v",
+          "sha256": "57737d50f540d17b65015c3bbdf2d3a90aff6932633e1d32924abaa79f285e07"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "ACCEPT",
+    "is_best": true,
+    "selected_source_sha256": "918624f684a3e2d46ef7ab3132bbe6aee8a936249248eeddcee6488d03a8df53"
+  },
+  "artifacts": {}
+}

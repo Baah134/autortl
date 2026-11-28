@@ -3,6 +3,7 @@ import http.server
 import json
 import sys
 import threading
+from unittest.mock import Mock
 
 import pytest
 
@@ -59,6 +60,10 @@ def test_command_failures_map_onto_the_retry_codes(script):
     with pytest.raises(CodexError) as empty:
         command_cli.ask("default", "p", timeout_s=30, argv=[sys.executable, silent], label="s")
     assert empty.value.code == "CODEX_PROTOCOL"
+    tooled = script("import sys; sys.stderr.write('MODEL_TOOL_USE: agy used tools [search_web]'); sys.exit(1)")
+    with pytest.raises(CodexError) as tool_use:  # agy_endpoint_uses_tools
+        command_cli.ask("default", "p", timeout_s=30, argv=[sys.executable, tooled], label="t")
+    assert tool_use.value.code == "MODEL_TOOL_USE"
     with pytest.raises(CodexError, match="no model_flag"):
         command_cli.ask("named", "p", timeout_s=30, argv=[sys.executable, silent], label="s")
 
@@ -174,5 +179,51 @@ def test_hosted_model_ids_with_a_slash_can_be_pinned():
 
 def test_jobs_zero_is_an_argument_error():
     import run
-    with pytest.raises(SystemExit):
+    with pytest.raises(SystemExit) as exit_info:
         run.main(["bench", "--tier", "0", "--jobs", "0"])
+    assert exit_info.value.code == 2
+
+
+@pytest.mark.parametrize("model, near", [("olama.llama3", "ollama"), ("Ollama.llama3", "ollama"),
+                                         ("opnai.gpt-4o", "openai"), ("codx.m", "codex")])
+def test_a_misspelled_backend_prefix_is_refused_not_sent_to_codex(configured, tmp_path, monkeypatch, model, near):
+    # mistyped_endpoint_routes_to_codex
+    configured({"ollama": {"kind": "openai", "base_url": "http://127.0.0.1:9/v1"}})
+    with pytest.raises(ValueError, match=f"did you mean {near}\\."):
+        client.check_model(model)
+    codex = Mock()
+    monkeypatch.setattr(client, "_BACKENDS", {**client._BACKENDS, "codex": codex})
+    monkeypatch.setattr(client, "_STATS_PATH", tmp_path / "stats.jsonl")
+    with pytest.raises(client.ModelCallError, match="did you mean"):
+        client.ask("planner", "p", model=model)
+    codex.ask.assert_not_called()
+
+
+@pytest.mark.parametrize("model", [None, "gpt-5.6-luna", "o3", "gpt-6-luna", "ollama.llama3.1",
+                                   "openai.gpt-4o-mini", "codex.default", "together.meta-llama/Llama-3.1"])
+def test_plain_aliases_and_real_backends_still_resolve(configured, model):
+    configured({"ollama": {"kind": "openai", "base_url": "http://127.0.0.1:9/v1"},
+                "together": {"kind": "openai", "base_url": "http://127.0.0.1:9/v1"}})
+    client.check_model(model)
+
+
+def test_an_unreadable_endpoints_file_refuses_dotted_models_only(tmp_path, monkeypatch):
+    bad = tmp_path / "endpoints.yaml"
+    bad.write_text("endpoints: [not, a, mapping]", encoding="utf-8")
+    monkeypatch.setenv("AUTORTL_ENDPOINTS", str(bad))
+    with pytest.raises(ValueError, match="endpoints file is unreadable"):
+        client.check_model("ollama.llama3")
+    with pytest.raises(ValueError, match="endpoints file is unreadable"):
+        client.check_model("gpt-5.6-luna")  # cannot tell an alias from an endpoint
+    client.check_model("gpt5")  # no prefix to resolve
+
+
+def test_the_cli_refuses_a_misspelled_backend_before_anything_runs(configured, monkeypatch, capsys):
+    import run
+    configured({"ollama": {"kind": "openai", "base_url": "http://127.0.0.1:9/v1"}})
+    orch = Mock()
+    monkeypatch.setattr(run, "Orchestrator", orch)
+    with pytest.raises(SystemExit) as exit_info:
+        run.main(["optimize", "--design", "d.v", "--top", "d", "--model", "olama.llama3"])
+    assert exit_info.value.code == 2 and "did you mean ollama.llama3" in capsys.readouterr().err
+    orch.assert_not_called()

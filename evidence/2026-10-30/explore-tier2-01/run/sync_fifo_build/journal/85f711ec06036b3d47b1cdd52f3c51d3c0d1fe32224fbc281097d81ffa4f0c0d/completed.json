@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_2:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 2\n## Contract check\n- Interface and top latency annotation: PASS \u2014 top ports match the contract and `// @latency 1` matches the authoritative latency.\n- Defined FIFO behavior: PASS \u2014 authoritative ladder result is ALIVE.\n- Compile, elaboration, and simulation: PASS \u2014 required tools exited successfully and simulation reported `TEST PASSED`.\n- Synthesis and process gates: PASS \u2014 successful exits and `SYNTH_COMPLETE` are recorded.\n- Routed metrics and timing feasibility: PASS \u2014 retained routed metrics show WNS 0.151 ns and WHS 0.12 ns.\n- Strict objective improvement: FAIL \u2014 both candidate and previous best are timing-feasible, but LUT usage increased from 21 to 26; no improvement is recorded.\n\n## Summary\n- Passed: 5 of 6\n- Failed: 1 of 6\n- Improved over previous best: NO\n\n## Recommendation\nREJECT\n\n## Reason\nThe candidate passes the behavioral and timing gates, but the previous best was already timing-feasible and used fewer LUTs. Since the objective is to minimize LUTs, this candidate does not meet the required strict improvement.",
+      "recommendation": "REJECT",
+      "passed": 5,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

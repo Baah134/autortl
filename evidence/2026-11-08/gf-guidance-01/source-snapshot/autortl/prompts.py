@@ -1,0 +1,391 @@
+"""Prompt templates — three roles, three views of the world, plus the doctor."""
+
+LATENCY_AUTHORITY = """For optimization and review, declared_latency.known/cycles in immutable run facts
+describe the current top module. Require a numeric '// @latency N' annotation
+only when declared_latency.known=true, matching its authoritative cycles value.
+When declared_latency.known=false, numeric top latency is UNKNOWN, not zero:
+missing top annotation is neither FAIL nor INVESTIGATE and must not block ACCEPT.
+Child typed-module latency metadata does not create a numeric annotation
+requirement for an arbitrary aggregate wrapper. Any proven wrapper inheritance
+must already appear in authoritative top latency evidence; do not infer it.
+Preserve all defined cycle behavior, typed latency semantics and minimum transfer
+age, registered outputs, handshakes and reset behavior. Unknown annotation
+metadata never permits changing behavior or weakening deterministic gates."""
+
+PLANNER_SYSTEM = """You are an FPGA design strategist. You plan architecture; you never write Verilog.
+Think in resource trade-offs (LUT/FF/DSP48/BRAM), timing (pipeline depth, logic
+levels, fanout) and Xilinx 7-series primitives. Output plain markdown, concrete
+and specific.\n""" + LATENCY_AUTHORITY
+
+GENERATOR_SYSTEM = """You are an expert FPGA engineer writing synthesisable Verilog for Xilinx
+7-series in Vivado. Output ONLY the complete module inside one ```verilog fence.
+Rules: exact interface from the contract (name, ports, widths, signedness, packed
+shape and public parameters). Reset kind, polarity and priority match the contract. No initial blocks. Every reg in a combinational always @(*) assigned in
+all branches (defaults at the top). When the contract provides a fixed numeric
+latency N, include a '// @latency N' header matching it and preserve its cycle
+behavior. When numeric latency is UNKNOWN, do not invent an @latency annotation
+or assume zero cycles: preserve the frozen source's exact observable cycles,
+including registered outputs. An annotation alone is not behavioral proof.
+Write behavioral RTL that Vivado infers to device primitives; never instantiate
+primitives such as CARRY4, LUT6, FDRE, DSP48E1, SRL16E or RAMB18E1 by name.
+Verification simulates behavioral RTL without the UNISIM library, so an
+instantiated primitive fails elaboration.
+Write plain Verilog-2001, not SystemVerilog: the harness compiles .v files.
+Never index or part-select a concatenation directly ({d, c, b, a}[i]); assign it
+to a named wire first, then select from the wire.\n""" + LATENCY_AUTHORITY
+
+EVALUATOR_SYSTEM = """You are an FPGA design reviewer grading against a fixed contract. You are
+not here to help or suggest; you enforce the contract line by line. Mark
+unverifiable criteria INVESTIGATE. Never rubber-stamp. Use the exact output
+format requested.\n""" + LATENCY_AUTHORITY
+
+DOCTOR_SYSTEM = """You are a timing-closure specialist for Xilinx 7-series. Given a diagnosed
+category and a surgical instruction, produce a minimally-changed module that
+implements exactly that change. Output ONLY the module in one ```verilog fence.
+Infer device primitives from behavioral RTL; never instantiate CARRY4, LUT6,
+FDRE, DSP48E1 or other UNISIM primitives by name (verification simulates
+behavioral RTL only)."""
+
+SPEC_PROMPT = """Produce a design_spec JSON for this request.
+
+**Request:** {intent}
+**Target:** {target_part} @ {target_freq_mhz} MHz. **Objective:** {objective}
+
+Output ONLY JSON matching this schema (no commentary):
+{{"top_name": str,
+  "modules": [{{"name": str, "behavior": str-one-paragraph,
+     "ports": [{{"name": str, "direction": "input|output", "width": int,
+                "signed": false, "packed_dimensions": null,
+                "clock_domain": "clk", "protocol": "none|valid_ready"}}],
+     "latency": int, "compare_mode": "fixed_latency|scoreboard",
+     "reset": {{"signal": "rst", "kind": "sync", "active_high": true,
+               "duration_cycles": 5}},
+     "clock_domains": ["clk"], "parameters": {{}},
+     "examples": [{{"inputs": {{}}, "expected": {{}}, "after_cycles": int}}] }}],
+  "connections": [{{"src_module": str, "src_port": str,
+                    "dst_module": str, "dst_port": str}}],
+  "external_ports": [ports of the top level] }}
+
+Protocol valid_ready marks only handshake ports (in_valid, in_ready, out_valid,
+out_ready); payload ports such as in_data and out_data are protocol none.
+Example expected values list exactly the protocol none outputs.
+compare_mode scoreboard fits only a module with exactly one valid/ready input
+channel and one valid/ready output channel. Every other module, including a
+stream sink or source such as a UART transmitter fed by a FIFO, uses
+fixed_latency with every port protocol none, and the ports connected to it are
+none as well (protocol must match across a connection); describe the
+handshake cycle-exactly in behavior instead.
+Port signed is an optional boolean (default false). packed_dimensions is optional
+null (legacy descending [width-1:0], scalar for width 1) or a list of [left,right]
+integer bound pairs, for example [[0,7]] or [[1,0],[3,0]]. Preserve direction and
+shape; the product of dimension sizes must equal width. Parameters are public
+integer defaults, not internal localparams. Do not emit interface_signature;
+the harness derives that immutable metadata from existing source.
+Typed build modules require a known numeric latency; latency_known, if supplied,
+must be true. An absent annotation in an existing optimization source is a
+separate case and must never be interpreted as zero cycles.
+For fixed_latency, stimulus is driven at a falling edge: latency 0 is checked
+before the next rising edge, after combinational settling; latency 1 is checked
+just after that rising edge, after register updates. A Python step that returns
+the result of the current clocked state transition therefore uses latency 1;
+first-word-fall-through does not by itself determine this observation phase.
+Larger latencies add pipeline delay to that observation. Do not infer latency
+from the mere presence of clk:
+a combinational observation can still have clock/reset ports. Preserve the
+request's edge behavior; do not silently change a declared latency to fit RTL.
+This is distinct from scoreboard: scoreboard latency is the minimum
+accepted-transfer age, not the fixed_latency observation phase.
+fixed_latency compares every protocol none output on every sampled row, even
+when a valid output is zero. Define deterministic empty/invalid data values in
+behavior and examples; the typed spec has no per-cycle don't-care or output-mask
+field. Do not assume invalid data is excluded from those comparisons.
+Every module MUST include 2-3 concrete examples. Keep modules under ~60 lines
+of eventual Verilog each; split anything bigger.
+Each example holds its inputs constant for after_cycles clock steps, starting
+from the reset state, then checks the expected outputs; every inputs and
+expected value is a single integer, never a per-cycle list.
+Each example runs the Python reference for after_cycles steps inside a fixed
+sandbox budget, so keep every after_cycles at or below 2000. For long-period
+designs (for example a UART bit lasting hundreds of cycles), make each example
+check an early part of the behavior, such as the start bit and the first data
+bits, rather than a whole frame; full-length behavior is checked by the
+generated testbench and any independent testbench.
+Structural rules the harness checks before any generation:
+- top_name names the top wrapper the harness generates mechanically. It must be
+  a valid identifier that differs from every module name: a request for a single
+  module `foo` has modules [{{"name": "foo", ...}}] and top_name "foo_top".
+- Module names are unique. Every module input is driven by exactly one
+  connection or is an external port with the same name, direction, width,
+  protocol and signedness. Each external output is driven by exactly one
+  module output of that name. Connected ports agree in width, signedness,
+  shape, protocol and clock domain."""
+
+CONTRACT_PROPOSAL = """Propose a CONTRACT: a testable checklist of success for this run.
+Mode: {mode}. Objective: {objective}. Target: {target_part} @ {target_freq_mhz} MHz.
+Baseline: sim={sim_status} LUTs={lut_used} FFs={ff_used} WNS={wns_ns}ns
+{device_budget}
+
+{design_context}
+
+The attached authoritative harness facts define tool versions, sources, provided
+verification, constraints and baseline measurements. Use their actual values.
+Keep a concise checklist of the fixed hard gates and a separate advisory
+optimization goal. Do not invent mandatory savings/slack targets, testbench names,
+versions, comparison thresholds, timing corners or code-style quotas. Preserve
+all observable baseline behavior. Include no requirement to modify the harness.
+Output 5-8 criteria in exactly this markdown structure:
+# CONTRACT
+## Resource targets
+- [ ] ...
+## Timing targets
+- [ ] ...
+## Correctness
+- [ ] ...
+## Code quality
+- [ ] ...
+## Definition of done
+One paragraph.
+Every criterion must be verifiable from Vivado output or the code alone."""
+
+CONTRACT_REVIEW = """Review this contract for testability. Push back on vague terms, missing
+thresholds, and unverifiable judgment. Under 200 words.
+Review using the attached authoritative harness facts. They are fixed and already
+implemented; do not demand extra tool settings, board constraints, corner values,
+new tests or naming/style conventions. Unknown facts must stay unknown. Reject
+criteria that contradict these facts or make an advisory improvement goal a
+mandatory success threshold. A correct completed experiment may find no gain.
+Output "ACCEPT: ..." if testable as written, else bullet criticisms with rewrites.
+
+{contract}"""
+
+CONTRACT_REFINE = """Revise the contract to address this feedback. Same format. Every criterion
+objectively testable under the attached immutable harness facts. Do not invent
+new environment requirements or guaranteed savings. Output only the revised
+checklist, without rewriting or copying the authoritative facts.
+Feedback:
+{feedback}
+Original:
+{contract}"""
+
+PLAN = """Plan iteration {iteration} of an FPGA optimisation loop.
+{planning_skill}
+# Device budget
+{device_budget}
+# Contract
+{contract}
+# Progress (recent)
+{progress}
+# Recent evaluations
+{evaluations}
+# Verified incumbent measurements (may describe a different source from the generation seed)
+LUTs={lut_used} FFs={ff_used} WNS={wns_ns}ns DSP={dsp_used} BRAM={bram_used}
+Register-to-register WNS (excludes I/O pad delay; not a timing gate; maximize_freq compares it between timing-feasible designs that both report it): {reg2reg}
+Between timing-feasible designs, minimize_luts compares (LUTs, FFs) and minimize_ffs compares (FFs, LUTs) lexicographically: at an equal primary count, strictly fewer of the secondary is an improvement; a higher primary count never is.
+# Actual generation seed (write instructions for this source)
+```verilog
+{generation_seed}
+```
+Baseline source facts remain immutable verification context. The source above is
+the code the generator will modify; incumbent measurements are not measurements
+of this seed unless independently established by retained evidence.
+# Vivado advisor (advisory only | strong evidence from the tool that will judge)
+{advisor}
+# Watchdog signals
+{signals}
+
+Output exactly:
+# PLAN — iteration {iteration}
+## Current state assessment
+one paragraph
+## Hypothesis
+one sentence
+## Instruction for generator
+2-4 sentences naming the exact code pattern to change. The generator also receives
+the immutable harness facts, fixed contract and immutable compilation boundary.
+Respect explicit unspecified cases in supplied build specifications; do not invent
+extra behavioral requirements. Use retained trial evidence to avoid repeating an
+unchanged failed experiment. Prior proposal outcomes are advisory observations,
+not new contract requirements. Name a concrete change from an already tried
+proposal when appropriate; identical RTL remains valid for different physical
+settings, and a new source hash alone does not establish an improvement.
+Moving a child's logic into the top unchanged, or only regrouping modules, is
+not an optimization: synthesis flattens the hierarchy and routes the same design.
+Inline only together with a named logic change across the boundary."""
+
+RESTART_PLAN = """The loop has stalled ({stall_count} iterations without improvement).
+# Contract
+{contract}
+# Verified incumbent measurements (preserved across restart)
+LUTs={lut_used} FFs={ff_used} WNS={wns_ns}ns
+# Original generation seed for restart (write instructions for this source)
+```verilog
+{generation_seed}
+```
+The original seed can differ from the verified incumbent. Its measurements must
+not be inferred from the incumbent measurements or advisory history.
+# Already tried on this line (do NOT reuse or refine any of these)
+{tried}
+
+Propose a fundamentally different architectural direction. The current best is
+preserved, so be radical. Output the standard PLAN format."""
+
+GENERATE = """{skills}
+
+**Contract for module {name}:**
+Behavior: {behavior}
+Ports: {ports_table}
+Public parameter defaults (preserve names/order/defaults): {parameters}
+Frozen source interface signature: {interface_signature}
+The signature is authoritative when present: retain public parameter types/default
+expressions and symbolic port dimensions, not just their resolved default widths.
+Internal localparams may change only when the external contract remains identical.
+Latency: {latency}. Reset: {reset_desc}.
+
+**Approach for this candidate:** {mutation}
+
+**Instruction:** {instruction}
+
+**Current code (modify this):**
+```verilog
+{verilog}
+```
+Return the complete module in one ```verilog fence. {latency_header}"""
+
+FIX = """The Verilog failed verification.
+
+**Diagnosed errors:**
+{diagnosis}
+
+**Raw error excerpt:**
+```
+{error}
+```
+
+**Failing code:**
+```verilog
+{verilog}
+```
+
+**Testbench interface for reference (do NOT modify, shown as text):**
+```text
+{tb_excerpt}
+```
+{previous_attempts}
+Return the complete fixed module in one ```verilog fence. Interface must match
+the contract exactly."""
+
+EVALUATE = """Grade this design against the contract. Deterministic ladder results are
+authoritative for correctness; you rule only on the subjective residue.
+Use the attached candidate source, complete current and previous-best metrics
+and immutable run facts. Judge improvement from those metrics and the recorded
+improvement_kind. A verified candidate with timing_met=true, nonnegative setup
+and hold may replace a known timing-infeasible previous best even if area/power
+is equal or higher: timing_recovery is feasibility recovery, not resource savings.
+Unknown or contradictory timing evidence cannot establish recovery. While the
+previous best is still timing-infeasible, timing progress counts: when the
+recorded improvement_kind is timing_progress (verified, still infeasible, strictly
+better setup WNS, hold not worse beyond a small tolerance), the unmet timing is
+not a failed criterion for this comparison; it is progress, not closure. Once both
+incumbent and candidate are timing-feasible, require strict improvement of the
+chosen objective. minimize_luts compares (LUTs, FFs) and minimize_ffs compares
+(FFs, LUTs) lexicographically: an equal primary count with strictly fewer of the
+secondary is an objective improvement (recorded improvement_kind objective), so
+never reject it for an unchanged primary count; a higher primary count is never
+an improvement. Never reject a valid timing recovery solely for higher area
+or power, and never reject valid timing progress solely for higher area, power
+or still-negative slack. Extra savings or slack margins are advisory goals, not mandatory gates. Do not invent missing
+measurements or change the provided testbench, latency, constraints or tools.
+Use authoritative declared_latency for the current top's annotation requirement.
+If known=false, do not reject or demand investigation solely because the top has
+no @latency comment. A typed child's latency does not declare aggregate top latency.
+ACCEPT requires zero failed mandatory criteria; otherwise REJECT.
+
+# Contract
+{contract}
+# Ladder results (authoritative)
+{ladder}
+# Metrics
+sim={sim_status} LUTs={lut_used} FFs={ff_used} WNS={wns_ns}ns timing_met={timing_met}
+Register-to-register WNS (excludes I/O pad delay; not a timing gate; maximize_freq compares it between timing-feasible designs that both report it): {reg2reg}
+DSP={dsp_used} BRAM={bram_used}
+# Vivado notes
+{vivado_notes}
+# Stall count
+{stall_count}
+
+Output exactly:
+# EVALUATION — iteration {iteration}
+## Contract check
+- <criterion>: PASS/FAIL/INVESTIGATE — reason
+## Summary
+- Passed: X of Y
+- Failed: X of Y
+- Improved over previous best: YES/NO/N-A
+## Recommendation
+ACCEPT | REJECT | RESTART
+## Reason
+one paragraph. RESTART only if stall count >= {restart_threshold}."""
+
+GOLDEN_MODEL = """Write a Python golden model for this module.
+Behavior: {behavior}
+Ports: {ports_table}
+Public parameter defaults: {parameters}
+Model only this module's behavior and state. Declared input ports are authoritative
+external values, including results supplied by neighboring modules. Consume those
+inputs when the contract uses them; do not recompute a neighbor's function or
+infer hidden upstream state. Legitimately unused inputs may remain unused.
+Inputs and outputs remain masked nonnegative bit patterns even for signed ports.
+For signed arithmetic, explicitly interpret two's-complement operands at their
+specified widths, then mask outputs. Signed declarations do not change this API.
+Required API scaffold (syntax only, not a complete behavioral implementation):
+```python
+def init():
+    return dict()
+
+def step(state, inputs):
+    outputs = dict()
+    return state, outputs
+```
+Replace the empty state/output placeholders with the specified behavior; fill
+outputs with every named data output below. Use unannotated function signatures.
+Restricted Python execution, not general Python:
+Allowed builtins: {safe_builtins}
+Allowed methods: {safe_methods}
+Use integer arithmetic/bit operations, assignments, if/else and bounded loops.
+Execution is metered: init() has a large one-time budget, all step() calls of a
+run share a smaller one. Build constant tables (an S-box, coefficient or arctan
+table) once in init() from their definition with an efficient loop, keep them
+in state, and only look them up in step(); never rebuild them per step, and do
+not type long tables from memory. A loop of hundreds of operations per table
+entry is too slow: for GF(2^8) inverses build log/antilog tables with one
+255-step loop or use square-and-multiply, and check the table against any
+values the behavior text states.
+Log/antilog tables require a primitive generator for the specified field:
+verify that its powers visit every nonzero field element before repeating
+(255 distinct nonzero elements for GF(2^8)).
+Irreducibility alone does not guarantee that x is a primitive generator. Verify
+that field multiplication of the element and its computed inverse gives one
+for every nonzero element, and check the anchors stated in the behavior.
+Helper functions must be defined at module top level; pass required state/table
+values as explicit arguments. Nested helper calls are unsupported by this sandbox.
+No imports, classes, try/except, raise, lambda,
+f-strings, list/dict/set comprehensions, floats, decorators or default arguments.
+Generator expressions are supported. Do not use private names starting with '_'.
+Use literal port names, for example inputs.get("port_name", 0), replacing the
+placeholder with a declared name. str() and .format() are unsupported; do not
+construct port names with string formatting. No file/network/system access.
+Comparison mode: {compare_mode}. Declared RTL latency: {latency}. Reset: {reset_desc}.
+Output keys must be exactly these data outputs: {data_outputs}; do not return
+valid/ready control outputs. Values are masked plain integers. The clock edge
+is implicit; do not read clk. Handle reset input explicitly when supplied;
+init() must represent reset state. Generated comparisons begin with asserted
+reset steps, followed by deasserted reset and data stimulus. Spec examples may
+supply controls explicitly; use suitable inactive defaults for omitted controls.
+For fixed_latency, model one logical input/state transition per step and return
+its behavioral result. The testbench handles the declared pipeline delay; do
+not add a separate pipeline-delay queue in the Python model.
+For scoreboard, each non-reset step is ONE ACCEPTED input transaction: return
+its eventual output payload. Do not simulate buffer occupancy, valid/ready
+scheduling, bubbles or backpressure; the testbench independently schedules and
+checks those RTL behaviors. Supplied handshake inputs are 1 for accepted
+transactions and 0 during reset. Output ONLY python in one ```python fence."""

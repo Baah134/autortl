@@ -7,6 +7,7 @@ import re
 from pathlib import Path
 from .state import atomic_write_text
 from .timing_doctor import first_violated_path
+from .fileio import file_sha256
 
 
 def file_evidence(path: Path, limit: int = 16000) -> dict:
@@ -102,7 +103,7 @@ def tool_exit_evidence(directory: Path) -> dict:
                 log_status = "missing"
             else:
                 try:
-                    digest = hashlib.sha256(output.read_bytes()).hexdigest()
+                    digest = file_sha256(output)
                     log_status = "verified" if digest == item["output_log_sha256"] else "mismatch"
                 except OSError:
                     log_status = "unreadable"
@@ -192,13 +193,37 @@ def _build_spec_evidence(path, top_module):
                         "do not turn incidental values in unspecified cases into requirements."}
 
 
-def run_evidence(cfg, baseline, sources, tb, directory, execution_context, *, build_spec_path=None) -> dict:
+IMPLEMENTATION_MEANING = {
+    "chip_top": "Chip-top implementation: the top is the whole FPGA design. Every port bit gets an I/O buffer "
+                "on a package pin, and data ports have zero input and output delay to clk, so the routed WNS "
+                "and WHS include pad delay. Utilization includes the I/O buffers.",
+    "out_of_context": "Out-of-context implementation (chip_top_flow_for_soc_block): the top is a block inside a "
+                      "larger design, synthesized with synth_design -mode out_of_context and placed and routed "
+                      "without I/O buffers or package pins. clk is constrained at the target period and modeled "
+                      "as driven by a global clock buffer (HD.CLK_SRC). Data ports have no input or output delay "
+                      "and no pad delay, so they are unconstrained I/O; the routed WNS and WHS, and timing "
+                      "acceptance, cover the internal clocked paths only, and combinational logic between a port "
+                      "and its first or last register is not timed. Utilization excludes I/O buffers.",
+}
+
+
+def implementation_fact(mode: str) -> dict:
+    return {"mode": mode, "meaning": IMPLEMENTATION_MEANING[mode]}
+
+
+def run_evidence(cfg, baseline, sources, tb, directory, execution_context, *, build_spec_path=None,
+                 edit_scope=None) -> dict:
     from .verilog_interface import infer_module
     directory = Path(directory)
     if cfg.mode == "build" and build_spec_path is None:
         raise ValueError("build mode requires complete typed build spec evidence")
     if cfg.mode != "build" and build_spec_path is not None:
         raise ValueError("standalone optimization cannot use a typed build spec exception")
+    if edit_scope is not None:
+        if cfg.mode != "build":
+            raise ValueError("only a build hands its generated modules to the optimizer")
+        if edit_scope.get("mode") not in ("whole_design", "frozen_children") or edit_scope.get("top") != cfg.top_module:
+            raise ValueError("invalid build edit scope evidence")
     build_spec = _build_spec_evidence(build_spec_path,cfg.top_module) if build_spec_path is not None else None
     source_facts = [file_evidence(path) for path in sources]
     source_contract = infer_module(Path(sources[0]).read_text(encoding="utf-8", errors="replace"), cfg.top_module)
@@ -217,10 +242,13 @@ def run_evidence(cfg, baseline, sources, tb, directory, execution_context, *, bu
                    "fixed source contract, all defined typed latency/minimum transfer age and deterministic "
                    "verification, without inventing a numeric requirement.",
     }
+    scope_fact = {} if edit_scope is None else {"edit_scope": dict(edit_scope)}
     return {
+        **scope_fact,
         "schema_version": 1,
         "authority": "Harness evidence is fixed. Proposed architectural goals cannot redefine it.",
         "top_module": cfg.top_module, "part": cfg.target_part,
+        "implementation": implementation_fact(cfg.implementation),
         "objective": cfg.objective, "clock_period_ns": cfg.target_period_ns,
         "baseline_metrics": baseline.to_dict(),
         "sources": source_facts, "declared_latency": declared_latency,
@@ -244,8 +272,16 @@ def run_evidence(cfg, baseline, sources, tb, directory, execution_context, *, bu
         ],
         "objective_policy": "First establish timing feasibility. A verified timing-feasible candidate "
                             "may replace a known timing-infeasible previous best even with higher area or power; "
-                            "classify this as timing_recovery, not objective savings. Once both are timing-feasible, "
-                            "require strict improvement of the chosen objective. Unknown or contradictory incumbent "
+                            "classify this as timing_recovery, not objective savings. While the previous best is "
+                            "timing-infeasible, a verified still-infeasible candidate with strictly better setup WNS "
+                            "and hold not worse beyond a small tolerance may replace it as timing_progress, which is "
+                            "not closure; a feasible candidate always outranks it. Once both are timing-feasible, "
+                            "require strict improvement of the chosen objective; for maximize_freq that is "
+                            "register-to-register setup slack (reg2reg_wns_ns) when both designs report it, otherwise "
+                            "full setup WNS for both, while feasibility stays on full WNS and WHS. minimize_luts compares "
+                            "(lut_used, ff_used) and minimize_ffs compares (ff_used, lut_used) lexicographically: an equal "
+                            "primary metric with a strictly lower secondary is an objective improvement, a higher primary "
+                            "never is, and a secondary missing from either design gives no tie-break. Unknown or contradictory incumbent "
                             "timing evidence cannot establish recovery. A completed experiment may find no improvement. "
                             "Do not invent mandatory savings, slack margins, tool versions, timing corners, "
                             "new tests, thresholds, code-style quotas or external environment requirements.",
@@ -269,13 +305,22 @@ def render_fixed_optimize_contract(evidence: dict) -> str:
     hashes and actual constraints identify the measurement environment. This is
     deliberately a fixed policy, not a model-authored set of acceptance goals.
     """
+    # equal_lut_ff_saving_discarded: the resource objectives compare lexicographically.
+    lexicographic = lambda primary, secondary: (
+        f"({primary}, {secondary}) compared lexicographically",
+        f"strictly lower {primary}, or equal {primary} with strictly lower {secondary},",
+        f"Higher {primary} is never an objective improvement. When either design lacks a "
+        f"finite {secondary}, only strictly lower {primary} counts. ")
     objectives = {
-        "minimize_luts": ("lut_used", "strictly lower"),
-        "minimize_ffs": ("ff_used", "strictly lower"),
-        "maximize_freq": ("wns_ns", "strictly higher at the same clock period"),
-        "minimize_power": ("dynamic_power_w", "strictly lower"),
+        "minimize_luts": lexicographic("lut_used", "ff_used"),
+        "minimize_ffs": lexicographic("ff_used", "lut_used"),
+        # maximize_freq_ranks_on_pad_delay: compare logic timing, not pad delay, when both report it.
+        "maximize_freq": ("reg2reg_wns_ns (register-to-register setup slack) when both designs report "
+                          "a finite value, otherwise wns_ns for both, never mixed",
+                          "strictly higher at the same clock period", ""),
+        "minimize_power": ("dynamic_power_w", "strictly lower", ""),
     }
-    field, direction = objectives[evidence["objective"]]
+    field, direction, objective_note = objectives[evidence["objective"]]
     identity = lambda item: {"path": item["path"], "sha256": item["sha256"]}
     fixed = {
         "top_module": evidence["top_module"], "part": evidence["part"],
@@ -290,6 +335,39 @@ def render_fixed_optimize_contract(evidence: dict) -> str:
         "report_manifest": evidence["report_manifest"],
         "build_spec": evidence.get("build_spec"),
     }
+    implementation = evidence.get("implementation")
+    flow_text = ""
+    if implementation is not None:
+        fixed["implementation"] = implementation
+        flow_text = ("## Implementation flow\n\n"
+                     f"Mode {implementation['mode']}, fixed by the harness. " + implementation["meaning"] + "\n\n")
+    scope = evidence.get("edit_scope")
+    boundary = ""
+    if scope is not None:
+        fixed["edit_scope"] = scope
+        if scope["mode"] == "whole_design":
+            required = ", ".join(scope.get("testbench_modules") or [])
+            boundary = (
+                "## Edit boundary\n\n"
+                f"The editable source is one unit holding every generated child module ({', '.join(scope['children'])}) "
+                f"and the top {scope['top']}, children first and top last; no frozen companion is compiled beside it. "
+                f"Only the top {scope['top']} carries the interface contract: its name, ports, parameters and "
+                "defaults, reset, clocking, latency annotation rule and every observable cycle at its ports are "
+                "fixed. Child module names, ports and boundaries are internal and may change while the top's "
+                f"contract holds. Every candidate must define {scope['top']}"
+                + (f"; modules the trusted testbench instantiates directly ({required}) must stay defined and be "
+                   f"live-reached from {scope['top']}" if required else "")
+                + ". Every candidate is verified by the trusted integration testbench below and every other gate. "
+                "The per-child generated oracles and testbenches verified the baseline children only; they are "
+                "not evidence for changed children and must not be cited as such. Typed child contracts in the "
+                "build spec describe the baseline decomposition; their composed behavior at the top's ports "
+                "remains mandatory. Their latency fields and annotations bind nothing on their own: a child "
+                "module needs no // @latency annotation, and a missing or changed child annotation is never "
+                "a failed criterion (evaluator_requires_child_latency_annotation).\n\n")
+        else:
+            boundary = ("## Edit boundary\n\n"
+                        f"Only the top {scope['top']} is editable; generated children are frozen companions. "
+                        "Reason: " + scope["reason"] + "\n\n")
     if evidence.get("build_spec") is not None:
         obligations = (
             "The complete resolved typed build specification below is the behavioral authority. "
@@ -327,6 +405,8 @@ def render_fixed_optimize_contract(evidence: dict) -> str:
         "Planner, generator and evaluator cannot amend its requirements.\n\n"
         "## Behavioral obligations\n\n"
         + obligations + "\n\n"
+        + boundary
+        + flow_text
         + "## Verification gates\n\n"
         + annotation_rule + "\n\n"
         + "Use the frozen testbench unchanged. Pass static/interface and declared "
@@ -338,7 +418,8 @@ def render_fixed_optimize_contract(evidence: dict) -> str:
         "TEST FAILED, missing verdicts, tool errors and timeouts. Provided testbench "
         "coverage is not formal equivalence. Require valid retained routed reports "
         "and metric integrity; setup WNS >= 0 and hold WHS >= 0 are both mandatory "
-        "for promotion. Missing or unknown evidence is not success.\n\n"
+        "for timing closure and for promotion, except timing_progress below. "
+        "Missing or unknown evidence is not success.\n\n"
         "## Objective and completion\n\n"
         "First establish timing feasibility: the candidate must pass simulation and all "
         "verification/metric/receipt gates, with timing_met=true, WNS >= 0 and WHS >= 0. "
@@ -346,15 +427,21 @@ def render_fixed_optimize_contract(evidence: dict) -> str:
         "consistent timing evidence fails setup or hold, even when area or power increases "
         "or stays equal. Classify this as timing_recovery: a feasibility recovery, not "
         "resource or power savings. Unknown, missing or contradictory timing evidence "
-        "does not establish a timing recovery. Once both designs are timing-feasible, "
+        "does not establish a timing recovery. While the previous best is still "
+        "timing-infeasible, a verified candidate that is also infeasible may replace it "
+        "only with strictly better setup WNS and hold WHS not worse beyond a small "
+        "tolerance. Classify this as timing_progress: progress toward closure, not "
+        "closure; a timing-feasible candidate always outranks it, a feasible previous "
+        "best is never replaced by an infeasible candidate, and a run whose best is "
+        "still infeasible has not closed timing. Once both designs are timing-feasible, "
         f"objective {evidence['objective']} maps to {field}: require {direction} "
         "than the previous verified best, under the same device, clock and "
-        "constraints. No minimum percentage gain or extra slack margin is imposed. "
+        "constraints. " + objective_note + "No minimum percentage gain or extra slack margin is imposed. "
         "Final evaluator ACCEPT with zero failed criteria and all deterministic "
         "promotion gates are required. DONE describes a completed experiment; "
         "best_iteration 0 retains the baseline and claims no accepted improvement. "
         "Only a promoted best_iteration > 0 establishes an accepted improvement; "
-        "its recorded kind distinguishes timing recovery from objective gain.\n\n"
+        "its recorded kind distinguishes timing recovery and timing progress from objective gain.\n\n"
         "## Fixed measurement authority\n\n"
         "The JSON below records source/testbench identities, actual device, clock, "
         "tool context, constraints and retained report hashes. Numeric metrics are "

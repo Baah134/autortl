@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_4:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 4\n## Contract check\n- Top interface, reset, and handshake behavior: PASS \u2014 ports are preserved; the candidate\u2019s registered ready and output behavior matches the specified cycle behavior.\n- Arithmetic and output behavior: PASS \u2014 the unchanged integration testbench passed its bit-exact, accuracy, handshake, and reset checks.\n- Top latency annotation: PASS \u2014 authoritative `declared_latency.known=false`, so no numeric top annotation is required.\n- Compile and simulation gates: PASS \u2014 xvlog, xelab, and xsim exited successfully; the required `TEST PASSED` verdict is present.\n- Routed metrics and timing closure: PASS \u2014 retained routed evidence reports WNS 0.153 ns and WHS 0.085 ns, with valid metric evidence.\n- Improvement over previous best: FAIL \u2014 both designs are timing-feasible, but LUTs increased from 194 to 195 and FFs stayed at 95; this does not improve the `minimize_luts` objective, and no improvement kind is recorded.\n\n## Summary\n- Passed: 5 of 6\n- Failed: 1 of 6\n- Improved over previous best: NO\n\n## Recommendation\nREJECT\n\n## Reason\nThe candidate passes the behavioral and implementation gates, but it cannot replace the timing-feasible previous best under the fixed `minimize_luts` objective: it uses one more LUT with no FF reduction. Stall count is 1, below the RESTART threshold.",
+      "recommendation": "REJECT",
+      "passed": 5,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_4:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 4\n## Contract check\n- Interface, parameters, reset and cycle behavior: PASS \u2014 ports and parameter defaults are preserved; registered products keep the output cycle aligned with the original.\n- Top latency annotation: PASS \u2014 `// @latency 1` matches the authoritative latency.\n- Deterministic verification: PASS \u2014 5 ladder rungs ALIVE; simulation passed, and compile, elaboration and simulation tool exits succeeded.\n- Synthesis and metric integrity: PASS \u2014 synthesis completed successfully; retained routed reports use the fixed part and constraints.\n- Timing closure: PASS \u2014 timing_met=true, WNS=0.267 ns and WHS=0.201 ns.\n- Promotion and improvement: PASS \u2014 the verified candidate recovers timing from the infeasible previous best; higher area and power do not disqualify recovery.\n## Summary\n- Passed: 6 of 6\n- Failed: 0 of 6\n- Improved over previous best: YES\n## Recommendation\nACCEPT\n## Reason\nThe candidate passes deterministic verification and the contract checks, and its routed setup and hold slack are nonnegative. The previous best was timing-infeasible, so this verified timing recovery qualifies for promotion despite increased LUTs, DSPs and power.",
+      "recommendation": "ACCEPT",
+      "passed": 6,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}

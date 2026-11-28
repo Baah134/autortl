@@ -1,0 +1,383 @@
+# Fixed optimization contract
+
+This contract is rendered by the harness from immutable run evidence. Planner, generator and evaluator cannot amend its requirements.
+
+## Behavioral obligations
+
+The complete resolved typed build specification below is the behavioral authority. Preserve all defined behavior, supported parameter semantics, reset priority, observable cycles, latency, throughput, flags and handshakes. Preserve top ports and parameter defaults. Explicitly unspecified cases remain unspecified: do not impose blanket equality to incidental frozen implementation values in those cases, including invalid output payload when the spec leaves it unspecified. This does not relax specified valid payloads, transfers or cycle behavior. Source hashes identify the measured implementation, not additional semantic obligations. No new pipeline stages, extra cycles, interfaces or invented thresholds.
+
+## Edit boundary
+
+The editable source is one unit holding every generated child module (fir16_sym_core) and the top fir16_sym, children first and top last; no frozen companion is compiled beside it. Only the top fir16_sym carries the interface contract: its name, ports, parameters and defaults, reset, clocking, latency annotation rule and every observable cycle at its ports are fixed. Child module names, ports and boundaries are internal and may change while the top's contract holds. Every candidate must define fir16_sym. Every candidate is verified by the trusted integration testbench below and every other gate. The per-child generated oracles and testbenches verified the baseline children only; they are not evidence for changed children and must not be cited as such. Typed child contracts in the build spec describe the baseline decomposition; their composed behavior at the top's ports remains mandatory. Their latency fields and annotations bind nothing on their own: a child module needs no // @latency annotation, and a missing or changed child annotation is never a failed criterion (evaluator_requires_child_latency_annotation).
+
+## Implementation flow
+
+Mode out_of_context, fixed by the harness. Out-of-context implementation (chip_top_flow_for_soc_block): the top is a block inside a larger design, synthesized with synth_design -mode out_of_context and placed and routed without I/O buffers or package pins. clk is constrained at the target period and modeled as driven by a global clock buffer (HD.CLK_SRC). Data ports have no input or output delay and no pad delay, so they are unconstrained I/O; the routed WNS and WHS, and timing acceptance, cover the internal clocked paths only, and combinational logic between a port and its first or last register is not timed. Utilization excludes I/O buffers.
+
+## Verification gates
+
+The current top has known numeric latency 5; require a matching // @latency 5 annotation. Preserve its defined cycle behavior. Only authoritative current-top declared_latency.known=true creates a numeric annotation requirement. Preserve defined typed latency semantics, minimum transfer age, registered outputs, reset and cycle behavior; all deterministic checks remain mandatory. 
+
+Use the frozen testbench unchanged. Pass static/interface and declared latency checks when a numeric declaration is known, xvlog compilation, xelab elaboration and xsim -runall. Unannotated numeric latency is UNKNOWN, not zero; an annotation alone is not independent behavioral proof. Tool stages require successful exit codes; synthesis also requires the SYNTH_COMPLETE marker. Simulation requires the exact standalone TEST PASSED verdict and rejects TEST FAILED, missing verdicts, tool errors and timeouts. Provided testbench coverage is not formal equivalence. Require valid retained routed reports and metric integrity; setup WNS >= 0 and hold WHS >= 0 are both mandatory for timing closure and for promotion, except timing_progress below. Missing or unknown evidence is not success.
+
+## Objective and completion
+
+First establish timing feasibility: the candidate must pass simulation and all verification/metric/receipt gates, with timing_met=true, WNS >= 0 and WHS >= 0. A candidate meeting those gates may replace a previous verified best whose known consistent timing evidence fails setup or hold, even when area or power increases or stays equal. Classify this as timing_recovery: a feasibility recovery, not resource or power savings. Unknown, missing or contradictory timing evidence does not establish a timing recovery. While the previous best is still timing-infeasible, a verified candidate that is also infeasible may replace it only with strictly better setup WNS and hold WHS not worse beyond a small tolerance. Classify this as timing_progress: progress toward closure, not closure; a timing-feasible candidate always outranks it, a feasible previous best is never replaced by an infeasible candidate, and a run whose best is still infeasible has not closed timing. Once both designs are timing-feasible, objective minimize_luts maps to (lut_used, ff_used) compared lexicographically: require strictly lower lut_used, or equal lut_used with strictly lower ff_used, than the previous verified best, under the same device, clock and constraints. Higher lut_used is never an objective improvement. When either design lacks a finite ff_used, only strictly lower lut_used counts. No minimum percentage gain or extra slack margin is imposed. Final evaluator ACCEPT with zero failed criteria and all deterministic promotion gates are required. DONE describes a completed experiment; best_iteration 0 retains the baseline and claims no accepted improvement. Only a promoted best_iteration > 0 establishes an accepted improvement; its recorded kind distinguishes timing recovery and timing progress from objective gain.
+
+## Fixed measurement authority
+
+The JSON below records source/testbench identities, actual device, clock, tool context, constraints and retained report hashes. Numeric metrics are the parsed structured evidence, with routed reports preferred. The candidate's retained synthesis script records actual permitted retiming or physical optimization settings; these never change behavioral obligations.
+
+```json
+{
+  "baseline_metrics": {
+    "bram_total": 50.0,
+    "bram_used": 0.0,
+    "dsp_total": 90,
+    "dsp_used": 7,
+    "dynamic_power_w": 0.03,
+    "ff_pct": 0.78125,
+    "ff_total": 41600,
+    "ff_used": 325,
+    "lut_pct": 1.8942307692307692,
+    "lut_total": 20800,
+    "lut_used": 394,
+    "reg2reg_wns_ns": -10.25,
+    "sim_error": "",
+    "sim_passed": true,
+    "synth_error": "",
+    "timing_met": false,
+    "total_power_w": 0.099,
+    "whs_ns": 0.122,
+    "wns_ns": -10.25
+  },
+  "build_spec": {
+    "authority": "Complete resolved typed build contract. Defined behavior is mandatory; explicitly unspecified cases remain unspecified. Frozen implementation identities do not turn incidental values in unspecified cases into requirements.",
+    "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\fir16-ooc-02\\design_spec.json",
+    "resolved_spec": {
+      "connections": [],
+      "external_ports": [
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "clk",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "rst",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "in_sample",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": true,
+          "width": 16
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "in_valid",
+          "packed_dimensions": null,
+          "protocol": "valid_ready",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "output",
+          "name": "in_ready",
+          "packed_dimensions": null,
+          "protocol": "valid_ready",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "output",
+          "name": "out_sample",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": true,
+          "width": 16
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "output",
+          "name": "out_valid",
+          "packed_dimensions": null,
+          "protocol": "valid_ready",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "out_ready",
+          "packed_dimensions": null,
+          "protocol": "valid_ready",
+          "signed": false,
+          "width": 1
+        }
+      ],
+      "modules": [
+        {
+          "behavior": "Sixteen-tap symmetric FIR filter on a signed 16-bit valid/ready sample stream with round-half-up scaling, saturation and a five-slot elastic pipeline. Coefficients h[0..15] = -6, -20, -24, 18, 110, 226, 330, 390, 390, 330, 226, 110, 18, -24, -20, -6: h[k] = h[15-k], eight unique signed values that each fit 10-bit two's complement, total 2048. Let x[n] be the n-th accepted in_sample (two's complement) since reset, with x[m] = 0 for every position before the first sample accepted after reset. For each accepted sample compute the exact integer acc = sum over k = 0..15 of h[k] * x[n-k]; the pre-adder form sum over k = 0..7 of h[k] * (x[n-k] + x[n-15+k]) is equivalent, and each pairwise sum needs 17 bits. |acc| <= 73662464, so 28 signed bits hold it exactly. Then r = floor((acc + 1024) / 2048) (add 1024, arithmetic shift right by 11: round half up) and out_sample = 32767 if r > 32767, -32768 if r < -32768, else r (saturate, never wrap). Only accepted samples enter the history; invalid or blocked cycles never change it. Handshake: five elastic slots with valid bits v1..v5, all 0 after reset; out_valid = v5 and out_sample is the result held in slot 5. ready5 = !v5 || out_ready, ready_i = !v_i || ready_(i+1) for i = 4, 3, 2, 1, and in_ready = ready1: a combinational function of out_ready and the registered valid bits only, with no path from in_valid, in_sample or rst. At a rising edge with rst low, every slot i whose ready_i is 1 takes the valid bit and result of slot i-1, where slot 0 is the input (valid = in_valid; the sample is accepted when in_valid && in_ready); a slot whose ready_i is 0 holds. So a sample accepted at edge k reaches slot 5 after edge k+4 at the earliest and can transfer at edge k+5 (minimum accepted-transfer age 5, exact when out_ready stays high); the pipeline sustains one sample per cycle; bubbles collapse, so in_ready is 0 only when all five slots are full and out_ready is 0. While out_valid && !out_ready, out_valid and out_sample stay stable. out_sample is unspecified while out_valid = 0. Synchronous active-high rst at a rising edge empties every slot, clears the history to zero and overrides acceptance; reset has no effect between edges (an off-edge rst pulse changes nothing). Producers hold in_sample and in_valid while blocked. For the Python scoreboard oracle ONLY: each non-reset step is one accepted sample; keep the previous 15 accepted samples in state (zeros after reset), read in_sample as signed 16-bit, compute acc, r and the saturated result, and return out_sample masked to 16 bits. A supplied rst clears the history and returns out_sample 0; init() is the reset state. Do not model the slots, readiness or backpressure in the oracle. Each example starts from reset and after_cycles repeats the same accepted sample: 1000 once gives acc = -6000 and out_sample -3 (65533); 32767 thirteen times gives acc = 32767 * 2098 and saturates to 32767; -32768 eight times gives acc = -32768 * 1024 and r = -16384 (49152).",
+          "clock_domains": [
+            "clk"
+          ],
+          "compare_mode": "scoreboard",
+          "examples": [
+            {
+              "after_cycles": 1,
+              "expected": {
+                "out_sample": 65533
+              },
+              "inputs": {
+                "in_sample": 1000,
+                "in_valid": 1,
+                "out_ready": 1,
+                "rst": 0
+              }
+            },
+            {
+              "after_cycles": 13,
+              "expected": {
+                "out_sample": 32767
+              },
+              "inputs": {
+                "in_sample": 32767,
+                "in_valid": 1,
+                "out_ready": 1,
+                "rst": 0
+              }
+            },
+            {
+              "after_cycles": 8,
+              "expected": {
+                "out_sample": 49152
+              },
+              "inputs": {
+                "in_sample": 32768,
+                "in_valid": 1,
+                "out_ready": 1,
+                "rst": 0
+              }
+            }
+          ],
+          "golden_model": "",
+          "interface_signature": null,
+          "latency": 5,
+          "latency_known": true,
+          "name": "fir16_sym_core",
+          "parameters": {},
+          "ports": [
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "clk",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "rst",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "in_sample",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": true,
+              "width": 16
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "in_valid",
+              "packed_dimensions": null,
+              "protocol": "valid_ready",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "in_ready",
+              "packed_dimensions": null,
+              "protocol": "valid_ready",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "out_sample",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": true,
+              "width": 16
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "out_valid",
+              "packed_dimensions": null,
+              "protocol": "valid_ready",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "out_ready",
+              "packed_dimensions": null,
+              "protocol": "valid_ready",
+              "signed": false,
+              "width": 1
+            }
+          ],
+          "reset": {
+            "active_high": true,
+            "duration_cycles": 3,
+            "kind": "sync",
+            "signal": "rst"
+          }
+        }
+      ],
+      "top_name": "fir16_sym"
+    },
+    "sha256": "23f422db23853e0cf09dfa32389f4d13fd45b413bb924602fd7a849d1bd2406f",
+    "truncated": false
+  },
+  "clock_period_ns": 6.666666666666667,
+  "declared_latency": {
+    "cycles": 5,
+    "known": true,
+    "meaning": "A source annotation declares numeric latency only when present. This known/cycles pair is authoritative for the current top module's annotation requirement. Only known=true requires a matching numeric top annotation. Child typed-module latency does not invent a top annotation for arbitrary aggregate wrappers. When known=false, absence of a top annotation is not a failed or unverifiable criterion. Unannotated numeric latency is UNKNOWN, not zero. Preserve the source's exact observable cycles and registered behavior. Annotation presence or absence alone is not independent proof of behavioral correctness; use the fixed source contract, all defined typed latency/minimum transfer age and deterministic verification, without inventing a numeric requirement.",
+    "source_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\fir16-ooc-02\\iter_000\\fir16_sym.v",
+    "source_sha256": "6db13f317c61f796970d05da40198ddb54fe8737c64e171e7d69efab8c2417a0"
+  },
+  "edit_scope": {
+    "children": [
+      "fir16_sym_core"
+    ],
+    "mode": "whole_design",
+    "reason": "The supplied testbench instantiates the top fir16_sym and is the trusted integration authority, so every generated child module and the mechanical top form one editable unit verified through the top. Per-child generated oracles and testbenches verified the baseline children only and are not evidence for changed children.",
+    "testbench_modules": [],
+    "top": "fir16_sym"
+  },
+  "execution_context": {
+    "dependencies": [],
+    "implementation": "out_of_context",
+    "part": "xc7a35tcpg236-1",
+    "period_ns": 6.666666666666667,
+    "promotions": {
+      "Designutils 20-1307": "ERROR",
+      "Synth 8-327": "ERROR",
+      "Synth 8-3352": "ERROR",
+      "Synth 8-9873": "ERROR",
+      "VRFC 10-3609": "ERROR"
+    },
+    "synthesis_template": "61e44d95134130552d86e050a4db65035952d348028dc942b327b8aced90b3d1",
+    "tb": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\fir16-ooc-02\\inputs\\testbench_path.v",
+      "sha256": "c899218aedf02b74edd1bde45753f30a6c1e34d712bed49c88a1e6ec8adabe65"
+    },
+    "tools": {
+      "vivado_bin": {
+        "path": "C:\\AMDDesignTools\\2025.2\\Vivado\\bin\\vivado.bat",
+        "sha256": "4f9c05aea82a71c7086a9e5edf01ba16ea70255f69cf3420c58b805ec113e994"
+      },
+      "xelab_bin": {
+        "path": "C:\\AMDDesignTools\\2025.2\\Vivado\\bin\\xelab.bat",
+        "sha256": "512a29ace988992d7fab14ca84f20f0b4515bb69ef1d5fef0a57c5f28b72c9b1"
+      },
+      "xsim_bin": {
+        "path": "C:\\AMDDesignTools\\2025.2\\Vivado\\bin\\xsim.bat",
+        "sha256": "8819fbb54fdf9cbcaaf24c2bf72801b403d5c93e0990ba32408b56c666761d21"
+      },
+      "xvlog_bin": {
+        "path": "C:\\AMDDesignTools\\2025.2\\Vivado\\bin\\xvlog.bat",
+        "sha256": "512a29ace988992d7fab14ca84f20f0b4515bb69ef1d5fef0a57c5f28b72c9b1"
+      }
+    },
+    "top": "fir16_sym"
+  },
+  "flow_and_constraints": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\fir16-ooc-02\\iter_000\\synth.tcl",
+      "sha256": "ce818ce11d896f315a19e659ce0c0fabcf21459b6d4a281f12df7452e5538e5d",
+      "text": "set_msg_config -id {VRFC 10-3609} -new_severity ERROR\r\nset_msg_config -id {Synth 8-9873} -new_severity ERROR\r\nset_msg_config -id {Designutils 20-1307} -new_severity ERROR\r\nset_msg_config -id {Synth 8-327} -new_severity ERROR\r\nset_msg_config -id {Synth 8-3352} -new_severity ERROR\r\nset_part xc7a35tcpg236-1\r\nread_verilog \"C:/Users/prince.baah/Downloads/autortl-work/logs/fir16-ooc-02/iter_000/fir16_sym.v\"\r\nset fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/fir16-ooc-02/iter_000/timing.xdc\" w]\r\nputs $fp {create_clock -period 6.667 -name clk [get_ports clk]}\r\nputs $fp {set_property HD.CLK_SRC BUFGCTRL_X0Y0 [get_ports clk]}\r\nclose $fp\r\nread_xdc \"C:/Users/prince.baah/Downloads/autortl-work/logs/fir16-ooc-02/iter_000/timing.xdc\"\r\nsynth_design -top fir16_sym -flatten_hierarchy rebuilt -mode out_of_context \r\nreport_utilization -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/fir16-ooc-02/iter_000/utilization.rpt\"\r\nreport_timing_summary -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/fir16-ooc-02/iter_000/timing.rpt\"\r\nopt_design\r\nplace_design\r\n\r\nroute_design\r\nreport_utilization -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/fir16-ooc-02/iter_000/utilization_routed.rpt\"\r\nreport_timing_summary -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/fir16-ooc-02/iter_000/timing_routed.rpt\"\r\ncatch { if {[llength [all_registers]] > 0} { report_timing -from [all_registers] -to [all_registers] -max_paths 1 -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/fir16-ooc-02/iter_000/timing_reg2reg.rpt\" } }\r\nreport_design_analysis -logic_level_distribution -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/fir16-ooc-02/iter_000/design_analysis.rpt\"\r\nreport_power -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/fir16-ooc-02/iter_000/power.rpt\"\r\ncatch { report_methodology -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/fir16-ooc-02/iter_000/methodology.rpt\" }\r\ncatch { report_qor_suggestions -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/fir16-ooc-02/iter_000/qor_suggestions.rpt\" }\r\nputs \"SYNTH_COMPLETE\"\r\n",
+      "truncated": false
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\fir16-ooc-02\\iter_000\\timing.xdc",
+      "sha256": "952d85aec49f6e20f2003112943b665b86d078d91c18438bd81498e37ec1a892",
+      "text": "create_clock -period 6.667 -name clk [get_ports clk]\r\nset_property HD.CLK_SRC BUFGCTRL_X0Y0 [get_ports clk]\r\n",
+      "truncated": false
+    }
+  ],
+  "implementation": {
+    "meaning": "Out-of-context implementation (chip_top_flow_for_soc_block): the top is a block inside a larger design, synthesized with synth_design -mode out_of_context and placed and routed without I/O buffers or package pins. clk is constrained at the target period and modeled as driven by a global clock buffer (HD.CLK_SRC). Data ports have no input or output delay and no pad delay, so they are unconstrained I/O; the routed WNS and WHS, and timing acceptance, cover the internal clocked paths only, and combinational logic between a port and its first or last register is not timed. Utilization excludes I/O buffers.",
+    "mode": "out_of_context"
+  },
+  "part": "xc7a35tcpg236-1",
+  "report_manifest": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\fir16-ooc-02\\iter_000\\power.rpt",
+      "sha256": "c18a7c7ad6a4bc5ca7e4a3d29ad39e2d98eee8a6055373ec3a8bd6e356e84fc0"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\fir16-ooc-02\\iter_000\\timing.rpt",
+      "sha256": "2e44f0252ac0b110dd596b05b0cef86f55156bdf92860821d6d20e283dd7a604"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\fir16-ooc-02\\iter_000\\timing_reg2reg.rpt",
+      "sha256": "00f9e30b72f6c06241dc1205cf54567454fee162914b33c5cb1a8b9f59ecc769"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\fir16-ooc-02\\iter_000\\timing_routed.rpt",
+      "sha256": "1d3acf2a6d9c3238282b3b3ac43d8b1f3d0371afe7b362a2d8d38f6b3ab776c1"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\fir16-ooc-02\\iter_000\\utilization.rpt",
+      "sha256": "5af168d95f44b607d707ff6fdf5ab253ecc94c1c7d1aa7e0106e03eef157a2d8"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\fir16-ooc-02\\iter_000\\utilization_routed.rpt",
+      "sha256": "079a87b6ce6b964f3bd838a207f33bae36eb58e38627bb2c8570350100080484"
+    }
+  ],
+  "sources": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\fir16-ooc-02\\iter_000\\fir16_sym.v",
+      "sha256": "6db13f317c61f796970d05da40198ddb54fe8737c64e171e7d69efab8c2417a0"
+    }
+  ],
+  "testbench": {
+    "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\fir16-ooc-02\\inputs\\testbench_path.v",
+    "sha256": "c899218aedf02b74edd1bde45753f30a6c1e34d712bed49c88a1e6ec8adabe65"
+  },
+  "testbench_top": "fir16_sym_tb",
+  "top_module": "fir16_sym"
+}
+```

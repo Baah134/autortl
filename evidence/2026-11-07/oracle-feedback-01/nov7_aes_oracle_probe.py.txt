@@ -1,0 +1,58 @@
+from pathlib import Path
+import ast, hashlib, json, sys
+root=Path('C:/Users/prince.baah/Downloads/autortl-work')
+work=Path(__file__).resolve().parent
+sys.path.insert(0,str(root))
+from autortl.golden import GoldenModel,qualify_against_examples
+from autortl.spec import DesignSpec
+run=root/'logs/explore-aes-20261107-01/aes128_core_build'
+out=work/'nov7-aes-oracle-probe';out.mkdir(exist_ok=False)
+module=next(m for m in DesignSpec.load(run/'design_spec.json').modules if m.name=='aes_ctrl')
+results=[]
+for p in (run/'journal').glob('*/completed.json'):
+    record=json.loads(p.read_text(encoding='utf-8'))
+    if not record.get('stage','').startswith('module_aes_ctrl:model:generator.golden_model:'):continue
+    attempt=int(record['stage'].rsplit(':',1)[1]);source=record['result']
+    path=out/f'attempt{attempt}.py';path.write_text(source,encoding='utf-8')
+    tree=ast.parse(source)
+    def referenced(name):
+        return [n.lineno for n in ast.walk(tree) if (isinstance(n,ast.Call) and isinstance(n.func,ast.Attribute) and n.func.attr=='get' and isinstance(n.func.value,ast.Name) and n.func.value.id=='inputs' and n.args and isinstance(n.args[0],ast.Constant) and n.args[0].value==name) or (isinstance(n,ast.Subscript) and isinstance(n.value,ast.Name) and n.value.id=='inputs' and isinstance(n.slice,ast.Constant) and n.slice.value==name)]
+    try:errors=qualify_against_examples(GoldenModel(path),module)
+    except Exception as exc:errors=[type(exc).__name__+': '+str(exc)]
+    results.append({'attempt':attempt,'sha256':hashlib.sha256(path.read_bytes()).hexdigest(),'round_out_reads':referenced('round_out'),'key_next_reads':referenced('key_next'),'qualification_errors':errors})
+control='''def init():
+    return dict(busy=0,out_valid=0,rnd=0,ct=0,rk=0)
+def step(state,inputs):
+    if inputs.get('rst',0):
+        state['busy']=0
+        state['out_valid']=0
+        state['rnd']=0
+        state['ct']=0
+        state['rk']=0
+    elif state['busy']:
+        state['rk']=inputs.get('key_next',0)
+        if state['rnd']==0:
+            state['rnd']=1
+        else:
+            state['ct']=inputs.get('round_out',0)
+            if state['rnd']==10:
+                state['busy']=0
+                state['out_valid']=1
+                state['rnd']=0
+            else:
+                state['rnd']=state['rnd']+1
+    elif state['out_valid']:
+        if inputs.get('out_ready',0): state['out_valid']=0
+    elif inputs.get('in_valid',0):
+        state['ct']=inputs.get('pt',0)^inputs.get('key',0)
+        state['rk']=inputs.get('key',0)
+        state['rnd']=0
+        state['busy']=1
+    rcons=[1,2,4,8,16,32,64,128,27,54,0,0,0,0,0,0]
+    return state,dict(in_ready=int(not state['busy'] and not state['out_valid']),out_valid=state['out_valid'],ct=state['ct'],rk=state['rk'],rcon=rcons[state['rnd']],last=int(state['rnd']==10))
+'''
+path=out/'controller-control.py';path.write_text(control,encoding='utf-8')
+control_errors=qualify_against_examples(GoldenModel(path),module)
+report={'attempts':sorted(results,key=lambda r:r['attempt']),'controller_only_control_errors':control_errors,'model_calls':0,'vendor_calls':0,'board_access':False}
+(out/'result.json').write_text(json.dumps(report,indent=2)+'\n',encoding='utf-8')
+print(json.dumps(report))

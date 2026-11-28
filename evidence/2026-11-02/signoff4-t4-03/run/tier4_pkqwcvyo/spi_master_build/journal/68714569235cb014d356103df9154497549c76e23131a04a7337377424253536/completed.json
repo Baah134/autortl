@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Interface and live child: PASS \u2014 `spi_master` preserves the required ports, and `spi_master_core` remains defined and connected to the top.\n- Top latency annotation: PASS \u2014 top declares `// @latency 33`, matching authoritative latency.\n- Defined behavior: PASS \u2014 the candidate preserves transfer timing, sampling, handshakes, reset behavior, and response stability; the response register removal is safe because `rx_shift` stays unchanged while a response is valid.\n- Deterministic verification: PASS \u2014 standard ladder reports 5 rungs ALIVE; simulation passed.\n- Tool and metric integrity: PASS \u2014 required tool exits succeeded, synthesis completed, and routed metrics are available.\n- Timing closure: PASS \u2014 timing is met; WNS is 0.343 ns and WHS is 0.040 ns.\n- Objective improvement: PASS \u2014 LUTs remain 19 and FFs decrease from 34 to 32, a strict lexicographic improvement for `minimize_luts`.\n## Summary\n- Passed: 7 of 7\n- Failed: 0\n- Improved over previous best: YES\n## Recommendation\nACCEPT\n## Reason\nThe candidate passes the deterministic and implementation gates, preserves the defined contract behavior, and is timing-feasible. With LUT count unchanged and FF count reduced, it improves the selected lexicographic objective over the previous best.",
+      "recommendation": "ACCEPT",
+      "passed": 7,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}

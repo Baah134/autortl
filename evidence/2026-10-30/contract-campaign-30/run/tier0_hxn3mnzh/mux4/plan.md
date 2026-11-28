@@ -1,0 +1,9 @@
+# PLAN — iteration 1
+## Current state assessment
+The 8-bit registered 4:1 mux uses 8 LUTs and 8 FFs on xc7a35tcpg236-1, with routed WNS 0.579 ns and WHS 0.052 ns. Timing is feasible, so promotion requires strictly fewer than 8 LUTs while preserving the clocked output, synchronous active-high reset, and all four select cases. The current top’s numeric latency is unknown; no numeric annotation is required.
+
+## Hypothesis
+Writing the selection as a constant-width indexed slice may let Vivado map each output bit directly into a LUT6, but the existing 8-LUT result may already be the practical minimum, so a strict LUT reduction is uncertain.
+
+## Instruction for generator
+Replace the `case (sel)` data selection with a variable indexed 8-bit slice of `{d, c, b, a}`, using `sel` to choose the slice, while keeping the existing `if (rst) y <= 8'd0` priority and the same rising-edge register. Preserve all ports and the exact one-cycle registered behavior. Evaluate whether routed LUT use falls below 8; retain the candidate only if simulation, metric integrity, and both setup and hold gates pass.

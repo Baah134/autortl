@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_1:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 1,
+    "instruction": "Replace the `case (sel)` data selection with an explicit balanced 2:1 mux tree, first selecting between `a`/`b` and `c`/`d` using `sel[0]`, then selecting between those results using `sel[1]`. Keep the existing synchronous active-high reset to zero and the single clocked assignment to `y`; preserve all ports and cycle behavior. The proposed benefit is fewer than 8 routed LUTs; retain the candidate only if it passes every deterministic gate, has WNS and WHS at least zero, and strictly improves LUT count.",
+    "candidates": [
+      {
+        "iteration": 1,
+        "mutation": "standard",
+        "instruction": "Replace the `case (sel)` data selection with an explicit balanced 2:1 mux tree, first selecting between `a`/`b` and `c`/`d` using `sel[0]`, then selecting between those results using `sel[1]`. Keep the existing synchronous active-high reset to zero and the single clocked assignment to `y`; preserve all ports and cycle behavior. The proposed benefit is fewer than 8 routed LUTs; retain the candidate only if it passes every deterministic gate, has WNS and WHS at least zero, and strictly improves LUT count.",
+        "generated_source_sha256": "c9f2088ee352098ba1d1446c1933ad9fb1169665e647a730ef08b75cae3de492",
+        "final_source_sha256": "c9f2088ee352098ba1d1446c1933ad9fb1169665e647a730ef08b75cae3de492",
+        "generated_code_hash": "ca42056875a70116",
+        "final_code_hash": "ca42056875a70116",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.579,
+          "whs_ns": 0.057,
+          "lut_used": 8,
+          "ff_used": 8,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.04,
+          "total_power_w": 0.111
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\contract-campaign-29\\tier0_7xqlsujx\\mux4\\iter_001\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\contract-campaign-29\\tier0_7xqlsujx\\mux4\\iter_001\\cand_standard\\synth.tcl",
+          "sha256": "d5063cb0029df8347fb98a8d0993a271ae504652c2cc5158ea8fd30265edc465"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\contract-campaign-29\\tier0_7xqlsujx\\mux4\\iter_001\\cand_standard\\mux4.v",
+          "sha256": "5c1d5d8dc98272a293cf03f3a3bcaeb6a523bdc1fb82fe49af8de20d91ffe776"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": "c9f2088ee352098ba1d1446c1933ad9fb1169665e647a730ef08b75cae3de492"
+  },
+  "artifacts": {}
+}

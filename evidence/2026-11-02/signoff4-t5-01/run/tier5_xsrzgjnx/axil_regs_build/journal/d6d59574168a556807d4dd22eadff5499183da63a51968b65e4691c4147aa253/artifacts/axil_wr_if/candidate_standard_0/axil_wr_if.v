@@ -1,0 +1,78 @@
+`timescale 1ns/1ps
+// @latency 1
+module axil_wr_if (
+    input wire clk,
+    input wire rst,
+    input wire awvalid,
+    output wire awready,
+    input wire [5:0] awaddr,
+    input wire wvalid,
+    output wire wready,
+    input wire [31:0] wdata,
+    input wire [3:0] wstrb,
+    output wire bvalid,
+    input wire bready,
+    output wire [1:0] bresp,
+    output wire wr_en,
+    output wire [2:0] wr_idx,
+    output wire [31:0] wr_data,
+    output wire [3:0] wr_strb
+);
+
+    reg aw_full;
+    reg [5:0] aw_addr;
+    reg w_full;
+    reg [31:0] w_data;
+    reg [3:0] w_strb;
+    reg bvalid_reg;
+    reg [1:0] bresp_reg;
+
+    wire do_write;
+
+    assign awready = !aw_full;
+    assign wready = !w_full;
+    assign bvalid = bvalid_reg;
+    assign bresp = bresp_reg;
+
+    assign do_write = aw_full && w_full && !bvalid_reg;
+    assign wr_en = do_write && !aw_addr[5];
+    assign wr_idx = aw_addr[4:2];
+    assign wr_data = w_data;
+    assign wr_strb = w_strb;
+
+    always @(posedge clk) begin
+        if (rst) begin
+            aw_full <= 1'b0;
+            aw_addr <= 6'b0;
+            w_full <= 1'b0;
+            w_data <= 32'b0;
+            w_strb <= 4'b0;
+            bvalid_reg <= 1'b0;
+            bresp_reg <= 2'b0;
+        end else begin
+            if (do_write) begin
+                aw_full <= 1'b0;
+                w_full <= 1'b0;
+                bvalid_reg <= 1'b1;
+                if (aw_addr[5])
+                    bresp_reg <= 2'b10;
+                else
+                    bresp_reg <= 2'b00;
+            end else if (bvalid_reg && bready) begin
+                bvalid_reg <= 1'b0;
+            end
+
+            if (awvalid && awready) begin
+                aw_full <= 1'b1;
+                aw_addr <= awaddr;
+            end
+
+            if (wvalid && wready) begin
+                w_full <= 1'b1;
+                w_data <= wdata;
+                w_strb <= wstrb;
+            end
+        end
+    end
+
+endmodule

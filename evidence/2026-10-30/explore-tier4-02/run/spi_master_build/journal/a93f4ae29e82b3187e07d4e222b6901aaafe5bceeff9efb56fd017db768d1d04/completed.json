@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_3:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 3\n## Contract check\n- Top interface and live `spi_master_core` instance: PASS \u2014 the required modules and ports are present, and the child is instantiated under the top.\n- Defined behavior and cycle semantics: PASS \u2014 the authoritative ladder is ALIVE and simulation passed.\n- Top latency annotation: PASS \u2014 `spi_master` declares `// @latency 33`, matching the authoritative current-top latency.\n- Typed child latency annotation: FAIL \u2014 `spi_master_core` has a typed latency contract but no numeric latency annotation.\n- Tool and verification gates: PASS \u2014 compile, elaboration, simulation, and synthesis exits succeeded; simulation reports `TEST PASSED` and synthesis reports `SYNTH_COMPLETE`.\n- Routed metrics and timing feasibility: PASS \u2014 retained routed evidence reports 17 LUTs, timing met, WNS 0.342 ns, and WHS 0.106 ns.\n- Objective improvement: PASS \u2014 LUT use decreased from 19 to 17 while both candidate and previous best are timing-feasible.\n## Summary\n- Passed: 6 of 7\n- Failed: 1 of 7\n- Improved over previous best: YES\n## Recommendation\nREJECT\n## Reason\nThe candidate improves the feasible previous best by reducing LUT use, and the deterministic verification and timing gates pass. It still fails the explicit annotation requirement for the typed `spi_master_core` child, so the mandatory criteria are not all satisfied.",
+      "recommendation": "REJECT",
+      "passed": 6,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

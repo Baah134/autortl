@@ -1,21 +1,24 @@
 """Measured curriculum runs and promotion of matching, consecutive cohorts."""
 from __future__ import annotations
 from concurrent.futures import ProcessPoolExecutor, as_completed
+from concurrent.futures.process import BrokenProcessPool
 from dataclasses import asdict
 from datetime import datetime, timezone
 import hashlib
 import json
+import math
 import os
 import re
 from pathlib import Path
 import tempfile
 import time
 import yaml
-from autortl.config import RunConfig
+from autortl.config import IMPLEMENTATIONS, RunConfig
 from autortl.fsm import Orchestrator
 from autortl.metrics_gate import validate, MetricsGateError
 from autortl.report_parser import VivadoMetrics
 from autortl.state import CheckpointLockedError, atomic_write_text
+from autortl.fileio import file_sha256, read_json
 
 ROOT = Path(__file__).resolve().parent
 RESULTS = ROOT / "results.jsonl"
@@ -24,6 +27,24 @@ OVERRIDES = {"proposal_feedback", "vivado_bin", "xvlog_bin", "xelab_bin", "xsim_
              "max_llm_calls", "max_vivado_minutes", "max_wall_minutes", "max_infra_retries", "model"}
 EXECUTOR = ProcessPoolExecutor  # for --jobs > 1; separate processes keep per-tool timing apart
 STALE_LOCK_SECONDS = 600
+# meta.yaml `budgets` keys and the run settings they set for that entry only
+# (entry_budgets_ignored_by_bench).
+ENTRY_BUDGETS = {"model_calls": "max_llm_calls", "tool_minutes": "max_vivado_minutes",
+                 "wall_minutes": "max_wall_minutes"}
+
+
+def entry_settings(meta) -> dict:
+    """Run settings an entry declares for itself in meta.yaml (already validated).
+
+    They win over the bench's tier-wide values, which apply only to entries that
+    declare none (gate_frequency_overrides_entry_meta, entry_budgets_ignored_by_bench).
+    """
+    settings = {}
+    if "target_freq_mhz" in meta:
+        settings["target_freq_mhz"] = float(meta["target_freq_mhz"])
+    for key, value in (meta.get("budgets") or {}).items():
+        settings[ENTRY_BUDGETS[key]] = value if key == "model_calls" else float(value)
+    return settings
 
 
 def _run_entry(cfg, run_dir):
@@ -40,14 +61,14 @@ def _run_entry(cfg, run_dir):
 
 
 def _hash(path):
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+    return file_sha256(path)
 
 
 def _runtime_identity(run_dir):
     """Read evidence frozen by Orchestrator, without guessing the CLI model."""
     path = run_dir / "runtime.json"
     try:
-        runtime = json.loads(path.read_text(encoding="utf-8"))
+        runtime = read_json(path)
         if not isinstance(runtime, dict) or runtime.get("schema_version") != 1:
             raise ValueError("unsupported runtime manifest")
         implementation = runtime.get("implementation")
@@ -79,6 +100,14 @@ def _runtime_identity(run_dir):
 
 
 def _accepted(summary, criteria):
+    if summary.get("status") == "target_infeasible":
+        # io_overutilization_sent_to_fixer: deterministic for the entry's configuration
+        # (top ports, part, implementation flow), so a FAIL of that configuration with
+        # this reason; not infrastructure (no verdict) and not a model failure.
+        capacity = summary.get("target_capacity") or {}
+        return False, (f"target_infeasible: the entry configuration does not fit the target "
+                       f"({capacity.get('io_ports')} I/O ports, {capacity.get('available_user_io')} "
+                       f"available user I/O on {capacity.get('part')}); not a model or infrastructure outcome")
     if summary.get("status") != "done":
         return False, "run did not complete successfully"
     try:
@@ -109,6 +138,26 @@ def _metadata(entry):
             raise ValueError(f"{entry.name}: generate_golden must be boolean")
         if meta["generate_golden"] and mode != "build":
             raise ValueError(f"{entry.name}: generate_golden=True requires build mode")
+    if "synthesis_timeout_minutes" in meta and (type(meta["synthesis_timeout_minutes"]) not in (int, float)
+                                                or not 1 <= meta["synthesis_timeout_minutes"] <= 240):
+        raise ValueError(f"{entry.name}: synthesis_timeout_minutes must be between 1 and 240")
+    if "target_freq_mhz" in meta and (type(meta["target_freq_mhz"]) not in (int, float)
+                                      or not math.isfinite(meta["target_freq_mhz"]) or meta["target_freq_mhz"] <= 0):
+        raise ValueError(f"{entry.name}: target_freq_mhz must be a positive number")
+    if "explore_budgets" in meta:
+        raise ValueError(f"{entry.name}: explore_budgets was renamed budgets")
+    if "budgets" in meta:
+        budgets = meta["budgets"]
+        if not isinstance(budgets, dict) or not budgets or set(budgets) - set(ENTRY_BUDGETS):
+            raise ValueError(f"{entry.name}: budgets may set only " + ", ".join(ENTRY_BUDGETS))
+        for key, value in budgets.items():
+            integer = key == "model_calls"
+            if (type(value) not in ((int,) if integer else (int, float)) or not math.isfinite(value)
+                    or value <= 0):
+                raise ValueError(f"{entry.name}: budgets.{key} must be a positive "
+                                 + ("integer" if integer else "number"))
+    if "implementation" in meta and meta["implementation"] not in IMPLEMENTATIONS:
+        raise ValueError(f"{entry.name}: implementation must be one of: " + ", ".join(IMPLEMENTATIONS))
     for name in ("design", "tb", "spec"):
         if name in meta:
             if not isinstance(meta[name], str):
@@ -135,46 +184,141 @@ def _history_bytes() -> bytes:
     return RESULTS.read_bytes() if RESULTS.exists() else b""
 
 
-def _commit_history(expected: bytes, history, record) -> None:
-    """Write history + record only if nobody changed the history meanwhile.
+def _grew_by_other_tiers(expected: bytes, current: bytes, tier: int) -> bool:
+    """True if current is expected plus whole records of tiers other than tier.
 
-    Benches read the history when they start and rewrite it when they end, so
-    two at once would drop one record (concurrent_bench_drops_history). A short
+    Governance for a tier reads only that tier's earlier records, so a history
+    that only grew, by records of other tiers, is still the history this
+    campaign was governed against (cross_tier_benches_serialized).
+    """
+    if not current.startswith(expected):
+        return False  # rewritten, truncated or edited: not the history we read
+    appended = current[len(expected):]
+    if not appended:
+        return True
+    if expected and not expected.endswith(b"\n"):
+        return False  # the boundary is mid-line, so the appended records are unclear
+    try:
+        records = _parse_history(appended.decode("utf-8"))
+    except ValueError:
+        return False
+    return all(r["tier"] != tier for r in records)
+
+
+def _take_lock(lock: Path) -> None:
+    """Create the lock exclusively and record this process as its owner."""
+    fd = os.open(lock, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+    try:
+        os.write(fd, str(os.getpid()).encode("ascii"))
+    finally:
+        os.close(fd)
+
+
+def _lock_owner(lock: Path) -> int | None:
+    """The process ID a lock records, or None when it records none readable."""
+    try:
+        text = lock.read_bytes()[:32].decode("ascii").strip()
+    except (OSError, UnicodeDecodeError):
+        return None
+    if not re.fullmatch(r"[1-9][0-9]{0,9}", text) or int(text) >= 2 ** 31:
+        return None
+    return int(text)
+
+
+def _process_running(pid: int) -> bool:
+    """False only when pid is known not to be running; never signals the process.
+
+    Windows: OpenProcess plus GetExitCodeProcess (os.kill would terminate it).
+    Elsewhere: kill(pid, 0), which only checks. Any doubt counts as running,
+    so an unclear lock falls back to the age rule.
+    """
+    if pid == os.getpid():
+        return True
+    if os.name == "nt":
+        import ctypes
+        from ctypes import wintypes
+        kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+        kernel32.OpenProcess.argtypes = [wintypes.DWORD, wintypes.BOOL, wintypes.DWORD]
+        kernel32.OpenProcess.restype = wintypes.HANDLE
+        kernel32.GetExitCodeProcess.argtypes = [wintypes.HANDLE, ctypes.POINTER(wintypes.DWORD)]
+        kernel32.GetExitCodeProcess.restype = wintypes.BOOL
+        kernel32.CloseHandle.argtypes = [wintypes.HANDLE]
+        kernel32.CloseHandle.restype = wintypes.BOOL
+        handle = kernel32.OpenProcess(0x1000, False, pid)  # PROCESS_QUERY_LIMITED_INFORMATION
+        if not handle:
+            return ctypes.get_last_error() != 87  # ERROR_INVALID_PARAMETER: no such process
+        try:
+            code = wintypes.DWORD()
+            if not kernel32.GetExitCodeProcess(handle, ctypes.byref(code)):
+                return True
+            return code.value == 259  # STILL_ACTIVE
+        finally:
+            kernel32.CloseHandle(handle)
+    try:
+        os.kill(pid, 0)
+    except ProcessLookupError:
+        return False
+    except OSError:
+        return True
+    return True
+
+
+def _commit_history(expected: bytes, record) -> None:
+    """Append record only if the history is unchanged for this record's tier.
+
+    Benches read the history when they start and write it when they end, so
+    two at once could drop one record (concurrent_bench_drops_history). A short
     exclusive lock covers the compare and the write; a conflict fails closed and
-    leaves this campaign's record in its own summary.json.
+    leaves this campaign's record in its own summary.json. Records of other
+    tiers appended meanwhile are kept and are no conflict
+    (cross_tier_benches_serialized); the earlier bytes are never re-serialized.
     """
     lock = RESULTS.with_name(RESULTS.name + ".lock")
     try:
-        os.close(os.open(lock, os.O_CREAT | os.O_EXCL | os.O_WRONLY))
+        _take_lock(lock)
     except FileExistsError as exc:
-        # The locked section takes milliseconds; an old lock was left by a crashed
-        # bench (stale_history_lock_blocks_benches) and is replaced once.
+        # The locked section takes milliseconds; a lock whose owner is gone
+        # (dead_bench_lock_blocks_until_stale) or an old one without a readable
+        # owner was left by a crashed bench (stale_history_lock_blocks_benches)
+        # and is replaced once.
         try:
             age = time.time() - lock.stat().st_mtime
         except OSError:
             age = 0
-        if age <= STALE_LOCK_SECONDS:
+        owner = _lock_owner(lock)
+        if owner is not None and not _process_running(owner):
+            print(f"[bench] replacing a history lock left by process {owner}, which is no longer running")
+        elif age > STALE_LOCK_SECONDS:
+            print(f"[bench] replacing a stale history lock ({age / 60:.0f} minutes old)")
+        else:
             raise HistoryConflictError(f"{lock} exists: another bench is writing the history") from exc
-        print(f"[bench] replacing a stale history lock ({age / 60:.0f} minutes old)")
         lock.unlink(missing_ok=True)
         try:
-            os.close(os.open(lock, os.O_CREAT | os.O_EXCL | os.O_WRONLY))
+            _take_lock(lock)
         except FileExistsError as again:
             raise HistoryConflictError(f"{lock} exists: another bench is writing the history") from again
     try:
-        if _history_bytes() != expected:
+        current = _history_bytes()
+        if not _grew_by_other_tiers(expected, current, record["tier"]):
             raise HistoryConflictError("curriculum history changed during this campaign; "
                                        "run benches one at a time")
-        atomic_write_text(RESULTS, "".join(json.dumps(r, default=str) + "\n" for r in history + [record]))
+        text = current.decode("utf-8")
+        if text and not text.endswith("\n"):
+            text += "\n"
+        atomic_write_text(RESULTS, text + json.dumps(record, default=str) + "\n")
     finally:
         lock.unlink(missing_ok=True)
 
 
 def _history():
-    records = []
     if not RESULTS.exists():
-        return records
-    for number, line in enumerate(RESULTS.read_text(encoding="utf-8").splitlines(), 1):
+        return []
+    return _parse_history(RESULTS.read_text(encoding="utf-8"))
+
+
+def _parse_history(text):
+    records = []
+    for number, line in enumerate(text.splitlines(), 1):
         if not line.strip():
             continue
         try:
@@ -255,11 +399,22 @@ def run_tier(tier: int, **overrides) -> int:
                   "objective": meta.get("objective", "minimize_luts"),
                   "target_freq_mhz": meta.get("target_freq_mhz", 100.0),
                   "max_iterations": meta.get("iterations", 5),
-                  "generate_golden": meta.get("generate_golden", False)}
+                  "generate_golden": meta.get("generate_golden", False),
+                  # chip_top_flow_for_soc_block: part of the entry configuration and the cohort.
+                  "implementation": meta.get("implementation", "chip_top"),
+                  "synthesis_timeout_minutes": meta.get("synthesis_timeout_minutes", 15.0)}
         for key, field in (("design", "design_path"), ("tb", "testbench_path"), ("spec", "spec_path")):
             if meta.get(key):
                 config[field] = (entry / meta[key]).resolve()
         config.update(overrides)
+        # The entry's own frequency and budgets win over the bench's tier-wide values;
+        # the effective values are in the snapshot and so in the cohort.
+        declared = entry_settings(meta)
+        for field, value in declared.items():
+            if field in overrides and overrides[field] != value:
+                print(f"[bench] {entry.name}: meta.yaml sets {field} = {value}; "
+                      f"the bench value {overrides[field]} does not apply to it", flush=True)
+        config.update(declared)
         cfg = RunConfig(**config)
         cfg.validate()
         snapshot = json.loads(json.dumps(asdict(cfg), default=str))
@@ -279,6 +434,11 @@ def run_tier(tier: int, **overrides) -> int:
             for future in as_completed(futures):
                 try:
                     summaries[futures[future]] = future.result()
+                except BrokenProcessPool as exc:
+                    # dead_worker_pool_recorded_as_fail: a worker killed by the host (a stop,
+                    # out of memory) judged nothing, so the campaign gets no verdict.
+                    summaries[futures[future]] = {"status": "infra_blocked", "failure_kind": "infra",
+                                                  "error": "worker process terminated: " + str(exc)[:400]}
                 except BaseException as exc:  # a dead worker process still yields a record
                     summaries[futures[future]] = {"status": "exception", "error": type(exc).__name__ + ": " + str(exc)[:500]}
                 print(f"[bench] {futures[future]}: finished ({len(summaries)}/{len(prepared)})", flush=True)
@@ -355,7 +515,7 @@ def run_tier(tier: int, **overrides) -> int:
         return 3
     atomic_write_text(campaign / "summary.json", json.dumps(rec, indent=2, default=str))
     try:
-        _commit_history(history_bytes, history, rec)
+        _commit_history(history_bytes, rec)
     except HistoryConflictError as exc:
         # Infrastructure: nothing enters the history; the record stays in summary.json.
         print(f"[bench] history not updated: {exc}; record kept in {campaign / 'summary.json'}")

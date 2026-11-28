@@ -1,0 +1,5 @@
+{
+  "stage": "module_crc16_stream_core:model:generator.golden_model:0",
+  "result": "def init():\n    return dict(F=65535)\n\ndef step(state, inputs):\n    outputs = dict()\n    if inputs.get(\"rst\", 0):\n        state[\"F\"] = 65535\n        outputs[\"out_crc\"] = 0\n        outputs[\"out_last\"] = 0\n        return state, outputs\n\n    value = (state.get(\"F\", 65535) ^ ((int(inputs.get(\"in_data\", 0)) & 255) << 8)) & 65535\n    for bit in range(8):\n        if value & 32768:\n            value = ((value << 1) ^ 4129) & 65535\n        else:\n            value = (value << 1) & 65535\n\n    last = int(bool(inputs.get(\"in_last\", 0)))\n    outputs[\"out_crc\"] = value\n    outputs[\"out_last\"] = last\n    if last:\n        state[\"F\"] = 65535\n    else:\n        state[\"F\"] = value\n    return state, outputs",
+  "artifacts": {}
+}

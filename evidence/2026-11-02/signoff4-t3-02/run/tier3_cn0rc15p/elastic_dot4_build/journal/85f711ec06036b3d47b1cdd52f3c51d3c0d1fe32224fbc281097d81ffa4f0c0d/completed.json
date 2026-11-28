@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_2:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 2\n## Contract check\n- Top interface, defined behavior, and latency annotation: PASS \u2014 source preserves the specified two-stage behavior and has the required top `// @latency 2`.\n- Deterministic verification and tool gates: PASS \u2014 ladder is ALIVE; simulation passed, and required tool exits succeeded.\n- Routed metrics and metric integrity: PASS \u2014 routed reports are retained; LUTs=20, FFs=20, WNS=0.105 ns, WHS=0.18 ns.\n- Timing closure: PASS \u2014 timing is feasible with nonnegative setup and hold slack.\n- Objective improvement over previous best: FAIL \u2014 both have LUTs=20 and FFs=20, so the `minimize_luts` lexicographic objective did not strictly improve; recorded `improvement_kind` is null.\n## Summary\n- Passed: 4 of 5\n- Failed: 1 of 5\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes behavioral verification, required tool and report gates, and timing closure, but the previous best is already timing-feasible and has identical LUT and FF counts. The contract requires a strict objective improvement when both designs are timing-feasible, so this candidate cannot replace the previous best.",
+      "recommendation": "REJECT",
+      "passed": 4,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

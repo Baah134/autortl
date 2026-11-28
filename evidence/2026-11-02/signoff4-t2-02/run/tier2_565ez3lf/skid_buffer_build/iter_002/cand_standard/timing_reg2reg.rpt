@@ -1,0 +1,72 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025
+| Date         : Tue Nov  3 02:06:21 2026
+| Host         : Baah running 64-bit major release  (build 9200)
+| Command      : report_timing -from [all_registers] -to [all_registers] -max_paths 1 -file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t2-02/tier2_565ez3lf/skid_buffer_build/iter_002/cand_standard/timing_reg2reg.rpt
+| Design       : skid_buffer
+| Device       : 7a35t-cpg236
+| Speed File   : -1  PRODUCTION 1.23 2018-06-13
+| Design State : Routed
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Timing Report
+
+Slack (MET) :             4.918ns  (required time - arrival time)
+  Source:                 u_skid_buffer_core/tail_valid_reg/C
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            u_skid_buffer_core/head_reg[7]/CE
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            10.000ns  (clk rise@10.000ns - clk rise@0.000ns)
+  Data Path Delay:        4.613ns  (logic 0.741ns (16.062%)  route 3.872ns (83.938%))
+  Logic Levels:           1  (LUT5=1)
+  Clock Path Skew:        -0.020ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    4.276ns = ( 14.276 - 10.000 ) 
+    Source Clock Delay      (SCD):    4.632ns
+    Clock Pessimism Removal (CPR):    0.336ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+    M18                                               0.000     0.000 r  clk (IN)
+                         net (fo=0)                   0.000     0.000    clk
+    M18                  IBUF (Prop_ibuf_I_O)         0.938     0.938 r  clk_IBUF_inst/O
+                         net (fo=1, routed)           1.972     2.910    clk_IBUF
+    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.096     3.006 r  clk_IBUF_BUFG_inst/O
+                         net (fo=18, routed)          1.626     4.632    u_skid_buffer_core/CLK
+    SLICE_X3Y19          FDRE                                         r  u_skid_buffer_core/tail_valid_reg/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X3Y19          FDRE (Prop_fdre_C_Q)         0.419     5.051 r  u_skid_buffer_core/tail_valid_reg/Q
+                         net (fo=13, routed)          1.755     6.806    u_skid_buffer_core/tail_valid
+    SLICE_X0Y12          LUT5 (Prop_lut5_I1_O)        0.322     7.128 r  u_skid_buffer_core/head[7]_i_1/O
+                         net (fo=8, routed)           2.118     9.245    u_skid_buffer_core/head[7]_i_1_n_0
+    SLICE_X0Y16          FDRE                                         r  u_skid_buffer_core/head_reg[7]/CE
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)       10.000    10.000 r  
+    M18                                               0.000    10.000 r  clk (IN)
+                         net (fo=0)                   0.000    10.000    clk
+    M18                  IBUF (Prop_ibuf_I_O)         0.805    10.805 r  clk_IBUF_inst/O
+                         net (fo=1, routed)           1.868    12.673    clk_IBUF
+    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.091    12.764 r  clk_IBUF_BUFG_inst/O
+                         net (fo=18, routed)          1.512    14.276    u_skid_buffer_core/CLK
+    SLICE_X0Y16          FDRE                                         r  u_skid_buffer_core/head_reg[7]/C
+                         clock pessimism              0.336    14.612    
+                         clock uncertainty           -0.035    14.577    
+    SLICE_X0Y16          FDRE (Setup_fdre_C_CE)      -0.413    14.164    u_skid_buffer_core/head_reg[7]
+  -------------------------------------------------------------------
+                         required time                         14.164    
+                         arrival time                          -9.245    
+  -------------------------------------------------------------------
+                         slack                                  4.918    
+
+
+
+

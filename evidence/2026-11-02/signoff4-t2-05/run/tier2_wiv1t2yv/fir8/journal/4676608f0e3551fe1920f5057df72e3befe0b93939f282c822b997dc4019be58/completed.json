@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_6:decision:instruction:0",
+  "result": "In `fir8`, retain `x_d`, `p0`\u2013`p7`, `acc1`\u2013`acc7`, `y_out`, the sequential reset and update structure, and `// @latency 1`. Isolate each existing 32-bit accumulation expression (`p6 + acc7` through `p1 + acc2`, and `p0 + acc1`) as a signed 32-bit sum wire with `(* use_dsp = \"no\" *)`, then register that sum into the same destination on the same edge; leave `acc7 <= p7` unchanged. Preserve the full 32-bit wraparound and verify that the mapped path no longer cascades through multiple DSP48E1s, while checking simulation, routed setup and hold, and reg-to-reg WNS against the 1.387 ns incumbent.",
+  "artifacts": {}
+}

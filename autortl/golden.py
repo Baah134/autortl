@@ -7,6 +7,7 @@ so a wrong oracle is caught at spec time, not after it grades everything.
 from __future__ import annotations
 import json
 import os
+import re
 import subprocess
 import sys
 import tempfile
@@ -84,6 +85,8 @@ def validate_examples(spec: ModuleSpec, *, require_anchors=False) -> list[str]:
         return ["generated oracle requires at least one concrete specification example"]
     inputs = {p.name:p for p in spec.ports if p.direction == "input" and p.name != "clk"}
     outputs = {p.name:p for p in spec.ports if p.direction == "output" and p.protocol == "none"}
+    # Each example of a resetless module first replays its init prefix.
+    prefix = len(spec.init_rows())
     steps = 0
     for index, example in enumerate(examples):
         label = f"example {index}"
@@ -91,12 +94,19 @@ def validate_examples(spec: ModuleSpec, *, require_anchors=False) -> list[str]:
         if type(cycles) is not int or not 1 <= cycles <= 10000:
             errors.append(label + ": after_cycles must be an integer in 1..10000")
         else:
-            steps += cycles
+            steps += cycles + prefix
         given, expected = getattr(example, "inputs", None), getattr(example, "expected", None)
         if not isinstance(given, dict) or not set(given).issubset(inputs):
-            errors.append(label + ": inputs must contain only declared non-clock input ports")
+            # unnamed_example_input_error: name the stray keys and the allowed ones.
+            stray = sorted(set(given) - set(inputs)) if isinstance(given, dict) else []
+            errors.append(label + ": inputs must contain only declared non-clock input ports"
+                          + (f" (not inputs of this module: {stray}; allowed: {sorted(inputs)})"
+                             if stray else ""))
         if not isinstance(expected, dict) or not expected or set(expected) != set(outputs):
-            errors.append(label + ": expected must cover exactly all data output ports and be nonempty")
+            # payload_ports_tagged_valid_ready: name the ports so a planner can repair.
+            errors.append(label + ": expected must cover exactly all data output ports and be nonempty"
+                          f" (data outputs are the protocol none outputs: {sorted(outputs) or 'none declared'};"
+                          " tag only valid/ready handshake ports valid_ready, payload ports none)")
         for mapping, ports, kind in ((given,inputs,"input"),(expected,outputs,"expected")):
             if isinstance(mapping, dict):
                 for name, value in mapping.items():
@@ -108,12 +118,18 @@ def validate_examples(spec: ModuleSpec, *, require_anchors=False) -> list[str]:
 
 
 def qualify_against_examples(gm: GoldenModel, spec: ModuleSpec) -> list[str]:
-    """Run the spec's concrete IO examples through the golden model."""
+    """Run the spec's concrete IO examples through the golden model.
+
+    Examples start from the reset state: fresh init(), or for a module without a
+    reset port, fresh init() followed by the unchecked init_cycles prefix that the
+    generated testbench also drives (resetless_sequential_unrepresentable).
+    """
     errs = validate_examples(spec)
     if errs:
         return errs
+    prefix = spec.init_rows()
     for i, ex in enumerate(spec.examples):
-        stim = [dict(ex.inputs)] + [dict(ex.inputs)] * max(0, ex.after_cycles - 1)
+        stim = prefix + [dict(ex.inputs)] + [dict(ex.inputs)] * max(0, ex.after_cycles - 1)
         outs = gm.run(stim)
         final = outs[-1] if outs else {}
         for k, v in ex.expected.items():
@@ -121,3 +137,18 @@ def qualify_against_examples(gm: GoldenModel, spec: ModuleSpec) -> list[str]:
                 errs.append(f"example {i}: expected {k}={v}, golden model gave "
                             f"{final.get(k)}")
     return errs
+
+
+_MISMATCH = re.compile(r"example \d+: expected [A-Za-z_][A-Za-z0-9_$]*=\d+, golden model gave .{0,200}")
+
+
+def only_example_mismatches(errors: list[str], spec: ModuleSpec) -> bool:
+    """True when qualify_against_examples rejected a runnable oracle only on example values.
+
+    The spec's examples must be valid (so no line is a validation error) and every
+    line must be a mismatch in the exact format above. Sandbox, validation and
+    timeout failures raise instead and never reach this check
+    (oracle_example_dispute_ends_build).
+    """
+    return (bool(errors) and not validate_examples(spec)
+            and all(isinstance(line, str) and _MISMATCH.fullmatch(line) for line in errors))

@@ -1,0 +1,5 @@
+{
+  "stage": "module_rv_imem:model:generator.generate:0",
+  "result": "`timescale 1ns/1ps\n// @latency 1\nmodule rv_imem (\n    input wire clk,\n    input wire rst,\n    input wire imem_we,\n    input wire [5:0] imem_waddr,\n    input wire [31:0] imem_wdata,\n    input wire [5:0] imem_raddr,\n    output wire [31:0] imem_rdata\n);\n\n    reg [31:0] mem [0:63];\n    reg [31:0] imem_rdata_reg;\n    integer i;\n\n    assign imem_rdata = imem_rdata_reg;\n\n    always @(posedge clk) begin\n        if (rst) begin\n            for (i = 0; i < 64; i = i + 1)\n                mem[i] <= 32'b0;\n            imem_rdata_reg <= 32'b0;\n        end else begin\n            imem_rdata_reg <= mem[imem_raddr];\n            if (imem_we)\n                mem[imem_waddr] <= imem_wdata;\n        end\n    end\n\nendmodule",
+  "artifacts": {}
+}

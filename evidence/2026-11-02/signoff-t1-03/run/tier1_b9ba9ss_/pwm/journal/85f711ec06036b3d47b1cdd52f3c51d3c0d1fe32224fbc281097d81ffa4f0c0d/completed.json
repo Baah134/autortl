@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_2:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 2\n## Contract check\n- Observable behavior and interface: PASS \u2014 The 8-bit counter preserves the frozen 32-bit counter\u2019s 0\u2013255 sequence, reset behavior, registered output, and cycle behavior; ports match.\n- Top latency annotation: PASS \u2014 Authoritative `declared_latency.known=false`; no numeric annotation is required.\n- Deterministic verification: PASS \u2014 Ladder is ALIVE; compile, elaboration, and simulation exits succeeded, and simulation reports `TEST PASSED`.\n- Routed reports and metric integrity: PASS \u2014 Retained routed reports and successful synthesis evidence are provided.\n- Timing closure: PASS \u2014 Candidate timing is feasible with WNS 0.463 ns and WHS 0.227 ns.\n- Objective improvement: FAIL \u2014 Both candidate and previous best are timing-feasible; for `minimize_luts`, LUTs increased from 7 to 10 while FFs stayed at 9. No strict objective improvement is established.\n## Summary\n- Passed: 5 of 6\n- Failed: 1 of 6\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate preserves observable behavior and passes verification and timing closure, but the previous best was already timing-feasible and used fewer LUTs (7 versus 10) with the same FF count. It therefore fails the required strict `minimize_luts` improvement criterion.",
+      "recommendation": "REJECT",
+      "passed": 5,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

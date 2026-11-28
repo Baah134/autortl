@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_1:decision:instruction:0",
+  "result": "Replace the 32-bit `counter` with an 8-bit counter and use its natural modulo-256 overflow instead of the `counter == 255` reset mux. Keep `pwm_out` registered from the pre-edge counter comparison against `duty`, and preserve the synchronous reset of both registers. This relies on the counter starting at zero and reaching no values above 255; verify that cycle behavior and reset behavior remain identical, then retain the candidate only if all gates pass and LUT count is strictly lower than the incumbent.",
+  "artifacts": {}
+}

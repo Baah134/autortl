@@ -7,6 +7,8 @@ import json
 from pathlib import Path
 from unittest.mock import Mock
 
+import pytest
+
 from autortl import prompts
 from tests.test_fsm_build import ROOT, create
 
@@ -89,3 +91,162 @@ def test_a_spec_that_crashes_the_loader_is_repaired_and_the_planner_sees_it(tmp_
 def test_spec_prompt_states_the_example_budget():
     # spec_prompt_omits_example_budget: the oracle sandbox cannot run full UART frames
     assert "after_cycles at or below 2000" in prompts.SPEC_PROMPT
+
+
+def test_per_cycle_example_lists_go_back_to_the_planner(tmp_path, monkeypatch):
+    # spec_example_values_skip_planner_repair (tier1-campaign-04 debouncer_build)
+    o, _ = create(tmp_path, monkeypatch)
+    prose(tmp_path, o)
+    spec = json.loads(GOOD)
+    example = spec["modules"][0]["examples"][0]
+    name = next(iter(example["expected"]))
+    example["expected"][name] = [0, 0, 1]
+    planner = Mock(side_effect=[json.dumps(spec), GOOD])
+    monkeypatch.setattr(o.planner, "make_spec", planner)
+    assert o.run()["status"] == "done"
+    assert "must be a masked port integer" in planner.call_args_list[1].kwargs["feedback"]
+
+
+def test_spec_prompt_states_example_values_are_held_integers():
+    assert "never a per-cycle list" in prompts.SPEC_PROMPT
+
+
+def test_spec_prompt_forbids_behavior_the_request_does_not_state():
+    # planner_spec_error_shared_by_oracle_and_rtl (final-02 Prob066 reset, Prob139 sampling phase)
+    text = " ".join(prompts.SPEC_PROMPT.split())
+    assert "never add behavior it does not state" in text
+    assert "keeps following it during reset unless the request says reset clears it" in text
+    assert "Keep the request's own timing words" in text
+    prompts.SPEC_PROMPT.format(intent="x", target_part="p", target_freq_mhz=1, objective="minimize_luts")
+
+
+def test_example_error_names_the_data_outputs_and_the_prompt_states_the_tagging_rule():
+    # payload_ports_tagged_valid_ready (explore-tier3-02 uart_fifo_build)
+    from autortl.golden import validate_examples
+    from autortl.spec import DesignSpec
+    spec = DesignSpec.from_json(GOOD)
+    module = spec.modules[0]
+    module.examples[0].expected = {}
+    names = sorted(p.name for p in module.ports if p.direction == "output" and p.protocol == "none")
+    errors = validate_examples(module)
+    assert any(str(names) in e and "payload ports none" in e for e in errors)
+    assert "payload ports such as in_data and out_data are protocol none" in prompts.SPEC_PROMPT
+
+
+def test_generated_oracle_shape_errors_go_back_to_the_planner(tmp_path, monkeypatch):
+    # fixed_latency_handshake_found_at_oracle: checked only when an oracle will be generated
+    from autortl import fsm
+    o, _ = create(tmp_path, monkeypatch)
+    prose(tmp_path, o)
+    o.cfg.generate_golden = True
+    shapes = Mock(side_effect=[["fixed latency does not accept handshake ports"], []])
+    monkeypatch.setattr(fsm, "tb_shape_errors", shapes)
+    planner = Mock(side_effect=[GOOD, GOOD])
+    monkeypatch.setattr(o.planner, "make_spec", planner)
+    class LintPassed(Exception):
+        pass
+    monkeypatch.setattr(fsm, "write_stub_project", Mock(side_effect=LintPassed))
+    import pytest
+    with pytest.raises(LintPassed):  # stop before the fixture's forbidden oracle
+        o.run()
+    assert planner.call_count == 2
+    assert "fixed latency does not accept handshake ports" in \
+        planner.call_args_list[1].kwargs["feedback"]
+
+
+def test_trusted_testbench_single_module_skips_oracle_shape_rules(tmp_path, monkeypatch):
+    from autortl import fsm
+    o, _ = create(tmp_path, monkeypatch)
+    prose(tmp_path, o)
+    shapes = Mock(return_value=["should not be consulted"])
+    monkeypatch.setattr(fsm, "tb_shape_errors", shapes)
+    monkeypatch.setattr(o.planner, "make_spec", Mock(return_value=GOOD))
+    assert o.run()["status"] == "done"
+    shapes.assert_not_called()
+
+
+def test_example_input_error_names_stray_and_allowed_ports():
+    # unnamed_example_input_error (explore-tier3-06 uart_fifo_build)
+    from autortl.golden import validate_examples
+    from autortl.spec import DesignSpec
+    module = DesignSpec.from_json(GOOD).modules[0]
+    module.examples[0].inputs = dict(module.examples[0].inputs, not_a_port=1)
+    allowed = sorted(p.name for p in module.ports if p.direction == "input" and p.name != "clk")
+    errors = validate_examples(module)
+    assert any("not inputs of this module: ['not_a_port']" in e and str(allowed) in e for e in errors)
+
+
+def test_planner_must_use_the_requested_top_name(tmp_path, monkeypatch):
+    # requested_top_not_enforced: the trusted testbench instantiates the requested top
+    o, _ = create(tmp_path, monkeypatch)
+    prose(tmp_path, o)
+    o.cfg.top_module = "counter8"
+    renamed = json.loads(GOOD)
+    renamed["top_name"] = "counter8_wrapper"
+    planner = Mock(side_effect=[json.dumps(renamed), GOOD])
+    monkeypatch.setattr(o.planner, "make_spec", planner)
+    assert o.run()["status"] == "done"
+    assert "top_name must be 'counter8'" in planner.call_args_list[1].kwargs["feedback"]
+
+
+def test_single_module_build_may_name_its_module_after_the_request(tmp_path, monkeypatch):
+    o, _ = create(tmp_path, monkeypatch)
+    prose(tmp_path, o)
+    spec = json.loads(GOOD)
+    o.cfg.top_module = spec["modules"][0]["name"]
+    monkeypatch.setattr(o.planner, "make_spec", Mock(return_value=GOOD))
+    assert o.run()["status"] == "done"
+
+
+def test_load_error_asks_for_the_complete_spec(tmp_path, monkeypatch):
+    # partial_spec_in_repair (explore-tier3-05/-06 uart_fifo_build)
+    o, _ = create(tmp_path, monkeypatch)
+    prose(tmp_path, o)
+    planner = Mock(side_effect=['{"top_name": "counter8"}', GOOD])
+    monkeypatch.setattr(o.planner, "make_spec", planner)
+    assert o.run()["status"] == "done"
+    assert "return the complete design_spec JSON object" in planner.call_args_list[1].kwargs["feedback"]
+
+
+MULTI = (ROOT / "curriculum/tier3/dot4_pipeline_build/design_spec.json").read_text(encoding="utf-8")
+
+
+def test_multi_module_plan_without_trusted_testbench_goes_back_to_the_planner(tmp_path, monkeypatch):
+    # multi_module_plan_without_trusted_tb (final-02 Prob131_mt2015_q4): without a trusted
+    # integration testbench the plan must be one module; it used to stop late as build_blocked
+    # after every module had been generated and verified.
+    o, synthesis = create(tmp_path, monkeypatch)
+    prose(tmp_path, o)
+    o.cfg.testbench_path = None
+    planner = Mock(return_value=MULTI)
+    monkeypatch.setattr(o.planner, "make_spec", planner)
+    result = o.run()
+    assert result["status"] == "spec_lint_failed"
+    assert any("no trusted integration testbench" in e for e in result["errors"])
+    feedback = planner.call_args_list[1].kwargs["feedback"]
+    assert "exactly one module" in feedback and "this spec has 3" in feedback
+    assert planner.call_count == 1 + o.cfg.max_fix_attempts
+    synthesis.assert_not_called()
+
+
+def test_multi_module_plan_with_trusted_testbench_is_not_flagged(tmp_path, monkeypatch):
+    o, _ = create(tmp_path, monkeypatch)
+    prose(tmp_path, o)
+    o.cfg.top_module = "counter8"  # MULTI's top differs, so lint fails without building
+    monkeypatch.setattr(o.planner, "make_spec", Mock(return_value=MULTI))
+    result = o.run()
+    assert result["status"] == "spec_lint_failed"
+    assert not any("no trusted integration testbench" in e for e in result["errors"])
+
+
+@pytest.mark.parametrize("code, status, kind", [("MODEL_TOOL_USE", "model_tool_use", "design"),
+                                                ("CODEX_QUOTA", "model_blocked", "infra")])
+def test_tool_using_reply_is_a_model_failure_not_infrastructure(tmp_path, monkeypatch, code, status, kind):
+    # agy_endpoint_uses_tools: only a tool-using reply leaves the infrastructure class
+    from llm.client import ModelCallError
+    o, synthesis = create(tmp_path, monkeypatch)
+    prose(tmp_path, o)
+    monkeypatch.setattr(o.planner, "make_spec", Mock(side_effect=ModelCallError("planner", code)))
+    result = o.run()
+    assert (result["status"], result["failure_kind"], result["error_code"]) == (status, kind, code)
+    synthesis.assert_not_called()

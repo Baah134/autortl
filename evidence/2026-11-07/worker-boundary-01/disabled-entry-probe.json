@@ -1,0 +1,50 @@
+{
+  "method": "Complete explicitly disabled MCP entries use an inert nonexistent command for schema-valid transport. mcp list only; no servers/models started.",
+  "cases": [
+    {
+      "case": "empty_map",
+      "exit": 0,
+      "server_count": 1,
+      "servers": [
+        {
+          "name": "node_repl",
+          "enabled": true
+        }
+      ],
+      "invalid_transport": false
+    },
+    {
+      "case": "complete_disabled_node",
+      "exit": 0,
+      "server_count": 1,
+      "servers": [
+        {
+          "name": "node_repl",
+          "enabled": false
+        }
+      ],
+      "invalid_transport": false
+    },
+    {
+      "case": "complete_disabled_known",
+      "exit": 0,
+      "server_count": 3,
+      "servers": [
+        {
+          "name": "codex_app",
+          "enabled": false
+        },
+        {
+          "name": "cua_repl",
+          "enabled": false
+        },
+        {
+          "name": "node_repl",
+          "enabled": false
+        }
+      ],
+      "invalid_transport": false
+    }
+  ],
+  "limits": "Known configured names only; not a complete exec tool-catalog proof."
+}

@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_3:decision:instruction:0",
+  "result": "In `uart_rx_core`, replace the `frame_data[bit_index - 1'b1] <= majority` variable-index write in the data-bit decision branch with a right shift that inserts `majority` at bit 7; keep the existing start-bit, stop-bit, and decision-cycle conditions. Preserve the reset and frame-start clear, and verify that the final byte remains LSB-first for every supported `OVERSAMPLE_DIV`. Keep the iteration 1 FIFO output register behavior so the routed timing closure is retained; do not change the top interface or add latency.",
+  "artifacts": {}
+}

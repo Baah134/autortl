@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_3:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 3\n## Contract check\n- Defined behavior and integration simulation: PASS \u2014 authoritative ladder is ALIVE; xsim reports TEST PASSED.\n- Interface, compilation, and elaboration: PASS \u2014 candidate defines `axil_regs`; xvlog and xelab exited successfully.\n- Top latency annotation: PASS \u2014 authoritative top latency is unknown, so no numeric annotation is required.\n- Synthesis and routed metric integrity: PASS \u2014 required tool exits succeeded, SYNTH_COMPLETE is present, and routed reports are retained.\n- Timing feasibility: PASS \u2014 timing_met=true, WNS=5.441 ns, and WHS=0.134 ns.\n- Improvement over previous best: FAIL \u2014 both designs are timing-feasible, but LUTs and FFs are unchanged; the minimize_luts objective requires strict lexicographic improvement.\n## Summary\n- Passed: 5 of 6\n- Failed: 1 of 6\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes behavioral, implementation, metric, and timing gates, and its missing top latency annotation is permitted because authoritative top latency is unknown. However, the previous best is already timing-feasible and the candidate has identical LUT and FF counts, so it does not meet the required minimize_luts improvement criterion.",
+      "recommendation": "REJECT",
+      "passed": 5,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

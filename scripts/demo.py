@@ -14,7 +14,6 @@ measurement.
 from __future__ import annotations
 import argparse
 from contextlib import contextmanager
-import hashlib
 import json
 from pathlib import Path
 import socket
@@ -29,6 +28,7 @@ from autortl.config import RunConfig  # noqa: E402
 from autortl.report_parser import VivadoMetrics  # noqa: E402
 from autortl.roles import Evaluation  # noqa: E402
 from autortl.triage import FailureKind  # noqa: E402
+from autortl.fileio import file_sha256
 
 DESIGN = ROOT / "curriculum" / "tier0" / "mux4"
 BANNER = "SIMULATED WALKTHROUGH: no model, no Vivado. The numbers below are fixed stand-ins and measure nothing."
@@ -62,7 +62,7 @@ def _receipts(work, tools):
                                      "cwd": str(work.resolve()), "pid": 1, "status": "exited", "returncode": 0,
                                      "driver_returncode": 0, "elapsed_seconds": 0,
                                      "output_log_path": str(log.resolve()),
-                                     "output_log_sha256": hashlib.sha256(log.read_bytes()).hexdigest()}) + "\n")
+                                     "output_log_sha256": file_sha256(log)}) + "\n")
 
 
 def _compile(files, cfg, work, **kwargs):

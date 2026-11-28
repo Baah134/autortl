@@ -1,0 +1,5 @@
+{
+  "stage": "module_signed_fir4_core:model:generator.golden_model:0",
+  "result": "def init():\n    return dict(history=[0, 0, 0])\n\ndef step(state, inputs):\n    outputs = dict()\n    if inputs.get(\"rst\", 0):\n        state[\"history\"] = [0, 0, 0]\n        outputs[\"out_data\"] = 0\n        return state, outputs\n\n    history = state.get(\"history\", [0, 0, 0])\n    sample = int(inputs.get(\"x\", 0)) & 255\n    if sample >= 128:\n        sample = sample - 256\n\n    result = 3 * sample - 5 * history[0] + 7 * history[1] - 2 * history[2]\n    state[\"history\"] = [sample, history[0], history[1]]\n    outputs[\"out_data\"] = result & 8191\n    return state, outputs",
+  "artifacts": {}
+}

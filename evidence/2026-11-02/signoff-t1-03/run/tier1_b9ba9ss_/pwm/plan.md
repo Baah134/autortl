@@ -1,0 +1,9 @@
+# PLAN — iteration 5
+## Current state assessment
+The verified incumbent is already timing-feasible at 7 LUTs and 9 FFs, so this iteration must strictly reduce LUTs to improve the objective. The last three proposals were rejected despite passing behavior and timing; they changed counter width or update encoding without beating the incumbent. The top latency is unknown, and the source’s registered output, synchronous reset, and exact cycle behavior remain fixed.
+
+## Hypothesis
+Expressing the 8-bit PWM comparison as two 4-bit comparisons with an explicit high-nibble equality select may map the comparator into fewer LUTs while preserving the registered result.
+
+## Instruction for generator
+Keep the counter and its update unchanged; replace only `pwm_out <= (counter < {24'd0, duty});` with a 4-bit high-nibble less-than comparison, combined with a low-nibble less-than comparison when the high nibbles are equal. Preserve the comparison against the current counter value and the existing clocked assignment, reset behavior, and output registration. Do not add a numeric latency annotation; retain the candidate only if all deterministic and routed gates pass and LUT usage is strictly below 7.

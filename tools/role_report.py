@@ -86,6 +86,7 @@ def summarize(run):
             "errors": summary.get("errors") or ([summary["error"]] if summary.get("error") else []),
             "model_calls": budget.get("llm_calls"), "vivado_seconds": budget.get("vivado_seconds"),
             "tokens": budget.get("tokens"),
+            "calls_without_token_usage": budget.get("calls_without_token_usage") or 0,
             "baseline_lut": baseline.get("lut_used"), "best_lut": best.get("lut_used"),
             "best_iteration": summary.get("best_iteration"), "roles": calls,
             "repairs": {label: calls.get(method, {}).get("completed", 0)
@@ -102,6 +103,8 @@ def render(reports):
         repairs = ", ".join(f"{k} {v}" for k, v in r["repairs"].items() if v) or "—"
         tokens = r["tokens"] or {}
         spent = (f"{tokens.get('input_tokens', 0):,} / {tokens.get('output_tokens', 0):,}" if tokens else "—")
+        if r.get("calls_without_token_usage"):  # command_endpoint_tokens_reported_as_zero
+            spent += f" (incomplete: {r['calls_without_token_usage']} calls unreported)"
         lines.append(f"| {r['run']} | {r['status']} | {r['model_calls'] if r['model_calls'] is not None else '—'} | {spent} | "
                      f"{r['baseline_lut'] if r['baseline_lut'] is not None else '—'} | "
                      f"{r['best_lut'] if r['best_lut'] is not None else '—'} | {verdicts} | {repairs} |")

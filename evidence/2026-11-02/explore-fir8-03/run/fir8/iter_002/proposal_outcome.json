@@ -1,0 +1,77 @@
+{
+  "candidates": [
+    {
+      "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-fir8-03\\fir8\\iter_002\\cand_standard",
+      "cache_hit": false,
+      "final_code_hash": "123c267734724173",
+      "final_source_sha256": "42a7950cc2ad736d94291c80183dfc9dd7a0cd8a9ef41db8afd827852a054583",
+      "flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-fir8-03\\fir8\\iter_002\\cand_standard\\synth.tcl",
+        "sha256": "c7392b13e836741eeb3ac0952bd8a2a67ad6d22fc2b0ba4aac6906ecadb14369"
+      },
+      "generated_code_hash": "123c267734724173",
+      "generated_source_sha256": "42a7950cc2ad736d94291c80183dfc9dd7a0cd8a9ef41db8afd827852a054583",
+      "instruction": "Keep the eight products and their DSP inference, but replace the `s01` through `sum` addition tree with staged 32-bit 3:2 carry-save compressors: each stage computes XOR-based sum vectors and shifted majority carry vectors, reducing the eight operands to two vectors followed by one final addition. Preserve modulo-32-bit arithmetic for every supported signed parameter value, the existing delay registers, synchronous reset behavior, registered `y_out`, and the `// @latency 1` annotation; do not add registers or cycles. This differs from the advisor trial\u2019s DSP-avoidance attributes; verify the fu",
+      "iteration": 2,
+      "metrics": {
+        "bram_used": 0.0,
+        "dsp_used": 2,
+        "dynamic_power_w": 0.024,
+        "ff_used": 192,
+        "lut_used": 389,
+        "sim_passed": true,
+        "timing_met": false,
+        "total_power_w": 0.093,
+        "whs_ns": 0.178,
+        "wns_ns": -1.925
+      },
+      "mutation": "standard",
+      "reason": "",
+      "rungs": 5,
+      "source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-fir8-03\\fir8\\iter_002\\cand_standard\\fir8.v",
+        "sha256": "e2270aa3b7841dcb5ee8b918e0623dd210d3dd6cdefdc6a3053d4f667b9f7b7d"
+      },
+      "status": "measured"
+    }
+  ],
+  "doctor": {
+    "action": "rtl_surgery",
+    "adopted": false,
+    "identity_count": 3,
+    "input_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-fir8-03\\fir8\\iter_002\\cand_standard\\fir8.v",
+      "sha256": "e2270aa3b7841dcb5ee8b918e0623dd210d3dd6cdefdc6a3053d4f667b9f7b7d"
+    },
+    "measured_metrics": {
+      "bram_used": 0.0,
+      "dsp_used": 2,
+      "dynamic_power_w": 0.028,
+      "ff_used": 192,
+      "lut_used": 396,
+      "sim_passed": true,
+      "timing_met": false,
+      "total_power_w": 0.097,
+      "whs_ns": 0.078,
+      "wns_ns": -4.673
+    },
+    "proposed_source_text_sha256": "7d2ba87f767b3ec6cd0c1a26ebd30e4ea895a1b0dc022c9c7c8206ab08b40704",
+    "reason": "timing_not_closed",
+    "status": "NOT_ADOPTED",
+    "tools_ran": true,
+    "trial_flow_script": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-fir8-03\\fir8\\iter_002\\doctor_rtl_surgery_trial\\synth.tcl",
+      "sha256": "77bb5c7c2496b48c46500c039e936453cdd6cf79aaa1eb5baf04c90a60b8e071"
+    },
+    "trial_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-fir8-03\\fir8\\iter_002\\doctor_rtl_surgery_trial\\fir8.v",
+      "sha256": "d5836158aa1b4b5f32f2ad4a6a59f345724a5b89175a80423892c511a5d8c073"
+    }
+  },
+  "instruction": "Keep the eight products and their DSP inference, but replace the `s01` through `sum` addition tree with staged 32-bit 3:2 carry-save compressors: each stage computes XOR-based sum vectors and shifted majority carry vectors, reducing the eight operands to two vectors followed by one final addition. Preserve modulo-32-bit arithmetic for every supported signed parameter value, the existing delay registers, synchronous reset behavior, registered `y_out`, and the `// @latency 1` annotation; do not add registers or cycles. This differs from the advisor trial\u2019s DSP-avoidance attributes; verify the fu",
+  "is_best": true,
+  "iteration": 2,
+  "recommendation": "ACCEPT",
+  "schema_version": 1,
+  "selected_source_sha256": "42a7950cc2ad736d94291c80183dfc9dd7a0cd8a9ef41db8afd827852a054583"
+}

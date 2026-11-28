@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_2:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 2,
+    "instruction": "Replace the seed\u2019s `head`/`middle`/`tail` shift-register update cases with a three-slot circular buffer, explicit wrap for its read and write pointers, occupancy tracking, and a registered head cache. Update the cache on an empty push and on a pop when another word becomes head; handle simultaneous pop/push at occupancy one by loading the incoming word, and retain the registered output, reset behavior, full simultaneous transfer, and exact one-cycle minimum age. Keep the required `sync_fifo_core` instantiation and the top\u2019s `// @latency 1` annotation; preserve the interface and verify all gate",
+    "candidates": [
+      {
+        "iteration": 2,
+        "mutation": "standard",
+        "instruction": "Replace the seed\u2019s `head`/`middle`/`tail` shift-register update cases with a three-slot circular buffer, explicit wrap for its read and write pointers, occupancy tracking, and a registered head cache. Update the cache on an empty push and on a pop when another word becomes head; handle simultaneous pop/push at occupancy one by loading the incoming word, and retain the registered output, reset behavior, full simultaneous transfer, and exact one-cycle minimum age. Keep the required `sync_fifo_core` instantiation and the top\u2019s `// @latency 1` annotation; preserve the interface and verify all gate",
+        "generated_source_sha256": "b03351b4f28e02835e4649bcbe1e08ef2c502abdac65507d33ac8ba8d5ba48fe",
+        "final_source_sha256": "b03351b4f28e02835e4649bcbe1e08ef2c502abdac65507d33ac8ba8d5ba48fe",
+        "generated_code_hash": "1ff83506f0dc31cb",
+        "final_code_hash": "1ff83506f0dc31cb",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.151,
+          "whs_ns": 0.12,
+          "lut_used": 26,
+          "ff_used": 38,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.014,
+          "total_power_w": 0.085
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_002\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_002\\cand_standard\\synth.tcl",
+          "sha256": "da28a9ec4750fa3eec5b07235f6e4ad753729eb905be72e71494df664d153f98"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_002\\cand_standard\\sync_fifo.v",
+          "sha256": "259c0c934452189378c2311131252e55f144f5474425d0c26a44a043102e302b"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": "b03351b4f28e02835e4649bcbe1e08ef2c502abdac65507d33ac8ba8d5ba48fe"
+  },
+  "artifacts": {}
+}

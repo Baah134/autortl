@@ -1,0 +1,331 @@
+{
+  "allowed_flow_variations": "The harness may enable retiming or physical optimization. The candidate's retained synthesis script is authoritative for its actual settings.",
+  "authority": "Harness evidence is fixed. Proposed architectural goals cannot redefine it.",
+  "baseline_metrics": {
+    "bram_total": 50.0,
+    "bram_used": 0.0,
+    "dsp_total": 90,
+    "dsp_used": 0,
+    "dynamic_power_w": 0.002,
+    "ff_pct": 0.6105769230769231,
+    "ff_total": 41600,
+    "ff_used": 254,
+    "lut_pct": 0.6586538461538461,
+    "lut_total": 20800,
+    "lut_used": 137,
+    "reg2reg_wns_ns": 5.779,
+    "sim_error": "",
+    "sim_passed": true,
+    "synth_error": "",
+    "timing_met": true,
+    "total_power_w": 0.071,
+    "whs_ns": 0.109,
+    "wns_ns": 5.779
+  },
+  "build_spec": null,
+  "clock_period_ns": 10.0,
+  "declared_latency": {
+    "cycles": null,
+    "known": false,
+    "meaning": "A source annotation declares numeric latency only when present. This known/cycles pair is authoritative for the current top module's annotation requirement. Only known=true requires a matching numeric top annotation. Child typed-module latency does not invent a top annotation for arbitrary aggregate wrappers. When known=false, absence of a top annotation is not a failed or unverifiable criterion. Unannotated numeric latency is UNKNOWN, not zero. Preserve the source's exact observable cycles and registered behavior. Annotation presence or absence alone is not independent proof of behavioral correctness; use the fixed source contract, all defined typed latency/minimum transfer age and deterministic verification, without inventing a numeric requirement.",
+    "source_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\ooc-live-01\\iter_000\\axil_regs.v",
+    "source_sha256": "5cd0fc78f4cf41a49fef25e5668083d49e09c9f9e7780613460b315bae24823a"
+  },
+  "execution_context": {
+    "dependencies": [],
+    "implementation": "out_of_context",
+    "part": "xc7a35tcpg236-1",
+    "period_ns": 10.0,
+    "promotions": {
+      "Designutils 20-1307": "ERROR",
+      "Synth 8-327": "ERROR",
+      "Synth 8-3352": "ERROR",
+      "Synth 8-9873": "ERROR",
+      "VRFC 10-3609": "ERROR"
+    },
+    "synthesis_template": "61e44d95134130552d86e050a4db65035952d348028dc942b327b8aced90b3d1",
+    "tb": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\ooc-live-01\\inputs\\testbench_path.v",
+      "sha256": "e2d993581d56e24d9111541f82e3d2a5f12dee802409a47ecfd52bf4d0e9eb74"
+    },
+    "tools": {
+      "vivado_bin": {
+        "path": "C:\\AMDDesignTools\\2025.2\\Vivado\\bin\\vivado.bat",
+        "sha256": "4f9c05aea82a71c7086a9e5edf01ba16ea70255f69cf3420c58b805ec113e994"
+      },
+      "xelab_bin": {
+        "path": "C:\\AMDDesignTools\\2025.2\\Vivado\\bin\\xelab.bat",
+        "sha256": "512a29ace988992d7fab14ca84f20f0b4515bb69ef1d5fef0a57c5f28b72c9b1"
+      },
+      "xsim_bin": {
+        "path": "C:\\AMDDesignTools\\2025.2\\Vivado\\bin\\xsim.bat",
+        "sha256": "8819fbb54fdf9cbcaaf24c2bf72801b403d5c93e0990ba32408b56c666761d21"
+      },
+      "xvlog_bin": {
+        "path": "C:\\AMDDesignTools\\2025.2\\Vivado\\bin\\xvlog.bat",
+        "sha256": "512a29ace988992d7fab14ca84f20f0b4515bb69ef1d5fef0a57c5f28b72c9b1"
+      }
+    },
+    "top": "axil_regs"
+  },
+  "first_violated_path_excerpt": null,
+  "flow_and_constraints": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\ooc-live-01\\iter_000\\synth.tcl",
+      "sha256": "a5ad848da4b7caf5d05b2d1b09c0e80ce3add480cfcf4fbd366defccb393db9a",
+      "text": "set_msg_config -id {VRFC 10-3609} -new_severity ERROR\r\nset_msg_config -id {Synth 8-9873} -new_severity ERROR\r\nset_msg_config -id {Designutils 20-1307} -new_severity ERROR\r\nset_msg_config -id {Synth 8-327} -new_severity ERROR\r\nset_msg_config -id {Synth 8-3352} -new_severity ERROR\r\nset_part xc7a35tcpg236-1\r\nread_verilog \"C:/Users/prince.baah/Downloads/autortl-work/logs/ooc-live-01/iter_000/axil_regs.v\"\r\nset fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/ooc-live-01/iter_000/timing.xdc\" w]\r\nputs $fp {create_clock -period 10.000 -name clk [get_ports clk]}\r\nputs $fp {set_property HD.CLK_SRC BUFGCTRL_X0Y0 [get_ports clk]}\r\nclose $fp\r\nread_xdc \"C:/Users/prince.baah/Downloads/autortl-work/logs/ooc-live-01/iter_000/timing.xdc\"\r\nsynth_design -top axil_regs -flatten_hierarchy rebuilt -mode out_of_context \r\nreport_utilization -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/ooc-live-01/iter_000/utilization.rpt\"\r\nreport_timing_summary -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/ooc-live-01/iter_000/timing.rpt\"\r\nopt_design\r\nplace_design\r\n\r\nroute_design\r\nreport_utilization -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/ooc-live-01/iter_000/utilization_routed.rpt\"\r\nreport_timing_summary -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/ooc-live-01/iter_000/timing_routed.rpt\"\r\ncatch { if {[llength [all_registers]] > 0} { report_timing -from [all_registers] -to [all_registers] -max_paths 1 -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/ooc-live-01/iter_000/timing_reg2reg.rpt\" } }\r\nreport_design_analysis -logic_level_distribution -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/ooc-live-01/iter_000/design_analysis.rpt\"\r\nreport_power -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/ooc-live-01/iter_000/power.rpt\"\r\ncatch { report_methodology -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/ooc-live-01/iter_000/methodology.rpt\" }\r\ncatch { report_qor_suggestions -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/ooc-live-01/iter_000/qor_suggestions.rpt\" }\r\nputs \"SYNTH_COMPLETE\"\r\n",
+      "truncated": false
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\ooc-live-01\\iter_000\\timing.xdc",
+      "sha256": "64b6a06a567f5142e3b71c9ec44440c46d1ff02057a9207ab3820113a8e3e958",
+      "text": "create_clock -period 10.000 -name clk [get_ports clk]\r\nset_property HD.CLK_SRC BUFGCTRL_X0Y0 [get_ports clk]\r\n",
+      "truncated": false
+    }
+  ],
+  "hard_gates": [
+    "Preserve ports, parameter defaults, reset behavior and observable cycle behavior.",
+    "Use the fixed provided testbench, tools, device and constraints without modification.",
+    "Static/interface checks, compile, simulation and real routed metric integrity must pass.",
+    "Timing closure requires setup slack >= 0 and hold slack >= 0.",
+    "Unknown or absent evidence cannot count as success."
+  ],
+  "implementation": {
+    "meaning": "Out-of-context implementation (chip_top_flow_for_soc_block): the top is a block inside a larger design, synthesized with synth_design -mode out_of_context and placed and routed without I/O buffers or package pins. clk is constrained at the target period and modeled as driven by a global clock buffer (HD.CLK_SRC). Data ports have no input or output delay and no pad delay, so they are unconstrained I/O; the routed WNS and WHS, and timing acceptance, cover the internal clocked paths only, and combinational logic between a port and its first or last register is not timed. Utilization excludes I/O buffers.",
+    "mode": "out_of_context"
+  },
+  "metric_provenance": "Structured metrics are parsed from retained reports; routed utilization/timing reports take precedence when present. The manifest identifies complete files by hash. Header excerpts are bounded previews, not complete reports or an independent metric source.",
+  "objective": "minimize_luts",
+  "objective_policy": "First establish timing feasibility. A verified timing-feasible candidate may replace a known timing-infeasible previous best even with higher area or power; classify this as timing_recovery, not objective savings. While the previous best is timing-infeasible, a verified still-infeasible candidate with strictly better setup WNS and hold not worse beyond a small tolerance may replace it as timing_progress, which is not closure; a feasible candidate always outranks it. Once both are timing-feasible, require strict improvement of the chosen objective; for maximize_freq that is register-to-register setup slack (reg2reg_wns_ns) when both designs report it, otherwise full setup WNS for both, while feasibility stays on full WNS and WHS. minimize_luts compares (lut_used, ff_used) and minimize_ffs compares (ff_used, lut_used) lexicographically: an equal primary metric with a strictly lower secondary is an objective improvement, a higher primary never is, and a secondary missing from either design gives no tie-break. Unknown or contradictory incumbent timing evidence cannot establish recovery. A completed experiment may find no improvement. Do not invent mandatory savings, slack margins, tool versions, timing corners, new tests, thresholds, code-style quotas or external environment requirements.",
+  "part": "xc7a35tcpg236-1",
+  "report_headers": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\ooc-live-01\\iter_000\\power.rpt",
+      "sha256": "86450c7055c4eae9069dca31855739c634b10036907a29d03ac3b04905e10edb",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n-------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version     : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date             : Sun Nov  1 21:31:46 2026\r\n| Host             : Baah running 64-bit major release  (build 9200)\r\n| Command          : report_power -file C:/Users/prince.baah/Downloads/autortl-work/logs/ooc-live-01/iter_000/power.rpt\r\n| Design           : axil_regs\r\n| Device           : xc7a35tcpg236-1\r\n| Design State     : routed\r\n| Grade            : commercial\r\n| Process          : typical\r\n| Characterization : Production\r\n-------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nPower Report\r\n\r\nTable of Contents\r\n-----------------\r\n1. Summary\r\n1.1 On-Chip Components\r\n1.2 Power Supply Summary\r\n1.3 Confidence Level\r\n2. Settings\r\n2.1 Environment\r\n2.2 Clock Constraints\r\n3. Detailed Reports\r\n3.1 By Hierarchy\r\n\r\n1. Summary\r\n----------\r\n\r\n+--------------------------+--------------+\r\n| Total On-Chip Power (W)  | 0.071        |\r\n| Design Power Budget (W)  | Unspecified* |\r\n| Power Budget Margin (W)  | NA           |\r\n| Dynamic (W)              | 0.002        |\r\n| Device Static (W)        | 0.068        |\r\n| Effective TJA (C/W)      | 5.0          |\r\n| Max Ambient (C)          | 84.6         |\r\n| Junction Temperature (C) | 25.4         |\r\n| Confidence Level         | Medium       |\r\n| Setting File             | ---          |\r\n| Simulation Activity File | ---          |\r\n| Design Nets Matched      | NA           |\r\n+-------------",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\ooc-live-01\\iter_000\\timing.rpt",
+      "sha256": "e4625b3d4e9f54e51bf52c9c1d92a06773e4ccc01eca31df5c11fa508451ecee",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n---------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date         : Sun Nov  1 21:31:04 2026\r\n| Host         : Baah running 64-bit major release  (build 9200)\r\n| Command      : report_timing_summary -file C:/Users/prince.baah/Downloads/autortl-work/logs/ooc-live-01/iter_000/timing.rpt\r\n| Design       : axil_regs\r\n| Device       : 7a35t-cpg236\r\n| Speed File   : -1  PRODUCTION 1.23 2018-06-13\r\n| Design State : Synthesized\r\n---------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nTiming Summary Report\r\n\r\n------------------------------------------------------------------------------------------------\r\n| Timer Settings\r\n| --------------\r\n------------------------------------------------------------------------------------------------\r\n\r\n  Enable Multi Corner Analysis               :  Yes\r\n  Enable Pessimism Removal                   :  Yes\r\n  Pessimism Removal Resolution               :  Nearest Common Node\r\n  Enable Input Delay Default Clock           :  No\r\n  Enable Preset / Clear Arcs                 :  No\r\n  Disable Flight Delays                      :  No\r\n  Ignore I/O Paths                           :  No\r\n  Timing Early Launch at Borrowing Latches   :  No\r\n  Borrow Time for Max Delay Exceptions       :  Yes\r\n  Merge Timing Exceptions                    :  Yes\r\n  Inter-SLR Compensation                     :  Conservative\r\n\r\n  Corner  Analyze    Analyze    \r\n  Name    Max Paths  Min Paths",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\ooc-live-01\\iter_000\\timing_reg2reg.rpt",
+      "sha256": "cd5fd2cc75a31a4ebf8601330a9ae979fc533c6ca539dcb4b3318e20bab1d3e7",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date         : Sun Nov  1 21:31:46 2026\r\n| Host         : Baah running 64-bit major release  (build 9200)\r\n| Command      : report_timing -from [all_registers] -to [all_registers] -max_paths 1 -file C:/Users/prince.baah/Downloads/autortl-work/logs/ooc-live-01/iter_000/timing_reg2reg.rpt\r\n| Design       : axil_regs\r\n| Device       : 7a35t-cpg236\r\n| Speed File   : -1  PRODUCTION 1.23 2018-06-13\r\n| Design State : Routed\r\n-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nTiming Report\r\n\r\nSlack (MET) :             5.779ns  (required time - arrival time)\r\n  Source:                 u_axil_rd_if/rvalid_reg/C\r\n                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@5.000ns period=10.000ns})\r\n  Destination:            u_axil_rd_if/rdata_reg[6]/CE\r\n                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@5.000ns period=10.000ns})\r\n  Path Group:             clk\r\n  Path Type:              Setup (Max at Slow Process Corner)\r\n  Requirement:            10.000ns  (clk rise@10.000ns - clk rise@0.000ns)\r\n  Data Path Delay:        3.876ns  (logic 0.773ns (19.943%)  route 3.103ns (80.057%))\r\n  Logic Levels:           1  (LUT2=1)\r\n  Clock Path Skew:        -0.105ns (DCD - SCD + CPR)\r\n    Destin",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\ooc-live-01\\iter_000\\timing_routed.rpt",
+      "sha256": "c87ed3b42413947fe7e6096d97f93e6fe54126ce3e0cb9b796d53e66de03378e",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n---------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date         : Sun Nov  1 21:31:46 2026\r\n| Host         : Baah running 64-bit major release  (build 9200)\r\n| Command      : report_timing_summary -file C:/Users/prince.baah/Downloads/autortl-work/logs/ooc-live-01/iter_000/timing_routed.rpt\r\n| Design       : axil_regs\r\n| Device       : 7a35t-cpg236\r\n| Speed File   : -1  PRODUCTION 1.23 2018-06-13\r\n| Design State : Routed\r\n---------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nTiming Summary Report\r\n\r\n------------------------------------------------------------------------------------------------\r\n| Timer Settings\r\n| --------------\r\n------------------------------------------------------------------------------------------------\r\n\r\n  Enable Multi Corner Analysis               :  Yes\r\n  Enable Pessimism Removal                   :  Yes\r\n  Pessimism Removal Resolution               :  Nearest Common Node\r\n  Enable Input Delay Default Clock           :  No\r\n  Enable Preset / Clear Arcs                 :  No\r\n  Disable Flight Delays                      :  No\r\n  Ignore I/O Paths                           :  No\r\n  Timing Early Launch at Borrowing Latches   :  No\r\n  Borrow Time for Max Delay Exceptions       :  Yes\r\n  Merge Timing Exceptions                    :  Yes\r\n  Inter-SLR Compensation                     :  Conservative\r\n\r\n  Corner  Analyze    Analyze    \r\n  Name    Max Paths  Min Pat",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\ooc-live-01\\iter_000\\utilization.rpt",
+      "sha256": "2be1b0b8d2c523a94394deab04f42f03e9bb44cbf4df2381b2ab547567958a01",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\n---------------------------------------------------------------------------------------------------------------------------------------------\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\n| Date         : Sun Nov  1 21:30:55 2026\n| Host         : Baah running 64-bit major release  (build 9200)\n| Command      : report_utilization -file C:/Users/prince.baah/Downloads/autortl-work/logs/ooc-live-01/iter_000/utilization.rpt\n| Design       : axil_regs\n| Device       : xc7a35tcpg236-1\n| Speed File   : -1\n| Design State : Synthesized\n---------------------------------------------------------------------------------------------------------------------------------------------\n\nUtilization Design Information\n\nTable of Contents\n-----------------\n1. Slice Logic\n1.1 Summary of Registers by Type\n2. Memory\n3. DSP\n4. IO and GT Specific\n5. Clocking\n6. Specific Feature\n7. Primitives\n8. Black Boxes\n9. Instantiated Netlists\n\n1. Slice Logic\n--------------\n\n+-------------------------+------+-------+------------+-----------+-------+\n|        Site Type        | Used | Fixed | Prohibited | Available | Util% |\n+-------------------------+------+-------+------------+-----------+-------+\n| Slice LUTs*             |  139 |     0 |          0 |     20800 |  0.67 |\n|   LUT as Logic          |  139 |     0 |          0 |     20800 |  0.67 |\n|   LUT as Memory         |    0 |     0 |          0 |      9600 |  0.00 |\n| Slice Registers         |  254 |     0 |          0 |     41600 |  0.61 |\n|   Register as Flip Flop |  254 |     0 |          0 |     41600 |  0.61 |\n|   Register as Latch     |    0 |     0 |          0 |     41600 |  0.00 |\n| F7 M",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\ooc-live-01\\iter_000\\utilization_routed.rpt",
+      "sha256": "e15cf3f7b1d427a974e5465e789579413bccfaedb83649d42de419d3de988824",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\n---------------------------------------------------------------------------------------------------------------------------------------------\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\n| Date         : Sun Nov  1 21:31:46 2026\n| Host         : Baah running 64-bit major release  (build 9200)\n| Command      : report_utilization -file C:/Users/prince.baah/Downloads/autortl-work/logs/ooc-live-01/iter_000/utilization_routed.rpt\n| Design       : axil_regs\n| Device       : xc7a35tcpg236-1\n| Speed File   : -1\n| Design State : Routed\n---------------------------------------------------------------------------------------------------------------------------------------------\n\nUtilization Design Information\n\nTable of Contents\n-----------------\n1. Slice Logic\n1.1 Summary of Registers by Type\n2. Slice Logic Distribution\n3. Memory\n4. DSP\n5. IO and GT Specific\n6. Clocking\n7. Specific Feature\n8. Primitives\n9. Black Boxes\n10. Instantiated Netlists\n\n1. Slice Logic\n--------------\n\n+-------------------------+------+-------+------------+-----------+-------+\n|        Site Type        | Used | Fixed | Prohibited | Available | Util% |\n+-------------------------+------+-------+------------+-----------+-------+\n| Slice LUTs              |  137 |     0 |          0 |     20800 |  0.66 |\n|   LUT as Logic          |  137 |     0 |          0 |     20800 |  0.66 |\n|   LUT as Memory         |    0 |     0 |          0 |      9600 |  0.00 |\n| Slice Registers         |  254 |     0 |          0 |     41600 |  0.61 |\n|   Register as Flip Flop |  254 |     0 |          0 |     41600 |  0.61 |\n|   Register as Latch     |    0 |     0 |         ",
+      "truncated": true
+    }
+  ],
+  "report_manifest": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\ooc-live-01\\iter_000\\power.rpt",
+      "sha256": "86450c7055c4eae9069dca31855739c634b10036907a29d03ac3b04905e10edb"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\ooc-live-01\\iter_000\\timing.rpt",
+      "sha256": "e4625b3d4e9f54e51bf52c9c1d92a06773e4ccc01eca31df5c11fa508451ecee"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\ooc-live-01\\iter_000\\timing_reg2reg.rpt",
+      "sha256": "cd5fd2cc75a31a4ebf8601330a9ae979fc533c6ca539dcb4b3318e20bab1d3e7"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\ooc-live-01\\iter_000\\timing_routed.rpt",
+      "sha256": "c87ed3b42413947fe7e6096d97f93e6fe54126ce3e0cb9b796d53e66de03378e"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\ooc-live-01\\iter_000\\utilization.rpt",
+      "sha256": "2be1b0b8d2c523a94394deab04f42f03e9bb44cbf4df2381b2ab547567958a01"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\ooc-live-01\\iter_000\\utilization_routed.rpt",
+      "sha256": "e15cf3f7b1d427a974e5465e789579413bccfaedb83649d42de419d3de988824"
+    }
+  ],
+  "schema_version": 1,
+  "simulation": {
+    "failure_verdict": "TEST FAILED",
+    "required_verdict": "TEST PASSED",
+    "scope": "Provided testbench checks; not a formal equivalence proof.",
+    "tools": [
+      "xvlog",
+      "xelab",
+      "xsim -runall"
+    ]
+  },
+  "sources": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\ooc-live-01\\iter_000\\axil_regs.v",
+      "sha256": "5cd0fc78f4cf41a49fef25e5668083d49e09c9f9e7780613460b315bae24823a",
+      "text": "`timescale 1ns/1ps\r\n// Qualification reference only: axil_regs_tb.v must pass this source and\r\n// fail every mutant in mutants.json. Never configured as a generation seed.\r\n// The top below is byte-identical to the harness's mechanical wrapper.\r\n// @latency 1\r\n// Cycle-level: awready, wready and the wr_* bank port are views of registered state.\r\nmodule axil_wr_if (\r\n    input wire clk,\r\n    input wire rst,\r\n    input wire awvalid,\r\n    output wire awready,\r\n    input wire [5:0] awaddr,\r\n    input wire wvalid,\r\n    output wire wready,\r\n    input wire [31:0] wdata,\r\n    input wire [3:0] wstrb,\r\n    output reg bvalid,\r\n    input wire bready,\r\n    output reg [1:0] bresp,\r\n    output wire wr_en,\r\n    output wire [2:0] wr_idx,\r\n    output wire [31:0] wr_data,\r\n    output wire [3:0] wr_strb\r\n);\r\n    reg aw_full, w_full;     // one held address and one held data beat\r\n    reg [5:0] aw_addr;\r\n    reg [31:0] w_data;\r\n    reg [3:0] w_strb;\r\n\r\n    // Both halves held and no response pending: write and respond at this edge.\r\n    wire do_write = aw_full && w_full && !bvalid;\r\n    assign awready = !aw_full;\r\n    assign wready = !w_full;\r\n    assign wr_en = do_write && !aw_addr[5];\r\n    assign wr_idx = aw_addr[4:2];\r\n    assign wr_data = w_data;\r\n    assign wr_strb = w_strb;\r\n\r\n    always @(posedge clk) begin // wr_clock\r\n        if (rst) begin\r\n            aw_full <= 1'b0;\r\n            w_full <= 1'b0;\r\n            aw_addr <= 6'd0;\r\n            w_data <= 32'd0;\r\n            w_strb <= 4'd0;\r\n            bvalid <= 1'b0;\r\n            bresp <= 2'b00;\r\n        end else begin\r\n            if (do_write) begin\r\n                aw_full <= 1'b0;\r\n                w_full <= 1'b0;\r\n                bvalid <= 1'b1;\r\n                bresp <= aw_addr[5] ? 2'b10 : 2'b00;\r\n            end else if (bvalid && bready) begin\r\n                bvalid <= 1'b0;\r\n            end\r\n            if (awvalid && awready) begin\r\n                aw_full <= 1'b1;\r\n                aw_addr <= awaddr;\r\n            end\r\n            if (wvalid && wready) begin\r\n                w_full <= 1'b1;\r\n                w_data <= wdata;\r\n                w_strb <= wstrb;\r\n            end\r\n        end\r\n    end\r\nendmodule\r\n\r\n// @latency 1\r\n// Cycle-level: regs_flat, ctrl and irq are views of registered state.\r\nmodule axil_regbank (\r\n    input wire clk,\r\n    input wire rst,\r\n    input wire wr_en,\r\n    input wire [2:0] wr_idx,\r\n    input wire [31:0] wr_data,\r\n    input wire [3:0] wr_strb,\r\n    input wire [7:0] irq_set,\r\n    input wire [31:0] status_in,\r\n    output wire [255:0] regs_flat,\r\n    output wire [31:0] ctrl,\r\n    output wire irq\r\n);\r\n    localparam [31:0] ID_VALUE = 32'h52544C35;\r\n    reg [31:0] ctrl_q, scratch_q, config_q, status_q, wcount_q;\r\n    reg [7:0] mask_q, pend_q;\r\n\r\n    wire [31:0] strobe_mask = {{8{wr_strb[3]}}, {8{wr_strb[2]}}, {8{wr_strb[1]}}, {8{wr_strb[0]}}};\r\n    wire [31:0] merged_ctrl = (ctrl_q & ~strobe_mask) | (wr_data & strobe_mask);\r\n    wire [31:0] merged_scratch = (scratch_q & ~strobe_mask) | (wr_data & strobe_mask);\r\n    wire [31:0] merged_config = (config_q & ~strobe_mask) | (wr_data & strobe_mask);\r\n    wire [7:0] w1c_clear = (wr_en && wr_idx == 3'd4 && wr_strb[0]) ? wr_data[7:0] : 8'd0;\r\n\r\n    always @(posedge clk) begin // bank_clock\r\n        if (rst) begin\r\n            ctrl_q <= 32'd0;\r\n            scratch_q <= 32'd0;\r\n            config_q <= 32'h00000100;\r\n            mask_q <= 8'd0;\r\n            pend_q <= 8'd0;\r\n            status_q <= 32'd0;\r\n            wcount_q <= 32'd0;\r\n        end else begin\r\n            status_q <= status_in;\r\n            pend_q <= (pend_q & ~w1c_clear) | irq_set; // set_wins\r\n            if (wr_en) begin\r\n                wcount_q <= wcount_q + 32'd1;\r\n                case (wr_idx)\r\n                    3'd0: ctrl_q <= merged_ctrl;\r\n                    3'd1: scratch_q <= merged_scratch;\r\n                    3'd2: config_q <= merged_config;\r\n                    3'd3: if (wr_strb[0]) mask_q <= wr_data[7:0];\r\n                    default: ; // 4 is write-1-to-clear above; 5, 6 and 7 are read-only\r\n                endcase\r\n            end\r\n        end\r\n    end\r\n\r\n    assign regs_flat = {wcount_q, ID_VALUE, status_q, {24'd0, pend_q}, {24'd0, mask_q},\r\n                        config_q, scratch_q, ctrl_q};\r\n    assign ctrl = ctrl_q;\r\n    assign irq = |(pend_q & mask_q);\r\nendmodule\r\n\r\n// @latency 1\r\n// Cycle-level: arready is a view of registered state.\r\nmodule axil_rd_if (\r\n    input wire clk,\r\n    input wire rst,\r\n    input wire arvalid,\r\n    output wire arready,\r\n    input wire [5:0] araddr,\r\n    output reg rvalid,\r\n    input wire rready,\r\n    output reg [31:0] rdata,\r\n    output reg [1:0] rresp,\r\n    input wire [255:0] regs_flat\r\n);\r\n    wire [31:0] selected = regs_flat[araddr[4:2]*32 +: 32];\r\n    assign arready = !rvalid;\r\n\r\n    always @(posedge clk) begin // rd_clock\r\n        if (rst) begin\r\n            rvalid <= 1'b0;\r\n            rdata <= 32'd0;\r\n            rresp <= 2'b00;\r\n        end else if (arvalid && !rvalid) begin // ar_handshake\r\n            rvalid <= 1'b1;\r\n            rdata <= araddr[5] ? 32'd0 : selected;\r\n            rresp <= araddr[5] ? 2'b10 : 2'b00;\r\n        end else if (rvalid && rready) begin\r\n            rvalid <= 1'b0;\r\n        end\r\n    end\r\nendmodule\r\n\r\n`timescale 1ns/1ps\r\nmodule axil_regs (\r\n    input wire clk,\r\n    input wire rst,\r\n    input wire awvalid,\r\n    output wire awready,\r\n    input wire [5:0] awaddr,\r\n    input wire wvalid,\r\n    output wire wready,\r\n    input wire [31:0] wdata,\r\n    input wire [3:0] wstrb,\r\n    output wire bvalid,\r\n    input wire bready,\r\n    output wire [1:0] bresp,\r\n    input wire arvalid,\r\n    output wire arready,\r\n    input wire [5:0] araddr,\r\n    output wire rvalid,\r\n    input wire rready,\r\n    output wire [31:0] rdata,\r\n    output wire [1:0] rresp,\r\n    input wire [7:0] irq_set,\r\n    input wire [31:0] status_in,\r\n    output wire [31:0] ctrl,\r\n    output wire irq\r\n);\r\n    wire w_axil_wr_if_wr_en;\r\n    wire [2:0] w_axil_wr_if_wr_idx;\r\n    wire [31:0] w_axil_wr_if_wr_data;\r\n    wire [3:0] w_axil_wr_if_wr_strb;\r\n    wire [255:0] w_axil_regbank_regs_flat;\r\n    axil_wr_if u_axil_wr_if (\r\n        .clk(clk),\r\n        .rst(rst),\r\n        .awvalid(awvalid),\r\n        .awready(awready),\r\n        .awaddr(awaddr),\r\n        .wvalid(wvalid),\r\n        .wready(wready),\r\n        .wdata(wdata),\r\n        .wstrb(wstrb),\r\n        .bvalid(bvalid),\r\n        .bready(bready),\r\n        .bresp(bresp),\r\n        .wr_en(w_axil_wr_if_wr_en),\r\n        .wr_idx(w_axil_wr_if_wr_idx),\r\n        .wr_data(w_axil_wr_if_wr_data),\r\n        .wr_strb(w_axil_wr_if_wr_strb)\r\n    );\r\n    axil_regbank u_axil_regbank (\r\n        .clk(clk),\r\n        .rst(rst),\r\n        .wr_en(w_axil_wr_if_wr_en),\r\n        .wr_idx(w_axil_wr_if_wr_idx),\r\n        .wr_data(w_axil_wr_if_wr_data),\r\n        .wr_strb(w_axil_wr_if_wr_strb),\r\n        .irq_set(irq_set),\r\n        .status_in(status_in),\r\n        .regs_flat(w_axil_regbank_regs_flat),\r\n        .ctrl(ctrl),\r\n        .irq(irq)\r\n    );\r\n    axil_rd_if u_axil_rd_if (\r\n        .clk(clk),\r\n        .rst(rst),\r\n        .arvalid(arvalid),\r\n        .arready(arready),\r\n        .araddr(araddr),\r\n        .rvalid(rvalid),\r\n        .rready(rready),\r\n        .rdata(rdata),\r\n        .rresp(rresp),\r\n        .regs_flat(w_axil_regbank_regs_flat)\r\n    );\r\nendmodule\r\n",
+      "truncated": false
+    }
+  ],
+  "testbench": {
+    "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\ooc-live-01\\inputs\\testbench_path.v",
+    "sha256": "e2d993581d56e24d9111541f82e3d2a5f12dee802409a47ecfd52bf4d0e9eb74",
+    "text": "`timescale 1ns/1ps\r\n// Independent cycle-exact checker for the AXI4-Lite register slave. It models\r\n// the held AW and W halves, the B and R responses and all eight registers,\r\n// acts as an AXI master that keeps every offered VALID and payload stable until\r\n// the model accepts it, checks every output port before and after each rising\r\n// edge, and never reads DUT internals or the internal bank port.\r\nmodule axil_regs_tb;\r\n    reg clk=0, rst=1;\r\n    reg awvalid=0, wvalid=0, bready=0, arvalid=0, rready=0;\r\n    reg [5:0] awaddr=0, araddr=0;\r\n    reg [31:0] wdata=0, status_in=0;\r\n    reg [3:0] wstrb=0;\r\n    reg [7:0] irq_set=0;\r\n    wire awready, wready, bvalid, arready, rvalid, irq;\r\n    wire [1:0] bresp, rresp;\r\n    wire [31:0] rdata, ctrl;\r\n    axil_regs dut(.clk(clk),.rst(rst),.awvalid(awvalid),.awready(awready),.awaddr(awaddr),\r\n        .wvalid(wvalid),.wready(wready),.wdata(wdata),.wstrb(wstrb),.bvalid(bvalid),.bready(bready),\r\n        .bresp(bresp),.arvalid(arvalid),.arready(arready),.araddr(araddr),.rvalid(rvalid),\r\n        .rready(rready),.rdata(rdata),.rresp(rresp),.irq_set(irq_set),.status_in(status_in),\r\n        .ctrl(ctrl),.irq(irq));\r\n    always #5 clk=~clk;\r\n\r\n    localparam [31:0] ID_VALUE = 32'h52544c35;\r\n    // Reference state.\r\n    reg m_awf=0, m_wf=0, m_bv=0, m_rv=0;\r\n    reg [5:0] m_awa=0;\r\n    reg [31:0] m_wd=0, m_rd=0;\r\n    reg [3:0] m_ws=0;\r\n    reg [1:0] m_br=0, m_rr=0;\r\n    reg [31:0] m_reg [0:7];\r\n    reg [31:0] lanes=0, clear=0;\r\n    reg do_write=0, in_range=0, aw_hs=0, w_hs=0, b_hs=0, ar_hs=0, r_hs=0;\r\n    // Master: a VALID offered and not accepted is held with its payload.\r\n    reg aw_hold=0, w_hold=0, ar_hold=0, started=0;\r\n    reg [5:0] aw_held=0, ar_held=0;\r\n    reg [31:0] wd_held=0, irq_drive=0, status_drive=0, value=0;\r\n    reg [3:0] ws_held=0;\r\n    reg [7:0] irq_at_write=0;\r\n    integer cycle=0, errors=0, i, j, t, s;\r\n    integer writes_ok=0, writes_err=0, reads_ok=0, reads_err=0, w_first=0, aw_first=0, b_stalls=0;\r\n    integer r_stalls=0, ar_waiting=0, held_pair_waiting=0, set_and_clear=0, irq_cycles=0, strobe_seen=0;\r\n    integer busy_resets=0, pulses=0, ro_writes=0;\r\n    reg [15:0] strobes_written=0;\r\n    reg [31:0] seed=32'h2f6b9a1d;\r\n    reg aw_done, w_done;\r\n\r\n    task fail;\r\n        input [511:0] rule;\r\n        begin\r\n            errors=errors+1;\r\n            if(errors<=40) $display(\"FAIL BEHAVIOR rule=%0s cycle=%0d\",rule,cycle);\r\n        end\r\n    endtask\r\n    task checker_fail;\r\n        input [511:0] rule;\r\n        begin errors=errors+1; $display(\"CHECKER_FAIL rule=%0s cycle=%0d\",rule,cycle); end\r\n    endtask\r\n    task coverage_fail;\r\n        input [511:0] rule;\r\n        begin errors=errors+1; $display(\"COVERAGE_FAIL rule=%0s\",rule); end\r\n    endtask\r\n\r\n    function [31:0] advance;\r\n        input [31:0] v;\r\n        reg [31:0] x;\r\n        begin x=v^(v<<13); x=x^(x>>17); advance=x^(x<<5); end\r\n    endfunction\r\n\r\n    task model_reset;\r\n        begin\r\n            m_awf=0; m_wf=0; m_bv=0; m_rv=0; m_awa=0; m_wd=0; m_ws=0; m_br=0; m_rd=0; m_rr=0;\r\n            m_reg[0]=0; m_reg[1]=0; m_reg[2]=32'h00000100; m_reg[3]=0;\r\n            m_reg[4]=0; m_reg[5]=0; m_reg[6]=ID_VALUE; m_reg[7]=0;\r\n        end\r\n    endtask\r\n\r\n    task check_ports;\r\n        begin\r\n            if(awready !== !m_awf) fail(\"awready_independent_of_w_channel\");\r\n            if(wready !== !m_wf) fail(\"wready_independent_of_aw_channel\");\r\n            if(bvalid !== m_bv) fail(\"bvalid_with_the_register_update\");\r\n            if(bresp !== m_br) fail(\"bresp_okay_or_slverr\");\r\n            if(arready !== !m_rv) fail(\"arready_one_read_outstanding\");\r\n            if(rvalid !== m_rv) fail(\"rvalid\");\r\n            if(rdata !== m_rd) fail(\"rdata_register_value_or_stall_hold\");\r\n            if(rresp !== m_rr) fail(\"rresp_okay_or_slverr\");\r\n            if(ctrl !== m_reg[0]) fail(\"ctrl_register_output\");\r\n            if(irq !== ((m_reg[3] & m_reg[4] & 32'hff) != 0)) fail(\"irq_masked_pending\");\r\n        end\r\n    endtask\r\n\r\n    // One clock cycle: inputs change at the falling edge, ports are checked\r\n    // before the rising edge and after its updates. A held channel keeps\r\n    // VALID and payload; reset abandons every held request.\r\n    task step;\r\n        input reset_now, awv;\r\n        input [5:0] awa;\r\n        input wv;\r\n        input [31:0] wd;\r\n        input [3:0] ws;\r\n        input br, arv;\r\n        input [5:0] ara;\r\n        input rr;\r\n        begin\r\n            @(negedge clk);\r\n            rst=reset_now; bready=br; rready=rr;\r\n            if(aw_hold && !reset_now) begin awvalid=1; awaddr=aw_held; end\r\n            else begin awvalid=awv; awaddr=awa; end\r\n            if(w_hold && !reset_now) begin wvalid=1; wdata=wd_held; wstrb=ws_held; end\r\n            else begin wvalid=wv; wdata=wd; wstrb=ws; end\r\n            if(ar_hold && !reset_now) begin arvalid=1; araddr=ar_held; end\r\n            else begin arvalid=arv; araddr=ara; end\r\n            // irq_at_write lands on the edge where the model performs a write.\r\n            irq_set=(m_awf && m_wf && !m_bv && irq_at_write!=0) ? irq_at_write : irq_drive[7:0];\r\n            status_in=status_drive;\r\n            #1; if(started) check_ports;\r\n            @(posedge clk);\r\n            cycle=cycle+1;\r\n            do_write=m_awf && m_wf && !m_bv;\r\n            in_range=!m_awa[5];\r\n            aw_hs=!rst && awvalid && !m_awf;\r\n            w_hs=!rst && wvalid && !m_wf;\r\n            b_hs=!rst && m_bv && bready;\r\n            ar_hs=!rst && arvalid && !m_rv;\r\n            r_hs=!rst && m_rv && rready;\r\n            aw_hold=!rst && awvalid && !aw_hs; aw_held=awaddr;\r\n            w_hold=!rst && wvalid && !w_hs; wd_held=wdata; ws_held=wstrb;\r\n            ar_hold=!rst && arvalid && !ar_hs; ar_held=araddr;\r\n            if(rst) begin\r\n                if(m_awf || m_wf || m_bv || m_rv) busy_resets=busy_resets+1;\r\n                model_reset;\r\n            end else begin\r\n                if(m_bv && !bready) b_stalls=b_stalls+1;\r\n                if(m_rv && !rready) r_stalls=r_stalls+1;\r\n                if(m_rv && arvalid) ar_waiting=ar_waiting+1;\r\n                if(m_awf && m_wf && m_bv) held_pair_waiting=held_pair_waiting+1;\r\n                if(m_wf && !m_awf && !awvalid) w_first=w_first+1;\r\n                if(m_awf && !m_wf && !wvalid) aw_first=aw_first+1;\r\n                if((m_reg[3] & m_reg[4] & 32'hff)!=0) irq_cycles=irq_cycles+1;\r\n                // Read channel samples the registers as they were before the edge.\r\n                if(ar_hs) begin\r\n                    m_rv=1;\r\n                    if(araddr[5]) begin m_rd=0; m_rr=2'b10; reads_err=reads_err+1; end\r\n                    else begin m_rd=m_reg[araddr[4:2]]; m_rr=2'b00; reads_ok=reads_ok+1; end\r\n                end else if(r_hs) m_rv=0;\r\n                // Register bank.\r\n                clear=(do_write && in_range && m_awa[4:2]==3'd4 && m_ws[0]) ? (m_wd & 32'hff) : 32'd0;\r\n                if((clear & irq_set)!=0) set_and_clear=set_and_clear+1;\r\n                m_reg[4]=(m_reg[4] & ~clear) | irq_set;\r\n                m_reg[5]=status_in;\r\n                if(do_write && in_range) begin\r\n                    m_reg[7]=m_reg[7]+1;\r\n                    lanes={{8{m_ws[3]}},{8{m_ws[2]}},{8{m_ws[1]}},{8{m_ws[0]}}};\r\n                    if(m_awa[4:2]<=3'd2) begin\r\n                        m_reg[m_awa[4:2]]=(m_reg[m_awa[4:2]] & ~lanes) | (m_wd & lanes);\r\n                        strobes_written[m_ws]=1'b1;\r\n                    end\r\n                    if(m_awa[4:2]==3'd3 && m_ws[0]) m_reg[3]=m_wd & 32'hff;\r\n                    if(m_awa[4:2]>=3'd5) ro_writes=ro_writes+1;\r\n                    writes_ok=writes_ok+1;\r\n                end\r\n                // Write channel.\r\n                if(do_write) begin\r\n                    m_awf=0; m_wf=0; m_bv=1; m_br=in_range ? 2'b00 : 2'b10;\r\n                    if(!in_range) writes_err=writes_err+1;\r\n                end else if(b_hs) m_bv=0;\r\n                if(aw_hs) begin m_awf=1; m_awa=awaddr; end\r\n                if(w_hs) begin m_wf=1; m_wd=wdata; m_ws=wstrb; end\r\n            end\r\n            #1; started=1; check_ports;\r\n        end\r\n    endtask\r\n\r\n    // Called one ns after a rising edge: the pulse ends before the next one.\r\n    task pulse_reset;\r\n        begin\r\n            #1 rst=1;\r\n            #1 check_ports;\r\n            #1 rst=0;\r\n            #0.5 check_ports;\r\n            pulses=pulses+1;\r\n        end\r\n    endtask\r\n\r\n    task idle;\r\n        input integer count;\r\n        integer k;\r\n        begin\r\n            for(k=0;k<count;k=k+1) begin\r\n                seed=advance(seed);\r\n                step(0,0,seed[5:0],0,seed,seed[11:8],1,0,seed[17:12],1); // payload noise\r\n            end\r\n        end\r\n    endtask\r\n\r\n    // A complete write: AW offered from cycle aw_at and W from cycle w_at\r\n    // (relative), then B accepted after b_wait stalled cycles.\r\n    task axi_write;\r\n        input [5:0] addr;\r\n        input [31:0] data;\r\n        input [3:0] strb;\r\n        input integer aw_at, w_at, b_wait;\r\n        begin\r\n            aw_done=0; w_done=0; t=0;\r\n            while(!aw_done || !w_done) begin\r\n                step(0,!aw_done && t>=aw_at,addr,!w_done && t>=w_at,data,strb,0,0,6'd0,1);\r\n                if(aw_hs) aw_done=1;\r\n                if(w_hs) w_done=1;\r\n                t=t+1;\r\n            end\r\n            while(!m_bv) step(0,0,6'd0,0,32'd0,4'd0,0,0,6'd0,1);\r\n            s=0;\r\n            while(m_bv) begin step(0,0,6'd0,0,32'd0,4'd0,s>=b_wait,0,6'd0,1); s=s+1; end\r\n        end\r\n    endtask\r\n\r\n    // A complete read: AR offered at once, R accepted after r_wait stalled\r\n    // cycles. The model's data is returned for the checker's own sanity checks.\r\n    task axi_read;\r\n        input [5:0] addr;\r\n        input integer r_wait;\r\n        begin\r\n            step(0,0,6'd0,0,32'd0,4'd0,1,1,addr,0);\r\n            while(!m_rv) step(0,0,6'd0,0,32'd0,4'd0,1,1,addr,0);\r\n            value=m_rd;\r\n            s=0;\r\n            while(m_rv) begin step(0,0,6'd0,0,32'd0,4'd0,1,0,6'd0,s>=r_wait); s=s+1; end\r\n        end\r\n    endtask\r\n\r\n    initial begin\r\n        model_reset;\r\n        status_drive=32'h0badf00d;\r\n        step(1,0,6'd0,0,32'd0,4'd0,0,0,6'd0,0);\r\n        step(1,1,6'h00,1,32'hffffffff,4'hf,1,1,6'h00,1); // reset dominates every channel\r\n        // 1: reset values of all eight registers.\r\n        for(i=0;i<8;i=i+1) begin\r\n            axi_read(i*4,i%3);\r\n            if(i==2 && value!==32'h100) checker_fail(\"config_reset_value\");\r\n            if(i==5 && value!==32'h0badf00d) checker_fail(\"status_snapshot\");\r\n            if(i==6 && value!==ID_VALUE) checker_fail(\"id_value\");\r\n        end\r\n        // 2: every writable register with AW and W together, then read back.\r\n        axi_write(6'h00,32'h11223344,4'hf,0,0,0); axi_write(6'h04,32'h55667788,4'hf,0,0,1);\r\n        axi_write(6'h08,32'h99aabbcc,4'hf,0,0,0); axi_write(6'h0c,32'hffffff3c,4'hf,0,0,2);\r\n        for(i=0;i<5;i=i+1) axi_read(i*4,1);\r\n        // 3: W ahead of AW, AW ahead of W, and stalled responses.\r\n        axi_write(6'h04,32'hdeadbeef,4'hf,3,0,0);\r\n        axi_write(6'h08,32'hcafef00d,4'hf,0,4,5);\r\n        axi_write(6'h00,32'h0f0f0f0f,4'hf,7,1,3);\r\n        axi_read(6'h04,0); axi_read(6'h08,2); axi_read(6'h00,0);\r\n        // 4: a second AW/W pair is captured while the first response is\r\n        // stalled; it is written only after that response retires.\r\n        step(0,1,6'h04,1,32'h01010101,4'hf,0,0,6'd0,1);\r\n        step(0,0,6'd0,0,32'd0,4'd0,0,0,6'd0,1);\r\n        if(!m_bv) checker_fail(\"pending_response_setup\");\r\n        for(i=0;i<6;i=i+1) step(0,1,6'h08,1,32'h02020202,4'hf,0,0,6'd0,1);\r\n        if(!(m_awf && m_wf && m_bv)) checker_fail(\"held_pair_setup\");\r\n        for(i=0;i<4;i=i+1) step(0,0,6'd0,0,32'd0,4'd0,1,0,6'd0,1);\r\n        axi_read(6'h04,0); axi_read(6'h08,0);\r\n        // 5: all sixteen byte-strobe patterns on SCRATCH, each read back.\r\n        for(i=0;i<16;i=i+1) begin\r\n            seed=advance(seed);\r\n            axi_write(6'h04,seed,i,i%2,(i/2)%2,i%3);\r\n            axi_read(6'h04,i%2);\r\n        end\r\n        // 6: out-of-range writes (aliases of every index) and reads: SLVERR,\r\n        // no register change, no write count.\r\n        for(i=0;i<8;i=i+1) axi_write(6'h20+i*4+(i%4),32'hffffffff,4'hf,i%2,0,0);\r\n        for(i=0;i<8;i=i+1) axi_read(i*4,0);\r\n        axi_read(6'h20,1); axi_read(6'h33,0); axi_read(6'h3f,2);\r\n        // 7: unaligned addresses select by bits 4:2 only.\r\n        axi_write(6'h01,32'h13572468,4'hf,0,0,0); axi_write(6'h06,32'h24681357,4'h3,1,0,0);\r\n        axi_read(6'h03,0); axi_read(6'h05,0); axi_read(6'h0b,0);\r\n        // 8: interrupts: set pulses, mask, write-1-to-clear, clear with lane 0\r\n        // disabled, upper-lane noise, and set and clear of one flag at one edge.\r\n        irq_drive=8'h5a; step(0,0,6'd0,0,32'd0,4'd0,1,0,6'd0,1); irq_drive=0;\r\n        axi_write(6'h0c,32'h000000f0,4'hf,0,0,0);\r\n        axi_read(6'h10,0);\r\n        axi_write(6'h10,32'h00000050,4'hf,0,0,1);\r\n        axi_write(6'h10,32'h0000000a,4'he,0,0,0);\r\n        axi_write(6'h10,32'hffffff00,4'hf,0,0,0);\r\n        axi_read(6'h10,0);\r\n        irq_at_write=8'h22; axi_write(6'h10,32'h000000ff,4'h1,0,0,0); irq_at_write=0;\r\n        axi_read(6'h10,0);\r\n        axi_write(6'h0c,32'h00000000,4'he,0,0,0);\r\n        axi_write(6'h0c,32'h00000000,4'h1,0,0,0);\r\n        irq_drive=8'h81; step(0,0,6'd0,0,32'd0,4'd0,1,0,6'd0,1); irq_drive=0;\r\n        axi_write(6'h0c,32'h00000080,4'h1,0,0,0);\r\n        axi_write(6'h10,32'h00000081,4'h1,0,0,0);\r\n        // 9: read-only registers ignore writes but count them.\r\n        axi_write(6'h14,32'h11111111,4'hf,0,0,0); axi_write(6'h18,32'h22222222,4'hf,0,0,0);\r\n        axi_write(6'h1c,32'h33333333,4'hf,0,0,0);\r\n        status_drive=32'h600df00d; idle(1);\r\n        axi_read(6'h14,0); axi_read(6'h18,0); axi_read(6'h1c,0);\r\n        // 10: read at the very edge a write lands returns the old value; the\r\n        // next read returns the new value.\r\n        step(0,1,6'h00,1,32'habcdef01,4'hf,0,0,6'd0,1);\r\n        step(0,0,6'd0,0,32'd0,4'd0,0,1,6'h00,1);\r\n        step(0,0,6'd0,0,32'd0,4'd0,1,0,6'd0,1);\r\n        axi_read(6'h00,0);\r\n        idle(2);\r\n        // 11: R stalled while the next AR is held high: the second read is\r\n        // accepted only after the first R transfer.\r\n        step(0,0,6'd0,0,32'd0,4'd0,1,1,6'h08,0);\r\n        for(i=0;i<5;i=i+1) step(0,0,6'd0,0,32'd0,4'd0,1,1,6'h18,0);\r\n        step(0,0,6'd0,0,32'd0,4'd0,1,0,6'd0,1);\r\n        for(i=0;i<3;i=i+1) step(0,0,6'd0,0,32'd0,4'd0,1,1,6'h04,(i==2));\r\n        idle(3);\r\n        // 12: synchronous reset with a held pair behind a stalled response, a\r\n        // stalled read and nonzero registers; then everything restarts.\r\n        step(0,1,6'h04,1,32'h77777777,4'hf,0,1,6'h00,0);\r\n        step(0,1,6'h08,1,32'h88888888,4'hf,0,0,6'd0,0);\r\n        step(0,0,6'd0,0,32'd0,4'd0,0,0,6'd0,0);\r\n        if(!(m_bv && m_awf && m_wf && m_rv)) checker_fail(\"reset_setup\");\r\n        step(1,1,6'h0c,1,32'hffffffff,4'hf,0,1,6'h1c,0);\r\n        for(i=0;i<8;i=i+1) axi_read(i*4,0);\r\n        // 13: off-edge reset pulses with every channel busy and nonzero state.\r\n        axi_write(6'h00,32'h5a5a5a5a,4'hf,0,0,0);\r\n        irq_drive=8'h0f; step(0,0,6'd0,0,32'd0,4'd0,1,0,6'd0,1); irq_drive=0;\r\n        axi_write(6'h0c,32'h0000000f,4'h1,0,0,0);\r\n        step(0,1,6'h04,1,32'h66666666,4'hf,0,1,6'h00,0);\r\n        step(0,1,6'h08,1,32'h99999999,4'hf,0,0,6'd0,0);\r\n        pulse_reset;\r\n        step(0,0,6'd0,0,32'd0,4'd0,0,0,6'd0,0);\r\n        pulse_reset;\r\n        for(i=0;i<6;i=i+1) step(0,0,6'd0,0,32'd0,4'd0,1,0,6'd0,1);\r\n        // 14: seeded random master traffic with three synchronous resets.\r\n        for(i=0;i<3000;i=i+1) begin\r\n            seed=advance(seed);\r\n            status_drive=advance(seed^32'h85ebca6b);\r\n            irq_drive=(seed[30:28]==3'b000) ? {24'd0,seed[27:20]} : 32'd0;\r\n            value=advance(status_drive);\r\n            step(i==900 || i==1800 || i==2600,\r\n                 seed[0], {seed[1] & seed[2], seed[5:3], value[1:0]},\r\n                 seed[6], value, seed[10:7],\r\n                 (i%5",
+    "truncated": true
+  },
+  "testbench_top": "axil_regs_tb",
+  "tool_exit_evidence": {
+    "history_count": 4,
+    "latest_by_tool": {
+      "vivado": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\ooc-live-01\\iter_000\\vivado_synth_output.log",
+        "output_log_sha256": "205b7b31f1cc616a62813172a4c1f3674cc601eb5ca9fdd9da3e52197ab8cb0f",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xelab": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\ooc-live-01\\iter_000\\xelab.log",
+        "output_log_sha256": "23aa7ea287cb07b85caa10a5df59f01432ebb338690d391476ce217d42b4a711",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xsim": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\ooc-live-01\\iter_000\\xsim.log",
+        "output_log_sha256": "498f61ad1c5abcf0ab25b276ce579ec486282c7237499251a6e9b08bc510c56a",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xvlog": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\ooc-live-01\\iter_000\\xvlog.log",
+        "output_log_sha256": "84df0012574f3af226ea59fefd7445b7b15a0595915f13cde89975fbfeb18794",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      }
+    },
+    "missing_required_tools": [],
+    "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\ooc-live-01\\iter_000\\tool_exit_records.log",
+    "records": [
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\ooc-live-01\\iter_000",
+        "driver_returncode": 0,
+        "elapsed_seconds": 1.094000000000051,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xvlog.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\ooc-live-01\\iter_000\\xvlog.log",
+        "output_log_sha256": "84df0012574f3af226ea59fefd7445b7b15a0595915f13cde89975fbfeb18794",
+        "pid": 23144,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xvlog"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\ooc-live-01\\iter_000",
+        "driver_returncode": 0,
+        "elapsed_seconds": 3.719000000000051,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xelab.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\ooc-live-01\\iter_000\\xelab.log",
+        "output_log_sha256": "23aa7ea287cb07b85caa10a5df59f01432ebb338690d391476ce217d42b4a711",
+        "pid": 25480,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xelab"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\ooc-live-01\\iter_000",
+        "driver_returncode": 0,
+        "elapsed_seconds": 4.094000000000051,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xsim.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\ooc-live-01\\iter_000\\xsim.log",
+        "output_log_sha256": "498f61ad1c5abcf0ab25b276ce579ec486282c7237499251a6e9b08bc510c56a",
+        "pid": 11104,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xsim"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\ooc-live-01\\iter_000",
+        "driver_returncode": 0,
+        "elapsed_seconds": 167.3119999999999,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/vivado.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\ooc-live-01\\iter_000\\vivado_synth_output.log",
+        "output_log_sha256": "205b7b31f1cc616a62813172a4c1f3674cc601eb5ca9fdd9da3e52197ab8cb0f",
+        "pid": 224,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "vivado"
+      }
+    ],
+    "schema_valid": true,
+    "sha256": "877f39429c07489edf27c40b0284a550b0f03e3379e1891b26c25ee730641e6d",
+    "status": "recorded",
+    "truncated": false
+  },
+  "top_module": "axil_regs",
+  "verification_logs": [
+    {
+      "head": "INFO: [VRFC 10-2263] Analyzing Verilog file \"C:/Users/prince.baah/Downloads/autortl-work/logs/ooc-live-01/iter_000/axil_regs.v\" into library work\r\nINFO: [VRFC 10-311] analyzing module axil_wr_if\r\nINFO: [VRFC 10-311] analyzing module axil_regbank\r\nINFO: [VRFC 10-311] analyzing module axil_rd_if\r\nINFO: [VRFC 10-311] analyzing module axil_regs\r\nINFO: [VRFC 10-2263] Analyzing Verilog file \"C:/Users/prince.baah/Downloads/autortl-work/logs/ooc-live-01/inputs/testbench_path.v\" into library work\r\nINFO: [VRFC 10-311] analyzing module axil_regs_tb\r\n\r\n",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\ooc-live-01\\iter_000\\xvlog.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "84df0012574f3af226ea59fefd7445b7b15a0595915f13cde89975fbfeb18794",
+      "tail": "",
+      "truncated": false
+    },
+    {
+      "head": "Vivado Simulator v2025.2\r\nCopyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\nCopyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\nRunning: C:/AMDDesignTools/2025.2/Vivado/bin/unwrapped/win64.o/xelab.exe axil_regs_tb -s axil_regs_tb_snap --debug off \r\nMulti-threading is on. Using 10 slave threads.\r\nStarting static elaboration\r\nPass Through NonSizing Optimizer\r\nCompleted static elaboration\r\nStarting simulation data flow analysis\r\nCompleted simulation data flow analysis\r\nTime Resolution for simulation is 1ps\r\nCompiling module work.axil_wr_if\r\nCompiling module work.axil_regbank\r\nCompiling module work.axil_rd_if\r\nCompiling module work.axil_regs\r\nCompiling module work.axil_regs_tb\r\nBuilt simulation snapshot axil_regs_tb_snap\r\n\r\n",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\ooc-live-01\\iter_000\\xelab.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "23aa7ea287cb07b85caa10a5df59f01432ebb338690d391476ce217d42b4a711",
+      "tail": "",
+      "truncated": false
+    },
+    {
+      "head": "\r\n****** xsim v2025.2 (64-bit)\r\n  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025\r\n  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025\r\n  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025\r\n  **** Start of session at: Sun Nov  1 21:28:59 2026\r\n    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\n    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n\r\nsource xsim.dir/axil_regs_tb_snap/xsim_script.tcl\r\n# xsim {axil_regs_tb_snap} -autoloadwcfg -runall\r\nTime resolution is 1 ps\r\nrun -all\r\nCOVERAGE cycles=3407 writes_ok=688 writes_err=224 reads_ok=769 reads_err=218 w_first=156 aw_first=107 b_stalls=887 r_stalls=851 ar_waiting=1188 held_pair=751 set_and_clear=7 irq_cycles=2756 ro_writes=222 busy_resets=4 pulses=2\r\nTEST PASSED\r\n$finish called at time : 34076 ns : File \"C:/Users/prince.baah/Downloads/autortl-work/logs/ooc-live-01/inputs/testbench_path.v\" Line 356\r\nexit\r\nINFO: [Common 17-206] Exiting xsim at Sun Nov  1 21:29:01 2026...\r\n\r\n",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\ooc-live-01\\iter_000\\sim_log.txt",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "498f61ad1c5abcf0ab25b276ce579ec486282c7237499251a6e9b08bc510c56a",
+      "tail": "",
+      "truncated": false
+    },
+    {
+      "head": "\r\n****** Vivado v2025.2 (64-bit)\r\n  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025\r\n  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025\r\n  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025\r\n  **** Start of session at: Sun Nov  1 21:29:04 2026\r\n    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\n    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n\r\nsource C:/Users/prince.baah/Downloads/autortl-work/logs/ooc-live-01/iter_000/synth.tcl\r\n# set_msg_config -id {VRFC 10-3609} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-9873} -new_severity ERROR\r\n# set_msg_config -id {Designutils 20-1307} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-327} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-3352} -new_severity ERROR\r\n# set_part xc7a35tcpg236-1\r\nINFO: [Coretcl 2-1500] The part has been set to 'xc7a35tcpg236-1' for the current project only. Run set_part -help for more details. To evaluate different speed grades in the current design, use the set_speed_grade command, or use the open_checkpoint -part command to change the part used by an existing checkpoint design.\r\nset_part: Time (s): cpu = 00:00:15 ; elapsed = 00:00:15 . Memory (MB): peak = 531.340 ; gain = 222.891\r\n# read_verilog \"C:/Users/prince.baah/Downloads/autortl-work/logs/ooc-live-01/iter_000/axil_regs.v\"\r\n# set fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/ooc-live-01/iter_000/timing.xdc\" w]\r\n# puts $fp {create_clock -period 10.000 -name clk [get_ports clk]}\r\n# puts $fp {set_property HD.CLK_SRC BUFGCTRL_X0Y0 [get_ports clk]}\r\n# close $fp\r\n# read_xdc \"C:/Users/prince.baah/Downloads/autortl-work/logs/ooc-live-01/iter_000/timing.xdc\"\r\n# synth_design -top axil_regs -flatten_hierarchy rebuilt -mode out_of_context \r\nCommand: synth_design -top axi",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\ooc-live-01\\iter_000\\vivado_synth_output.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "205b7b31f1cc616a62813172a4c1f3674cc601eb5ca9fdd9da3e52197ab8cb0f",
+      "tail": ": report_power -file C:/Users/prince.baah/Downloads/autortl-work/logs/ooc-live-01/iter_000/power.rpt\r\nRunning Vector-less Activity Propagation...\r\n\r\nFinished Running Vector-less Activity Propagation\r\n0 Infos, 0 Warnings, 0 Critical Warnings and 0 Errors encountered.\r\nreport_power completed successfully\r\n# catch { report_methodology -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/ooc-live-01/iter_000/methodology.rpt\" }\r\nCommand: report_methodology -file C:/Users/prince.baah/Downloads/autortl-work/logs/ooc-live-01/iter_000/methodology.rpt\r\nINFO: [Timing 38-35] Done setting XDC timing constraints.\r\nINFO: [DRC 23-133] Running Methodology with 2 threads\r\nWARNING: [DRC 23-814] Not all possible (connectivity based) DRCs may have been run because this design is seen as Out of Context.\r\nINFO: [Vivado_Tcl 2-1520] The results of Report Methodology are in file C:/Users/prince.baah/Downloads/autortl-work/logs/ooc-live-01/iter_000/methodology.rpt.\r\nreport_methodology completed successfully\r\n# catch { report_qor_suggestions -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/ooc-live-01/iter_000/qor_suggestions.rpt\" }\r\nCommand: report_qor_suggestions -file C:/Users/prince.baah/Downloads/autortl-work/logs/ooc-live-01/iter_000/qor_suggestions.rpt\r\nCongestion Prediction Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.048 . Memory (MB): peak = 2002.836 ; gain = 0.000\r\nINFO: [Implflow 47-1309] PredResultString: 1:41.94:58.06\r\nfeatureProvider Time (s): cpu = 00:00:01 ; elapsed = 00:00:00.058 . Memory (MB): peak = 2002.836 ; gain = 0.000\r\nINFO: [Implflow 47-1274] ML strategy prediction is not supported for 7-series devices.\r\nreport_qor_suggestions completed successfully\r\n# puts \"SYNTH_COMPLETE\"\r\nSYNTH_COMPLETE\r\nINFO: [Common 17-206] Exiting Vivado at Sun Nov  1 21:31:48 2026...\r\n\r\n",
+      "truncated": true
+    }
+  ]
+}

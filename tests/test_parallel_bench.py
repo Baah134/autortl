@@ -37,6 +37,27 @@ def test_a_crashing_parallel_entry_is_an_exception_record(curriculum, monkeypatc
     assert [(r["entry"], r["reason"]) for r in failed] == [("c", "RuntimeError: boom")]
 
 
+def test_a_dead_worker_pool_is_infrastructure_and_never_enters_history(curriculum, monkeypatch):  # noqa: F811
+    # dead_worker_pool_recorded_as_fail: stopping sign-off pass 1 mid tier 2 killed the
+    # workers and the bench recorded a 0/4 verdict.
+    from concurrent.futures import Future
+    from concurrent.futures.process import BrokenProcessPool
+    _, orch, output = curriculum
+
+    class DyingPool(ThreadPoolExecutor):
+        def submit(self, fn, cfg, run_dir):
+            if run_dir.name == "c":
+                future = Future()
+                future.set_exception(BrokenProcessPool("A process in the process pool was terminated abruptly"))
+                return future
+            return super().submit(fn, cfg, run_dir)
+
+    monkeypatch.setattr(runner, "EXECUTOR", DyingPool)
+    before = len(records()) if runner.RESULTS.exists() else 0
+    assert runner.run_tier(0, output_root=output, jobs=2) == 3  # no verdict
+    assert (len(records()) if runner.RESULTS.exists() else 0) == before
+
+
 @pytest.mark.parametrize("jobs", [0, -1, 1.5, "2"])
 def test_jobs_must_be_a_positive_integer(curriculum, jobs):  # noqa: F811
     _, _, output = curriculum

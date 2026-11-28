@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_1:decision:instruction:0",
+  "result": "In `skid_buffer_core`, replace the `storage[read_ptr]` indexed output with explicit 8-bit head and tail registers, and drive `out_data` directly from the head register; update them on push/pop combinations so the oldest word remains at the head, including simultaneous push/pop when full. Preserve the exact occupancy-based `in_ready` and `out_valid` behavior, synchronous active-high reset, stalled payload stability, and one-cycle minimum transfer age; leave data unspecified when `out_valid` is low. Keep the top module interface and its `// @latency 1` annotation unchanged.",
+  "artifacts": {}
+}

@@ -1,0 +1,77 @@
+{
+  "candidates": [
+    {
+      "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-04\\tier2_32vakp9v\\fir8\\iter_004\\cand_standard",
+      "cache_hit": false,
+      "final_code_hash": "fc776399a01e7a32",
+      "final_source_sha256": "305f7b5c0d6d3c91990a28672a70dd3d84bbbdc028668136bc4b80b9c46bed98",
+      "flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-04\\tier2_32vakp9v\\fir8\\iter_004\\cand_standard\\synth.tcl",
+        "sha256": "46716eb4b7b5d0a380166725633f6824113724f69374c4d0bd69764db5f28501"
+      },
+      "generated_code_hash": "fc776399a01e7a32",
+      "generated_source_sha256": "305f7b5c0d6d3c91990a28672a70dd3d84bbbdc028668136bc4b80b9c46bed98",
+      "instruction": "Keep the delay line, signed parameterized products, output register, synchronous reset behavior, interface, and `// @latency 1` unchanged. Replace the pairwise `s01` through `sum_all` adder tree with a 32-bit carry-save compressor tree over `p0` through `p7`, followed by a single final 32-bit addition into `y_out`. Preserve modulo-2\u00b3\u00b2 sum behavior for every supported signed coefficient value, and avoid the previously rejected symmetric-coefficient pre-add architecture. Expect more LUTs but fewer serial carry-propagate stages; retain the candidate only if fixed simulation and implementation gat",
+      "iteration": 4,
+      "metrics": {
+        "bram_used": 0.0,
+        "dsp_used": 2,
+        "dynamic_power_w": 0.024,
+        "ff_used": 160,
+        "lut_used": 389,
+        "sim_passed": true,
+        "timing_met": false,
+        "total_power_w": 0.092,
+        "whs_ns": 0.166,
+        "wns_ns": -1.906
+      },
+      "mutation": "standard",
+      "reason": "",
+      "rungs": 5,
+      "source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-04\\tier2_32vakp9v\\fir8\\iter_004\\cand_standard\\fir8.v",
+        "sha256": "ff9dd9652f06386ac256988c986e8a8d00abaff3d798d7cfbaf55c665a18f057"
+      },
+      "status": "measured"
+    }
+  ],
+  "doctor": {
+    "action": "rtl_surgery",
+    "adopted": true,
+    "identity_count": 3,
+    "input_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-04\\tier2_32vakp9v\\fir8\\iter_004\\cand_standard\\fir8.v",
+      "sha256": "ff9dd9652f06386ac256988c986e8a8d00abaff3d798d7cfbaf55c665a18f057"
+    },
+    "measured_metrics": {
+      "bram_used": 0.0,
+      "dsp_used": 7,
+      "dynamic_power_w": 0.023,
+      "ff_used": 51,
+      "lut_used": 238,
+      "sim_passed": true,
+      "timing_met": true,
+      "total_power_w": 0.092,
+      "whs_ns": 0.416,
+      "wns_ns": 0.807
+    },
+    "proposed_source_text_sha256": "e7c8b23a7145ae26e8ca9870a989661b19bf73036d20d4cc7116358eb3375a45",
+    "reason": "policy_improvement",
+    "status": "ADOPTED",
+    "tools_ran": true,
+    "trial_flow_script": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-04\\tier2_32vakp9v\\fir8\\iter_004\\doctor_rtl_surgery_trial\\synth.tcl",
+      "sha256": "936cb50b874d0b0e1c95875cfd9340f53b5ad0b9f391eb4fecdb8c0e7ef99a62"
+    },
+    "trial_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-04\\tier2_32vakp9v\\fir8\\iter_004\\doctor_rtl_surgery_trial\\fir8.v",
+      "sha256": "7abc4358736e84639b8855bd388636536e0ce66d198ee3d7fd2a2059a4af5ff4"
+    }
+  },
+  "instruction": "Keep the delay line, signed parameterized products, output register, synchronous reset behavior, interface, and `// @latency 1` unchanged. Replace the pairwise `s01` through `sum_all` adder tree with a 32-bit carry-save compressor tree over `p0` through `p7`, followed by a single final 32-bit addition into `y_out`. Preserve modulo-2\u00b3\u00b2 sum behavior for every supported signed coefficient value, and avoid the previously rejected symmetric-coefficient pre-add architecture. Expect more LUTs but fewer serial carry-propagate stages; retain the candidate only if fixed simulation and implementation gat",
+  "is_best": true,
+  "iteration": 4,
+  "recommendation": "ACCEPT",
+  "schema_version": 1,
+  "selected_source_sha256": "e7c8b23a7145ae26e8ca9870a989661b19bf73036d20d4cc7116358eb3375a45"
+}

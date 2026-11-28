@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Defined behavior and supported parameters: PASS \u2014 authoritative ladder is ALIVE and simulation passed across the integration matrix.\n- Top interface and latency annotation: PASS \u2014 top is `packet_fifo` and declares `// @latency 1`, matching authoritative latency.\n- Required tool gates: PASS \u2014 xvlog, xelab, xsim, and Vivado exited successfully; synthesis reported `SYNTH_COMPLETE`.\n- Routed metric integrity: PASS \u2014 retained routed metrics are available and consistent with the reported candidate values.\n- Timing progress: PASS \u2014 setup WNS improved from -0.930 ns to -0.386 ns; hold improved from 0.052 ns to 0.064 ns. The incumbent was timing-infeasible, so remaining negative setup slack is not a failed criterion for this progress comparison.\n- Improvement classification: PASS \u2014 `timing_progress` is supported. LUTs increased from 24 to 31, so this is not an objective resource reduction.\n\n## Summary\n- Passed: 6 of 6\n- Failed: 0\n- Improved over previous best: YES\n\n## Recommendation\nACCEPT\n\n## Reason\nThe candidate passes the deterministic behavior and tool gates, matches the required top latency annotation, and provides verified timing progress over a timing-infeasible incumbent. Timing closure remains unmet, but that does not fail this comparison under the recorded `timing_progress` classification.",
+      "recommendation": "ACCEPT",
+      "passed": 6,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}

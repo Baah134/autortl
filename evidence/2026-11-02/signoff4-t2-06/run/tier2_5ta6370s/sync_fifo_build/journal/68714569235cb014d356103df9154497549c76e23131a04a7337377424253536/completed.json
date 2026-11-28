@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Behavioral ladder: PASS \u2014 authoritative standard ladder result is ALIVE; simulation also reports TEST PASSED.\n- Interface, parameters, and live child: PASS \u2014 source preserves the required top interface and parameterized `sync_fifo_core`; compile and elaboration succeed.\n- Top latency annotation: PASS \u2014 top declares `// @latency 1`, matching authoritative latency.\n- Compile and simulation gates: PASS \u2014 xvlog, xelab, and xsim exit successfully; exact TEST PASSED verdict is present.\n- Synthesis and process receipts: PASS \u2014 Vivado exits successfully and the retained log contains SYNTH_COMPLETE.\n- Routed metric integrity: PASS \u2014 routed timing and utilization reports are retained and metrics are supplied.\n- Timing progress comparison: PASS \u2014 setup WNS improves from -0.931 ns to -0.102 ns; hold changes from 0.091 ns to 0.089 ns, within the small tolerance. The recorded timing_progress rule applies while both designs remain infeasible.\n\n## Summary\n- Passed: 7 of 7\n- Failed: 0\n- Improved over previous best: YES\n\n## Recommendation\nACCEPT\n\n## Reason\nThe candidate passes the deterministic correctness and verification gates and qualifies as timing progress over the still-infeasible previous best. Timing is not yet closed, but that is not a failed criterion for this comparison under the recorded timing_progress rule. LUTs and FFs increased, which does not invalidate this progress classification.",
+      "recommendation": "ACCEPT",
+      "passed": 7,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}

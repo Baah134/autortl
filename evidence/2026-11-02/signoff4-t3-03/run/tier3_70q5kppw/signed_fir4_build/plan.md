@@ -1,0 +1,9 @@
+# PLAN — iteration 3
+## Current state assessment
+Iteration 2 is the verified incumbent at 71 LUTs and 67 FFs, with setup WNS 0.31 ns and hold WHS 0.059 ns. It passes the required behavior and verification gates; because timing is feasible, iteration 3 must strictly reduce LUTs, or match LUTs and reduce FFs, while keeping both timing slacks nonnegative.
+
+## Hypothesis
+Deriving `in_ready` directly from the three valid bits should remove the redundant registered `full` state and its next-state logic, potentially reducing LUTs and FFs while preserving the three-slot handshake.
+
+## Instruction for generator
+In `signed_fir4_core`, remove `full`, its reset and sequential updates, and the `v1_next`/`v2_next`/`v3_next` lookahead used only to update it. Derive `in_ready` from whether all three slots are occupied, allowing `out_ready` to admit a replacement on a full retire; keep the existing per-stage ready and valid movement behavior. Preserve `// @latency 3`, accepted-sample history updates, registered data movement, synchronous reset behavior, and all observable cycle behavior. Verify that routed setup WNS and hold WHS remain nonnegative and compare LUTs, then FFs, against the iteration 2 incumbent.

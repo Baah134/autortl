@@ -1,0 +1,99 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025
+| Date         : Tue Nov  3 06:15:52 2026
+| Host         : Baah running 64-bit major release  (build 9200)
+| Command      : report_timing -from [all_registers] -to [all_registers] -max_paths 1 -file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t3-02/tier3_cn0rc15p/signed_fir4_build/iter_000/timing_reg2reg.rpt
+| Design       : signed_fir4
+| Device       : 7a35t-cpg236
+| Speed File   : -1  PRODUCTION 1.23 2018-06-13
+| Design State : Routed
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Timing Report
+
+Slack (MET) :             1.991ns  (required time - arrival time)
+  Source:                 u_signed_fir4_core/hist1_reg[2]/C
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            u_signed_fir4_core/data1_reg[12]/D
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            10.000ns  (clk rise@10.000ns - clk rise@0.000ns)
+  Data Path Delay:        8.011ns  (logic 4.394ns (54.851%)  route 3.617ns (45.149%))
+  Logic Levels:           11  (CARRY4=7 LUT1=1 LUT2=1 LUT3=1 LUT4=1)
+  Clock Path Skew:        -0.025ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    4.282ns = ( 14.282 - 10.000 ) 
+    Source Clock Delay      (SCD):    4.643ns
+    Clock Pessimism Removal (CPR):    0.336ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+    M18                                               0.000     0.000 r  clk (IN)
+                         net (fo=0)                   0.000     0.000    clk
+    M18                  IBUF (Prop_ibuf_I_O)         0.938     0.938 r  clk_IBUF_inst/O
+                         net (fo=1, routed)           1.972     2.910    clk_IBUF
+    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.096     3.006 r  clk_IBUF_BUFG_inst/O
+                         net (fo=66, routed)          1.637     4.643    u_signed_fir4_core/CLK
+    SLICE_X2Y7           FDRE                                         r  u_signed_fir4_core/hist1_reg[2]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X2Y7           FDRE (Prop_fdre_C_Q)         0.518     5.161 r  u_signed_fir4_core/hist1_reg[2]/Q
+                         net (fo=4, routed)           0.717     5.878    u_signed_fir4_core/hist1[2]
+    SLICE_X3Y8           LUT2 (Prop_lut2_I1_O)        0.124     6.002 r  u_signed_fir4_core/term1_carry_i_1/O
+                         net (fo=1, routed)           0.000     6.002    u_signed_fir4_core/term1_carry_i_1_n_0
+    SLICE_X3Y8           CARRY4 (Prop_carry4_S[3]_CO[3])
+                                                      0.401     6.403 r  u_signed_fir4_core/term1_carry/CO[3]
+                         net (fo=1, routed)           0.000     6.403    u_signed_fir4_core/term1_carry_n_0
+    SLICE_X3Y9           CARRY4 (Prop_carry4_CI_O[1])
+                                                      0.334     6.737 r  u_signed_fir4_core/term1_carry__0/O[1]
+                         net (fo=1, routed)           0.502     7.240    u_signed_fir4_core/term1_carry__0_n_6
+    SLICE_X6Y9           CARRY4 (Prop_carry4_S[0]_O[0])
+                                                      0.555     7.795 f  u_signed_fir4_core/term1__23_carry/O[0]
+                         net (fo=1, routed)           0.720     8.515    u_signed_fir4_core/term1__23_carry_n_7
+    SLICE_X1Y9           LUT1 (Prop_lut1_I0_O)        0.295     8.810 r  u_signed_fir4_core/i__carry__0_i_3/O
+                         net (fo=1, routed)           0.000     8.810    u_signed_fir4_core/i__carry__0_i_3_n_0
+    SLICE_X1Y9           CARRY4 (Prop_carry4_S[1]_CO[3])
+                                                      0.550     9.360 r  u_signed_fir4_core/fir_result_inferred__0/i__carry__0/CO[3]
+                         net (fo=1, routed)           0.000     9.360    u_signed_fir4_core/fir_result_inferred__0/i__carry__0_n_0
+    SLICE_X1Y10          CARRY4 (Prop_carry4_CI_O[1])
+                                                      0.334     9.694 r  u_signed_fir4_core/fir_result_inferred__0/i__carry__1/O[1]
+                         net (fo=2, routed)           0.865    10.558    u_signed_fir4_core/fir_result_inferred__0/i__carry__1_n_6
+    SLICE_X0Y7           LUT3 (Prop_lut3_I0_O)        0.332    10.890 r  u_signed_fir4_core/i___23_carry__1_i_1/O
+                         net (fo=2, routed)           0.812    11.703    u_signed_fir4_core/i___23_carry__1_i_1_n_0
+    SLICE_X0Y7           LUT4 (Prop_lut4_I0_O)        0.327    12.030 r  u_signed_fir4_core/i___23_carry__1_i_5/O
+                         net (fo=1, routed)           0.000    12.030    u_signed_fir4_core/i___23_carry__1_i_5_n_0
+    SLICE_X0Y7           CARRY4 (Prop_carry4_S[3]_CO[3])
+                                                      0.401    12.431 r  u_signed_fir4_core/fir_result_inferred__0/i___23_carry__1/CO[3]
+                         net (fo=1, routed)           0.000    12.431    u_signed_fir4_core/fir_result_inferred__0/i___23_carry__1_n_0
+    SLICE_X0Y8           CARRY4 (Prop_carry4_CI_O[0])
+                                                      0.223    12.654 r  u_signed_fir4_core/fir_result_inferred__0/i___23_carry__2/O[0]
+                         net (fo=1, routed)           0.000    12.654    u_signed_fir4_core/fir_result0_out[12]
+    SLICE_X0Y8           FDRE                                         r  u_signed_fir4_core/data1_reg[12]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)       10.000    10.000 r  
+    M18                                               0.000    10.000 r  clk (IN)
+                         net (fo=0)                   0.000    10.000    clk
+    M18                  IBUF (Prop_ibuf_I_O)         0.805    10.805 r  clk_IBUF_inst/O
+                         net (fo=1, routed)           1.868    12.673    clk_IBUF
+    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.091    12.764 r  clk_IBUF_BUFG_inst/O
+                         net (fo=66, routed)          1.518    14.282    u_signed_fir4_core/CLK
+    SLICE_X0Y8           FDRE                                         r  u_signed_fir4_core/data1_reg[12]/C
+                         clock pessimism              0.336    14.618    
+                         clock uncertainty           -0.035    14.583    
+    SLICE_X0Y8           FDRE (Setup_fdre_C_D)        0.062    14.645    u_signed_fir4_core/data1_reg[12]
+  -------------------------------------------------------------------
+                         required time                         14.645    
+                         arrival time                         -12.654    
+  -------------------------------------------------------------------
+                         slack                                  1.991    
+
+
+
+

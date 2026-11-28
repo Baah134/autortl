@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_1:decision:instruction:0",
+  "result": "In `packet_fifo_core`, replace the `data_mem`/`last_mem` plus `read_ptr` indexed-output pattern with a WIDTH-generic register queue: drive `out_data` and `out_last` directly from the head registers, shift remaining entries on pop, and append accepted input at the correct tail on push, including simultaneous push/pop at full capacity. Keep the occupancy-based `out_valid`, combinational `in_ready`, explicit DEPTH handling, and synchronous reset behavior; do not add an output pipeline stage or change the top interface or `// @latency 1` annotation. Preserve empty-queue no-bypass behavior, tuple order and marker alignment, stall stability, reset discard, and all supported WIDTH/DEPTH configurations.",
+  "artifacts": {}
+}

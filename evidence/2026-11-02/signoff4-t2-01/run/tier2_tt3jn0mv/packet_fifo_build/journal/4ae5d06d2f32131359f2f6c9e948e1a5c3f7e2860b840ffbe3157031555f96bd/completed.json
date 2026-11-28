@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_2:decision:instruction:0",
+  "result": "In `packet_fifo_core`, keep the cached head tuple and occupancy logic, but add registered empty and full flags that track the current occupancy and drive `out_valid` and the capacity term of `in_ready` directly. Update both flags on the same edge as occupancy, accounting for reset, push-only, pop-only, simultaneous push/pop, and no transfer; preserve full simultaneous pop/push readiness and all supported `DEPTH` values. Keep the top interface and `// @latency 1` annotation unchanged, and preserve tuple order, stall stability, reset behavior, and minimum transfer age.",
+  "artifacts": {}
+}

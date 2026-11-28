@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Top interface and latency annotation: PASS \u2014 Top ports are preserved; declared top latency is unknown, so no numeric annotation is required.\n- Defined behavior and cycle semantics: PASS \u2014 The trusted integration simulation passes; the ALU add/subtract rewrite preserves 32-bit modulo arithmetic.\n- Compile and simulation gates: PASS \u2014 xvlog, xelab and xsim exited successfully; simulation reports `TEST PASSED`.\n- Routed metrics and timing closure: PASS \u2014 Routed evidence is present; WNS is 0.449 ns and WHS is 0.049 ns.\n- Objective improvement: PASS \u2014 LUTs decreased from 2,139 to 2,137; FFs are unchanged. Both designs are timing-feasible, and this is a strict `minimize_luts` improvement.\n- Promotion evidence: PASS \u2014 The recorded improvement kind is `objective`; stall count is 0.\n## Summary\n- Passed: 6 of 6\n- Failed: 0 of 6\n- Improved over previous best: YES\n## Recommendation\nACCEPT\n## Reason\nThe candidate passes the deterministic verification and routed timing gates, preserves the required behavior, and strictly reduces LUT usage against the timing-feasible previous best. The top latency is authoritatively unknown, so its missing numeric annotation is not a failure.",
+      "recommendation": "ACCEPT",
+      "passed": 6,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}

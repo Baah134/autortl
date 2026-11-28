@@ -1,0 +1,571 @@
+{
+  "candidate_metrics": {
+    "bram_total": 50.0,
+    "bram_used": 0.0,
+    "dsp_total": 90,
+    "dsp_used": 0,
+    "dynamic_power_w": 0.013,
+    "ff_pct": 0.06490384615384616,
+    "ff_total": 41600,
+    "ff_used": 27,
+    "lut_pct": 0.10096153846153846,
+    "lut_total": 20800,
+    "lut_used": 21,
+    "reg2reg_wns_ns": 4.856,
+    "sim_error": "",
+    "sim_passed": true,
+    "synth_error": "",
+    "timing_met": true,
+    "total_power_w": 0.083,
+    "whs_ns": 0.099,
+    "wns_ns": 0.063
+  },
+  "candidate_source": {
+    "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\doctor_tool_knobs_trial\\sync_fifo.v",
+    "sha256": "0e16378004a580ee19e53e414d8ce01f1de2ae0cb3af1d279afc249bda4c3e51",
+    "text": "`timescale 1ns/1ps\r\n// @latency 1\r\nmodule sync_fifo (\r\n    input wire clk,\r\n    input wire rst,\r\n    input wire [7:0] in_data,\r\n    input wire in_valid,\r\n    output wire in_ready,\r\n    output wire [7:0] out_data,\r\n    output wire out_valid,\r\n    input wire out_ready\r\n);\r\n    wire core_in_ready;\r\n    wire [7:0] core_out_data;\r\n    wire core_out_valid;\r\n\r\n    sync_fifo_core #(.WIDTH(8), .DEPTH(3)) u_sync_fifo_core (\r\n        .clk(clk),\r\n        .rst(rst),\r\n        .in_data(in_data),\r\n        .in_valid(in_valid),\r\n        .in_ready(core_in_ready),\r\n        .out_data(core_out_data),\r\n        .out_valid(core_out_valid),\r\n        .out_ready(out_ready)\r\n    );\r\n\r\n    reg [7:0] head;\r\n    reg [7:0] middle;\r\n    reg [7:0] tail;\r\n    reg [1:0] occupancy;\r\n\r\n    wire push;\r\n    wire pop;\r\n\r\n    assign out_valid = (occupancy != 0);\r\n    assign in_ready = (occupancy < 3) || out_ready;\r\n    assign out_data = head;\r\n\r\n    assign push = in_valid && in_ready;\r\n    assign pop = out_valid && out_ready;\r\n\r\n    always @(posedge clk) begin\r\n        if (rst) begin\r\n            occupancy <= 0;\r\n        end else begin\r\n            case ({push, pop})\r\n                2'b10: begin\r\n                    case (occupancy)\r\n                        0: head <= in_data;\r\n                        1: middle <= in_data;\r\n                        2: tail <= in_data;\r\n                        default: begin end\r\n                    endcase\r\n                    occupancy <= occupancy + 1'b1;\r\n                end\r\n\r\n                2'b01: begin\r\n                    if (occupancy > 1)\r\n                        head <= middle;\r\n                    if (occupancy > 2)\r\n                        middle <= tail;\r\n                    occupancy <= occupancy - 1'b1;\r\n                end\r\n\r\n                2'b11: begin\r\n                    case (occupancy)\r\n                        1: head <= in_data;\r\n                        2: begin\r\n                            head <= middle;\r\n                            middle <= in_data;\r\n                        end\r\n                        3: begin\r\n                            head <= middle;\r\n                            middle <= tail;\r\n                            tail <= in_data;\r\n                        end\r\n                        default: begin end\r\n                    endcase\r\n                end\r\n\r\n                default: begin\r\n                    occupancy <= occupancy;\r\n                end\r\n            endcase\r\n        end\r\n    end\r\nendmodule",
+    "truncated": false
+  },
+  "candidate_timing_feasible": true,
+  "doctor_trial": {
+    "action": "tool_knobs",
+    "input_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\cand_standard\\sync_fifo.v",
+      "sha256": "0e16378004a580ee19e53e414d8ce01f1de2ae0cb3af1d279afc249bda4c3e51",
+      "text": "",
+      "truncated": true
+    },
+    "measured_metrics": {
+      "bram_total": 50.0,
+      "bram_used": 0.0,
+      "dsp_total": 90,
+      "dsp_used": 0,
+      "dynamic_power_w": 0.013,
+      "ff_pct": 0.06490384615384616,
+      "ff_total": 41600,
+      "ff_used": 27,
+      "lut_pct": 0.10096153846153846,
+      "lut_total": 20800,
+      "lut_used": 21,
+      "reg2reg_wns_ns": 4.856,
+      "sim_error": "",
+      "sim_passed": true,
+      "synth_error": "",
+      "timing_met": true,
+      "total_power_w": 0.083,
+      "whs_ns": 0.099,
+      "wns_ns": 0.063
+    },
+    "reason": "policy_improvement",
+    "reports": [
+      {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\doctor_tool_knobs_trial\\power.rpt",
+        "sha256": "9e57b30c17884994d60e89b625aa2d9e74bc2574eec62c8d95931b0ba9645b11"
+      },
+      {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\doctor_tool_knobs_trial\\timing.rpt",
+        "sha256": "3d803ae975e6310674ba8af39e64b86fbb8ffa74b45a7bf0ded51587019a8ba0"
+      },
+      {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\doctor_tool_knobs_trial\\timing_reg2reg.rpt",
+        "sha256": "cb1d56eea5feff3f10a274af3be4ae4fd91764e9532078c9fa8c4e401116cc29"
+      },
+      {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\doctor_tool_knobs_trial\\timing_routed.rpt",
+        "sha256": "98bfa42e113f0d45d95c289875ecc0797a17516c85bed5cf23c265558c6e7e6b"
+      },
+      {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\doctor_tool_knobs_trial\\utilization.rpt",
+        "sha256": "ab8d2feaa2fd8a2cae8fb05277b0b4cf5590bf6b94d44c6b2cbec67307aa6a0d"
+      },
+      {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\doctor_tool_knobs_trial\\utilization_routed.rpt",
+        "sha256": "b8ca502758a96db701e04c464b447ea4f49fe89038362021664aebd8d4b7e345"
+      }
+    ],
+    "reports_truncated": false,
+    "scope": "Trial observations only; these do not replace candidate or incumbent metrics.",
+    "status": "ADOPTED",
+    "tools_ran": true,
+    "trial_flow_script": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\doctor_tool_knobs_trial\\synth.tcl",
+      "sha256": "fe42180f95dc3d87ca44d91e07f8ee683dc2493956a13a749bc608b6467ba228",
+      "text": "",
+      "truncated": true
+    },
+    "trial_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\doctor_tool_knobs_trial\\sync_fifo.v",
+      "sha256": "0e16378004a580ee19e53e414d8ce01f1de2ae0cb3af1d279afc249bda4c3e51",
+      "text": "`timescale 1ns/1ps\r\n// @latency 1\r\nmodule sync_fifo (\r\n    input wire clk,\r\n    input wire rst,\r\n    input wire [7:0] in_data,\r\n    input wire in_valid,\r\n    output wire in_ready,\r\n    output wire [7:0] out_data,\r\n    output wire out_valid,\r\n    input wire out_ready\r\n);\r\n    wire core_in_ready;\r\n    wire [7:0] core_out_data;\r\n    wire core_out_valid;\r\n\r\n    sync_fifo_core #(.WIDTH(8), .DEPTH(3)) u_sync_fifo_core (\r\n        .clk(clk),\r\n        .rst(rst),\r\n        .in_data(in_data),\r\n        .in_valid(in_valid),\r\n        .in_ready(core_in_ready),\r\n        .out_data(core_out_data),\r\n        .out_valid(core_out_valid),\r\n        .out_ready(out_ready)\r\n    );\r\n\r\n    reg [7:0] head;\r\n    reg [7:0] middle;\r\n    reg [7:0] tail;\r\n    reg [1:0] occupancy;\r\n\r\n    wire push;\r\n    wire pop;\r\n\r\n    assign out_valid = (occupancy != 0);\r\n    assign in_ready = (occupancy < 3) || out_ready;\r\n    assign out_data = head;\r\n\r\n    assign push = in_valid && in_ready;\r\n    assign pop = out_valid && out_ready;\r\n",
+      "truncated": true
+    }
+  },
+  "first_violated_path_excerpt": null,
+  "flow_and_constraints": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\doctor_tool_knobs_trial\\synth.tcl",
+      "sha256": "fe42180f95dc3d87ca44d91e07f8ee683dc2493956a13a749bc608b6467ba228",
+      "text": "set_msg_config -id {VRFC 10-3609} -new_severity ERROR\r\nset_msg_config -id {Synth 8-9873} -new_severity ERROR\r\nset_msg_config -id {Designutils 20-1307} -new_severity ERROR\r\nset_msg_config -id {Synth 8-327} -new_severity ERROR\r\nset_msg_config -id {Synth 8-3352} -new_severity ERROR\r\nset_part xc7a35tcpg236-1\r\nread_verilog \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier2-01/sync_fifo_build/iter_001/doctor_tool_knobs_trial/sync_fifo.v\" \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier2-01/sync_fifo_build/modules/sync_fifo_core/sync_fifo_core.v\"\r\nset fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier2-01/sync_fifo_build/iter_001/doctor_tool_knobs_trial/timing.xdc\" w]\r\nputs $fp {create_clock -period 10.000 -name clk [get_ports clk]}\r\nclose $fp\r\nread_xdc \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier2-01/sync_fifo_build/iter_001/doctor_tool_knobs_trial/timing.xdc\"\r\nsynth_design -top sync_fifo -flatten_hierarchy rebuilt -retiming\r\nset fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier2-01/sync_fifo_build/iter_001/doctor_tool_knobs_trial/timing_io.tcl\" w]\r\nputs $fp {set data_inputs [get_ports -filter {DIRECTION == IN && NAME != clk}]}\r\nputs $fp {if {[llength $data_inputs] > 0} {set_input_delay -clock clk -max 0.000 $data_inputs; set_input_delay -clock clk -min 0.000 $data_inputs}}\r\nputs $fp {if {[llength [all_outputs]] > 0} {set_output_delay -clock clk -max 0.000 [all_outputs]; set_output_delay -clock clk -min 0.000 [all_outputs]}}\r\nclose $fp\r\nsource \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier2-01/sync_fifo_build/iter_001/doctor_tool_knobs_trial/timing_io.tcl\"\r\nreport_utilization -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier2-01/sync_fifo_build/iter_001/doctor_tool_knobs_trial/utilization.rpt\"\r\nreport_timing_summary -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier2-01/sync_fifo_build/iter_001/doctor_tool_knobs_trial/timing.rpt\"\r\nopt_design\r\nplace_design\r\nphys_opt_design\r\nroute_design\r\nreport_utilization -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier2-01/sync_fifo_build/iter_001/doctor_tool_knobs_trial/utilization_routed.rpt\"\r\nreport_timing_summary -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier2-01/sync_fifo_build/iter_001/doctor_tool_knobs_trial/timing_routed.rpt\"\r\ncatch { if {[llength [all_registers]] > 0} { report_timing -from [all_registers] -to [all_registers] -max_paths 1 -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier2-01/sync_fifo_build/iter_001/doctor_tool_knobs_trial/timing_reg2reg.rpt\" } }\r\nreport_design_analysis -logic_level_distribution -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier2-01/sync_fifo_build/iter_001/doctor_tool_knobs_trial/design_analysis.rpt\"\r\nreport_power -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier2-01/sync_fifo_build/iter_001/doctor_tool_knobs_trial/power.rpt\"\r\ncatch { report_methodology -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier2-01/sync_fifo_build/iter_001/doctor_tool_knobs_trial/methodology.rpt\" }\r\ncatch { report_qor_suggestions -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier2-01/sync_fifo_build/iter_001/doctor_tool_knobs_trial/qor_suggestions.rpt\" }\r\nputs \"SYNTH_COMPLETE\"\r\n",
+      "truncated": false
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\doctor_tool_knobs_trial\\timing.xdc",
+      "sha256": "fa142c09f0fadb5e303ca9fea08c02bc353451533e44aeee9cd9a0231cc8bede",
+      "text": "create_clock -period 10.000 -name clk [get_ports clk]\r\n",
+      "truncated": false
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\doctor_tool_knobs_trial\\timing_io.tcl",
+      "sha256": "6b38098841a48bbb3ab15de49d2bf2baf7e4384f599259ff5f3afa2c2b1daf00",
+      "text": "set data_inputs [get_ports -filter {DIRECTION == IN && NAME != clk}]\r\nif {[llength $data_inputs] > 0} {set_input_delay -clock clk -max 0.000 $data_inputs; set_input_delay -clock clk -min 0.000 $data_inputs}\r\nif {[llength [all_outputs]] > 0} {set_output_delay -clock clk -max 0.000 [all_outputs]; set_output_delay -clock clk -min 0.000 [all_outputs]}\r\n",
+      "truncated": false
+    }
+  ],
+  "improvement_kind": "timing_recovery",
+  "measured_improvement": true,
+  "metric_provenance": "Structured metrics are parsed from retained reports; routed utilization/timing reports take precedence when present. The manifest identifies complete files by hash. Header excerpts are bounded previews, not complete reports or an independent metric source.",
+  "objective": "minimize_luts",
+  "previous_best_metrics": {
+    "bram_total": 50.0,
+    "bram_used": 0.0,
+    "dsp_total": 90,
+    "dsp_used": 0,
+    "dynamic_power_w": 0.015,
+    "ff_pct": 0.014423076923076924,
+    "ff_total": 41600,
+    "ff_used": 6,
+    "lut_pct": 0.0625,
+    "lut_total": 20800,
+    "lut_used": 13,
+    "reg2reg_wns_ns": 5.452,
+    "sim_error": "",
+    "sim_passed": true,
+    "synth_error": "",
+    "timing_met": false,
+    "total_power_w": 0.085,
+    "whs_ns": 0.091,
+    "wns_ns": -0.931
+  },
+  "previous_best_timing_feasible": false,
+  "process_exit_gate": {
+    "passed": true,
+    "policy": "Every required tool's latest actual process exit must be zero with retained matching output; physical-only Doctor may reuse source-bound prior compile/simulation.",
+    "reasons": []
+  },
+  "report_headers": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\doctor_tool_knobs_trial\\power.rpt",
+      "sha256": "9e57b30c17884994d60e89b625aa2d9e74bc2574eec62c8d95931b0ba9645b11",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version     : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date             : Fri Oct 30 11:22:54 2026\r\n| Host             : Baah running 64-bit major release  (build 9200)\r\n| Command          : report_power -file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier2-01/sync_fifo_build/iter_001/doctor_tool_knobs_trial/power.rpt\r\n| Design           : sync_fifo\r\n| Device           : xc7a35tcpg236-1\r\n| Design State     : routed\r\n| Grade            : commercial\r\n| Process          : typical\r\n| Characterization : Production\r\n-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nPower Report\r\n\r\nTable of Contents\r\n-----------------\r\n1. Summary\r\n1.1 On-Chip Components\r\n1.2 Power Supply Summary\r\n1.3 Confidence Level\r\n2. Settings\r\n2.1 Environment\r\n2.2 Clock Constraints\r\n3. Detailed Reports\r\n3.1 By Hierarchy\r\n\r\n1. Summary\r\n----------\r\n\r\n+--------------------------+--------------+\r\n| Total On-Chip Power (W)  | 0.083        |\r\n| Design Power Budget (W)  | Unspecified* |\r\n| Power Budget Margin (W)  | NA           |\r\n| Dynamic (W)              | 0.013        |\r\n| Device Static (W)        | 0.070        |\r\n| Effective TJA (C/W)      | 5.0          |\r\n| Max Ambient (C)          | 84.6         |\r\n| Junction Temperature (C) | 25.4         |\r\n| Confidence Level         | Low          |\r\n| Setting File             | ---          |\r\n| S",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\doctor_tool_knobs_trial\\timing.rpt",
+      "sha256": "3d803ae975e6310674ba8af39e64b86fbb8ffa74b45a7bf0ded51587019a8ba0",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n---------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date         : Fri Oct 30 11:22:08 2026\r\n| Host         : Baah running 64-bit major release  (build 9200)\r\n| Command      : report_timing_summary -file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier2-01/sync_fifo_build/iter_001/doctor_tool_knobs_trial/timing.rpt\r\n| Design       : sync_fifo\r\n| Device       : 7a35t-cpg236\r\n| Speed File   : -1  PRODUCTION 1.23 2018-06-13\r\n| Design State : Synthesized\r\n---------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nTiming Summary Report\r\n\r\n------------------------------------------------------------------------------------------------\r\n| Timer Settings\r\n| --------------\r\n------------------------------------------------------------------------------------------------\r\n\r\n  Enable Multi Corner Analysis               :  Yes\r\n  Enable Pessimism Removal                   :  Yes\r\n  Pessimism Removal Resolution               :  Nearest Common Node\r\n  Enable Input Delay Default Clock           :  No\r\n  Enable Preset / Clear Arcs                 :  No\r\n  Disable Flight Delays                      :  No\r\n  Ignore I/O Paths                           :  No\r\n  Timing Early Launch at Borrowing Latches   :  No\r\n  Borrow Time for Max Delay Exceptions       :  Yes\r\n  Merge Timing Exceptions                    :  Yes\r\n  Inter-SLR Compensatio",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\doctor_tool_knobs_trial\\timing_reg2reg.rpt",
+      "sha256": "cb1d56eea5feff3f10a274af3be4ae4fd91764e9532078c9fa8c4e401116cc29",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date         : Fri Oct 30 11:22:53 2026\r\n| Host         : Baah running 64-bit major release  (build 9200)\r\n| Command      : report_timing -from [all_registers] -to [all_registers] -max_paths 1 -file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier2-01/sync_fifo_build/iter_001/doctor_tool_knobs_trial/timing_reg2reg.rpt\r\n| Design       : sync_fifo\r\n| Device       : 7a35t-cpg236\r\n| Speed File   : -1  PRODUCTION 1.23 2018-06-13\r\n| Design State : Routed\r\n----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nTiming Report\r\n\r\nSlack (MET) :             4.856ns  (required time - arrival time)\r\n  Source:                 occupancy_reg[1]/C\r\n                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@5.000ns period=10.000ns})\r\n  Destination:            head_reg[7]/CE\r\n                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@5.000ns period=10.000ns})\r\n  Path Group:             clk\r\n  Path Type:              Setup (Max at Slow Process Corner)\r\n  Requirement:            10.000ns  (clk rise@10.000ns - clk rise@0.000ns)\r\n  Data Path Delay:        4.672ns  (logic 0.605ns (12.951%)  route 4.067ns (",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\doctor_tool_knobs_trial\\timing_routed.rpt",
+      "sha256": "98bfa42e113f0d45d95c289875ecc0797a17516c85bed5cf23c265558c6e7e6b",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date         : Fri Oct 30 11:22:53 2026\r\n| Host         : Baah running 64-bit major release  (build 9200)\r\n| Command      : report_timing_summary -file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier2-01/sync_fifo_build/iter_001/doctor_tool_knobs_trial/timing_routed.rpt\r\n| Design       : sync_fifo\r\n| Device       : 7a35t-cpg236\r\n| Speed File   : -1  PRODUCTION 1.23 2018-06-13\r\n| Design State : Routed\r\n----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nTiming Summary Report\r\n\r\n------------------------------------------------------------------------------------------------\r\n| Timer Settings\r\n| --------------\r\n------------------------------------------------------------------------------------------------\r\n\r\n  Enable Multi Corner Analysis               :  Yes\r\n  Enable Pessimism Removal                   :  Yes\r\n  Pessimism Removal Resolution               :  Nearest Common Node\r\n  Enable Input Delay Default Clock           :  No\r\n  Enable Preset / Clear Arcs                 :  No\r\n  Disable Flight Delays                      :  No\r\n  Ignore I/O Paths                           :  No\r\n  Timing Early Launch at Borrowing Latches   :  No\r\n  Borrow Time for Max Delay Exceptions       :  Yes\r\n  Merge Timing Exceptions                    :  Yes\r\n  Inter",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\doctor_tool_knobs_trial\\utilization.rpt",
+      "sha256": "ab8d2feaa2fd8a2cae8fb05277b0b4cf5590bf6b94d44c6b2cbec67307aa6a0d",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\n-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\n| Date         : Fri Oct 30 11:22:08 2026\n| Host         : Baah running 64-bit major release  (build 9200)\n| Command      : report_utilization -file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier2-01/sync_fifo_build/iter_001/doctor_tool_knobs_trial/utilization.rpt\n| Design       : sync_fifo\n| Device       : xc7a35tcpg236-1\n| Speed File   : -1\n| Design State : Synthesized\n-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n\nUtilization Design Information\n\nTable of Contents\n-----------------\n1. Slice Logic\n1.1 Summary of Registers by Type\n2. Memory\n3. DSP\n4. IO and GT Specific\n5. Clocking\n6. Specific Feature\n7. Primitives\n8. Black Boxes\n9. Instantiated Netlists\n\n1. Slice Logic\n--------------\n\n+-------------------------+------+-------+------------+-----------+-------+\n|        Site Type        | Used | Fixed | Prohibited | Available | Util% |\n+-------------------------+------+-------+------------+-----------+-------+\n| Slice LUTs*             |   21 |     0 |          0 |     20800 |  0.10 |\n|   LUT as Logic          |   21 |     0 |          0 |     20800 |  0.10 |\n|   LUT as Memory         |    0 |     0 |          0 |      9600 |  0.00 |\n| Slice Registers         |   26 |     0 |          0 |     41600 |  0.06 |\n|   Register as Flip Flop |   26 |     0 |       ",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\doctor_tool_knobs_trial\\utilization_routed.rpt",
+      "sha256": "b8ca502758a96db701e04c464b447ea4f49fe89038362021664aebd8d4b7e345",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\n------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\n| Date         : Fri Oct 30 11:22:53 2026\n| Host         : Baah running 64-bit major release  (build 9200)\n| Command      : report_utilization -file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier2-01/sync_fifo_build/iter_001/doctor_tool_knobs_trial/utilization_routed.rpt\n| Design       : sync_fifo\n| Device       : xc7a35tcpg236-1\n| Speed File   : -1\n| Design State : Routed\n------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n\nUtilization Design Information\n\nTable of Contents\n-----------------\n1. Slice Logic\n1.1 Summary of Registers by Type\n2. Slice Logic Distribution\n3. Memory\n4. DSP\n5. IO and GT Specific\n6. Clocking\n7. Specific Feature\n8. Primitives\n9. Black Boxes\n10. Instantiated Netlists\n\n1. Slice Logic\n--------------\n\n+-------------------------+------+-------+------------+-----------+-------+\n|        Site Type        | Used | Fixed | Prohibited | Available | Util% |\n+-------------------------+------+-------+------------+-----------+-------+\n| Slice LUTs              |   21 |     0 |          0 |     20800 |  0.10 |\n|   LUT as Logic          |   21 |     0 |          0 |     20800 |  0.10 |\n|   LUT as Memory         |    0 |     0 |          0 |      9600 |  0.00 |\n| Slice Registers         |   27 |     0 |          0 |     41600 |  0.06 |\n|   ",
+      "truncated": true
+    }
+  ],
+  "report_manifest": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\doctor_tool_knobs_trial\\power.rpt",
+      "sha256": "9e57b30c17884994d60e89b625aa2d9e74bc2574eec62c8d95931b0ba9645b11"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\doctor_tool_knobs_trial\\timing.rpt",
+      "sha256": "3d803ae975e6310674ba8af39e64b86fbb8ffa74b45a7bf0ded51587019a8ba0"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\doctor_tool_knobs_trial\\timing_reg2reg.rpt",
+      "sha256": "cb1d56eea5feff3f10a274af3be4ae4fd91764e9532078c9fa8c4e401116cc29"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\doctor_tool_knobs_trial\\timing_routed.rpt",
+      "sha256": "98bfa42e113f0d45d95c289875ecc0797a17516c85bed5cf23c265558c6e7e6b"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\doctor_tool_knobs_trial\\utilization.rpt",
+      "sha256": "ab8d2feaa2fd8a2cae8fb05277b0b4cf5590bf6b94d44c6b2cbec67307aa6a0d"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\doctor_tool_knobs_trial\\utilization_routed.rpt",
+      "sha256": "b8ca502758a96db701e04c464b447ea4f49fe89038362021664aebd8d4b7e345"
+    }
+  ],
+  "tool_exit_evidence": {
+    "history_count": 1,
+    "latest_by_tool": {
+      "vivado": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\doctor_tool_knobs_trial\\vivado_synth_output.log",
+        "output_log_sha256": "f0aad62f697105e3d07097ad9d2dfb3e762084988b345e918932be0fdb77469b",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      }
+    },
+    "missing_required_tools": [
+      "xvlog",
+      "xelab",
+      "xsim"
+    ],
+    "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\doctor_tool_knobs_trial\\tool_exit_records.log",
+    "records": [
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\doctor_tool_knobs_trial",
+        "driver_returncode": 0,
+        "elapsed_seconds": 125.92200000002049,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/vivado.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\doctor_tool_knobs_trial\\vivado_synth_output.log",
+        "output_log_sha256": "f0aad62f697105e3d07097ad9d2dfb3e762084988b345e918932be0fdb77469b",
+        "pid": 14988,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "vivado"
+      }
+    ],
+    "schema_valid": true,
+    "sha256": "ebb2191378c34d4cf6e8fb989592e77ed5d6f09cee82c030fd1964a29c473470",
+    "status": "recorded",
+    "truncated": false
+  },
+  "verification_logs": [
+    {
+      "head": "\r\n****** Vivado v2025.2 (64-bit)\r\n  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025\r\n  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025\r\n  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025\r\n  **** Start of session at: Fri Oct 30 11:20:52 2026\r\n    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\n    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n\r\nsource C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier2-01/sync_fifo_build/iter_001/doctor_tool_knobs_trial/synth.tcl\r\n# set_msg_config -id {VRFC 10-3609} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-9873} -new_severity ERROR\r\n# set_msg_config -id {Designutils 20-1307} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-327} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-3352} -new_severity ERROR\r\n# set_part xc7a35tcpg236-1\r\nINFO: [Coretcl 2-1500] The part has been set to 'xc7a35tcpg236-1' for the current project only. Run set_part -help for more details. To evaluate different speed grades in the current design, use the set_speed_grade command, or use the open_checkpoint -part command to change the part used by an existing checkpoint design.\r\nset_part: Time (s): cpu = 00:00:16 ; elapsed = 00:00:13 . Memory (MB): peak = 531.984 ; gain = 226.977\r\n# read_verilog \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier2-01/sync_fifo_build/iter_001/doctor_tool_knobs_trial/sync_fifo.v\" \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier2-01/sync_fifo_build/modules/sync_fifo_core/sync_fifo_core.v\"\r\n# set fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier2-01/sync_fifo_build/iter_001/doctor_tool_knobs_trial/timing.xdc\" w]\r\n# puts $fp {create_clock -period 10.000 -name clk [get_ports clk]}\r\n# close $fp\r\n# read_xdc \"C:",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\doctor_tool_knobs_trial\\vivado_synth_output.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "f0aad62f697105e3d07097ad9d2dfb3e762084988b345e918932be0fdb77469b",
+      "tail": "er.rpt\r\nRunning Vector-less Activity Propagation...\r\n\r\nFinished Running Vector-less Activity Propagation\r\n0 Infos, 0 Warnings, 0 Critical Warnings and 0 Errors encountered.\r\nreport_power completed successfully\r\n# catch { report_methodology -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier2-01/sync_fifo_build/iter_001/doctor_tool_knobs_trial/methodology.rpt\" }\r\nCommand: report_methodology -file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier2-01/sync_fifo_build/iter_001/doctor_tool_knobs_trial/methodology.rpt\r\nINFO: [Timing 38-35] Done setting XDC timing constraints.\r\nINFO: [DRC 23-133] Running Methodology with 2 threads\r\nINFO: [Vivado_Tcl 2-1520] The results of Report Methodology are in file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier2-01/sync_fifo_build/iter_001/doctor_tool_knobs_trial/methodology.rpt.\r\nreport_methodology completed successfully\r\n# catch { report_qor_suggestions -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier2-01/sync_fifo_build/iter_001/doctor_tool_knobs_trial/qor_suggestions.rpt\" }\r\nCommand: report_qor_suggestions -file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier2-01/sync_fifo_build/iter_001/doctor_tool_knobs_trial/qor_suggestions.rpt\r\nCongestion Prediction Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.012 . Memory (MB): peak = 1996.078 ; gain = 0.000\r\nINFO: [Implflow 47-1309] PredResultString: 1:37.08:62.92\r\nfeatureProvider Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.037 . Memory (MB): peak = 1996.078 ; gain = 0.000\r\nINFO: [Implflow 47-1274] ML strategy prediction is not supported for 7-series devices.\r\nreport_qor_suggestions completed successfully\r\n# puts \"SYNTH_COMPLETE\"\r\nSYNTH_COMPLETE\r\nINFO: [Common 17-206] Exiting Vivado at Fri Oct 30 11:22:55 2026...\r\n\r\n",
+      "truncated": true
+    }
+  ],
+  "verification_reuse": {
+    "evidence": [
+      {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\cand_standard\\verification_inputs.log",
+        "sha256": "e87a2026351219c8eeb1452b8d7ab793d3c3e7aabf70b84ea04877b96ece073b"
+      },
+      {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\cand_standard\\sync_fifo.v",
+        "sha256": "0e16378004a580ee19e53e414d8ce01f1de2ae0cb3af1d279afc249bda4c3e51"
+      },
+      {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\modules\\sync_fifo_core\\sync_fifo_core.v",
+        "sha256": "864e946b30e601606ae481b8b9715ba45dbb80b984497227354903ecd193d9af"
+      },
+      {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\inputs\\testbench_path.v",
+        "sha256": "2f5e867ee5421845b0e06565e7041a86c034afc78988701b09d684b2d0bb9139"
+      },
+      {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\cand_standard\\sim_log.txt",
+        "sha256": "fa98ea9c7ab4e8c1774cb1c169e25ede2eececec00be28d3c2134a2acab58496"
+      },
+      {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\cand_standard\\tool_exit_records.log",
+        "sha256": "3f289dc82f0f755d328a11ff2d335ab889ccb78ad8c11b96bbb064e7d45106bb"
+      },
+      {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\cand_standard\\vivado_synth_output.log",
+        "sha256": "79323fa3a24dc90dcd4d01c4b3d1e600a9196c2bfc8b394d288f0c2cb3d60888"
+      },
+      {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\cand_standard\\xelab.log",
+        "sha256": "be6d51e3e1cadceddc8948a929467538b47f1774272ae4760412b6049d5d4403"
+      },
+      {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\cand_standard\\xsim.log",
+        "sha256": "fa98ea9c7ab4e8c1774cb1c169e25ede2eececec00be28d3c2134a2acab58496"
+      },
+      {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\cand_standard\\xvlog.log",
+        "sha256": "02b5e23c2016ea181030d49e8a31cfd0689221ad65a91813bf2891aeb5042922"
+      }
+    ],
+    "mode": "source_identical_prior_verification",
+    "prior_directory": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\cand_standard",
+    "prior_flow_evidence": {
+      "first_violated_path_excerpt": {
+        "category": "setup",
+        "destination": "out_valid",
+        "fanout": 26,
+        "logic_levels": 2,
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\cand_standard\\timing_routed.rpt",
+        "preview_policy": "First complete identifiable violated path in report order, at most 6000 characters. Slack, endpoints, levels and fanout describe this path only, not global WNS/WHS. Resource text is retained verbatim; absent fields are unknown.",
+        "sha256": "4f79bdb46720a113e14dceccdf092f063fcbd336e5015890f1832711e081273b",
+        "slack_ns": -0.161,
+        "source": "occupancy_reg[1]/C",
+        "text": "Slack (VIOLATED) :        -0.161ns  (required time - arrival time)\r\n  Source:                 occupancy_reg[1]/C\r\n                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@5.000ns period=10.000ns})\r\n  Destination:            out_valid\r\n                            (output port clocked by clk  {rise@0.000ns fall@5.000ns period=10.000ns})\r\n  Path Group:             clk\r\n  Path Type:              Max at Slow Process Corner\r\n  Requirement:            10.000ns  (clk rise@10.000ns - clk rise@0.000ns)\r\n  Data Path Delay:        5.488ns  (logic 3.310ns (60.310%)  route 2.178ns (39.690%))\r\n  Logic Levels:           2  (LUT2=1 OBUF=1)\r\n  Output Delay:           0.000ns\r\n  Clock Path Skew:        -4.637ns (DCD - SCD + CPR)\r\n    Destination Clock Delay (DCD):    0.000ns = ( 10.000 - 10.000 ) \r\n    Source Clock Delay      (SCD):    4.637ns\r\n    Clock Pessimism Removal (CPR):    0.000ns\r\n  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE\r\n    Total System Jitter     (TSJ):    0.071ns\r\n    Total Input Jitter      (TIJ):    0.000ns\r\n    Discrete Jitter          (DJ):    0.000ns\r\n    Phase Error              (PE):    0.000ns\r\n\r\n    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)\r\n  -------------------------------------------------------------------    -------------------\r\n                         (clock clk rise edge)        0.000     0.000 r  \r\n    M18                                               0.000     0.000 r  clk (IN)\r\n                         net (fo=0)                   0.000     0.000    clk\r\n    M18                  IBUF (Prop_ibuf_I_O)         0.938     0.938 r  clk_IBUF_inst/O\r\n                         net (fo=1, routed)           1.972     2.910    clk_IBUF\r\n    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.096     3.006 r  clk_IBUF_BUFG_inst/O\r\n                         net (fo=26, routed)          1.631     4.637    clk_IBUF_BUFG\r\n    SLICE_X0Y15          FDRE                                         r  occupancy_reg[1]/C\r\n  -------------------------------------------------------------------    -------------------\r\n    SLICE_X0Y15          FDRE (Prop_fdre_C_Q)         0.419     5.056 r  occupancy_reg[1]/Q\r\n                         net (fo=23, routed)          0.650     5.706    occupancy[1]\r\n    SLICE_X1Y20          LUT2 (Prop_lut2_I0_O)        0.297     6.003 r  out_valid_OBUF_inst_i_1/O\r\n                         net (fo=1, routed)           1.529     7.531    out_valid_OBUF\r\n    U19                  OBUF (Prop_obuf_I_O)         2.594    10.125 r  out_valid_OBUF_inst/O\r\n                         net (fo=0)                   0.000    10.125    out_valid\r\n    U19                                                               r  out_valid (OUT)\r\n  -------------------------------------------------------------------    -------------------\r\n\r\n                         (clock clk rise edge)       10.000    10.000 r  \r\n                         clock pessimism              0.000    10.000    \r\n                         clock uncertainty           -0.035     9.965    \r\n                         output delay                -0.000     9.965    \r\n  -------------------------------------------------------------------\r\n                         required time                          9.965    \r\n                         arrival time                         -10.125    \r\n  -------------------------------------------------------------------\r\n                         slack                                 -0.161    ",
+        "truncated": false
+      },
+      "flow_and_constraints": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\cand_standard\\synth.tcl",
+          "sha256": "fb90d49bcc97880f44f0c8052005b6298c8790266ed763668a0ed1e43299bc7e",
+          "text": "set_msg_config -id {VRFC 10-3609} -new_severity ERROR\r\nset_msg_config -id {Synth 8-9873} -new_severity ERROR\r\nset_msg_config -id {Designutils 20-1307} -new_severity ERROR\r\nset_msg_config -id {Synth 8-327} -new_severity ERROR\r\nset_msg_config -id {Synth 8-3352} -new_severity ERROR\r\nset_part xc7a35tcpg236-1\r\nread_verilog \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier2-01/sync_fifo_build/iter_001/cand_standard/sync_fifo.v\" \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier2-01/sync_fifo_build/modules/sync_fifo_core/sync_fifo_core.v\"\r\nset fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier2-01/sync_fifo_build/iter_001/cand_standard/timing.xdc\" w]\r\nputs $fp {create_clock -period 10.000 -name clk [get_ports clk]}\r\nclose $fp\r\nread_xdc \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier2-01/sync_fifo_build/iter_001/cand_standard/timing.xdc\"\r\nsynth_design -top sync_fifo -flatten_hierarchy rebuilt \r\nset fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier2-01/sync_fifo_build/iter_001/cand_standard/timing_io.tcl\" w]\r\nputs $fp {set data_inputs [get_ports -filter {DIRECTION == IN && NAME != clk}]}\r\nputs $fp {if {[llength $data_inputs] > 0} {set_input_delay -clock clk -max 0.000 $data_inputs; set_input_delay -clock clk -min 0.000 $data_inputs}}\r\nputs $fp {if {[llength [all_outputs]] > 0} {set_output_delay -clock clk -max 0.000 [all_outputs]; set_output_delay -clock clk -min 0.000 [all_outputs]}}\r\nclose $fp\r\nsource \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier2-01/sync_fifo_build/iter_001/cand_standard/timing_io.tcl\"\r\nreport_utilization -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier2-01/sync_fifo_build/iter_001/cand_standard/utilization.rpt\"\r\nreport_timing_summary -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier2-01/sync_fifo_build/iter_001/cand_standard/timing.rpt\"\r\nopt_design\r\nplace_design\r\n\r\nroute_design\r\nreport_utilization -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier2-01/sync_fifo_build/iter_001/cand_standard/utilization_routed.rpt\"\r\nreport_timing_summary -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier2-01/sync_fifo_build/iter_001/cand_standard/timing_routed.rpt\"\r\ncatch { if {[llength [all_registers]] > 0} { report_timing -from [all_registers] -to [all_registers] -max_paths 1 -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier2-01/sync_fifo_build/iter_001/cand_standard/timing_reg2reg.rpt\" } }\r\nreport_design_analysis -logic_level_distribution -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier2-01/sync_fifo_build/iter_001/cand_standard/design_analysis.rpt\"\r\nreport_power -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier2-01/sync_fifo_build/iter_001/cand_standard/power.rpt\"\r\ncatch { report_methodology -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier2-01/sync_fifo_build/iter_001/cand_standard/methodology.rpt\" }\r\ncatch { report_qor_suggestions -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier2-01/sync_fifo_build/iter_001/cand_standard/qor_suggestions.rpt\" }\r\nputs \"SYNTH_COMPLETE\"\r\n",
+          "truncated": false
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\cand_standard\\timing.xdc",
+          "sha256": "fa142c09f0fadb5e303ca9fea08c02bc353451533e44aeee9cd9a0231cc8bede",
+          "text": "create_clock -period 10.000 -name clk [get_ports clk]\r\n",
+          "truncated": false
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\cand_standard\\timing_io.tcl",
+          "sha256": "6b38098841a48bbb3ab15de49d2bf2baf7e4384f599259ff5f3afa2c2b1daf00",
+          "text": "set data_inputs [get_ports -filter {DIRECTION == IN && NAME != clk}]\r\nif {[llength $data_inputs] > 0} {set_input_delay -clock clk -max 0.000 $data_inputs; set_input_delay -clock clk -min 0.000 $data_inputs}\r\nif {[llength [all_outputs]] > 0} {set_output_delay -clock clk -max 0.000 [all_outputs]; set_output_delay -clock clk -min 0.000 [all_outputs]}\r\n",
+          "truncated": false
+        }
+      ],
+      "metric_provenance": "Structured metrics are parsed from retained reports; routed utilization/timing reports take precedence when present. The manifest identifies complete files by hash. Header excerpts are bounded previews, not complete reports or an independent metric source.",
+      "report_headers": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\cand_standard\\power.rpt",
+          "sha256": "52b30acc7095fd06b72021626093f6e64684a59861e0850ef25b67c87ed8a83f",
+          "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n-------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version     : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date             : Fri Oct 30 11:20:47 2026\r\n| Host             : Baah running 64-bit major release  (build 9200)\r\n| Command          : report_power -file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier2-01/sync_fifo_build/iter_001/cand_standard/power.rpt\r\n| Design           : sync_fifo\r\n| Device           : xc7a35tcpg236-1\r\n| Design State     : routed\r\n| Grade            : commercial\r\n| Process          : typical\r\n| Characterization : Production\r\n-------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nPower Report\r\n\r\nTable of Contents\r\n-----------------\r\n1. Summary\r\n1.1 On-Chip Components\r\n1.2 Power Supply Summary\r\n1.3 Confidence Level\r\n2. Settings\r\n2.1 Environment\r\n2.2 Clock Constraints\r\n3. Detailed Reports\r\n3.1 By Hierarchy\r\n\r\n1. Summary\r\n----------\r\n\r\n+--------------------------+--------------+\r\n| Total On-Chip Power (W)  | 0.083        |\r\n| Design Power Budget (W)  | Unspecified* |\r\n| Power Budget Margin (W)  | NA           |\r\n| Dynamic (W)              | 0.013        |\r\n| Device Static (W)        | 0.070        |\r\n| Effective TJA (C/W)      | 5.0          |\r\n| Max Ambient (C)          | 84.6         |\r\n| Junction Temperature (C) | 25.4         |\r\n| Confidence Level         | Low          |\r\n| Setting File             | ---          |\r\n| Simulation Activity File | --- ",
+          "truncated": true
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\cand_standard\\timing.rpt",
+          "sha256": "f8bdf45b08b0b80801b9ba48d48f339d4906a0d2875c937c1880157d2b98baae",
+          "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n-----------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date         : Fri Oct 30 11:19:46 2026\r\n| Host         : Baah running 64-bit major release  (build 9200)\r\n| Command      : report_timing_summary -file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier2-01/sync_fifo_build/iter_001/cand_standard/timing.rpt\r\n| Design       : sync_fifo\r\n| Device       : 7a35t-cpg236\r\n| Speed File   : -1  PRODUCTION 1.23 2018-06-13\r\n| Design State : Synthesized\r\n-----------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nTiming Summary Report\r\n\r\n------------------------------------------------------------------------------------------------\r\n| Timer Settings\r\n| --------------\r\n------------------------------------------------------------------------------------------------\r\n\r\n  Enable Multi Corner Analysis               :  Yes\r\n  Enable Pessimism Removal                   :  Yes\r\n  Pessimism Removal Resolution               :  Nearest Common Node\r\n  Enable Input Delay Default Clock           :  No\r\n  Enable Preset / Clear Arcs                 :  No\r\n  Disable Flight Delays                      :  No\r\n  Ignore I/O Paths                           :  No\r\n  Timing Early Launch at Borrowing Latches   :  No\r\n  Borrow Time for Max Delay Exceptions       :  Yes\r\n  Merge Timing Exceptions                    :  Yes\r\n  Inter-SLR Compensation                     :  Conse",
+          "truncated": true
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\cand_standard\\timing_reg2reg.rpt",
+          "sha256": "b6015ca3b6bc06d4e36a3d13f1f1c47a0c0c2c8a9297998cb24b9bc494077e98",
+          "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date         : Fri Oct 30 11:20:46 2026\r\n| Host         : Baah running 64-bit major release  (build 9200)\r\n| Command      : report_timing -from [all_registers] -to [all_registers] -max_paths 1 -file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier2-01/sync_fifo_build/iter_001/cand_standard/timing_reg2reg.rpt\r\n| Design       : sync_fifo\r\n| Device       : 7a35t-cpg236\r\n| Speed File   : -1  PRODUCTION 1.23 2018-06-13\r\n| Design State : Routed\r\n------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nTiming Report\r\n\r\nSlack (MET) :             5.124ns  (required time - arrival time)\r\n  Source:                 occupancy_reg[1]/C\r\n                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@5.000ns period=10.000ns})\r\n  Destination:            head_reg[7]/CE\r\n                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@5.000ns period=10.000ns})\r\n  Path Group:             clk\r\n  Path Type:              Setup (Max at Slow Process Corner)\r\n  Requirement:            10.000ns  (clk rise@10.000ns - clk rise@0.000ns)\r\n  Data Path Delay:        4.400ns  (logic 0.742ns (16.865%)  route 3.658ns (83.135%))\r\n  Logic Levels:    ",
+          "truncated": true
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\cand_standard\\timing_routed.rpt",
+          "sha256": "4f79bdb46720a113e14dceccdf092f063fcbd336e5015890f1832711e081273b",
+          "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date         : Fri Oct 30 11:20:46 2026\r\n| Host         : Baah running 64-bit major release  (build 9200)\r\n| Command      : report_timing_summary -file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier2-01/sync_fifo_build/iter_001/cand_standard/timing_routed.rpt\r\n| Design       : sync_fifo\r\n| Device       : 7a35t-cpg236\r\n| Speed File   : -1  PRODUCTION 1.23 2018-06-13\r\n| Design State : Routed\r\n------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nTiming Summary Report\r\n\r\n------------------------------------------------------------------------------------------------\r\n| Timer Settings\r\n| --------------\r\n------------------------------------------------------------------------------------------------\r\n\r\n  Enable Multi Corner Analysis               :  Yes\r\n  Enable Pessimism Removal                   :  Yes\r\n  Pessimism Removal Resolution               :  Nearest Common Node\r\n  Enable Input Delay Default Clock           :  No\r\n  Enable Preset / Clear Arcs                 :  No\r\n  Disable Flight Delays                      :  No\r\n  Ignore I/O Paths                           :  No\r\n  Timing Early Launch at Borrowing Latches   :  No\r\n  Borrow Time for Max Delay Exceptions       :  Yes\r\n  Merge Timing Exceptions                    :  Yes\r\n  Inter-SLR Compensation             ",
+          "truncated": true
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\cand_standard\\utilization.rpt",
+          "sha256": "c267a56f96f35cf9eb7d8126e27739d67407276a5c4c9c1549679191150a10d6",
+          "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\n-------------------------------------------------------------------------------------------------------------------------------------------------------------------\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\n| Date         : Fri Oct 30 11:19:46 2026\n| Host         : Baah running 64-bit major release  (build 9200)\n| Command      : report_utilization -file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier2-01/sync_fifo_build/iter_001/cand_standard/utilization.rpt\n| Design       : sync_fifo\n| Device       : xc7a35tcpg236-1\n| Speed File   : -1\n| Design State : Synthesized\n-------------------------------------------------------------------------------------------------------------------------------------------------------------------\n\nUtilization Design Information\n\nTable of Contents\n-----------------\n1. Slice Logic\n1.1 Summary of Registers by Type\n2. Memory\n3. DSP\n4. IO and GT Specific\n5. Clocking\n6. Specific Feature\n7. Primitives\n8. Black Boxes\n9. Instantiated Netlists\n\n1. Slice Logic\n--------------\n\n+-------------------------+------+-------+------------+-----------+-------+\n|        Site Type        | Used | Fixed | Prohibited | Available | Util% |\n+-------------------------+------+-------+------------+-----------+-------+\n| Slice LUTs*             |   21 |     0 |          0 |     20800 |  0.10 |\n|   LUT as Logic          |   21 |     0 |          0 |     20800 |  0.10 |\n|   LUT as Memory         |    0 |     0 |          0 |      9600 |  0.00 |\n| Slice Registers         |   26 |     0 |          0 |     41600 |  0.06 |\n|   Register as Flip Flop |   26 |     0 |          0 |     41600 |  0.06 |\n|  ",
+          "truncated": true
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\cand_standard\\utilization_routed.rpt",
+          "sha256": "4cd733ef5dfeaf411ef4ff411105812e30322d33b4bdc861495e88d25ac3d6fd",
+          "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\n| Date         : Fri Oct 30 11:20:46 2026\n| Host         : Baah running 64-bit major release  (build 9200)\n| Command      : report_utilization -file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier2-01/sync_fifo_build/iter_001/cand_standard/utilization_routed.rpt\n| Design       : sync_fifo\n| Device       : xc7a35tcpg236-1\n| Speed File   : -1\n| Design State : Routed\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n\nUtilization Design Information\n\nTable of Contents\n-----------------\n1. Slice Logic\n1.1 Summary of Registers by Type\n2. Slice Logic Distribution\n3. Memory\n4. DSP\n5. IO and GT Specific\n6. Clocking\n7. Specific Feature\n8. Primitives\n9. Black Boxes\n10. Instantiated Netlists\n\n1. Slice Logic\n--------------\n\n+-------------------------+------+-------+------------+-----------+-------+\n|        Site Type        | Used | Fixed | Prohibited | Available | Util% |\n+-------------------------+------+-------+------------+-----------+-------+\n| Slice LUTs              |   21 |     0 |          0 |     20800 |  0.10 |\n|   LUT as Logic          |   21 |     0 |          0 |     20800 |  0.10 |\n|   LUT as Memory         |    0 |     0 |          0 |      9600 |  0.00 |\n| Slice Registers         |   26 |     0 |          0 |     41600 |  0.06 |\n|   Register as Flip Flop |   26 |",
+          "truncated": true
+        }
+      ],
+      "report_manifest": [
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\cand_standard\\power.rpt",
+          "sha256": "52b30acc7095fd06b72021626093f6e64684a59861e0850ef25b67c87ed8a83f"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\cand_standard\\timing.rpt",
+          "sha256": "f8bdf45b08b0b80801b9ba48d48f339d4906a0d2875c937c1880157d2b98baae"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\cand_standard\\timing_reg2reg.rpt",
+          "sha256": "b6015ca3b6bc06d4e36a3d13f1f1c47a0c0c2c8a9297998cb24b9bc494077e98"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\cand_standard\\timing_routed.rpt",
+          "sha256": "4f79bdb46720a113e14dceccdf092f063fcbd336e5015890f1832711e081273b"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\cand_standard\\utilization.rpt",
+          "sha256": "c267a56f96f35cf9eb7d8126e27739d67407276a5c4c9c1549679191150a10d6"
+        },
+        {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\cand_standard\\utilization_routed.rpt",
+          "sha256": "4cd733ef5dfeaf411ef4ff411105812e30322d33b4bdc861495e88d25ac3d6fd"
+        }
+      ],
+      "tool_exit_evidence": {
+        "history_count": 5,
+        "latest_by_tool": {
+          "vivado": {
+            "driver_returncode": 0,
+            "log_status": "verified",
+            "log_verified": true,
+            "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\cand_standard\\vivado_synth_output.log",
+            "output_log_sha256": "79323fa3a24dc90dcd4d01c4b3d1e600a9196c2bfc8b394d288f0c2cb3d60888",
+            "returncode": 0,
+            "status": "exited",
+            "successful": true
+          },
+          "xelab": {
+            "driver_returncode": 0,
+            "log_status": "verified",
+            "log_verified": true,
+            "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\cand_standard\\xelab.log",
+            "output_log_sha256": "be6d51e3e1cadceddc8948a929467538b47f1774272ae4760412b6049d5d4403",
+            "returncode": 0,
+            "status": "exited",
+            "successful": true
+          },
+          "xsim": {
+            "driver_returncode": 0,
+            "log_status": "verified",
+            "log_verified": true,
+            "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\cand_standard\\xsim.log",
+            "output_log_sha256": "fa98ea9c7ab4e8c1774cb1c169e25ede2eececec00be28d3c2134a2acab58496",
+            "returncode": 0,
+            "status": "exited",
+            "successful": true
+          },
+          "xvlog": {
+            "driver_returncode": 0,
+            "log_status": "verified",
+            "log_verified": true,
+            "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\cand_standard\\xvlog.log",
+            "output_log_sha256": "02b5e23c2016ea181030d49e8a31cfd0689221ad65a91813bf2891aeb5042922",
+            "returncode": 0,
+            "status": "exited",
+            "successful": true
+          }
+        },
+        "missing_required_tools": [],
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\cand_standard\\tool_exit_records.log",
+        "records": [
+          {
+            "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\cand_standard",
+            "driver_returncode": 0,
+            "elapsed_seconds": 2.969000000040978,
+            "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xvlog.bat",
+            "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\cand_standard\\xvlog.log",
+            "output_log_sha256": "9a7be2bb255e289b5935b567fdfb49e485345e949f3ff3c3eb3928df6ac584c6",
+            "pid": 9028,
+            "returncode": 0,
+            "schema_version": 1,
+            "status": "exited",
+            "tool": "xvlog"
+          },
+          {
+            "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\cand_standard",
+            "driver_returncode": 0,
+            "elapsed_seconds": 1.952999999979511,
+            "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xvlog.bat",
+            "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\cand_standard\\xvlog.log",
+            "output_log_sha256": "02b5e23c2016ea181030d49e8a31cfd0689221ad65a91813bf2891aeb5042922",
+            "pid": 22264,
+            "returncode": 0,
+            "schema_version": 1,
+            "status": "exited",
+            "tool": "xvlog"
+          },
+          {
+            "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\cand_standard",
+            "driver_returncode": 0,
+            "elapsed_seconds": 8.952999999979511,
+            "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xelab.bat",
+            "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\cand_standard\\xelab.log",
+            "output_log_sha256": "be6d51e3e1cadceddc8948a929467538b47f1774272ae4760412b6049d5d4403",
+            "pid": 15728,
+            "returncode": 0,
+            "schema_version": 1,
+            "status": "exited",
+            "tool": "xelab"
+          },
+          {
+            "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\cand_standard",
+            "driver_returncode": 0,
+            "elapsed_seconds": 4.75,
+            "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xsim.bat",
+            "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\cand_standard\\xsim.log",
+            "output_log_sha256": "fa98ea9c7ab4e8c1774cb1c169e25ede2eececec00be28d3c2134a2acab58496",
+            "pid": 25288,
+            "returncode": 0,
+            "schema_version": 1,
+            "status": "exited",
+            "tool": "xsim"
+          },
+          {
+            "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\cand_standard",
+            "driver_returncode": 0,
+            "elapsed_seconds": 167.51599999994505,
+            "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/vivado.bat",
+            "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\cand_standard\\vivado_synth_output.log",
+            "output_log_sha256": "79323fa3a24dc90dcd4d01c4b3d1e600a9196c2bfc8b394d288f0c2cb3d60888",
+            "pid": 24344,
+            "returncode": 0,
+            "schema_version": 1,
+            "status": "exited",
+            "tool": "vivado"
+          }
+        ],
+        "schema_valid": true,
+        "sha256": "3f289dc82f0f755d328a11ff2d335ab889ccb78ad8c11b96bbb064e7d45106bb",
+        "status": "recorded",
+        "truncated": false
+      },
+      "verification_logs": [
+        {
+          "head": "INFO: [VRFC 10-2263] Analyzing Verilog file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier2-01/sync_fifo_build/iter_001/cand_standard/sync_fifo.v\" into library work\r\nINFO: [VRFC 10-311] analyzing module sync_fifo\r\nINFO: [VRFC 10-2263] Analyzing Verilog file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier2-01/sync_fifo_build/modules/sync_fifo_core/sync_fifo_core.v\" into library work\r\nINFO: [VRFC 10-311] analyzing module sync_fifo_core\r\nINFO: [VRFC 10-2263] Analyzing Verilog file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier2-01/sync_fifo_build/inputs/testbench_path.v\" into library work\r\nINFO: [VRFC 10-311] analyzing module sync_fifo_case\r\nINFO: [VRFC 10-311] analyzing module sync_fifo_tb\r\n\r\n",
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\cand_standard\\xvlog.log",
+          "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+          "sha256": "02b5e23c2016ea181030d49e8a31cfd0689221ad65a91813bf2891aeb5042922",
+          "tail": "",
+          "truncated": false
+        },
+        {
+          "head": "Vivado Simulator v2025.2\r\nCopyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\nCopyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\nRunning: C:/AMDDesignTools/2025.2/Vivado/bin/unwrapped/win64.o/xelab.exe sync_fifo_tb -s sync_fifo_tb_snap --debug off \r\nMulti-threading is on. Using 10 slave threads.\r\nStarting static elaboration\r\nPass Through NonSizing Optimizer\r\nCompleted static elaboration\r\nStarting simulation data flow analysis\r\nCompleted simulation data flow analysis\r\nTime Resolution for simulation is 1ps\r\nCompiling module work.sync_fifo_core_default\r\nCompiling module work.sync_fifo\r\nCompiling module work.sync_fifo_case(USE_TOP=1)\r\nCompiling module work.sync_fifo_core(WIDTH=1,DEPTH=1)\r\nCompiling module work.sync_fifo_case(WIDTH=1,DEPTH=1)\r\nCompiling module work.sync_fifo_core(DEPTH=2)\r\nCompiling module work.sync_fifo_case(DEPTH=2)\r\nCompiling module work.sync_fifo_core(DEPTH=4)\r\nCompiling module work.sync_fifo_case(DEPTH=4)\r\nCompiling module work.sync_fifo_core(WIDTH=13,DEPTH=5)\r\nCompiling module work.sync_fifo_case(WIDTH=13,DEPTH=5)\r\nCompiling module work.sync_fifo_core(WIDTH=16,DEPTH=8)\r\nCompiling module work.sync_fifo_case(WIDTH=16,DEPTH=8)\r\nCompiling module work.sync_fifo_tb\r\nBuilt simulation snapshot sync_fifo_tb_snap\r\n\r\n",
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\cand_standard\\xelab.log",
+          "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+          "sha256": "be6d51e3e1cadceddc8948a929467538b47f1774272ae4760412b6049d5d4403",
+          "tail": "",
+          "truncated": false
+        },
+        {
+          "head": "\r\n****** xsim v2025.2 (64-bit)\r\n  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025\r\n  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025\r\n  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025\r\n  **** Start of session at: Fri Oct 30 11:17:58 2026\r\n    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\n    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n\r\nsource xsim.dir/sync_fifo_tb_snap/xsim_script.tcl\r\n# xsim {sync_fifo_tb_snap} -autoloadwcfg -runall\r\nTime resolution is 1 ps\r\nrun -all\r\nCOVERAGE case=1 WIDTH=1 DEPTH=1 checked=701 accepted=533 retired=530 discarded=3 full=612 stall=82 simultaneous=478 resets=3\r\nCOVERAGE case=2 WIDTH=8 DEPTH=2 checked=711 accepted=554 retired=550 discarded=4 full=175 stall=77 simultaneous=472 resets=3\r\nCOVERAGE case=0 WIDTH=8 DEPTH=3 checked=721 accepted=573 retired=564 discarded=9 full=134 stall=84 simultaneous=488 resets=3\r\nCOVERAGE case=3 WIDTH=8 DEPTH=4 checked=731 accepted=583 retired=576 discarded=7 full=100 stall=107 simultaneous=500 resets=3\r\nCOVERAGE case=4 WIDTH=13 DEPTH=5 checked=741 accepted=579 retired=569 discarded=10 full=97 stall=103 simultaneous=487 resets=2\r\nCOVERAGE case=5 WIDTH=16 DEPTH=8 checked=771 accepted=611 retired=597 discarded=14 full=93 stall=124 simultaneous=514 resets=3\r\nTEST PASSED\r\n$finish called at time : 7718 ns : File \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier2-01/sync_fifo_build/inputs/testbench_path.v\" Line 144\r\nexit\r\nINFO: [Common 17-206] Exiting xsim at Fri Oct 30 11:18:01 2026...\r\n\r\n",
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\cand_standard\\sim_log.txt",
+          "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+          "sha256": "fa98ea9c7ab4e8c1774cb1c169e25ede2eececec00be28d3c2134a2acab58496",
+          "tail": "",
+          "truncated": false
+        },
+        {
+          "head": "\r\n****** Vivado v2025.2 (64-bit)\r\n  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025\r\n  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025\r\n  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025\r\n  **** Start of session at: Fri Oct 30 11:18:03 2026\r\n    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\n    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n\r\nsource C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier2-01/sync_fifo_build/iter_001/cand_standard/synth.tcl\r\n# set_msg_config -id {VRFC 10-3609} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-9873} -new_severity ERROR\r\n# set_msg_config -id {Designutils 20-1307} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-327} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-3352} -new_severity ERROR\r\n# set_part xc7a35tcpg236-1\r\nINFO: [Coretcl 2-1500] The part has been set to 'xc7a35tcpg236-1' for the current project only. Run set_part -help for more details. To evaluate different speed grades in the current design, use the set_speed_grade command, or use the open_checkpoint -part command to change the part used by an existing checkpoint design.\r\nset_part: Time (s): cpu = 00:00:20 ; elapsed = 00:00:15 . Memory (MB): peak = 530.141 ; gain = 222.340\r\n# read_verilog \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier2-01/sync_fifo_build/iter_001/cand_standard/sync_fifo.v\" \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier2-01/sync_fifo_build/modules/sync_fifo_core/sync_fifo_core.v\"\r\n# set fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier2-01/sync_fifo_build/iter_001/cand_standard/timing.xdc\" w]\r\n# puts $fp {create_clock -period 10.000 -name clk [get_ports clk]}\r\n# close $fp\r\n# read_xdc \"C:/Users/prince.baah/Downloads/a",
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\sync_fifo_build\\iter_001\\cand_standard\\vivado_synth_output.log",
+          "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+          "sha256": "79323fa3a24dc90dcd4d01c4b3d1e600a9196c2bfc8b394d288f0c2cb3d60888",
+          "tail": "ier2-01/sync_fifo_build/iter_001/cand_standard/power.rpt\r\nRunning Vector-less Activity Propagation...\r\n\r\nFinished Running Vector-less Activity Propagation\r\n0 Infos, 0 Warnings, 0 Critical Warnings and 0 Errors encountered.\r\nreport_power completed successfully\r\n# catch { report_methodology -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier2-01/sync_fifo_build/iter_001/cand_standard/methodology.rpt\" }\r\nCommand: report_methodology -file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier2-01/sync_fifo_build/iter_001/cand_standard/methodology.rpt\r\nINFO: [Timing 38-35] Done setting XDC timing constraints.\r\nINFO: [DRC 23-133] Running Methodology with 2 threads\r\nINFO: [Vivado_Tcl 2-1520] The results of Report Methodology are in file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier2-01/sync_fifo_build/iter_001/cand_standard/methodology.rpt.\r\nreport_methodology completed successfully\r\n# catch { report_qor_suggestions -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier2-01/sync_fifo_build/iter_001/cand_standard/qor_suggestions.rpt\" }\r\nCommand: report_qor_suggestions -file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier2-01/sync_fifo_build/iter_001/cand_standard/qor_suggestions.rpt\r\nCongestion Prediction Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.013 . Memory (MB): peak = 1996.477 ; gain = 0.000\r\nINFO: [Implflow 47-1309] PredResultString: 1:36.25:63.75\r\nfeatureProvider Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.070 . Memory (MB): peak = 1996.477 ; gain = 0.000\r\nINFO: [Implflow 47-1274] ML strategy prediction is not supported for 7-series devices.\r\nreport_qor_suggestions completed successfully\r\n# puts \"SYNTH_COMPLETE\"\r\nSYNTH_COMPLETE\r\nINFO: [Common 17-206] Exiting Vivado at Fri Oct 30 11:20:48 2026...\r\n\r\n",
+          "truncated": true
+        }
+      ]
+    },
+    "prior_source_sha256": "0e16378004a580ee19e53e414d8ce01f1de2ae0cb3af1d279afc249bda4c3e51",
+    "schema_version": 1,
+    "source_sha256": "0e16378004a580ee19e53e414d8ce01f1de2ae0cb3af1d279afc249bda4c3e51",
+    "statement": "Only physical tool options changed. Compile/simulation were not rerun in this directory; their actual prior evidence is reused for identical RTL, testbench and companion sources. Missing prior exit receipts remain unknown."
+  }
+}

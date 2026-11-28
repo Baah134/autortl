@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Interface and defined behavior: PASS \u2014 candidate preserves the top ports, synchronous active-high reset, and 8-sample debounce behavior; the authoritative ladder is ALIVE.\n- Top latency annotation: PASS \u2014 `// @latency 0` matches the authoritative known latency.\n- Compile, elaboration, and simulation: PASS \u2014 required tool exits succeeded and simulation reported `TEST PASSED`.\n- Routed metrics and timing feasibility: PASS \u2014 retained routed evidence reports LUTs=4, FFs=5, WNS=0.731 ns, and WHS=0.185 ns.\n- Improvement over previous best: FAIL \u2014 both designs are timing-feasible, but the minimize_luts objective is unchanged at (4 LUTs, 5 FFs); no strict objective improvement is established.\n## Summary\n- Passed: 4 of 5\n- Failed: 1 of 5\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nAll behavioral and verification gates pass, but the candidate does not strictly improve the chosen objective over the timing-feasible previous best: LUT and FF counts are unchanged. The reg-to-reg slack gain is advisory for this objective and does not establish promotion.",
+      "recommendation": "REJECT",
+      "passed": 4,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

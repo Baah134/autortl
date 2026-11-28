@@ -1,0 +1,213 @@
+{
+  "top_name": "signed_fir4",
+  "modules": [
+    {
+      "name": "signed_fir4_core",
+      "behavior": "Signed stateful FIR4 stream: every accepted input sample x[n] produces y[n]=3*x[n]-5*x[n-1]+7*x[n-2]-2*x[n-3]. x is signed8 [-128,127]; output is exact signed13, full range [-2169,2166], no saturation. The previous three ACCEPTED samples are initially/reset zero. Advance history ONLY when in_valid && in_ready before a rising edge; invalid or blocked samples never change it. Three elastic slots/capacity3: r3=!v3||out_ready, r2=!v2||r3, r1=!v1||r2, in_ready=r1, out_valid=v3. On a rising edge each ready stage takes OLD preceding stage valid/data; ready stage1 captures current input-valid and its FIR math on accepted input. No bypass. Capture edge k first becomes stage3-valid after edge k+2 when unobstructed, earliest transfer edge k+3 (minimum accepted-transfer age3). Sustain one accepted input and retired output per edge after filling including full retire/advance/replace. Stalls may delay outputs. Hold out_valid and defined signed result stable while blocked; invalid output payload unspecified. Synchronous active-high rst overrides transfers, clears all history and three valid slots ONLY at rising edges. Ready/valid reflect slot state even before an edge while rst asserted; no combinational reset gating. Entirely off-edge reset pulse has no effect on history or validity. Producer holds x and in_valid while blocked except reset abort. Python accepted-transaction oracle MUST keep three signed prior accepted samples in state, reinterpret masked8 input x>=128 as x-256, compute current FIR and advance history once per non-reset step. Return out_data masked13 (value &8191). Supplied rst clears history and returns0. Do NOT model pipeline/latency/validity/occupancy/backpressure in oracle. Each IOExample starts from zero history and after_cycles repeats the SAME accepted input; examples are first/repeated-constant anchors, not latency or an impulse trace.",
+      "ports": [
+        {
+          "name": "clk",
+          "direction": "input",
+          "width": 1,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "rst",
+          "direction": "input",
+          "width": 1,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "x",
+          "direction": "input",
+          "width": 8,
+          "protocol": "none",
+          "signed": true
+        },
+        {
+          "name": "in_valid",
+          "direction": "input",
+          "width": 1,
+          "protocol": "valid_ready",
+          "signed": false
+        },
+        {
+          "name": "in_ready",
+          "direction": "output",
+          "width": 1,
+          "protocol": "valid_ready",
+          "signed": false
+        },
+        {
+          "name": "out_data",
+          "direction": "output",
+          "width": 13,
+          "protocol": "none",
+          "signed": true
+        },
+        {
+          "name": "out_valid",
+          "direction": "output",
+          "width": 1,
+          "protocol": "valid_ready",
+          "signed": false
+        },
+        {
+          "name": "out_ready",
+          "direction": "input",
+          "width": 1,
+          "protocol": "valid_ready",
+          "signed": false
+        }
+      ],
+      "latency": 3,
+      "latency_known": true,
+      "compare_mode": "scoreboard",
+      "reset": {
+        "signal": "rst",
+        "kind": "sync",
+        "active_high": true,
+        "duration_cycles": 3
+      },
+      "parameters": {},
+      "clock_domains": [
+        "clk"
+      ],
+      "examples": [
+        {
+          "inputs": {
+            "rst": 0,
+            "in_valid": 1,
+            "out_ready": 1,
+            "x": 0
+          },
+          "expected": {
+            "out_data": 0
+          },
+          "after_cycles": 1
+        },
+        {
+          "inputs": {
+            "rst": 0,
+            "in_valid": 1,
+            "out_ready": 1,
+            "x": 127
+          },
+          "expected": {
+            "out_data": 381
+          },
+          "after_cycles": 1
+        },
+        {
+          "inputs": {
+            "rst": 0,
+            "in_valid": 1,
+            "out_ready": 1,
+            "x": 128
+          },
+          "expected": {
+            "out_data": 7808
+          },
+          "after_cycles": 1
+        },
+        {
+          "inputs": {
+            "rst": 0,
+            "in_valid": 1,
+            "out_ready": 1,
+            "x": 127
+          },
+          "expected": {
+            "out_data": 7938
+          },
+          "after_cycles": 2
+        },
+        {
+          "inputs": {
+            "rst": 0,
+            "in_valid": 1,
+            "out_ready": 1,
+            "x": 128
+          },
+          "expected": {
+            "out_data": 7552
+          },
+          "after_cycles": 3
+        },
+        {
+          "inputs": {
+            "rst": 0,
+            "in_valid": 1,
+            "out_ready": 1,
+            "x": 127
+          },
+          "expected": {
+            "out_data": 381
+          },
+          "after_cycles": 4
+        }
+      ]
+    }
+  ],
+  "connections": [],
+  "external_ports": [
+    {
+      "name": "clk",
+      "direction": "input",
+      "width": 1,
+      "protocol": "none",
+      "signed": false
+    },
+    {
+      "name": "rst",
+      "direction": "input",
+      "width": 1,
+      "protocol": "none",
+      "signed": false
+    },
+    {
+      "name": "x",
+      "direction": "input",
+      "width": 8,
+      "protocol": "none",
+      "signed": true
+    },
+    {
+      "name": "in_valid",
+      "direction": "input",
+      "width": 1,
+      "protocol": "valid_ready",
+      "signed": false
+    },
+    {
+      "name": "in_ready",
+      "direction": "output",
+      "width": 1,
+      "protocol": "valid_ready",
+      "signed": false
+    },
+    {
+      "name": "out_data",
+      "direction": "output",
+      "width": 13,
+      "protocol": "none",
+      "signed": true
+    },
+    {
+      "name": "out_valid",
+      "direction": "output",
+      "width": 1,
+      "protocol": "valid_ready",
+      "signed": false
+    },
+    {
+      "name": "out_ready",
+      "direction": "input",
+      "width": 1,
+      "protocol": "valid_ready",
+      "signed": false
+    }
+  ]
+}

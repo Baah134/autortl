@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_1:decision:instruction:0",
+  "result": "In `priority_encoder8_core`, replace the descending `if/else` index selection with explicit equations: `index[2]` is the OR of `request[7:4]`; `index[1]` selects requests 7/6, or requests 3/2 when no upper-half request is set; `index[0]` is true for request 7, request 5 when 7/6 are clear, request 3 when 7:4 are clear, or request 1 when 7:2 are clear. Keep `valid` as the OR reduction of all request bits, and register these results with the existing reset behavior and output registers. Preserve the top interface and its `// @latency 1` annotation; add no state or cycles. This is a LUT-count hypothesis, not a guaranteed gain, so retain the candidate only if the unchanged simulation and all routed metric gates pass and the objective improves.",
+  "artifacts": {}
+}

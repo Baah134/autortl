@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_1:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 1,
+    "instruction": "Remove `wr_en_reg` and drive `wr_en` combinationally as the reduction OR of `grant_reg`. Keep `grant_reg`\u2019s reset, winner, and idle updates unchanged, so `wr_en` remains low on reset and idle cycles and reflects the registered grant between edges. Preserve all other arbiter and register-file behavior, including the registered write address/data, round-robin pointer, synchronous reset, and read-first registered read.",
+    "candidates": [
+      {
+        "iteration": 1,
+        "mutation": "standard",
+        "instruction": "Remove `wr_en_reg` and drive `wr_en` combinationally as the reduction OR of `grant_reg`. Keep `grant_reg`\u2019s reset, winner, and idle updates unchanged, so `wr_en` remains low on reset and idle cycles and reflects the registered grant between edges. Preserve all other arbiter and register-file behavior, including the registered write address/data, round-robin pointer, synchronous reset, and read-first registered read.",
+        "generated_source_sha256": "6796b128d785d5b8945f35557f39f8646f93f1395d366290fa4dd98f9e80f72b",
+        "final_source_sha256": "6796b128d785d5b8945f35557f39f8646f93f1395d366290fa4dd98f9e80f72b",
+        "generated_code_hash": "56ea187ca58cbf6b",
+        "final_code_hash": "56ea187ca58cbf6b",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.569,
+          "whs_ns": 0.052,
+          "lut_used": 42,
+          "ff_used": 93,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.06,
+          "total_power_w": 0.131
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-02\\tier4_z427ytzk\\rr_regfile_build\\iter_001\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-02\\tier4_z427ytzk\\rr_regfile_build\\iter_001\\cand_standard\\synth.tcl",
+          "sha256": "438762e6e28fcf339b7ffc2c78ef5fbfc56afbd850c46969672ced47dc0d4f5d"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-02\\tier4_z427ytzk\\rr_regfile_build\\iter_001\\cand_standard\\rr_regfile.v",
+          "sha256": "c4e030922bdc9f6981b7febf553144792785ee289d57421b6822b55eebbeff23"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": "6796b128d785d5b8945f35557f39f8646f93f1395d366290fa4dd98f9e80f72b"
+  },
+  "artifacts": {}
+}

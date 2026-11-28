@@ -1,0 +1,95 @@
+{
+  "top_name": "TopModule_top",
+  "modules": [
+    {
+      "name": "TopModule",
+      "behavior": "Implement combinational next-state logic for bit 1 of the specified FSM, with present-state input y encoding A=0, B=1, C=2, D=3, E=4, F=5. Y1 is the next-state bit, not the present-state bit y[1]. For A, Y1=0 for either w; for B, Y1=1 for either w; for C, Y1=w; for D, Y1=1 when w=0 and 0 when w=1; for E, Y1=w; for F, Y1=1 for either w. Define Y1=0 for unused state encodings 6 and 7. No flip-flops, clock port, or reset port are required because only next-state logic is requested; the three state flip-flops are external. Declare // @latency 0. Target xc7a35tcpg236-1 at 100 MHz with minimum LUT usage; the four-input Boolean function fits in one LUT4 and requires no FF, DSP48, or BRAM resources. The schema clock and reset metadata do not introduce physical ports or sequential behavior.",
+      "ports": [
+        {
+          "name": "y",
+          "direction": "input",
+          "width": 3,
+          "signed": false,
+          "packed_dimensions": null,
+          "clock_domain": "clk",
+          "protocol": "none"
+        },
+        {
+          "name": "w",
+          "direction": "input",
+          "width": 1,
+          "signed": false,
+          "packed_dimensions": null,
+          "clock_domain": "clk",
+          "protocol": "none"
+        },
+        {
+          "name": "Y1",
+          "direction": "output",
+          "width": 1,
+          "signed": false,
+          "packed_dimensions": null,
+          "clock_domain": "clk",
+          "protocol": "none"
+        }
+      ],
+      "latency": 0,
+      "compare_mode": "fixed_latency",
+      "reset": {
+        "signal": "rst",
+        "kind": "sync",
+        "active_high": true,
+        "duration_cycles": 5
+      },
+      "clock_domains": ["clk"],
+      "parameters": {},
+      "examples": [
+        {
+          "inputs": {"y": 1, "w": 0},
+          "expected": {"Y1": 1},
+          "after_cycles": 1
+        },
+        {
+          "inputs": {"y": 3, "w": 1},
+          "expected": {"Y1": 0},
+          "after_cycles": 1
+        },
+        {
+          "inputs": {"y": 4, "w": 1},
+          "expected": {"Y1": 1},
+          "after_cycles": 1
+        }
+      ]
+    }
+  ],
+  "connections": [],
+  "external_ports": [
+    {
+      "name": "y",
+      "direction": "input",
+      "width": 3,
+      "signed": false,
+      "packed_dimensions": null,
+      "clock_domain": "clk",
+      "protocol": "none"
+    },
+    {
+      "name": "w",
+      "direction": "input",
+      "width": 1,
+      "signed": false,
+      "packed_dimensions": null,
+      "clock_domain": "clk",
+      "protocol": "none"
+    },
+    {
+      "name": "Y1",
+      "direction": "output",
+      "width": 1,
+      "signed": false,
+      "packed_dimensions": null,
+      "clock_domain": "clk",
+      "protocol": "none"
+    }
+  ]
+}

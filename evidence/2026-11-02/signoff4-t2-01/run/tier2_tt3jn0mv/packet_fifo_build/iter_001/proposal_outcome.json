@@ -1,0 +1,77 @@
+{
+  "candidates": [
+    {
+      "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-01\\tier2_tt3jn0mv\\packet_fifo_build\\iter_001\\cand_standard",
+      "cache_hit": false,
+      "final_code_hash": "e411402edf652a4b",
+      "final_source_sha256": "1b6a3dd4aa01e90d6f3e3cac81529f3586856847a63546145f42fc3410e8a20f",
+      "flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-01\\tier2_tt3jn0mv\\packet_fifo_build\\iter_001\\cand_standard\\synth.tcl",
+        "sha256": "e4db07bd3fc7c77eb51ed40a196d42dcca5bf82c7e286ab4fc3890c86ce29762"
+      },
+      "generated_code_hash": "e411402edf652a4b",
+      "generated_source_sha256": "1b6a3dd4aa01e90d6f3e3cac81529f3586856847a63546145f42fc3410e8a20f",
+      "instruction": "In `packet_fifo_core`, add head data and last registers and drive `out_data` and `out_last` directly from them; update the cached tuple on an empty push, and on a pop load the next queued tuple, handling simultaneous pop/push at occupancy one by caching the incoming tuple. Preserve the ring buffer, exact occupancy and ready/valid behavior, reset priority, parameterized widths and depths, full simultaneous transfers, and minimum accepted-transfer age; leave invalid payload unspecified and keep the top\u2019s `// @latency 1` annotation. The cached outputs must stay stable during stalls, and the chang",
+      "iteration": 1,
+      "metrics": {
+        "bram_used": 0.0,
+        "dsp_used": 0,
+        "dynamic_power_w": 0.015,
+        "ff_used": 15,
+        "lut_used": 21,
+        "sim_passed": true,
+        "timing_met": false,
+        "total_power_w": 0.085,
+        "whs_ns": 0.058,
+        "wns_ns": -0.087
+      },
+      "mutation": "standard",
+      "reason": "",
+      "rungs": 5,
+      "source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-01\\tier2_tt3jn0mv\\packet_fifo_build\\iter_001\\cand_standard\\packet_fifo.v",
+        "sha256": "d0668e4e61193f2ddaba4c3767c56705fb33a2692ad11c088874d445a05474aa"
+      },
+      "status": "measured"
+    }
+  ],
+  "doctor": {
+    "action": "rtl_surgery",
+    "adopted": false,
+    "identity_count": 3,
+    "input_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-01\\tier2_tt3jn0mv\\packet_fifo_build\\iter_001\\cand_standard\\packet_fifo.v",
+      "sha256": "d0668e4e61193f2ddaba4c3767c56705fb33a2692ad11c088874d445a05474aa"
+    },
+    "measured_metrics": {
+      "bram_used": 0.0,
+      "dsp_used": 0,
+      "dynamic_power_w": 0.015,
+      "ff_used": 16,
+      "lut_used": 22,
+      "sim_passed": true,
+      "timing_met": false,
+      "total_power_w": 0.085,
+      "whs_ns": 0.1,
+      "wns_ns": -0.187
+    },
+    "proposed_source_text_sha256": "85aa8c68cf851408773929798ce6cdbd064f0bf0d3fd8c211912b390edf614fc",
+    "reason": "timing_not_closed",
+    "status": "NOT_ADOPTED",
+    "tools_ran": true,
+    "trial_flow_script": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-01\\tier2_tt3jn0mv\\packet_fifo_build\\iter_001\\doctor_rtl_surgery_trial\\synth.tcl",
+      "sha256": "589bfcecc541b1b6ffda47ea4371fd72b4f98cc05677a40c7a6bd1661d757392"
+    },
+    "trial_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-01\\tier2_tt3jn0mv\\packet_fifo_build\\iter_001\\doctor_rtl_surgery_trial\\packet_fifo.v",
+      "sha256": "1adbe6fc3d016f95f6d4c974b8fac326cf4a2f3b63c1e24819286c0b836a73f2"
+    }
+  },
+  "instruction": "In `packet_fifo_core`, add head data and last registers and drive `out_data` and `out_last` directly from them; update the cached tuple on an empty push, and on a pop load the next queued tuple, handling simultaneous pop/push at occupancy one by caching the incoming tuple. Preserve the ring buffer, exact occupancy and ready/valid behavior, reset priority, parameterized widths and depths, full simultaneous transfers, and minimum accepted-transfer age; leave invalid payload unspecified and keep the top\u2019s `// @latency 1` annotation. The cached outputs must stay stable during stalls, and the chang",
+  "is_best": true,
+  "iteration": 1,
+  "recommendation": "ACCEPT",
+  "schema_version": 1,
+  "selected_source_sha256": "1b6a3dd4aa01e90d6f3e3cac81529f3586856847a63546145f42fc3410e8a20f"
+}

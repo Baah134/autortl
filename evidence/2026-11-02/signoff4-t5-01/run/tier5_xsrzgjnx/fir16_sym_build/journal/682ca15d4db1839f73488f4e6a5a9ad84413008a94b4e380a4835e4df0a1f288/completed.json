@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_4:decision:instruction:0",
+  "result": "In `fir16_sym_core`, replace the eight full-coefficient product registers with products of the 17-bit pair sums by the half coefficients `-3, -10, -12, 9, 55, 113, 165, 195`, using signed widths of 19, 21, 21, 21, 23, 24, 25, and 25 bits respectively. Narrow the registered grouped sums to 22, 22, 25, and 26 signed bits, sign-extend them into an exact 27-bit half-accumulator, and compute rounding as `(half_acc + 27'sd512) >>> 10`, which is equivalent to the existing full accumulator rounding because the original coefficients are all even. Preserve the five ready-controlled register stages, valid-slot movement, synchronous reset behavior, top `// @latency 5` annotation, and exact saturation and handshake behavior; compare routed LUTs and timing against the 161-LUT feasible incumbent.",
+  "artifacts": {}
+}

@@ -1,0 +1,5 @@
+{
+  "stage": "module_rx_err_count:model:generator.generate:0",
+  "result": "`timescale 1ns/1ps\n// @latency 1\nmodule rx_err_count (\n    input wire clk,\n    input wire rst,\n    input wire ferr_in,\n    input wire ovf_in,\n    output wire [3:0] ferr_count,\n    output wire [3:0] ovf_count\n);\n\n    reg [3:0] ferr_count_reg;\n    reg [3:0] ovf_count_reg;\n\n    assign ferr_count = ferr_count_reg;\n    assign ovf_count = ovf_count_reg;\n\n    always @(posedge clk) begin\n        if (rst) begin\n            ferr_count_reg <= 4'd0;\n            ovf_count_reg  <= 4'd0;\n        end else begin\n            if (ferr_in && (ferr_count_reg < 4'd15))\n                ferr_count_reg <= ferr_count_reg + 1'b1;\n\n            if (ovf_in && (ovf_count_reg < 4'd15))\n                ovf_count_reg <= ovf_count_reg + 1'b1;\n        end\n    end\n\nendmodule",
+  "artifacts": {}
+}

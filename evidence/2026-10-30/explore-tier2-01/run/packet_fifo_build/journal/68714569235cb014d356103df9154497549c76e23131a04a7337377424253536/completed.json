@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Top interface and required child instance: PASS \u2014 top ports match the contract, and `packet_fifo_core` remains instantiated.\n- Top latency annotation: PASS \u2014 `// @latency 1` matches authoritative `declared_latency` of 1 cycle.\n- Defined FIFO behavior: PASS \u2014 the unchanged temporal testbench passes across the default wrapper and all five child parameter configurations.\n- Compile and elaboration: PASS \u2014 `xvlog` and `xelab` exited successfully.\n- Simulation: PASS \u2014 `xsim -runall` exited successfully and produced the exact `TEST PASSED` verdict.\n- Synthesis completion and process exits: PASS \u2014 required tool exits are zero and the synthesis log contains `SYNTH_COMPLETE`.\n- Routed metric integrity: PASS \u2014 retained routed timing and utilization reports are present with matching metric evidence.\n- Timing feasibility: PASS \u2014 `timing_met=true`, WNS is 0.108 ns, and WHS is 0.122 ns.\n- Improvement over previous best: PASS \u2014 recorded `timing_recovery` is supported by the previous best\u2019s known setup failure and the candidate\u2019s feasible timing; higher LUT use does not disqualify recovery.\n## Summary\n- Passed: 9 of 9\n- Failed: 0 of 9\n- Improved over previous best: YES\n## Recommendation\nACCEPT\n## Reason\nThe candidate passes the deterministic behavioral and tool gates, meets setup and hold timing, and recovers feasibility from a verified timing-infeasible previous best. Under the contract, this timing recovery qualifies despite the increase from 15 to 28 LUTs.",
+      "recommendation": "ACCEPT",
+      "passed": 9,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}

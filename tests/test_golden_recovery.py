@@ -53,11 +53,11 @@ def test_two_bad_oracles_stop_without_rtl_generation_or_rejection_history(oracle
     o,spec,folder=oracle_build
     model=Mock(return_value="def init(:"); monkeypatch.setattr(o.generator,"golden_model",model)
     assert o._build_module(spec,folder) is None
-    assert model.call_count==2
+    assert model.call_count==fsm.ORACLE_ATTEMPTS
     o._generate_verified.assert_not_called()
     fsm.qualify_tb.assert_not_called()
     assert o.state.read_designs()==[]
-    assert json.loads((folder/"golden_attempt_2.log").read_text())["status"]=="oracle_rejected"
+    assert json.loads((folder/f"golden_attempt_{fsm.ORACLE_ATTEMPTS}.log").read_text())["status"]=="oracle_rejected"
 
 
 @pytest.mark.parametrize("examples",[[],[IOExample({"a":1},{})],[IOExample({"a":1},{"y":2},10**12)]])

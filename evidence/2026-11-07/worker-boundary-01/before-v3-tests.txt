@@ -1,0 +1,742 @@
+FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF.F.....................       [100%]
+================================== FAILURES ===================================
+_ test_effective_mcp_is_disabled_before_worker_and_security_env_is_preserved __
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001E6CCCDA9C0>
+worker = ([('worker', ['configured-codex.exe', 'exec', '--sandbox', 'read-only', '--ephemeral', '--json', ...], {'stdin': -1, 'stdout': -1, 'stderr': -1, 'text': True, ...})], <Mock id='2090816473424'>)
+
+    def test_effective_mcp_is_disabled_before_worker_and_security_env_is_preserved(monkeypatch, worker):
+        calls, _ = worker
+        protected = {'CODEX_HOME': 'existing-auth-home', 'CODEX_PERMISSION_PROFILE': 'managed',
+                     'CODEX_SANDBOX_NETWORK_DISABLED': '1', 'CODEX_APP_TOOLS_PIPE_PATH': 'existing-tool-pipe'}
+        for key, value in protected.items():
+            monkeypatch.setenv(key, value)
+        response, _ = codex_cli.ask('specified-model', 'request', timeout_s=12)
+        assert response.startswith('module m')
+>       assert [row[0] for row in calls] == ['listing', 'listing', 'worker']
+E       AssertionError: assert ['worker'] == ['listing', '...ng', 'worker']
+E         
+E         At index 0 diff: 'worker' != 'listing'
+E         Right contains 2 more items, first extra item: 'listing'
+E         Use -v to get more diff
+
+tests\test_codex_worker_boundary.py:60: AssertionError
+_______________ test_unprovable_mcp_config_blocks_worker[None] ________________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001E6CE5F8D70>
+worker = ([('worker', ['configured-codex.exe', 'exec', '--sandbox', 'read-only', '--ephemeral', '--json', ...], {'stdin': -1, 'stdout': -1, 'stderr': -1, 'text': True, ...})], <Mock id='2090816478032'>)
+payload = None
+
+    @pytest.mark.parametrize('payload', [None, {}, '[]', [{'name': 'x'}], [{'name': 'x', 'enabled': 0}],
+                                         [{'name': 'x', 'enabled': True}, {'name': 'x', 'enabled': False}],
+                                         [{'name': '\n', 'enabled': False}], [{'name': '\ud800', 'enabled': False}],
+                                         [{'name': str(i), 'enabled': False} for i in range(129)],
+                                         [{'name': 'x'*201, 'enabled': False}]])
+    def test_unprovable_mcp_config_blocks_worker(monkeypatch, worker, payload):
+        calls, _ = worker
+        monkeypatch.setattr(codex_cli.subprocess, 'run', Mock(return_value=SimpleNamespace(returncode=0, stdout=json.dumps(payload), stderr='')))
+>       with pytest.raises(codex_cli.CodexError, match='CODEX_PROTOCOL'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE CodexError
+
+tests\test_codex_worker_boundary.py:87: Failed
+_____________ test_unprovable_mcp_config_blocks_worker[payload1] ______________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001E6CE602870>
+worker = ([('worker', ['configured-codex.exe', 'exec', '--sandbox', 'read-only', '--ephemeral', '--json', ...], {'stdin': -1, 'stdout': -1, 'stderr': -1, 'text': True, ...})], <Mock id='2090816515888'>)
+payload = {}
+
+    @pytest.mark.parametrize('payload', [None, {}, '[]', [{'name': 'x'}], [{'name': 'x', 'enabled': 0}],
+                                         [{'name': 'x', 'enabled': True}, {'name': 'x', 'enabled': False}],
+                                         [{'name': '\n', 'enabled': False}], [{'name': '\ud800', 'enabled': False}],
+                                         [{'name': str(i), 'enabled': False} for i in range(129)],
+                                         [{'name': 'x'*201, 'enabled': False}]])
+    def test_unprovable_mcp_config_blocks_worker(monkeypatch, worker, payload):
+        calls, _ = worker
+        monkeypatch.setattr(codex_cli.subprocess, 'run', Mock(return_value=SimpleNamespace(returncode=0, stdout=json.dumps(payload), stderr='')))
+>       with pytest.raises(codex_cli.CodexError, match='CODEX_PROTOCOL'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE CodexError
+
+tests\test_codex_worker_boundary.py:87: Failed
+________________ test_unprovable_mcp_config_blocks_worker[[]] _________________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001E6CE602ED0>
+worker = ([('worker', ['configured-codex.exe', 'exec', '--sandbox', 'read-only', '--ephemeral', '--json', ...], {'stdin': -1, 'stdout': -1, 'stderr': -1, 'text': True, ...})], <Mock id='2090816519296'>)
+payload = '[]'
+
+    @pytest.mark.parametrize('payload', [None, {}, '[]', [{'name': 'x'}], [{'name': 'x', 'enabled': 0}],
+                                         [{'name': 'x', 'enabled': True}, {'name': 'x', 'enabled': False}],
+                                         [{'name': '\n', 'enabled': False}], [{'name': '\ud800', 'enabled': False}],
+                                         [{'name': str(i), 'enabled': False} for i in range(129)],
+                                         [{'name': 'x'*201, 'enabled': False}]])
+    def test_unprovable_mcp_config_blocks_worker(monkeypatch, worker, payload):
+        calls, _ = worker
+        monkeypatch.setattr(codex_cli.subprocess, 'run', Mock(return_value=SimpleNamespace(returncode=0, stdout=json.dumps(payload), stderr='')))
+>       with pytest.raises(codex_cli.CodexError, match='CODEX_PROTOCOL'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE CodexError
+
+tests\test_codex_worker_boundary.py:87: Failed
+_____________ test_unprovable_mcp_config_blocks_worker[payload3] ______________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001E6CE603B30>
+worker = ([('worker', ['configured-codex.exe', 'exec', '--sandbox', 'read-only', '--ephemeral', '--json', ...], {'stdin': -1, 'stdout': -1, 'stderr': -1, 'text': True, ...})], <Mock id='2090816516080'>)
+payload = [{'name': 'x'}]
+
+    @pytest.mark.parametrize('payload', [None, {}, '[]', [{'name': 'x'}], [{'name': 'x', 'enabled': 0}],
+                                         [{'name': 'x', 'enabled': True}, {'name': 'x', 'enabled': False}],
+                                         [{'name': '\n', 'enabled': False}], [{'name': '\ud800', 'enabled': False}],
+                                         [{'name': str(i), 'enabled': False} for i in range(129)],
+                                         [{'name': 'x'*201, 'enabled': False}]])
+    def test_unprovable_mcp_config_blocks_worker(monkeypatch, worker, payload):
+        calls, _ = worker
+        monkeypatch.setattr(codex_cli.subprocess, 'run', Mock(return_value=SimpleNamespace(returncode=0, stdout=json.dumps(payload), stderr='')))
+>       with pytest.raises(codex_cli.CodexError, match='CODEX_PROTOCOL'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE CodexError
+
+tests\test_codex_worker_boundary.py:87: Failed
+_____________ test_unprovable_mcp_config_blocks_worker[payload4] ______________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001E6CE603200>
+worker = ([('worker', ['configured-codex.exe', 'exec', '--sandbox', 'read-only', '--ephemeral', '--json', ...], {'stdin': -1, 'stdout': -1, 'stderr': -1, 'text': True, ...})], <Mock id='2090817046864'>)
+payload = [{'name': 'x', 'enabled': 0}]
+
+    @pytest.mark.parametrize('payload', [None, {}, '[]', [{'name': 'x'}], [{'name': 'x', 'enabled': 0}],
+                                         [{'name': 'x', 'enabled': True}, {'name': 'x', 'enabled': False}],
+                                         [{'name': '\n', 'enabled': False}], [{'name': '\ud800', 'enabled': False}],
+                                         [{'name': str(i), 'enabled': False} for i in range(129)],
+                                         [{'name': 'x'*201, 'enabled': False}]])
+    def test_unprovable_mcp_config_blocks_worker(monkeypatch, worker, payload):
+        calls, _ = worker
+        monkeypatch.setattr(codex_cli.subprocess, 'run', Mock(return_value=SimpleNamespace(returncode=0, stdout=json.dumps(payload), stderr='')))
+>       with pytest.raises(codex_cli.CodexError, match='CODEX_PROTOCOL'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE CodexError
+
+tests\test_codex_worker_boundary.py:87: Failed
+_____________ test_unprovable_mcp_config_blocks_worker[payload5] ______________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001E6CE6854C0>
+worker = ([('worker', ['configured-codex.exe', 'exec', '--sandbox', 'read-only', '--ephemeral', '--json', ...], {'stdin': -1, 'stdout': -1, 'stderr': -1, 'text': True, ...})], <Mock id='2090817050176'>)
+payload = [{'name': 'x', 'enabled': True}, {'name': 'x', 'enabled': False}]
+
+    @pytest.mark.parametrize('payload', [None, {}, '[]', [{'name': 'x'}], [{'name': 'x', 'enabled': 0}],
+                                         [{'name': 'x', 'enabled': True}, {'name': 'x', 'enabled': False}],
+                                         [{'name': '\n', 'enabled': False}], [{'name': '\ud800', 'enabled': False}],
+                                         [{'name': str(i), 'enabled': False} for i in range(129)],
+                                         [{'name': 'x'*201, 'enabled': False}]])
+    def test_unprovable_mcp_config_blocks_worker(monkeypatch, worker, payload):
+        calls, _ = worker
+        monkeypatch.setattr(codex_cli.subprocess, 'run', Mock(return_value=SimpleNamespace(returncode=0, stdout=json.dumps(payload), stderr='')))
+>       with pytest.raises(codex_cli.CodexError, match='CODEX_PROTOCOL'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE CodexError
+
+tests\test_codex_worker_boundary.py:87: Failed
+_____________ test_unprovable_mcp_config_blocks_worker[payload6] ______________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001E6CE685BB0>
+worker = ([('worker', ['configured-codex.exe', 'exec', '--sandbox', 'read-only', '--ephemeral', '--json', ...], {'stdin': -1, 'stdout': -1, 'stderr': -1, 'text': True, ...})], <Mock id='2090817044560'>)
+payload = [{'name': '\n', 'enabled': False}]
+
+    @pytest.mark.parametrize('payload', [None, {}, '[]', [{'name': 'x'}], [{'name': 'x', 'enabled': 0}],
+                                         [{'name': 'x', 'enabled': True}, {'name': 'x', 'enabled': False}],
+                                         [{'name': '\n', 'enabled': False}], [{'name': '\ud800', 'enabled': False}],
+                                         [{'name': str(i), 'enabled': False} for i in range(129)],
+                                         [{'name': 'x'*201, 'enabled': False}]])
+    def test_unprovable_mcp_config_blocks_worker(monkeypatch, worker, payload):
+        calls, _ = worker
+        monkeypatch.setattr(codex_cli.subprocess, 'run', Mock(return_value=SimpleNamespace(returncode=0, stdout=json.dumps(payload), stderr='')))
+>       with pytest.raises(codex_cli.CodexError, match='CODEX_PROTOCOL'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE CodexError
+
+tests\test_codex_worker_boundary.py:87: Failed
+_____________ test_unprovable_mcp_config_blocks_worker[payload7] ______________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001E6CE687E60>
+worker = ([('worker', ['configured-codex.exe', 'exec', '--sandbox', 'read-only', '--ephemeral', '--json', ...], {'stdin': -1, 'stdout': -1, 'stderr': -1, 'text': True, ...})], <Mock id='2090817057712'>)
+payload = [{'name': '\ud800', 'enabled': False}]
+
+    @pytest.mark.parametrize('payload', [None, {}, '[]', [{'name': 'x'}], [{'name': 'x', 'enabled': 0}],
+                                         [{'name': 'x', 'enabled': True}, {'name': 'x', 'enabled': False}],
+                                         [{'name': '\n', 'enabled': False}], [{'name': '\ud800', 'enabled': False}],
+                                         [{'name': str(i), 'enabled': False} for i in range(129)],
+                                         [{'name': 'x'*201, 'enabled': False}]])
+    def test_unprovable_mcp_config_blocks_worker(monkeypatch, worker, payload):
+        calls, _ = worker
+        monkeypatch.setattr(codex_cli.subprocess, 'run', Mock(return_value=SimpleNamespace(returncode=0, stdout=json.dumps(payload), stderr='')))
+>       with pytest.raises(codex_cli.CodexError, match='CODEX_PROTOCOL'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE CodexError
+
+tests\test_codex_worker_boundary.py:87: Failed
+_____________ test_unprovable_mcp_config_blocks_worker[payload8] ______________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001E6CE68C5F0>
+worker = ([('worker', ['configured-codex.exe', 'exec', '--sandbox', 'read-only', '--ephemeral', '--json', ...], {'stdin': -1, 'stdout': -1, 'stderr': -1, 'text': True, ...})], <Mock id='2090817077856'>)
+payload = [{'name': '0', 'enabled': False}, {'name': '1', 'enabled': False}, {'name': '2', 'enabled': False}, {'name': '3', 'enabled': False}, {'name': '4', 'enabled': False}, {'name': '5', 'enabled': False}, ...]
+
+    @pytest.mark.parametrize('payload', [None, {}, '[]', [{'name': 'x'}], [{'name': 'x', 'enabled': 0}],
+                                         [{'name': 'x', 'enabled': True}, {'name': 'x', 'enabled': False}],
+                                         [{'name': '\n', 'enabled': False}], [{'name': '\ud800', 'enabled': False}],
+                                         [{'name': str(i), 'enabled': False} for i in range(129)],
+                                         [{'name': 'x'*201, 'enabled': False}]])
+    def test_unprovable_mcp_config_blocks_worker(monkeypatch, worker, payload):
+        calls, _ = worker
+        monkeypatch.setattr(codex_cli.subprocess, 'run', Mock(return_value=SimpleNamespace(returncode=0, stdout=json.dumps(payload), stderr='')))
+>       with pytest.raises(codex_cli.CodexError, match='CODEX_PROTOCOL'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE CodexError
+
+tests\test_codex_worker_boundary.py:87: Failed
+_____________ test_unprovable_mcp_config_blocks_worker[payload9] ______________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001E6CE633110>
+worker = ([('worker', ['configured-codex.exe', 'exec', '--sandbox', 'read-only', '--ephemeral', '--json', ...], {'stdin': -1, 'stdout': -1, 'stderr': -1, 'text': True, ...})], <Mock id='2090816711296'>)
+payload = [{'name': 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', 'enabled': False}]
+
+    @pytest.mark.parametrize('payload', [None, {}, '[]', [{'name': 'x'}], [{'name': 'x', 'enabled': 0}],
+                                         [{'name': 'x', 'enabled': True}, {'name': 'x', 'enabled': False}],
+                                         [{'name': '\n', 'enabled': False}], [{'name': '\ud800', 'enabled': False}],
+                                         [{'name': str(i), 'enabled': False} for i in range(129)],
+                                         [{'name': 'x'*201, 'enabled': False}]])
+    def test_unprovable_mcp_config_blocks_worker(monkeypatch, worker, payload):
+        calls, _ = worker
+        monkeypatch.setattr(codex_cli.subprocess, 'run', Mock(return_value=SimpleNamespace(returncode=0, stdout=json.dumps(payload), stderr='')))
+>       with pytest.raises(codex_cli.CodexError, match='CODEX_PROTOCOL'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE CodexError
+
+tests\test_codex_worker_boundary.py:87: Failed
+______________ test_enabled_managed_or_new_server_blocks_worker _______________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001E6CE631DC0>
+worker = ([('worker', ['configured-codex.exe', 'exec', '--sandbox', 'read-only', '--ephemeral', '--json', ...], {'stdin': -1, 'stdout': -1, 'stderr': -1, 'text': True, ...})], <Mock id='2090816712496'>)
+
+    def test_enabled_managed_or_new_server_blocks_worker(monkeypatch, worker):
+        calls, _ = worker
+        monkeypatch.setattr(codex_cli.subprocess, 'run', Mock(return_value=SimpleNamespace(returncode=0, stdout='[{"name":"forced-server","enabled":true}]', stderr='')))
+>       with pytest.raises(codex_cli.CodexError, match='CODEX_PROTOCOL'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE CodexError
+
+tests\test_codex_worker_boundary.py:95: Failed
+_________ test_unsupported_cli_restriction_fails_without_weaker_retry _________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001E6CE68C530>
+worker = ([('worker', ['configured-codex.exe', 'exec', '--sandbox', 'read-only', '--ephemeral', '--json', ...], {'stdin': -1, 'stdout': -1, 'stderr': -1, 'text': True, ...})], <Mock id='2090817090240'>)
+
+    def test_unsupported_cli_restriction_fails_without_weaker_retry(monkeypatch, worker):
+        calls, _ = worker
+        listing = Mock(return_value=SimpleNamespace(returncode=2, stdout='', stderr='unsupported flag; private configuration detail'))
+        monkeypatch.setattr(codex_cli.subprocess, 'run', listing)
+>       with pytest.raises(codex_cli.CodexError, match='CODEX_UNAVAILABLE') as error:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE CodexError
+
+tests\test_codex_worker_boundary.py:104: Failed
+_________________ test_config_preflight_timeout_blocks_worker _________________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001E6CE685280>
+worker = ([('worker', ['configured-codex.exe', 'exec', '--sandbox', 'read-only', '--ephemeral', '--json', ...], {'stdin': -1, 'stdout': -1, 'stderr': -1, 'text': True, ...})], <Mock id='2090817058288'>)
+
+    def test_config_preflight_timeout_blocks_worker(monkeypatch, worker):
+        calls, _ = worker
+        monkeypatch.setattr(codex_cli.subprocess, 'run', Mock(side_effect=subprocess.TimeoutExpired('codex', 1)))
+>       with pytest.raises(codex_cli.CodexError, match='CODEX_TIMEOUT'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE CodexError
+
+tests\test_codex_worker_boundary.py:114: Failed
+_________________ test_config_output_byte_limit_blocks_worker _________________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001E6CE6858B0>
+worker = ([('worker', ['configured-codex.exe', 'exec', '--sandbox', 'read-only', '--ephemeral', '--json', ...], {'stdin': -1, 'stdout': -1, 'stderr': -1, 'text': True, ...})], <Mock id='2090817059440'>)
+
+    def test_config_output_byte_limit_blocks_worker(monkeypatch, worker):
+        calls, _ = worker
+        huge = '[{"name":"node_repl","enabled":false,"private":"' + 'x'*(256*1024) + '"}]'
+        monkeypatch.setattr(codex_cli.subprocess, 'run', Mock(return_value=SimpleNamespace(returncode=0, stdout=huge, stderr='')))
+>       with pytest.raises(codex_cli.CodexError, match='CODEX_PROTOCOL'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE CodexError
+
+tests\test_codex_worker_boundary.py:123: Failed
+______________ test_preflights_and_execution_share_one_deadline _______________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001E6CE6039B0>
+worker = ([], <Mock id='2090816503984'>)
+
+    def test_preflights_and_execution_share_one_deadline(monkeypatch, worker):
+        calls, process = worker
+        clock = {'now': 100.0}
+>       monkeypatch.setattr(codex_cli.time, 'monotonic', lambda: clock['now'])
+                            ^^^^^^^^^^^^^^
+E       AttributeError: module 'llm.backends.codex_cli' has no attribute 'time'
+
+tests\test_codex_worker_boundary.py:131: AttributeError
+__________ test_server_names_are_toml_data_and_cannot_inject_policy ___________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001E6CE602B40>
+worker = ([('worker', ['configured-codex.exe', 'exec', '--sandbox', 'read-only', '--ephemeral', '--json', ...], {'stdin': -1, 'stdout': -1, 'stderr': -1, 'text': True, ...})], <Mock id='2090816518096'>)
+
+    def test_server_names_are_toml_data_and_cannot_inject_policy(monkeypatch, worker):
+        calls, _ = worker
+        name = 'node".tricky]=name'
+        listing = Mock(side_effect=[SimpleNamespace(returncode=0, stdout=json.dumps([{'name': name, 'enabled': True}]), stderr=''),
+                                    SimpleNamespace(returncode=0, stdout=json.dumps([{'name': name, 'enabled': False}]), stderr='')])
+        monkeypatch.setattr(codex_cli.subprocess, 'run', listing)
+        codex_cli.ask('default', 'request')
+        worker_command = next(row[1] for row in calls if row[0] == 'worker')
+>       policy = tomllib.loads(next(arg for arg in worker_command if arg.startswith('mcp_servers=')))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       StopIteration
+
+tests\test_codex_worker_boundary.py:151: StopIteration
+_ test_tools_and_unknown_item_types_reject_even_completed_turn[item.started-command_execution] _
+
+item_type = 'command_execution', event_type = 'item.started'
+
+    @pytest.mark.parametrize('item_type', ['command_execution', 'mcp_tool_call', 'file_change', 'web_search',
+                                           'collab_agent_tool_call', 'todo_list', 'future_tool_type'])
+    @pytest.mark.parametrize('event_type', ['item.started', 'item.updated', 'item.completed'])
+    def test_tools_and_unknown_item_types_reject_even_completed_turn(item_type, event_type):
+        events = jsonl({'type': event_type, 'item': {'type': item_type, 'arguments': {'secret': 'do-not-retain'}}},
+                       {'type': 'turn.completed'})
+>       with pytest.raises(codex_cli.CodexError, match='CODEX_PROTOCOL') as error:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE CodexError
+
+tests\test_codex_worker_boundary.py:161: Failed
+_ test_tools_and_unknown_item_types_reject_even_completed_turn[item.started-mcp_tool_call] _
+
+item_type = 'mcp_tool_call', event_type = 'item.started'
+
+    @pytest.mark.parametrize('item_type', ['command_execution', 'mcp_tool_call', 'file_change', 'web_search',
+                                           'collab_agent_tool_call', 'todo_list', 'future_tool_type'])
+    @pytest.mark.parametrize('event_type', ['item.started', 'item.updated', 'item.completed'])
+    def test_tools_and_unknown_item_types_reject_even_completed_turn(item_type, event_type):
+        events = jsonl({'type': event_type, 'item': {'type': item_type, 'arguments': {'secret': 'do-not-retain'}}},
+                       {'type': 'turn.completed'})
+>       with pytest.raises(codex_cli.CodexError, match='CODEX_PROTOCOL') as error:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE CodexError
+
+tests\test_codex_worker_boundary.py:161: Failed
+_ test_tools_and_unknown_item_types_reject_even_completed_turn[item.started-file_change] _
+
+item_type = 'file_change', event_type = 'item.started'
+
+    @pytest.mark.parametrize('item_type', ['command_execution', 'mcp_tool_call', 'file_change', 'web_search',
+                                           'collab_agent_tool_call', 'todo_list', 'future_tool_type'])
+    @pytest.mark.parametrize('event_type', ['item.started', 'item.updated', 'item.completed'])
+    def test_tools_and_unknown_item_types_reject_even_completed_turn(item_type, event_type):
+        events = jsonl({'type': event_type, 'item': {'type': item_type, 'arguments': {'secret': 'do-not-retain'}}},
+                       {'type': 'turn.completed'})
+>       with pytest.raises(codex_cli.CodexError, match='CODEX_PROTOCOL') as error:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE CodexError
+
+tests\test_codex_worker_boundary.py:161: Failed
+_ test_tools_and_unknown_item_types_reject_even_completed_turn[item.started-web_search] _
+
+item_type = 'web_search', event_type = 'item.started'
+
+    @pytest.mark.parametrize('item_type', ['command_execution', 'mcp_tool_call', 'file_change', 'web_search',
+                                           'collab_agent_tool_call', 'todo_list', 'future_tool_type'])
+    @pytest.mark.parametrize('event_type', ['item.started', 'item.updated', 'item.completed'])
+    def test_tools_and_unknown_item_types_reject_even_completed_turn(item_type, event_type):
+        events = jsonl({'type': event_type, 'item': {'type': item_type, 'arguments': {'secret': 'do-not-retain'}}},
+                       {'type': 'turn.completed'})
+>       with pytest.raises(codex_cli.CodexError, match='CODEX_PROTOCOL') as error:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE CodexError
+
+tests\test_codex_worker_boundary.py:161: Failed
+_ test_tools_and_unknown_item_types_reject_even_completed_turn[item.started-collab_agent_tool_call] _
+
+item_type = 'collab_agent_tool_call', event_type = 'item.started'
+
+    @pytest.mark.parametrize('item_type', ['command_execution', 'mcp_tool_call', 'file_change', 'web_search',
+                                           'collab_agent_tool_call', 'todo_list', 'future_tool_type'])
+    @pytest.mark.parametrize('event_type', ['item.started', 'item.updated', 'item.completed'])
+    def test_tools_and_unknown_item_types_reject_even_completed_turn(item_type, event_type):
+        events = jsonl({'type': event_type, 'item': {'type': item_type, 'arguments': {'secret': 'do-not-retain'}}},
+                       {'type': 'turn.completed'})
+>       with pytest.raises(codex_cli.CodexError, match='CODEX_PROTOCOL') as error:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE CodexError
+
+tests\test_codex_worker_boundary.py:161: Failed
+_ test_tools_and_unknown_item_types_reject_even_completed_turn[item.started-todo_list] _
+
+item_type = 'todo_list', event_type = 'item.started'
+
+    @pytest.mark.parametrize('item_type', ['command_execution', 'mcp_tool_call', 'file_change', 'web_search',
+                                           'collab_agent_tool_call', 'todo_list', 'future_tool_type'])
+    @pytest.mark.parametrize('event_type', ['item.started', 'item.updated', 'item.completed'])
+    def test_tools_and_unknown_item_types_reject_even_completed_turn(item_type, event_type):
+        events = jsonl({'type': event_type, 'item': {'type': item_type, 'arguments': {'secret': 'do-not-retain'}}},
+                       {'type': 'turn.completed'})
+>       with pytest.raises(codex_cli.CodexError, match='CODEX_PROTOCOL') as error:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE CodexError
+
+tests\test_codex_worker_boundary.py:161: Failed
+_ test_tools_and_unknown_item_types_reject_even_completed_turn[item.started-future_tool_type] _
+
+item_type = 'future_tool_type', event_type = 'item.started'
+
+    @pytest.mark.parametrize('item_type', ['command_execution', 'mcp_tool_call', 'file_change', 'web_search',
+                                           'collab_agent_tool_call', 'todo_list', 'future_tool_type'])
+    @pytest.mark.parametrize('event_type', ['item.started', 'item.updated', 'item.completed'])
+    def test_tools_and_unknown_item_types_reject_even_completed_turn(item_type, event_type):
+        events = jsonl({'type': event_type, 'item': {'type': item_type, 'arguments': {'secret': 'do-not-retain'}}},
+                       {'type': 'turn.completed'})
+>       with pytest.raises(codex_cli.CodexError, match='CODEX_PROTOCOL') as error:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE CodexError
+
+tests\test_codex_worker_boundary.py:161: Failed
+_ test_tools_and_unknown_item_types_reject_even_completed_turn[item.updated-command_execution] _
+
+item_type = 'command_execution', event_type = 'item.updated'
+
+    @pytest.mark.parametrize('item_type', ['command_execution', 'mcp_tool_call', 'file_change', 'web_search',
+                                           'collab_agent_tool_call', 'todo_list', 'future_tool_type'])
+    @pytest.mark.parametrize('event_type', ['item.started', 'item.updated', 'item.completed'])
+    def test_tools_and_unknown_item_types_reject_even_completed_turn(item_type, event_type):
+        events = jsonl({'type': event_type, 'item': {'type': item_type, 'arguments': {'secret': 'do-not-retain'}}},
+                       {'type': 'turn.completed'})
+>       with pytest.raises(codex_cli.CodexError, match='CODEX_PROTOCOL') as error:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE CodexError
+
+tests\test_codex_worker_boundary.py:161: Failed
+_ test_tools_and_unknown_item_types_reject_even_completed_turn[item.updated-mcp_tool_call] _
+
+item_type = 'mcp_tool_call', event_type = 'item.updated'
+
+    @pytest.mark.parametrize('item_type', ['command_execution', 'mcp_tool_call', 'file_change', 'web_search',
+                                           'collab_agent_tool_call', 'todo_list', 'future_tool_type'])
+    @pytest.mark.parametrize('event_type', ['item.started', 'item.updated', 'item.completed'])
+    def test_tools_and_unknown_item_types_reject_even_completed_turn(item_type, event_type):
+        events = jsonl({'type': event_type, 'item': {'type': item_type, 'arguments': {'secret': 'do-not-retain'}}},
+                       {'type': 'turn.completed'})
+>       with pytest.raises(codex_cli.CodexError, match='CODEX_PROTOCOL') as error:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE CodexError
+
+tests\test_codex_worker_boundary.py:161: Failed
+_ test_tools_and_unknown_item_types_reject_even_completed_turn[item.updated-file_change] _
+
+item_type = 'file_change', event_type = 'item.updated'
+
+    @pytest.mark.parametrize('item_type', ['command_execution', 'mcp_tool_call', 'file_change', 'web_search',
+                                           'collab_agent_tool_call', 'todo_list', 'future_tool_type'])
+    @pytest.mark.parametrize('event_type', ['item.started', 'item.updated', 'item.completed'])
+    def test_tools_and_unknown_item_types_reject_even_completed_turn(item_type, event_type):
+        events = jsonl({'type': event_type, 'item': {'type': item_type, 'arguments': {'secret': 'do-not-retain'}}},
+                       {'type': 'turn.completed'})
+>       with pytest.raises(codex_cli.CodexError, match='CODEX_PROTOCOL') as error:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE CodexError
+
+tests\test_codex_worker_boundary.py:161: Failed
+_ test_tools_and_unknown_item_types_reject_even_completed_turn[item.updated-web_search] _
+
+item_type = 'web_search', event_type = 'item.updated'
+
+    @pytest.mark.parametrize('item_type', ['command_execution', 'mcp_tool_call', 'file_change', 'web_search',
+                                           'collab_agent_tool_call', 'todo_list', 'future_tool_type'])
+    @pytest.mark.parametrize('event_type', ['item.started', 'item.updated', 'item.completed'])
+    def test_tools_and_unknown_item_types_reject_even_completed_turn(item_type, event_type):
+        events = jsonl({'type': event_type, 'item': {'type': item_type, 'arguments': {'secret': 'do-not-retain'}}},
+                       {'type': 'turn.completed'})
+>       with pytest.raises(codex_cli.CodexError, match='CODEX_PROTOCOL') as error:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE CodexError
+
+tests\test_codex_worker_boundary.py:161: Failed
+_ test_tools_and_unknown_item_types_reject_even_completed_turn[item.updated-collab_agent_tool_call] _
+
+item_type = 'collab_agent_tool_call', event_type = 'item.updated'
+
+    @pytest.mark.parametrize('item_type', ['command_execution', 'mcp_tool_call', 'file_change', 'web_search',
+                                           'collab_agent_tool_call', 'todo_list', 'future_tool_type'])
+    @pytest.mark.parametrize('event_type', ['item.started', 'item.updated', 'item.completed'])
+    def test_tools_and_unknown_item_types_reject_even_completed_turn(item_type, event_type):
+        events = jsonl({'type': event_type, 'item': {'type': item_type, 'arguments': {'secret': 'do-not-retain'}}},
+                       {'type': 'turn.completed'})
+>       with pytest.raises(codex_cli.CodexError, match='CODEX_PROTOCOL') as error:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE CodexError
+
+tests\test_codex_worker_boundary.py:161: Failed
+_ test_tools_and_unknown_item_types_reject_even_completed_turn[item.updated-todo_list] _
+
+item_type = 'todo_list', event_type = 'item.updated'
+
+    @pytest.mark.parametrize('item_type', ['command_execution', 'mcp_tool_call', 'file_change', 'web_search',
+                                           'collab_agent_tool_call', 'todo_list', 'future_tool_type'])
+    @pytest.mark.parametrize('event_type', ['item.started', 'item.updated', 'item.completed'])
+    def test_tools_and_unknown_item_types_reject_even_completed_turn(item_type, event_type):
+        events = jsonl({'type': event_type, 'item': {'type': item_type, 'arguments': {'secret': 'do-not-retain'}}},
+                       {'type': 'turn.completed'})
+>       with pytest.raises(codex_cli.CodexError, match='CODEX_PROTOCOL') as error:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE CodexError
+
+tests\test_codex_worker_boundary.py:161: Failed
+_ test_tools_and_unknown_item_types_reject_even_completed_turn[item.updated-future_tool_type] _
+
+item_type = 'future_tool_type', event_type = 'item.updated'
+
+    @pytest.mark.parametrize('item_type', ['command_execution', 'mcp_tool_call', 'file_change', 'web_search',
+                                           'collab_agent_tool_call', 'todo_list', 'future_tool_type'])
+    @pytest.mark.parametrize('event_type', ['item.started', 'item.updated', 'item.completed'])
+    def test_tools_and_unknown_item_types_reject_even_completed_turn(item_type, event_type):
+        events = jsonl({'type': event_type, 'item': {'type': item_type, 'arguments': {'secret': 'do-not-retain'}}},
+                       {'type': 'turn.completed'})
+>       with pytest.raises(codex_cli.CodexError, match='CODEX_PROTOCOL') as error:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE CodexError
+
+tests\test_codex_worker_boundary.py:161: Failed
+_ test_tools_and_unknown_item_types_reject_even_completed_turn[item.completed-command_execution] _
+
+item_type = 'command_execution', event_type = 'item.completed'
+
+    @pytest.mark.parametrize('item_type', ['command_execution', 'mcp_tool_call', 'file_change', 'web_search',
+                                           'collab_agent_tool_call', 'todo_list', 'future_tool_type'])
+    @pytest.mark.parametrize('event_type', ['item.started', 'item.updated', 'item.completed'])
+    def test_tools_and_unknown_item_types_reject_even_completed_turn(item_type, event_type):
+        events = jsonl({'type': event_type, 'item': {'type': item_type, 'arguments': {'secret': 'do-not-retain'}}},
+                       {'type': 'turn.completed'})
+>       with pytest.raises(codex_cli.CodexError, match='CODEX_PROTOCOL') as error:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE CodexError
+
+tests\test_codex_worker_boundary.py:161: Failed
+_ test_tools_and_unknown_item_types_reject_even_completed_turn[item.completed-mcp_tool_call] _
+
+item_type = 'mcp_tool_call', event_type = 'item.completed'
+
+    @pytest.mark.parametrize('item_type', ['command_execution', 'mcp_tool_call', 'file_change', 'web_search',
+                                           'collab_agent_tool_call', 'todo_list', 'future_tool_type'])
+    @pytest.mark.parametrize('event_type', ['item.started', 'item.updated', 'item.completed'])
+    def test_tools_and_unknown_item_types_reject_even_completed_turn(item_type, event_type):
+        events = jsonl({'type': event_type, 'item': {'type': item_type, 'arguments': {'secret': 'do-not-retain'}}},
+                       {'type': 'turn.completed'})
+>       with pytest.raises(codex_cli.CodexError, match='CODEX_PROTOCOL') as error:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE CodexError
+
+tests\test_codex_worker_boundary.py:161: Failed
+_ test_tools_and_unknown_item_types_reject_even_completed_turn[item.completed-file_change] _
+
+item_type = 'file_change', event_type = 'item.completed'
+
+    @pytest.mark.parametrize('item_type', ['command_execution', 'mcp_tool_call', 'file_change', 'web_search',
+                                           'collab_agent_tool_call', 'todo_list', 'future_tool_type'])
+    @pytest.mark.parametrize('event_type', ['item.started', 'item.updated', 'item.completed'])
+    def test_tools_and_unknown_item_types_reject_even_completed_turn(item_type, event_type):
+        events = jsonl({'type': event_type, 'item': {'type': item_type, 'arguments': {'secret': 'do-not-retain'}}},
+                       {'type': 'turn.completed'})
+>       with pytest.raises(codex_cli.CodexError, match='CODEX_PROTOCOL') as error:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE CodexError
+
+tests\test_codex_worker_boundary.py:161: Failed
+_ test_tools_and_unknown_item_types_reject_even_completed_turn[item.completed-web_search] _
+
+item_type = 'web_search', event_type = 'item.completed'
+
+    @pytest.mark.parametrize('item_type', ['command_execution', 'mcp_tool_call', 'file_change', 'web_search',
+                                           'collab_agent_tool_call', 'todo_list', 'future_tool_type'])
+    @pytest.mark.parametrize('event_type', ['item.started', 'item.updated', 'item.completed'])
+    def test_tools_and_unknown_item_types_reject_even_completed_turn(item_type, event_type):
+        events = jsonl({'type': event_type, 'item': {'type': item_type, 'arguments': {'secret': 'do-not-retain'}}},
+                       {'type': 'turn.completed'})
+>       with pytest.raises(codex_cli.CodexError, match='CODEX_PROTOCOL') as error:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE CodexError
+
+tests\test_codex_worker_boundary.py:161: Failed
+_ test_tools_and_unknown_item_types_reject_even_completed_turn[item.completed-collab_agent_tool_call] _
+
+item_type = 'collab_agent_tool_call', event_type = 'item.completed'
+
+    @pytest.mark.parametrize('item_type', ['command_execution', 'mcp_tool_call', 'file_change', 'web_search',
+                                           'collab_agent_tool_call', 'todo_list', 'future_tool_type'])
+    @pytest.mark.parametrize('event_type', ['item.started', 'item.updated', 'item.completed'])
+    def test_tools_and_unknown_item_types_reject_even_completed_turn(item_type, event_type):
+        events = jsonl({'type': event_type, 'item': {'type': item_type, 'arguments': {'secret': 'do-not-retain'}}},
+                       {'type': 'turn.completed'})
+>       with pytest.raises(codex_cli.CodexError, match='CODEX_PROTOCOL') as error:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE CodexError
+
+tests\test_codex_worker_boundary.py:161: Failed
+_ test_tools_and_unknown_item_types_reject_even_completed_turn[item.completed-todo_list] _
+
+item_type = 'todo_list', event_type = 'item.completed'
+
+    @pytest.mark.parametrize('item_type', ['command_execution', 'mcp_tool_call', 'file_change', 'web_search',
+                                           'collab_agent_tool_call', 'todo_list', 'future_tool_type'])
+    @pytest.mark.parametrize('event_type', ['item.started', 'item.updated', 'item.completed'])
+    def test_tools_and_unknown_item_types_reject_even_completed_turn(item_type, event_type):
+        events = jsonl({'type': event_type, 'item': {'type': item_type, 'arguments': {'secret': 'do-not-retain'}}},
+                       {'type': 'turn.completed'})
+>       with pytest.raises(codex_cli.CodexError, match='CODEX_PROTOCOL') as error:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE CodexError
+
+tests\test_codex_worker_boundary.py:161: Failed
+_ test_tools_and_unknown_item_types_reject_even_completed_turn[item.completed-future_tool_type] _
+
+item_type = 'future_tool_type', event_type = 'item.completed'
+
+    @pytest.mark.parametrize('item_type', ['command_execution', 'mcp_tool_call', 'file_change', 'web_search',
+                                           'collab_agent_tool_call', 'todo_list', 'future_tool_type'])
+    @pytest.mark.parametrize('event_type', ['item.started', 'item.updated', 'item.completed'])
+    def test_tools_and_unknown_item_types_reject_even_completed_turn(item_type, event_type):
+        events = jsonl({'type': event_type, 'item': {'type': item_type, 'arguments': {'secret': 'do-not-retain'}}},
+                       {'type': 'turn.completed'})
+>       with pytest.raises(codex_cli.CodexError, match='CODEX_PROTOCOL') as error:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE CodexError
+
+tests\test_codex_worker_boundary.py:161: Failed
+________________ test_unknown_event_shapes_fail_closed[event0] ________________
+
+event = {'type': 'item.completed'}
+
+    @pytest.mark.parametrize('event', [{'type': 'item.completed'}, {'type': 'item.started', 'item': []},
+                                      {'type': 'item.updated', 'item': {'text': 'missing-type'}},
+                                      {'type': 'item.updated', 'item': {'type': []}},
+                                      {'type': 'future.unrecognized.event'}])
+    def test_unknown_event_shapes_fail_closed(event):
+>       with pytest.raises(codex_cli.CodexError, match='CODEX_PROTOCOL'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE CodexError
+
+tests\test_codex_worker_boundary.py:171: Failed
+________________ test_unknown_event_shapes_fail_closed[event1] ________________
+
+event = {'type': 'item.started', 'item': []}
+
+    @pytest.mark.parametrize('event', [{'type': 'item.completed'}, {'type': 'item.started', 'item': []},
+                                      {'type': 'item.updated', 'item': {'text': 'missing-type'}},
+                                      {'type': 'item.updated', 'item': {'type': []}},
+                                      {'type': 'future.unrecognized.event'}])
+    def test_unknown_event_shapes_fail_closed(event):
+>       with pytest.raises(codex_cli.CodexError, match='CODEX_PROTOCOL'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE CodexError
+
+tests\test_codex_worker_boundary.py:171: Failed
+________________ test_unknown_event_shapes_fail_closed[event2] ________________
+
+event = {'type': 'item.updated', 'item': {'text': 'missing-type'}}
+
+    @pytest.mark.parametrize('event', [{'type': 'item.completed'}, {'type': 'item.started', 'item': []},
+                                      {'type': 'item.updated', 'item': {'text': 'missing-type'}},
+                                      {'type': 'item.updated', 'item': {'type': []}},
+                                      {'type': 'future.unrecognized.event'}])
+    def test_unknown_event_shapes_fail_closed(event):
+>       with pytest.raises(codex_cli.CodexError, match='CODEX_PROTOCOL'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE CodexError
+
+tests\test_codex_worker_boundary.py:171: Failed
+________________ test_unknown_event_shapes_fail_closed[event3] ________________
+
+event = {'type': 'item.updated', 'item': {'type': []}}
+
+    @pytest.mark.parametrize('event', [{'type': 'item.completed'}, {'type': 'item.started', 'item': []},
+                                      {'type': 'item.updated', 'item': {'text': 'missing-type'}},
+                                      {'type': 'item.updated', 'item': {'type': []}},
+                                      {'type': 'future.unrecognized.event'}])
+    def test_unknown_event_shapes_fail_closed(event):
+>       with pytest.raises(codex_cli.CodexError, match='CODEX_PROTOCOL'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE CodexError
+
+tests\test_codex_worker_boundary.py:171: Failed
+________________ test_unknown_event_shapes_fail_closed[event4] ________________
+
+event = {'type': 'future.unrecognized.event'}
+
+    @pytest.mark.parametrize('event', [{'type': 'item.completed'}, {'type': 'item.started', 'item': []},
+                                      {'type': 'item.updated', 'item': {'text': 'missing-type'}},
+                                      {'type': 'item.updated', 'item': {'type': []}},
+                                      {'type': 'future.unrecognized.event'}])
+    def test_unknown_event_shapes_fail_closed(event):
+>       with pytest.raises(codex_cli.CodexError, match='CODEX_PROTOCOL'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE CodexError
+
+tests\test_codex_worker_boundary.py:171: Failed
+______________ test_tool_fixture_rejected_through_public_adapter ______________
+
+worker = ([('worker', ['configured-codex.exe', 'exec', '--sandbox', 'read-only', '--ephemeral', '--json', ...], {'stdin': -1, 'stdout': -1, 'stderr': -1, 'text': True, ...})], <Mock id='2090816716000'>)
+
+    def test_tool_fixture_rejected_through_public_adapter(worker):
+        _, process = worker
+        fixture = Path(__file__).parent / 'fixtures' / 'codex_unexpected_tool.jsonl'
+        process.communicate.return_value = (fixture.read_text(encoding='utf-8'), '')
+>       with pytest.raises(codex_cli.CodexError, match='CODEX_PROTOCOL'):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE CodexError
+
+tests\test_codex_worker_boundary.py:188: Failed
+=========================== short test summary info ===========================
+FAILED tests/test_codex_worker_boundary.py::test_effective_mcp_is_disabled_before_worker_and_security_env_is_preserved
+FAILED tests/test_codex_worker_boundary.py::test_unprovable_mcp_config_blocks_worker[None]
+FAILED tests/test_codex_worker_boundary.py::test_unprovable_mcp_config_blocks_worker[payload1]
+FAILED tests/test_codex_worker_boundary.py::test_unprovable_mcp_config_blocks_worker[[]]
+FAILED tests/test_codex_worker_boundary.py::test_unprovable_mcp_config_blocks_worker[payload3]
+FAILED tests/test_codex_worker_boundary.py::test_unprovable_mcp_config_blocks_worker[payload4]
+FAILED tests/test_codex_worker_boundary.py::test_unprovable_mcp_config_blocks_worker[payload5]
+FAILED tests/test_codex_worker_boundary.py::test_unprovable_mcp_config_blocks_worker[payload6]
+FAILED tests/test_codex_worker_boundary.py::test_unprovable_mcp_config_blocks_worker[payload7]
+FAILED tests/test_codex_worker_boundary.py::test_unprovable_mcp_config_blocks_worker[payload8]
+FAILED tests/test_codex_worker_boundary.py::test_unprovable_mcp_config_blocks_worker[payload9]
+FAILED tests/test_codex_worker_boundary.py::test_enabled_managed_or_new_server_blocks_worker
+FAILED tests/test_codex_worker_boundary.py::test_unsupported_cli_restriction_fails_without_weaker_retry
+FAILED tests/test_codex_worker_boundary.py::test_config_preflight_timeout_blocks_worker
+FAILED tests/test_codex_worker_boundary.py::test_config_output_byte_limit_blocks_worker
+FAILED tests/test_codex_worker_boundary.py::test_preflights_and_execution_share_one_deadline
+FAILED tests/test_codex_worker_boundary.py::test_server_names_are_toml_data_and_cannot_inject_policy
+FAILED tests/test_codex_worker_boundary.py::test_tools_and_unknown_item_types_reject_even_completed_turn[item.started-command_execution]
+FAILED tests/test_codex_worker_boundary.py::test_tools_and_unknown_item_types_reject_even_completed_turn[item.started-mcp_tool_call]
+FAILED tests/test_codex_worker_boundary.py::test_tools_and_unknown_item_types_reject_even_completed_turn[item.started-file_change]
+FAILED tests/test_codex_worker_boundary.py::test_tools_and_unknown_item_types_reject_even_completed_turn[item.started-web_search]
+FAILED tests/test_codex_worker_boundary.py::test_tools_and_unknown_item_types_reject_even_completed_turn[item.started-collab_agent_tool_call]
+FAILED tests/test_codex_worker_boundary.py::test_tools_and_unknown_item_types_reject_even_completed_turn[item.started-todo_list]
+FAILED tests/test_codex_worker_boundary.py::test_tools_and_unknown_item_types_reject_even_completed_turn[item.started-future_tool_type]
+FAILED tests/test_codex_worker_boundary.py::test_tools_and_unknown_item_types_reject_even_completed_turn[item.updated-command_execution]
+FAILED tests/test_codex_worker_boundary.py::test_tools_and_unknown_item_types_reject_even_completed_turn[item.updated-mcp_tool_call]
+FAILED tests/test_codex_worker_boundary.py::test_tools_and_unknown_item_types_reject_even_completed_turn[item.updated-file_change]
+FAILED tests/test_codex_worker_boundary.py::test_tools_and_unknown_item_types_reject_even_completed_turn[item.updated-web_search]
+FAILED tests/test_codex_worker_boundary.py::test_tools_and_unknown_item_types_reject_even_completed_turn[item.updated-collab_agent_tool_call]
+FAILED tests/test_codex_worker_boundary.py::test_tools_and_unknown_item_types_reject_even_completed_turn[item.updated-todo_list]
+FAILED tests/test_codex_worker_boundary.py::test_tools_and_unknown_item_types_reject_even_completed_turn[item.updated-future_tool_type]
+FAILED tests/test_codex_worker_boundary.py::test_tools_and_unknown_item_types_reject_even_completed_turn[item.completed-command_execution]
+FAILED tests/test_codex_worker_boundary.py::test_tools_and_unknown_item_types_reject_even_completed_turn[item.completed-mcp_tool_call]
+FAILED tests/test_codex_worker_boundary.py::test_tools_and_unknown_item_types_reject_even_completed_turn[item.completed-file_change]
+FAILED tests/test_codex_worker_boundary.py::test_tools_and_unknown_item_types_reject_even_completed_turn[item.completed-web_search]
+FAILED tests/test_codex_worker_boundary.py::test_tools_and_unknown_item_types_reject_even_completed_turn[item.completed-collab_agent_tool_call]
+FAILED tests/test_codex_worker_boundary.py::test_tools_and_unknown_item_types_reject_even_completed_turn[item.completed-todo_list]
+FAILED tests/test_codex_worker_boundary.py::test_tools_and_unknown_item_types_reject_even_completed_turn[item.completed-future_tool_type]
+FAILED tests/test_codex_worker_boundary.py::test_unknown_event_shapes_fail_closed[event0]
+FAILED tests/test_codex_worker_boundary.py::test_unknown_event_shapes_fail_closed[event1]
+FAILED tests/test_codex_worker_boundary.py::test_unknown_event_shapes_fail_closed[event2]
+FAILED tests/test_codex_worker_boundary.py::test_unknown_event_shapes_fail_closed[event3]
+FAILED tests/test_codex_worker_boundary.py::test_unknown_event_shapes_fail_closed[event4]
+FAILED tests/test_codex_worker_boundary.py::test_tool_fixture_rejected_through_public_adapter
+44 failed, 22 passed in 3.06s

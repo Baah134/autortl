@@ -1,0 +1,86 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025
+| Date         : Tue Nov  3 06:43:35 2026
+| Host         : Baah running 64-bit major release  (build 9200)
+| Command      : report_timing -from [all_registers] -to [all_registers] -max_paths 1 -file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t3-03/tier3_70q5kppw/iterative_divider_build/iter_000/timing_reg2reg.rpt
+| Design       : iterative_divider
+| Device       : 7a35t-cpg236
+| Speed File   : -1  PRODUCTION 1.23 2018-06-13
+| Design State : Routed
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Timing Report
+
+Slack (MET) :             3.990ns  (required time - arrival time)
+  Source:                 u_iterative_divider_core/dividend_shift_reg[7]/C
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            u_iterative_divider_core/remainder_work_reg[7]/D
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            10.000ns  (clk rise@10.000ns - clk rise@0.000ns)
+  Data Path Delay:        5.724ns  (logic 2.699ns (47.156%)  route 3.025ns (52.844%))
+  Logic Levels:           6  (CARRY4=4 LUT3=1 LUT4=1)
+  Clock Path Skew:        -0.048ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    4.273ns = ( 14.273 - 10.000 ) 
+    Source Clock Delay      (SCD):    4.643ns
+    Clock Pessimism Removal (CPR):    0.322ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+    M18                                               0.000     0.000 r  clk (IN)
+                         net (fo=0)                   0.000     0.000    clk
+    M18                  IBUF (Prop_ibuf_I_O)         0.938     0.938 r  clk_IBUF_inst/O
+                         net (fo=1, routed)           1.972     2.910    clk_IBUF
+    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.096     3.006 r  clk_IBUF_BUFG_inst/O
+                         net (fo=81, routed)          1.637     4.643    u_iterative_divider_core/clk_IBUF_BUFG
+    SLICE_X0Y7           FDRE                                         r  u_iterative_divider_core/dividend_shift_reg[7]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X0Y7           FDRE (Prop_fdre_C_Q)         0.419     5.062 r  u_iterative_divider_core/dividend_shift_reg[7]/Q
+                         net (fo=4, routed)           1.818     6.880    u_iterative_divider_core/dividend_shift_reg_n_0_[7]
+    SLICE_X0Y30          LUT4 (Prop_lut4_I2_O)        0.297     7.177 r  u_iterative_divider_core/next_quotient_bit_carry_i_8/O
+                         net (fo=1, routed)           0.000     7.177    u_iterative_divider_core/next_quotient_bit_carry_i_8_n_0
+    SLICE_X0Y30          CARRY4 (Prop_carry4_S[0]_CO[3])
+                                                      0.532     7.709 r  u_iterative_divider_core/next_quotient_bit_carry/CO[3]
+                         net (fo=1, routed)           0.000     7.709    u_iterative_divider_core/next_quotient_bit_carry_n_0
+    SLICE_X0Y31          CARRY4 (Prop_carry4_CI_CO[0])
+                                                      0.293     8.002 r  u_iterative_divider_core/next_quotient_bit_carry__0/CO[0]
+                         net (fo=11, routed)          0.740     8.742    u_iterative_divider_core/p_0_in[0]
+    SLICE_X1Y31          LUT3 (Prop_lut3_I2_O)        0.373     9.115 r  u_iterative_divider_core/remainder_work[6]_i_4/O
+                         net (fo=1, routed)           0.000     9.115    u_iterative_divider_core/remainder_work[6]_i_4_n_0
+    SLICE_X1Y31          CARRY4 (Prop_carry4_S[1]_CO[3])
+                                                      0.550     9.665 r  u_iterative_divider_core/remainder_work_reg[6]_i_1/CO[3]
+                         net (fo=1, routed)           0.000     9.665    u_iterative_divider_core/remainder_work_reg[6]_i_1_n_0
+    SLICE_X1Y32          CARRY4 (Prop_carry4_CI_O[0])
+                                                      0.235     9.900 r  u_iterative_divider_core/remainder_work_reg[7]_i_3/O[0]
+                         net (fo=2, routed)           0.466    10.366    u_iterative_divider_core/next_remainder[7]
+    SLICE_X2Y31          FDRE                                         r  u_iterative_divider_core/remainder_work_reg[7]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)       10.000    10.000 r  
+    M18                                               0.000    10.000 r  clk (IN)
+                         net (fo=0)                   0.000    10.000    clk
+    M18                  IBUF (Prop_ibuf_I_O)         0.805    10.805 r  clk_IBUF_inst/O
+                         net (fo=1, routed)           1.868    12.673    clk_IBUF
+    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.091    12.764 r  clk_IBUF_BUFG_inst/O
+                         net (fo=81, routed)          1.509    14.273    u_iterative_divider_core/clk_IBUF_BUFG
+    SLICE_X2Y31          FDRE                                         r  u_iterative_divider_core/remainder_work_reg[7]/C
+                         clock pessimism              0.322    14.595    
+                         clock uncertainty           -0.035    14.560    
+    SLICE_X2Y31          FDRE (Setup_fdre_C_D)       -0.203    14.357    u_iterative_divider_core/remainder_work_reg[7]
+  -------------------------------------------------------------------
+                         required time                         14.357    
+                         arrival time                         -10.366    
+  -------------------------------------------------------------------
+                         slack                                  3.990    
+
+
+
+

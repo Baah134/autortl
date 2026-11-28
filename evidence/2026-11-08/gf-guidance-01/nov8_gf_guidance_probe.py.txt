@@ -1,0 +1,51 @@
+"""Independent trusted field-arithmetic check; no generated program execution."""
+import hashlib,json
+from pathlib import Path
+work=Path(__file__).resolve().parent
+def multiply(a,b,modulus=0x11b):
+    # Polynomial convolution followed by long division, deliberately distinct
+    # from the archived program's repeated byte-shift recurrence.
+    product=0
+    for i in range(8):
+        if (b>>i)&1:product^=a<<i
+    for degree in range(14,7,-1):
+        if (product>>degree)&1:product^=modulus<<(degree-8)
+    return product
+def walk(generator,modulus=0x11b):
+    values=[];value=1
+    for _ in range(255):
+        values.append(value);value=multiply(value,generator,modulus)
+    return values,value
+cycles={}
+for generator in (2,3):
+    values,last=walk(generator)
+    cycles[hex(generator)]={'distinct_nonzero':len(set(values)),
+                           'first_return_to_one':next((i for i,v in enumerate(values[1:],1) if v==1),255 if last==1 else None),
+                           'covers_all_nonzero':set(values)==set(range(1,256)),
+                           'after_255':last}
+values,_=walk(3);logs={v:i for i,v in enumerate(values)}
+inverse={0:0};brute_inverse={0:0}
+for byte in range(1,256):
+    inverse[byte]=values[(-logs[byte])%255]
+    brute_inverse[byte]=next(value for value in range(1,256) if multiply(byte,value)==1)
+def affine(value):
+    result=value^0x63
+    for shift in range(1,5):result^=((value<<shift)|(value>>(8-shift)))&255
+    return result
+sbox=[affine(inverse[b]) for b in range(256)]
+brute_sbox=[affine(brute_inverse[b]) for b in range(256)]
+report={'modulus':'0x11b','method':'Independent polynomial convolution/reduction; order walk and exhaustive inverse identities',
+        'cycles':cycles,'all_255_inverse_products_one':all(multiply(b,inverse[b])==1 for b in range(1,256)),
+        'all_256_inverses_match_exhaustive_product_search':inverse==brute_inverse,
+        'all_256_affine_results_match':sbox==brute_sbox,
+        'affine_results_bijective':len(set(sbox))==256,
+        'public_anchor_results':{f'{b:02x}':f'{sbox[b]:02x}' for b in (0,1,0x53)},
+        'affine_table_sha256':hashlib.sha256(bytes(sbox)).hexdigest(),
+        'model_calls':0,'vendor_calls':0,'generated_python_executed':False,
+        'limits':'Two independent inverse constructions share the explicitly specified polynomial field definition and affine map. No full table or corrected AES implementation is supplied to model prompts.'}
+other_values,other_end=walk(2,0x11d)
+report['different_polynomial_control']={'modulus':'0x11d','generator':'0x02',
+    'distinct_nonzero':len(set(other_values)),'covers_all_nonzero':set(other_values)==set(range(1,256)),
+    'after_255':other_end,'purpose':'Avoid a blanket ban on generator0x02 across different field definitions.'}
+(work/'nov8-gf-guidance-probe.json').write_text(json.dumps(report,indent=2)+'\n',encoding='utf-8')
+print(json.dumps(report))

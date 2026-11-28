@@ -1,0 +1,28 @@
+import hashlib, importlib.util, json
+from pathlib import Path
+
+base=Path(__file__).resolve().parent
+source=base/'nov8-benchmark-artifact-stage/benchmark/artifacts.py'
+spec=importlib.util.spec_from_file_location('review_artifacts',source)
+a=importlib.util.module_from_spec(spec);spec.loader.exec_module(a)
+out=base/'nov8-benchmark-review-probes'
+out.mkdir(exist_ok=True)
+pub=out/'public';priv=out/'private'
+pub.mkdir(exist_ok=True);priv.mkdir(exist_ok=True)
+(pub/'statement.txt').write_bytes(b'public')
+(priv/'test.sv').write_bytes(b'private')
+sha=lambda raw:hashlib.sha256(raw).hexdigest()
+manifest={'schema':1,'identity':{'dataset':{'commit':'1'*40,'format':'synthetic'},'source_commit':'2'*40,'runtime':{'commit':'3'*40,'sha256':'4'*64},'requested_model':'fixture','observed_model':None},'tasks':[{'id':'fixture','public_files':[{'path':'statement.txt','sha256':sha(b'public')}],'private_files':[{'path':'test.sv','sha256':sha(b'private')}]}],'cells':[{'task':'fixture','trial':0,'arm':'full','budget':{'model_calls':3,'tool_seconds':5,'wall_seconds':10},'verification_policy':'full'}]}
+result={'reviewed_source_sha256':sha(source.read_bytes()),'cases':[]}
+for encoding in ('utf-8','utf-16','utf-32'):
+    path=out/(encoding+'.json');path.write_bytes(json.dumps(manifest).encode(encoding))
+    try:a.load_manifest(path,public_root=pub,private_root=priv);outcome='accepted'
+    except Exception as exc:outcome=type(exc).__name__+': '+str(exc)
+    result['cases'].append({'case':encoding,'outcome':outcome})
+manifest['cells'][0]['budget']['tool_seconds']=10**400
+path=out/'large-budget.json';path.write_text(json.dumps(manifest),encoding='utf-8')
+try:a.load_manifest(path,public_root=pub,private_root=priv);outcome='accepted'
+except Exception as exc:outcome=type(exc).__name__+': '+str(exc)
+result['cases'].append({'case':'large_integer_finite_budget','outcome':outcome})
+(out/'results.json').write_text(json.dumps(result,indent=2)+'\n',encoding='utf-8')
+print(json.dumps(result,indent=2))

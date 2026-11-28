@@ -1,0 +1,5 @@
+{
+  "stage": "module_priority_encoder8_core:model:generator.generate:0",
+  "result": "`timescale 1ns/1ps\n// @latency 1\nmodule priority_encoder8_core (\n    input wire clk,\n    input wire rst,\n    input wire [7:0] request,\n    output wire [2:0] index,\n    output wire valid\n);\n\nreg [2:0] index_reg;\nreg valid_reg;\n\nassign index = index_reg;\nassign valid = valid_reg;\n\nalways @(posedge clk) begin\n    if (rst) begin\n        index_reg <= 3'd0;\n        valid_reg <= 1'b0;\n    end else begin\n        valid_reg <= (request != 8'd0);\n\n        if (request[7])\n            index_reg <= 3'd7;\n        else if (request[6])\n            index_reg <= 3'd6;\n        else if (request[5])\n            index_reg <= 3'd5;\n        else if (request[4])\n            index_reg <= 3'd4;\n        else if (request[3])\n            index_reg <= 3'd3;\n        else if (request[2])\n            index_reg <= 3'd2;\n        else if (request[1])\n            index_reg <= 3'd1;\n        else\n            index_reg <= 3'd0;\n    end\nend\n\nendmodule",
+  "artifacts": {}
+}

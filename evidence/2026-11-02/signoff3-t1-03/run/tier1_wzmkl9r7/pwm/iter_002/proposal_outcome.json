@@ -1,0 +1,45 @@
+{
+  "candidates": [
+    {
+      "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff3-t1-03\\tier1_wzmkl9r7\\pwm\\iter_002\\cand_standard",
+      "cache_hit": false,
+      "final_code_hash": "52d8124ab2f5e216",
+      "final_source_sha256": "7e2e0c0d4333a02e111c50cc0d96afd18a4c04563b53328d550d7695fc5c9247",
+      "flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff3-t1-03\\tier1_wzmkl9r7\\pwm\\iter_002\\cand_standard\\synth.tcl",
+        "sha256": "4f6b05f9c45de54681e225a4dd1204c0e7c47f23db6ee355b9a13827d5742e2e"
+      },
+      "generated_code_hash": "52d8124ab2f5e216",
+      "generated_source_sha256": "7e2e0c0d4333a02e111c50cc0d96afd18a4c04563b53328d550d7695fc5c9247",
+      "instruction": "Keep the 32-bit counter, its terminal-count reset branch, and the registered output behavior unchanged. Replace only `counter < {24'd0, duty}` with an equivalent comparison: require `counter[31:8] == 0`, then compare the high nibbles `counter[7:4]` and `duty[7:4]`, using the low-nibble comparison `counter[3:0] < duty[3:0]` only when the high nibbles are equal. Preserve reset behavior and cycle timing; retain the candidate only if it passes every gate and strictly reduces LUTs versus the 7-LUT incumbent.",
+      "iteration": 2,
+      "metrics": {
+        "bram_used": 0.0,
+        "dsp_used": 0,
+        "dynamic_power_w": 0.011,
+        "ff_used": 9,
+        "lut_used": 8,
+        "sim_passed": true,
+        "timing_met": true,
+        "total_power_w": 0.081,
+        "whs_ns": 0.289,
+        "wns_ns": 0.594
+      },
+      "mutation": "standard",
+      "reason": "",
+      "rungs": 5,
+      "source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff3-t1-03\\tier1_wzmkl9r7\\pwm\\iter_002\\cand_standard\\pwm.v",
+        "sha256": "6d7296f4ec4c4256f3edbdb006dadc1d350d468603dd852c053710b94669186f"
+      },
+      "status": "measured"
+    }
+  ],
+  "doctor": null,
+  "instruction": "Keep the 32-bit counter, its terminal-count reset branch, and the registered output behavior unchanged. Replace only `counter < {24'd0, duty}` with an equivalent comparison: require `counter[31:8] == 0`, then compare the high nibbles `counter[7:4]` and `duty[7:4]`, using the low-nibble comparison `counter[3:0] < duty[3:0]` only when the high nibbles are equal. Preserve reset behavior and cycle timing; retain the candidate only if it passes every gate and strictly reduces LUTs versus the 7-LUT incumbent.",
+  "is_best": false,
+  "iteration": 2,
+  "recommendation": "REJECT",
+  "schema_version": 1,
+  "selected_source_sha256": "7e2e0c0d4333a02e111c50cc0d96afd18a4c04563b53328d550d7695fc5c9247"
+}

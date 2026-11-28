@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_4:decision:instruction:0",
+  "result": "In `debouncer_top`, keep `clean_reg` and the 3-bit counter, but replace the binary up-counter and `count == 3'd7` saturation branch with a countdown: reset the count to zero when `noisy == clean_reg`, load `3'd7` on the first differing sample while idle, and decrement on subsequent differing samples. When the prior count is `3'd1`, update `clean_reg` to `noisy` and return the count to zero, so the output changes on the eighth consecutive differing sample. Preserve synchronous active-high reset, registered `clean`, the exact interface and `// @latency 0`; retain the candidate only if all gates pass and routed metrics strictly improve on the incumbent objective.",
+  "artifacts": {}
+}

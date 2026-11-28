@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_1:model:planner.plan:0",
+  "result": "# PLAN \u2014 iteration 1\n## Current state assessment\nThe incumbent uses 6 LUTs and 8 FFs and meets timing, with WNS 0.424 ns and WHS 0.226 ns. The objective is strictly fewer LUTs, or equal LUTs with fewer FFs, after all verification gates pass; the current top requires `// @latency 1`.\n\n## Hypothesis\nReplacing the enabled increment with explicit carry-toggle equations may reduce LUT use while preserving the same eight state bits and cycle behavior.\n\n## Instruction for generator\nIn `counter8_core`, replace `count_q + 8'd1` with per-bit toggle logic: bit 0 toggles on `enable`, and bit *i* toggles on `enable` AND the reduction-AND of `count_q[i-1:0]`. Preserve synchronous active-high reset priority, hold behavior when disabled, and modulo-256 counting. Keep the top interface and `// @latency 1` annotation unchanged; retain the candidate only if it passes all gates and improves the LUT objective.",
+  "artifacts": {}
+}

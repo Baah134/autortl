@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_8:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 8\n## Contract check\n- Interface and top latency annotation: PASS \u2014 top ports match the contract, and `// @latency 5` matches authoritative latency.\n- Defined behavior: PASS \u2014 deterministic ladder reports 5 rungs ALIVE; no subjective source issue is evident.\n- Compile and simulation: PASS \u2014 xvlog, xelab and xsim exited successfully; simulation reports `TEST PASSED`.\n- Routed metrics and process receipts: PASS \u2014 routed reports are retained, process exits succeeded, and metric evidence is consistent.\n- Timing feasibility: PASS \u2014 timing is met with WNS 1.729 ns and WHS 0.105 ns.\n- Objective improvement over previous best: FAIL \u2014 both candidates are timing-feasible, but LUTs and FFs are equal (78, 202); strict improvement for `minimize_luts` is required, and `improvement_kind` is null.\n## Summary\n- Passed: 5 of 6\n- Failed: 1 of 6\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes behavioral, verification, metric and timing gates, but it does not strictly improve the feasible previous best on the selected objective: LUT and FF counts are unchanged. That mandatory comparison fails, so the candidate cannot be accepted as an improvement.",
+      "recommendation": "REJECT",
+      "passed": 5,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

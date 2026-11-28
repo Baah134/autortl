@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_3:decision:instruction:0",
+  "result": "In `aes_round`, replace the `mixed_state = shifted_state` plus `if (!final_round)` whole-column selection with the shared-total correction form: each output byte is its shifted byte XOR the corresponding MixColumns correction, masked by `!final_round`. XOR `round_key` with that result, preserving the existing byte order and final-round behavior. Keep the controller, registers, handshakes, reset behavior, and cycle timing unchanged; evaluate against the same routed LUT, WNS, and WHS gates.",
+  "artifacts": {}
+}

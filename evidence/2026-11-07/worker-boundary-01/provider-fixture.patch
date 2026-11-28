@@ -1,0 +1,19 @@
+--- a/tests/test_provider_failures.py
++++ b/tests/test_provider_failures.py
+@@ -16,6 +16,7 @@
+ def worker(tmp_path, monkeypatch):
+     monkeypatch.setattr(backend.tempfile, "tempdir", str(tmp_path))
+     monkeypatch.setenv("AUTORTL_CODEX_BIN", "fake-codex.exe")
++    monkeypatch.setattr(backend.subprocess, "run", Mock(return_value=Mock(returncode=0, stdout="[]", stderr="")))
+     process = Mock(returncode=1, pid=12345)
+     monkeypatch.setattr(backend.subprocess, "Popen", Mock(return_value=process))
+     monkeypatch.setattr(backend, "_terminate_worker", Mock())
+@@ -90,7 +91,7 @@
+ def test_protocol_event_count_is_bounded(monkeypatch):
+     monkeypatch.setattr(backend, "MAX_EVENTS", 3)
+     with pytest.raises(backend.CodexError, match="event limit"):
+-        backend._parse_events('\n'.join(['{"type":"item.started"}'] * 4))
++        backend._parse_events('\n'.join(['{"type":"item.started","item":{"type":"reasoning","text":"bounded control"}}'] * 4))
+ 
+ 
+ @pytest.fixture

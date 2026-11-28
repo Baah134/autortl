@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_2:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 2\n## Contract check\n- Interface and reset behavior: PASS \u2014 module ports and synchronous active-high reset behavior are preserved.\n- Top latency annotation: PASS \u2014 authoritative `declared_latency.known=false`, so no numeric annotation is required.\n- Behavioral cycle preservation: FAIL \u2014 the original counter resets all 32 bits at 255; the candidate increments the upper bits when the low byte wraps, changing observable PWM behavior after 256 cycles.\n- Compilation and simulation gates: PASS \u2014 required tools exited successfully and the frozen testbench reported `TEST PASSED`.\n- Routed metrics and timing feasibility: PASS \u2014 retained routed metrics are present; timing is met with WNS 0.553 ns and WHS 0.121 ns.\n- Improvement over previous best: FAIL \u2014 the previous best is already timing-feasible, while LUTs increased from 7 to 30 and FFs from 9 to 33; no strict `minimize_luts` improvement is established.\n## Summary\n- Passed: 4 of 6\n- Failed: 2 of 6\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate changes the counter\u2019s behavior after it reaches 255, violating the fixed behavioral contract. It also does not improve the chosen objective over the already timing-feasible previous best. The passing testbench and timing results do not clear these failures.",
+      "recommendation": "REJECT",
+      "passed": 4,
+      "failed": 2
+    }
+  },
+  "artifacts": {}
+}

@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_3:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 3,
+    "instruction": "In `crc16_stream_core`, remove `start_of_frame` and use the prior `out_last_reg` value to select `16'hFFFF` as the CRC seed for the next accepted byte; otherwise use `crc_reg`. Set `out_last_reg` to 1 on synchronous reset so the first post-reset byte starts from `16'hFFFF`; its reset value is unspecified while `out_valid` is low. On each accepted byte, continue registering the computed CRC and `in_last`, and preserve the existing one-slot ready/valid behavior, stall stability, reset priority, and one-cycle minimum transfer age. Keep the top `// @latency 1` annotation; evaluate against the incu",
+    "candidates": [
+      {
+        "iteration": 3,
+        "mutation": "standard",
+        "instruction": "In `crc16_stream_core`, remove `start_of_frame` and use the prior `out_last_reg` value to select `16'hFFFF` as the CRC seed for the next accepted byte; otherwise use `crc_reg`. Set `out_last_reg` to 1 on synchronous reset so the first post-reset byte starts from `16'hFFFF`; its reset value is unspecified while `out_valid` is low. On each accepted byte, continue registering the computed CRC and `in_last`, and preserve the existing one-slot ready/valid behavior, stall stability, reset priority, and one-cycle minimum transfer age. Keep the top `// @latency 1` annotation; evaluate against the incu",
+        "generated_source_sha256": "172e8cdde3a9f652c8338a21a438174d610bffde9a2781f37503d99052d384e4",
+        "final_source_sha256": "172e8cdde3a9f652c8338a21a438174d610bffde9a2781f37503d99052d384e4",
+        "generated_code_hash": "505d21975effe4d1",
+        "final_code_hash": "505d21975effe4d1",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.318,
+          "whs_ns": 0.156,
+          "lut_used": 15,
+          "ff_used": 18,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.018,
+          "total_power_w": 0.088
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-01\\tier4_609n_qcd\\crc16_stream_build\\iter_003\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-01\\tier4_609n_qcd\\crc16_stream_build\\iter_003\\cand_standard\\synth.tcl",
+          "sha256": "b98dd75f97c0908a7d884b2679012b8fc9965dfb9192dc7a7133f71b46c0e209"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-01\\tier4_609n_qcd\\crc16_stream_build\\iter_003\\cand_standard\\crc16_stream.v",
+          "sha256": "d3963857e4d7e3f11e4a177fb40f9b8102fd24da99c6b1418bf1401fbe8d3165"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "ACCEPT",
+    "is_best": true,
+    "selected_source_sha256": "172e8cdde3a9f652c8338a21a438174d610bffde9a2781f37503d99052d384e4"
+  },
+  "artifacts": {}
+}

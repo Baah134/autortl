@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_3:decision:instruction:0",
+  "result": "In `rv_imem` and `rv_dmem`, remove the reset loops that clear the data arrays and add per-word valid bits that reset to zero; leave the wide arrays unreset. On reads, register zero for an invalid address and otherwise register the addressed word, using pre-edge validity so same-edge reads and writes remain read-first; on writes, update the addressed word and set its valid bit. Keep each registered output\u2019s synchronous reset-to-zero behavior, ignore writes during reset, and preserve the existing address, latency, and top-level cycle behavior.",
+  "artifacts": {}
+}

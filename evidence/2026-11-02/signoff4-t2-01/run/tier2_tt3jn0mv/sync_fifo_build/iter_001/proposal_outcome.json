@@ -1,0 +1,77 @@
+{
+  "candidates": [
+    {
+      "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-01\\tier2_tt3jn0mv\\sync_fifo_build\\iter_001\\cand_standard",
+      "cache_hit": false,
+      "final_code_hash": "41f0f9812e794474",
+      "final_source_sha256": "1e19a3100db5578439a9a92ff8176d9a4bb7d2079221f8154b2aae97c857a8b2",
+      "flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-01\\tier2_tt3jn0mv\\sync_fifo_build\\iter_001\\cand_standard\\synth.tcl",
+        "sha256": "1d4039fc6ed8a6d90f1a29809c713f6e8958172858cb34c231fdb35654d5a79c"
+      },
+      "generated_code_hash": "41f0f9812e794474",
+      "generated_source_sha256": "1e19a3100db5578439a9a92ff8176d9a4bb7d2079221f8154b2aae97c857a8b2",
+      "instruction": "In `sync_fifo_core`, replace the circular `mem[rd_ptr]` output selection with a parameterized shift-register queue that presents its oldest entry directly from slot zero, and shifts remaining entries on each accepted output transfer. Handle simultaneous pop/push\u2014including a full queue\u2014by appending the input at the post-pop occupancy; preserve empty capture timing, stall stability, reset behavior, explicit capacity and wrap semantics for all supported `WIDTH` and `DEPTH` values. Keep the top `sync_fifo` interface and its `// @latency 1` annotation unchanged; do not add a pipeline stage.",
+      "iteration": 1,
+      "metrics": {
+        "bram_used": 0.0,
+        "dsp_used": 0,
+        "dynamic_power_w": 0.013,
+        "ff_used": 26,
+        "lut_used": 21,
+        "sim_passed": true,
+        "timing_met": false,
+        "total_power_w": 0.083,
+        "whs_ns": 0.124,
+        "wns_ns": -0.273
+      },
+      "mutation": "standard",
+      "reason": "",
+      "rungs": 5,
+      "source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-01\\tier2_tt3jn0mv\\sync_fifo_build\\iter_001\\cand_standard\\sync_fifo.v",
+        "sha256": "d335254b92a09e7a5726de622ac52883818369ad8d7b1b8113352bded9d17b31"
+      },
+      "status": "measured"
+    }
+  ],
+  "doctor": {
+    "action": "rtl_surgery",
+    "adopted": true,
+    "identity_count": 3,
+    "input_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-01\\tier2_tt3jn0mv\\sync_fifo_build\\iter_001\\cand_standard\\sync_fifo.v",
+      "sha256": "d335254b92a09e7a5726de622ac52883818369ad8d7b1b8113352bded9d17b31"
+    },
+    "measured_metrics": {
+      "bram_used": 0.0,
+      "dsp_used": 0,
+      "dynamic_power_w": 0.013,
+      "ff_used": 27,
+      "lut_used": 21,
+      "sim_passed": true,
+      "timing_met": true,
+      "total_power_w": 0.083,
+      "whs_ns": 0.196,
+      "wns_ns": 0.153
+    },
+    "proposed_source_text_sha256": "f76761c81a659631c35c98b4a0af46b4a8d37c78ea77a821f24646c74093d2f9",
+    "reason": "policy_improvement",
+    "status": "ADOPTED",
+    "tools_ran": true,
+    "trial_flow_script": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-01\\tier2_tt3jn0mv\\sync_fifo_build\\iter_001\\doctor_rtl_surgery_trial\\synth.tcl",
+      "sha256": "454f6020b440aa09d360f4b7fc4abad0b448ed6566af55acccbbfbf0d58a8f35"
+    },
+    "trial_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-01\\tier2_tt3jn0mv\\sync_fifo_build\\iter_001\\doctor_rtl_surgery_trial\\sync_fifo.v",
+      "sha256": "ec809a5fac2d4c2038e98aef688e7bee9e763a27a9b664bc3280dc5298aef7b8"
+    }
+  },
+  "instruction": "In `sync_fifo_core`, replace the circular `mem[rd_ptr]` output selection with a parameterized shift-register queue that presents its oldest entry directly from slot zero, and shifts remaining entries on each accepted output transfer. Handle simultaneous pop/push\u2014including a full queue\u2014by appending the input at the post-pop occupancy; preserve empty capture timing, stall stability, reset behavior, explicit capacity and wrap semantics for all supported `WIDTH` and `DEPTH` values. Keep the top `sync_fifo` interface and its `// @latency 1` annotation unchanged; do not add a pipeline stage.",
+  "is_best": true,
+  "iteration": 1,
+  "recommendation": "ACCEPT",
+  "schema_version": 1,
+  "selected_source_sha256": "f76761c81a659631c35c98b4a0af46b4a8d37c78ea77a821f24646c74093d2f9"
+}

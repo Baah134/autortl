@@ -1,0 +1,423 @@
+{
+  "top_name": "rr_regfile",
+  "modules": [
+    {
+      "name": "rr_arbiter4",
+      "behavior": "Four-requester round-robin arbiter with a registered register-file write port. State last is the index 0..3 of the most recently granted requester; its reset value is 3, so requester 0 has the highest priority after reset. At each rising clk edge with rst low, using req and the addrN/dataN inputs sampled before the edge, search requesters in the order (last+1)%4, (last+2)%4, (last+3)%4, last and choose the first i with req[i] = 1 as the winner. If a winner exists: grant = 1 << winner (one-hot), wr_en = 1, wr_addr = addr<winner>, wr_data = data<winner>, last = winner. If req == 0: grant = 0, wr_en = 0, wr_addr = 0, wr_data = 0 and last is unchanged. grant, wr_en, wr_addr and wr_data are registers: they change only at rising edges and hold between edges whatever the inputs do. Synchronous active-high rst at a rising edge sets grant = 0, wr_en = 0, wr_addr = 0, wr_data = 0 and last = 3; reset has no effect between edges. Consequences: with all four requesting, grants rotate 0,1,2,3,0,...; a requester that keeps requesting is granted within 4 edges; a lone requester is granted at every edge. Python oracle: cycle-level model, one step per rising edge; keep last in state and return grant, wr_en, wr_addr and wr_data as registered by that edge. The driver applies the fixed latency of 1; do not add a delay queue. init() is the reset state and a supplied rst must be handled.",
+      "ports": [
+        {
+          "name": "clk",
+          "direction": "input",
+          "width": 1,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "rst",
+          "direction": "input",
+          "width": 1,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "req",
+          "direction": "input",
+          "width": 4,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "addr0",
+          "direction": "input",
+          "width": 3,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "data0",
+          "direction": "input",
+          "width": 8,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "addr1",
+          "direction": "input",
+          "width": 3,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "data1",
+          "direction": "input",
+          "width": 8,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "addr2",
+          "direction": "input",
+          "width": 3,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "data2",
+          "direction": "input",
+          "width": 8,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "addr3",
+          "direction": "input",
+          "width": 3,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "data3",
+          "direction": "input",
+          "width": 8,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "grant",
+          "direction": "output",
+          "width": 4,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "wr_en",
+          "direction": "output",
+          "width": 1,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "wr_addr",
+          "direction": "output",
+          "width": 3,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "wr_data",
+          "direction": "output",
+          "width": 8,
+          "protocol": "none",
+          "signed": false
+        }
+      ],
+      "latency": 1,
+      "latency_known": true,
+      "compare_mode": "fixed_latency",
+      "reset": {
+        "signal": "rst",
+        "kind": "sync",
+        "active_high": true,
+        "duration_cycles": 3
+      },
+      "parameters": {},
+      "clock_domains": [
+        "clk"
+      ],
+      "examples": [
+        {
+          "inputs": {
+            "rst": 0,
+            "req": 15,
+            "addr0": 1,
+            "addr1": 2,
+            "addr2": 3,
+            "addr3": 4,
+            "data0": 16,
+            "data1": 32,
+            "data2": 48,
+            "data3": 64
+          },
+          "expected": {
+            "grant": 1,
+            "wr_en": 1,
+            "wr_addr": 1,
+            "wr_data": 16
+          },
+          "after_cycles": 1
+        },
+        {
+          "inputs": {
+            "rst": 0,
+            "req": 15,
+            "addr0": 1,
+            "addr1": 2,
+            "addr2": 3,
+            "addr3": 4,
+            "data0": 16,
+            "data1": 32,
+            "data2": 48,
+            "data3": 64
+          },
+          "expected": {
+            "grant": 8,
+            "wr_en": 1,
+            "wr_addr": 4,
+            "wr_data": 64
+          },
+          "after_cycles": 4
+        },
+        {
+          "inputs": {
+            "rst": 0,
+            "req": 10,
+            "addr0": 1,
+            "addr1": 2,
+            "addr2": 3,
+            "addr3": 4,
+            "data0": 16,
+            "data1": 32,
+            "data2": 48,
+            "data3": 64
+          },
+          "expected": {
+            "grant": 2,
+            "wr_en": 1,
+            "wr_addr": 2,
+            "wr_data": 32
+          },
+          "after_cycles": 3
+        }
+      ]
+    },
+    {
+      "name": "regfile8x8",
+      "behavior": "8-entry by 8-bit register file with one synchronous write port and one registered read port, read-before-write. At each rising clk edge with rst low: rd_data takes mem[rd_addr] as it was BEFORE this edge's write (read-first: reading the address written at the same edge returns the old value; the new value is visible to a read sampled at the next edge); then, if wr_en = 1, mem[wr_addr] = wr_data. wr_addr and wr_data are ignored when wr_en = 0. rd_data is a register and holds between edges. Synchronous active-high rst at a rising edge clears all 8 entries and rd_data to 0 and blocks any write at that edge; reset has no effect between edges. Python oracle: cycle-level model, one step per rising edge; keep the 8 entries in state and return rd_data as registered by that edge. The driver applies the fixed latency of 1; do not add a delay queue. init() is the reset state (all entries zero) and a supplied rst must be handled.",
+      "ports": [
+        {
+          "name": "clk",
+          "direction": "input",
+          "width": 1,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "rst",
+          "direction": "input",
+          "width": 1,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "wr_en",
+          "direction": "input",
+          "width": 1,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "wr_addr",
+          "direction": "input",
+          "width": 3,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "wr_data",
+          "direction": "input",
+          "width": 8,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "rd_addr",
+          "direction": "input",
+          "width": 3,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "rd_data",
+          "direction": "output",
+          "width": 8,
+          "protocol": "none",
+          "signed": false
+        }
+      ],
+      "latency": 1,
+      "latency_known": true,
+      "compare_mode": "fixed_latency",
+      "reset": {
+        "signal": "rst",
+        "kind": "sync",
+        "active_high": true,
+        "duration_cycles": 3
+      },
+      "parameters": {},
+      "clock_domains": [
+        "clk"
+      ],
+      "examples": [
+        {
+          "inputs": {
+            "rst": 0,
+            "wr_en": 1,
+            "wr_addr": 5,
+            "wr_data": 165,
+            "rd_addr": 5
+          },
+          "expected": {
+            "rd_data": 0
+          },
+          "after_cycles": 1
+        },
+        {
+          "inputs": {
+            "rst": 0,
+            "wr_en": 1,
+            "wr_addr": 5,
+            "wr_data": 165,
+            "rd_addr": 5
+          },
+          "expected": {
+            "rd_data": 165
+          },
+          "after_cycles": 2
+        },
+        {
+          "inputs": {
+            "rst": 0,
+            "wr_en": 0,
+            "wr_addr": 3,
+            "wr_data": 255,
+            "rd_addr": 3
+          },
+          "expected": {
+            "rd_data": 0
+          },
+          "after_cycles": 2
+        }
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "src_module": "rr_arbiter4",
+      "src_port": "wr_en",
+      "dst_module": "regfile8x8",
+      "dst_port": "wr_en"
+    },
+    {
+      "src_module": "rr_arbiter4",
+      "src_port": "wr_addr",
+      "dst_module": "regfile8x8",
+      "dst_port": "wr_addr"
+    },
+    {
+      "src_module": "rr_arbiter4",
+      "src_port": "wr_data",
+      "dst_module": "regfile8x8",
+      "dst_port": "wr_data"
+    }
+  ],
+  "external_ports": [
+    {
+      "name": "clk",
+      "direction": "input",
+      "width": 1,
+      "protocol": "none",
+      "signed": false
+    },
+    {
+      "name": "rst",
+      "direction": "input",
+      "width": 1,
+      "protocol": "none",
+      "signed": false
+    },
+    {
+      "name": "req",
+      "direction": "input",
+      "width": 4,
+      "protocol": "none",
+      "signed": false
+    },
+    {
+      "name": "addr0",
+      "direction": "input",
+      "width": 3,
+      "protocol": "none",
+      "signed": false
+    },
+    {
+      "name": "data0",
+      "direction": "input",
+      "width": 8,
+      "protocol": "none",
+      "signed": false
+    },
+    {
+      "name": "addr1",
+      "direction": "input",
+      "width": 3,
+      "protocol": "none",
+      "signed": false
+    },
+    {
+      "name": "data1",
+      "direction": "input",
+      "width": 8,
+      "protocol": "none",
+      "signed": false
+    },
+    {
+      "name": "addr2",
+      "direction": "input",
+      "width": 3,
+      "protocol": "none",
+      "signed": false
+    },
+    {
+      "name": "data2",
+      "direction": "input",
+      "width": 8,
+      "protocol": "none",
+      "signed": false
+    },
+    {
+      "name": "addr3",
+      "direction": "input",
+      "width": 3,
+      "protocol": "none",
+      "signed": false
+    },
+    {
+      "name": "data3",
+      "direction": "input",
+      "width": 8,
+      "protocol": "none",
+      "signed": false
+    },
+    {
+      "name": "rd_addr",
+      "direction": "input",
+      "width": 3,
+      "protocol": "none",
+      "signed": false
+    },
+    {
+      "name": "grant",
+      "direction": "output",
+      "width": 4,
+      "protocol": "none",
+      "signed": false
+    },
+    {
+      "name": "rd_data",
+      "direction": "output",
+      "width": 8,
+      "protocol": "none",
+      "signed": false
+    }
+  ]
+}

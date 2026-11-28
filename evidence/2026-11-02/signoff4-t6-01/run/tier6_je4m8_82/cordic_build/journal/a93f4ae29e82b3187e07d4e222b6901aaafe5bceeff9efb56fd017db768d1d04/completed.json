@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_3:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 3\n## Contract check\n- Top interface and source boundary: PASS \u2014 candidate defines `cordic_sincos` with the required ports; all required logic is in the supplied unit.\n- Defined behavior and cycle semantics: PASS \u2014 the trusted integration simulation passed, and the candidate preserves the iterative schedule, handshakes, reset behavior, and registered output behavior.\n- Top latency annotation: PASS \u2014 authoritative `declared_latency.known=false`; no numeric top annotation is required.\n- Compile, elaboration, and simulation: PASS \u2014 `xvlog`, `xelab`, and `xsim` exited successfully; simulation reports `TEST PASSED`.\n- Routed metric integrity: PASS \u2014 retained routed reports and successful synthesis evidence are provided.\n- Timing closure: PASS \u2014 timing is met with WNS 0.153 ns and WHS 0.085 ns.\n- Objective improvement over previous best: FAIL \u2014 both designs are timing-feasible, but LUTs increased from 194 to 195 and FFs stayed at 95; this does not improve `minimize_luts`.\n## Summary\n- Passed: 6 of 7\n- Failed: 1 of 7\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes behavioral verification and timing closure, but the previous best is already timing-feasible and the candidate uses one more LUT with no FF reduction. It therefore fails the required strict objective improvement for promotion.",
+      "recommendation": "REJECT",
+      "passed": 6,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

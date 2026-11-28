@@ -1,0 +1,925 @@
+# Harness effectiveness review
+
+Updated 2026-10-21. The objective is to make a bounded, reliable harness that
+extracts useful work from weaker models. Design results are probes of that
+system. No weaker-model performance has been demonstrated yet.
+
+## Historical campaign05 findings
+
+- At that checkpoint: **655 regression tests passed**. Fresh campaign05 completed
+  **2/2**, with accepted counter55to53LUT (3.6%), FF37, WNS0.456ns/
+  WHS0.282ns. Mux8LUT baseline retained because its candidate had no gain.
+  Three model calls per design; actual DONE replay preserved the counter
+  winner/budget/summary without added tool/model calls. One bounded accepted
+  gain, no held tier and no weaker-model claim.
+- At the preceding checkpoint,554 regression tests passed. The counter32 reference checks every output and
+  detects all four selected mutants in real Vivado simulation. Earlier nine
+  generated-testbench cases cover positive and negative timing/streaming cases.
+- Earlier cohort tier0_fkxbmmwe originally finished 0/2 after worker exits, not failed
+  RTL. Counter generation and the complete physical ladder succeeded before its
+  evaluator failed; mux completed its baseline before its planner failed.
+- Counter baseline: 55 LUTs/37 FFs, setup slack 0.494 ns, hold slack 0.113 ns.
+  Candidate: 53 LUTs/37 FFs, setup slack 0.456 ns, hold slack 0.282 ns. Both use
+  the same independent testbench, device and 10 ns/ideal-zero-I/O assumptions.
+- Real counter recovery retried one evaluator call, preserved all completed
+  physical stages and kept tool time at 267.641 seconds. The evaluator rejected
+  the candidate because its context omitted the routed timing report identity.
+  That report exists. The lower LUT count is measured, but the harness did not
+  promote it; do not claim an accepted autonomous improvement.
+
+The rejection is an evidence-delivery defect, not justification for weakening
+verification. It also demonstrates why model opinions about available evidence
+should not substitute for explicit machine predicates.
+
+## Keep, improve, simplify
+
+| Decision | Feature | Evidence and action |
+|---|---|---|
+| Keep | Verification ladder and metric integrity | Exercised on real baselines/candidates. Reject missing metrics and failed setup/hold; preserve exact source-to-report linkage. |
+| Keep | Independent reference tests and mutation qualification | Actual bug detection catches changed latency, high-bit comparisons, reset and overflow semantics. Expand before increasing complexity. Mutation coverage is not a proof of all behavior. |
+| Keep | Atomic journals and immutable context | Controlled interruption/tamper tests and real provider recovery exist. Add real process interruption coverage and preserve accounting. |
+| Improve now | Report evidence delivered to roles | Timing/utilization/power identities now reach live review. Campaign04 exposed a further missing actual-process-exit proof; durable receipts and deterministic gates pass fresh live campaign05. |
+| Improve now | Worker diagnostics and blocked outcomes | Implemented bounded redacted diagnostics, typed provider failures and resumable model-blocked outcomes. Budget stops retain the verified best pointer. Controlled replay tests validate recovery; live provider recovery was already observed at the prior revision. |
+| Simplify | Prose contract negotiation | Campaign02 spent six calls on wording and blocked counter before generation. Replaced optimization negotiation with a deterministic contract from immutable evidence; preserve all verification and final promotion gates. |
+| Improve next | Acceptance policy | Define machine-checkable mandatory predicates and make model review advisory for their measurable portions. Preserve genuine semantic checks; add tests for any bug a reviewer finds. Do not simply bypass a rejection to publish a gain. |
+| Improve | Legal mutation portfolio and Doctor | Mutation and surgery prompts now preserve latency/reset/parameter semantics. Canonical setup/hold diagnosis maps hold failures to physical hold fixing, then replan. Supervised hold-fix command run passes routing but raises mux area from8to18LUTs; keep it targeted. Full autonomous Doctor repair remains unproven. |
+| Validate live | Contextual cache, build, golden process and restart | Regression coverage exists. This cohort does not prove live build, cache reuse, restart or general interruption recovery. Exercise each explicitly. |
+| Measure | Best-of-N diversity, skills, watchdog and advisor | Current cohort uses N=1. Their marginal benefit has not been measured; do not present them as established gains. |
+| Remove or disable clearly | Dead module-cache branch and unused controls | Removed unreachable module-cache branch and writes; verified journal reuse remains. False parallel_candidates stays compatible; True now errors explicitly because execution is sequential. |
+| Keep historical only | Legacy provider adapters and max_turns argument | Active runtime is Codex-only. max_turns is not enforced. Do not advertise these as working runtime capabilities. |
+
+## Next feature coverage experiments
+
+1. Recovery and archival completed. Original cohort 0/2 and recovered per-run
+   outcomes remain separate; neither recovered run promoted a candidate.
+2. Validate repaired report-provenance and worker-diagnostic boundaries with
+   regression tests and a fresh bounded campaign.
+3. Run counter8 and encoder8 typed builds to exercise golden execution,
+   generated TBs, qualification, integration and final physical measurement.
+4. Use a pipeline/streaming case to exercise latency and backpressure; inject
+   timing failures to exercise Doctor and verify its output through the ladder.
+5. Force a repeated candidate and changed constraints to test live deduplication
+   and cache reuse/invalidation. Force stagnation to test restart.
+
+## Measure whether a feature earns its complexity
+
+Freeze tasks, source/TB hashes, device, constraints, model identity and budgets.
+Compare a minimal generate/verify/repair loop against planning, selected skills,
+N-candidate diversity and Doctor, adding one feature at a time. Record completed
+runs, correctness failures, infrastructure blocks, accepted improvements, calls,
+reported tokens, tool time, duplicate candidates and recovery behavior.
+
+Use repeated runs and an actually available weaker model before making model
+robustness claims. Mutation tests establish verifier sensitivity, not weak-model
+success. Keep unsuccessful attempts in the denominator. A layer should remain
+only when it improves reliability, verification strength or measured efficiency.
+
+## Timing repair implementation references
+
+Physical hold fixing uses `phys_opt_design -hold_fix` after placement and before
+routing, without RTL delay chains or synthesis retiming for hold-only trials.
+AMD documents the physical option in [UG835](https://docs.amd.com/r/2024.2-English/ug835-vivado-tcl-commands/phys_opt_design).
+Local Vivado 2025.2 execution remains the acceptance evidence for this environment;
+command-generation tests alone are not proof that a hold violation was repaired.
+
+## Assembled guidance audit
+
+Campaign02 at61854c0 finished0/2: counter contract wording blocked after six
+calls; mux saved a live CODEX_QUOTA model_blocked outcome with baseline retained.
+This is separate from campaign01/recovery and remains a failed cohort.
+
+The actual prompt audit found six role calls missing conventions, a nonexistent
+planning skill, contradictory latency/reset/inference advice, and an unsafe
+referenced FIFO full comparator. Repairs align every injected skill with the
+fixed contract, add the short planning checklist, enforce conventions in every
+role and count headings/separators in the skill injection budget. Tests inspect
+assembled calls, not just template strings. FIFO reference qualification at two
+depths checks transaction behavior; it cannot establish metastability reliability
+or physical CDC closure. Multi-clock physical implementation is not demonstrated.
+
+Feature value remains an experiment: instruction consistency is required for
+correctness, while the marginal benefit of each optional reference still needs
+controlled ablation. Do not add agent layers merely to increase agent count.
+
+
+## Structural checks and persistence audit
+
+Campaign03 reached useful generation without negotiation but exposed a Windows
+atomic budget replacement error. Bounded Windows-only retry now has controlled
+fault tests and a real sharing-lock test. Persistent storage failure/hard-kill
+accounting is still not an external transaction; no exact recovery claim follows.
+
+Default-width comparison was insufficient: six reproduced public-parameter,
+signedness and packed-shape bypasses are now rejected. Signed/shape metadata and
+symbolic interface dependencies reach mechanical code generation as well as
+static gates. Four live signed/parameter control-and-mutant cases qualify the
+new paths. These checks preserve declarations, not all parameterized behavior.
+
+Retain the verification ladder and deterministic contracts. Next live coverage
+still needs typed build/golden integration, cache/restart and complete Doctor
+invocation; optional planning/skill/best-of-N benefits need controlled ablation.
+
+## Campaign04 evidence audit
+
+Frozen2318e42 completed tier0 **2/2 mandatory gates**, the first qualifying
+cohort; not a held tier. Both runs used three model calls. Neither promoted a
+candidate. Counter measured53vs55LUT but its evaluator lacked actual process
+exit codes. A log marker is not an exit record. The next repair retains actual
+process/driver outcomes separately and carries their hashes through evaluation,
+cache and DONE. Tool-only Doctor trials must identify reused simulation evidence
+against unchanged source, without implying simulation reran.
+
+The mux had no objective gain and exposed absent latency metadata being
+presented as zero. An unannotated existing design has unknown declared latency;
+its observable cycles remain fixed by source and independent tests. Typed
+builds still need an explicit numeric latency. This distinction must reach
+generation, checks and evaluation.
+
+Curriculum task/config identity alone cannot establish a frozen three-run
+streak. Runtime and governance implementation identity must also match; unknown
+provenance cannot support qualification. CLI model identity remains unobserved,
+so no controlled comparison between model strengths follows from a held tier.
+
+## Research policy (2026-10-20 user direction)
+
+[Research ledger](RESEARCH.md) maps primary literature and engineering reports
+to observed AutoRTL needs, simple alternatives, adoption triggers and tests.
+Reviewed workflow/evaluator patterns, long-running continuity, SWE-agent's tool
+interface, AutoChip/MAGE RTL feedback, AlphaEvolve's measured search, VerilogEval
+and execution-versus-knowledge persistence. No new framework, provider, memory
+service or agent layer is justified solely by this review. First strengthen
+evidence and independent verification, then ablate existing optional features.
+
+## Fresh05 result and next feature decision
+
+The counter now passes the exact evidence requirement that blocked campaign04:
+all actual latest tool exits are successful and raw logs match their hashes.
+The evaluator passes8/8criteria and the deterministic gates promote iteration1.
+Mux review passes behavioral/physical criteria and rejects its unchanged8LUT
+objective; baseline retention is the expected outcome. Full tier0 is2/2,
+runtime-bound streak1, not held. No gate was removed to obtain the counter gain.
+
+Completed-run replay is now live checked; in-flight hard-kill accounting is
+still unproven. Keep improving independent verification before population search,
+extra roles or a framework migration. Generated golden/build integration and
+behavior-specific trusted-TB mutations are the next necessary coverage work.
+
+
+## Generated-build review and streaming admission
+
+- **Keep:** deterministic ladder, isolated Python oracle, immutable examples,
+  source-bound tool receipts, one coordinator/vendor queue and independent TBs.
+- **Improve (observed failures):** missing reset keys broke a real counter oracle;
+  the startup prefix and explicit model protocol repair that boundary. A first
+  malformed Python answer now gets one bounded retry with the actual diagnostic.
+  Empty/unbounded examples stop before calls/allocations; provider/storage failures
+  do not consume RTL repair attempts or appear as rejected designs.
+- **Improve (demonstrated false positive):** scoreboard accepted a reset-gated
+  combinational implementation under latency1. Track accepted transaction ages;
+  matching a latency comment is insufficient. Actual simulator before/after logs
+  retain this failure. Minimum age does not prove exact queue capacity/readiness.
+- **Improve:** mutation qualification requires raw assertion detail plus a failure
+  verdict; generic simulator failure, compilation, watchdogs and missing logs are
+  insufficient. Independent counter/encoder controls and eight distinct faults
+  have real expected verdicts. Streaming qualification remains a separate gate.
+- **Maintain limits:** generated examples anchor Python, not separately injected
+  temporal RTL sequences; generated startup reset does not establish reset kind or
+  midstream reset. Independent queue tests check these properties for the new
+  two-entry buffer. Read docs/GOLDEN_VERIFICATION.md before interpreting results.
+- **Defer:** population search, new framework/provider and extra semantic roles.
+  The measured need is stronger deterministic verification, not another model
+  opinion. The next design adds state, capacity and backpressure with a bounded
+  independent oracle; full UART/processor generation would outrun current evidence.
+
+
+## Streaming feature review after measured failures
+
+Keep both graders: generated Python/unit tests cover payload behavior, while an
+independently qualified temporal TB checks exact capacity/readiness/reset and
+all-output behavior. Same-byte capacity-one RTL passed the former and failed the
+latter. The combined mode therefore gates child repair and every integrated
+candidate, not only a manual check after choosing a winner.
+
+Improve fault qualification with a bounded fixed portfolio. Retain the missed
+readiness mutation; the payload grader detects stuck-zero and the independent
+TB detects readiness. Changing a probe is not changing the grading testbench.
+One observed assertion is minimum non-vacuity evidence; do not present it as
+complete mutation coverage. Typed tool blockers now preserve infrastructure causes
+and stop without RTL repair. No extra model judge, framework or agent layer was
+needed to repair these boundaries. Keep population search deferred until these
+checks have repeated model/budget-controlled results.
+
+
+## Review after the completed streaming build
+
+The combined loop produced a routed two-entry buffer (15 LUTs / 19 FFs) and its
+saved winner passed the independent 893-cycle test. Retain this architecture:
+payload-only qualification visibly missed readiness, so it cannot replace the
+independent temporal grader. No additional role or framework is justified.
+
+Two concrete repairs follow this experiment. Preserve raw assertion proof and
+qualification reports through stage replay and completed-run integrity checks.
+Reject the compiler's duplicate-module diagnostics before metrics or model review:
+the real candidate had exit-zero overwrite warnings and was rejected only later.
+The exact saved bad candidate now fails compilation before elaboration; unrelated
+warnings remain accepted and infrastructure failures keep their classification.
+These are deterministic guard repairs to the existing ladder, with fixture and
+real-tool evidence, rather than a new verification mechanism.
+
+Maintain source-frozen cohorts and honest failures. Next complexity should add a
+parameterized synchronous FIFO and wraparound/full throughput tests, then a
+packet-oriented block with explicit reset/backpressure rules. First complete the
+fresh full tier0 merge gate. Defer extra search roles and framework changes until
+controlled ablations demonstrate a benefit; no feature is removed merely because
+one bounded optimization found no gain.
+
+
+## FIFO01 recovery decision before implementation
+
+FIFO01 atffc15fc passed generated and six-configuration independent verification,
+then routed13LUT/6FF with setup-0.931ns and hold0.091ns. It is not timing closed.
+The optimization candidate redeclared its frozen companion and was correctly
+blocked before elaboration; this repeats the earlier streaming boundary mistake.
+The run completed with an invalid-timing baseline retained, not a successful
+physical result. Preserve the complete attempt and grader coverage misses.
+
+Observed policy issues: generator/fix omitted immutable run/dependency evidence;
+compile design failures skipped the candidate's repair opportunity; area-first
+selection and strict objective comparison can block timing recovery. A controlled
+old-policy reproduction using that real baseline and a synthetic14LUT timing-
+feasible candidate confirms selection favors the invalid13LUT design. The14LUT
+value is a synthetic policy test, not a physical measurement.
+
+Implement the smallest corrections to the existing flow: explicit editable top
+and frozen companion context for generator/repair/Doctor; one configured bounded
+compile-or-simulation repair sequence with all verification rerun; one shared
+feasibility-first comparison policy used in selection, promotion and rendered
+contracts/evaluation. Recovery from known failed timing may increase area and
+must be labeled timing recovery. Among timing-feasible designs the original
+strict objective remains. Unknown timing cannot establish recovery. Keep actual
+exit, RTL behavior, source identity, setup/hold and evaluator gates unchanged.
+No new role/framework or unbounded retry is justified. Validate pure policy and
+integrated failure/replay cases, fullsuite and fresh campaigns before main merge.
+
+
+## Current FIFO recovery review
+
+Keep generated payload and independent temporal graders: the exact same
+readiness mutant passed one and failed the other. Preserve the miss, raw
+assertions and source hashes. FIFO01 passed functionally but failed setup;
+its 13 LUT / 6 FF result is a failed physical trial, not a published improvement.
+
+Revise existing policy and feedback, without adding roles: feasibility-first
+selection/promotion, explicit editable-top and frozen-companion context, and
+configured bounded compile/simulation repairs with separate attempt evidence.
+Keep strict objective improvement once timing is feasible. Explicitly label
+recovery that increases area. Final source/TB/child identities must survive DONE
+reuse; UTF-8 IO must be explicit on Windows. Before-failing regressions and
+read-only review cover these repairs. Fresh live closure is still required.
+
+The full regression run found one legacy synthetic cache fixture without its
+required source/TB manifest (938 passes, one failure). Added truthful synthetic
+lineage, retaining production guards and all assertions; its 20-test file passes.
+The complete rerun passed **939 tests in349.85seconds** on frozen runtime.
+Main remains gated on a fresh complete tier0 campaign.
+
+After FIFO timing closure, the smallest next experiment is a packet-tagged FIFO:
+store an end-of-packet bit with every beat and verify tuple alignment through
+stalls, simultaneous transfers, wrap and reset. Reuse the current ladder and
+dual graders. Defer parsing, CRC, store-and-forward, arbitration and CDC until
+concrete failures justify that complexity. No new framework is justified.
+
+
+## FIFO03 observed feedback corrections, before implementation
+
+Source49599b5 reproduced baseline13LUT/6FF, setup-0.931ns/hold0.091ns.
+Candidate1 closed neither setup(-0.905) nor its resource objective. Doctor's
+masked read mux improved setup to-0.525 but remained invalid and was not adopted.
+Candidate2 remained at-0.600. Its Doctor response exactly repeated source; the
+remaining synthesis deadline expired and the trial ended budget_exhausted,
+10calls,1200.654chargedtoolseconds/1349.068elapsed. No accepted FIFO gain.
+
+Read-only review confirmed four existing feedback omissions. The first1800
+report characters exclude real paths at line201+, and planner explicitly says
+the path is unavailable. Rejected Doctor trials do not reach next planning.
+The typed build spec's explicit invalid-payload qualifier is absent after
+integration, so planner incorrectly requires matching empty output data.
+Exact unchanged Doctor RTL also repeats the same measured flow unnecessarily.
+
+Smallest correction: bounded report-hash-linked path excerpts; frozen complete
+bounded resolved specification facts; labeled not-adopted Doctor advice in
+existing evaluation/planner context; skip only proven source-and-flow-identical
+surgery. Keep standalone optimization strict, all defined valid/stalled behavior
+and reset/latency/interface/TB/exit/setup/hold gates intact. Do not mislabel hold
+paths as setup or adopt merely less-negative slack. No new role/framework.
+Oversized semantic metadata must fail explicitly rather than drop qualifiers.
+Test missing/malformed/hold/routed precedence, exact hashes, actual prompts,
+failed-trial visibility, no-op versus intentional physical changes, and replay.
+
+
+## Feedback correction outcome before fresh physical trial
+
+Keep the existing roles and gates. Final984tests passed423.26s; context51 and
+Doctor74focused checks pass. Raw report/path/hash use one snapshot; full resolved
+semantics are bounded without dropping qualifiers. Failed trial evidence and
+source previews reach planning, while original related digests survive DONE.
+No-op skip requires actual prior receipts/inputs and exact default-flow proof.
+
+Remove test-only report inference: synthetic helper now has real path fields.
+Do not infer data-net fanout from the selected path's clock-inclusive maximum.
+Keep this metadata advisory; no new heuristic or driver parser was added.
+Fresh physical FIFO and fulltier0 are still required. Unit results establish
+these guard/feedback properties, not model robustness or timing closure.
+
+## FIFO04 observed annotation-authority correction
+
+Keep path excerpts, resolved semantics and rejected-trial feedback: actual
+second planning used the Doctor trial path and generated a timing-feasible
+candidate (24LUT/27FF, WNS0.318/WHS0.050ns). The harness nevertheless rejected it
+solely for missing top latency annotation, despite known=false. Preserve this
+failed outcome and its area tradeoff; no accepted FIFO closure follows.
+
+Revise the ambiguous injected typed-build wording and explicit review rules.
+Require the top header only when its authoritative declaration is known.
+Retain typed metadata across validated complete transparent single-child wiring;
+do not add graph latency inference, another model reviewer or manual regrading.
+No verification, constraints or metric gates are relaxed.
+
+Related review exposed a whole-file latency search that could borrow a helper
+annotation or block-comment example. Keep one shared selected-module parser
+for inference/client/four deterministic generation and repair gates. Preserve
+original comments for static inference so malformed metadata is rejected as a
+design issue, not raised after that boundary. The supported lexical subset and
+no-top multi-module unknown result are explicit; no general Verilog elaborator
+was added. Read-only final integration review found no blocker.
+
+## FIFO05 measured feature decision
+
+Keep exact path/spec evidence and top annotation authority: firstplan named real
+RAMreadpath and requiredmatchingheader; allactualreviews passedlatencycriterion.
+Keep separate generatedpayload and independenttemporal graders: payload again
+missed readinessmutation, independent caughtit. Do not claim either provesall
+parametercombinations. Keep boundedDoctor: toolonly-.016ns remainedrejected;
+actualRTLrepair registered equivalentvalidstate and won22LUT/13FF,+.108/.076ns.
+Firstfeasible24LUT shrank8.33%; initialinvalid13LUT is notanareasavingsbaseline.
+Strict timing/objective policy retained priorvalidbest when an initialiter3
+candidate failedsetup. No newrole/framework/threshold was needed.
+ActualDONE nominal/child/spec/Doctorreport tests preserved327identities/budget.
+No-op skip not exercised bythistrial; its regressions remain separate evidence.
+BestofN1 is intentional boundedcost here; diversity/cache/weakmodel ablations
+are not established by thisrun. Nextcomplexity packet-tagFIFO can reusetheflow
+after freshfulltier0. Mainstillgated; fullsuite1074unchangedruntime.
+
+## Fresh campaign07 and role boundaries
+
+Complete tier0 passed2/2 on unchanged tested runtime. Counter review explicitly
+accepted unknown numeric top latency as unknown (no invented annotation), and
+accepted55→31LUT with positive setup/hold. Mux generated MUXF7/MUXF8 primitives
+whose simulation libraries were not linked; xelab rejected them. One bounded
+generator repair returned behavioral RTL, passed the ladder, and was correctly
+rejected for no LUT gain. Keep the repair role and deterministic promotion gate.
+Retain this library-support limit before claiming arbitrary vendor primitive/IP
+coverage. Add a library adapter only when a required design establishes that
+need, with actual primitive/control verification; no new agent role is needed.
+
+Runtime roles remain planner, generator/repair, evaluator and Timing Doctor.
+The harness owns contracts, source boundaries, execution, budgets and acceptance.
+The development coordinator reviews and improves those mechanisms; bounded CLI
+runs do not require this chat. Continuous unattended scheduling, provider quota
+recovery and general hardware/application support remain separate capabilities.
+
+## Packet fixture admission decision
+
+Keep current multi-output scoreboard plus independent temporal checking. Adding
+last as ordinary payload required no new engine or role. Supervised control
+passed allsix selected configurations;19namedsource mutations failed actual
+behavioralassertions. Retain bothtruncations as distinctimplementation probes,
+but document overlappingobservablefaults ratherthan19independentclasses.
+1105fulltests and60focusedtests passed; generatedgrader marker sensitivity is
+still unmeasured. Measure its named faults before deciding whether runtime
+qualification needs a change. No new feature justified by admission alone.
+
+## Packet01 measured feature decision
+
+Keep complementary graders: the generated grader detected six named marker
+faults on the default instance but missed readinessflip; independent temporal
+verification caught it. There is no observed missing multi-output comparison
+to justify a new scoreboard engine or role. Keep report-grounded planning:
+actual read-pointer/RAM-to-out_last path informed the first architecture change.
+Keep bounded Doctor: tool settings closed timing at23LUT/31FF,+.078/.106ns;
+subsequent failed/timing-feasible-but-larger trials remained rejected.
+
+Cache reuse saved redundant candidate work, but duplicate proposals persisted
+after the scheduled/stall replan, which also received the churn signal. Record this diversity limit. A future frozen,
+equal-budget feedback/portfolio comparison can test improvement; this single
+trial does not justify another agent or evolutionary framework. Existing
+independent source review and331-identity DONE checks found no blocker; no
+in-flight hard-kill or general parameter proof follows.
+
+Fresh campaign08 passed2/2, matching cohort streak2/heldfalse. Counter gain
+varied55→53 ratherthan prior55→31; retain both. A passing gate is not evidence
+of repeatable optimization magnitude. Mux no-gain proposal correctly retained
+baseline. Keep deterministic acceptance, comparable cohorts and failed trials.
+No runtime modification was needed for the packet milestone.
+
+## Divider admission: observed reset blind spot
+
+Keep independent temporal checking plus compiling fault qualification. The
+first admission correctly blocked model generation despite1175unit tests:
+reset with ready1 let normal retirement hide an ignored reset. A coverage count
+named reset_result did not establish stalled-result abort. Retain that case,
+add ready0 reset and distinct mandatory coverage plus omission regressions.
+Fresh21/21qualification and1180tests passed with unchanged reference/mutants.
+No new runtime role or scoreboard engine was required. Carry this distinction
+into future checker reviews; a scenario count alone is not fault sensitivity.
+
+## Divider01 outcome and next necessary correction
+
+The accepted sequential divider reduced38->26LUT (31.58%) and46->38FF with
+positive setup/hold. Estimated power increased; do not claim power savings.
+Keep report/contract-grounded planning: after one duplicate proposal, the next
+plan's shared subtraction produced a useful distinct candidate. This differs
+from packet01's repeated replan outcome; diversity reliability remains unproven.
+Independent finalwinner and251-identity actualDONE checks passed.
+
+Generated grader caught13/17applicablefaults but missed zero-divisor remainder
+despite an explicit255/0example. Actual RTL stimulus had only0/0. Oracle example
+qualification is separate from RTL input coverage. Revise scoreboard stimulus
+to include eligible complete accepted-example payloads, retaining corner/random
+cases and existing scheduling. Do not replay fixed-latency/stateful examples
+as isolated transactions. Exact reset/readiness verification remains independent.
+Original source/results archived before change; require a controlled unchanged
+oracle/reference/mutant comparison and full regression before claiming closure.
+
+Scoreboard payload correction validated:1226tests; same frozen oracle/reference/
+fault reproduces oldzeroRmiss and newassertion, bothcontrolspass. Detection
+13/17->14/17 without modelcalls,changedrandomtail orweakenedacceptance. Keep
+the small deterministic payload selector. Keep independent temporal checker
+for remainingreadiness/resetcoverage; no newengine orrole justified. Full
+example timing/state replay and general mutation completeness remain unclaimed.
+
+Fresh fulltier0campaign09 passed2/2 onnewruntime4618887;newcohortstreak1,
+noheldtier.193testedidentities unchanged. Oldcohortstreaknotcarriedover.
+User's product comparison requires matched empirical trials; generalagents
+with identicaltools may matchorbeat current harness. Keep domain-specific
+verification/measurement/evidence workflow, and measure usereffort and escaped
+bugs before asserting an advantage. Rawunitcounts and selfbaseline PPA gains
+do not establish superiority. No new role/framework is justified by that question.
+
+
+## Previous-proposal study02: revise the default, retain the audit
+
+Three chronological pairs on one divider did not reduce repeated proposals:
+three repeats in each mode. One original baseline run hit quota; its separate
+budget-preserving recovery is not an uninterrupted comparison. Token totals
+are incomplete, model identity is unknown and host load was uncontrolled.
+Keep immutable proposal evidence and bounded opt-in context; disable context
+by default. Do not assert that context is harmful or generally ineffective.
+
+The trajectory audit instead exposed stale instructions after a changed seed.
+Supply the current RTL and bind each plan to its exact seed; the deterministic
+binding is a correctness boundary, not a diversity guarantee. Keep verified
+incumbents when fresh planning exceeds the original budget. Validate with
+replay/budget tests and an actual changed-seed path before promotion.
+
+The candidate audit separately reproduced a normalized-hash collision for
+different Verilog string outputs. Exact UTF8 SHA256 dedupe is the smallest
+safe correction. Cosmetic variants may now cost verification; normalized text
+hashes remain advisory and cannot establish semantic equivalence. No cache
+redesign, language parser, new model role or framework is justified.
+
+
+## Source binding and exact dedupe: verified implementation decision
+
+Keep seed-bound planning and exact dedupe:1,340 regression tests passed; a fresh
+actual run exercised accepted-source replanning with no unbound generator input.
+The exact winner independently passed six widths. Five restored tamper probes,
+including the plan binding, were rejected with267 protected identities and no
+new budget charges. Fresh full tier0 passed2/2 in a new cohort, streak1/heldfalse.
+
+The live run was quota-interrupted, then recovered on unchanged source with
+cumulative budgets. Its reporting observer also failed printing Unicode after
+harness completion; that original exit/wall timing stays unknown. These results
+validate the mechanism and evidence boundaries, not causal efficiency or
+repetition improvements. Keep additional proposal context opt-in and retain
+negative study results. No role/framework expansion is justified.
+
+
+## Three-module dot-product design: keep composition and bounded repair
+
+Independent checker admission detected all12 named compiling faults, including
+hidden asynchronous partial-state reset. Three generated goldens and RTL modules
+then composed correctly. A golden syntax error was repaired by the existing
+bounded loop; no new role or parser is justified.
+
+Keep the editable-top optimization boundary: equivalent logic can be inlined
+while companion definitions stay frozen. This case mapped arithmetic into4DSPs,
+reducing325→17LUT and52→18sliceFF. No hierarchical optimizer extension is needed
+for this observed success. DSP internal registers are outside sliceFF counts;
+total estimated power increased slightly. No general PPA benefit follows.
+
+Revise the mechanical wrapper template: missing timescale triggered43-4099 only
+when optimization compiled top before children. The same generated children/TB
+reproduce that failure; addingonlytimescale passes685checks without modelcalls.
+This is deterministic scaffold generation, so fix the template rather than spend
+LLM repair budget. Preserve latency authority and severity policy; retain the
+original completed run before integrating the tested patch.
+
+
+## Permanent timescale correction: keep the minimal deterministic fix
+
+The one-line wrapper directive passed1,366 full tests and canonical13-case
+top-first qualification, then fresh fulltier0 passed2/2 in a new cohort. Keep
+the corrected scaffold and complex fixture. No role, retry, severity or
+interface/latency policy changed. The observed missing-directive repair no
+longer requires a model call; no broad model-cost savings claim is inferred.
+
+
+## Elastic arithmetic: fix the documented API before expanding the agent loop
+
+Build01 copied an invalid signature from the prompt, then repaired it using
+f-strings unsupported by the restricted oracle interpreter. Keep the rejection
+gate and originalfailedrun. Replace the invalid scaffold and expose actualpolicy
+names in the prompt. This follows the interface-clarity/evaluation rationale in
+[Anthropic Writing effective tools](https://www.anthropic.com/research/writing-tools-for-agents);
+our actual failure and tests motivate/validate the change, not an imported score.
+
+The failedreturn also exposed stale final activewall accounting. Persist active
+exit walltime using the existing atomic budget save, without changing charges
+or completedreuse semantics. No new role/framework, language feature or retries
+are justified. Hard process termination remains a separate evidence boundary.
+
+
+## Target/deployment scope clarified with the user
+
+Current reference targets Artix-7 xc7a35tcpg236-1 at100MHz/10ns with idealzero
+external delays, not a complete board profile. Part/frequency are configurable;
+board pin/interface constraints and hardware validation are separate work.
+See TARGETS.md for current evidence, limits and acceptance criteria. Keep those
+assumptions explicit; do not add unverified board-support claims while fixing
+the observed oracle/API and active-wall accounting failures.
+
+
+## Elastic pipeline: retain independent checks and bounded existing roles
+
+Corrected prompt produced a valid first oracle in freshbuild02; this single
+trial is not a causal/repeated efficiency estimate. Independent checker then
+caught30assertions in a proposed ready-control transformation. Existing bounded
+repair restored validtwo-slot behavior. Keep the qualified independentTB and
+generatedoracle paths: no newreviewrole or weaker gate was necessary.
+
+Timing recovered−.052→+.137ns at328LUT before4DSPmapping yielded20LUT,+.155/.206ns.
+Keep allresource/powertradeoffs:54→20sliceFF excludesDSPregisters;power increased.
+Fresh-seed plan binding/budgetdegradation correctly stopped beforeiter3 when no
+newplan was permitted. ActualDONE plus sixrestoredprobes preserved372identities.
+No runtimeextension is justified by these successful existing paths. Hardkill
+atomicity, realboard validation and matchedweakmodel/generalagent comparisons
+remain separate unestablished claims; do not substitute unit counts for them.
+
+
+## October26: observed signed-extrema trace coverage gap
+
+During frozen generated-audit01, correctreference passed and truncate12 mutant
+also passed the original generated unitgrader, with successful actual tool exits.
+The independentchecker detected this identicalfault. All27faults remain in the
+ongoing audit; this observation is not its finalscore. Frozen104 acceptedpayloads
+produce expectedrange[-1703,1539], never requiring signed13. Rootcause is stimulus
+coverage, not oracle API, RTL repair count, or missing specialist role.
+
+Development failure taxonomy: signed_extrema_trace_gap = generated accepted-
+transaction vectors omit a sensitizing sequence at signed arithmetic boundaries,
+allowing compiling narrowing/sign-extension faults to pass. Preserve original
+build01/archive and complete originalaudit before integrating runtimecorrection.
+
+Smallest proposed fix: after existing3corners and eligibleexamplepayloads, append
+six alternating signed minimum/maximum acceptedpayloads (three balanced pairs),
+only for scoreboard modules with signed DATA inputs. Unsigned data inputs hold0
+within this burst; reset/handshake ports staydriver-owned. Preserve fixedlatency
+and unsigned-only behavior, all originalorderedprefix and exactseededrandominput
+sequence. No oracle/IOExample trace schema or driver scheduling change. Recompute
+expectedhistory via same restrictedoracle. Guard total10000 includingreset;
+intentional temporal duplicates must not be deduplicated. This boundedpattern
+is not exhaustive signed/stateful coverage.
+
+Testsbeforeimplementation: stage source227 separately; first reproduce missing
+fullrange on newbehavior regression with oldcode, retainfailure; then patchonly
+stagedtbgen plusnewtestmodule. Verify actual restricted FIRoracle reaches2166
+and-2169, legacycorners/examples/randomtail preserved, signed1/mixedwidth/mixed
+unsigned/maskedintegers/countboundary, fixedlatency/unsignedunchanged. Stagepure
+focus, coordinatorreview, completedoldauditarc beforecanonicalintegration. Data
+failuretaxonomy BEFORE runtimepatch. Controlledactualunchangedoldgolden/reference/
+truncate12 oldPASS/newassertion, newcontrolPASS; preserve all artifacts. Fullsuite
+and freshfulltier0 then NEWFIRbuild02, originalcontract/budgets, no regrade01.
+
+Primary sources rechecked October26: VerilogEval compares transient simulation
+against goldens (https://arxiv.org/abs/2309.07544); MAGE uses targeted state-check
+feedback (https://arxiv.org/abs/2412.07822); AutoChip finds iterativefeedback benefit
+model-dependent (https://arxiv.org/abs/2411.11856). Our inference from OUR measured
+miss is to strengthen a deterministic inputpattern before adding agents. These
+sources do not validate our patch, prescribe sixsamples, or establish modelgain.
+
+
+## October26: measured generic driver gaps, plan before implementation
+
+The completed frozen generated audit measured 18/27 detections, nine misses and
+zero ungraded cases. All faults compiled and ran. The signed-only correction is
+now separately archived with a successful same-oracle/reference/truncation
+comparison (old fault passed; new fault triggers five assertions; both controls
+pass). No original run was regraded or changed.
+
+Independent read-only assessment identifies two additional small, typed-safe
+corrections for actual misses: history_on_invalid, async_history_reset and
+async_valid_reset. Add legal periodic input bubbles with width-masked invalid
+payload noise, retaining input-valid and data whenever the PREVIOUS rising edge
+sampled valid && !ready. Never decide producer hold using ready recomputed after
+changing consumer-ready at the next falling edge. Keep all accepted payloads,
+expected outputs and Python oracle calls unchanged. Preserve same-edge push/pop
+for zero latency and the existing finite drain budget; prove it with real controls.
+
+For synchronous-reset contracts only, inject a bounded pulse wholly between a
+falling and rising edge, ending with settling margin. Keep all other inputs
+stable during it. Do not reset the oracle or queue and do not check ports while
+reset is asserted. Apply the configured polarity. No pulse for asynchronous
+contracts. A two-nanosecond pulse fits the generated 10 ns clock/1 ns timescale.
+
+These changes do not infer occupied-reset flush/preserve policy, output reset
+values, exact capacity or earliest valid timing. ResetSpec lacks those typed
+policies; those properties remain independently checked against each contract.
+This avoids rejecting a legitimate contract that retains specified state.
+
+Prepare a NEW isolated stage, preserving the signed-only stage and all archives.
+Add behavior regressions and executable legal-traffic controls for zero-latency
+forwarding, busy sequential operation, prolonged input blocking, renamed active-
+low sync reset and async reset (no off-edge pulse). Include a producer-stability
+monitor, accepted/retired counts, invalid-noise and pulse timing/coverage. Failing
+old-driver tests must be retained before patch. Root reviews source and actual
+serial Vivado control/fault outcomes before integrating the driver change.
+Frozen original oracle/reference/faults and signed-only payload/expected arrays
+must remain identical in the controlled comparison. Fresh full27-fault audit
+measures the new score; no expected detection is counted without raw assertions
+and successful tool receipts. Taxonomy precedes runtime patch; no role, framework,
+sequence API, oracle reset epoch, retries or budget expansion. Full regression,
+fresh fulltier0 and new fixed-budget FIR trial remain mandatory before main.
+
+## October29 — Codex resumes Claude; acceptance hardening before more curricula
+
+User explicitly requested takeover after Claude usage stopped. No active vendor
+or model job was found; Claude application processes were left untouched.
+Development749d6d1 is the reference: independent1654tests passed532.84s; tooling
+181passed plus its sandbox-blocked local-clone test passed separately. Six pure
+or mock probes reproduce safety, companion, triage and board-suite gaps. The
+committed-blob audit passes43719claims with138justified exceptions and171known
+historical losses; no loss is relabeled recovered.
+
+Campaign25 finished2/2, streak2, heldfalse,1654tests,272frozen files unchanged.
+Its428-file archive was completed before source changes. Campaign26 and tier1
+03..05 have only prepared archive helpers; do not represent them as launched.
+
+Fixed plan, before implementation: preserve749 source/results; integrate the
+pending d71c49c golden files/tests and only its timeout handling in FSM (do not
+revert newer latency/Doctor guards). Repair string-aware scanning and true host
+failure precedence; apply baseline companion protection; strengthen child-only
+qualification boundaries without claiming lexical instantiation proves semantics.
+Board-suite checks must require zero process exits and real behavioral fault
+assertions, and never infer programmed payload identity from an unprogrammed file.
+
+Acceptance: new regressions fail against749 and pass with corrections; all prior
+focused suites and full harness/tooling pass; exact source identities are frozen
+through fresh fulltier0 gate with existing budgets. Preserve every attempt and
+run the committed-blob audit. Do not spend on a third hold run of code scheduled
+for replacement. No new roles, services, model escalation or budget expansion.
+Only then continue higher curricula and the CV-oriented board/public-task plan.
+
+
+
+## November 7 — keep deterministic verification; clarify and prune
+
+Three tier3 UART/FIFO failures used a pre-edge fixed_latency0 contract for
+post-transition Python outputs. Keep the driver semantics and every comparison;
+teach the planner the actual observation phases and deterministic empty data.
+No new output mask, global latency conversion or additional role. Six new
+instruction/contract tests and independent 114-test review support consistency;
+three real XSIM positive/negative controls establish the actual sampling
+behavior. Prompt benefit to model success remains unmeasured.
+
+The gate's rglob visited agent worktrees before discarding their paths. Prune
+the exact excluded subtree before traversal; preserve selected paths and raw
+hashes. Compare against a self-contained legacy selector, including Windows
+junction behavior. Synthetic excluded scans fell from8 to0; no wall-time
+speedup factor is claimed. Symbolic-link privilege was unavailable on this
+Windows host, so that test is explicitly skipped, not passed.
+
+AES golden generation in tier6-01 failed correctly. Tier6-02 is quota-blocked,
+not another AES design failure. A source-plus-error oracle repair mechanism
+remains conditional on a controlled need, not added after one failed campaign.
+No framework, role, model escalation or budget expansion was justified.
+
+
+## Configured text-generation worker policy (November 7)
+
+Codex CLI roles use a restricted child configuration: user config is ignored
+for execution; command/app/plugin/hook/browser/computer/image/delegation
+capabilities and web search are disabled. Two model-free MCP configuration
+listings discover server names and verify complete inert disabled entries leave
+no server enabled. Malformed/unresolved configuration blocks before generation.
+Authentication, managed requirements, security environment, read-only sandbox
+and execpolicy rule loading are preserved. No weaker automatic fallback.
+
+Configuration checks and generation share the existing worker timeout. A
+known-expired deadline is checked before launching a model process. Only text
+and reasoning JSONL items are accepted; unexpected tool/unknown items are
+infrastructure/protocol failures, not RTL repair feedback. Successful metadata
+records restricted_text_v1, the completed MCP check and zero observed tool
+items. max_turns remains an unenforced compatibility argument.
+
+Ignoring user config changes default model/provider semantics: an unspecified
+model uses CLI builtins; explicit --model is retained but does not restore a
+custom user provider/profile. Use the explicit AutoRTL endpoint backend for
+custom endpoints. No credential file is copied or global configuration edited.
+
+The installed CLI0.166.0-alpha.6 profile was checked with all ten targeted
+features false and no enabled MCP server. Preserve executable version/hash
+qualification when updating. This is a bounded configuration restriction, not
+a complete runtime-tool-catalog or universal OS/device isolation guarantee.
+Event rejection after execution cannot prevent or undo earlier side effects.
+The public benchmark requires its own independently qualified grader boundary.
+
+## November7 oracle module-boundary clarification
+
+Oracle clarification validation: 2078 passed in 518.77s (0:08:38); 323 passed, 1 skipped in 59.24s; 341 frozen inputs unchanged.
+Only generic module-boundary and top-level-helper instructions changed; no
+roles/FSM/sandbox/budget changes. AES01 remains a failed oracle build, with
+three rejected attempts and no new hardware or curriculum verdict. The next
+fresh run is AES02 on the published correction with original limits.
+
+## November8 bounded oracle repair context
+
+Bounded oracle-context change validated: 2087 passed in 467.00s (0:07:47); 323 passed, 1 skipped in 63.86s (0:01:03); 342 frozen inputs unchanged.
+Public contract examples are included as complete bounded records, with explicit
+omissions and fresh-init/repeated-step semantics. Repairs receive the exact
+immediately preceding same-module source, raw-file digest and error; normalized
+text has a separately labelled digest and explicit truncation. Empty failed
+artifacts retain their hash/context. Three attempts, qualifiers, sandbox and
+all budgets remain unchanged.104focused tests and independent review passed.
+AES02 remains a failed run, not evidence of improvement. Next: one fresh AES03
+on this committed source with original budgets. No board access or programming.
+
+## November8 finite field-guidance experiment
+
+Finite-field guidance validated: 2095 passed in 857.66s (0:14:17); 323 passed, 1 skipped in 93.31s (0:01:33); 343 selected inputs unchanged.
+Existing log/antilog advice now states its primitive-generator prerequisite,
+complete nonzero-element coverage and inverse-product checks.255 is explicitly
+scoped to GF(2^8). No generator number, reference program, S-box table or AES
+round output was added to production instructions. Gates, roles, attempts,
+budgets and sandbox are unchanged. Historical V1 focus112passed; final V2
+affected8passed; independent review and current full suites passed.
+
+One fresh AES04 is declared on this committed source with the original limits.
+After that trial, stop AES-specific prompt tuning regardless of outcome;
+assess and move to release/public benchmark work. No automatic AES05.
+Software/math controls do not establish model improvement or full AES success.
+No board programming, reset, JTAG, hardware-server or serial action occurred.
+
+
+# Benchmark artifact foundation: acceptance before implementation
+
+Need: the proposed public comparison cannot reproducibly grade outputs without
+an explicit public-only input bundle and an immutable complete RTL bundle sealed
+before grading. Existing FSM journals and winner files do not yet export a
+complete bundle at every termination. Read-only review:
+work/nov8-benchmark-next-review.md. This slice supplies artifact contracts only;
+it must not guess candidate selection, execute arms or claim grader isolation.
+
+Implement one small standard-library benchmark/artifacts.py module, package
+initializer if needed, meaningful no-Vivado tests, and a short API document.
+Versioned strict manifests bind full dataset/source commits, runtime identity,
+requested/observed model, finite budgets, public/private file hashes and unique
+task/trial/arm cells. Do not register real tasks or download the dataset here.
+Export only explicit public files; no private paths, bytes or metadata in that
+receipt. Seal only an explicitly supplied complete ordered RTL bundle, with
+top, internal status, declared verification policy and selection reason; record
+missing output separately. Receipt identity is independent of destination.
+
+Reject invalid/unknown schemas, mutable revisions, malformed hashes, duplicate
+cells/files, absolute/traversing paths, links/reparse escapes, source drift,
+missing dependencies and overwrite. Write the final completed receipt last and
+atomically; partial failure must not load as completed. Exact bytes, never
+repair/rename RTL, never recursively copy dataset trees or discover candidates.
+Preserve complete rejected output as rejected: sealing is not acceptance.
+
+Tests: real two-file temp bundles, private sentinel beside public input,
+byte drift, invalid paths including Windows forms, links where supported,
+partial copy before receipt, deterministic identity, rejected-but-complete and
+missing output. Preserve skips/limitations. Use no models, vendor tools, hardware
+or simulator. Parent independently reviews, integrates only after the frozen
+AES04 boundary, runs necessary tests and audits the published milestone.
+
+This is not an end-to-end benchmark or OS/network security boundary. Candidate
+selection hooks, mutation-only policy with positive control, independent grader,
+actual simulator/isolation controls, per-cell failed-call accounting and
+pilot/final registration remain explicit next integration work. Do not label
+synthetic artifact tests as a benchmark result or claim superiority.
+
+## November8: finite AES outcome and benchmark foundation
+
+Published8c59efb after2095harness+323tooling passes/one native Windows link
+privilege skip,343 unchanged frozen inputs, full committed audit and148 archive
+blob checks. AES04 completed322.61s/9modelcalls/121.050offline vendorseconds:
+controller qualified; round oracle qualified on3rd attempt; all4roundRTL
+candidates failed102assertions. All343originalinputs unchanged;219archive
+entries independently verified. No integration/PPA/hold/board result. The
+declared AES study is closed: no AES05 or more task-specific prompt tuning.
+Keep bounded contract/source context and gates; general RTL diagnostic loss is
+recorded separately, not repaired by injecting AES code or expanding budgets.
+
+Independent benchmark review motivated and approved a small artifact module:
+strict manifests/public-only export/externally anchored ordered RTL seals and
+missing records. Three staged review findings were reproduced and fixed:
+UTF8 enforcement, oversized time handling and fail-closed inventory traversal.
+Final staged75passed/two Windows permission skips; canonical full checks now
+active in workspace work/nov8-benchmark-full-tests-01,347inputs frozen. This is
+provenance foundation only: no task registration, arm execution, grader,
+isolation proof or benchmark superiority. No model/vendor job remains active.
+
+Shared memory now uses a stable START_HERE guide and one dated current
+SESSION_HANDOFF checkpoint. Superseded current sections are preserved in the
+AES04 review archive and Git. Final software/publication receipts are pending.
+
+## November8 benchmark artifact acceptance completed
+
+Canonical software validation: 2171 passed, 1 skipped in 744.46s (0:12:24); 323 passed, 1 skipped in 79.85s (0:01:19). All 347 explicitly
+selected inputs stayed unchanged. Source selection includes the new benchmark
+package, its tests and API document. Staged V2 separately passed75 tests with
+two native Windows permission skips; independent probes confirmed all three
+review corrections. Staged V1 is retained separately with its original scope.
+
+This slice supplies strict frozen metadata, public-only exact-byte export,
+ordered explicit RTL seals and separate missing records. Loading binds an
+externally retained ID and fails closed on inventory errors. It neither selects
+candidates nor executes arms, enforces ablation, grades Verilog, establishes
+OS/network isolation or supplies a public benchmark result. No actual tasks
+have been selected or scored; unknown observed model/cost stays unknown.
+
+AES04 is archived as failed; its finite study is closed. Shared memory has one current checkpoint. Next implementation is explicit FSM candidate bundles; no new AES trial or public benchmark result.
+
+
+# Candidate bundle integration: acceptance before implementation
+
+Observed gap: current FSM journals retain module/candidate files, but complete
+ordered top-level submissions are not explicitly recorded at every termination.
+The DONE-only best file and filename/mtime discovery cannot implement the
+predeclared benchmark rule after budget, model or design failure. The existing
+artifact API deliberately requires an explicit complete bundle. Reuse current
+stage replay, atomic storage, frozen inputs and real incumbent decisions rather
+than add roles, a database, a grading feedback loop or functional-only mode.
+Prior primary-source rationale and the exact hooks/acceptance are recorded in
+docs/RESEARCH.md and the published benchmark-artifact next-review report.
+
+Implement a small source-bundle record plus FSM hooks and a separate benchmark
+bridge. Freeze exact ordered source/dependency bytes and top at complete
+mechanical integration, baseline/repair materialization, optimization repairs
+and RTL Doctor proposals before they face static gates. Partial module graphs
+are not complete designs. Do not discover candidates, repair RTL, regenerate a
+missing top, silently omit dependencies or select by grading/mtime/glob.
+
+Mark incumbents only at actual verified baseline and accepted-best transitions.
+Final selection is accepted incumbent, otherwise latest complete generation by
+explicit order, otherwise missing. Unsafe/rejected complete output stays selected
+and unaccepted; safety rejection must not choose a nicer earlier candidate.
+Records must survive resumable terminal outcomes and interruption, detect source
+or metadata drift, and replay idempotently without duplicate/reordered generation
+or resetting a later incumbent to the baseline. Reuse the existing run lock for
+external export; refuse an active generation run. Unsupported old runs without
+records remain unavailable, never reconstructed from filenames.
+
+Bridge the selected explicit snapshot to benchmark.artifacts. Bind registered
+runtime/configuration/model/budget and actual run termination rather than allow
+caller metadata to manufacture full verification or an enforced ablation. Current
+runtime is full verification; reject unsupported single-call/ablation exports.
+Do not infer an observed served model or source-commit provenance from a label.
+Document the launcher's remaining trust/registration responsibilities. Seal once
+before private grading; existing exact-ID validation/no-overwrite rules apply.
+
+Tests without model/vendor/board: real two-module bundles and order; DONE
+baseline/winner; budget/model blocks with incumbent; failed complete candidate;
+failed module before integration; repair/Doctor capture; static-rejected latest
+output; changed/missing companion; identical filenames in different generations;
+restart/resume/idempotence; active-run lock; metadata/runtime mismatch; missing
+legacy records; complete artifact loading using retained ID. Exercise real FSM
+paths with controlled tool/model doubles, not only pure recorder methods.
+Keep contracts, prompts, gates, budgets and curriculum rules unchanged. No AES05,
+real benchmark trials, grader installation or board commands. Parent integrates
+only independently reviewed stage bytes, runs full suites, audits and pushes
+development; main remains frozen. This is provenance plumbing, not a score or
+proof of hidden-grader isolation or HDL elaboration completeness.
+
+## November8 candidate-bundle acceptance amendment: run/export exclusion
+
+Repository inspection and independent review found no whole-run lock to reuse.
+CheckpointLockedError handles atomic checkpoint replacement contention, not
+concurrent generation/export. Add a small cooperative standard-library OS file
+lock shared by Orchestrator.run and benchmark export, automatically released on
+process death. Preserve the lock file, reject an active owner, and test genuine
+multiprocess exclusion/crash release. No PID-based automatic stale deletion or
+new service is needed. This corrects the earlier acceptance premise before
+implementation. It is cooperative exclusion, not malicious-process isolation.

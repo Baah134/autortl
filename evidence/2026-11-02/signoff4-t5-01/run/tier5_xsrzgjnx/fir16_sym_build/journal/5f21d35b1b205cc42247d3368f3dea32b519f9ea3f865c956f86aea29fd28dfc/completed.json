@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_6:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 6\n## Contract check\n- Defined behavior and integration verification: PASS \u2014 candidate is ALIVE on all 5 authoritative ladder rungs; simulation passed.\n- Top latency annotation: PASS \u2014 `fir16_sym` declares `// @latency 5`, matching the known authoritative latency.\n- Compile, elaboration and synthesis gates: PASS \u2014 required tools exited successfully; synthesis reported `SYNTH_COMPLETE`.\n- Routed metrics and timing closure: PASS \u2014 retained routed metrics report WNS 0.197 ns and WHS 0.118 ns, with `timing_met=true`.\n- Objective improvement over previous best: FAIL \u2014 both designs are timing-feasible, but LUTs and FFs are unchanged at 161 and 317; `improvement_kind` is null and no improvement is recorded.\n## Summary\n- Passed: 4 of 5\n- Failed: 1 of 5\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes deterministic verification, declares the required latency, and meets routed setup and hold timing. Since the previous best is already timing-feasible, promotion requires a strict improvement in the `minimize_luts` objective; the candidate\u2019s LUT and FF counts are identical to the previous best, so that mandatory criterion fails.",
+      "recommendation": "REJECT",
+      "passed": 4,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

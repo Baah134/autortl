@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_2:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 2,
+    "instruction": "Specialize `sync_fifo_core` for `DEPTH==3` to use three `WIDTH`-bit entry registers, with entry 0 driving `out_data`; shift entries on pop and place accepted data in the vacated or next free slot, including simultaneous push/pop cases. Keep the existing parameterized implementation for other depths, and preserve capacity, wrap-independent ordering, stalls, reset behavior, full-width payloads, and minimum transfer age. Retain the top interface and `// @latency 1`; evaluate whether routed LUTs decrease and both WNS and WHS remain nonnegative.",
+    "candidates": [
+      {
+        "iteration": 2,
+        "mutation": "standard",
+        "instruction": "Specialize `sync_fifo_core` for `DEPTH==3` to use three `WIDTH`-bit entry registers, with entry 0 driving `out_data`; shift entries on pop and place accepted data in the vacated or next free slot, including simultaneous push/pop cases. Keep the existing parameterized implementation for other depths, and preserve capacity, wrap-independent ordering, stalls, reset behavior, full-width payloads, and minimum transfer age. Retain the top interface and `// @latency 1`; evaluate whether routed LUTs decrease and both WNS and WHS remain nonnegative.",
+        "generated_source_sha256": "7020b964f507962685a32d46caa1a0d2325c0a5b5770175a53ab7ef4b3e9cbcd",
+        "final_source_sha256": "7020b964f507962685a32d46caa1a0d2325c0a5b5770175a53ab7ef4b3e9cbcd",
+        "generated_code_hash": "e6daed9e85e86f45",
+        "final_code_hash": "e6daed9e85e86f45",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.003,
+          "whs_ns": 0.02,
+          "lut_used": 23,
+          "ff_used": 26,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.013,
+          "total_power_w": 0.083
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-02\\tier2_565ez3lf\\sync_fifo_build\\iter_002\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-02\\tier2_565ez3lf\\sync_fifo_build\\iter_002\\cand_standard\\synth.tcl",
+          "sha256": "1e95c133b7056ff983ea705708e4f2dfb047f462665ebcbc1ae06ac5d8cf973d"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-02\\tier2_565ez3lf\\sync_fifo_build\\iter_002\\cand_standard\\sync_fifo.v",
+          "sha256": "a67eb0235cdcb3da8590d1eb92d62dd18c5b7effc6bfc5c692335d43c5dfb762"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "ACCEPT",
+    "is_best": true,
+    "selected_source_sha256": "7020b964f507962685a32d46caa1a0d2325c0a5b5770175a53ab7ef4b3e9cbcd"
+  },
+  "artifacts": {}
+}

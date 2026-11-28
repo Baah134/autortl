@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Interface, editable unit, and live child: PASS \u2014 `sync_fifo` has the required ports and annotation, and its unconditional `sync_fifo_core` instance drives the top outputs.\n- FIFO behavior and supported parameters: PASS \u2014 the candidate preserves registered validity, synchronous reset, handshakes, ordering, stall stability, and parameterized capacity; the authoritative ladder passes all six tested configurations.\n- Compile, elaboration, and simulation: PASS \u2014 required tool exits are zero, and the trusted testbench reports `TEST PASSED`.\n- Synthesis and metric integrity: PASS \u2014 synthesis completed with `SYNTH_COMPLETE`; routed reports and structured metrics are present.\n- Timing closure: PASS \u2014 routed setup WNS is 0.153 ns and hold WHS is 0.196 ns.\n- Improvement over previous best: PASS \u2014 this is valid `timing_recovery`: the previous best was timing-infeasible and the candidate is feasible. Higher LUT and FF counts do not disqualify recovery.\n## Summary\n- Passed: 6 of 6\n- Failed: 0 of 6\n- Improved over previous best: YES\n## Recommendation\nACCEPT\n## Reason\nThe candidate passes the deterministic verification and metric gates, preserves the defined FIFO behavior, and closes setup and hold timing against a previously timing-infeasible best. Its higher resource counts are permitted for this verified timing recovery.",
+      "recommendation": "ACCEPT",
+      "passed": 6,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}

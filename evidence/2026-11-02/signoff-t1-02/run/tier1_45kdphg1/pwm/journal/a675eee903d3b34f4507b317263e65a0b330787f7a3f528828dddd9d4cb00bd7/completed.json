@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_4:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 4\n## Contract check\n- Ports, reset, and observable behavior: PASS \u2014 interface and reset behavior are preserved; the rewritten comparison is equivalent for all counter and duty values.\n- Top latency annotation: PASS \u2014 authoritative latency is unknown, so no numeric annotation is required.\n- Simulation and tool gates: PASS \u2014 compile, elaboration, synthesis, and simulation exited successfully; the fixed testbench reported `TEST PASSED`.\n- Routed metrics and timing: PASS \u2014 retained routed metrics are valid; timing is feasible with WNS 0.553 ns and WHS 0.135 ns.\n- Improvement over previous best: FAIL \u2014 LUTs and FFs are unchanged (7 and 9), so the candidate does not strictly improve the `minimize_luts` objective.\n## Summary\n- Passed: 4 of 5\n- Failed: 1 of 5\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes behavioral, verification, and timing gates, but its LUT and FF counts match the timing-feasible previous best, so it cannot be promoted under the strict objective improvement requirement. The stall count is 3, meeting the threshold at which RESTART is permitted, but ACCEPT requires zero failed mandatory criteria.",
+      "recommendation": "REJECT",
+      "passed": 4,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_2:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 2\n## Contract check\n- Top interface, parameters, and live child reachability: PASS \u2014 `packet_fifo` retains the required ports, and `packet_fifo_core` is live-reached.\n- FIFO behavior and supported parameters: PASS \u2014 ladder simulation passed the parameter matrix and temporal checks; source preserves capacity, handshakes, ordering, stalls, reset, and minimum transfer age.\n- Top latency annotation: PASS \u2014 top declares `// @latency 1`, matching authoritative latency.\n- Compile, elaboration, and simulation: PASS \u2014 required tools exited successfully and simulation reported `TEST PASSED`.\n- Routed metric and receipt gates: PASS \u2014 routed reports are retained, synthesis completed, and metric evidence is consistent.\n- Timing closure: PASS \u2014 timing is met with WNS 0.329 ns and WHS 0.197 ns.\n- Improvement over previous best: PASS \u2014 valid timing recovery from the known infeasible best (WNS \u22120.17 ns, WHS 0.105 ns); higher LUT and FF counts do not disqualify recovery.\n## Summary\n- Passed: 7 of 7\n- Failed: 0 of 7\n- Improved over previous best: YES\n## Recommendation\nACCEPT\n## Reason\nThe candidate passes deterministic verification and the reviewed behavioral obligations, declares the required top latency, and meets setup and hold timing. Its previous best was known timing-infeasible, so this verified timing recovery qualifies for promotion despite increased LUT and FF counts.",
+      "recommendation": "ACCEPT",
+      "passed": 7,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}

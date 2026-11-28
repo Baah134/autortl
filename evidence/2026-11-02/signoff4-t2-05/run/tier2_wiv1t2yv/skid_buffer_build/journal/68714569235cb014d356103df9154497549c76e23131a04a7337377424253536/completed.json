@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Top interface and FIFO behavior: PASS \u2014 candidate preserves the specified ports and two-entry FIFO behavior; the authoritative ladder is ALIVE and simulation passed.\n- Top latency annotation: PASS \u2014 `skid_buffer` declares `// @latency 1`, matching authoritative latency 1.\n- Compile, elaboration, and simulation: PASS \u2014 required tool exits are successful and the frozen testbench reports `TEST PASSED`.\n- Routed metrics and receipt integrity: PASS \u2014 retained routed reports and metric provenance are present; synthesis completed successfully.\n- Timing closure: PASS \u2014 `timing_met=true`, setup WNS is 0.088 ns, and hold WHS is 0.158 ns.\n- Objective improvement: PASS \u2014 LUTs decreased from 15 to 14 with FFs unchanged at 19, improving the `minimize_luts` objective.\n## Summary\n- Passed: 6 of 6\n- Failed: 0\n- Improved over previous best: YES\n## Recommendation\nACCEPT\n## Reason\nThe candidate passes the deterministic verification and required tool and metric gates, meets setup and hold timing, and improves the selected objective by reducing LUT usage while keeping FF usage equal.",
+      "recommendation": "ACCEPT",
+      "passed": 6,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}

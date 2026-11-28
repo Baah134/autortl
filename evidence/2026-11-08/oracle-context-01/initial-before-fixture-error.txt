@@ -1,0 +1,122 @@
+FFFF.F.                                                                  [100%]
+================================== FAILURES ===================================
+_ test_public_examples_include_original_values_cycle_semantics_and_no_reference _
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x00000260ACBF28A0>
+
+    def test_public_examples_include_original_values_cycle_semantics_and_no_reference(monkeypatch):
+        spec=module();spec.golden_model='FORBIDDEN_HIDDEN_REFERENCE'
+        text=prompt(monkeypatch,spec)
+>       assert 'AUTHORITATIVE PUBLIC CONTRACT EXAMPLES' in text
+E       AssertionError: assert 'AUTHORITATIVE PUBLIC CONTRACT EXAMPLES' in 'Write a Python golden model for this module.\nBehavior: Increment the authoritative external input a modulo256.\nPort...plied handshake inputs are 1 for accepted\ntransactions and 0 during reset. Output ONLY python in one ```python fence.'
+
+tests\test_oracle_context.py:36: AssertionError
+___________ test_example_omissions_are_explicit_and_never_cut_json ____________
+
+    def test_example_omissions_are_explicit_and_never_cut_json():
+        spec=module();spec.examples=[IOExample({'a':'x'*20000},{'y':0},1)]+spec.examples
+>       text=roles.golden_examples_context(spec)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'autortl.roles' has no attribute 'golden_examples_context'
+
+tests\test_oracle_context.py:48: AttributeError
+_ test_failed_source_is_untrusted_bounded_and_separates_file_from_text_identity _
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x00000260ACBF17F0>
+
+    def test_failed_source_is_untrusted_bounded_and_separates_file_from_text_identity(monkeypatch):
+        source='# "quoted"\n'*5000
+        digest='f'*64
+>       text=prompt(monkeypatch,feedback='ValueError: matching_latest_failure',
+                    previous_source=source,previous_source_sha256=digest)
+
+tests\test_oracle_context.py:61: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x00000260ACBF17F0>
+spec = None
+kwargs = {'feedback': 'ValueError: matching_latest_failure', 'previous_source': '# "quoted"\n# "quoted"\n# "quoted"\n# "quoted"... "quoted"\n# "quoted"\n', 'previous_source_sha256': 'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'}
+
+    def prompt(monkeypatch, spec=None, **kwargs):
+        request=Mock(return_value=GOOD)
+        monkeypatch.setattr(roles,'ask',request)
+        monkeypatch.setattr(roles,'conventions',lambda:'')
+>       roles.Generator().golden_model(spec or module(),None,**kwargs)
+E       TypeError: Generator.golden_model() got an unexpected keyword argument 'previous_source'
+
+tests\test_oracle_context.py:29: TypeError
+_ test_successive_repairs_receive_only_immediately_preceding_source_and_raw_digest _
+
+tmp_path = WindowsPath('C:/Users/prince.baah/Documents/Codex/2026-10-15/hey/work/nov8-oracle-context-before-tmp/test_successive_repairs_receiv0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x00000260ACC67BF0>
+
+    def test_successive_repairs_receive_only_immediately_preceding_source_and_raw_digest(tmp_path,monkeypatch):
+        o,folder=make_orchestrator(tmp_path,monkeypatch)
+        calls=[]
+        def generation(spec,budget,**kwargs):
+            calls.append(kwargs)
+            if len(calls)>1:
+                receipt=json.loads((folder/f'golden_attempt_{len(calls)-1}.log').read_text())
+                assert kwargs['previous_source_sha256']==receipt['source_sha256']
+                assert kwargs['previous_source_sha256']==hashlib.sha256((folder/'golden.py').read_bytes()).hexdigest()
+                assert kwargs['feedback']==receipt['diagnostic']
+            return [BAD1,BAD2,GOOD][len(calls)-1]
+        monkeypatch.setattr(o.generator,'golden_model',generation)
+>       assert o._build_module(module(),folder)==RTL
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_oracle_context.py:98: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+autortl\fsm.py:801: in _build_module
+    golden_src = self._model("generator", "golden_model", m, self.budget, feedback=feedback)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+autortl\fsm.py:383: in _model
+    return self._stage("model", role + "." + name,
+autortl\fsm.py:324: in _stage
+    return function()
+           ^^^^^^^^^^
+autortl\fsm.py:384: in <lambda>
+    lambda: getattr(getattr(self, role), name)(*args, **kwargs), args, kwargs)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+spec = ModuleSpec(name='m', behavior='Increment the authoritative external input a modulo256.', ports=[Port(name='a', directi...nputs={'a': 254}, expected={'y': 255}, after_cycles=1)], golden_model='', interface_signature=None, latency_known=True)
+budget = <autortl.budget.Budget object at 0x00000260ACC66DB0>
+kwargs = {'feedback': 'SyntaxError: invalid syntax (<unknown>, line 1)'}
+
+    def generation(spec,budget,**kwargs):
+        calls.append(kwargs)
+        if len(calls)>1:
+            receipt=json.loads((folder/f'golden_attempt_{len(calls)-1}.log').read_text())
+>           assert kwargs['previous_source_sha256']==receipt['source_sha256']
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           KeyError: 'previous_source_sha256'
+
+tests\test_oracle_context.py:93: KeyError
+---------------------------- Captured stdout call -----------------------------
+[module m] golden model + testbench...
+_____ test_replay_restores_rejected_sources_without_new_generation_calls ______
+
+tmp_path = WindowsPath('C:/Users/prince.baah/Documents/Codex/2026-10-15/hey/work/nov8-oracle-context-before-tmp/test_replay_restores_rejected_0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x00000260ACDA6570>
+
+    def test_replay_restores_rejected_sources_without_new_generation_calls(tmp_path,monkeypatch):
+        o,folder=make_orchestrator(tmp_path,monkeypatch,journal=True)
+        model=Mock(side_effect=[BAD1,BAD2,GOOD]);monkeypatch.setattr(o.generator,'golden_model',model)
+>       assert o._build_module(module(),folder)==RTL
+E       assert None == "module m(input [7:0] a, output [7:0] y); assign y=a+1'b1; endmodule"
+E        +  where None = _build_module(ModuleSpec(name='m', behavior='Increment the authoritative external input a modulo256.', ports=[Port(name='a', directi...nputs={'a': 254}, expected={'y': 255}, after_cycles=1)], golden_model='', interface_signature=None, latency_known=True), WindowsPath('C:/Users/prince.baah/Documents/Codex/2026-10-15/hey/work/nov8-oracle-context-before-tmp/test_replay_restores_rejected_0/one_module'))
+E        +    where _build_module = <autortl.fsm.Orchestrator object at 0x00000260ACDA5FA0>._build_module
+E        +    and   ModuleSpec(name='m', behavior='Increment the authoritative external input a modulo256.', ports=[Port(name='a', directi...nputs={'a': 254}, expected={'y': 255}, after_cycles=1)], golden_model='', interface_signature=None, latency_known=True) = module()
+
+tests\test_oracle_context.py:117: AssertionError
+---------------------------- Captured stdout call -----------------------------
+[module m] golden model + testbench...
+[module m] tb qualification: qualification control did not pass: xvlog not found: [WinError 2] The system cannot find the file specified
+=========================== short test summary info ===========================
+FAILED tests/test_oracle_context.py::test_public_examples_include_original_values_cycle_semantics_and_no_reference
+FAILED tests/test_oracle_context.py::test_example_omissions_are_explicit_and_never_cut_json
+FAILED tests/test_oracle_context.py::test_failed_source_is_untrusted_bounded_and_separates_file_from_text_identity
+FAILED tests/test_oracle_context.py::test_successive_repairs_receive_only_immediately_preceding_source_and_raw_digest
+FAILED tests/test_oracle_context.py::test_replay_restores_rejected_sources_without_new_generation_calls
+5 failed, 2 passed in 5.01s

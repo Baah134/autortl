@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_1:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 1,
+    "instruction": "Replace the `crc16_stream_core` instance with top-level state and slot logic, and implement the byte update as a factored parallel XOR network for the CRC-16/CCITT-FALSE polynomial rather than eight serial shift-and-conditional-XOR rounds. Preserve the exact `in_ready` equation, accepted-byte behavior, synchronous active-high reset priority, frame restart on `in_last`, registered output hold during stalls, and minimum accepted-transfer age of one cycle; retain `// @latency 1`. The experiment succeeds only if the unchanged verification gates pass and routed LUT use is strictly below 16, with se",
+    "candidates": [
+      {
+        "iteration": 1,
+        "mutation": "standard",
+        "instruction": "Replace the `crc16_stream_core` instance with top-level state and slot logic, and implement the byte update as a factored parallel XOR network for the CRC-16/CCITT-FALSE polynomial rather than eight serial shift-and-conditional-XOR rounds. Preserve the exact `in_ready` equation, accepted-byte behavior, synchronous active-high reset priority, frame restart on `in_last`, registered output hold during stalls, and minimum accepted-transfer age of one cycle; retain `// @latency 1`. The experiment succeeds only if the unchanged verification gates pass and routed LUT use is strictly below 16, with se",
+        "generated_source_sha256": "0684e0f1042202c87d8431b26a0803a82b68951e06b0030e0660e6c66c1b1ad6",
+        "final_source_sha256": "36399dd8ec9b09fd9703f616f376508ad2539698ff2f5671547291c5aad43ba3",
+        "generated_code_hash": "68aef9ae003ee517",
+        "final_code_hash": "2d14fea094dc4be3",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.445,
+          "whs_ns": 0.208,
+          "lut_used": 16,
+          "ff_used": 34,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.017,
+          "total_power_w": 0.088
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-portability\\logs\\explore-tier4-01\\crc16_stream_build\\iter_001\\cand_standard\\repair_001",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-portability\\logs\\explore-tier4-01\\crc16_stream_build\\iter_001\\cand_standard\\repair_001\\synth.tcl",
+          "sha256": "674ed77dd9040d7cec9e9af28451ecf1502679f88a00b032eff9743fb2a2086a"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-portability\\logs\\explore-tier4-01\\crc16_stream_build\\iter_001\\cand_standard\\repair_001\\crc16_stream.v",
+          "sha256": "6c67f8dc79a9079c0bb9c95a380c942b1419ff787307d3711f1fbeca02a511fd"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": "36399dd8ec9b09fd9703f616f376508ad2539698ff2f5671547291c5aad43ba3"
+  },
+  "artifacts": {}
+}

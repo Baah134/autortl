@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_3:decision:instruction:0",
+  "result": "In `axil_rd_if`, replace `regs_flat[{araddr[4:2], 5'b0} +: 32]` with an explicit case on `araddr[4:2]` selecting the corresponding 32-bit slice, retaining the existing out-of-range handling for `araddr[5]`. Keep `rdata_reg`, `rresp_reg`, and `rvalid_reg` registered with the same reset, accept, stall, and transfer behavior; the read must still sample the pre-edge bank value. Preserve every top port and observable cycle, and do not add a top latency annotation because the authoritative top latency is unknown.",
+  "artifacts": {}
+}

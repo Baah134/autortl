@@ -14,10 +14,12 @@ module fir8_tb;
     end
     initial begin
         clk=0; errors=0; rst=1; x_in=0;
-        repeat(4) @(posedge clk); rst=0; @(posedge clk);
-        x_in = 16'sd1; @(posedge clk); x_in = 16'sd0;   // impulse
-        // y pipeline: d[0] captures at impulse edge; y valid 2 edges later
-        @(posedge clk);
+        // Inputs change 1 ns after an edge, so every edge samples a settled value
+        // (fir8_testbench_input_race: blocking writes at the edge raced the DUT).
+        repeat(4) @(posedge clk); #1 rst = 0;
+        @(posedge clk); #1 x_in = 16'sd1;      // the next edge captures the impulse into d[0]
+        @(posedge clk); #1 x_in = 16'sd0;
+        // y registers the sum of d one edge later: k=0 reads right after that edge.
         for (k=0; k<10; k=k+1) begin
             @(posedge clk); #1;
             if (y_out !== expected[k]) begin

@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_3:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 3\n## Contract check\n- Interface, reset, and defined debounce behavior: PASS \u2014 top ports match the contract; synchronous active-high reset clears the state and output. The counter sequence updates `clean` on the eighth consecutive sampled cycle and restarts when `noisy` changes.\n- Top latency annotation: PASS \u2014 `// @latency 0` matches authoritative declared latency.\n- Compilation and simulation: PASS \u2014 `xvlog`, `xelab`, and `xsim` exited successfully; the required `TEST PASSED` verdict is present.\n- Routed metric evidence: PASS \u2014 retained routed utilization, timing, and power reports are identified; tool exits and synthesis completion are recorded.\n- Timing feasibility: PASS \u2014 `timing_met=true`, WNS is 0.731 ns, and WHS is 0.067 ns.\n- LUT objective improvement: FAIL \u2014 candidate and previous best both use 4 LUTs; the objective requires a strict reduction when both are timing-feasible.\n- Recorded improvement classification: PASS \u2014 `measured_improvement=false` and `improvement_kind=null` do not claim an improvement.\n## Summary\n- Passed: 6 of 7\n- Failed: 1 of 7\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate satisfies the behavioral and verification gates and meets setup and hold timing, but it does not reduce LUT usage versus the timing-feasible previous best. The fixed objective therefore is not achieved, leaving a failed mandatory promotion criterion.",
+      "recommendation": "REJECT",
+      "passed": 6,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

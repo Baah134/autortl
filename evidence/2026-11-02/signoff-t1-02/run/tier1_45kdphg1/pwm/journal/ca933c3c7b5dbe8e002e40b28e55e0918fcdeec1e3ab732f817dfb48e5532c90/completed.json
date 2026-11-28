@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_2:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 2,
+    "instruction": "Keep `counter` 32 bits and retain the synchronous reset and registered `pwm_out` update. Replace the conditional 32-bit increment/wrap with a low-byte increment and a high-part increment enabled when the low byte is `8'hFF` and the high part is nonzero; this preserves the special wrap at 255 and normal 32-bit increment behavior elsewhere. Preserve the comparison against the full counter so states above 255 still produce the same output. Check reset, arbitrary high counter values, and transitions at 254, 255, and 256; retain the candidate only if the unchanged verification gates pass and routed",
+    "candidates": [
+      {
+        "iteration": 2,
+        "mutation": "standard",
+        "instruction": "Keep `counter` 32 bits and retain the synchronous reset and registered `pwm_out` update. Replace the conditional 32-bit increment/wrap with a low-byte increment and a high-part increment enabled when the low byte is `8'hFF` and the high part is nonzero; this preserves the special wrap at 255 and normal 32-bit increment behavior elsewhere. Preserve the comparison against the full counter so states above 255 still produce the same output. Check reset, arbitrary high counter values, and transitions at 254, 255, and 256; retain the candidate only if the unchanged verification gates pass and routed",
+        "generated_source_sha256": "22ad4566d5fbe995f00e3a260136304a717e93afefda28021cb4113e080bc7f7",
+        "final_source_sha256": "22ad4566d5fbe995f00e3a260136304a717e93afefda28021cb4113e080bc7f7",
+        "generated_code_hash": "697b4348a8becb4d",
+        "final_code_hash": "697b4348a8becb4d",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.553,
+          "whs_ns": 0.121,
+          "lut_used": 30,
+          "ff_used": 33,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.01,
+          "total_power_w": 0.08
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff-t1-02\\tier1_45kdphg1\\pwm\\iter_002\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff-t1-02\\tier1_45kdphg1\\pwm\\iter_002\\cand_standard\\synth.tcl",
+          "sha256": "e05de763d33d32f48a797ec8f9134d3fedd263bd113a3992abdd5c8c82257bec"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff-t1-02\\tier1_45kdphg1\\pwm\\iter_002\\cand_standard\\pwm.v",
+          "sha256": "d99df725cc822ec67a3497ea295af8229673380902ace179e32dcefaaaee2c6c"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": "22ad4566d5fbe995f00e3a260136304a717e93afefda28021cb4113e080bc7f7"
+  },
+  "artifacts": {}
+}

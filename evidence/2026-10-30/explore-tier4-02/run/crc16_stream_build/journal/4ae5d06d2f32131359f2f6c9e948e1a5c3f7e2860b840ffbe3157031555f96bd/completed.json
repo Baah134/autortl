@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_2:decision:instruction:0",
+  "result": "In `crc16_stream_core`, replace the separate `frame_crc` state and `out_crc_reg` storage with one 16-bit CRC register plus a seed flag: compute each accepted byte from `16'hFFFF` when the flag is set, otherwise from the shared CRC register, and set the flag from `in_last`. Preserve the shared register\u2019s update only on accepted transfers, hold it during stalls, and keep `out_last_reg`, `out_valid_reg`, readiness, synchronous reset priority, and the top\u2019s `// @latency 1` unchanged. Fold seed selection into the CRC Boolean equations where useful, then require the unchanged integration checks and valid routed reports; promote only if every gate passes and routed LUT usage is strictly below 16.",
+  "artifacts": {}
+}

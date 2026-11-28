@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Interface and live child module: PASS \u2014 `iterative_divider_core` remains defined and connected to the top; top ports and defaults match the contract.\n- Arithmetic and parameter behavior: PASS \u2014 the source implements WIDTH-dependent unsigned restoring division, including divide by zero; the integration test passes for WIDTH 1, 2, 4, 8, 13, and 16.\n- Cycle behavior, handshakes, and reset: PASS \u2014 the deterministic test passes exact availability timing, minimum transfer age, stalls, retirement bubble, and synchronous reset checks.\n- Top latency annotation: PASS \u2014 the top declares `// @latency 9`, matching authoritative latency.\n- Compile, elaboration, and simulation gates: PASS \u2014 required tool exits are successful and the unchanged testbench reports `TEST PASSED`.\n- Routed metrics and timing closure: PASS \u2014 retained routed metrics show LUTs 31, FFs 57, WNS 0.313 ns, and WHS 0.182 ns; timing is feasible.\n- Objective and improvement classification: PASS \u2014 LUTs decrease from 35 to 31 with FFs unchanged, satisfying `minimize_luts`; `improvement_kind=objective` is consistent.\n\n## Summary\n- Passed: 7 of 7\n- Failed: 0 of 7\n- Improved over previous best: YES\n\n## Recommendation\nACCEPT\n\n## Reason\nThe candidate passes the deterministic behavioral and implementation gates, preserves the required top latency and cycle behavior, and improves the chosen objective by reducing routed LUT use from 35 to 31 while maintaining timing closure.",
+      "recommendation": "ACCEPT",
+      "passed": 7,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}

@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_1:decision:instruction:0",
+  "result": "In `skid_buffer_core`, replace the case-based `count` FSM with a two-bit binary occupancy register and explicit next-state logic driven by the existing `push` and `pop` handshakes; retain the two data registers and their FIFO ordering and stall behavior. Keep `in_ready = (occupancy < 2) || out_ready`, `out_valid = (occupancy != 0)`, synchronous active-high reset priority, and the top module\u2019s `// @latency 1` annotation. Preserve simultaneous full pop/push, empty capture without fallthrough, and all specified transfer behavior; do not change ports or add pipeline stages.",
+  "artifacts": {}
+}

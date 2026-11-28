@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_2:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 2\n## Contract check\n- Top latency annotation: PASS \u2014 the current top declares `// @latency 1`, matching the authoritative latency.\n- Interface and defined behavior: PASS \u2014 deterministic ladder is ALIVE; the candidate preserves the top interface, parameters, reset behavior, and registered cycle structure.\n- Compile and simulation gates: PASS \u2014 required tool exits succeeded, and the unchanged testbench reports `TEST PASSED`.\n- Retained metrics and process evidence: PASS \u2014 routed reports and synthesis completion are recorded; setup and hold metrics are available.\n- Timing feasibility: FAIL \u2014 `timing_met=false` and setup WNS is \u221210.304 ns; positive hold slack does not satisfy the setup requirement.\n- Improvement over previous best: FAIL \u2014 both candidate and previous best are timing-infeasible, so this is not timing recovery; no feasible-objective gain is established.\n## Summary\n- Passed: 4 of 6\n- Failed: 2 of 6\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes the annotation, behavioral, compile, simulation, and evidence checks, but it does not meet setup timing. Since the previous best also fails timing, the candidate establishes neither timing recovery nor a feasible `maximize_freq` improvement.",
+      "recommendation": "REJECT",
+      "passed": 4,
+      "failed": 2
+    }
+  },
+  "artifacts": {}
+}

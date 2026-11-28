@@ -1,0 +1,63 @@
+{
+  "top_name": "uart_fifo_tx",
+  "modules": [
+    {
+      "name": "sync_fifo16",
+      "behavior": "Synchronous 16-entry, 8-bit FIFO with one-cycle synchronous memory reads and one transfer per cycle. Accept a write when in_valid and in_ready are high, and remove a head entry when out_valid and out_ready are high. The first accepted entry becomes visible on out_data with out_valid asserted two clock cycles after acceptance; subsequent entries can be delivered at one per cycle. out_data is zero while empty. Reset clears the occupancy and pointers; memory contents are not reset.",
+      "ports": [
+        {"name": "clk", "direction": "input", "width": 1, "signed": false, "packed_dimensions": null, "clock_domain": "clk", "protocol": "none"},
+        {"name": "rst", "direction": "input", "width": 1, "signed": false, "packed_dimensions": null, "clock_domain": "clk", "protocol": "none"},
+        {"name": "in_valid", "direction": "input", "width": 1, "signed": false, "packed_dimensions": null, "clock_domain": "clk", "protocol": "valid_ready"},
+        {"name": "in_ready", "direction": "output", "width": 1, "signed": false, "packed_dimensions": null, "clock_domain": "clk", "protocol": "valid_ready"},
+        {"name": "in_data", "direction": "input", "width": 8, "signed": false, "packed_dimensions": null, "clock_domain": "clk", "protocol": "none"},
+        {"name": "out_valid", "direction": "output", "width": 1, "signed": false, "packed_dimensions": null, "clock_domain": "clk", "protocol": "valid_ready"},
+        {"name": "out_ready", "direction": "input", "width": 1, "signed": false, "packed_dimensions": null, "clock_domain": "clk", "protocol": "valid_ready"},
+        {"name": "out_data", "direction": "output", "width": 8, "signed": false, "packed_dimensions": null, "clock_domain": "clk", "protocol": "none"}
+      ],
+      "latency": 2,
+      "compare_mode": "scoreboard",
+      "reset": {"signal": "rst", "kind": "sync", "active_high": true, "duration_cycles": 5},
+      "clock_domains": ["clk"],
+      "parameters": {},
+      "examples": [
+        {"inputs": {"in_valid": 0, "in_data": 0, "out_ready": 0}, "expected": {"out_data": 0}, "after_cycles": 2},
+        {"inputs": {"in_valid": 1, "in_data": 165, "out_ready": 0}, "expected": {"out_data": 165}, "after_cycles": 2}
+      ]
+    },
+    {
+      "name": "uart_tx",
+      "behavior": "8N1 UART transmitter with configurable integer baud divisor DIV, default 868. Accept a byte only when in_valid and tx_ready are high; acceptance starts a registered low start bit on that clock edge. Hold each start, data, and stop bit for DIV clock cycles, transmit data least significant bit first, and return tx high while idle. Keep tx_ready low while transmitting and assert it again after the stop bit completes. Synchronous active-high reset sets tx high and the transmitter idle.",
+      "ports": [
+        {"name": "clk", "direction": "input", "width": 1, "signed": false, "packed_dimensions": null, "clock_domain": "clk", "protocol": "none"},
+        {"name": "rst", "direction": "input", "width": 1, "signed": false, "packed_dimensions": null, "clock_domain": "clk", "protocol": "none"},
+        {"name": "in_valid", "direction": "input", "width": 1, "signed": false, "packed_dimensions": null, "clock_domain": "clk", "protocol": "valid_ready"},
+        {"name": "tx_ready", "direction": "output", "width": 1, "signed": false, "packed_dimensions": null, "clock_domain": "clk", "protocol": "valid_ready"},
+        {"name": "in_data", "direction": "input", "width": 8, "signed": false, "packed_dimensions": null, "clock_domain": "clk", "protocol": "none"},
+        {"name": "tx", "direction": "output", "width": 1, "signed": false, "packed_dimensions": null, "clock_domain": "clk", "protocol": "none"}
+      ],
+      "latency": 1,
+      "compare_mode": "fixed_latency",
+      "reset": {"signal": "rst", "kind": "sync", "active_high": true, "duration_cycles": 5},
+      "clock_domains": ["clk"],
+      "parameters": {"DIV": 868},
+      "examples": [
+        {"inputs": {"in_valid": 0, "in_data": 0}, "expected": {"tx": 1}, "after_cycles": 5},
+        {"inputs": {"in_valid": 1, "in_data": 0}, "expected": {"tx": 0}, "after_cycles": 1},
+        {"inputs": {"in_valid": 1, "in_data": 1}, "expected": {"tx": 1}, "after_cycles": 869}
+      ]
+    }
+  ],
+  "connections": [
+    {"src_module": "sync_fifo16", "src_port": "out_valid", "dst_module": "uart_tx", "dst_port": "in_valid"},
+    {"src_module": "uart_tx", "src_port": "tx_ready", "dst_module": "sync_fifo16", "dst_port": "out_ready"},
+    {"src_module": "sync_fifo16", "src_port": "out_data", "dst_module": "uart_tx", "dst_port": "in_data"}
+  ],
+  "external_ports": [
+    {"name": "clk", "direction": "input", "width": 1, "signed": false, "packed_dimensions": null, "clock_domain": "clk", "protocol": "none"},
+    {"name": "rst", "direction": "input", "width": 1, "signed": false, "packed_dimensions": null, "clock_domain": "clk", "protocol": "none"},
+    {"name": "in_valid", "direction": "input", "width": 1, "signed": false, "packed_dimensions": null, "clock_domain": "clk", "protocol": "valid_ready"},
+    {"name": "in_ready", "direction": "output", "width": 1, "signed": false, "packed_dimensions": null, "clock_domain": "clk", "protocol": "valid_ready"},
+    {"name": "in_data", "direction": "input", "width": 8, "signed": false, "packed_dimensions": null, "clock_domain": "clk", "protocol": "none"},
+    {"name": "tx", "direction": "output", "width": 1, "signed": false, "packed_dimensions": null, "clock_domain": "clk", "protocol": "none"}
+  ]
+}

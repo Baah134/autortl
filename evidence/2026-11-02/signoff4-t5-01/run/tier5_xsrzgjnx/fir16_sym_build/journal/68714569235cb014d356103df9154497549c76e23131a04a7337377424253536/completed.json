@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Top interface and latency annotation: PASS \u2014 top `fir16_sym` retains the required ports and has `// @latency 5`.\n- Defined behavior: PASS \u2014 the authoritative integration ladder is ALIVE and the frozen testbench reports `TEST PASSED`, including arithmetic, handshakes, stalls, and reset coverage.\n- Tool and verification gates: PASS \u2014 xvlog, xelab, xsim, and Vivado exits are successful; synthesis reports `SYNTH_COMPLETE`.\n- Routed metrics and timing closure: PASS \u2014 routed evidence reports timing met, WNS 0.197 ns, and WHS 0.118 ns.\n- Improvement over previous best: PASS \u2014 valid `timing_recovery` replaces a known timing-infeasible best; LUTs also fall from 166 to 161 and FFs from 325 to 317.\n- Flow and measurement integrity: PASS \u2014 retained evidence uses the fixed device, clock constraints, and out-of-context flow; no contradictory metric evidence is supplied.\n## Summary\n- Passed: 6 of 6\n- Failed: 0 of 6\n- Improved over previous best: YES\n## Recommendation\nACCEPT\n## Reason\nThe candidate passes the deterministic behavioral and tool gates, meets setup and hold timing, and validly recovers timing feasibility over the known-infeasible previous best. The resource counts also improve, with no failed mandatory criterion.",
+      "recommendation": "ACCEPT",
+      "passed": 6,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}

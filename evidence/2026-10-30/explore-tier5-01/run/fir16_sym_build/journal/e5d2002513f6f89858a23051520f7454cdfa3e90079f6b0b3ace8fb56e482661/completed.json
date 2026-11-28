@@ -1,0 +1,81 @@
+{
+  "stage": "iteration_3:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 3,
+    "instruction": "In `fir16_sym_core`, change stage 1 to register `pair0` through `pair7` when `ready1` and `in_valid`, and form the eight constant products from those registers in stage 2 when `ready2` and `valid_slots[0]`. Rebalance the existing arithmetic stages so the four product-pair sums, two grouped sums, final accumulation, and rounding/saturation still produce the same result through the same five elastic slots and preserve the `// @latency 5` top annotation. Preserve accepted-sample history updates, stall holds, reset behavior, registered outputs, and all signed widths needed for exact arithmetic; ev",
+    "candidates": [
+      {
+        "iteration": 3,
+        "mutation": "standard",
+        "instruction": "In `fir16_sym_core`, change stage 1 to register `pair0` through `pair7` when `ready1` and `in_valid`, and form the eight constant products from those registers in stage 2 when `ready2` and `valid_slots[0]`. Rebalance the existing arithmetic stages so the four product-pair sums, two grouped sums, final accumulation, and rounding/saturation still produce the same result through the same five elastic slots and preserve the `// @latency 5` top annotation. Preserve accepted-sample history updates, stall holds, reset behavior, registered outputs, and all signed widths needed for exact arithmetic; ev",
+        "generated_source_sha256": "a0b930cdebc29fa367380aacd100f15e96545cb39033380c5cc7acd75005a4ad",
+        "final_source_sha256": "b4e529e22704463af7ac41fcbbb7e51fce50b897f40033e6443f51f0ccf11fcf",
+        "generated_code_hash": "8e50ed5c7606a3ad",
+        "final_code_hash": "b78cad6317edaae0",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": false,
+          "wns_ns": -10.77,
+          "whs_ns": 0.057,
+          "lut_used": 394,
+          "ff_used": 325,
+          "dsp_used": 7,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.041,
+          "total_power_w": 0.112
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\fir16_sym_build\\iter_003\\cand_standard\\repair_001",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\fir16_sym_build\\iter_003\\cand_standard\\repair_001\\synth.tcl",
+          "sha256": "bcaff2b43010263715e8f83a59f09b61493936e020116bb4e19d2928f4034a03"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\fir16_sym_build\\iter_003\\cand_standard\\repair_001\\fir16_sym.v",
+          "sha256": "bb1c56fea569eeaa42e5dd2526a5881e78565ac47a7b459f81d6e831aebaba85"
+        }
+      }
+    ],
+    "doctor": {
+      "status": "NOT_ADOPTED",
+      "action": "rtl_surgery",
+      "reason": "timing_not_closed",
+      "tools_ran": true,
+      "measured_metrics": {
+        "sim_passed": true,
+        "timing_met": false,
+        "wns_ns": -3.407,
+        "whs_ns": 0.048,
+        "lut_used": 160,
+        "ff_used": 261,
+        "dsp_used": 10,
+        "bram_used": 0.0,
+        "dynamic_power_w": 0.052,
+        "total_power_w": 0.122
+      },
+      "adopted": false,
+      "input_source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\fir16_sym_build\\iter_003\\cand_standard\\repair_001\\fir16_sym.v",
+        "sha256": "bb1c56fea569eeaa42e5dd2526a5881e78565ac47a7b459f81d6e831aebaba85"
+      },
+      "trial_source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\fir16_sym_build\\iter_003\\doctor_rtl_surgery_trial\\fir16_sym.v",
+        "sha256": "d3f4da54552fbe2f715758a0a6874041d4c2bc4cf564b63e2cea31dc7359ad06"
+      },
+      "trial_flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\fir16_sym_build\\iter_003\\doctor_rtl_surgery_trial\\synth.tcl",
+        "sha256": "aa3a55b7cd4736b17ab80d2b7aded845e4992a8104b54441c3680463800adbde"
+      },
+      "identity_count": 3,
+      "proposed_source_text_sha256": "b0397dda11463918197879fd4f511ac69e5cf1072efb95b6c74926994b1daed3"
+    },
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": "b4e529e22704463af7ac41fcbbb7e51fce50b897f40033e6443f51f0ccf11fcf"
+  },
+  "artifacts": {}
+}

@@ -19,7 +19,7 @@ module tb_stream_shell;
     parameter MIN_STALLED = 200;
     parameter REQUIRE_OVERLAP = 1;
     parameter MIN_OVERLAP = 20;
-    localparam MAX_BYTES = 8 * 4096;
+    localparam MAX_BYTES = 32 * 4096;     // up to 4096 transactions of 32 bytes
 
     reg clk = 1'b0;
     always #5 clk = ~clk;

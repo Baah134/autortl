@@ -1,0 +1,77 @@
+{
+  "candidates": [
+    {
+      "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-03\\tier2_g47m0rx8\\fir8\\iter_004\\cand_standard",
+      "cache_hit": false,
+      "final_code_hash": "5856aff1181816e4",
+      "final_source_sha256": "7d6a12a1b57d720ab19f06ed3920b40747e5beee63c2dd1ed4234dd28cd4ade2",
+      "flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-03\\tier2_g47m0rx8\\fir8\\iter_004\\cand_standard\\synth.tcl",
+        "sha256": "a0f72f1f9702aa8634edc951b82a183824d4a8bd69eeb05830d1fc593e539554"
+      },
+      "generated_code_hash": "5856aff1181816e4",
+      "generated_source_sha256": "7d6a12a1b57d720ab19f06ed3920b40747e5beee63c2dd1ed4234dd28cd4ade2",
+      "instruction": "Keep the delay line, `y_out` register, reset behavior, ports, parameters, multiplier function, and carry-save tree unchanged. Replace only `wire signed [31:0] sum = s5 + c5;` with four 8-bit sum blocks, computing each block\u2019s generate and propagate and using explicit lookahead equations for the inter-block carries. Preserve exact modulo-32-bit addition for every supported parameter value, signed interpretation, and the existing one-cycle registered output behavior; retain `// @latency 1`.",
+      "iteration": 4,
+      "metrics": {
+        "bram_used": 0.0,
+        "dsp_used": 0,
+        "dynamic_power_w": 0.02,
+        "ff_used": 160,
+        "lut_used": 410,
+        "sim_passed": true,
+        "timing_met": false,
+        "total_power_w": 0.088,
+        "whs_ns": 0.08,
+        "wns_ns": -2.814
+      },
+      "mutation": "standard",
+      "reason": "",
+      "rungs": 5,
+      "source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-03\\tier2_g47m0rx8\\fir8\\iter_004\\cand_standard\\fir8.v",
+        "sha256": "ad5f3ec04dc377042d86c7cce5c9d221d08011db9b9005e094331a372ba4e2d4"
+      },
+      "status": "measured"
+    }
+  ],
+  "doctor": {
+    "action": "rtl_surgery",
+    "adopted": false,
+    "identity_count": 3,
+    "input_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-03\\tier2_g47m0rx8\\fir8\\iter_004\\cand_standard\\fir8.v",
+      "sha256": "ad5f3ec04dc377042d86c7cce5c9d221d08011db9b9005e094331a372ba4e2d4"
+    },
+    "measured_metrics": {
+      "bram_used": 0.0,
+      "dsp_used": 5,
+      "dynamic_power_w": 0.011,
+      "ff_used": 160,
+      "lut_used": 150,
+      "sim_passed": true,
+      "timing_met": false,
+      "total_power_w": 0.08,
+      "whs_ns": 0.164,
+      "wns_ns": -9.799
+    },
+    "proposed_source_text_sha256": "188f10f324967ff57372ccf6a130579ca5aae71f0ecd03f72c4423cbdf4ea8fe",
+    "reason": "timing_not_closed",
+    "status": "NOT_ADOPTED",
+    "tools_ran": true,
+    "trial_flow_script": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-03\\tier2_g47m0rx8\\fir8\\iter_004\\doctor_rtl_surgery_trial\\synth.tcl",
+      "sha256": "887392426872545f3d6ce36cfceab1681d9fff7c6a3b6a446be4e5186d69f69f"
+    },
+    "trial_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-03\\tier2_g47m0rx8\\fir8\\iter_004\\doctor_rtl_surgery_trial\\fir8.v",
+      "sha256": "5f1e219874c48428806efc5c4cb5848393663eb3655dc4327822c2096cc8b9dd"
+    }
+  },
+  "instruction": "Keep the delay line, `y_out` register, reset behavior, ports, parameters, multiplier function, and carry-save tree unchanged. Replace only `wire signed [31:0] sum = s5 + c5;` with four 8-bit sum blocks, computing each block\u2019s generate and propagate and using explicit lookahead equations for the inter-block carries. Preserve exact modulo-32-bit addition for every supported parameter value, signed interpretation, and the existing one-cycle registered output behavior; retain `// @latency 1`.",
+  "is_best": false,
+  "iteration": 4,
+  "recommendation": "REJECT",
+  "schema_version": 1,
+  "selected_source_sha256": "7d6a12a1b57d720ab19f06ed3920b40747e5beee63c2dd1ed4234dd28cd4ade2"
+}

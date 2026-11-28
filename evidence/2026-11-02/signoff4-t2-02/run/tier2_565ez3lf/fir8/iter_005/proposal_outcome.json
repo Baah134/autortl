@@ -1,0 +1,77 @@
+{
+  "candidates": [
+    {
+      "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-02\\tier2_565ez3lf\\fir8\\iter_005\\cand_standard\\repair_001",
+      "cache_hit": false,
+      "final_code_hash": "1c5971a3dd6d2e87",
+      "final_source_sha256": "c0f1f3a2a0820e865cc7f8e114369e0c2cc020d9d3dbb3bed1b99ad0a7496bba",
+      "flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-02\\tier2_565ez3lf\\fir8\\iter_005\\cand_standard\\repair_001\\synth.tcl",
+        "sha256": "f53ea8d2cb65d8f830e54e2111319ead147d809833f5e5fb3dd666a167231b2e"
+      },
+      "generated_code_hash": "88e527d8d32a191c",
+      "generated_source_sha256": "3f1c1123215fbe35e2050d017c8faa019eaf26e521c7fe9722f22af5ffa54f1c",
+      "instruction": "In the exact-default-coefficients specialization, change the 32-bit `acc` partial-sum registers and associated sum expressions to signed 23-bit values; sign-extend the final sum into the existing 32-bit `y_out`. Keep the general parameterized fallback unchanged, along with the delay register, synchronous active-high reset, registered output, and `// @latency 1`. The default-coefficient bound is a signed sum of at most 80 products of signed 16-bit samples, which fits in 23 bits; confirm the fixed testbench and all mandatory routed timing and metric gates before promotion.",
+      "iteration": 5,
+      "metrics": {
+        "bram_used": 0.0,
+        "dsp_used": 6,
+        "dynamic_power_w": 0.012,
+        "ff_used": 128,
+        "lut_used": 101,
+        "sim_passed": true,
+        "timing_met": false,
+        "total_power_w": 0.081,
+        "whs_ns": 0.171,
+        "wns_ns": -9.981
+      },
+      "mutation": "standard",
+      "reason": "",
+      "rungs": 5,
+      "source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-02\\tier2_565ez3lf\\fir8\\iter_005\\cand_standard\\repair_001\\fir8.v",
+        "sha256": "8715dadf651587ec39ebbdba7f545decb0419a991f1289b754aeac8790406890"
+      },
+      "status": "measured"
+    }
+  ],
+  "doctor": {
+    "action": "rtl_surgery",
+    "adopted": false,
+    "identity_count": 3,
+    "input_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-02\\tier2_565ez3lf\\fir8\\iter_005\\cand_standard\\repair_001\\fir8.v",
+      "sha256": "8715dadf651587ec39ebbdba7f545decb0419a991f1289b754aeac8790406890"
+    },
+    "measured_metrics": {
+      "bram_used": 0.0,
+      "dsp_used": 8,
+      "dynamic_power_w": 0.009,
+      "ff_used": 64,
+      "lut_used": 0,
+      "sim_passed": true,
+      "timing_met": false,
+      "total_power_w": 0.078,
+      "whs_ns": 0.118,
+      "wns_ns": -5.933
+    },
+    "proposed_source_text_sha256": "581a1beabcc6e289ca7a119f9e4b9533715f48b16bb730fe04e026765df6e7d1",
+    "reason": "timing_not_closed",
+    "status": "NOT_ADOPTED",
+    "tools_ran": true,
+    "trial_flow_script": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-02\\tier2_565ez3lf\\fir8\\iter_005\\doctor_rtl_surgery_trial\\synth.tcl",
+      "sha256": "3fc45574f4dfd2c2615a3640456ecb84bbfc38fe12f9aa29a4af4c1e674cad59"
+    },
+    "trial_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-02\\tier2_565ez3lf\\fir8\\iter_005\\doctor_rtl_surgery_trial\\fir8.v",
+      "sha256": "7ba3cf26fda7e6a78892808b0193766689d3b3f6ee275908a86fc7b43fb99b35"
+    }
+  },
+  "instruction": "In the exact-default-coefficients specialization, change the 32-bit `acc` partial-sum registers and associated sum expressions to signed 23-bit values; sign-extend the final sum into the existing 32-bit `y_out`. Keep the general parameterized fallback unchanged, along with the delay register, synchronous active-high reset, registered output, and `// @latency 1`. The default-coefficient bound is a signed sum of at most 80 products of signed 16-bit samples, which fits in 23 bits; confirm the fixed testbench and all mandatory routed timing and metric gates before promotion.",
+  "is_best": false,
+  "iteration": 5,
+  "recommendation": "REJECT",
+  "schema_version": 1,
+  "selected_source_sha256": "c0f1f3a2a0820e865cc7f8e114369e0c2cc020d9d3dbb3bed1b99ad0a7496bba"
+}

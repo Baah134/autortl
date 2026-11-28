@@ -1,0 +1,77 @@
+{
+  "candidates": [
+    {
+      "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-03\\tier2_g47m0rx8\\fir8\\iter_005\\cand_standard",
+      "cache_hit": false,
+      "final_code_hash": "50500a6c8d2b168b",
+      "final_source_sha256": "7efc02ac7315d8f90ddd74a7656954d2df9ae9beb67bed388fca476c59c6cb7b",
+      "flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-03\\tier2_g47m0rx8\\fir8\\iter_005\\cand_standard\\synth.tcl",
+        "sha256": "adaec4ac6e8e4da795a179b5757a306ddbc01f155cc39e7464ed68d3ee4504e8"
+      },
+      "generated_code_hash": "50500a6c8d2b168b",
+      "generated_source_sha256": "7efc02ac7315d8f90ddd74a7656954d2df9ae9beb67bed388fca476c59c6cb7b",
+      "instruction": "Keep the delay line, `y_out` register, reset behavior, interface, parameters, `// @latency 1`, and final carry-save reduction unchanged. Replace the `mul_shift_add` function\u2019s serial `accum` loop with a balanced pairwise tree of 32-bit shifted terms, including the `b[15]` term as a subtraction; preserve signed 16-bit operands and the original modulo-32-bit result for every parameter value. Do not add registers or change cycle behavior.",
+      "iteration": 5,
+      "metrics": {
+        "bram_used": 0.0,
+        "dsp_used": 0,
+        "dynamic_power_w": 0.015,
+        "ff_used": 160,
+        "lut_used": 351,
+        "sim_passed": true,
+        "timing_met": false,
+        "total_power_w": 0.084,
+        "whs_ns": 0.206,
+        "wns_ns": -0.294
+      },
+      "mutation": "standard",
+      "reason": "",
+      "rungs": 5,
+      "source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-03\\tier2_g47m0rx8\\fir8\\iter_005\\cand_standard\\fir8.v",
+        "sha256": "ceaa58d30b07d57441a399ee053bd7216124313e463957182b200816bf1a2aeb"
+      },
+      "status": "measured"
+    }
+  ],
+  "doctor": {
+    "action": "rtl_surgery",
+    "adopted": true,
+    "identity_count": 3,
+    "input_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-03\\tier2_g47m0rx8\\fir8\\iter_005\\cand_standard\\fir8.v",
+      "sha256": "ceaa58d30b07d57441a399ee053bd7216124313e463957182b200816bf1a2aeb"
+    },
+    "measured_metrics": {
+      "bram_used": 0.0,
+      "dsp_used": 5,
+      "dynamic_power_w": 0.013,
+      "ff_used": 112,
+      "lut_used": 133,
+      "sim_passed": true,
+      "timing_met": true,
+      "total_power_w": 0.081,
+      "whs_ns": 0.212,
+      "wns_ns": 0.137
+    },
+    "proposed_source_text_sha256": "a3aeaa670a5607d17064cde50df77b605da6021474223056a93e8a10a29c005a",
+    "reason": "policy_improvement",
+    "status": "ADOPTED",
+    "tools_ran": true,
+    "trial_flow_script": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-03\\tier2_g47m0rx8\\fir8\\iter_005\\doctor_rtl_surgery_trial\\synth.tcl",
+      "sha256": "5baaa81ff7e201f468e2078d4eabcc0b605b6eeb744dc11b5ab976e2d19b6919"
+    },
+    "trial_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-03\\tier2_g47m0rx8\\fir8\\iter_005\\doctor_rtl_surgery_trial\\fir8.v",
+      "sha256": "b6df6773b5c0b8d948ba96b4077e2aae86a8e7fd68ef84a62fd2d1d3eee7747b"
+    }
+  },
+  "instruction": "Keep the delay line, `y_out` register, reset behavior, interface, parameters, `// @latency 1`, and final carry-save reduction unchanged. Replace the `mul_shift_add` function\u2019s serial `accum` loop with a balanced pairwise tree of 32-bit shifted terms, including the `b[15]` term as a subtraction; preserve signed 16-bit operands and the original modulo-32-bit result for every parameter value. Do not add registers or change cycle behavior.",
+  "is_best": true,
+  "iteration": 5,
+  "recommendation": "ACCEPT",
+  "schema_version": 1,
+  "selected_source_sha256": "a3aeaa670a5607d17064cde50df77b605da6021474223056a93e8a10a29c005a"
+}

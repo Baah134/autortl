@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_3:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 3,
+    "instruction": "In `spi_master_core`, remove `sclk_reg` and its reset, acceptance, toggle, and completion assignments; drive `sclk` from registered state as `busy_reg && half_index[0]`, preserving the required low idle and response-held levels. Keep `half_index` updates and all divider, MOSI, MISO sampling, response, reset, and handshake behavior unchanged, and retain the top\u2019s `// @latency 33` annotation. This is a distinct state-removal proposal from iteration 2; verify it across the trusted parameterized integration testbench and compare retained routed LUT/FF and WNS/WHS evidence against the incumbent.",
+    "candidates": [
+      {
+        "iteration": 3,
+        "mutation": "standard",
+        "instruction": "In `spi_master_core`, remove `sclk_reg` and its reset, acceptance, toggle, and completion assignments; drive `sclk` from registered state as `busy_reg && half_index[0]`, preserving the required low idle and response-held levels. Keep `half_index` updates and all divider, MOSI, MISO sampling, response, reset, and handshake behavior unchanged, and retain the top\u2019s `// @latency 33` annotation. This is a distinct state-removal proposal from iteration 2; verify it across the trusted parameterized integration testbench and compare retained routed LUT/FF and WNS/WHS evidence against the incumbent.",
+        "generated_source_sha256": "6b84114f602920b8029c82572155e906cb33cab57265b921b6db8aba33fcbb45",
+        "final_source_sha256": "6b84114f602920b8029c82572155e906cb33cab57265b921b6db8aba33fcbb45",
+        "generated_code_hash": "b0b0ef577f7171cb",
+        "final_code_hash": "b0b0ef577f7171cb",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.167,
+          "whs_ns": 0.051,
+          "lut_used": 18,
+          "ff_used": 31,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.015,
+          "total_power_w": 0.085
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-03\\tier4_pkqwcvyo\\spi_master_build\\iter_003\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-03\\tier4_pkqwcvyo\\spi_master_build\\iter_003\\cand_standard\\synth.tcl",
+          "sha256": "d5a3a8ac5f032ab6a36916f142bb25c367c1120706c209d4c6c176c4e288703e"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-03\\tier4_pkqwcvyo\\spi_master_build\\iter_003\\cand_standard\\spi_master.v",
+          "sha256": "7a600b43907ab88940f32b8da348bb2f48a3bdeffd3da934a27ec86315cf2183"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "ACCEPT",
+    "is_best": true,
+    "selected_source_sha256": "6b84114f602920b8029c82572155e906cb33cab57265b921b6db8aba33fcbb45"
+  },
+  "artifacts": {}
+}

@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_2:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 2\n## Contract check\n- Top interface and latency declaration: PASS \u2014 candidate preserves the top ports and declares `// @latency 2`, matching the authoritative latency.\n- Defined behavior: PASS \u2014 deterministic ladder reports ALIVE across all 5 rungs.\n- Build and simulation gates: PASS \u2014 required tools exited successfully and the frozen testbench reports `TEST PASSED`.\n- Routed metrics and timing closure: PASS \u2014 retained routed metrics are available; timing is met with WNS 0.105 ns and WHS 0.18 ns.\n- Improvement over feasible previous best: FAIL \u2014 LUT usage is unchanged at 20, so the required strict objective improvement is absent; `improvement_kind` is null and `measured_improvement` is false.\n## Summary\n- Passed: 4 of 5\n- Failed: 1 of 5\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes behavioral, build, simulation, and timing gates, but both it and the previous best are timing-feasible and the LUT objective did not strictly improve. The contract therefore does not permit promotion.",
+      "recommendation": "REJECT",
+      "passed": 4,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

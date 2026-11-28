@@ -79,6 +79,7 @@ def main(argv=None):
     parser.add_argument("out", type=Path)
     parser.add_argument("--vivado", type=Path, default=DEFAULT_VIVADO)
     args = parser.parse_args(argv)
+    args.out = args.out.resolve()  # the simulator runs inside each case folder
     if args.out.exists() and any(args.out.iterdir()):
         raise SystemExit(f"{args.out} must be new or empty")
     tb, top, cases = load_entry(args.entry)

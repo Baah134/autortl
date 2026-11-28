@@ -1,0 +1,13 @@
+# PLAN — iteration 1
+
+## Current state assessment
+
+The verified incumbent is timing-feasible at 6 LUTs, 8 FFs, WNS 0.424 ns, and WHS 0.226 ns. The objective is strict LUT reduction, with FFs as a tie-breaker; the current registered 8-bit counter has no parameter cases, and its synchronous active-high reset takes priority over enable. The top requires `// @latency 1`. No prior trial outcomes were provided.
+
+## Hypothesis
+
+Adding `enable` as the increment operand may let Vivado map hold and increment behavior into one carry-chain path and reduce LUT use while preserving the 8 FF state and cycle behavior; routed LUT count will determine whether this hypothesis holds.
+
+## Instruction for generator
+
+In `counter8_core`, replace the conditional increment-and-hold assignment with an enabled addition, `count_reg <= count_reg + enable`, under the existing reset-priority branch. Keep the 8-bit registered count, synchronous active-high reset to zero, and top interface and `// @latency 1` annotation unchanged. Preserve modulo-256 overflow and hold behavior when `enable` is low; do not add pipeline stages.

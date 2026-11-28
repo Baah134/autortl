@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_2:model:planner.plan:0",
+  "result": "# PLAN \u2014 iteration 2\n## Current state assessment\nIteration 1 passed the behavioral and verification gates with WNS 0.412 ns and WHS 0.196 ns, but increased LUT use from 7 to 10, so it did not improve the LUT objective. The current seed retains the 32-bit counter and explicit rollover; its top latency is unknown, so no numeric annotation is required. The incumbent is already timing-feasible, making strict LUT reduction the promotion criterion.\n\n## Hypothesis\nExpressing the duty comparison as an upper-bit zero check and an 8-bit comparison may reduce LUT use while preserving the comparison for every 32-bit counter value.\n\n## Instruction for generator\nKeep the 32-bit counter, its increment and explicit `counter == 32'd255` rollover branch unchanged. Replace only `pwm_out <= (counter < {24'd0, duty});` with the equivalent condition `pwm_out <= ((counter[31:8] == 0) && (counter[7:0] < duty));`. Preserve reset and registered-output behavior; promote only if all deterministic gates pass and routed LUT use is strictly below 7 with setup and hold slack both nonnegative.",
+  "artifacts": {}
+}

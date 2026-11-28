@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_1:model:planner.plan:0",
+  "result": "# PLAN \u2014 iteration 1\n\n## Current state assessment\n\nThe incumbent is timing-feasible at 328 LUTs, 54 FFs, 0 DSPs, WNS 0.108 ns, and WHS 0.243 ns; the frozen testbench passed. The objective is fewer LUTs, with timing, simulation, metric integrity, and the top\u2019s `// @latency 2` annotation still required.\n\n## Hypothesis\n\nDirecting Vivado to map the four 8\u00d78 unsigned multipliers into DSP48E1s will reduce LUT use below 328, at the cost of four DSPs, while preserving timing closure and cycle behavior.\n\n## Instruction for generator\n\nApply Vivado\u2019s `use_dsp = \"yes\"` attribute to the four product operations that drive `product0` through `product3`, leaving the pair sums, final sum, elastic state, and ready/valid logic unchanged. Preserve unsigned widths and carry bits, the two-slot transfer timing, reset behavior, and the top\u2019s `// @latency 2` annotation. Evaluate whether routed LUTs fall below 328 and require all fixed verification and timing gates to pass.",
+  "artifacts": {}
+}

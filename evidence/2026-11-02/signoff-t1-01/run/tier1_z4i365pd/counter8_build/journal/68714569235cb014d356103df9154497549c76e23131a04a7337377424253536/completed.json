@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Defined counter behavior and top interface: PASS \u2014 synchronous active-high reset has priority; enabled increments modulo 256, disabled holds, and the output remains registered.\n- Top latency annotation: PASS \u2014 the known top latency is 1 and the source declares `// @latency 1`.\n- Deterministic verification: PASS \u2014 ladder is ALIVE; compile, elaboration, and simulation receipts pass, with the required `TEST PASSED` verdict.\n- Routed metric integrity: PASS \u2014 retained routed reports and successful synthesis evidence are present.\n- Timing closure: PASS \u2014 timing is feasible; WNS is 0.555 ns and WHS is 0.051 ns.\n- Objective improvement over previous best: FAIL \u2014 with both designs timing-feasible, `minimize_luts` compares (LUTs, FFs); candidate and incumbent are equal at (6, 8), so there is no strict improvement.\n## Summary\n- Passed: 5 of 6\n- Failed: 1 of 6\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate preserves the defined behavior and passes the deterministic and timing gates, but it does not improve the selected objective: LUT and FF counts match the feasible previous best. The improved routed WNS and lower reported power are not the chosen objective and do not establish promotion.",
+      "recommendation": "REJECT",
+      "passed": 5,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

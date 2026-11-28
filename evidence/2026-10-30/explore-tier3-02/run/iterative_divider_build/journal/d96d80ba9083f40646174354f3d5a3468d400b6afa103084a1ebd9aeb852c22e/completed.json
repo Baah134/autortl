@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_3:model:generator.generate:0",
+  "result": "`timescale 1ns/1ps\n// @latency 9\n// Inherited minimum accepted-transfer age from transparent typed child wiring; not measured timing.\nmodule iterative_divider (\n    input wire clk,\n    input wire rst,\n    input wire [7:0] dividend,\n    input wire [7:0] divisor,\n    input wire in_valid,\n    output wire in_ready,\n    output wire [7:0] quotient,\n    output wire [7:0] remainder,\n    output wire out_valid,\n    input wire out_ready\n);\n    wire core_out_ready;\n    assign core_out_ready = out_ready && out_valid;\n\n    iterative_divider_core #( .WIDTH(8) ) u_iterative_divider_core (\n        .clk(clk),\n        .rst(rst),\n        .dividend(dividend),\n        .divisor(divisor),\n        .in_valid(in_valid),\n        .in_ready(in_ready),\n        .quotient(quotient),\n        .remainder(remainder),\n        .out_valid(out_valid),\n        .out_ready(core_out_ready)\n    );\nendmodule",
+  "artifacts": {}
+}

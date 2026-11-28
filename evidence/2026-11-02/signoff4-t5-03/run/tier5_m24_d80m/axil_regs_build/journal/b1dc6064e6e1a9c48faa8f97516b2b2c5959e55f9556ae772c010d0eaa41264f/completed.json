@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_3:decision:instruction:0",
+  "result": "In `axil_regbank`, replace the separate `case (wr_idx)` branches and nested strobe checks for indices 0\u20132 with shared per-register select terms and per-byte write enables derived from `wr_en`, `wr_idx`, and `wr_strb`. Use those enables to update only the selected register bytes from the matching `wr_data` lanes, preserving each disabled byte. Keep reset values, IRQ and write-count logic, read behavior, handshakes, and all cycle behavior unchanged; this is an area hypothesis, so retain it only if the full gates pass and routed LUTs strictly decrease, or LUTs tie with fewer FFs.",
+  "artifacts": {}
+}

@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_4:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 4\n## Contract check\n- Ports, reset, and defined cycle behavior: PASS \u2014 interface and synchronous active-high reset are preserved; the 3-bit counter wraps, but repeated updates after the 8-cycle threshold only reassign the same `clean` value.\n- Top latency annotation: PASS \u2014 source declares `// @latency 0`, matching the authoritative value.\n- Static/interface and compilation: PASS \u2014 ladder is ALIVE; xvlog and xelab completed successfully.\n- Simulation: PASS \u2014 xsim completed with the exact `TEST PASSED` verdict.\n- Synthesis and process exits: PASS \u2014 Vivado completed successfully with `SYNTH_COMPLETE`; required tool exits are zero.\n- Routed reports and metric integrity: PASS \u2014 retained routed utilization and timing reports are present and metrics are provided.\n- Timing feasibility: PASS \u2014 `timing_met=true`, WNS is 0.731 ns, and WHS is 0.178 ns.\n- LUT objective: PASS \u2014 candidate uses 3 LUTs versus 4 for the timing-feasible previous best, with the same device and constraints.\n- Recorded improvement: PASS \u2014 `improvement_kind=objective` and `measured_improvement=true` agree with the LUT reduction.\n## Summary\n- Passed: 9 of 9\n- Failed: 0 of 9\n- Improved over previous best: YES\n## Recommendation\nACCEPT\n## Reason\nThe candidate passes the deterministic verification and promotion gates, preserves the defined debouncer behavior and required latency declaration, and strictly reduces LUT use from 4 to 3 while remaining timing-feasible.",
+      "recommendation": "ACCEPT",
+      "passed": 9,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}

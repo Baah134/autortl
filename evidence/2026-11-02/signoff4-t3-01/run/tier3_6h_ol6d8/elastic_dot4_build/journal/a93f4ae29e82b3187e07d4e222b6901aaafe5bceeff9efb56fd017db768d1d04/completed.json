@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_3:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 3\n## Contract check\n- Top interface and latency annotation: PASS \u2014 `elastic_dot4` preserves the specified ports and has `// @latency 2`, matching the authoritative top latency.\n- Defined behavior: PASS \u2014 the candidate preserves the specified two-slot pipeline, arithmetic, handshake, reset, stall stability, and minimum transfer age; the trusted integration testbench passes.\n- Compile and simulation gates: PASS \u2014 `xvlog`, `xelab`, and `xsim` exited successfully, and the simulation reports `TEST PASSED`.\n- Synthesis and metric integrity: PASS \u2014 Vivado exited successfully with `SYNTH_COMPLETE`; routed reports are retained and candidate metrics are provided.\n- Timing closure: PASS \u2014 timing is feasible with WNS 0.134 ns and WHS 0.156 ns.\n- Objective improvement: PASS \u2014 LUTs fell from 20 to 3 with FFs unchanged at 20; this is a strict `minimize_luts` improvement.\n## Summary\n- Passed: 6 of 6\n- Failed: 0 of 6\n- Improved over previous best: YES\n## Recommendation\nACCEPT\n## Reason\nThe candidate passes the deterministic behavioral, tool, metric, and timing gates, and improves the chosen objective by reducing LUT use while preserving FF count.",
+      "recommendation": "ACCEPT",
+      "passed": 6,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}

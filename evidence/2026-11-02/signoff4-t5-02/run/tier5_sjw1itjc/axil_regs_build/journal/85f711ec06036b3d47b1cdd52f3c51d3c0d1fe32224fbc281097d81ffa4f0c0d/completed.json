@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_2:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 2\n## Contract check\n- Top interface and defined behavior: PASS \u2014 candidate defines `axil_regs` with the contracted ports; the unchanged trusted integration testbench passed.\n- Top latency annotation: PASS \u2014 authoritative top latency is unknown, so no numeric annotation is required.\n- Deterministic verification: PASS \u2014 ladder is ALIVE; compilation, elaboration, and simulation succeeded with `TEST PASSED`.\n- Tool exits and retained reports: PASS \u2014 required tool exits are zero, synthesis has `SYNTH_COMPLETE`, and routed metric reports are retained.\n- Timing closure: PASS \u2014 timing is met; WNS is 5.441 ns and WHS is 0.134 ns.\n- Objective improvement: FAIL \u2014 with both designs timing-feasible, `minimize_luts` requires a strict lexicographic improvement; LUTs and FFs are unchanged at 95 and 254, and no improvement is recorded.\n## Summary\n- Passed: 5 of 6\n- Failed: 1 of 6\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes behavioral verification and timing closure, and its missing top latency annotation is permitted because authoritative top latency is unknown. It does not improve the feasible previous best on the chosen objective: LUT and FF counts are equal, so the mandatory strict improvement criterion fails. Stall count is below 3.",
+      "recommendation": "REJECT",
+      "passed": 5,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_2:decision:instruction:0",
+  "result": "Keep the delay register, synchronous active-high reset, registered `y_out`, and `// @latency 1` unchanged. Add an elaboration-time fast path for `C0==C7`, `C1==C6`, `C2==C5`, and `C3==C4`: form four sign-extended 17-bit mirrored-sample sums, multiply each by its shared signed coefficient, then combine the 32-bit products with a balanced tree. Retain a general path for all other parameter combinations that preserves the existing signed 32-bit product and sum behavior; run the unchanged verification and routed flow, and compare setup and hold against iteration 1.",
+  "artifacts": {}
+}

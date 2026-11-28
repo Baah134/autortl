@@ -1,0 +1,45 @@
+{
+  "candidates": [
+    {
+      "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-01\\tier2_tt3jn0mv\\skid_buffer_build\\iter_002\\cand_standard",
+      "cache_hit": false,
+      "final_code_hash": "f86a3322a2e41a90",
+      "final_source_sha256": "85d6ff3f09a7cd2ea9f77cdf0749920aa845b375e02cf1a981408c539c21d6ce",
+      "flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-01\\tier2_tt3jn0mv\\skid_buffer_build\\iter_002\\cand_standard\\synth.tcl",
+        "sha256": "f37a7e8984847d6bcc1f50e2735133e8d120ae43f2c88b6c6d13a180ae441dd5"
+      },
+      "generated_code_hash": "f86a3322a2e41a90",
+      "generated_source_sha256": "85d6ff3f09a7cd2ea9f77cdf0749920aa845b375e02cf1a981408c539c21d6ce",
+      "instruction": "In `skid_buffer_core`, replace the 2-bit `occupancy` state and its increment/decrement case with synchronous `empty` and `full` flags updated for reset, push-only, pop-only, simultaneous push/pop, and idle transitions. Keep `in_ready = ~full || out_ready` and `out_valid = ~empty` combinational; preserve the two-entry queue\u2019s payload ordering, stall stability, throughput, reset behavior, and minimum transfer age. Do not register `in_ready` or alter the top\u2019s `// @latency 1`; evaluate whether routed WNS improves and whether WHS, simulation, and all metric gates still pass.",
+      "iteration": 2,
+      "metrics": {
+        "bram_used": 0.0,
+        "dsp_used": 0,
+        "dynamic_power_w": 0.013,
+        "ff_used": 18,
+        "lut_used": 12,
+        "sim_passed": true,
+        "timing_met": true,
+        "total_power_w": 0.083,
+        "whs_ns": 0.043,
+        "wns_ns": 0.009
+      },
+      "mutation": "standard",
+      "reason": "",
+      "rungs": 5,
+      "source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-01\\tier2_tt3jn0mv\\skid_buffer_build\\iter_002\\cand_standard\\skid_buffer.v",
+        "sha256": "21e91aed5c224ce6a5175c7dfc461140e83a1857b20db8b3f3aadff5c1c3e16e"
+      },
+      "status": "measured"
+    }
+  ],
+  "doctor": null,
+  "instruction": "In `skid_buffer_core`, replace the 2-bit `occupancy` state and its increment/decrement case with synchronous `empty` and `full` flags updated for reset, push-only, pop-only, simultaneous push/pop, and idle transitions. Keep `in_ready = ~full || out_ready` and `out_valid = ~empty` combinational; preserve the two-entry queue\u2019s payload ordering, stall stability, throughput, reset behavior, and minimum transfer age. Do not register `in_ready` or alter the top\u2019s `// @latency 1`; evaluate whether routed WNS improves and whether WHS, simulation, and all metric gates still pass.",
+  "is_best": true,
+  "iteration": 2,
+  "recommendation": "ACCEPT",
+  "schema_version": 1,
+  "selected_source_sha256": "85d6ff3f09a7cd2ea9f77cdf0749920aa845b375e02cf1a981408c539c21d6ce"
+}

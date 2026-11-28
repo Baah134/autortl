@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_5:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 5\n## Contract check\n- Top latency annotation: PASS \u2014 candidate declares `// @latency 1`, matching the authoritative current-top latency.\n- Behavioral verification: PASS \u2014 simulation passed with the required `TEST PASSED` verdict.\n- Tool and synthesis gates: PASS \u2014 compile, elaboration, and synthesis tool exits succeeded; synthesis reported `SYNTH_COMPLETE`.\n- Metric and report evidence: PASS \u2014 routed metrics and retained report evidence are present and consistent.\n- Timing closure and promotion: FAIL \u2014 setup WNS is \u22120.226 ns, so the candidate is timing-infeasible while the previous best is feasible at +0.267 ns setup and +0.201 ns hold.\n- Improvement over previous best: FAIL \u2014 the infeasible candidate cannot replace the feasible incumbent; no accepted improvement is recorded.\n## Summary\n- Passed: 4 of 6\n- Failed: 2 of 6\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes behavioral and tool verification and has the required latency annotation, but it fails timing closure. Since the previous best is already timing-feasible, this infeasible candidate cannot promote, regardless of its other metric changes. Stall count is 0, so RESTART does not apply.",
+      "recommendation": "REJECT",
+      "passed": 4,
+      "failed": 2
+    }
+  },
+  "artifacts": {}
+}

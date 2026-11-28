@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_2:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 2\n## Contract check\n- Top interface and latency annotation: PASS \u2014 Top ports match the contract and `// @latency 3` matches the authoritative latency.\n- Defined behavior: PASS \u2014 The fixed integration testbench reports `TEST PASSED`; the ladder reports all 5 rungs ALIVE.\n- Compile, elaboration, and simulation gates: PASS \u2014 Required tools exited successfully, and simulation produced the required verdict.\n- Routed timing closure: PASS \u2014 WNS is 0.31 ns and WHS is 0.059 ns; both are nonnegative.\n- Metric and report integrity: PASS \u2014 Routed reports are retained, and the recorded measurements are consistent with the candidate evidence.\n- Improvement over previous best: PASS \u2014 With both designs timing-feasible, LUTs improve from 80 to 71; FFs remain 67, meeting the `minimize_luts` objective.\n## Summary\n- Passed: 6 of 6\n- Failed: 0 of 6\n- Improved over previous best: YES\n## Recommendation\nACCEPT\n## Reason\nThe candidate passes the behavioral, build, simulation, and routed timing gates, and its matching top latency annotation satisfies the contract. It improves the chosen objective by reducing LUT usage from 80 to 71 while preserving timing feasibility; unchanged FF count does not negate that improvement.",
+      "recommendation": "ACCEPT",
+      "passed": 6,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}

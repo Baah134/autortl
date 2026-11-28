@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "status": "qualified",
+  "qualified": true,
+  "testbench_sha256": "7b0a1f66b2b77a052c4dcaac68bc5a853876b651f289126414c43e362b6d9181",
+  "attempts": [
+    {
+      "label": "control",
+      "description": "unmodified control",
+      "passed": true,
+      "failure_kind": "design",
+      "error": "",
+      "assertion_detected": false,
+      "proof_reason": "simulation passed",
+      "source_sha256": "df72eb44ad7fba6233a5e3dd7082fd22b316e9cedd94fe8ba06d9e4848afea3c",
+      "raw_log_sha256": "d0d0db6f0182ac132702cc69cbb8517ca7ce5eedadd20a74e96a756d8a3c8499"
+    },
+    {
+      "label": "mutant",
+      "description": "flip == to !=",
+      "passed": true,
+      "failure_kind": "design",
+      "error": "",
+      "assertion_detected": false,
+      "proof_reason": "simulation passed",
+      "source_sha256": "0497bcdfd2e58dbad92e2e830661cb82dcb290a2e93ef1dff21e964e21d07955",
+      "raw_log_sha256": "d8788cabc2e46b1883f46ced882448d23cab3f99c11882865335606e6feb7b4f"
+    },
+    {
+      "label": "stuck_zero",
+      "description": "stuck-zero outputs",
+      "passed": true,
+      "failure_kind": "design",
+      "error": "",
+      "assertion_detected": false,
+      "proof_reason": "simulation passed",
+      "source_sha256": "6f19ab6acaaaa0d133925a8461ed279a6641d3d9279ba7942d569cad859aefc3",
+      "raw_log_sha256": "d05601d9cbad560b4b618ad087132db6d6eb2678486137e0e82abf51bc6b5035"
+    },
+    {
+      "label": "stuck_one",
+      "description": "stuck-one outputs",
+      "passed": false,
+      "failure_kind": "design",
+      "error": "Testbench failures:\nFAIL index=0 signal=clean  (x103)",
+      "assertion_detected": true,
+      "proof_reason": "raw assertion detail and failure verdict retained",
+      "source_sha256": "2f2ea1b9adea9e6115b4902b3616506783176eae6891b264d271bac93b4e361d",
+      "raw_log_sha256": "deb834f0f0f3390f11cec1519a9f757fe538a23cffffcdd462853d6d2a3338b8"
+    }
+  ],
+  "missed": [
+    {
+      "label": "mutant",
+      "description": "flip == to !=",
+      "reason": "simulation passed"
+    },
+    {
+      "label": "stuck_zero",
+      "description": "stuck-zero outputs",
+      "reason": "simulation passed"
+    }
+  ],
+  "scope": "Minimum assertion sensitivity; missed faults remain coverage limits."
+}

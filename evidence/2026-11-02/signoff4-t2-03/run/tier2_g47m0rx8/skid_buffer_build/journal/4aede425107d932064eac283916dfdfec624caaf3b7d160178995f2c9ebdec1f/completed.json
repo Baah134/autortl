@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_1:decision:instruction:0",
+  "result": "Replace the combinational `out_valid = (occupancy != 0)` decode with an `out_valid` register, reset synchronously to zero and updated from the pre-edge occupancy and accepted push/pop events so it always matches whether the queue is nonempty after that edge. Keep occupancy-based `in_ready`, the two data registers, and all queue transitions so full-throughput transfers, stalls, reset priority, ordering, and minimum transfer age remain unchanged. Preserve the top interface and its required `// @latency 1` annotation; do not add a pipeline stage.",
+  "artifacts": {}
+}

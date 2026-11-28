@@ -1,0 +1,98 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025
+| Date         : Fri Oct 30 19:32:48 2026
+| Host         : Baah running 64-bit major release  (build 9200)
+| Command      : report_timing -from [all_registers] -to [all_registers] -max_paths 1 -file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier5-01/fir16_sym_build/iter_001/doctor_rtl_surgery_trial/timing_reg2reg.rpt
+| Design       : fir16_sym
+| Device       : 7a35t-cpg236
+| Speed File   : -1  PRODUCTION 1.23 2018-06-13
+| Design State : Routed
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Timing Report
+
+Slack (VIOLATED) :        -0.953ns  (required time - arrival time)
+  Source:                 u_fir16_sym_core/data4_reg/CLK
+                            (rising edge-triggered cell DSP48E1 clocked by clk  {rise@0.000ns fall@3.333ns period=6.667ns})
+  Destination:            u_fir16_sym_core/data5_reg[0]/S
+                            (rising edge-triggered cell FDSE clocked by clk  {rise@0.000ns fall@3.333ns period=6.667ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            6.667ns  (clk rise@6.667ns - clk rise@0.000ns)
+  Data Path Delay:        7.098ns  (logic 3.123ns (43.997%)  route 3.975ns (56.003%))
+  Logic Levels:           10  (CARRY4=7 LUT1=1 LUT2=1 LUT5=1)
+  Clock Path Skew:        -0.058ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    4.284ns = ( 10.951 - 6.667 ) 
+    Source Clock Delay      (SCD):    4.663ns
+    Clock Pessimism Removal (CPR):    0.322ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+    M18                                               0.000     0.000 r  clk (IN)
+                         net (fo=0)                   0.000     0.000    clk
+    M18                  IBUF (Prop_ibuf_I_O)         0.938     0.938 r  clk_IBUF_inst/O
+                         net (fo=1, routed)           1.972     2.910    clk_IBUF
+    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.096     3.006 r  clk_IBUF_BUFG_inst/O
+                         net (fo=273, routed)         1.658     4.663    u_fir16_sym_core/clk_IBUF_BUFG
+    DSP48_X0Y3           DSP48E1                                      r  u_fir16_sym_core/data4_reg/CLK
+  -------------------------------------------------------------------    -------------------
+    DSP48_X0Y3           DSP48E1 (Prop_dsp48e1_CLK_P[10])
+                                                      0.434     5.097 f  u_fir16_sym_core/data4_reg/P[10]
+                         net (fo=2, routed)           0.680     5.777    u_fir16_sym_core/data4_reg_n_95
+    SLICE_X12Y7          LUT1 (Prop_lut1_I0_O)        0.124     5.901 r  u_fir16_sym_core/rounded0_carry_i_1/O
+                         net (fo=1, routed)           0.000     5.901    u_fir16_sym_core/rounded0_carry_i_1_n_0
+    SLICE_X12Y7          CARRY4 (Prop_carry4_S[1]_CO[3])
+                                                      0.533     6.434 r  u_fir16_sym_core/rounded0_carry/CO[3]
+                         net (fo=1, routed)           0.000     6.434    u_fir16_sym_core/rounded0_carry_n_0
+    SLICE_X12Y8          CARRY4 (Prop_carry4_CI_CO[3])
+                                                      0.117     6.551 r  u_fir16_sym_core/rounded0_carry__0/CO[3]
+                         net (fo=1, routed)           0.000     6.551    u_fir16_sym_core/rounded0_carry__0_n_0
+    SLICE_X12Y9          CARRY4 (Prop_carry4_CI_CO[3])
+                                                      0.117     6.668 r  u_fir16_sym_core/rounded0_carry__1/CO[3]
+                         net (fo=1, routed)           0.000     6.668    u_fir16_sym_core/rounded0_carry__1_n_0
+    SLICE_X12Y10         CARRY4 (Prop_carry4_CI_CO[3])
+                                                      0.117     6.785 r  u_fir16_sym_core/rounded0_carry__2/CO[3]
+                         net (fo=1, routed)           0.000     6.785    u_fir16_sym_core/rounded0_carry__2_n_0
+    SLICE_X12Y11         CARRY4 (Prop_carry4_CI_O[1])
+                                                      0.323     7.108 f  u_fir16_sym_core/rounded0_carry__3/O[1]
+                         net (fo=5, routed)           0.915     8.023    u_fir16_sym_core/rounded[15]
+    SLICE_X6Y11          LUT2 (Prop_lut2_I1_O)        0.306     8.329 r  u_fir16_sym_core/i__carry_i_4/O
+                         net (fo=1, routed)           0.000     8.329    u_fir16_sym_core/i__carry_i_4_n_0
+    SLICE_X6Y11          CARRY4 (Prop_carry4_S[0]_CO[3])
+                                                      0.513     8.842 r  u_fir16_sym_core/data50_inferred__0/i__carry/CO[3]
+                         net (fo=1, routed)           0.000     8.842    u_fir16_sym_core/data50_inferred__0/i__carry_n_0
+    SLICE_X6Y12          CARRY4 (Prop_carry4_CI_CO[2])
+                                                      0.229     9.071 r  u_fir16_sym_core/data50_inferred__0/i__carry__0/CO[2]
+                         net (fo=1, routed)           0.444     9.515    u_fir16_sym_core/data50_inferred__0/i__carry__0_n_1
+    SLICE_X1Y12          LUT5 (Prop_lut5_I4_O)        0.310     9.825 r  u_fir16_sym_core/data5[15]_i_1/O
+                         net (fo=16, routed)          1.937    11.762    u_fir16_sym_core/data5[15]_i_1_n_0
+    SLICE_X1Y0           FDSE                                         r  u_fir16_sym_core/data5_reg[0]/S
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        6.667     6.667 r  
+    M18                                               0.000     6.667 r  clk (IN)
+                         net (fo=0)                   0.000     6.667    clk
+    M18                  IBUF (Prop_ibuf_I_O)         0.805     7.472 r  clk_IBUF_inst/O
+                         net (fo=1, routed)           1.868     9.340    clk_IBUF
+    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.091     9.431 r  clk_IBUF_BUFG_inst/O
+                         net (fo=273, routed)         1.520    10.951    u_fir16_sym_core/clk_IBUF_BUFG
+    SLICE_X1Y0           FDSE                                         r  u_fir16_sym_core/data5_reg[0]/C
+                         clock pessimism              0.322    11.273    
+                         clock uncertainty           -0.035    11.238    
+    SLICE_X1Y0           FDSE (Setup_fdse_C_S)       -0.429    10.809    u_fir16_sym_core/data5_reg[0]
+  -------------------------------------------------------------------
+                         required time                         10.809    
+                         arrival time                         -11.762    
+  -------------------------------------------------------------------
+                         slack                                 -0.953    
+
+
+
+

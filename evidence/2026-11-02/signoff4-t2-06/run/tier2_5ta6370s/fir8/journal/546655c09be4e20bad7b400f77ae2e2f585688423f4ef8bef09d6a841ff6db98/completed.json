@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_5:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 5,
+    "instruction": "Replace the `prod[0:63]` product-delay chains and the combinational carry-save reduction with a transposed FIR: keep a signed 16-bit input sample register, seven signed 32-bit partial-sum registers, and the registered `y_out`. On each clock, compute `y_out` from the previous sample and first partial sum, and update each partial sum from that same previous sample, its coefficient, and the next partial sum; use 32-bit modular arithmetic so arbitrary signed parameter values retain the existing product and sum semantics. Reset every state register and `y_out` to zero, preserve the interface and `/",
+    "candidates": [
+      {
+        "iteration": 5,
+        "mutation": "standard",
+        "instruction": "Replace the `prod[0:63]` product-delay chains and the combinational carry-save reduction with a transposed FIR: keep a signed 16-bit input sample register, seven signed 32-bit partial-sum registers, and the registered `y_out`. On each clock, compute `y_out` from the previous sample and first partial sum, and update each partial sum from that same previous sample, its coefficient, and the next partial sum; use 32-bit modular arithmetic so arbitrary signed parameter values retain the existing product and sum semantics. Reset every state register and `y_out` to zero, preserve the interface and `/",
+        "generated_source_sha256": "31d699963184bea21e6b581911280397258a8dd4034c2279a14419ba9a304919",
+        "final_source_sha256": "31d699963184bea21e6b581911280397258a8dd4034c2279a14419ba9a304919",
+        "generated_code_hash": "891d7242c1ef926e",
+        "final_code_hash": "891d7242c1ef926e",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.148,
+          "whs_ns": 0.182,
+          "lut_used": 133,
+          "ff_used": 112,
+          "dsp_used": 5,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.013,
+          "total_power_w": 0.082
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\fir8\\iter_005\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\fir8\\iter_005\\cand_standard\\synth.tcl",
+          "sha256": "e443c6ca7628b634d1af87213e2b0fd7b08a07da21931c7a7aa99033d150b211"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\fir8\\iter_005\\cand_standard\\fir8.v",
+          "sha256": "4b9fb59dc2b73c62b8aa229b19122bcde5364d90fcbfcae8a9efcd55efc7f684"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": "31d699963184bea21e6b581911280397258a8dd4034c2279a14419ba9a304919"
+  },
+  "artifacts": {}
+}

@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_5:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 5\n## Contract check\n- Interface and cycle behavior: PASS \u2014 the 8-bit counter wraps every 256 cycles, matching the original counter\u2019s observable sequence; reset and registered PWM output are preserved.\n- Top latency annotation: PASS \u2014 authoritative latency is unknown, so no numeric annotation is required.\n- Compile and simulation: PASS \u2014 required tool exits succeeded and the frozen testbench reported `TEST PASSED`.\n- Synthesis and metric integrity: PASS \u2014 synthesis completed; retained routed reports and metrics are present.\n- Timing closure: PASS \u2014 timing is met with WNS 0.404 ns and WHS 0.186 ns.\n- Objective improvement: FAIL \u2014 both designs are timing-feasible, but LUTs increased from 7 to 11 and FFs stayed at 9; `minimize_luts` requires a strict lexicographic improvement.\n\n## Summary\n- Passed: 5 of 6\n- Failed: 1 of 6\n- Improved over previous best: NO\n\n## Recommendation\nREJECT\n\n## Reason\nThe candidate preserves the observable PWM behavior and passes verification and timing closure, but it does not improve the chosen objective: with both designs timing-feasible, its LUT count is higher than the previous best and its FF count is unchanged. The recorded `improvement_kind` is null, so promotion is not justified.",
+      "recommendation": "REJECT",
+      "passed": 5,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

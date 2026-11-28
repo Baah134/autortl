@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_3:decision:instruction:0",
+  "result": "In `fir16_sym_core`, express the rounded result as a signed 17-bit quotient using the exact `acc4[27:11] + acc4[10]` identity, then replace comparisons against \u00b132767/32768 with checks of quotient bits `[16:15]`: `01` saturates positive, `10` saturates negative, and `00`/`11` pass through the low 16 bits. Preserve the existing registered `data5`, elastic-slot enables, reset behavior, and top `// @latency 5`; retain the current 28-bit accumulator because its full signed range is part of the exact arithmetic. This targets LUT reduction, but only matching routed reports and all required verification gates can establish improvement.",
+  "artifacts": {}
+}

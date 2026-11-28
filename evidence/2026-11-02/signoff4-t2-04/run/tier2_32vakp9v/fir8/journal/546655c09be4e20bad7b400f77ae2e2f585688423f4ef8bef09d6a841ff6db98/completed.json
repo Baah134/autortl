@@ -1,0 +1,80 @@
+{
+  "stage": "iteration_5:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 5,
+    "instruction": "Keep the delay line, product registers, carry-save tree, output register, synchronous reset behavior, parameters, interface, and `// @latency 1` unchanged. Replace only `sum_all = s6 + c6` with a combinational 32-bit carry-select adder: compute each 8-bit section\u2019s sum for carry-in 0 and 1 in parallel, then select each section\u2019s result using the preceding section\u2019s carry. Preserve signed interpretation and the original modulo-32-bit result for all supported coefficient values.",
+    "candidates": [
+      {
+        "iteration": 5,
+        "mutation": "standard",
+        "instruction": "Keep the delay line, product registers, carry-save tree, output register, synchronous reset behavior, parameters, interface, and `// @latency 1` unchanged. Replace only `sum_all = s6 + c6` with a combinational 32-bit carry-select adder: compute each 8-bit section\u2019s sum for carry-in 0 and 1 in parallel, then select each section\u2019s result using the preceding section\u2019s carry. Preserve signed interpretation and the original modulo-32-bit result for all supported coefficient values.",
+        "generated_source_sha256": "af5a6f2c98b868a204393040e956f4e9b69bb92810a7ddf01ac075af992a0081",
+        "final_source_sha256": "af5a6f2c98b868a204393040e956f4e9b69bb92810a7ddf01ac075af992a0081",
+        "generated_code_hash": "c130a77e22062803",
+        "final_code_hash": "c130a77e22062803",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": false,
+          "wns_ns": -0.341,
+          "whs_ns": 0.417,
+          "lut_used": 279,
+          "ff_used": 196,
+          "dsp_used": 7,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.027,
+          "total_power_w": 0.095
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-04\\tier2_32vakp9v\\fir8\\iter_005\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-04\\tier2_32vakp9v\\fir8\\iter_005\\cand_standard\\synth.tcl",
+          "sha256": "8122dc22df40b0870a420b8aa95eb04a876b1fc619aeab9b5049c3af8aa50fa2"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-04\\tier2_32vakp9v\\fir8\\iter_005\\cand_standard\\fir8.v",
+          "sha256": "00bb5884e7a5413fc7a1dabfaf124c41a0fa688fb30c52123509292d3ecefbac"
+        }
+      }
+    ],
+    "doctor": {
+      "status": "NOT_ADOPTED",
+      "action": "tool_knobs",
+      "reason": "timing_not_closed",
+      "tools_ran": true,
+      "measured_metrics": {
+        "sim_passed": true,
+        "timing_met": false,
+        "wns_ns": -0.341,
+        "whs_ns": 0.417,
+        "lut_used": 279,
+        "ff_used": 196,
+        "dsp_used": 7,
+        "bram_used": 0.0,
+        "dynamic_power_w": 0.027,
+        "total_power_w": 0.095
+      },
+      "adopted": false,
+      "input_source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-04\\tier2_32vakp9v\\fir8\\iter_005\\cand_standard\\fir8.v",
+        "sha256": "00bb5884e7a5413fc7a1dabfaf124c41a0fa688fb30c52123509292d3ecefbac"
+      },
+      "trial_source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-04\\tier2_32vakp9v\\fir8\\iter_005\\doctor_tool_knobs_trial\\fir8.v",
+        "sha256": "00bb5884e7a5413fc7a1dabfaf124c41a0fa688fb30c52123509292d3ecefbac"
+      },
+      "trial_flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-04\\tier2_32vakp9v\\fir8\\iter_005\\doctor_tool_knobs_trial\\synth.tcl",
+        "sha256": "89996c5988192f63580a29797be7280308c4b1358ae1eab391cea92f9bbb5628"
+      },
+      "identity_count": 3
+    },
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": "af5a6f2c98b868a204393040e956f4e9b69bb92810a7ddf01ac075af992a0081"
+  },
+  "artifacts": {}
+}

@@ -1,0 +1,45 @@
+{
+  "candidates": [
+    {
+      "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-01\\tier5_xsrzgjnx\\fir16_sym_build\\iter_003\\cand_standard",
+      "cache_hit": false,
+      "final_code_hash": "fd3af74bf6e736ff",
+      "final_source_sha256": "49ff379ca6154067f8b2468f93fc5f7a770f8191f90516006187e87b9202b322",
+      "flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-01\\tier5_xsrzgjnx\\fir16_sym_build\\iter_003\\cand_standard\\synth.tcl",
+        "sha256": "5f3fce6ed0e27fa5de7335ce96c7e7e8b027058ab4d63999578e4a2cce68c252"
+      },
+      "generated_code_hash": "fd3af74bf6e736ff",
+      "generated_source_sha256": "49ff379ca6154067f8b2468f93fc5f7a770f8191f90516006187e87b9202b322",
+      "instruction": "In `fir16_sym_core`, replace the `ready4` four-term `acc` assignment with two registered 28-bit partial sums, `sum01 + sum23` and `sum45 + sum67`. In the `ready5` stage, combine those registered partial sums, apply the existing round-half-up shift and saturation, and capture the result in `data5`; preserve the current five-slot valid/ready movement, stalls, synchronous reset behavior, and accepted-sample history updates. Keep all arithmetic signed and wide enough for the exact 28-bit accumulator range, and retain the top\u2019s `// @latency 5` annotation.",
+      "iteration": 3,
+      "metrics": {
+        "bram_used": 0.0,
+        "dsp_used": 11,
+        "dynamic_power_w": 0.021,
+        "ff_used": 289,
+        "lut_used": 166,
+        "sim_passed": true,
+        "timing_met": true,
+        "total_power_w": 0.09,
+        "whs_ns": 0.118,
+        "wns_ns": 0.002
+      },
+      "mutation": "standard",
+      "reason": "",
+      "rungs": 5,
+      "source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-01\\tier5_xsrzgjnx\\fir16_sym_build\\iter_003\\cand_standard\\fir16_sym.v",
+        "sha256": "27c1e281d97eb0bf73c390e1b5b58d565722025735329b14dd75cceed170508f"
+      },
+      "status": "measured"
+    }
+  ],
+  "doctor": null,
+  "instruction": "In `fir16_sym_core`, replace the `ready4` four-term `acc` assignment with two registered 28-bit partial sums, `sum01 + sum23` and `sum45 + sum67`. In the `ready5` stage, combine those registered partial sums, apply the existing round-half-up shift and saturation, and capture the result in `data5`; preserve the current five-slot valid/ready movement, stalls, synchronous reset behavior, and accepted-sample history updates. Keep all arithmetic signed and wide enough for the exact 28-bit accumulator range, and retain the top\u2019s `// @latency 5` annotation.",
+  "is_best": false,
+  "iteration": 3,
+  "recommendation": "REJECT",
+  "schema_version": 1,
+  "selected_source_sha256": "49ff379ca6154067f8b2468f93fc5f7a770f8191f90516006187e87b9202b322"
+}

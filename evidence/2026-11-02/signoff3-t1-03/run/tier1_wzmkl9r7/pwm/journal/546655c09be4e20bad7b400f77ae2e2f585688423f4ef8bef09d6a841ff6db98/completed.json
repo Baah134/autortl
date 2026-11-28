@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_5:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 5,
+    "instruction": "Replace the `if (counter == 32'd255) ... else counter <= counter + 32'd1` update with an unconditional 8-bit increment of `counter[7:0]` and an upper 24-bit increment only when the low byte is `8'hff` and `counter[31:8]` is nonzero. This preserves the 32-bit counter\u2019s modulo behavior, including the special wrap at 255 and behavior from nonzero upper bits; keep the existing reset and registered `pwm_out` comparison unchanged. The expected benefit is fewer LUTs for terminal detection and reset selection, but the added upper-bit reduction and enable may erase that gain, so retain the candidate on",
+    "candidates": [
+      {
+        "iteration": 5,
+        "mutation": "standard",
+        "instruction": "Replace the `if (counter == 32'd255) ... else counter <= counter + 32'd1` update with an unconditional 8-bit increment of `counter[7:0]` and an upper 24-bit increment only when the low byte is `8'hff` and `counter[31:8]` is nonzero. This preserves the 32-bit counter\u2019s modulo behavior, including the special wrap at 255 and behavior from nonzero upper bits; keep the existing reset and registered `pwm_out` comparison unchanged. The expected benefit is fewer LUTs for terminal detection and reset selection, but the added upper-bit reduction and enable may erase that gain, so retain the candidate on",
+        "generated_source_sha256": "fb708c8ee177a1f4daa1f50d9dcedc2f6f31de2b63a91243cb1a4e7230b70c69",
+        "final_source_sha256": "fb708c8ee177a1f4daa1f50d9dcedc2f6f31de2b63a91243cb1a4e7230b70c69",
+        "generated_code_hash": "6079f81cec077ad5",
+        "final_code_hash": "6079f81cec077ad5",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.604,
+          "whs_ns": 0.162,
+          "lut_used": 29,
+          "ff_used": 33,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.01,
+          "total_power_w": 0.08
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff3-t1-03\\tier1_wzmkl9r7\\pwm\\iter_005\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff3-t1-03\\tier1_wzmkl9r7\\pwm\\iter_005\\cand_standard\\synth.tcl",
+          "sha256": "282b399bbff496c23faac10d1cbb6102ace7f6df67a73edda6a1fadffb429a99"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff3-t1-03\\tier1_wzmkl9r7\\pwm\\iter_005\\cand_standard\\pwm.v",
+          "sha256": "0cc9d694f9b14b7cc00f2350bb6dc9bb9aeb5f1a9072b6315704f4cefde55dde"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": "fb708c8ee177a1f4daa1f50d9dcedc2f6f31de2b63a91243cb1a4e7230b70c69"
+  },
+  "artifacts": {}
+}

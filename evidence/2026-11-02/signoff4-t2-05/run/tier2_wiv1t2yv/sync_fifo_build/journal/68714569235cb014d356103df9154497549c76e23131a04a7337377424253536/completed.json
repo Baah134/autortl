@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Interface, supported FIFO behavior, and live child: PASS \u2014 source preserves the specified interface and FIFO behavior; the integration testbench passes its parameter matrix.\n- Top latency annotation: PASS \u2014 top declares `// @latency 1`, matching authoritative latency.\n- Deterministic verification and simulation: PASS \u2014 ladder reports ALIVE; simulation reports `TEST PASSED`.\n- Required tool stages: PASS \u2014 xvlog, xelab, xsim, and Vivado exits succeeded; synthesis includes `SYNTH_COMPLETE`.\n- Routed reports and metric integrity: PASS \u2014 retained routed metrics are available and consistent.\n- Timing promotion rule: PASS \u2014 candidate remains infeasible, but setup WNS improves from \u22120.931 ns to \u22120.273 ns and hold improves from 0.091 ns to 0.124 ns, meeting timing_progress criteria.\n- Improvement classification: PASS \u2014 `timing_progress` permits promotion despite higher LUT and FF counts; this is progress, not timing closure or objective savings.\n## Summary\n- Passed: 7 of 7\n- Failed: 0 of 7\n- Improved over previous best: YES\n## Recommendation\nACCEPT\n## Reason\nThe candidate passes the deterministic checks and required implementation gates. It qualifies as timing progress over the still-infeasible previous best because setup WNS is strictly better and hold slack is not worse; the higher resource use does not disqualify this progress classification.",
+      "recommendation": "ACCEPT",
+      "passed": 7,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}

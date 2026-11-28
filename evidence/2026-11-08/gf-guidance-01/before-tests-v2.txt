@@ -1,0 +1,42 @@
+FF......                                                                 [100%]
+================================== FAILURES ===================================
+__ test_actual_oracle_prompt_supplies_field_invariants_without_answer_code[] __
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000002AD3236F860>
+feedback = ''
+
+    @pytest.mark.parametrize('feedback',['','ValueError: controlled prior table failure'])
+    def test_actual_oracle_prompt_supplies_field_invariants_without_answer_code(monkeypatch,feedback):
+        request=Mock(return_value='def init(): return {}\ndef step(s,i): return s,{}')
+        monkeypatch.setattr(roles,'ask',request)
+        monkeypatch.setattr(roles,'conventions',lambda:'')
+        spec=ModuleSpec('renamed_lookup','Use the field explicitly named by the contract.',
+                        [Port('a','input',8),Port('y','output',8)])
+        roles.Generator().golden_model(spec,None,feedback=feedback)
+        text=' '.join(request.call_args.args[1].split())
+>       assert 'a primitive generator for the specified field' in text
+E       AssertionError: assert 'a primitive generator for the specified field' in 'Write a Python golden model for this module. Behavior: Use the field explicitly named by the contract. Ports: input w...re the original specification indexes; omissions do not change the contract. Omitted examples: 0 of 0 (context bound).'
+
+tests\test_golden_field_guidance.py:19: AssertionError
+_ test_actual_oracle_prompt_supplies_field_invariants_without_answer_code[ValueError: controlled prior table failure] _
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000002AD3237C6E0>
+feedback = 'ValueError: controlled prior table failure'
+
+    @pytest.mark.parametrize('feedback',['','ValueError: controlled prior table failure'])
+    def test_actual_oracle_prompt_supplies_field_invariants_without_answer_code(monkeypatch,feedback):
+        request=Mock(return_value='def init(): return {}\ndef step(s,i): return s,{}')
+        monkeypatch.setattr(roles,'ask',request)
+        monkeypatch.setattr(roles,'conventions',lambda:'')
+        spec=ModuleSpec('renamed_lookup','Use the field explicitly named by the contract.',
+                        [Port('a','input',8),Port('y','output',8)])
+        roles.Generator().golden_model(spec,None,feedback=feedback)
+        text=' '.join(request.call_args.args[1].split())
+>       assert 'a primitive generator for the specified field' in text
+E       AssertionError: assert 'a primitive generator for the specified field' in 'Write a Python golden model for this module. Behavior: Use the field explicitly named by the contract. Ports: input w...e previous Python reference failed validation. Repair this specific failure ValueError: controlled prior table failure'
+
+tests\test_golden_field_guidance.py:19: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_golden_field_guidance.py::test_actual_oracle_prompt_supplies_field_invariants_without_answer_code[]
+FAILED tests/test_golden_field_guidance.py::test_actual_oracle_prompt_supplies_field_invariants_without_answer_code[ValueError: controlled prior table failure]
+2 failed, 6 passed in 1.39s

@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Defined FIFO behavior: PASS \u2014 authoritative ladder is ALIVE and simulation passed.\n- Top interface and latency annotation: PASS \u2014 the top retains its contract and has `// @latency 1`, matching the known value.\n- Compile, elaboration, and simulation gates: PASS \u2014 required tools exited successfully and the testbench reported `TEST PASSED`.\n- Routed metric integrity: PASS \u2014 retained routed reports and successful synthesis evidence are present.\n- Timing comparison: PASS \u2014 recorded `timing_progress`; setup WNS improved from -0.946 ns to -0.17 ns, with WHS remaining positive and its 0.062 ns decrease within a small tolerance. Timing is still infeasible.\n- Improvement classification: PASS \u2014 timing progress qualifies against the timing-infeasible previous best; higher LUT and FF counts do not disqualify it.\n\n## Summary\n- Passed: 6 of 6\n- Failed: 0 of 6\n- Improved over previous best: YES\n\n## Recommendation\nACCEPT\n\n## Reason\nThe candidate passes the deterministic correctness and implementation gates and makes valid timing progress over the still-infeasible previous best. It has not closed setup timing, but under the contract this timing progress may be accepted; increased resource use does not invalidate that comparison.",
+      "recommendation": "ACCEPT",
+      "passed": 6,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}

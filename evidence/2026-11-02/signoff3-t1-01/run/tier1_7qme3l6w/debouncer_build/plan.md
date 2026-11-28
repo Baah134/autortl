@@ -1,0 +1,7 @@
+# PLAN — iteration 4
+## Current state assessment
+The verified incumbent is timing-feasible at 3 LUTs and 5 FFs, so this iteration needs a strict LUT reduction or an equal LUT count with fewer FFs to improve the `minimize_luts` objective. Iteration 3’s counter arithmetic rewrite was rejected at 4 LUTs; the current seed wraps its 3-bit counter, which can revisit the terminal state after the input has already been debounced. Preserve `// @latency 0`, the registered output, synchronous active-high reset, and the exact eight-sample debounce behavior. Promotion still requires all simulation, tool, routed metric-integrity, setup, and hold gates.
+## Hypothesis
+Use `clean` as the reference for pending input polarity and remove `previous_noisy`, targeting one fewer FF while retaining at most 3 LUTs.
+## Instruction for generator
+Keep the top interface and `// @latency 0`, but replace `previous_noisy` tracking with a 3-bit consecutive-difference counter: clear it when `noisy == clean`, increment it while `noisy != clean`, and update `clean` when the old count is 7. Clear the counter when `clean` updates, and retain the synchronous reset that sets both `clean` and the counter to zero. This should preserve the first update on the eighth consecutive sample differing from `clean`; verify reversals, reset, and the output hold behavior, then compare routed LUTs and FFs against the 3-LUT, 5-FF incumbent.

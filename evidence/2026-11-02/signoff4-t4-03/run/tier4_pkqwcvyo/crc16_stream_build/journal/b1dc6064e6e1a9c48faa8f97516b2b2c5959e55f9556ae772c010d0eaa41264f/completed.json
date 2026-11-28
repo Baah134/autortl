@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_3:decision:instruction:0",
+  "result": "In `crc16_stream_core`, replace `crc_state = out_last_reg ? 16'hFFFF : out_crc_reg` followed by `crc16_update(crc_state, in_data)` with Boolean equations that compute the byte-data contribution and select between the transformed `out_crc_reg` and the fixed transformed frame-start value (`T(16'hFFFF) = 16'hE1F0`). Fold `out_last_reg` into those output equations rather than building a separate 16-bit state mux; preserve the CRC result for every accepted byte and the existing one-slot handshake, reset, registered-output, and cycle behavior. Keep the top `// @latency 1` annotation, and evaluate promotion only with the unchanged integration testbench and all routed timing, utilization, and metric-integrity gates.",
+  "artifacts": {}
+}

@@ -1,0 +1,13 @@
+# PLAN — iteration 1
+
+## Current state assessment
+
+The current counter is already timing-feasible on `xc7a35tcpg236-1`: 6 LUTs, 8 FFs, routed WNS 0.424 ns and WHS 0.226 ns. The objective is to reduce LUTs while preserving the top’s known one-cycle declaration and exact counter behavior; any promotion still requires all verification and metric gates to pass.
+
+## Hypothesis
+
+Expressing the increment as per-bit toggle conditions may map to fewer than 6 LUTs while keeping 8 FFs and meeting setup and hold timing.
+
+## Instruction for generator
+
+In `counter8_core`, replace the `count_reg + 8'b1` increment pattern with per-bit toggles: bit 0 toggles on `enable`, and each higher bit toggles when `enable` is high and all lower bits are one. Preserve the synchronous active-high reset priority, hold behavior when disabled, modulo-256 wraparound, registered output, and top-level `// @latency 1` annotation. Keep the same clock, interface and state width, with no added registers or cycles. Treat the hypothesis as successful only if the routed LUT count is strictly lower than 6 and every verification and metric gate passes, including WNS and WHS of at least zero.

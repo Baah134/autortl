@@ -1,0 +1,107 @@
+{
+  "entry": "curriculum\\tier6\\rv32i_core_build",
+  "top": "rv32i_core_tb",
+  "testbench_sha256": "cce8097f90390eaae89898441cf5ecc369c27385c0fa404a76b59b87bd18b737",
+  "runs": [
+    {
+      "case": "reference",
+      "why": "control",
+      "expect_pass": true,
+      "verdict": "TEST PASSED",
+      "assertion_detected": false,
+      "as_required": true,
+      "source_sha256": "17145d80aab91f7acf73178a549b8816750a346a416aa98c3d76b2a1fe0917e0"
+    },
+    {
+      "case": "srai_decoded_as_srli",
+      "why": "the decoder drops instr[30] for OP-IMM shifts, so SRAI shifts in zeros",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 8 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "7437e3cdc42f79291582fe1006dcf25332643e2e4cc7b00d83f841f651732384"
+    },
+    {
+      "case": "store_offset_from_rs2_field",
+      "why": "the S immediate takes its low five bits from the rs2 field, the I-type position",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 107 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "fc2c332bb6aa45884cf1420dce15befe1b96c665e04455114a7c950fa5ddfa2a"
+    },
+    {
+      "case": "slt_compares_unsigned",
+      "why": "SLT and SLTI compare unsigned, so negative operands order wrongly",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 488 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "202cf6ca361dbf58a90a1eb537f0c7348de9efad572b2da033b62e6ab1f4bf95"
+    },
+    {
+      "case": "shift_amount_not_masked",
+      "why": "SLL shifts by the whole 32-bit operand instead of its low five bits",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 6 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "1e0be546e71020fa25b4383e1e5c16b0328ac0110fc4b8a169d42e036a5834d1"
+    },
+    {
+      "case": "x0_writable",
+      "why": "the register file stores writes to x0, so x0 no longer reads zero",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 5237 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "d2864559a9c8b7f4b44c0d30697f0601d7fdd6a5e9676f7f1c681fbee0cacd23"
+    },
+    {
+      "case": "imem_write_address_truncated",
+      "why": "the program loader drops imem_waddr[5], so words 32..63 overwrite 0..31",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 19479 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "785d129792f15db7873304d3973c0ff7bc36d6b6ffb23f8ffd2e90b447081597"
+    },
+    {
+      "case": "data_address_not_word_aligned",
+      "why": "the byte address bits [4:0] index the data memory instead of word bits [6:2]",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 174 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "71875b25e09e1767bd5c07c99f2dfb8c123be349e441c84c5fe892ce290da72c"
+    },
+    {
+      "case": "bge_not_taken_on_equal",
+      "why": "BGE behaves as a strict greater-than and falls through on equal operands",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 1362 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "98ada9fc4d602712982c12354c243948cbc8d5c08f8c5749eaf24079d6ec2893"
+    },
+    {
+      "case": "jalr_keeps_bit0",
+      "why": "JALR does not clear bit 0 of the computed target",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 2860 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "27040c9602294738fec13d4603228cf6bf6c478cc2dc4b4e12266978c445e327"
+    },
+    {
+      "case": "load_skips_memory_wait",
+      "why": "a load goes from M straight to write-back and writes the address instead of the loaded word",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 7150 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "cb84abeff9da2d11362f2321d4e22a0daae36f424de001e771cfc28380ebaff1"
+    }
+  ],
+  "qualified": true
+}

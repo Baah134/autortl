@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_3:decision:instruction:0",
+  "result": "In the top-level FIFO control, replace the registered `tail_write_ptr` and its reset, toggle, and write-address uses with a combinational address derived as `tail_read_ptr ^ (occupancy == 2'd2)`. Preserve the existing head/tail data updates, occupancy transitions, synchronous reset behavior, direct ready/valid behavior, and minimum transfer age; this address relation must hold for every reachable occupancy and simultaneous push/pop case. Keep the `packet_fifo_core` instance and its connections unchanged, and retain `// @latency 1`. This is a LUT objective experiment: promote only if all fixed gates pass, routed WNS and WHS are nonnegative, and LUT use is strictly below 23.",
+  "artifacts": {}
+}

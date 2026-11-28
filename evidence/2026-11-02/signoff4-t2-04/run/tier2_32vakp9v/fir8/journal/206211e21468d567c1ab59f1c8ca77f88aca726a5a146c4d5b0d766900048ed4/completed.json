@@ -1,0 +1,81 @@
+{
+  "stage": "iteration_6:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 6,
+    "instruction": "Keep `p0`\u2013`p7`, the carry-save reduction, `y_out`, reset behavior, parameters, and `// @latency 1` unchanged. Replace only `sum_all = s6 + c6` with a 32-bit segmented carry-select sum: compute a low chunk\u2019s sum and carry, compute each upper chunk\u2019s sums for carry-in 0 and 1, then select by the preceding chunk\u2019s carry. Preserve exact modulo-32-bit addition semantics; evaluate the routed timing, especially `reg2reg_wns_ns`, against the 0.807 ns incumbent and retain the candidate only if all gates pass and the objective improves.",
+    "candidates": [
+      {
+        "iteration": 6,
+        "mutation": "standard",
+        "instruction": "Keep `p0`\u2013`p7`, the carry-save reduction, `y_out`, reset behavior, parameters, and `// @latency 1` unchanged. Replace only `sum_all = s6 + c6` with a 32-bit segmented carry-select sum: compute a low chunk\u2019s sum and carry, compute each upper chunk\u2019s sums for carry-in 0 and 1, then select by the preceding chunk\u2019s carry. Preserve exact modulo-32-bit addition semantics; evaluate the routed timing, especially `reg2reg_wns_ns`, against the 0.807 ns incumbent and retain the candidate only if all gates pass and the objective improves.",
+        "generated_source_sha256": "4394cb7d7441fbc2267b9470dde1cc9317c152cb39c6a1891d488bd927b8b457",
+        "final_source_sha256": "4394cb7d7441fbc2267b9470dde1cc9317c152cb39c6a1891d488bd927b8b457",
+        "generated_code_hash": "beee9f0916298515",
+        "final_code_hash": "beee9f0916298515",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": false,
+          "wns_ns": -0.095,
+          "whs_ns": 0.362,
+          "lut_used": 327,
+          "ff_used": 174,
+          "dsp_used": 7,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.03,
+          "total_power_w": 0.098
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-04\\tier2_32vakp9v\\fir8\\iter_006\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-04\\tier2_32vakp9v\\fir8\\iter_006\\cand_standard\\synth.tcl",
+          "sha256": "3bf7dce2e64a812d3e45052f56659fc54c91302cd05c4af3071066843dbad276"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-04\\tier2_32vakp9v\\fir8\\iter_006\\cand_standard\\fir8.v",
+          "sha256": "0b80f986ea991b822d1515034fe2d4a485788c03796e06cac50e9f9c392ad6cc"
+        }
+      }
+    ],
+    "doctor": {
+      "status": "NOT_ADOPTED",
+      "action": "rtl_surgery",
+      "reason": "timing_not_closed",
+      "tools_ran": true,
+      "measured_metrics": {
+        "sim_passed": true,
+        "timing_met": false,
+        "wns_ns": -0.047,
+        "whs_ns": 0.414,
+        "lut_used": 381,
+        "ff_used": 238,
+        "dsp_used": 7,
+        "bram_used": 0.0,
+        "dynamic_power_w": 0.036,
+        "total_power_w": 0.105
+      },
+      "adopted": false,
+      "input_source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-04\\tier2_32vakp9v\\fir8\\iter_006\\cand_standard\\fir8.v",
+        "sha256": "0b80f986ea991b822d1515034fe2d4a485788c03796e06cac50e9f9c392ad6cc"
+      },
+      "trial_source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-04\\tier2_32vakp9v\\fir8\\iter_006\\doctor_rtl_surgery_trial\\fir8.v",
+        "sha256": "a86ef5349f054b3fa91b173a675fe773e7941ba19dbc996c91167b9309e4036d"
+      },
+      "trial_flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-04\\tier2_32vakp9v\\fir8\\iter_006\\doctor_rtl_surgery_trial\\synth.tcl",
+        "sha256": "2ec2c6f13470924bc4f8dc910351d978b995e11e8e93ed99e5d25bda9188c656"
+      },
+      "identity_count": 3,
+      "proposed_source_text_sha256": "47ce683ce5ba5e6f19bdc4f8b33854a4260cfb98a772982004d764e8fb63f345"
+    },
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": "4394cb7d7441fbc2267b9470dde1cc9317c152cb39c6a1891d488bd927b8b457"
+  },
+  "artifacts": {}
+}

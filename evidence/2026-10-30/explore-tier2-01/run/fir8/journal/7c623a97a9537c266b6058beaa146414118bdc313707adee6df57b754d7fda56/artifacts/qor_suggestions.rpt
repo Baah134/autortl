@@ -1,0 +1,50 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025
+| Date         : Fri Oct 30 11:00:34 2026
+| Host         : Baah running 64-bit major release  (build 9200)
+| Command      : report_qor_suggestions -file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier2-01/fir8/iter_003/doctor_rtl_surgery_trial/qor_suggestions.rpt
+| Design       : fir8
+| Device       : xc7a35t
+| Design State : Routed
+| ML Models    : v2021.2.0
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Report QoR Suggestions
+
+Table of Contents
+-----------------
+1. QoR Suggestions Report Summary
+2. ML Strategies
+3. QoR Suggestions - XDC
+
+1. QoR Suggestions Report Summary
+---------------------------------
+
++-------------+-----------+-----------+--------------+----------------+-----------+-------------+----------------------+------------------------------------------------------------------------------------------+-------------+
+|     Name    |     Id    |   Status  | Generated At | Applicable For | Automatic |    Scope    | Incremental Friendly |                                        Description                                       |    Source   |
++-------------+-----------+-----------+--------------+----------------+-----------+-------------+----------------------+------------------------------------------------------------------------------------------+-------------+
+| RQS_XDC-1-1 | RQS_XDC-1 | Generated | route_design | synth_design   | No        | GLOBALSCOPE | No                   | Paths above Max Net/LUT budgeting. Review paths and either reduce logic delays, add      | Current Run |
+|             |           |           |              |                |           |             |                      | pipelining or increase path requirements.                                                |             |
++-------------+-----------+-----------+--------------+----------------+-----------+-------------+----------------------+------------------------------------------------------------------------------------------+-------------+
+* By default the number of failing paths is limited to 100. Use the -max_paths options to override.
+
+
+2. ML Strategies
+----------------
+
++---+----+---------+---------+
+| # | Id | Command | Options |
++---+----+---------+---------+
+
+
+3. QoR Suggestions - XDC
+------------------------
+
++-------------+-------------+--------------+--------+--------+-------+--------+----------------+-------+--------+--------------+-------------------+------------------------------+-----------------------+---------------------------+---------------------------+-----------------+-----------------+
+|     Name    | No of Paths | Logic Levels | Routes |  Slack |  Req. |  Skew  | Datapath Delay | Cell% | Route% | Source Clock | Destination Clock |          Startpoint          |        Endpoint       | Path budget for Net check | Path budget for Lut check | Net check slack | LUT check slack |
++-------------+-------------+--------------+--------+--------+-------+--------+----------------+-------+--------+--------------+-------------------+------------------------------+-----------------------+---------------------------+---------------------------+-----------------+-----------------+
+| RQS_XDC-1-1 | 80          | 2            | 3      | -3.797 | 6.667 | -0.032 | 8.997          | 99.90 | 0.100  | clk          | clk               | gen_symmetric.full_prod2/CLK | sum_pipe0_reg/PCIN[0] | -5                        | 11                        | -4.597          | 4.050           |
++-------------+-------------+--------------+--------+--------+-------+--------+----------------+-------+--------+--------------+-------------------+------------------------------+-----------------------+---------------------------+---------------------------+-----------------+-----------------+
+
+

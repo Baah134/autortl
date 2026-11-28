@@ -1,0 +1,1131 @@
+{
+  "top_name": "rv32i_core",
+  "modules": [
+    {
+      "name": "rv_imem",
+      "behavior": "Instruction memory of 64 words of 32 bits with one write port (the core's program loader) and one registered read port. State: mem[0..63] and the imem_rdata register; imem_rdata is a view of that register only. At each rising edge with rst low, using pre-edge values: imem_rdata = mem[imem_raddr] (read-first: a word written at this same edge is read with its old value), and if imem_we = 1 then mem[imem_waddr] = imem_wdata. A synchronous active-high rst at a rising edge clears all 64 words and imem_rdata to 0 and ignores imem_we at that edge; reset has no effect between edges. The contents are defined by that reset, never by initial values (initial blocks are rejected in RTL), so the program is loaded after reset. Python oracle: cycle-level model, one step per rising edge; keep the registers in state and return every output as it is after that edge. The driver applies the fixed latency of 1; do not add a delay queue. init() is the reset state and a supplied rst must be handled.",
+      "ports": [
+        {
+          "name": "clk",
+          "direction": "input",
+          "width": 1,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "rst",
+          "direction": "input",
+          "width": 1,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "imem_we",
+          "direction": "input",
+          "width": 1,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "imem_waddr",
+          "direction": "input",
+          "width": 6,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "imem_wdata",
+          "direction": "input",
+          "width": 32,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "imem_raddr",
+          "direction": "input",
+          "width": 6,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "imem_rdata",
+          "direction": "output",
+          "width": 32,
+          "protocol": "none",
+          "signed": false
+        }
+      ],
+      "latency": 1,
+      "latency_known": true,
+      "compare_mode": "fixed_latency",
+      "reset": {
+        "signal": "rst",
+        "kind": "sync",
+        "active_high": true,
+        "duration_cycles": 3
+      },
+      "parameters": {},
+      "clock_domains": [
+        "clk"
+      ],
+      "examples": [
+        {
+          "inputs": {
+            "rst": 0,
+            "imem_we": 1,
+            "imem_waddr": 5,
+            "imem_wdata": 10485907,
+            "imem_raddr": 5
+          },
+          "expected": {
+            "imem_rdata": 0
+          },
+          "after_cycles": 1
+        },
+        {
+          "inputs": {
+            "rst": 0,
+            "imem_we": 1,
+            "imem_waddr": 5,
+            "imem_wdata": 10485907,
+            "imem_raddr": 5
+          },
+          "expected": {
+            "imem_rdata": 10485907
+          },
+          "after_cycles": 2
+        },
+        {
+          "inputs": {
+            "rst": 0,
+            "imem_we": 1,
+            "imem_waddr": 63,
+            "imem_wdata": 3735928559,
+            "imem_raddr": 62
+          },
+          "expected": {
+            "imem_rdata": 0
+          },
+          "after_cycles": 3
+        }
+      ]
+    },
+    {
+      "name": "rv_decode",
+      "behavior": "Combinational RV32I decoder for the word instr. Fields always shown: rs1 = instr[19:15], rs2 = instr[24:20], rd = instr[11:7], funct3 = instr[14:12]. Immediates (sign extension replicates instr[31]): I = sext(instr[31:20]); S = sext({instr[31:25], instr[11:7]}); B = sext({instr[31], instr[7], instr[30:25], instr[11:8], 0}) (13 bits); U = {instr[31:12], 12 zero bits}; J = sext({instr[31], instr[19:12], instr[20], instr[30:21], 0}) (21 bits). By the full 7-bit opcode instr[6:0] (kind, a_sel, b_sel, alu_op, imm): 0110011 OP: kind 0, a_sel 0, b_sel 0, alu_op = {instr[30], funct3}, imm 0. 0010011 OP-IMM: kind 0, a_sel 0, b_sel 1, imm I, alu_op = {instr[30], funct3} when funct3 = 101 (SRLI/SRAI) else {0, funct3} (bit 30 is immediate data for the other OP-IMM instructions). 0110111 LUI: kind 0, a_sel 2, b_sel 1, alu_op 0, imm U. 0010111 AUIPC: kind 0, a_sel 1, b_sel 1, alu_op 0, imm U. 1101111 JAL: kind 4, a_sel 1, b_sel 1, alu_op 0, imm J. 1100111 JALR: kind 5, a_sel 0, b_sel 1, alu_op 0, imm I (funct3 ignored). 1100011 BRANCH: kind 3, a_sel 1, b_sel 1, alu_op 0, imm B. 0000011 LOAD: kind 1, a_sel 0, b_sel 1, alu_op 0, imm I (every load is a word load; funct3 ignored). 0100011 STORE: kind 2, a_sel 0, b_sel 1, alu_op 0, imm S (every store is a word store). Any other opcode: kind 6 (no operation), a_sel 0, b_sel 0, alu_op 0, imm 0. kind 7 is never produced. All outputs are functions of instr only. Python oracle: combinational and stateless; step returns the outputs for this step's inputs (latency 0, no clock and no reset port).",
+      "ports": [
+        {
+          "name": "instr",
+          "direction": "input",
+          "width": 32,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "rs1",
+          "direction": "output",
+          "width": 5,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "rs2",
+          "direction": "output",
+          "width": 5,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "rd",
+          "direction": "output",
+          "width": 5,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "imm",
+          "direction": "output",
+          "width": 32,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "alu_op",
+          "direction": "output",
+          "width": 4,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "a_sel",
+          "direction": "output",
+          "width": 2,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "b_sel",
+          "direction": "output",
+          "width": 1,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "kind",
+          "direction": "output",
+          "width": 3,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "funct3",
+          "direction": "output",
+          "width": 3,
+          "protocol": "none",
+          "signed": false
+        }
+      ],
+      "latency": 0,
+      "latency_known": true,
+      "compare_mode": "fixed_latency",
+      "reset": {
+        "signal": "rst",
+        "kind": "sync",
+        "active_high": true,
+        "duration_cycles": 3
+      },
+      "parameters": {},
+      "clock_domains": [
+        "clk"
+      ],
+      "examples": [
+        {
+          "inputs": {
+            "instr": 1087427219
+          },
+          "expected": {
+            "rs1": 1,
+            "rs2": 13,
+            "rd": 5,
+            "imm": 1037,
+            "alu_op": 13,
+            "a_sel": 0,
+            "b_sel": 1,
+            "kind": 0,
+            "funct3": 5
+          },
+          "after_cycles": 1
+        },
+        {
+          "inputs": {
+            "instr": 4263562467
+          },
+          "expected": {
+            "rs1": 1,
+            "rs2": 2,
+            "rd": 25,
+            "imm": 4294967288,
+            "alu_op": 0,
+            "a_sel": 1,
+            "b_sel": 1,
+            "kind": 3,
+            "funct3": 4
+          },
+          "after_cycles": 1
+        },
+        {
+          "inputs": {
+            "instr": 2147483759
+          },
+          "expected": {
+            "rs1": 0,
+            "rs2": 0,
+            "rd": 0,
+            "imm": 4293918720,
+            "alu_op": 0,
+            "a_sel": 1,
+            "b_sel": 1,
+            "kind": 4,
+            "funct3": 0
+          },
+          "after_cycles": 1
+        }
+      ]
+    },
+    {
+      "name": "rv_regfile",
+      "behavior": "RV32I register file: 32 registers of 32 bits, x0 always reads 0, two registered read ports and one write port. State: x1..x31, rdata1 and rdata2 (outputs are views of those two registers only). At each rising edge with rst low, using pre-edge values: rdata1 = x[raddr1] and rdata2 = x[raddr2] (0 for index 0; read-first: a register written at this same edge is read with its old value), and if we = 1 and waddr != 0 then x[waddr] = wdata (writes to x0 are ignored). A synchronous active-high rst at a rising edge clears x1..x31, rdata1 and rdata2 to 0 and ignores we at that edge; reset has no effect between edges. Contents are defined by that reset, never by initial values. Python oracle: cycle-level model, one step per rising edge; keep the registers in state and return every output as it is after that edge. The driver applies the fixed latency of 1; do not add a delay queue. init() is the reset state and a supplied rst must be handled.",
+      "ports": [
+        {
+          "name": "clk",
+          "direction": "input",
+          "width": 1,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "rst",
+          "direction": "input",
+          "width": 1,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "we",
+          "direction": "input",
+          "width": 1,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "waddr",
+          "direction": "input",
+          "width": 5,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "wdata",
+          "direction": "input",
+          "width": 32,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "raddr1",
+          "direction": "input",
+          "width": 5,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "raddr2",
+          "direction": "input",
+          "width": 5,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "rdata1",
+          "direction": "output",
+          "width": 32,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "rdata2",
+          "direction": "output",
+          "width": 32,
+          "protocol": "none",
+          "signed": false
+        }
+      ],
+      "latency": 1,
+      "latency_known": true,
+      "compare_mode": "fixed_latency",
+      "reset": {
+        "signal": "rst",
+        "kind": "sync",
+        "active_high": true,
+        "duration_cycles": 3
+      },
+      "parameters": {},
+      "clock_domains": [
+        "clk"
+      ],
+      "examples": [
+        {
+          "inputs": {
+            "rst": 0,
+            "we": 1,
+            "waddr": 7,
+            "wdata": 305419896,
+            "raddr1": 7,
+            "raddr2": 0
+          },
+          "expected": {
+            "rdata1": 0,
+            "rdata2": 0
+          },
+          "after_cycles": 1
+        },
+        {
+          "inputs": {
+            "rst": 0,
+            "we": 1,
+            "waddr": 7,
+            "wdata": 305419896,
+            "raddr1": 7,
+            "raddr2": 7
+          },
+          "expected": {
+            "rdata1": 305419896,
+            "rdata2": 305419896
+          },
+          "after_cycles": 2
+        },
+        {
+          "inputs": {
+            "rst": 0,
+            "we": 1,
+            "waddr": 0,
+            "wdata": 4294967295,
+            "raddr1": 0,
+            "raddr2": 0
+          },
+          "expected": {
+            "rdata1": 0,
+            "rdata2": 0
+          },
+          "after_cycles": 2
+        }
+      ]
+    },
+    {
+      "name": "rv_alu",
+      "behavior": "Combinational RV32I ALU with operand selection. a = rs1_val when a_sel = 0, pc_val when a_sel = 1, 0 when a_sel = 2 or 3; b = imm when b_sel = 1, else rs2_val. y by op[2:0], all modulo 2^32: 000 a + b when op[3] = 0, a - b when op[3] = 1; 001 a << b[4:0]; 010 1 if a < b as two's complement signed numbers else 0; 011 1 if a < b unsigned else 0; 100 a ^ b; 101 a >> b[4:0] logical when op[3] = 0, arithmetic (sign bit replicated) when op[3] = 1; 110 a | b; 111 a & b. op[3] is ignored for every op[2:0] other than 000 and 101. Comparison flags always compare the raw rs1_val and rs2_val (not a or b): eq = (rs1_val == rs2_val), lt = rs1_val < rs2_val signed, ltu = rs1_val < rs2_val unsigned. Python oracle: combinational and stateless; step returns the outputs for this step's inputs (latency 0, no clock and no reset port).",
+      "ports": [
+        {
+          "name": "a_sel",
+          "direction": "input",
+          "width": 2,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "b_sel",
+          "direction": "input",
+          "width": 1,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "op",
+          "direction": "input",
+          "width": 4,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "rs1_val",
+          "direction": "input",
+          "width": 32,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "rs2_val",
+          "direction": "input",
+          "width": 32,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "pc_val",
+          "direction": "input",
+          "width": 32,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "imm",
+          "direction": "input",
+          "width": 32,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "y",
+          "direction": "output",
+          "width": 32,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "eq",
+          "direction": "output",
+          "width": 1,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "lt",
+          "direction": "output",
+          "width": 1,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "ltu",
+          "direction": "output",
+          "width": 1,
+          "protocol": "none",
+          "signed": false
+        }
+      ],
+      "latency": 0,
+      "latency_known": true,
+      "compare_mode": "fixed_latency",
+      "reset": {
+        "signal": "rst",
+        "kind": "sync",
+        "active_high": true,
+        "duration_cycles": 3
+      },
+      "parameters": {},
+      "clock_domains": [
+        "clk"
+      ],
+      "examples": [
+        {
+          "inputs": {
+            "a_sel": 0,
+            "b_sel": 0,
+            "op": 13,
+            "rs1_val": 2147483664,
+            "rs2_val": 4,
+            "pc_val": 0,
+            "imm": 0
+          },
+          "expected": {
+            "y": 4160749569,
+            "eq": 0,
+            "lt": 1,
+            "ltu": 0
+          },
+          "after_cycles": 1
+        },
+        {
+          "inputs": {
+            "a_sel": 0,
+            "b_sel": 1,
+            "op": 2,
+            "rs1_val": 4294967295,
+            "rs2_val": 1,
+            "pc_val": 64,
+            "imm": 1
+          },
+          "expected": {
+            "y": 1,
+            "eq": 0,
+            "lt": 1,
+            "ltu": 0
+          },
+          "after_cycles": 1
+        },
+        {
+          "inputs": {
+            "a_sel": 1,
+            "b_sel": 1,
+            "op": 8,
+            "rs1_val": 5,
+            "rs2_val": 5,
+            "pc_val": 64,
+            "imm": 4294967288
+          },
+          "expected": {
+            "y": 72,
+            "eq": 1,
+            "lt": 0,
+            "ltu": 0
+          },
+          "after_cycles": 1
+        }
+      ]
+    },
+    {
+      "name": "rv_dmem",
+      "behavior": "Data memory of 32 words of 32 bits with one shared address. State: mem[0..31] and the rdata register; rdata is a view of that register only. At each rising edge with rst low, using pre-edge values: rdata = mem[addr] (read-first: old contents when this edge also writes addr), and if we = 1 then mem[addr] = wdata. A synchronous active-high rst at a rising edge clears all 32 words and rdata to 0 and ignores we at that edge; reset has no effect between edges. Contents are defined by that reset, never by initial values. Python oracle: cycle-level model, one step per rising edge; keep the registers in state and return every output as it is after that edge. The driver applies the fixed latency of 1; do not add a delay queue. init() is the reset state and a supplied rst must be handled.",
+      "ports": [
+        {
+          "name": "clk",
+          "direction": "input",
+          "width": 1,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "rst",
+          "direction": "input",
+          "width": 1,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "we",
+          "direction": "input",
+          "width": 1,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "addr",
+          "direction": "input",
+          "width": 5,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "wdata",
+          "direction": "input",
+          "width": 32,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "rdata",
+          "direction": "output",
+          "width": 32,
+          "protocol": "none",
+          "signed": false
+        }
+      ],
+      "latency": 1,
+      "latency_known": true,
+      "compare_mode": "fixed_latency",
+      "reset": {
+        "signal": "rst",
+        "kind": "sync",
+        "active_high": true,
+        "duration_cycles": 3
+      },
+      "parameters": {},
+      "clock_domains": [
+        "clk"
+      ],
+      "examples": [
+        {
+          "inputs": {
+            "rst": 0,
+            "we": 1,
+            "addr": 9,
+            "wdata": 3405705229
+          },
+          "expected": {
+            "rdata": 0
+          },
+          "after_cycles": 1
+        },
+        {
+          "inputs": {
+            "rst": 0,
+            "we": 1,
+            "addr": 9,
+            "wdata": 3405705229
+          },
+          "expected": {
+            "rdata": 3405705229
+          },
+          "after_cycles": 2
+        }
+      ]
+    },
+    {
+      "name": "rv_ctrl",
+      "behavior": "Multi-cycle RV32I sequencer. Every output is a function of registered state only (no combinational path from any input). Registers, all reset to 0: state in {F=0, D=1, E=2, M=3, L=4, W=5}, pc[31:0], npc[31:0], res[31:0], sdata[31:0], rd_q[4:0], wb_q, st_q, ld_q. Outputs: pc = pc; imem_raddr = pc[7:2]; retire = (state == W); rf_we = (state == W) && wb_q; rf_waddr = rd_q; rf_wdata = res; dmem_we = (state == M) && st_q; dmem_addr = res[6:2]; dmem_wdata = sdata. Neighbours: kind, funct3 and rd come from the decoder of the fetched word, y/eq/lt/ltu from the ALU, rs2_val from register read port 2, dmem_rdata from data memory. At each rising edge with rst low, using pre-edge values: in F, state = D when run = 1, else stay in F (run is sampled only in F). In D, state = E. In E: wb_q = 1 when kind is 0, 1, 4 or 5, else 0; st_q = (kind == 2); ld_q = (kind == 1); rd_q = rd; sdata = rs2_val; res = pc + 4 when kind is 4 or 5, else y; with link = pc + 4 and branch condition taken by funct3 (000 eq, 001 !eq, 100 lt, 101 !lt, 110 ltu, 111 !ltu, 010 and 011 never taken): npc = y when kind == 4 or (kind == 3 and taken), npc = y with bit 0 cleared when kind == 5, else npc = link; state = M when kind is 1 or 2, else W. In M, state = L when ld_q, else W. In L, res = dmem_rdata and state = W. In W, pc = npc and state = F. Any other state value goes to F. kinds 6 and 7 are no-operations (no write, npc = link). So an instruction takes 4 cycles (F with run, D, E, W), a store 5 and a load 6; the register write and retire are visible during W, a store's dmem_we during M. Arithmetic is modulo 2^32. Synchronous active-high rst at a rising edge returns every register to its reset value; reset has no effect between edges. Python oracle: cycle-level model, one step per rising edge; keep the registers in state and return every output as it is after that edge. The driver applies the fixed latency of 1; do not add a delay queue. init() is the reset state and a supplied rst must be handled.",
+      "ports": [
+        {
+          "name": "clk",
+          "direction": "input",
+          "width": 1,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "rst",
+          "direction": "input",
+          "width": 1,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "run",
+          "direction": "input",
+          "width": 1,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "kind",
+          "direction": "input",
+          "width": 3,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "funct3",
+          "direction": "input",
+          "width": 3,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "rd",
+          "direction": "input",
+          "width": 5,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "y",
+          "direction": "input",
+          "width": 32,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "eq",
+          "direction": "input",
+          "width": 1,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "lt",
+          "direction": "input",
+          "width": 1,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "ltu",
+          "direction": "input",
+          "width": 1,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "rs2_val",
+          "direction": "input",
+          "width": 32,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "dmem_rdata",
+          "direction": "input",
+          "width": 32,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "pc",
+          "direction": "output",
+          "width": 32,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "imem_raddr",
+          "direction": "output",
+          "width": 6,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "retire",
+          "direction": "output",
+          "width": 1,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "rf_we",
+          "direction": "output",
+          "width": 1,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "rf_waddr",
+          "direction": "output",
+          "width": 5,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "rf_wdata",
+          "direction": "output",
+          "width": 32,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "dmem_we",
+          "direction": "output",
+          "width": 1,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "dmem_addr",
+          "direction": "output",
+          "width": 5,
+          "protocol": "none",
+          "signed": false
+        },
+        {
+          "name": "dmem_wdata",
+          "direction": "output",
+          "width": 32,
+          "protocol": "none",
+          "signed": false
+        }
+      ],
+      "latency": 1,
+      "latency_known": true,
+      "compare_mode": "fixed_latency",
+      "reset": {
+        "signal": "rst",
+        "kind": "sync",
+        "active_high": true,
+        "duration_cycles": 3
+      },
+      "parameters": {},
+      "clock_domains": [
+        "clk"
+      ],
+      "examples": [
+        {
+          "inputs": {
+            "rst": 0,
+            "run": 1,
+            "kind": 0,
+            "funct3": 0,
+            "rd": 3,
+            "y": 4660,
+            "eq": 0,
+            "lt": 0,
+            "ltu": 0,
+            "rs2_val": 85,
+            "dmem_rdata": 119
+          },
+          "expected": {
+            "pc": 0,
+            "imem_raddr": 0,
+            "retire": 1,
+            "rf_we": 1,
+            "rf_waddr": 3,
+            "rf_wdata": 4660,
+            "dmem_we": 0,
+            "dmem_addr": 13,
+            "dmem_wdata": 85
+          },
+          "after_cycles": 3
+        },
+        {
+          "inputs": {
+            "rst": 0,
+            "run": 1,
+            "kind": 3,
+            "funct3": 1,
+            "rd": 9,
+            "y": 72,
+            "eq": 0,
+            "lt": 1,
+            "ltu": 0,
+            "rs2_val": 85,
+            "dmem_rdata": 119
+          },
+          "expected": {
+            "pc": 72,
+            "imem_raddr": 18,
+            "retire": 0,
+            "rf_we": 0,
+            "rf_waddr": 9,
+            "rf_wdata": 72,
+            "dmem_we": 0,
+            "dmem_addr": 18,
+            "dmem_wdata": 85
+          },
+          "after_cycles": 8
+        },
+        {
+          "inputs": {
+            "rst": 0,
+            "run": 1,
+            "kind": 1,
+            "funct3": 2,
+            "rd": 12,
+            "y": 156,
+            "eq": 1,
+            "lt": 0,
+            "ltu": 0,
+            "rs2_val": 43981,
+            "dmem_rdata": 2271560481
+          },
+          "expected": {
+            "pc": 0,
+            "imem_raddr": 0,
+            "retire": 1,
+            "rf_we": 1,
+            "rf_waddr": 12,
+            "rf_wdata": 2271560481,
+            "dmem_we": 0,
+            "dmem_addr": 8,
+            "dmem_wdata": 43981
+          },
+          "after_cycles": 5
+        }
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "src_module": "rv_ctrl",
+      "src_port": "imem_raddr",
+      "dst_module": "rv_imem",
+      "dst_port": "imem_raddr"
+    },
+    {
+      "src_module": "rv_imem",
+      "src_port": "imem_rdata",
+      "dst_module": "rv_decode",
+      "dst_port": "instr"
+    },
+    {
+      "src_module": "rv_decode",
+      "src_port": "rs1",
+      "dst_module": "rv_regfile",
+      "dst_port": "raddr1"
+    },
+    {
+      "src_module": "rv_decode",
+      "src_port": "rs2",
+      "dst_module": "rv_regfile",
+      "dst_port": "raddr2"
+    },
+    {
+      "src_module": "rv_regfile",
+      "src_port": "rdata1",
+      "dst_module": "rv_alu",
+      "dst_port": "rs1_val"
+    },
+    {
+      "src_module": "rv_regfile",
+      "src_port": "rdata2",
+      "dst_module": "rv_alu",
+      "dst_port": "rs2_val"
+    },
+    {
+      "src_module": "rv_regfile",
+      "src_port": "rdata2",
+      "dst_module": "rv_ctrl",
+      "dst_port": "rs2_val"
+    },
+    {
+      "src_module": "rv_ctrl",
+      "src_port": "pc",
+      "dst_module": "rv_alu",
+      "dst_port": "pc_val"
+    },
+    {
+      "src_module": "rv_decode",
+      "src_port": "imm",
+      "dst_module": "rv_alu",
+      "dst_port": "imm"
+    },
+    {
+      "src_module": "rv_decode",
+      "src_port": "alu_op",
+      "dst_module": "rv_alu",
+      "dst_port": "op"
+    },
+    {
+      "src_module": "rv_decode",
+      "src_port": "a_sel",
+      "dst_module": "rv_alu",
+      "dst_port": "a_sel"
+    },
+    {
+      "src_module": "rv_decode",
+      "src_port": "b_sel",
+      "dst_module": "rv_alu",
+      "dst_port": "b_sel"
+    },
+    {
+      "src_module": "rv_decode",
+      "src_port": "kind",
+      "dst_module": "rv_ctrl",
+      "dst_port": "kind"
+    },
+    {
+      "src_module": "rv_decode",
+      "src_port": "funct3",
+      "dst_module": "rv_ctrl",
+      "dst_port": "funct3"
+    },
+    {
+      "src_module": "rv_decode",
+      "src_port": "rd",
+      "dst_module": "rv_ctrl",
+      "dst_port": "rd"
+    },
+    {
+      "src_module": "rv_alu",
+      "src_port": "y",
+      "dst_module": "rv_ctrl",
+      "dst_port": "y"
+    },
+    {
+      "src_module": "rv_alu",
+      "src_port": "eq",
+      "dst_module": "rv_ctrl",
+      "dst_port": "eq"
+    },
+    {
+      "src_module": "rv_alu",
+      "src_port": "lt",
+      "dst_module": "rv_ctrl",
+      "dst_port": "lt"
+    },
+    {
+      "src_module": "rv_alu",
+      "src_port": "ltu",
+      "dst_module": "rv_ctrl",
+      "dst_port": "ltu"
+    },
+    {
+      "src_module": "rv_ctrl",
+      "src_port": "rf_we",
+      "dst_module": "rv_regfile",
+      "dst_port": "we"
+    },
+    {
+      "src_module": "rv_ctrl",
+      "src_port": "rf_waddr",
+      "dst_module": "rv_regfile",
+      "dst_port": "waddr"
+    },
+    {
+      "src_module": "rv_ctrl",
+      "src_port": "rf_wdata",
+      "dst_module": "rv_regfile",
+      "dst_port": "wdata"
+    },
+    {
+      "src_module": "rv_ctrl",
+      "src_port": "dmem_we",
+      "dst_module": "rv_dmem",
+      "dst_port": "we"
+    },
+    {
+      "src_module": "rv_ctrl",
+      "src_port": "dmem_addr",
+      "dst_module": "rv_dmem",
+      "dst_port": "addr"
+    },
+    {
+      "src_module": "rv_ctrl",
+      "src_port": "dmem_wdata",
+      "dst_module": "rv_dmem",
+      "dst_port": "wdata"
+    },
+    {
+      "src_module": "rv_dmem",
+      "src_port": "rdata",
+      "dst_module": "rv_ctrl",
+      "dst_port": "dmem_rdata"
+    }
+  ],
+  "external_ports": [
+    {
+      "name": "clk",
+      "direction": "input",
+      "width": 1,
+      "protocol": "none",
+      "signed": false
+    },
+    {
+      "name": "rst",
+      "direction": "input",
+      "width": 1,
+      "protocol": "none",
+      "signed": false
+    },
+    {
+      "name": "run",
+      "direction": "input",
+      "width": 1,
+      "protocol": "none",
+      "signed": false
+    },
+    {
+      "name": "imem_we",
+      "direction": "input",
+      "width": 1,
+      "protocol": "none",
+      "signed": false
+    },
+    {
+      "name": "imem_waddr",
+      "direction": "input",
+      "width": 6,
+      "protocol": "none",
+      "signed": false
+    },
+    {
+      "name": "imem_wdata",
+      "direction": "input",
+      "width": 32,
+      "protocol": "none",
+      "signed": false
+    },
+    {
+      "name": "pc",
+      "direction": "output",
+      "width": 32,
+      "protocol": "none",
+      "signed": false
+    },
+    {
+      "name": "retire",
+      "direction": "output",
+      "width": 1,
+      "protocol": "none",
+      "signed": false
+    },
+    {
+      "name": "rf_we",
+      "direction": "output",
+      "width": 1,
+      "protocol": "none",
+      "signed": false
+    },
+    {
+      "name": "rf_waddr",
+      "direction": "output",
+      "width": 5,
+      "protocol": "none",
+      "signed": false
+    },
+    {
+      "name": "rf_wdata",
+      "direction": "output",
+      "width": 32,
+      "protocol": "none",
+      "signed": false
+    },
+    {
+      "name": "dmem_we",
+      "direction": "output",
+      "width": 1,
+      "protocol": "none",
+      "signed": false
+    },
+    {
+      "name": "dmem_addr",
+      "direction": "output",
+      "width": 5,
+      "protocol": "none",
+      "signed": false
+    },
+    {
+      "name": "dmem_wdata",
+      "direction": "output",
+      "width": 32,
+      "protocol": "none",
+      "signed": false
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_3:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 3\n## Contract check\n- Interface and cycle behavior: PASS \u2014 ports and widths are preserved; the synchronous reset and registered PWM output are preserved, and the counter implements the same 8-bit sequence.\n- Top latency annotation: PASS \u2014 authoritative latency is unknown, so no numeric annotation is required.\n- Deterministic verification: PASS \u2014 ladder is ALIVE; compile, elaboration, and simulation exit successfully, with the required `TEST PASSED` verdict.\n- Timing and metric integrity: PASS \u2014 routed timing is feasible with WNS 0.404 ns and WHS 0.186 ns; retained metric evidence and synthesis completion are present.\n- Objective improvement: FAIL \u2014 LUT use increased from 7 to 11 while both candidate and previous best are timing-feasible; no strict LUT improvement is established.\n## Summary\n- Passed: 4 of 5\n- Failed: 1 of 5\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes behavioral and deterministic promotion gates, and its missing top latency annotation is allowed because authoritative top latency is unknown. Since the previous best already meets timing, promotion requires fewer LUTs; this candidate uses 11 versus 7, so the objective gate fails.",
+      "recommendation": "REJECT",
+      "passed": 4,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

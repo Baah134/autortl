@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_1:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 1,
+    "instruction": "In `spi_master_core`, replace the `rx_shift` receive path with shifts into `rsp_data_reg` on each rising SCLK sample edge, and remove `rx_shift` plus its reset and command-accept initialization. At the final falling edge, assert `rsp_valid_reg` without overwriting `rsp_data_reg`; the eighth bit must already have been captured on the preceding rising edge. Preserve all transfer timing, parameter behavior, reset and handshake behavior, and keep `spi_master_core` live-reached from `spi_master`; retain the top\u2019s `// @latency 33` annotation.",
+    "candidates": [
+      {
+        "iteration": 1,
+        "mutation": "standard",
+        "instruction": "In `spi_master_core`, replace the `rx_shift` receive path with shifts into `rsp_data_reg` on each rising SCLK sample edge, and remove `rx_shift` plus its reset and command-accept initialization. At the final falling edge, assert `rsp_valid_reg` without overwriting `rsp_data_reg`; the eighth bit must already have been captured on the preceding rising edge. Preserve all transfer timing, parameter behavior, reset and handshake behavior, and keep `spi_master_core` live-reached from `spi_master`; retain the top\u2019s `// @latency 33` annotation.",
+        "generated_source_sha256": "8695b9f1468b50873e3abe55976b1b8a013506ab295cdafcf8d435f35a0f3777",
+        "final_source_sha256": "8695b9f1468b50873e3abe55976b1b8a013506ab295cdafcf8d435f35a0f3777",
+        "generated_code_hash": "0e5311920f6d8e79",
+        "final_code_hash": "0e5311920f6d8e79",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.317,
+          "whs_ns": 0.082,
+          "lut_used": 20,
+          "ff_used": 31,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.015,
+          "total_power_w": 0.085
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-01\\tier4_609n_qcd\\spi_master_build\\iter_001\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-01\\tier4_609n_qcd\\spi_master_build\\iter_001\\cand_standard\\synth.tcl",
+          "sha256": "89e86dc1bd998880bd836ad0cf63922d9a2c6d9236c86b53369a525932623a17"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-01\\tier4_609n_qcd\\spi_master_build\\iter_001\\cand_standard\\spi_master.v",
+          "sha256": "fcee9b45b5d12b26515a0cd37128b58383dd84d3d05005b909613d80878ef2f3"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "ACCEPT",
+    "is_best": true,
+    "selected_source_sha256": "8695b9f1468b50873e3abe55976b1b8a013506ab295cdafcf8d435f35a0f3777"
+  },
+  "artifacts": {}
+}

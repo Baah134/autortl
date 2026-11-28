@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_1:decision:instruction:0",
+  "result": "In `rx_fifo`, replace `out_data = out_valid ? mem[rd_ptr] : 0` with a head-data register that is zero after reset and always reflects the oldest queued byte, including the empty-to-nonempty write, final pop, and simultaneous push/pop cases. Update that register from the next queue head on a pop with remaining entries, and from `wr_data` when a push becomes the new head; drive `out_data` directly from the register while keeping `out_valid` and all FIFO handshakes unchanged. Preserve the FIFO\u2019s parameter range, ordering, overflow pulse, reset behavior, and cycle-by-cycle outputs; do not add a top latency annotation because its numeric latency is unknown.",
+  "artifacts": {}
+}

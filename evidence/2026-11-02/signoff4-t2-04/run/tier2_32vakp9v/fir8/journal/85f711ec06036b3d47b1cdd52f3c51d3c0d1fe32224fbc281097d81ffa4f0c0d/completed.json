@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_2:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 2\n## Contract check\n- Interface and latency annotation: PASS \u2014 The candidate preserves the top-level ports and parameters and declares `// @latency 1`, matching authoritative latency.\n- Compilation and simulation: PASS \u2014 xvlog, xelab, and xsim exited successfully; the unchanged testbench reports `TEST PASSED`.\n- Metrics and process evidence: PASS \u2014 Required tool exits, `SYNTH_COMPLETE`, and retained routed reports are recorded; metric evidence is consistent.\n- Timing comparison: PASS \u2014 Both designs remain timing-infeasible, but setup WNS improved from -9.799 ns to -2.962 ns and hold WHS decreased by only 0.010 ns, consistent with the recorded timing progress.\n- Promotion and objective: PASS \u2014 The candidate qualifies as `timing_progress` over a timing-infeasible previous best; the contract permits this progress without timing closure or resource savings.\n\n## Summary\n- Passed: 5 of 5\n- Failed: 0\n- Improved over previous best: YES\n\n## Recommendation\nACCEPT\n\n## Reason\nThe candidate passes the deterministic verification and evidence gates, preserves the required numeric latency declaration, and shows verified timing progress over the still-infeasible previous best. Timing closure is not claimed; the contract permits promotion for this progress.",
+      "recommendation": "ACCEPT",
+      "passed": 5,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}

@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_1:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 1,
+    "instruction": "Change `counter` from 32 bits to 8 bits and replace the `counter == 255` reset-versus-increment branch with an unconditional 8-bit increment that naturally wraps from 255 to 0. Keep synchronous reset to zero and keep `pwm_out` registered from the comparison of the current counter against the 8-bit `duty`, preserving the existing cycle behavior. The change must pass the unchanged simulation and all routed metric gates, and improve LUT count strictly versus the incumbent to qualify as an objective gain.",
+    "candidates": [
+      {
+        "iteration": 1,
+        "mutation": "standard",
+        "instruction": "Change `counter` from 32 bits to 8 bits and replace the `counter == 255` reset-versus-increment branch with an unconditional 8-bit increment that naturally wraps from 255 to 0. Keep synchronous reset to zero and keep `pwm_out` registered from the comparison of the current counter against the 8-bit `duty`, preserving the existing cycle behavior. The change must pass the unchanged simulation and all routed metric gates, and improve LUT count strictly versus the incumbent to qualify as an objective gain.",
+        "generated_source_sha256": "8ecf09d7fd6c5bb3ea20ba27cb372fcbfa2271340fce583f4e311f96d871c33b",
+        "final_source_sha256": "8ecf09d7fd6c5bb3ea20ba27cb372fcbfa2271340fce583f4e311f96d871c33b",
+        "generated_code_hash": "fcf5074cb65ec305",
+        "final_code_hash": "fcf5074cb65ec305",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.412,
+          "whs_ns": 0.196,
+          "lut_used": 10,
+          "ff_used": 9,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.01,
+          "total_power_w": 0.081
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t1-03\\tier1_thbzfnr6\\pwm\\iter_001\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t1-03\\tier1_thbzfnr6\\pwm\\iter_001\\cand_standard\\synth.tcl",
+          "sha256": "7ca2d43f4bcc8d8a54ab4033f282a3217f731c01a7e14f588f092a5ff1e1e61c"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t1-03\\tier1_thbzfnr6\\pwm\\iter_001\\cand_standard\\pwm.v",
+          "sha256": "94209ac1e9a933b664cb83edddca7aa66bc443ab6de1b340dcb4b73e85e9132b"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": "8ecf09d7fd6c5bb3ea20ba27cb372fcbfa2271340fce583f4e311f96d871c33b"
+  },
+  "artifacts": {}
+}

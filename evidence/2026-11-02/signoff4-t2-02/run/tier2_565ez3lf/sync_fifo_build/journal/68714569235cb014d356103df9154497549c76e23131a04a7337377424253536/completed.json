@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Top interface and live child reachability: PASS \u2014 `sync_fifo` retains the required ports, and `sync_fifo_core` is instantiated with outputs driving the top.\n- Top latency annotation: PASS \u2014 `// @latency 1` matches the authoritative current-top latency.\n- Defined FIFO behavior: PASS \u2014 candidate source and trusted integration simulation support the specified parameterized capacity, handshakes, reset, payload order, stall stability, and minimum transfer age.\n- Compile, elaboration, and simulation: PASS \u2014 required tools exited successfully; simulation reported `TEST PASSED`.\n- Routed reports and metric integrity: PASS \u2014 retained routed timing and utilization reports are present, and synthesis completed successfully.\n- Timing closure: PASS \u2014 candidate timing is feasible with WNS 0.164 ns and WHS 0.128 ns.\n- Improvement over previous best: PASS \u2014 this is valid `timing_recovery` from a verified timing-infeasible incumbent; higher LUT and FF counts do not disqualify recovery.\n## Summary\n- Passed: 7 of 7\n- Failed: 0\n- Improved over previous best: YES\n## Recommendation\nACCEPT\n## Reason\nThe candidate passes the deterministic verification and routed metric gates, preserves the defined FIFO behavior, and closes timing where the previous best had negative setup slack. The recorded timing recovery is valid despite increased area.",
+      "recommendation": "ACCEPT",
+      "passed": 7,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}

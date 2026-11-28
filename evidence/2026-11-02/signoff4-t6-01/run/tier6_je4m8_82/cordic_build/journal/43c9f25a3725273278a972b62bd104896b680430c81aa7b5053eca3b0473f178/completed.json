@@ -1,0 +1,5 @@
+{
+  "stage": "module_cordic_prerot:model:generator.golden_model:0",
+  "result": "def init():\n    return dict()\n\n\ndef step(state, inputs):\n    angle = int(inputs.get(\"angle\", 0)) & 0xffff\n    quadrant = (angle >> 14) & 3\n\n    if quadrant == 1 or quadrant == 2:\n        x0 = (1 << 18) - 39797\n        reduced = angle ^ 0x8000\n    else:\n        x0 = 39797\n        reduced = angle\n\n    z0 = (reduced << 4) & 0xfffff\n    outputs = {\"x0\": x0 & 0x3ffff, \"z0\": z0}\n    return state, outputs",
+  "artifacts": {}
+}

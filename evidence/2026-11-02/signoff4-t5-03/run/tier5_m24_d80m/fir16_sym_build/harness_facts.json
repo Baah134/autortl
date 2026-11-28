@@ -1,0 +1,568 @@
+{
+  "allowed_flow_variations": "The harness may enable retiming or physical optimization. The candidate's retained synthesis script is authoritative for its actual settings.",
+  "authority": "Harness evidence is fixed. Proposed architectural goals cannot redefine it.",
+  "baseline_metrics": {
+    "bram_total": 50.0,
+    "bram_used": 0.0,
+    "dsp_total": 90,
+    "dsp_used": 7,
+    "dynamic_power_w": 0.028,
+    "ff_pct": 0.78125,
+    "ff_total": 41600,
+    "ff_used": 325,
+    "lut_pct": 1.8653846153846154,
+    "lut_total": 20800,
+    "lut_used": 388,
+    "reg2reg_wns_ns": -11.741,
+    "sim_error": "",
+    "sim_passed": true,
+    "synth_error": "",
+    "timing_met": false,
+    "total_power_w": 0.097,
+    "whs_ns": 0.103,
+    "wns_ns": -11.741
+  },
+  "build_spec": {
+    "authority": "Complete resolved typed build contract. Defined behavior is mandatory; explicitly unspecified cases remain unspecified. Frozen implementation identities do not turn incidental values in unspecified cases into requirements.",
+    "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-03\\tier5_m24_d80m\\fir16_sym_build\\design_spec.json",
+    "resolved_spec": {
+      "connections": [],
+      "external_ports": [
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "clk",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "rst",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "in_sample",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": true,
+          "width": 16
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "in_valid",
+          "packed_dimensions": null,
+          "protocol": "valid_ready",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "output",
+          "name": "in_ready",
+          "packed_dimensions": null,
+          "protocol": "valid_ready",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "output",
+          "name": "out_sample",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": true,
+          "width": 16
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "output",
+          "name": "out_valid",
+          "packed_dimensions": null,
+          "protocol": "valid_ready",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "out_ready",
+          "packed_dimensions": null,
+          "protocol": "valid_ready",
+          "signed": false,
+          "width": 1
+        }
+      ],
+      "modules": [
+        {
+          "behavior": "Sixteen-tap symmetric FIR filter on a signed 16-bit valid/ready sample stream with round-half-up scaling, saturation and a five-slot elastic pipeline. Coefficients h[0..15] = -6, -20, -24, 18, 110, 226, 330, 390, 390, 330, 226, 110, 18, -24, -20, -6: h[k] = h[15-k], eight unique signed values that each fit 10-bit two's complement, total 2048. Let x[n] be the n-th accepted in_sample (two's complement) since reset, with x[m] = 0 for every position before the first sample accepted after reset. For each accepted sample compute the exact integer acc = sum over k = 0..15 of h[k] * x[n-k]; the pre-adder form sum over k = 0..7 of h[k] * (x[n-k] + x[n-15+k]) is equivalent, and each pairwise sum needs 17 bits. |acc| <= 73662464, so 28 signed bits hold it exactly. Then r = floor((acc + 1024) / 2048) (add 1024, arithmetic shift right by 11: round half up) and out_sample = 32767 if r > 32767, -32768 if r < -32768, else r (saturate, never wrap). Only accepted samples enter the history; invalid or blocked cycles never change it. Handshake: five elastic slots with valid bits v1..v5, all 0 after reset; out_valid = v5 and out_sample is the result held in slot 5. ready5 = !v5 || out_ready, ready_i = !v_i || ready_(i+1) for i = 4, 3, 2, 1, and in_ready = ready1: a combinational function of out_ready and the registered valid bits only, with no path from in_valid, in_sample or rst. At a rising edge with rst low, every slot i whose ready_i is 1 takes the valid bit and result of slot i-1, where slot 0 is the input (valid = in_valid; the sample is accepted when in_valid && in_ready); a slot whose ready_i is 0 holds. So a sample accepted at edge k reaches slot 5 after edge k+4 at the earliest and can transfer at edge k+5 (minimum accepted-transfer age 5, exact when out_ready stays high); the pipeline sustains one sample per cycle; bubbles collapse, so in_ready is 0 only when all five slots are full and out_ready is 0. While out_valid && !out_ready, out_valid and out_sample stay stable. out_sample is unspecified while out_valid = 0. Synchronous active-high rst at a rising edge empties every slot, clears the history to zero and overrides acceptance; reset has no effect between edges (an off-edge rst pulse changes nothing). Producers hold in_sample and in_valid while blocked. For the Python scoreboard oracle ONLY: each non-reset step is one accepted sample; keep the previous 15 accepted samples in state (zeros after reset), read in_sample as signed 16-bit, compute acc, r and the saturated result, and return out_sample masked to 16 bits. A supplied rst clears the history and returns out_sample 0; init() is the reset state. Do not model the slots, readiness or backpressure in the oracle. Each example starts from reset and after_cycles repeats the same accepted sample: 1000 once gives acc = -6000 and out_sample -3 (65533); 32767 thirteen times gives acc = 32767 * 2098 and saturates to 32767; -32768 eight times gives acc = -32768 * 1024 and r = -16384 (49152).",
+          "clock_domains": [
+            "clk"
+          ],
+          "compare_mode": "scoreboard",
+          "examples": [
+            {
+              "after_cycles": 1,
+              "expected": {
+                "out_sample": 65533
+              },
+              "inputs": {
+                "in_sample": 1000,
+                "in_valid": 1,
+                "out_ready": 1,
+                "rst": 0
+              }
+            },
+            {
+              "after_cycles": 13,
+              "expected": {
+                "out_sample": 32767
+              },
+              "inputs": {
+                "in_sample": 32767,
+                "in_valid": 1,
+                "out_ready": 1,
+                "rst": 0
+              }
+            },
+            {
+              "after_cycles": 8,
+              "expected": {
+                "out_sample": 49152
+              },
+              "inputs": {
+                "in_sample": 32768,
+                "in_valid": 1,
+                "out_ready": 1,
+                "rst": 0
+              }
+            }
+          ],
+          "golden_model": "",
+          "interface_signature": null,
+          "latency": 5,
+          "latency_known": true,
+          "name": "fir16_sym_core",
+          "parameters": {},
+          "ports": [
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "clk",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "rst",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "in_sample",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": true,
+              "width": 16
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "in_valid",
+              "packed_dimensions": null,
+              "protocol": "valid_ready",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "in_ready",
+              "packed_dimensions": null,
+              "protocol": "valid_ready",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "out_sample",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": true,
+              "width": 16
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "out_valid",
+              "packed_dimensions": null,
+              "protocol": "valid_ready",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "out_ready",
+              "packed_dimensions": null,
+              "protocol": "valid_ready",
+              "signed": false,
+              "width": 1
+            }
+          ],
+          "reset": {
+            "active_high": true,
+            "duration_cycles": 3,
+            "kind": "sync",
+            "signal": "rst"
+          }
+        }
+      ],
+      "top_name": "fir16_sym"
+    },
+    "sha256": "23f422db23853e0cf09dfa32389f4d13fd45b413bb924602fd7a849d1bd2406f",
+    "truncated": false
+  },
+  "clock_period_ns": 6.666666666666667,
+  "declared_latency": {
+    "cycles": 5,
+    "known": true,
+    "meaning": "A source annotation declares numeric latency only when present. This known/cycles pair is authoritative for the current top module's annotation requirement. Only known=true requires a matching numeric top annotation. Child typed-module latency does not invent a top annotation for arbitrary aggregate wrappers. When known=false, absence of a top annotation is not a failed or unverifiable criterion. Unannotated numeric latency is UNKNOWN, not zero. Preserve the source's exact observable cycles and registered behavior. Annotation presence or absence alone is not independent proof of behavioral correctness; use the fixed source contract, all defined typed latency/minimum transfer age and deterministic verification, without inventing a numeric requirement.",
+    "source_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-03\\tier5_m24_d80m\\fir16_sym_build\\iter_000\\fir16_sym.v",
+    "source_sha256": "4ae08db07da1ef31440525900e28c84c9e17fbaab619a476cad39900050dc240"
+  },
+  "edit_scope": {
+    "children": [
+      "fir16_sym_core"
+    ],
+    "mode": "whole_design",
+    "reason": "The supplied testbench instantiates the top fir16_sym and is the trusted integration authority, so every generated child module and the mechanical top form one editable unit verified through the top. Per-child generated oracles and testbenches verified the baseline children only and are not evidence for changed children.",
+    "testbench_modules": [],
+    "top": "fir16_sym"
+  },
+  "execution_context": {
+    "dependencies": [],
+    "implementation": "out_of_context",
+    "part": "xc7a35tcpg236-1",
+    "period_ns": 6.666666666666667,
+    "promotions": {
+      "Designutils 20-1307": "ERROR",
+      "Synth 8-327": "ERROR",
+      "Synth 8-3352": "ERROR",
+      "Synth 8-9873": "ERROR",
+      "VRFC 10-3609": "ERROR"
+    },
+    "synthesis_template": "61e44d95134130552d86e050a4db65035952d348028dc942b327b8aced90b3d1",
+    "tb": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-03\\tier5_m24_d80m\\fir16_sym_build\\inputs\\testbench_path.v",
+      "sha256": "c899218aedf02b74edd1bde45753f30a6c1e34d712bed49c88a1e6ec8adabe65"
+    },
+    "tools": {
+      "vivado_bin": {
+        "path": "C:\\AMDDesignTools\\2025.2\\Vivado\\bin\\vivado.bat",
+        "sha256": "4f9c05aea82a71c7086a9e5edf01ba16ea70255f69cf3420c58b805ec113e994"
+      },
+      "xelab_bin": {
+        "path": "C:\\AMDDesignTools\\2025.2\\Vivado\\bin\\xelab.bat",
+        "sha256": "512a29ace988992d7fab14ca84f20f0b4515bb69ef1d5fef0a57c5f28b72c9b1"
+      },
+      "xsim_bin": {
+        "path": "C:\\AMDDesignTools\\2025.2\\Vivado\\bin\\xsim.bat",
+        "sha256": "8819fbb54fdf9cbcaaf24c2bf72801b403d5c93e0990ba32408b56c666761d21"
+      },
+      "xvlog_bin": {
+        "path": "C:\\AMDDesignTools\\2025.2\\Vivado\\bin\\xvlog.bat",
+        "sha256": "512a29ace988992d7fab14ca84f20f0b4515bb69ef1d5fef0a57c5f28b72c9b1"
+      }
+    },
+    "top": "fir16_sym"
+  },
+  "first_violated_path_excerpt": {
+    "category": "setup",
+    "destination": "u_fir16_sym_core/data1_reg[3]/S",
+    "fanout": 324,
+    "logic_levels": 23,
+    "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-03\\tier5_m24_d80m\\fir16_sym_build\\iter_000\\timing_routed.rpt",
+    "preview_policy": "First complete identifiable violated path in report order, at most 6000 characters. Slack, endpoints, levels and fanout describe this path only, not global WNS/WHS. Resource text is retained verbatim; absent fields are unknown.",
+    "sha256": "8166b2404f20b4205778b062f50e055e4821f29096e5747a5764244b7cb5ee07",
+    "slack_ns": -11.741,
+    "source": "u_fir16_sym_core/history_reg[2][6]/C",
+    "text": "Slack (VIOLATED) :        -11.741ns  (required time - arrival time)\r\n  Source:                 u_fir16_sym_core/history_reg[2][6]/C\r\n                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@3.333ns period=6.667ns})\r\n  Destination:            u_fir16_sym_core/data1_reg[3]/S\r\n                            (rising edge-triggered cell FDSE clocked by clk  {rise@0.000ns fall@3.333ns period=6.667ns})\r\n  Path Group:             clk\r\n  Path Type:              Setup (Max at Slow Process Corner)\r\n  Requirement:            6.667ns  (clk rise@6.667ns - clk rise@0.000ns)\r\n  Data Path Delay:        17.928ns  (logic 10.118ns (56.437%)  route 7.810ns (43.563%))\r\n  Logic Levels:           23  (CARRY4=16 DSP48E1=1 LUT2=2 LUT3=2 LUT4=1 LUT6=1)\r\n  Clock Path Skew:        -0.016ns (DCD - SCD + CPR)\r\n    Destination Clock Delay (DCD):    1.449ns = ( 8.116 - 6.667 ) \r\n    Source Clock Delay      (SCD):    1.558ns\r\n    Clock Pessimism Removal (CPR):    0.093ns\r\n  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE\r\n    Total System Jitter     (TSJ):    0.071ns\r\n    Total Input Jitter      (TIJ):    0.000ns\r\n    Discrete Jitter          (DJ):    0.000ns\r\n    Phase Error              (PE):    0.000ns\r\n\r\n    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)\r\n  -------------------------------------------------------------------    -------------------\r\n                         (clock clk rise edge)        0.000     0.000 r  \r\n                                                      0.000     0.000 r  clk (IN)\r\n                         net (fo=324, unset)          1.558     1.558    u_fir16_sym_core/clk\r\n    SLICE_X13Y29         FDRE                                         r  u_fir16_sym_core/history_reg[2][6]/C\r\n  -------------------------------------------------------------------    -------------------\r\n    SLICE_X13Y29         FDRE (Prop_fdre_C_Q)         0.456     2.014 r  u_fir16_sym_core/history_reg[2][6]/Q\r\n                         net (fo=3, routed)           0.868     2.882    u_fir16_sym_core/history_reg[2][6]\r\n    SLICE_X12Y29         LUT2 (Prop_lut2_I0_O)        0.124     3.006 r  u_fir16_sym_core/prod3_i_16/O\r\n                         net (fo=1, routed)           0.000     3.006    u_fir16_sym_core/prod3_i_16_n_0\r\n    SLICE_X12Y29         CARRY4 (Prop_carry4_S[2]_CO[3])\r\n                                                      0.380     3.386 r  u_fir16_sym_core/prod3_i_4/CO[3]\r\n                         net (fo=1, routed)           0.000     3.386    u_fir16_sym_core/prod3_i_4_n_0\r\n    SLICE_X12Y30         CARRY4 (Prop_carry4_CI_CO[3])\r\n                                                      0.117     3.503 r  u_fir16_sym_core/prod3_i_3/CO[3]\r\n                         net (fo=1, routed)           0.000     3.503    u_fir16_sym_core/prod3_i_3_n_0\r\n    SLICE_X12Y31         CARRY4 (Prop_carry4_CI_CO[3])\r\n                                                      0.117     3.620 r  u_fir16_sym_core/prod3_i_2/CO[3]\r\n                         net (fo=1, routed)           0.000     3.620    u_fir16_sym_core/prod3_i_2_n_0\r\n    SLICE_X12Y32         CARRY4 (Prop_carry4_CI_O[0])\r\n                                                      0.219     3.839 r  u_fir16_sym_core/prod3_i_1/O[0]\r\n                         net (fo=14, routed)          0.814     4.653    u_fir16_sym_core/prod3_i_1_n_7\r\n    DSP48_X0Y12          DSP48E1 (Prop_dsp48e1_A[16]_P[0])\r\n                                                      4.012     8.665 r  u_fir16_sym_core/prod3/P[0]\r\n                         net (fo=3, routed)           1.038     9.703    u_fir16_sym_core/prod3__0[0]\r\n    SLICE_X11Y35         LUT3 (Prop_lut3_I1_O)        0.124     9.827 r  u_fir16_sym_core/acc_wide__83_carry_i_3/O\r\n                         net (fo=1, routed)           0.621    10.448    u_fir16_sym_core/acc_wide__83_carry_i_3_n_0\r\n    SLICE_X6Y32          CARRY4 (Prop_carry4_DI[1]_CO[3])\r\n                                                      0.520    10.968 r  u_fir16_sym_core/acc_wide__83_carry/CO[3]\r\n                         net (fo=1, routed)           0.000    10.968    u_fir16_sym_core/acc_wide__83_carry_n_0\r\n    SLICE_X6Y33          CARRY4 (Prop_carry4_CI_CO[3])\r\n                                                      0.117    11.085 r  u_fir16_sym_core/acc_wide__83_carry__0/CO[3]\r\n                         net (fo=1, routed)           0.000    11.085    u_fir16_sym_core/acc_wide__83_carry__0_n_0\r\n    SLICE_X6Y34          CARRY4 (Prop_carry4_CI_O[0])\r\n                                                      0.219    11.304 r  u_fir16_sym_core/acc_wide__83_carry__1/O[0]\r\n                         net (fo=3, routed)           0.810    12.114    u_fir16_sym_core/acc_wide__83_carry__1_n_7\r\n    SLICE_X4Y33          LUT3 (Prop_lut3_I1_O)        0.295    12.409 r  u_fir16_sym_core/acc_wide__163_carry__1_i_15/O\r\n                         net (fo=2, routed)           1.019    13.428    u_fir16_sym_core/acc_wide__163_carry__1_i_15_n_0\r\n    SLICE_X9Y33          LUT6 (Prop_lut6_I2_O)        0.124    13.552 r  u_fir16_sym_core/acc_wide__163_carry__1_i_6/O\r\n                         net (fo=1, routed)           0.000    13.552    u_fir16_sym_core/acc_wide__163_carry__1_i_6_n_0\r\n    SLICE_X9Y33          CARRY4 (Prop_carry4_S[2]_CO[3])\r\n                                                      0.398    13.950 r  u_fir16_sym_core/acc_wide__163_carry__1/CO[3]\r\n                         net (fo=1, routed)           0.000    13.950    u_fir16_sym_core/acc_wide__163_carry__1_n_0\r\n    SLICE_X9Y34          CARRY4 (Prop_carry4_CI_O[1])\r\n                                                      0.334    14.284 r  u_fir16_sym_core/acc_wide__163_carry__2/O[1]\r\n                         net (fo=1, routed)           0.714    14.998    u_fir16_sym_core/p_0_in[13]\r\n    SLICE_X12Y34         CARRY4 (Prop_carry4_S[0]_CO[3])\r\n                                                      0.816    15.814 r  u_fir16_sym_core/rounded0_carry__0/CO[3]\r\n",
+    "truncated": true
+  },
+  "flow_and_constraints": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-03\\tier5_m24_d80m\\fir16_sym_build\\iter_000\\synth.tcl",
+      "sha256": "99ae77f51bced5a962d21acafa38bb789672d094b3d5763fd1c03d1c6e584e88",
+      "text": "set_msg_config -id {VRFC 10-3609} -new_severity ERROR\r\nset_msg_config -id {Synth 8-9873} -new_severity ERROR\r\nset_msg_config -id {Designutils 20-1307} -new_severity ERROR\r\nset_msg_config -id {Synth 8-327} -new_severity ERROR\r\nset_msg_config -id {Synth 8-3352} -new_severity ERROR\r\nset_part xc7a35tcpg236-1\r\nread_verilog \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t5-03/tier5_m24_d80m/fir16_sym_build/iter_000/fir16_sym.v\"\r\nset fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t5-03/tier5_m24_d80m/fir16_sym_build/iter_000/timing.xdc\" w]\r\nputs $fp {create_clock -period 6.667 -name clk [get_ports clk]}\r\nputs $fp {set_property HD.CLK_SRC BUFGCTRL_X0Y0 [get_ports clk]}\r\nclose $fp\r\nread_xdc \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t5-03/tier5_m24_d80m/fir16_sym_build/iter_000/timing.xdc\"\r\nsynth_design -top fir16_sym -flatten_hierarchy rebuilt -mode out_of_context \r\nreport_utilization -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t5-03/tier5_m24_d80m/fir16_sym_build/iter_000/utilization.rpt\"\r\nreport_timing_summary -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t5-03/tier5_m24_d80m/fir16_sym_build/iter_000/timing.rpt\"\r\nopt_design\r\nplace_design\r\n\r\nroute_design\r\nreport_utilization -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t5-03/tier5_m24_d80m/fir16_sym_build/iter_000/utilization_routed.rpt\"\r\nreport_timing_summary -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t5-03/tier5_m24_d80m/fir16_sym_build/iter_000/timing_routed.rpt\"\r\ncatch { if {[llength [all_registers]] > 0} { report_timing -from [all_registers] -to [all_registers] -max_paths 1 -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t5-03/tier5_m24_d80m/fir16_sym_build/iter_000/timing_reg2reg.rpt\" } }\r\nreport_design_analysis -logic_level_distribution -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t5-03/tier5_m24_d80m/fir16_sym_build/iter_000/design_analysis.rpt\"\r\nreport_power -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t5-03/tier5_m24_d80m/fir16_sym_build/iter_000/power.rpt\"\r\ncatch { report_methodology -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t5-03/tier5_m24_d80m/fir16_sym_build/iter_000/methodology.rpt\" }\r\ncatch { report_qor_suggestions -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t5-03/tier5_m24_d80m/fir16_sym_build/iter_000/qor_suggestions.rpt\" }\r\nputs \"SYNTH_COMPLETE\"\r\n",
+      "truncated": false
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-03\\tier5_m24_d80m\\fir16_sym_build\\iter_000\\timing.xdc",
+      "sha256": "952d85aec49f6e20f2003112943b665b86d078d91c18438bd81498e37ec1a892",
+      "text": "create_clock -period 6.667 -name clk [get_ports clk]\r\nset_property HD.CLK_SRC BUFGCTRL_X0Y0 [get_ports clk]\r\n",
+      "truncated": false
+    }
+  ],
+  "hard_gates": [
+    "Preserve typed build spec defined behavior, ports, parameter defaults, reset and observable cycles; explicitly unspecified cases remain unspecified.",
+    "Use the fixed provided testbench, tools, device and constraints without modification.",
+    "Static/interface checks, compile, simulation and real routed metric integrity must pass.",
+    "Timing closure requires setup slack >= 0 and hold slack >= 0.",
+    "Unknown or absent evidence cannot count as success."
+  ],
+  "implementation": {
+    "meaning": "Out-of-context implementation (chip_top_flow_for_soc_block): the top is a block inside a larger design, synthesized with synth_design -mode out_of_context and placed and routed without I/O buffers or package pins. clk is constrained at the target period and modeled as driven by a global clock buffer (HD.CLK_SRC). Data ports have no input or output delay and no pad delay, so they are unconstrained I/O; the routed WNS and WHS, and timing acceptance, cover the internal clocked paths only, and combinational logic between a port and its first or last register is not timed. Utilization excludes I/O buffers.",
+    "mode": "out_of_context"
+  },
+  "metric_provenance": "Structured metrics are parsed from retained reports; routed utilization/timing reports take precedence when present. The manifest identifies complete files by hash. Header excerpts are bounded previews, not complete reports or an independent metric source.",
+  "objective": "minimize_luts",
+  "objective_policy": "First establish timing feasibility. A verified timing-feasible candidate may replace a known timing-infeasible previous best even with higher area or power; classify this as timing_recovery, not objective savings. While the previous best is timing-infeasible, a verified still-infeasible candidate with strictly better setup WNS and hold not worse beyond a small tolerance may replace it as timing_progress, which is not closure; a feasible candidate always outranks it. Once both are timing-feasible, require strict improvement of the chosen objective; for maximize_freq that is register-to-register setup slack (reg2reg_wns_ns) when both designs report it, otherwise full setup WNS for both, while feasibility stays on full WNS and WHS. minimize_luts compares (lut_used, ff_used) and minimize_ffs compares (ff_used, lut_used) lexicographically: an equal primary metric with a strictly lower secondary is an objective improvement, a higher primary never is, and a secondary missing from either design gives no tie-break. Unknown or contradictory incumbent timing evidence cannot establish recovery. A completed experiment may find no improvement. Do not invent mandatory savings, slack margins, tool versions, timing corners, new tests, thresholds, code-style quotas or external environment requirements.",
+  "part": "xc7a35tcpg236-1",
+  "report_headers": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-03\\tier5_m24_d80m\\fir16_sym_build\\iter_000\\power.rpt",
+      "sha256": "8fcd47e8642187052f5bbe5f44d216b5ccbeb2ee6cb339947f54f908183bb651",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version     : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date             : Tue Nov  3 12:01:30 2026\r\n| Host             : Baah running 64-bit major release  (build 9200)\r\n| Command          : report_power -file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t5-03/tier5_m24_d80m/fir16_sym_build/iter_000/power.rpt\r\n| Design           : fir16_sym\r\n| Device           : xc7a35tcpg236-1\r\n| Design State     : routed\r\n| Grade            : commercial\r\n| Process          : typical\r\n| Characterization : Production\r\n------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nPower Report\r\n\r\nTable of Contents\r\n-----------------\r\n1. Summary\r\n1.1 On-Chip Components\r\n1.2 Power Supply Summary\r\n1.3 Confidence Level\r\n2. Settings\r\n2.1 Environment\r\n2.2 Clock Constraints\r\n3. Detailed Reports\r\n3.1 By Hierarchy\r\n\r\n1. Summary\r\n----------\r\n\r\n+--------------------------+--------------+\r\n| Total On-Chip Power (W)  | 0.097        |\r\n| Design Power Budget (W)  | Unspecified* |\r\n| Power Budget Margin (W)  | NA           |\r\n| Dynamic (W)              | 0.028        |\r\n| Device Static (W)        | 0.068        |\r\n| Effective TJA (C/W)      | 5.0          |\r\n| Max Ambient (C)          | 84.5         |\r\n| Junction Temperature (C) | 25.5         |\r\n| Confidence Level         | Medium       |\r\n| Setting File             | ---          |\r\n| Simulation Activity File | ---    ",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-03\\tier5_m24_d80m\\fir16_sym_build\\iter_000\\timing.rpt",
+      "sha256": "d4e2a400750c036ca25b3f27b1f543b758dcdedb401542982f0d25a4e64bf741",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n----------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date         : Tue Nov  3 11:57:49 2026\r\n| Host         : Baah running 64-bit major release  (build 9200)\r\n| Command      : report_timing_summary -file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t5-03/tier5_m24_d80m/fir16_sym_build/iter_000/timing.rpt\r\n| Design       : fir16_sym\r\n| Device       : 7a35t-cpg236\r\n| Speed File   : -1  PRODUCTION 1.23 2018-06-13\r\n| Design State : Synthesized\r\n----------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nTiming Summary Report\r\n\r\n------------------------------------------------------------------------------------------------\r\n| Timer Settings\r\n| --------------\r\n------------------------------------------------------------------------------------------------\r\n\r\n  Enable Multi Corner Analysis               :  Yes\r\n  Enable Pessimism Removal                   :  Yes\r\n  Pessimism Removal Resolution               :  Nearest Common Node\r\n  Enable Input Delay Default Clock           :  No\r\n  Enable Preset / Clear Arcs                 :  No\r\n  Disable Flight Delays                      :  No\r\n  Ignore I/O Paths                           :  No\r\n  Timing Early Launch at Borrowing Latches   :  No\r\n  Borrow Time for Max Delay Exceptions       :  Yes\r\n  Merge Timing Exceptions                    :  Yes\r\n  Inter-SLR Compensation                     :  Conserva",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-03\\tier5_m24_d80m\\fir16_sym_build\\iter_000\\timing_reg2reg.rpt",
+      "sha256": "93699111c7ec669d5bb76a9e2398df428b6079f2a5a494e9013a4248b4362b13",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date         : Tue Nov  3 12:01:29 2026\r\n| Host         : Baah running 64-bit major release  (build 9200)\r\n| Command      : report_timing -from [all_registers] -to [all_registers] -max_paths 1 -file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t5-03/tier5_m24_d80m/fir16_sym_build/iter_000/timing_reg2reg.rpt\r\n| Design       : fir16_sym\r\n| Device       : 7a35t-cpg236\r\n| Speed File   : -1  PRODUCTION 1.23 2018-06-13\r\n| Design State : Routed\r\n-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nTiming Report\r\n\r\nSlack (VIOLATED) :        -11.741ns  (required time - arrival time)\r\n  Source:                 u_fir16_sym_core/history_reg[2][6]/C\r\n                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@3.333ns period=6.667ns})\r\n  Destination:            u_fir16_sym_core/data1_reg[3]/S\r\n                            (rising edge-triggered cell FDSE clocked by clk  {rise@0.000ns fall@3.333ns period=6.667ns})\r\n  Path Group:             clk\r\n  Path Type:              Setup (Max at Slow Process Corner)\r\n  Requirement:            6.667ns  (clk rise@6.667ns - clk rise@0.000ns)\r\n  Data Path Delay:        17.928ns  (logic 10.118ns (56.437%)  route 7.810ns",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-03\\tier5_m24_d80m\\fir16_sym_build\\iter_000\\timing_routed.rpt",
+      "sha256": "8166b2404f20b4205778b062f50e055e4821f29096e5747a5764244b7cb5ee07",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n-----------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date         : Tue Nov  3 12:01:29 2026\r\n| Host         : Baah running 64-bit major release  (build 9200)\r\n| Command      : report_timing_summary -file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t5-03/tier5_m24_d80m/fir16_sym_build/iter_000/timing_routed.rpt\r\n| Design       : fir16_sym\r\n| Device       : 7a35t-cpg236\r\n| Speed File   : -1  PRODUCTION 1.23 2018-06-13\r\n| Design State : Routed\r\n-----------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nTiming Summary Report\r\n\r\n------------------------------------------------------------------------------------------------\r\n| Timer Settings\r\n| --------------\r\n------------------------------------------------------------------------------------------------\r\n\r\n  Enable Multi Corner Analysis               :  Yes\r\n  Enable Pessimism Removal                   :  Yes\r\n  Pessimism Removal Resolution               :  Nearest Common Node\r\n  Enable Input Delay Default Clock           :  No\r\n  Enable Preset / Clear Arcs                 :  No\r\n  Disable Flight Delays                      :  No\r\n  Ignore I/O Paths                           :  No\r\n  Timing Early Launch at Borrowing Latches   :  No\r\n  Borrow Time for Max Delay Exceptions       :  Yes\r\n  Merge Timing Exceptions                    :  Yes\r\n  Inter-SLR Compensation                ",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-03\\tier5_m24_d80m\\fir16_sym_build\\iter_000\\utilization.rpt",
+      "sha256": "71f580fe053ea7362bbc9bd37457a8b586473ff39a50cd2b51403fb7812d53b0",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\n------------------------------------------------------------------------------------------------------------------------------------------------------------------\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\n| Date         : Tue Nov  3 11:57:28 2026\n| Host         : Baah running 64-bit major release  (build 9200)\n| Command      : report_utilization -file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t5-03/tier5_m24_d80m/fir16_sym_build/iter_000/utilization.rpt\n| Design       : fir16_sym\n| Device       : xc7a35tcpg236-1\n| Speed File   : -1\n| Design State : Synthesized\n------------------------------------------------------------------------------------------------------------------------------------------------------------------\n\nUtilization Design Information\n\nTable of Contents\n-----------------\n1. Slice Logic\n1.1 Summary of Registers by Type\n2. Memory\n3. DSP\n4. IO and GT Specific\n5. Clocking\n6. Specific Feature\n7. Primitives\n8. Black Boxes\n9. Instantiated Netlists\n\n1. Slice Logic\n--------------\n\n+-------------------------+------+-------+------------+-----------+-------+\n|        Site Type        | Used | Fixed | Prohibited | Available | Util% |\n+-------------------------+------+-------+------------+-----------+-------+\n| Slice LUTs*             |  391 |     0 |          0 |     20800 |  1.88 |\n|   LUT as Logic          |  391 |     0 |          0 |     20800 |  1.88 |\n|   LUT as Memory         |    0 |     0 |          0 |      9600 |  0.00 |\n| Slice Registers         |  325 |     0 |          0 |     41600 |  0.78 |\n|   Register as Flip Flop |  325 |     0 |          0 |     41600 |  0.78 |\n|   Re",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-03\\tier5_m24_d80m\\fir16_sym_build\\iter_000\\utilization_routed.rpt",
+      "sha256": "062abff99c21805270a7cb610b18be337d8c9776591f75c4fade8f656c576892",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\n-------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\n| Date         : Tue Nov  3 12:01:28 2026\n| Host         : Baah running 64-bit major release  (build 9200)\n| Command      : report_utilization -file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t5-03/tier5_m24_d80m/fir16_sym_build/iter_000/utilization_routed.rpt\n| Design       : fir16_sym\n| Device       : xc7a35tcpg236-1\n| Speed File   : -1\n| Design State : Routed\n-------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n\nUtilization Design Information\n\nTable of Contents\n-----------------\n1. Slice Logic\n1.1 Summary of Registers by Type\n2. Slice Logic Distribution\n3. Memory\n4. DSP\n5. IO and GT Specific\n6. Clocking\n7. Specific Feature\n8. Primitives\n9. Black Boxes\n10. Instantiated Netlists\n\n1. Slice Logic\n--------------\n\n+-------------------------+------+-------+------------+-----------+-------+\n|        Site Type        | Used | Fixed | Prohibited | Available | Util% |\n+-------------------------+------+-------+------------+-----------+-------+\n| Slice LUTs              |  388 |     0 |          0 |     20800 |  1.87 |\n|   LUT as Logic          |  388 |     0 |          0 |     20800 |  1.87 |\n|   LUT as Memory         |    0 |     0 |          0 |      9600 |  0.00 |\n| Slice Registers         |  325 |     0 |          0 |     41600 |  0.78 |\n|   Register as Flip Flop |  325 |   ",
+      "truncated": true
+    }
+  ],
+  "report_manifest": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-03\\tier5_m24_d80m\\fir16_sym_build\\iter_000\\power.rpt",
+      "sha256": "8fcd47e8642187052f5bbe5f44d216b5ccbeb2ee6cb339947f54f908183bb651"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-03\\tier5_m24_d80m\\fir16_sym_build\\iter_000\\timing.rpt",
+      "sha256": "d4e2a400750c036ca25b3f27b1f543b758dcdedb401542982f0d25a4e64bf741"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-03\\tier5_m24_d80m\\fir16_sym_build\\iter_000\\timing_reg2reg.rpt",
+      "sha256": "93699111c7ec669d5bb76a9e2398df428b6079f2a5a494e9013a4248b4362b13"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-03\\tier5_m24_d80m\\fir16_sym_build\\iter_000\\timing_routed.rpt",
+      "sha256": "8166b2404f20b4205778b062f50e055e4821f29096e5747a5764244b7cb5ee07"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-03\\tier5_m24_d80m\\fir16_sym_build\\iter_000\\utilization.rpt",
+      "sha256": "71f580fe053ea7362bbc9bd37457a8b586473ff39a50cd2b51403fb7812d53b0"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-03\\tier5_m24_d80m\\fir16_sym_build\\iter_000\\utilization_routed.rpt",
+      "sha256": "062abff99c21805270a7cb610b18be337d8c9776591f75c4fade8f656c576892"
+    }
+  ],
+  "schema_version": 1,
+  "simulation": {
+    "failure_verdict": "TEST FAILED",
+    "required_verdict": "TEST PASSED",
+    "scope": "Provided testbench checks; not a formal equivalence proof.",
+    "tools": [
+      "xvlog",
+      "xelab",
+      "xsim -runall"
+    ]
+  },
+  "sources": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-03\\tier5_m24_d80m\\fir16_sym_build\\iter_000\\fir16_sym.v",
+      "sha256": "4ae08db07da1ef31440525900e28c84c9e17fbaab619a476cad39900050dc240",
+      "text": "`timescale 1ns/1ps\r\n// @latency 5\r\nmodule fir16_sym_core (\r\n    input wire clk,\r\n    input wire rst,\r\n    input wire signed [15:0] in_sample,\r\n    input wire in_valid,\r\n    output wire in_ready,\r\n    output wire signed [15:0] out_sample,\r\n    output wire out_valid,\r\n    input wire out_ready\r\n);\r\n\r\n    reg signed [15:0] history [0:14];\r\n    reg v1, v2, v3, v4, v5;\r\n    reg signed [15:0] data1, data2, data3, data4, data5;\r\n\r\n    wire ready5 = !v5 || out_ready;\r\n    wire ready4 = !v4 || ready5;\r\n    wire ready3 = !v3 || ready4;\r\n    wire ready2 = !v2 || ready3;\r\n    wire ready1 = !v1 || ready2;\r\n\r\n    assign in_ready = ready1;\r\n    assign out_valid = v5;\r\n    assign out_sample = data5;\r\n\r\n    localparam signed [9:0] C0 = -10'sd6;\r\n    localparam signed [9:0] C1 = -10'sd20;\r\n    localparam signed [9:0] C2 = -10'sd24;\r\n    localparam signed [9:0] C3 = 10'sd18;\r\n    localparam signed [9:0] C4 = 10'sd110;\r\n    localparam signed [9:0] C5 = 10'sd226;\r\n    localparam signed [9:0] C6 = 10'sd330;\r\n    localparam signed [9:0] C7 = 10'sd390;\r\n\r\n    wire signed [16:0] pair0 =\r\n        {in_sample[15], in_sample} + {history[14][15], history[14]};\r\n    wire signed [16:0] pair1 =\r\n        {history[0][15], history[0]} + {history[13][15], history[13]};\r\n    wire signed [16:0] pair2 =\r\n        {history[1][15], history[1]} + {history[12][15], history[12]};\r\n    wire signed [16:0] pair3 =\r\n        {history[2][15], history[2]} + {history[11][15], history[11]};\r\n    wire signed [16:0] pair4 =\r\n        {history[3][15], history[3]} + {history[10][15], history[10]};\r\n    wire signed [16:0] pair5 =\r\n        {history[4][15], history[4]} + {history[9][15], history[9]};\r\n    wire signed [16:0] pair6 =\r\n        {history[5][15], history[5]} + {history[8][15], history[8]};\r\n    wire signed [16:0] pair7 =\r\n        {history[6][15], history[6]} + {history[7][15], history[7]};\r\n\r\n    wire signed [26:0] prod0 = pair0 * C0;\r\n    wire signed [26:0] prod1 = pair1 * C1;\r\n    wire signed [26:0] prod2 = pair2 * C2;\r\n    wire signed [26:0] prod3 = pair3 * C3;\r\n    wire signed [26:0] prod4 = pair4 * C4;\r\n    wire signed [26:0] prod5 = pair5 * C5;\r\n    wire signed [26:0] prod6 = pair6 * C6;\r\n    wire signed [26:0] prod7 = pair7 * C7;\r\n\r\n    wire signed [30:0] acc_wide =\r\n        {{4{prod0[26]}}, prod0} +\r\n        {{4{prod1[26]}}, prod1} +\r\n        {{4{prod2[26]}}, prod2} +\r\n        {{4{prod3[26]}}, prod3} +\r\n        {{4{prod4[26]}}, prod4} +\r\n        {{4{prod5[26]}}, prod5} +\r\n        {{4{prod6[26]}}, prod6} +\r\n        {{4{prod7[26]}}, prod7};\r\n\r\n    wire signed [27:0] acc = acc_wide[27:0];\r\n    wire signed [31:0] rounded =\r\n        ($signed({{4{acc[27]}}, acc}) + 32'sd1024) >>> 11;\r\n\r\n    wire signed [15:0] fir_result =\r\n        (rounded > 32'sd32767) ? 16'sd32767 :\r\n        (rounded < -32'sd32768) ? -16'sd32768 :\r\n        rounded[15:0];\r\n\r\n    integer i;\r\n    always @(posedge clk) begin\r\n        if (rst) begin\r\n            v1 <= 1'b0;\r\n            v2 <= 1'b0;\r\n            v3 <= 1'b0;\r\n            v4 <= 1'b0;\r\n            v5 <= 1'b0;\r\n            for (i = 0; i < 15; i = i + 1)\r\n                history[i] <= 16'sd0;\r\n        end else begin\r\n            if (in_valid && in_ready) begin\r\n                history[0] <= in_sample;\r\n                for (i = 1; i < 15; i = i + 1)\r\n                    history[i] <= history[i-1];\r\n            end\r\n\r\n            if (ready1) begin\r\n                v1 <= in_valid;\r\n                if (in_valid)\r\n                    data1 <= fir_result;\r\n            end\r\n            if (ready2) begin\r\n                v2 <= v1;\r\n                if (v1)\r\n                    data2 <= data1;\r\n            end\r\n            if (ready3) begin\r\n                v3 <= v2;\r\n                if (v2)\r\n                    data3 <= data2;\r\n            end\r\n            if (ready4) begin\r\n                v4 <= v3;\r\n                if (v3)\r\n                    data4 <= data3;\r\n            end\r\n            if (ready5) begin\r\n                v5 <= v4;\r\n                if (v4)\r\n                    data5 <= data4;\r\n            end\r\n        end\r\n    end\r\n\r\nendmodule\r\n`timescale 1ns/1ps\r\n// @latency 5\r\n// Inherited minimum accepted-transfer age from transparent typed child wiring; not measured timing.\r\nmodule fir16_sym (\r\n    input wire clk,\r\n    input wire rst,\r\n    input wire signed [15:0] in_sample,\r\n    input wire in_valid,\r\n    output wire in_ready,\r\n    output wire signed [15:0] out_sample,\r\n    output wire out_valid,\r\n    input wire out_ready\r\n);\r\n    fir16_sym_core u_fir16_sym_core (\r\n        .clk(clk),\r\n        .rst(rst),\r\n        .in_sample(in_sample),\r\n        .in_valid(in_valid),\r\n        .in_ready(in_ready),\r\n        .out_sample(out_sample),\r\n        .out_valid(out_valid),\r\n        .out_ready(out_ready)\r\n    );\r\nendmodule\r\n",
+      "truncated": false
+    }
+  ],
+  "testbench": {
+    "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-03\\tier5_m24_d80m\\fir16_sym_build\\inputs\\testbench_path.v",
+    "sha256": "c899218aedf02b74edd1bde45753f30a6c1e34d712bed49c88a1e6ec8adabe65",
+    "text": "`timescale 1ns/1ps\r\n// Independent checker for the 16-tap symmetric FIR stream. It keeps its own\r\n// accepted history and evaluates the filter in direct form (sixteen products,\r\n// no pre-adder), models the five elastic slots abstractly, checks ready, valid\r\n// and data before and after every rising edge, and schedules stimulus from its\r\n// own model only, so a stuck DUT still reaches a verdict.\r\nmodule fir16_sym_tb;\r\n    reg clk=0, rst=1, in_valid=0, out_ready=0;\r\n    reg signed [15:0] in_sample=0;\r\n    wire in_ready, out_valid;\r\n    wire signed [15:0] out_sample;\r\n    fir16_sym dut(.clk(clk),.rst(rst),.in_sample(in_sample),.in_valid(in_valid),.in_ready(in_ready),\r\n        .out_sample(out_sample),.out_valid(out_valid),.out_ready(out_ready));\r\n    always #5 clk=~clk;\r\n\r\n    // Reference state: slot valid bits and results, accepted history.\r\n    reg s1=0, s2=0, s3=0, s4=0, s5=0;\r\n    reg [15:0] d1=0, d2=0, d3=0, d4=0, d5=0, result=0;\r\n    reg r1=0, r2=0, r3=0, r4=0, r5=0, push=0, pop=0, blocked=0, started=0, last_push=0;\r\n    reg signed [15:0] held=0;\r\n    integer hist [0:15];\r\n    integer acc, rounded, k, nonzero;\r\n    integer cycle=0, errors=0, accepted=0, retired=0, aborted=0;\r\n    integer pos_sat=0, neg_sat=0, ties=0, full_stalls=0, collapses=0, replaces=0;\r\n    integer history_resets=0, pulses=0, noise=0, extreme_acc=0;\r\n    integer i, j;\r\n    reg [31:0] seed=32'h3c6ef372;\r\n\r\n    task fail;\r\n        input [511:0] rule;\r\n        begin\r\n            errors=errors+1;\r\n            if(errors<=40) $display(\"FAIL BEHAVIOR rule=%0s cycle=%0d\",rule,cycle);\r\n        end\r\n    endtask\r\n    task checker_fail;\r\n        input [511:0] rule;\r\n        begin errors=errors+1; $display(\"CHECKER_FAIL rule=%0s cycle=%0d\",rule,cycle); end\r\n    endtask\r\n    task coverage_fail;\r\n        input [511:0] rule;\r\n        begin errors=errors+1; $display(\"COVERAGE_FAIL rule=%0s\",rule); end\r\n    endtask\r\n\r\n    function [31:0] advance;\r\n        input [31:0] value;\r\n        reg [31:0] x;\r\n        begin x=value^(value<<13); x=x^(x>>17); advance=x^(x<<5); end\r\n    endfunction\r\n\r\n    function integer coef;\r\n        input integer index;\r\n        integer m;\r\n        begin\r\n            m=(index<8) ? index : 15-index;\r\n            case(m)\r\n                0: coef=-6;\r\n                1: coef=-20;\r\n                2: coef=-24;\r\n                3: coef=18;\r\n                4: coef=110;\r\n                5: coef=226;\r\n                6: coef=330;\r\n                default: coef=390;\r\n            endcase\r\n        end\r\n    endfunction\r\n\r\n    task check_ports;\r\n        begin\r\n            if(in_ready !== (!(s1 && s2 && s3 && s4 && s5) || out_ready)) fail(\"in_ready_elastic_bubble_collapse\");\r\n            if(out_valid !== s5) fail(\"out_valid_slot5_occupancy\");\r\n            if(s5 && out_sample !== d5) fail(\"rounded_saturated_result_or_stall_hold\");\r\n        end\r\n    endtask\r\n\r\n    // One clock cycle. Inputs change at the falling edge; ports are checked\r\n    // before the rising edge and after its updates. A blocked sample is held\r\n    // unchanged until accepted, except that reset aborts it.\r\n    task step;\r\n        input reset_now, offer;\r\n        input integer value;\r\n        input ready_now;\r\n        begin\r\n            @(negedge clk);\r\n            rst=reset_now; out_ready=ready_now;\r\n            if(blocked && !reset_now) begin in_valid=1; in_sample=held; end\r\n            else begin in_valid=offer; in_sample=value; end\r\n            #1; if(started) check_ports;\r\n            @(posedge clk);\r\n            cycle=cycle+1;\r\n            r5=!s5 || out_ready; r4=!s4 || r5; r3=!s3 || r4; r2=!s2 || r3; r1=!s1 || r2;\r\n            push=!rst && in_valid && r1;\r\n            pop=!rst && s5 && out_ready;\r\n            blocked=!rst && in_valid && !r1;\r\n            held=in_sample;\r\n            last_push=push;\r\n            if(rst) begin\r\n                nonzero=0;\r\n                for(k=0;k<16;k=k+1) if(hist[k]!=0) nonzero=1;\r\n                if(nonzero) history_resets=history_resets+1;\r\n                aborted=aborted+s1+s2+s3+s4+s5;\r\n                s1=0; s2=0; s3=0; s4=0; s5=0;\r\n                for(k=0;k<16;k=k+1) hist[k]=0;\r\n            end else begin\r\n                if(s1 && s2 && s3 && s4 && s5 && !out_ready && in_valid) full_stalls=full_stalls+1;\r\n                if(!r5 && ((r4 && s3) || (r3 && s2) || (r2 && s1) || push)) collapses=collapses+1;\r\n                if(!in_valid && r1) noise=noise+1;\r\n                if(push && pop && s1 && s2 && s3 && s4 && s5) replaces=replaces+1;\r\n                if(pop) retired=retired+1;\r\n                if(push) begin\r\n                    for(k=15;k>0;k=k-1) hist[k]=hist[k-1];\r\n                    hist[0]=in_sample; // signed: sign-extends into the integer\r\n                    acc=0;\r\n                    for(k=0;k<16;k=k+1) acc=acc+coef(k)*hist[k];\r\n                    if(acc>70000000 || acc< -70000000) extreme_acc=extreme_acc+1;\r\n                    if(((acc+1024) & 2047)==0) ties=ties+1;\r\n                    rounded=(acc+1024)>>>11;\r\n                    if(rounded>32767) begin result=16'h7fff; pos_sat=pos_sat+1; end\r\n                    else if(rounded< -32768) begin result=16'h8000; neg_sat=neg_sat+1; end\r\n                    else result=rounded[15:0];\r\n                    accepted=accepted+1;\r\n                end\r\n                // Descending updates consume the OLD predecessor slots.\r\n                if(r5) begin s5=s4; if(s4) d5=d4; end\r\n                if(r4) begin s4=s3; if(s3) d4=d3; end\r\n                if(r3) begin s3=s2; if(s2) d3=d2; end\r\n                if(r2) begin s2=s1; if(s1) d2=d1; end\r\n                if(r1) begin s1=in_valid; if(push) d1=result; end\r\n            end\r\n            if(accepted != retired+aborted+s1+s2+s3+s4+s5) checker_fail(\"transaction_conservation\");\r\n            #1; started=1; check_ports;\r\n        end\r\n    endtask\r\n\r\n    // Called one ns after a rising edge: the pulse ends before the next one.\r\n    task pulse_reset;\r\n        begin\r\n            #1 rst=1;\r\n            #1 check_ports;\r\n            #1 rst=0;\r\n            #0.5 check_ports;\r\n            pulses=pulses+1;\r\n        end\r\n    endtask\r\n\r\n    // One accepted impulse followed by eighteen accepted zeros at full rate.\r\n    task impulse;\r\n        input integer value;\r\n        integer n;\r\n        begin\r\n            step(0,1,value,1);\r\n            for(n=0;n<18;n=n+1) step(0,1,0,1);\r\n        end\r\n    endtask\r\n\r\n    initial begin\r\n        for(k=0;k<16;k=k+1) hist[k]=0;\r\n        step(1,0,0,0);\r\n        step(1,1,1234,1); // reset dominates an offered sample\r\n        // A: impulse responses of both signs; 512 and -512 make every odd\r\n        // half-coefficient an exact rounding tie.\r\n        impulse(32767); impulse(-32768); impulse(512); impulse(-512); impulse(1); impulse(-1);\r\n        // B: constant extremes: the pre-adder sums need 17 bits, both rails saturate.\r\n        for(i=0;i<40;i=i+1) step(0,1,32767,1);\r\n        for(i=0;i<40;i=i+1) step(0,1,-32768,1);\r\n        // C: windows aligned with the coefficient signs reach |acc| maximum.\r\n        for(j=0;j<4;j=j+1)\r\n            for(i=0;i<16;i=i+1) step(0,1,((((i<=2)||(i>=13)) ? 1 : 0) ^ (j%2)) ? -32768 : 32767,1);\r\n        // D: alternating extremes at full rate.\r\n        for(i=0;i<48;i=i+1) step(0,1,(i%2) ? -32768 : 32767,1);\r\n        // E: fill all five slots behind a stalled output, hold a blocked\r\n        // sample for five cycles, then drain with changing invalid data.\r\n        for(i=0;i<10;i=i+1) step(0,1,i*3001-15000,0);\r\n        if(!(s1 && s2 && s3 && s4 && s5) || !blocked) checker_fail(\"full_stall_setup\");\r\n        for(i=0;i<8;i=i+1) step(0,0,i*777-3000,1);\r\n        // F: sparse input behind an intermittently stalled output: bubbles\r\n        // must collapse toward the output.\r\n        for(i=0;i<90;i=i+1) step(0,(i%3)==0,i*1103-30000,(i%7)>=4);\r\n        for(i=0;i<8;i=i+1) step(0,0,0,1);\r\n        // G: synchronous reset with nonzero history and a partly full\r\n        // pipeline; the following impulse must see an all-zero history.\r\n        for(i=0;i<3;i=i+1) step(0,1,20000-i*9000,0);\r\n        step(1,1,555,0);\r\n        for(i=0;i<20;i=i+1) step(0,1,(i==0) ? 16384 : 0,1);\r\n        // H: off-edge reset pulses with a full stalled pipeline, nonzero\r\n        // history and a blocked sample; nothing may change.\r\n        for(i=0;i<7;i=i+1) step(0,1,i*4111-12000,0);\r\n        if(!(s1 && s2 && s3 && s4 && s5) || !blocked) checker_fail(\"pulse_setup\");\r\n        pulse_reset;\r\n        step(0,1,0,0); pulse_reset;\r\n        for(i=0;i<12;i=i+1) step(0,1,i*97,1);\r\n        // I: seeded random traffic with extremes, stalls and two resets.\r\n        for(i=0;i<2000;i=i+1) begin\r\n            seed=advance(seed);\r\n            step(i==700 || i==1500, seed[1:0]!=2'b00,\r\n                 (seed[6:5]==2'b00) ? (seed[7] ? 32767 : -32768) : $signed(seed[31:16]),\r\n                 (i%64)<40 ? (seed[4:2]!=3'b000) : (seed[4:2]==3'b000));\r\n        end\r\n        for(i=0;i<12;i=i+1) step(0,0,0,1);\r\n        if(s1 || s2 || s3 || s4 || s5 || accepted != retired+aborted) checker_fail(\"final_drain\");\r\n        if(pos_sat<10 || neg_sat<10 || ties<8 || extreme_acc<4) coverage_fail(\"arithmetic_corners\");\r\n        if(full_stalls<40 || collapses<100 || replaces<150 || noise<200) coverage_fail(\"flow_control\");\r\n        if(history_resets<3 || pulses!=2 || aborted<5) coverage_fail(\"resets\");\r\n        $display(\"COVERAGE cycles=%0d accepted=%0d retired=%0d aborted=%0d pos_sat=%0d neg_sat=%0d ties=%0d extreme=%0d full_stalls=%0d collapses=%0d replaces=%0d noise=%0d history_resets=%0d pulses=%0d\",\r\n            cycle,accepted,retired,aborted,pos_sat,neg_sat,ties,extreme_acc,full_stalls,collapses,replaces,noise,history_resets,pulses);\r\n        if(errors==0) $display(\"TEST PASSED\");\r\n        else $display(\"TEST FAILED: %0d errors\",errors);\r\n        $finish;\r\n    end\r\n    initial begin\r\n        #1000000;\r\n        $display(\"TEST FAILED: watchdog timeout\");\r\n        $finish;\r\n    end\r\nendmodule\r\n",
+    "truncated": false
+  },
+  "testbench_top": "fir16_sym_tb",
+  "tool_exit_evidence": {
+    "history_count": 4,
+    "latest_by_tool": {
+      "vivado": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-03\\tier5_m24_d80m\\fir16_sym_build\\iter_000\\vivado_synth_output.log",
+        "output_log_sha256": "828e801548f2e5fce15fbc8bc682e9ffae61f5dfd8efc1af59e8fae8ffc57a43",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xelab": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-03\\tier5_m24_d80m\\fir16_sym_build\\iter_000\\xelab.log",
+        "output_log_sha256": "6ada58650926cc615e06fc7555def0fc9e45e731150bb7b7959300fad218c8fb",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xsim": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-03\\tier5_m24_d80m\\fir16_sym_build\\iter_000\\xsim.log",
+        "output_log_sha256": "eadafd02c781def194d22bc9b0a4b3cdc796c152838c9bfc4e6cbdbb02d5e7bb",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xvlog": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-03\\tier5_m24_d80m\\fir16_sym_build\\iter_000\\xvlog.log",
+        "output_log_sha256": "3605f4b3abbb2cc54f64e47e492064c9ae27f753e754bca6ddd4fe967347bd66",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      }
+    },
+    "missing_required_tools": [],
+    "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-03\\tier5_m24_d80m\\fir16_sym_build\\iter_000\\tool_exit_records.log",
+    "records": [
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-03\\tier5_m24_d80m\\fir16_sym_build\\iter_000",
+        "driver_returncode": 0,
+        "elapsed_seconds": 3.193376700000954,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xvlog.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-03\\tier5_m24_d80m\\fir16_sym_build\\iter_000\\xvlog.log",
+        "output_log_sha256": "3605f4b3abbb2cc54f64e47e492064c9ae27f753e754bca6ddd4fe967347bd66",
+        "pid": 7760,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xvlog"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-03\\tier5_m24_d80m\\fir16_sym_build\\iter_000",
+        "driver_returncode": 0,
+        "elapsed_seconds": 6.404650500000571,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xelab.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-03\\tier5_m24_d80m\\fir16_sym_build\\iter_000\\xelab.log",
+        "output_log_sha256": "6ada58650926cc615e06fc7555def0fc9e45e731150bb7b7959300fad218c8fb",
+        "pid": 29152,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xelab"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-03\\tier5_m24_d80m\\fir16_sym_build\\iter_000",
+        "driver_returncode": 0,
+        "elapsed_seconds": 5.045582699996885,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xsim.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-03\\tier5_m24_d80m\\fir16_sym_build\\iter_000\\xsim.log",
+        "output_log_sha256": "eadafd02c781def194d22bc9b0a4b3cdc796c152838c9bfc4e6cbdbb02d5e7bb",
+        "pid": 26148,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xsim"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-03\\tier5_m24_d80m\\fir16_sym_build\\iter_000",
+        "driver_returncode": 0,
+        "elapsed_seconds": 404.2659801000118,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/vivado.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-03\\tier5_m24_d80m\\fir16_sym_build\\iter_000\\vivado_synth_output.log",
+        "output_log_sha256": "828e801548f2e5fce15fbc8bc682e9ffae61f5dfd8efc1af59e8fae8ffc57a43",
+        "pid": 27076,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "vivado"
+      }
+    ],
+    "schema_valid": true,
+    "sha256": "14673291f81d36ae84216b7d3407d42c32d01891c473f73e64f8f33e6eddbea5",
+    "status": "recorded",
+    "truncated": false
+  },
+  "top_module": "fir16_sym",
+  "verification_logs": [
+    {
+      "head": "INFO: [VRFC 10-2263] Analyzing Verilog file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t5-03/tier5_m24_d80m/fir16_sym_build/iter_000/fir16_sym.v\" into library work\r\nINFO: [VRFC 10-311] analyzing module fir16_sym_core\r\nINFO: [VRFC 10-311] analyzing module fir16_sym\r\nINFO: [VRFC 10-2263] Analyzing Verilog file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t5-03/tier5_m24_d80m/fir16_sym_build/inputs/testbench_path.v\" into library work\r\nINFO: [VRFC 10-311] analyzing module fir16_sym_tb\r\n\r\n",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-03\\tier5_m24_d80m\\fir16_sym_build\\iter_000\\xvlog.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "3605f4b3abbb2cc54f64e47e492064c9ae27f753e754bca6ddd4fe967347bd66",
+      "tail": "",
+      "truncated": false
+    },
+    {
+      "head": "Vivado Simulator v2025.2\r\nCopyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\nCopyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\nRunning: C:/AMDDesignTools/2025.2/Vivado/bin/unwrapped/win64.o/xelab.exe fir16_sym_tb -s fir16_sym_tb_snap --debug off \r\nMulti-threading is on. Using 10 slave threads.\r\nStarting static elaboration\r\nPass Through NonSizing Optimizer\r\nCompleted static elaboration\r\nStarting simulation data flow analysis\r\nCompleted simulation data flow analysis\r\nTime Resolution for simulation is 1ps\r\nCompiling module work.fir16_sym_core\r\nCompiling module work.fir16_sym_tb\r\nBuilt simulation snapshot fir16_sym_tb_snap\r\n\r\n",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-03\\tier5_m24_d80m\\fir16_sym_build\\iter_000\\xelab.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "6ada58650926cc615e06fc7555def0fc9e45e731150bb7b7959300fad218c8fb",
+      "tail": "",
+      "truncated": false
+    },
+    {
+      "head": "\r\n****** xsim v2025.2 (64-bit)\r\n  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025\r\n  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025\r\n  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025\r\n  **** Start of session at: Tue Nov  3 11:54:48 2026\r\n    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\n    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n\r\nsource xsim.dir/fir16_sym_tb_snap/xsim_script.tcl\r\n# xsim {fir16_sym_tb_snap} -autoloadwcfg -runall\r\nTime resolution is 1 ps\r\nrun -all\r\nCOVERAGE cycles=2480 accepted=1392 retired=1380 aborted=12 pos_sat=14 neg_sat=14 ties=78 extreme=15 full_stalls=631 collapses=140 replaces=757 noise=395 history_resets=3 pulses=2\r\nTEST PASSED\r\n$finish called at time : 24806 ns : File \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t5-03/tier5_m24_d80m/fir16_sym_build/inputs/testbench_path.v\" Line 209\r\nexit\r\nINFO: [Common 17-206] Exiting xsim at Tue Nov  3 11:54:50 2026...\r\n\r\n",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-03\\tier5_m24_d80m\\fir16_sym_build\\iter_000\\sim_log.txt",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "eadafd02c781def194d22bc9b0a4b3cdc796c152838c9bfc4e6cbdbb02d5e7bb",
+      "tail": "",
+      "truncated": false
+    },
+    {
+      "head": "\r\n****** Vivado v2025.2 (64-bit)\r\n  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025\r\n  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025\r\n  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025\r\n  **** Start of session at: Tue Nov  3 11:54:53 2026\r\n    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\n    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n\r\nsource C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t5-03/tier5_m24_d80m/fir16_sym_build/iter_000/synth.tcl\r\n# set_msg_config -id {VRFC 10-3609} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-9873} -new_severity ERROR\r\n# set_msg_config -id {Designutils 20-1307} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-327} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-3352} -new_severity ERROR\r\n# set_part xc7a35tcpg236-1\r\nINFO: [Coretcl 2-1500] The part has been set to 'xc7a35tcpg236-1' for the current project only. Run set_part -help for more details. To evaluate different speed grades in the current design, use the set_speed_grade command, or use the open_checkpoint -part command to change the part used by an existing checkpoint design.\r\nset_part: Time (s): cpu = 00:00:29 ; elapsed = 00:00:22 . Memory (MB): peak = 531.121 ; gain = 226.227\r\n# read_verilog \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t5-03/tier5_m24_d80m/fir16_sym_build/iter_000/fir16_sym.v\"\r\n# set fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t5-03/tier5_m24_d80m/fir16_sym_build/iter_000/timing.xdc\" w]\r\n# puts $fp {create_clock -period 6.667 -name clk [get_ports clk]}\r\n# puts $fp {set_property HD.CLK_SRC BUFGCTRL_X0Y0 [get_ports clk]}\r\n# close $fp\r\n# read_xdc \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t5-03/tier5_m24_d80m/fir16_sym_bui",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-03\\tier5_m24_d80m\\fir16_sym_build\\iter_000\\vivado_synth_output.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "828e801548f2e5fce15fbc8bc682e9ffae61f5dfd8efc1af59e8fae8ffc57a43",
+      "tail": "or-less Activity Propagation\r\n0 Infos, 0 Warnings, 0 Critical Warnings and 0 Errors encountered.\r\nreport_power completed successfully\r\n# catch { report_methodology -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t5-03/tier5_m24_d80m/fir16_sym_build/iter_000/methodology.rpt\" }\r\nCommand: report_methodology -file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t5-03/tier5_m24_d80m/fir16_sym_build/iter_000/methodology.rpt\r\nINFO: [Timing 38-35] Done setting XDC timing constraints.\r\nINFO: [DRC 23-133] Running Methodology with 2 threads\r\nWARNING: [DRC 23-814] Not all possible (connectivity based) DRCs may have been run because this design is seen as Out of Context.\r\nINFO: [Vivado_Tcl 2-1520] The results of Report Methodology are in file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t5-03/tier5_m24_d80m/fir16_sym_build/iter_000/methodology.rpt.\r\nreport_methodology completed successfully\r\n# catch { report_qor_suggestions -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t5-03/tier5_m24_d80m/fir16_sym_build/iter_000/qor_suggestions.rpt\" }\r\nCommand: report_qor_suggestions -file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t5-03/tier5_m24_d80m/fir16_sym_build/iter_000/qor_suggestions.rpt\r\nCongestion Prediction Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.074 . Memory (MB): peak = 1958.473 ; gain = 0.000\r\nINFO: [Implflow 47-1309] PredResultString: 1:44.11:55.89\r\nfeatureProvider Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.090 . Memory (MB): peak = 1958.473 ; gain = 0.000\r\nINFO: [Implflow 47-1274] ML strategy prediction is not supported for 7-series devices.\r\nreport_qor_suggestions completed successfully\r\n# puts \"SYNTH_COMPLETE\"\r\nSYNTH_COMPLETE\r\nINFO: [Common 17-206] Exiting Vivado at Tue Nov  3 12:01:34 2026...\r\n\r\n",
+      "truncated": true
+    }
+  ]
+}

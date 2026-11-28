@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_3:model:planner.plan:0",
+  "result": "# PLAN \u2014 iteration 3\n\n## Current state assessment\n\nIterations 1 and 2 were accepted as timing progress, with the incumbent at WNS \u22122.049 ns and still timing-infeasible. The output path remains 13 logic levels; preserve the one-cycle registered output and `// @latency 1`. The advisor\u2019s native-multiplier trial reached only \u22129.799 ns, so do not repeat that change.\n\n## Hypothesis\n\nReplacing the multi-level 32-bit carry-propagate sum with a carry-save compressor tree should reduce serial carry propagation on the path to `y_out` and improve setup WNS without adding cycles.\n\n## Instruction for generator\n\nKeep the delay line, `y_out` register, reset behavior, multiplier function, ports, and parameters unchanged. Replace the `s01`\u2013`sum` binary adder tree with a 3:2 carry-save compressor tree over `p0`\u2013`p7`, followed by one final 32-bit carry-propagate addition; preserve modulo-2\u00b3\u00b2 result semantics. Retain `// @latency 1` and verify the fixed testbench and all routed timing and metric gates.",
+  "artifacts": {}
+}

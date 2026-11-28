@@ -1,0 +1,906 @@
+{
+  "allowed_flow_variations": "The harness may enable retiming or physical optimization. The candidate's retained synthesis script is authoritative for its actual settings.",
+  "authority": "Harness evidence is fixed. Proposed architectural goals cannot redefine it.",
+  "baseline_metrics": {
+    "bram_total": 50.0,
+    "bram_used": 0.0,
+    "dsp_total": 90,
+    "dsp_used": 0,
+    "dynamic_power_w": 0.052,
+    "ff_pct": 0.14903846153846154,
+    "ff_total": 41600,
+    "ff_used": 62,
+    "lut_pct": 0.7451923076923077,
+    "lut_total": 20800,
+    "lut_used": 155,
+    "reg2reg_wns_ns": -0.673,
+    "sim_error": "",
+    "sim_passed": true,
+    "synth_error": "",
+    "timing_met": false,
+    "total_power_w": 0.122,
+    "whs_ns": 0.035,
+    "wns_ns": -1.759
+  },
+  "build_spec": {
+    "authority": "Complete resolved typed build contract. Defined behavior is mandatory; explicitly unspecified cases remain unspecified. Frozen implementation identities do not turn incidental values in unspecified cases into requirements.",
+    "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\cordic_build\\design_spec.json",
+    "resolved_spec": {
+      "connections": [
+        {
+          "dst_module": "cordic_engine",
+          "dst_port": "x0",
+          "src_module": "cordic_prerot",
+          "src_port": "x0"
+        },
+        {
+          "dst_module": "cordic_engine",
+          "dst_port": "z0",
+          "src_module": "cordic_prerot",
+          "src_port": "z0"
+        },
+        {
+          "dst_module": "cordic_atan",
+          "dst_port": "idx",
+          "src_module": "cordic_engine",
+          "src_port": "iter"
+        },
+        {
+          "dst_module": "cordic_engine",
+          "dst_port": "atan_val",
+          "src_module": "cordic_atan",
+          "src_port": "atan"
+        },
+        {
+          "dst_module": "cordic_out",
+          "dst_port": "x_in",
+          "src_module": "cordic_engine",
+          "src_port": "x"
+        },
+        {
+          "dst_module": "cordic_out",
+          "dst_port": "y_in",
+          "src_module": "cordic_engine",
+          "src_port": "y"
+        }
+      ],
+      "external_ports": [
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "clk",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "rst",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "angle",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 16
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "in_valid",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "output",
+          "name": "in_ready",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "output",
+          "name": "out_valid",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "out_ready",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "output",
+          "name": "cos_out",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 16
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "output",
+          "name": "sin_out",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 16
+        }
+      ],
+      "modules": [
+        {
+          "behavior": "Combinational CORDIC quadrant pre-rotation. Formats (all two's complement, ports unsigned bit vectors): angle is a 16-bit binary angle, theta = angle * 2*pi / 2^16 radians (one turn = 2^16); x and y are 18-bit Q2.16 (value / 2^16); z and atan values are 20-bit in units of 2^-20 turn; cos_out and sin_out are 16-bit Q2.14 (value / 2^14). K = 39797 = round(2^16 * prod_{i=0..15} 1/sqrt(1 + 2^-2i)). Quadrant q = angle[15:14]. When q is 01 or 10 (|theta| >= pi/2) the start vector is rotated by half a turn: x0 = -K (2^18 - 39797) and the reduced angle is angle ^ 0x8000; otherwise x0 = K and the reduced angle is angle. z0 = sign-extended reduced angle * 16, i.e. {reduced[15:0], 4'b0000}, a 20-bit value in 2^-20 turns within [-2^18, 2^18). The start vector's y is 0 (not a port). Python oracle: combinational and stateless; step returns the outputs for this step's inputs (latency 0, no clock and no reset port).",
+          "clock_domains": [
+            "clk"
+          ],
+          "compare_mode": "fixed_latency",
+          "examples": [
+            {
+              "after_cycles": 1,
+              "expected": {
+                "x0": 39797,
+                "z0": 131072
+              },
+              "inputs": {
+                "angle": 8192
+              }
+            },
+            {
+              "after_cycles": 1,
+              "expected": {
+                "x0": 222347,
+                "z0": 917504
+              },
+              "inputs": {
+                "angle": 24576
+              }
+            },
+            {
+              "after_cycles": 1,
+              "expected": {
+                "x0": 222347,
+                "z0": 131072
+              },
+              "inputs": {
+                "angle": 40960
+              }
+            }
+          ],
+          "golden_model": "",
+          "interface_signature": null,
+          "latency": 0,
+          "latency_known": true,
+          "name": "cordic_prerot",
+          "parameters": {},
+          "ports": [
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "angle",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 16
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "x0",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 18
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "z0",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 20
+            }
+          ],
+          "reset": {
+            "active_high": true,
+            "duration_cycles": 3,
+            "kind": "sync",
+            "signal": "rst"
+          }
+        },
+        {
+          "behavior": "Combinational CORDIC arctangent table: atan = round(atan(2^-idx) / (2*pi) * 2^20), round half up, in 2^-20 turn units, for idx 0..15: 131072, 77376, 40884, 20753, 10417, 5213, 2607, 1304, 652, 326, 163, 81, 41, 20, 10, 5. Python oracle: combinational and stateless; step returns the outputs for this step's inputs (latency 0, no clock and no reset port).",
+          "clock_domains": [
+            "clk"
+          ],
+          "compare_mode": "fixed_latency",
+          "examples": [
+            {
+              "after_cycles": 1,
+              "expected": {
+                "atan": 131072
+              },
+              "inputs": {
+                "idx": 0
+              }
+            },
+            {
+              "after_cycles": 1,
+              "expected": {
+                "atan": 20753
+              },
+              "inputs": {
+                "idx": 3
+              }
+            },
+            {
+              "after_cycles": 1,
+              "expected": {
+                "atan": 5
+              },
+              "inputs": {
+                "idx": 15
+              }
+            }
+          ],
+          "golden_model": "",
+          "interface_signature": null,
+          "latency": 0,
+          "latency_known": true,
+          "name": "cordic_atan",
+          "parameters": {},
+          "ports": [
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "idx",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 4
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "atan",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 20
+            }
+          ],
+          "reset": {
+            "active_high": true,
+            "duration_cycles": 3,
+            "kind": "sync",
+            "signal": "rst"
+          }
+        },
+        {
+          "behavior": "Iterative CORDIC rotation engine, one micro-rotation per rising edge, 16 iterations, with valid/ready-style handshake ports carried as plain protocol none signals. Formats (all two's complement, ports unsigned bit vectors): angle is a 16-bit binary angle, theta = angle * 2*pi / 2^16 radians (one turn = 2^16); x and y are 18-bit Q2.16 (value / 2^16); z and atan values are 20-bit in units of 2^-20 turn; cos_out and sin_out are 16-bit Q2.14 (value / 2^14). Registers, all reset to 0: busy, out_valid, i[3:0], x[17:0], y[17:0], z[19:0]. Outputs, all views of registered state: in_ready = !busy && !out_valid; out_valid; iter = i; x; y. atan_val is the table value for index iter (from the atan table neighbour); x0 and z0 come from the pre-rotation of the input angle. At each rising edge with rst low, using pre-edge values: if busy: with xs = x >>> i and ys = y >>> i (arithmetic shifts of the 18-bit two's complement values, rounding toward minus infinity), if z >= 0 (z[19] = 0) then x = x - ys, y = y + xs, z = z - atan_val, else x = x + ys, y = y - xs, z = z + atan_val (x and y modulo 2^18, z modulo 2^20); i = i + 1 modulo 16; and when i was 15, busy = 0 and out_valid = 1. Else if out_valid: out_valid = 0 when out_ready = 1 (x and y hold). Else (idle) if in_valid = 1: accept: x = x0, y = 0, z = z0, i = 0, busy = 1. in_valid, x0 and z0 are ignored except at the accepting edge. An accepted angle takes 16 busy edges and out_valid appears after the 16th; the next angle can be accepted at the edge after the output transfer at the earliest. Synchronous active-high rst at a rising edge returns every register to its reset value; reset has no effect between edges. Python oracle: cycle-level model, one step per rising edge; keep the registers in state and return every output as it is after that edge. The driver applies the fixed latency of 1; do not add a delay queue. init() is the reset state and a supplied rst must be handled.",
+          "clock_domains": [
+            "clk"
+          ],
+          "compare_mode": "fixed_latency",
+          "examples": [
+            {
+              "after_cycles": 2,
+              "expected": {
+                "in_ready": 0,
+                "iter": 1,
+                "out_valid": 0,
+                "x": 39797,
+                "y": 39797
+              },
+              "inputs": {
+                "atan_val": 131072,
+                "in_valid": 1,
+                "out_ready": 0,
+                "rst": 0,
+                "x0": 39797,
+                "z0": 131072
+              }
+            },
+            {
+              "after_cycles": 17,
+              "expected": {
+                "in_ready": 0,
+                "iter": 0,
+                "out_valid": 1,
+                "x": 252246,
+                "y": 64781
+              },
+              "inputs": {
+                "atan_val": 20753,
+                "in_valid": 1,
+                "out_ready": 0,
+                "rst": 0,
+                "x0": 39797,
+                "z0": 131072
+              }
+            },
+            {
+              "after_cycles": 20,
+              "expected": {
+                "in_ready": 0,
+                "iter": 1,
+                "out_valid": 0,
+                "x": 222347,
+                "y": 39797
+              },
+              "inputs": {
+                "atan_val": 5213,
+                "in_valid": 1,
+                "out_ready": 1,
+                "rst": 0,
+                "x0": 222347,
+                "z0": 983040
+              }
+            }
+          ],
+          "golden_model": "",
+          "interface_signature": null,
+          "latency": 1,
+          "latency_known": true,
+          "name": "cordic_engine",
+          "parameters": {},
+          "ports": [
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "clk",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "rst",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "in_valid",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "in_ready",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "x0",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 18
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "z0",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 20
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "atan_val",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 20
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "iter",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 4
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "out_valid",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "out_ready",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "x",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 18
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "y",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 18
+            }
+          ],
+          "reset": {
+            "active_high": true,
+            "duration_cycles": 3,
+            "kind": "sync",
+            "signal": "rst"
+          }
+        },
+        {
+          "behavior": "Combinational CORDIC output stage: Q2.16 to Q2.14 with round half up. cos_out = ((x_in + 2) >>> 2) and sin_out = ((y_in + 2) >>> 2), where x_in and y_in are 18-bit two's complement, the sum is formed without overflow (19 bits) and the result is its low 16 bits (bits [17:2] of the 19-bit sum, wrapping for out-of-range inputs that the engine never produces). Python oracle: combinational and stateless; step returns the outputs for this step's inputs (latency 0, no clock and no reset port).",
+          "clock_domains": [
+            "clk"
+          ],
+          "compare_mode": "fixed_latency",
+          "examples": [
+            {
+              "after_cycles": 1,
+              "expected": {
+                "cos_out": 16384,
+                "sin_out": 0
+              },
+              "inputs": {
+                "x_in": 65536,
+                "y_in": 262143
+              }
+            },
+            {
+              "after_cycles": 1,
+              "expected": {
+                "cos_out": 11585,
+                "sin_out": 53950
+              },
+              "inputs": {
+                "x_in": 46341,
+                "y_in": 215801
+              }
+            }
+          ],
+          "golden_model": "",
+          "interface_signature": null,
+          "latency": 0,
+          "latency_known": true,
+          "name": "cordic_out",
+          "parameters": {},
+          "ports": [
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "x_in",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 18
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "y_in",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 18
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "cos_out",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 16
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "sin_out",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 16
+            }
+          ],
+          "reset": {
+            "active_high": true,
+            "duration_cycles": 3,
+            "kind": "sync",
+            "signal": "rst"
+          }
+        }
+      ],
+      "top_name": "cordic_sincos"
+    },
+    "sha256": "2f8a659f64af32868925f90ac90e5030b27ab6083ea41ac43ce8b4766b17645c",
+    "truncated": false
+  },
+  "clock_period_ns": 10.0,
+  "declared_latency": {
+    "cycles": null,
+    "known": false,
+    "meaning": "A source annotation declares numeric latency only when present. This known/cycles pair is authoritative for the current top module's annotation requirement. Only known=true requires a matching numeric top annotation. Child typed-module latency does not invent a top annotation for arbitrary aggregate wrappers. When known=false, absence of a top annotation is not a failed or unverifiable criterion. Unannotated numeric latency is UNKNOWN, not zero. Preserve the source's exact observable cycles and registered behavior. Annotation presence or absence alone is not independent proof of behavioral correctness; use the fixed source contract, all defined typed latency/minimum transfer age and deterministic verification, without inventing a numeric requirement.",
+    "source_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\cordic_build\\iter_000\\cordic_sincos.v",
+    "source_sha256": "5c47445be061900c2fa1eb660360d7adb25378568fb823ff74799648644277dc"
+  },
+  "edit_scope": {
+    "children": [
+      "cordic_prerot",
+      "cordic_atan",
+      "cordic_engine",
+      "cordic_out"
+    ],
+    "mode": "whole_design",
+    "reason": "The supplied testbench instantiates the top cordic_sincos and is the trusted integration authority, so every generated child module and the mechanical top form one editable unit verified through the top. Per-child generated oracles and testbenches verified the baseline children only and are not evidence for changed children.",
+    "testbench_modules": [],
+    "top": "cordic_sincos"
+  },
+  "execution_context": {
+    "dependencies": [],
+    "implementation": "chip_top",
+    "part": "xc7a35tcpg236-1",
+    "period_ns": 10.0,
+    "promotions": {
+      "Designutils 20-1307": "ERROR",
+      "Synth 8-327": "ERROR",
+      "Synth 8-3352": "ERROR",
+      "Synth 8-9873": "ERROR",
+      "VRFC 10-3609": "ERROR"
+    },
+    "synthesis_template": "82fa3469b365c54e445b50a587f2dfd2ca06256e842bb05a2596faac46249cd4",
+    "tb": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\cordic_build\\inputs\\testbench_path.v",
+      "sha256": "b82e70c9b673d57859b6e18e752d7ce629cab088976ae69f07450e87bfd3db8d"
+    },
+    "tools": {
+      "vivado_bin": {
+        "path": "C:\\AMDDesignTools\\2025.2\\Vivado\\bin\\vivado.bat",
+        "sha256": "4f9c05aea82a71c7086a9e5edf01ba16ea70255f69cf3420c58b805ec113e994"
+      },
+      "xelab_bin": {
+        "path": "C:\\AMDDesignTools\\2025.2\\Vivado\\bin\\xelab.bat",
+        "sha256": "512a29ace988992d7fab14ca84f20f0b4515bb69ef1d5fef0a57c5f28b72c9b1"
+      },
+      "xsim_bin": {
+        "path": "C:\\AMDDesignTools\\2025.2\\Vivado\\bin\\xsim.bat",
+        "sha256": "8819fbb54fdf9cbcaaf24c2bf72801b403d5c93e0990ba32408b56c666761d21"
+      },
+      "xvlog_bin": {
+        "path": "C:\\AMDDesignTools\\2025.2\\Vivado\\bin\\xvlog.bat",
+        "sha256": "512a29ace988992d7fab14ca84f20f0b4515bb69ef1d5fef0a57c5f28b72c9b1"
+      }
+    },
+    "top": "cordic_sincos"
+  },
+  "first_violated_path_excerpt": {
+    "category": "setup",
+    "destination": "sin_out[15]",
+    "fanout": 62,
+    "logic_levels": 7,
+    "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\cordic_build\\iter_000\\timing_routed.rpt",
+    "preview_policy": "First complete identifiable violated path in report order, at most 6000 characters. Slack, endpoints, levels and fanout describe this path only, not global WNS/WHS. Resource text is retained verbatim; absent fields are unknown.",
+    "sha256": "4f9e86693fae2295e46a7a2047f432fd72e76329a5811a6e3a36701356edb805",
+    "slack_ns": -1.759,
+    "source": "u_cordic_engine/y_state_reg[1]/C",
+    "text": "Slack (VIOLATED) :        -1.759ns  (required time - arrival time)\r\n  Source:                 u_cordic_engine/y_state_reg[1]/C\r\n                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@5.000ns period=10.000ns})\r\n  Destination:            sin_out[15]\r\n                            (output port clocked by clk  {rise@0.000ns fall@5.000ns period=10.000ns})\r\n  Path Group:             clk\r\n  Path Type:              Max at Slow Process Corner\r\n  Requirement:            10.000ns  (clk rise@10.000ns - clk rise@0.000ns)\r\n  Data Path Delay:        6.782ns  (logic 4.606ns (67.919%)  route 2.176ns (32.081%))\r\n  Logic Levels:           7  (CARRY4=5 LUT1=1 OBUF=1)\r\n  Output Delay:           0.000ns\r\n  Clock Path Skew:        -4.942ns (DCD - SCD + CPR)\r\n    Destination Clock Delay (DCD):    0.000ns = ( 10.000 - 10.000 ) \r\n    Source Clock Delay      (SCD):    4.942ns\r\n    Clock Pessimism Removal (CPR):    0.000ns\r\n  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE\r\n    Total System Jitter     (TSJ):    0.071ns\r\n    Total Input Jitter      (TIJ):    0.000ns\r\n    Discrete Jitter          (DJ):    0.000ns\r\n    Phase Error              (PE):    0.000ns\r\n\r\n    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)\r\n  -------------------------------------------------------------------    -------------------\r\n                         (clock clk rise edge)        0.000     0.000 r  \r\n    C15                                               0.000     0.000 r  clk (IN)\r\n                         net (fo=0)                   0.000     0.000    clk\r\n    C15                  IBUF (Prop_ibuf_I_O)         0.935     0.935 r  clk_IBUF_inst/O\r\n                         net (fo=1, routed)           2.273     3.208    clk_IBUF\r\n    BUFGCTRL_X0Y16       BUFG (Prop_bufg_I_O)         0.096     3.304 r  clk_IBUF_BUFG_inst/O\r\n                         net (fo=62, routed)          1.637     4.942    u_cordic_engine/CLK\r\n    SLICE_X3Y38          FDRE                                         r  u_cordic_engine/y_state_reg[1]/C\r\n  -------------------------------------------------------------------    -------------------\r\n    SLICE_X3Y38          FDRE (Prop_fdre_C_Q)         0.456     5.398 f  u_cordic_engine/y_state_reg[1]/Q\r\n                         net (fo=5, routed)           0.313     5.710    u_cordic_engine/y_state_reg[1]\r\n    SLICE_X0Y38          LUT1 (Prop_lut1_I0_O)        0.124     5.834 r  u_cordic_engine/y_rounded_carry_i_1/O\r\n                         net (fo=1, routed)           0.000     5.834    u_cordic_out/sin_out[1][0]\r\n    SLICE_X0Y38          CARRY4 (Prop_carry4_S[1]_CO[3])\r\n                                                      0.550     6.384 r  u_cordic_out/y_rounded_carry/CO[3]\r\n                         net (fo=1, routed)           0.000     6.384    u_cordic_out/y_rounded_carry_n_0\r\n    SLICE_X0Y39          CARRY4 (Prop_carry4_CI_CO[3])\r\n                                                      0.114     6.498 r  u_cordic_out/y_rounded_carry__0/CO[3]\r\n                         net (fo=1, routed)           0.000     6.498    u_cordic_out/y_rounded_carry__0_n_0\r\n    SLICE_X0Y40          CARRY4 (Prop_carry4_CI_CO[3])\r\n                                                      0.114     6.612 r  u_cordic_out/y_rounded_carry__1/CO[3]\r\n                         net (fo=1, routed)           0.000     6.612    u_cordic_out/y_rounded_carry__1_n_0\r\n    SLICE_X0Y41          CARRY4 (Prop_carry4_CI_CO[3])\r\n                                                      0.114     6.726 r  u_cordic_out/y_rounded_carry__2/CO[3]\r\n                         net (fo=1, routed)           0.000     6.726    u_cordic_out/y_rounded_carry__2_n_0\r\n    SLICE_X0Y42          CARRY4 (Prop_carry4_CI_O[1])\r\n                                                      0.334     7.060 r  u_cordic_out/y_rounded_carry__3/O[1]\r\n                         net (fo=1, routed)           1.863     8.923    sin_out_OBUF[15]\r\n    D19                  OBUF (Prop_obuf_I_O)         2.800    11.723 r  sin_out_OBUF[15]_inst/O\r\n                         net (fo=0)                   0.000    11.723    sin_out[15]\r\n    D19                                                               r  sin_out[15] (OUT)\r\n  -------------------------------------------------------------------    -------------------\r\n\r\n                         (clock clk rise edge)       10.000    10.000 r  \r\n                         clock pessimism              0.000    10.000    \r\n                         clock uncertainty           -0.035     9.965    \r\n                         output delay                -0.000     9.965    \r\n  -------------------------------------------------------------------\r\n                         required time                          9.965    \r\n                         arrival time                         -11.723    \r\n  -------------------------------------------------------------------\r\n                         slack                                 -1.759    ",
+    "truncated": false
+  },
+  "flow_and_constraints": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\cordic_build\\iter_000\\synth.tcl",
+      "sha256": "4546c55236fb3ec39431c5446d8d0fd742af00d46c9c62a917a3bd9e21b69a8e",
+      "text": "set_msg_config -id {VRFC 10-3609} -new_severity ERROR\r\nset_msg_config -id {Synth 8-9873} -new_severity ERROR\r\nset_msg_config -id {Designutils 20-1307} -new_severity ERROR\r\nset_msg_config -id {Synth 8-327} -new_severity ERROR\r\nset_msg_config -id {Synth 8-3352} -new_severity ERROR\r\nset_part xc7a35tcpg236-1\r\nread_verilog \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t6-01/tier6_je4m8_82/cordic_build/iter_000/cordic_sincos.v\"\r\nset fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t6-01/tier6_je4m8_82/cordic_build/iter_000/timing.xdc\" w]\r\nputs $fp {create_clock -period 10.000 -name clk [get_ports clk]}\r\nclose $fp\r\nread_xdc \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t6-01/tier6_je4m8_82/cordic_build/iter_000/timing.xdc\"\r\nsynth_design -top cordic_sincos -flatten_hierarchy rebuilt \r\nset fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t6-01/tier6_je4m8_82/cordic_build/iter_000/timing_io.tcl\" w]\r\nputs $fp {set data_inputs [get_ports -filter {DIRECTION == IN && NAME != clk}]}\r\nputs $fp {if {[llength $data_inputs] > 0} {set_input_delay -clock clk -max 0.000 $data_inputs; set_input_delay -clock clk -min 0.000 $data_inputs}}\r\nputs $fp {if {[llength [all_outputs]] > 0} {set_output_delay -clock clk -max 0.000 [all_outputs]; set_output_delay -clock clk -min 0.000 [all_outputs]}}\r\nclose $fp\r\nsource \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t6-01/tier6_je4m8_82/cordic_build/iter_000/timing_io.tcl\"\r\nreport_utilization -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t6-01/tier6_je4m8_82/cordic_build/iter_000/utilization.rpt\"\r\nreport_timing_summary -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t6-01/tier6_je4m8_82/cordic_build/iter_000/timing.rpt\"\r\nopt_design\r\nplace_design\r\n\r\nroute_design\r\nreport_utilization -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t6-01/tier6_je4m8_82/cordic_build/iter_000/utilization_routed.rpt\"\r\nreport_timing_summary -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t6-01/tier6_je4m8_82/cordic_build/iter_000/timing_routed.rpt\"\r\ncatch { if {[llength [all_registers]] > 0} { report_timing -from [all_registers] -to [all_registers] -max_paths 1 -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t6-01/tier6_je4m8_82/cordic_build/iter_000/timing_reg2reg.rpt\" } }\r\nreport_design_analysis -logic_level_distribution -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t6-01/tier6_je4m8_82/cordic_build/iter_000/design_analysis.rpt\"\r\nreport_power -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t6-01/tier6_je4m8_82/cordic_build/iter_000/power.rpt\"\r\ncatch { report_methodology -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t6-01/tier6_je4m8_82/cordic_build/iter_000/methodology.rpt\" }\r\ncatch { report_qor_suggestions -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t6-01/tier6_je4m8_82/cordic_build/iter_000/qor_suggestions.rpt\" }\r\nputs \"SYNTH_COMPLETE\"\r\n",
+      "truncated": false
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\cordic_build\\iter_000\\timing.xdc",
+      "sha256": "fa142c09f0fadb5e303ca9fea08c02bc353451533e44aeee9cd9a0231cc8bede",
+      "text": "create_clock -period 10.000 -name clk [get_ports clk]\r\n",
+      "truncated": false
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\cordic_build\\iter_000\\timing_io.tcl",
+      "sha256": "6b38098841a48bbb3ab15de49d2bf2baf7e4384f599259ff5f3afa2c2b1daf00",
+      "text": "set data_inputs [get_ports -filter {DIRECTION == IN && NAME != clk}]\r\nif {[llength $data_inputs] > 0} {set_input_delay -clock clk -max 0.000 $data_inputs; set_input_delay -clock clk -min 0.000 $data_inputs}\r\nif {[llength [all_outputs]] > 0} {set_output_delay -clock clk -max 0.000 [all_outputs]; set_output_delay -clock clk -min 0.000 [all_outputs]}\r\n",
+      "truncated": false
+    }
+  ],
+  "hard_gates": [
+    "Preserve typed build spec defined behavior, ports, parameter defaults, reset and observable cycles; explicitly unspecified cases remain unspecified.",
+    "Use the fixed provided testbench, tools, device and constraints without modification.",
+    "Static/interface checks, compile, simulation and real routed metric integrity must pass.",
+    "Timing closure requires setup slack >= 0 and hold slack >= 0.",
+    "Unknown or absent evidence cannot count as success."
+  ],
+  "implementation": {
+    "meaning": "Chip-top implementation: the top is the whole FPGA design. Every port bit gets an I/O buffer on a package pin, and data ports have zero input and output delay to clk, so the routed WNS and WHS include pad delay. Utilization includes the I/O buffers.",
+    "mode": "chip_top"
+  },
+  "metric_provenance": "Structured metrics are parsed from retained reports; routed utilization/timing reports take precedence when present. The manifest identifies complete files by hash. Header excerpts are bounded previews, not complete reports or an independent metric source.",
+  "objective": "minimize_luts",
+  "objective_policy": "First establish timing feasibility. A verified timing-feasible candidate may replace a known timing-infeasible previous best even with higher area or power; classify this as timing_recovery, not objective savings. While the previous best is timing-infeasible, a verified still-infeasible candidate with strictly better setup WNS and hold not worse beyond a small tolerance may replace it as timing_progress, which is not closure; a feasible candidate always outranks it. Once both are timing-feasible, require strict improvement of the chosen objective; for maximize_freq that is register-to-register setup slack (reg2reg_wns_ns) when both designs report it, otherwise full setup WNS for both, while feasibility stays on full WNS and WHS. minimize_luts compares (lut_used, ff_used) and minimize_ffs compares (ff_used, lut_used) lexicographically: an equal primary metric with a strictly lower secondary is an objective improvement, a higher primary never is, and a secondary missing from either design gives no tie-break. Unknown or contradictory incumbent timing evidence cannot establish recovery. A completed experiment may find no improvement. Do not invent mandatory savings, slack margins, tool versions, timing corners, new tests, thresholds, code-style quotas or external environment requirements.",
+  "part": "xc7a35tcpg236-1",
+  "report_headers": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\cordic_build\\iter_000\\power.rpt",
+      "sha256": "78aa415d98186a02b5da733b830858331a2dca526396d36d5242d41d819dee35",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n---------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version     : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date             : Thu Nov  5 16:23:43 2026\r\n| Host             : Baah running 64-bit major release  (build 9200)\r\n| Command          : report_power -file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t6-01/tier6_je4m8_82/cordic_build/iter_000/power.rpt\r\n| Design           : cordic_sincos\r\n| Device           : xc7a35tcpg236-1\r\n| Design State     : routed\r\n| Grade            : commercial\r\n| Process          : typical\r\n| Characterization : Production\r\n---------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nPower Report\r\n\r\nTable of Contents\r\n-----------------\r\n1. Summary\r\n1.1 On-Chip Components\r\n1.2 Power Supply Summary\r\n1.3 Confidence Level\r\n2. Settings\r\n2.1 Environment\r\n2.2 Clock Constraints\r\n3. Detailed Reports\r\n3.1 By Hierarchy\r\n\r\n1. Summary\r\n----------\r\n\r\n+--------------------------+--------------+\r\n| Total On-Chip Power (W)  | 0.122        |\r\n| Design Power Budget (W)  | Unspecified* |\r\n| Power Budget Margin (W)  | NA           |\r\n| Dynamic (W)              | 0.052        |\r\n| Device Static (W)        | 0.070        |\r\n| Effective TJA (C/W)      | 5.0          |\r\n| Max Ambient (C)          | 84.4         |\r\n| Junction Temperature (C) | 25.6         |\r\n| Confidence Level         | Low          |\r\n| Setting File             | ---          |\r\n| Simulation Activity File | ---         ",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\cordic_build\\iter_000\\timing.rpt",
+      "sha256": "12abe381cf2a67bf8f20c19db402240c746b7f5bf2655b7c80b6af312d9d2a93",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n-------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date         : Thu Nov  5 16:20:36 2026\r\n| Host         : Baah running 64-bit major release  (build 9200)\r\n| Command      : report_timing_summary -file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t6-01/tier6_je4m8_82/cordic_build/iter_000/timing.rpt\r\n| Design       : cordic_sincos\r\n| Device       : 7a35t-cpg236\r\n| Speed File   : -1  PRODUCTION 1.23 2018-06-13\r\n| Design State : Synthesized\r\n-------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nTiming Summary Report\r\n\r\n------------------------------------------------------------------------------------------------\r\n| Timer Settings\r\n| --------------\r\n------------------------------------------------------------------------------------------------\r\n\r\n  Enable Multi Corner Analysis               :  Yes\r\n  Enable Pessimism Removal                   :  Yes\r\n  Pessimism Removal Resolution               :  Nearest Common Node\r\n  Enable Input Delay Default Clock           :  No\r\n  Enable Preset / Clear Arcs                 :  No\r\n  Disable Flight Delays                      :  No\r\n  Ignore I/O Paths                           :  No\r\n  Timing Early Launch at Borrowing Latches   :  No\r\n  Borrow Time for Max Delay Exceptions       :  Yes\r\n  Merge Timing Exceptions                    :  Yes\r\n  Inter-SLR Compensation                     :  Conservative\r",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\cordic_build\\iter_000\\timing_reg2reg.rpt",
+      "sha256": "cba58fe167573b1d61aa162ff6be2cd17ed60951befa8563e0b90ce42e1d35e1",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date         : Thu Nov  5 16:23:42 2026\r\n| Host         : Baah running 64-bit major release  (build 9200)\r\n| Command      : report_timing -from [all_registers] -to [all_registers] -max_paths 1 -file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t6-01/tier6_je4m8_82/cordic_build/iter_000/timing_reg2reg.rpt\r\n| Design       : cordic_sincos\r\n| Device       : 7a35t-cpg236\r\n| Speed File   : -1  PRODUCTION 1.23 2018-06-13\r\n| Design State : Routed\r\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nTiming Report\r\n\r\nSlack (VIOLATED) :        -0.673ns  (required time - arrival time)\r\n  Source:                 u_cordic_engine/busy_reg/C\r\n                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@5.000ns period=10.000ns})\r\n  Destination:            u_cordic_engine/x_state_reg[17]/D\r\n                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@5.000ns period=10.000ns})\r\n  Path Group:             clk\r\n  Path Type:              Setup (Max at Slow Process Corner)\r\n  Requirement:            10.000ns  (clk rise@10.000ns - clk rise@0.000ns)\r\n  Data Path Delay:        10.093ns  (logic 1.778ns (17.617%)  route 8.315ns (82.383%))",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\cordic_build\\iter_000\\timing_routed.rpt",
+      "sha256": "4f9e86693fae2295e46a7a2047f432fd72e76329a5811a6e3a36701356edb805",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date         : Thu Nov  5 16:23:42 2026\r\n| Host         : Baah running 64-bit major release  (build 9200)\r\n| Command      : report_timing_summary -file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t6-01/tier6_je4m8_82/cordic_build/iter_000/timing_routed.rpt\r\n| Design       : cordic_sincos\r\n| Device       : 7a35t-cpg236\r\n| Speed File   : -1  PRODUCTION 1.23 2018-06-13\r\n| Design State : Routed\r\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nTiming Summary Report\r\n\r\n------------------------------------------------------------------------------------------------\r\n| Timer Settings\r\n| --------------\r\n------------------------------------------------------------------------------------------------\r\n\r\n  Enable Multi Corner Analysis               :  Yes\r\n  Enable Pessimism Removal                   :  Yes\r\n  Pessimism Removal Resolution               :  Nearest Common Node\r\n  Enable Input Delay Default Clock           :  No\r\n  Enable Preset / Clear Arcs                 :  No\r\n  Disable Flight Delays                      :  No\r\n  Ignore I/O Paths                           :  No\r\n  Timing Early Launch at Borrowing Latches   :  No\r\n  Borrow Time for Max Delay Exceptions       :  Yes\r\n  Merge Timing Exceptions                    :  Yes\r\n  Inter-SLR Compensation                     ",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\cordic_build\\iter_000\\utilization.rpt",
+      "sha256": "2720da1d2d20aabd2dee4fa3d8bdb25c9219a2c802ae7a0abf354a9a7f909e02",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\n---------------------------------------------------------------------------------------------------------------------------------------------------------------\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\n| Date         : Thu Nov  5 16:20:35 2026\n| Host         : Baah running 64-bit major release  (build 9200)\n| Command      : report_utilization -file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t6-01/tier6_je4m8_82/cordic_build/iter_000/utilization.rpt\n| Design       : cordic_sincos\n| Device       : xc7a35tcpg236-1\n| Speed File   : -1\n| Design State : Synthesized\n---------------------------------------------------------------------------------------------------------------------------------------------------------------\n\nUtilization Design Information\n\nTable of Contents\n-----------------\n1. Slice Logic\n1.1 Summary of Registers by Type\n2. Memory\n3. DSP\n4. IO and GT Specific\n5. Clocking\n6. Specific Feature\n7. Primitives\n8. Black Boxes\n9. Instantiated Netlists\n\n1. Slice Logic\n--------------\n\n+-------------------------+------+-------+------------+-----------+-------+\n|        Site Type        | Used | Fixed | Prohibited | Available | Util% |\n+-------------------------+------+-------+------------+-----------+-------+\n| Slice LUTs*             |  156 |     0 |          0 |     20800 |  0.75 |\n|   LUT as Logic          |  156 |     0 |          0 |     20800 |  0.75 |\n|   LUT as Memory         |    0 |     0 |          0 |      9600 |  0.00 |\n| Slice Registers         |   62 |     0 |          0 |     41600 |  0.15 |\n|   Register as Flip Flop |   62 |     0 |          0 |     41600 |  0.15 |\n|   Registe",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\cordic_build\\iter_000\\utilization_routed.rpt",
+      "sha256": "c63eb1418ddc58577a20f4a12fd3611694e21d8de31726e3e4d5bfa39eed184d",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\n----------------------------------------------------------------------------------------------------------------------------------------------------------------------\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\n| Date         : Thu Nov  5 16:23:42 2026\n| Host         : Baah running 64-bit major release  (build 9200)\n| Command      : report_utilization -file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t6-01/tier6_je4m8_82/cordic_build/iter_000/utilization_routed.rpt\n| Design       : cordic_sincos\n| Device       : xc7a35tcpg236-1\n| Speed File   : -1\n| Design State : Routed\n----------------------------------------------------------------------------------------------------------------------------------------------------------------------\n\nUtilization Design Information\n\nTable of Contents\n-----------------\n1. Slice Logic\n1.1 Summary of Registers by Type\n2. Slice Logic Distribution\n3. Memory\n4. DSP\n5. IO and GT Specific\n6. Clocking\n7. Specific Feature\n8. Primitives\n9. Black Boxes\n10. Instantiated Netlists\n\n1. Slice Logic\n--------------\n\n+-------------------------+------+-------+------------+-----------+-------+\n|        Site Type        | Used | Fixed | Prohibited | Available | Util% |\n+-------------------------+------+-------+------------+-----------+-------+\n| Slice LUTs              |  155 |     0 |          0 |     20800 |  0.75 |\n|   LUT as Logic          |  155 |     0 |          0 |     20800 |  0.75 |\n|   LUT as Memory         |    0 |     0 |          0 |      9600 |  0.00 |\n| Slice Registers         |   62 |     0 |          0 |     41600 |  0.15 |\n|   Register as Flip Flop |   62 |     0 |",
+      "truncated": true
+    }
+  ],
+  "report_manifest": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\cordic_build\\iter_000\\power.rpt",
+      "sha256": "78aa415d98186a02b5da733b830858331a2dca526396d36d5242d41d819dee35"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\cordic_build\\iter_000\\timing.rpt",
+      "sha256": "12abe381cf2a67bf8f20c19db402240c746b7f5bf2655b7c80b6af312d9d2a93"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\cordic_build\\iter_000\\timing_reg2reg.rpt",
+      "sha256": "cba58fe167573b1d61aa162ff6be2cd17ed60951befa8563e0b90ce42e1d35e1"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\cordic_build\\iter_000\\timing_routed.rpt",
+      "sha256": "4f9e86693fae2295e46a7a2047f432fd72e76329a5811a6e3a36701356edb805"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\cordic_build\\iter_000\\utilization.rpt",
+      "sha256": "2720da1d2d20aabd2dee4fa3d8bdb25c9219a2c802ae7a0abf354a9a7f909e02"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\cordic_build\\iter_000\\utilization_routed.rpt",
+      "sha256": "c63eb1418ddc58577a20f4a12fd3611694e21d8de31726e3e4d5bfa39eed184d"
+    }
+  ],
+  "schema_version": 1,
+  "simulation": {
+    "failure_verdict": "TEST FAILED",
+    "required_verdict": "TEST PASSED",
+    "scope": "Provided testbench checks; not a formal equivalence proof.",
+    "tools": [
+      "xvlog",
+      "xelab",
+      "xsim -runall"
+    ]
+  },
+  "sources": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\cordic_build\\iter_000\\cordic_sincos.v",
+      "sha256": "5c47445be061900c2fa1eb660360d7adb25378568fb823ff74799648644277dc",
+      "text": "`timescale 1ns/1ps\r\n// @latency 0\r\nmodule cordic_prerot (\r\n    input  wire [15:0] angle,\r\n    output wire [17:0] x0,\r\n    output wire [19:0] z0\r\n);\r\n\r\nwire [1:0] quadrant;\r\nwire       flip;\r\nwire [15:0] reduced_angle;\r\n\r\nassign quadrant      = angle[15:14];\r\nassign flip           = (quadrant == 2'b01) || (quadrant == 2'b10);\r\nassign reduced_angle  = flip ? (angle ^ 16'h8000) : angle;\r\nassign x0             = flip ? 18'd222347 : 18'd39797;\r\nassign z0             = {reduced_angle, 4'b0000};\r\n\r\nendmodule\r\n`timescale 1ns/1ps\r\n// @latency 0\r\nmodule cordic_atan (\r\n    input  wire [3:0]  idx,\r\n    output wire [19:0] atan\r\n);\r\n\r\n    reg [19:0] atan_value;\r\n\r\n    always @(*) begin\r\n        atan_value = 20'd0;\r\n        case (idx)\r\n            4'd0:  atan_value = 20'd131072;\r\n            4'd1:  atan_value = 20'd77376;\r\n            4'd2:  atan_value = 20'd40884;\r\n            4'd3:  atan_value = 20'd20753;\r\n            4'd4:  atan_value = 20'd10417;\r\n            4'd5:  atan_value = 20'd5213;\r\n            4'd6:  atan_value = 20'd2607;\r\n            4'd7:  atan_value = 20'd1304;\r\n            4'd8:  atan_value = 20'd652;\r\n            4'd9:  atan_value = 20'd326;\r\n            4'd10: atan_value = 20'd163;\r\n            4'd11: atan_value = 20'd81;\r\n            4'd12: atan_value = 20'd41;\r\n            4'd13: atan_value = 20'd20;\r\n            4'd14: atan_value = 20'd10;\r\n            4'd15: atan_value = 20'd5;\r\n            default: atan_value = 20'd0;\r\n        endcase\r\n    end\r\n\r\n    assign atan = atan_value;\r\n\r\nendmodule\r\n`timescale 1ns/1ps\r\n// @latency 1\r\nmodule cordic_engine (\r\n    input wire clk,\r\n    input wire rst,\r\n    input wire in_valid,\r\n    output wire in_ready,\r\n    input wire [17:0] x0,\r\n    input wire [19:0] z0,\r\n    input wire [19:0] atan_val,\r\n    output wire [3:0] iter,\r\n    output wire out_valid,\r\n    input wire out_ready,\r\n    output wire [17:0] x,\r\n    output wire [17:0] y\r\n);\r\n\r\nreg busy;\r\nreg out_valid_reg;\r\nreg [3:0] i;\r\nreg signed [17:0] x_state;\r\nreg signed [17:0] y_state;\r\nreg [19:0] z_state;\r\nwire signed [17:0] x_shift;\r\nwire signed [17:0] y_shift;\r\n\r\nassign x_shift = x_state >>> i;\r\nassign y_shift = y_state >>> i;\r\n\r\nassign in_ready = !busy && !out_valid_reg;\r\nassign out_valid = out_valid_reg;\r\nassign iter = i;\r\nassign x = x_state;\r\nassign y = y_state;\r\n\r\nalways @(posedge clk) begin\r\n    if (rst) begin\r\n        busy <= 1'b0;\r\n        out_valid_reg <= 1'b0;\r\n        i <= 4'd0;\r\n        x_state <= 18'd0;\r\n        y_state <= 18'd0;\r\n        z_state <= 20'd0;\r\n    end else if (busy) begin\r\n        if (!z_state[19]) begin\r\n            x_state <= x_state - y_shift;\r\n            y_state <= y_state + x_shift;\r\n            z_state <= z_state - atan_val;\r\n        end else begin\r\n            x_state <= x_state + y_shift;\r\n            y_state <= y_state - x_shift;\r\n            z_state <= z_state + atan_val;\r\n        end\r\n\r\n        i <= i + 4'd1;\r\n        if (i == 4'd15) begin\r\n            busy <= 1'b0;\r\n            out_valid_reg <= 1'b1;\r\n        end\r\n    end else if (out_valid_reg) begin\r\n        if (out_ready)\r\n            out_valid_reg <= 1'b0;\r\n    end else if (in_valid) begin\r\n        x_state <= x0;\r\n        y_state <= 18'd0;\r\n        z_state <= z0;\r\n        i <= 4'd0;\r\n        busy <= 1'b1;\r\n    end\r\nend\r\n\r\nendmodule\r\n`timescale 1ns/1ps\r\n// @latency 0\r\nmodule cordic_out (\r\n    input  wire [17:0] x_in,\r\n    input  wire [17:0] y_in,\r\n    output wire [15:0] cos_out,\r\n    output wire [15:0] sin_out\r\n);\r\n\r\n    wire signed [18:0] x_ext = {{1{x_in[17]}}, x_in};\r\n    wire signed [18:0] y_ext = {{1{y_in[17]}}, y_in};\r\n\r\n    wire signed [18:0] x_rounded = x_ext + 19'sd2;\r\n    wire signed [18:0] y_rounded = y_ext + 19'sd2;\r\n\r\n    assign cos_out = x_rounded[17:2];\r\n    assign sin_out = y_rounded[17:2];\r\n\r\nendmodule\r\n`timescale 1ns/1ps\r\nmodule cordic_sincos (\r\n    input wire clk,\r\n    input wire rst,\r\n    input wire [15:0] angle,\r\n    input wire in_valid,\r\n    output wire in_ready,\r\n    output wire out_valid,\r\n    input wire out_ready,\r\n    output wire [15:0] cos_out,\r\n    output wire [15:0] sin_out\r\n);\r\n    wire [17:0] w_cordic_prerot_x0;\r\n    wire [19:0] w_cordic_prerot_z0;\r\n    wire [3:0] w_cordic_engine_iter;\r\n    wire [19:0] w_cordic_atan_atan;\r\n    wire [17:0] w_cordic_engine_x;\r\n    wire [17:0] w_cordic_engine_y;\r\n    cordic_prerot u_cordic_prerot (\r\n        .angle(angle),\r\n        .x0(w_cordic_prerot_x0),\r\n        .z0(w_cordic_prerot_z0)\r\n    );\r\n    cordic_atan u_cordic_atan (\r\n        .idx(w_cordic_engine_iter),\r\n        .atan(w_cordic_atan_atan)\r\n    );\r\n    cordic_engine u_cordic_engine (\r\n        .clk(clk),\r\n        .rst(rst),\r\n        .in_valid(in_valid),\r\n        .in_ready(in_ready),\r\n        .x0(w_cordic_prerot_x0),\r\n        .z0(w_cordic_prerot_z0),\r\n        .atan_val(w_cordic_atan_atan),\r\n        .iter(w_cordic_engine_iter),\r\n        .out_valid(out_valid),\r\n        .out_ready(out_ready),\r\n        .x(w_cordic_engine_x),\r\n        .y(w_cordic_engine_y)\r\n    );\r\n    cordic_out u_cordic_out (\r\n        .x_in(w_cordic_engine_x),\r\n        .y_in(w_cordic_engine_y),\r\n        .cos_out(cos_out),\r\n        .sin_out(sin_out)\r\n    );\r\nendmodule\r\n",
+      "truncated": false
+    }
+  ],
+  "testbench": {
+    "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\cordic_build\\inputs\\testbench_path.v",
+    "sha256": "b82e70c9b673d57859b6e18e752d7ce629cab088976ae69f07450e87bfd3db8d",
+    "text": "`timescale 1ns/1ps\r\n// Independent checker for the iterative CORDIC sine/cosine core. Two references:\r\n// (1) a bit-exact model of the contract written here with 32-bit integers\r\n// (quadrant fold by half a turn, start x = +-39797, sixteen micro-rotations with\r\n// arithmetic shifts, the same arctangent table, z >= 0 rotates up, Q2.16 to\r\n// Q2.14 with round half up), compared exactly on every result; and (2) a loose\r\n// check of every result against cos and sin from real-valued Taylor series,\r\n// within 4 Q2.14 LSB, which catches a table or gain error shared by the design\r\n// and model (1). The table and gain are also checked against real arctangents\r\n// at time 0. Angles: quadrant and octant boundaries, a full sweep at a stride of\r\n// 61 and seeded random angles, under random valid gaps, output backpressure,\r\n// resets and off-edge reset pulses. The handshake is checked before every rising\r\n// edge against a cycle model (16 busy edges per angle, one in flight).\r\n// Stimulus never depends on DUT outputs and the checker never reads internals.\r\nmodule cordic_sincos_tb;\r\n    reg clk=0, rst=1, in_valid=0, out_ready=0;\r\n    reg [15:0] angle=0;\r\n    wire in_ready, out_valid;\r\n    wire [15:0] cos_out, sin_out;\r\n    cordic_sincos dut(.clk(clk),.rst(rst),.angle(angle),.in_valid(in_valid),.in_ready(in_ready),\r\n        .out_valid(out_valid),.out_ready(out_ready),.cos_out(cos_out),.sin_out(sin_out));\r\n    always #5 clk=~clk;\r\n\r\n    // Reference handshake state.\r\n    reg m_busy=0, m_ov=0;\r\n    integer m_cnt=0;\r\n    reg [31:0] m_exp=0;\r\n    reg [15:0] m_angle=0;\r\n    // Master: an offer that is not accepted is held with its angle.\r\n    reg hold=0, acc=0, started=0;\r\n    reg [15:0] hangle=0, nangle=0;\r\n    integer cycle=0, errors=0, i, offered=0;\r\n    integer accepted=0, transfers=0, stalls=0, busy_offers=0, back_to_back=0, noise=0;\r\n    integer busy_resets=0, ov_resets=0, pulses=0, last_transfer=-10, loose_checked=0;\r\n    integer quadrant_hits [0:3];\r\n    real worst=0.0;\r\n    reg [31:0] seed=32'h0badc0de;\r\n\r\n    task fail;\r\n        input [511:0] rule;\r\n        begin\r\n            errors=errors+1;\r\n            if(errors<=40) $display(\"FAIL BEHAVIOR rule=%0s cycle=%0d angle=%h\",rule,cycle,m_angle);\r\n        end\r\n    endtask\r\n    task checker_fail;\r\n        input [511:0] rule;\r\n        begin errors=errors+1; $display(\"CHECKER_FAIL rule=%0s cycle=%0d\",rule,cycle); end\r\n    endtask\r\n    task coverage_fail;\r\n        input [511:0] rule;\r\n        begin errors=errors+1; $display(\"COVERAGE_FAIL rule=%0s\",rule); end\r\n    endtask\r\n\r\n    function [31:0] advance;\r\n        input [31:0] v;\r\n        reg [31:0] x;\r\n        begin x=v^(v<<13); x=x^(x>>17); advance=x^(x<<5); end\r\n    endfunction\r\n\r\n    function integer atan_t;\r\n        input integer k;\r\n        begin\r\n            case(k)\r\n                0: atan_t=131072;  1: atan_t=77376;  2: atan_t=40884;  3: atan_t=20753;\r\n                4: atan_t=10417;   5: atan_t=5213;   6: atan_t=2607;   7: atan_t=1304;\r\n                8: atan_t=652;     9: atan_t=326;    10: atan_t=163;   11: atan_t=81;\r\n                12: atan_t=41;     13: atan_t=20;    14: atan_t=10;    default: atan_t=5;\r\n            endcase\r\n        end\r\n    endfunction\r\n    // Wrap to an n-bit two's complement value.\r\n    function integer wrap;\r\n        input integer v, bits;\r\n        integer m;\r\n        begin\r\n            m=v & ((1<<bits)-1);\r\n            wrap=(m >= (1<<(bits-1))) ? m-(1<<bits) : m;\r\n        end\r\n    endfunction\r\n    // {cos_out, sin_out} of the contract, bit exact.\r\n    function [31:0] cordic_ref;\r\n        input [15:0] a;\r\n        integer x, y, z, xs, ys, k, c, s;\r\n        begin\r\n            x=39797; z=a;\r\n            if(a[15]!=a[14]) begin x=-39797; z=a^16'h8000; end\r\n            z=wrap(z,16)*16; y=0;\r\n            for(k=0;k<16;k=k+1) begin\r\n                xs=x>>>k; ys=y>>>k;\r\n                if(z>=0) begin x=wrap(x-ys,18); y=wrap(y+xs,18); z=wrap(z-atan_t(k),20); end\r\n                else begin x=wrap(x+ys,18); y=wrap(y-xs,18); z=wrap(z+atan_t(k),20); end\r\n            end\r\n            c=(x+2)>>>2; s=(y+2)>>>2;\r\n            cordic_ref={c[15:0],s[15:0]};\r\n        end\r\n    endfunction\r\n\r\n    // Real-valued references: Taylor series (no system math functions).\r\n    function real rsin;\r\n        input real t;\r\n        real term, sum;\r\n        integer k;\r\n        begin\r\n            term=t; sum=t;\r\n            for(k=1;k<24;k=k+1) begin term=-term*t*t/((2.0*k)*(2.0*k+1.0)); sum=sum+term; end\r\n            rsin=sum;\r\n        end\r\n    endfunction\r\n    function real rcos;\r\n        input real t;\r\n        real term, sum;\r\n        integer k;\r\n        begin\r\n            term=1.0; sum=1.0;\r\n            for(k=1;k<24;k=k+1) begin term=-term*t*t/((2.0*k-1.0)*(2.0*k)); sum=sum+term; end\r\n            rcos=sum;\r\n        end\r\n    endfunction\r\n    function real ratan;\r\n        input real t;\r\n        real term, sum;\r\n        integer k;\r\n        begin\r\n            term=t; sum=t;\r\n            for(k=1;k<60;k=k+1) begin term=-term*t*t; sum=sum+term/(2.0*k+1.0); end\r\n            ratan=sum;\r\n        end\r\n    endfunction\r\n    real pi;\r\n\r\n    task self_check;\r\n        real v, prod, lo, hi;\r\n        integer k;\r\n        begin\r\n            pi=16.0*ratan(0.2)-4.0*ratan(1.0/239.0);\r\n            if(pi<3.14159265 || pi>3.14159266) checker_fail(\"machin_pi\");\r\n            for(k=0;k<16;k=k+1) begin\r\n                v=(k==0 ? pi/4.0 : ratan(1.0/(1<<k)))/(2.0*pi)*1048576.0;\r\n                if($rtoi(v+0.5)!=atan_t(k)) checker_fail(\"arctangent_table_rounding\");\r\n            end\r\n            prod=1.0;\r\n            for(k=0;k<16;k=k+1) prod=prod/(1.0+1.0/((1<<k)*(1<<k)*1.0));\r\n            lo=(39796.5/65536.0)*(39796.5/65536.0); hi=(39797.5/65536.0)*(39797.5/65536.0);\r\n            if(prod<lo || prod>=hi) checker_fail(\"gain_constant_rounding\");\r\n        end\r\n    endtask\r\n\r\n    function integer s16;\r\n        input [15:0] v;\r\n        s16=v[15] ? v-65536 : v;\r\n    endfunction\r\n    task loose_check;\r\n        real th, ec, es;\r\n        begin\r\n            th=s16(m_angle)*2.0*pi/65536.0;\r\n            ec=s16(cos_out)-16384.0*rcos(th); es=s16(sin_out)-16384.0*rsin(th);\r\n            if(ec<0) ec=-ec;\r\n            if(es<0) es=-es;\r\n            if(ec>worst) worst=ec;\r\n            if(es>worst) worst=es;\r\n            if(ec>4.0 || es>4.0) fail(\"result_within_4_lsb_of_true_cos_and_sin\");\r\n            loose_checked=loose_checked+1;\r\n        end\r\n    endtask\r\n\r\n    task check_ports;\r\n        begin\r\n            if(in_ready !== (!m_busy && !m_ov)) fail(\"in_ready_only_when_idle\");\r\n            if(out_valid !== m_ov) fail(\"out_valid_sixteen_edges_after_accept_until_transfer\");\r\n            if(m_ov) begin\r\n                if(cos_out !== m_exp[31:16]) fail(\"cos_out_bit_exact\");\r\n                if(sin_out !== m_exp[15:0]) fail(\"sin_out_bit_exact\");\r\n                if(out_ready) loose_check;\r\n            end\r\n        end\r\n    endtask\r\n\r\n    // One cycle. Inputs change at the falling edge, ports are checked before\r\n    // the rising edge. A held offer keeps in_valid and angle.\r\n    task step;\r\n        input r, iv;\r\n        input [15:0] a;\r\n        input ordy, pulse;\r\n        begin\r\n            @(negedge clk);\r\n            rst=r; out_ready=ordy;\r\n            if(hold && !r) begin in_valid=1; angle=hangle; end\r\n            else begin in_valid=iv; angle=a; end\r\n            if(!in_valid) noise=noise+1;\r\n            #1; if(started) check_ports;\r\n            if(pulse) begin #1 rst=1; #2 rst=0; pulses=pulses+1; end\r\n            @(posedge clk);\r\n            cycle=cycle+1;\r\n            acc=!rst && in_valid && !m_busy && !m_ov;\r\n            hold=!rst && in_valid && !acc; hangle=angle;\r\n            if(rst) begin\r\n                if(m_busy) busy_resets=busy_resets+1;\r\n                if(m_ov) ov_resets=ov_resets+1;\r\n                m_busy=0; m_ov=0; m_cnt=0;\r\n                started=1;\r\n            end else if(m_busy) begin\r\n                if(in_valid) busy_offers=busy_offers+1;\r\n                m_cnt=m_cnt-1;\r\n                if(m_cnt==0) begin m_busy=0; m_ov=1; end\r\n            end else if(m_ov) begin\r\n                if(!out_ready) stalls=stalls+1;\r\n                else begin m_ov=0; transfers=transfers+1; last_transfer=cycle; end\r\n            end else if(in_valid) begin\r\n                if(cycle==last_transfer+1) back_to_back=back_to_back+1;\r\n                m_busy=1; m_cnt=16; accepted=accepted+1;\r\n                m_angle=angle; m_exp=cordic_ref(angle);\r\n                quadrant_hits[angle[15:14]]=quadrant_hits[angle[15:14]]+1;\r\n            end\r\n        end\r\n    endtask\r\n\r\n    // Angle sequence: 24 boundary angles, a stride-61 sweep of the circle, then random.\r\n    task next_angle;\r\n        begin\r\n            case(offered)\r\n                0: nangle=16'h0000;  1: nangle=16'h4000;  2: nangle=16'h8000;  3: nangle=16'hc000;\r\n                4: nangle=16'h3fff;  5: nangle=16'h4001;  6: nangle=16'h7fff;  7: nangle=16'h8001;\r\n                8: nangle=16'hbfff;  9: nangle=16'hc001;  10: nangle=16'hffff; 11: nangle=16'h0001;\r\n                12: nangle=16'h2000; 13: nangle=16'h6000; 14: nangle=16'ha000; 15: nangle=16'he000;\r\n                16: nangle=16'h1555; 17: nangle=16'h2aab; 18: nangle=16'h5555; 19: nangle=16'hd555;\r\n                20: nangle=16'h0400; 21: nangle=16'hfc00; 22: nangle=16'h7c00; 23: nangle=16'h8400;\r\n                default: begin\r\n                    if(offered<24+1075) nangle=(offered-24)*61;\r\n                    else begin seed=advance(seed); nangle=seed[23:8]; end\r\n                end\r\n            endcase\r\n            offered=offered+1;\r\n        end\r\n    endtask\r\n\r\n    task traffic;\r\n        input integer cycles, valid_pct, ready_pct;\r\n        input integer reset_at, pulse_at;\r\n        reg iv, ordy;\r\n        integer c;\r\n        begin\r\n            for(c=0;c<cycles;c=c+1) begin\r\n                seed=advance(seed);\r\n                iv=0;\r\n                if(!hold && (seed%100)<valid_pct) begin iv=1; next_angle; end\r\n                ordy=((seed>>8)%100)<ready_pct;\r\n                if(iv) step(c==reset_at, 1, nangle, ordy, c==pulse_at);\r\n                else step(c==reset_at, 0, seed[31:16], ordy, c==pulse_at);\r\n            end\r\n        end\r\n    endtask\r\n\r\n    initial begin\r\n        for(i=0;i<4;i=i+1) quadrant_hits[i]=0;\r\n        self_check;\r\n        for(i=0;i<3;i=i+1) step(1,0,16'd0,0,0);\r\n        // Boundary angles and the sweep at full rate, then random traffic.\r\n        traffic(20000,100,100,-1,-1);\r\n        traffic(4000,60,50,1777,401);\r\n        traffic(4000,100,30,-1,2203);\r\n        traffic(3000,40,90,-1,-1);\r\n        for(i=0;i<200 && !m_ov;i=i+1) step(0,0,16'd0,0,0);\r\n        step(1,0,16'd0,0,0);\r\n        traffic(2000,100,80,-1,-1);\r\n        for(i=0;i<40;i=i+1) step(0,0,16'd0,1,0);\r\n        if(m_busy || m_ov || hold) checker_fail(\"final_drain\");\r\n        if(accepted<1300 || transfers<1290 || offered<24+1075+100 || loose_checked<1290) coverage_fail(\"angles\");\r\n        for(i=0;i<4;i=i+1) if(quadrant_hits[i]<200) coverage_fail(\"every_quadrant\");\r\n        if(stalls<300 || busy_offers<5000 || back_to_back<500 || noise<300) coverage_fail(\"handshake\");\r\n        if(busy_resets<1 || ov_resets<1 || pulses!=2) coverage_fail(\"resets\");\r\n        $display(\"COVERAGE cycles=%0d accepted=%0d transfers=%0d loose_checked=%0d worst_lsb=%f stalls=%0d busy_offers=%0d back_to_back=%0d noise=%0d busy_resets=%0d ov_resets=%0d pulses=%0d\",\r\n            cycle,accepted,transfers,loose_checked,worst,stalls,busy_offers,back_to_back,noise,busy_resets,ov_resets,pulses);\r\n        if(errors==0) $display(\"TEST PASSED\");\r\n        else $display(\"TEST FAILED: %0d errors\",errors);\r\n        $finish;\r\n    end\r\n    initial begin\r\n        #2000000;\r\n        $display(\"TEST FAILED: watchdog timeout\");\r\n        $finish;\r\n    end\r\nendmodule\r\n",
+    "truncated": false
+  },
+  "testbench_top": "cordic_sincos_tb",
+  "tool_exit_evidence": {
+    "history_count": 4,
+    "latest_by_tool": {
+      "vivado": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\cordic_build\\iter_000\\vivado_synth_output.log",
+        "output_log_sha256": "819d9ed7aff2ebb39a2ae4da0836b170b75e40902fd3592a85440e1a6e7bb0ce",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xelab": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\cordic_build\\iter_000\\xelab.log",
+        "output_log_sha256": "73d400f42a731b78761734a499233172624cbd5bbac1a379717a3cdc943abbf6",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xsim": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\cordic_build\\iter_000\\xsim.log",
+        "output_log_sha256": "99ad8baedf2e63c91bca8804280b95e6d43f059c457cd23c568ab742a22b40ea",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xvlog": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\cordic_build\\iter_000\\xvlog.log",
+        "output_log_sha256": "b20d744ab95327f6f63a492d8a71a6fb8c29ef0cdec7e5a1c5bc93060091f0a5",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      }
+    },
+    "missing_required_tools": [],
+    "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\cordic_build\\iter_000\\tool_exit_records.log",
+    "records": [
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\cordic_build\\iter_000",
+        "driver_returncode": 0,
+        "elapsed_seconds": 1.9102296999917598,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xvlog.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\cordic_build\\iter_000\\xvlog.log",
+        "output_log_sha256": "b20d744ab95327f6f63a492d8a71a6fb8c29ef0cdec7e5a1c5bc93060091f0a5",
+        "pid": 2076,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xvlog"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\cordic_build\\iter_000",
+        "driver_returncode": 0,
+        "elapsed_seconds": 3.4734027000085916,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xelab.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\cordic_build\\iter_000\\xelab.log",
+        "output_log_sha256": "73d400f42a731b78761734a499233172624cbd5bbac1a379717a3cdc943abbf6",
+        "pid": 32576,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xelab"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\cordic_build\\iter_000",
+        "driver_returncode": 0,
+        "elapsed_seconds": 3.99926620000042,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xsim.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\cordic_build\\iter_000\\xsim.log",
+        "output_log_sha256": "99ad8baedf2e63c91bca8804280b95e6d43f059c457cd23c568ab742a22b40ea",
+        "pid": 14320,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xsim"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\cordic_build\\iter_000",
+        "driver_returncode": 0,
+        "elapsed_seconds": 437.34724459999416,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/vivado.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\cordic_build\\iter_000\\vivado_synth_output.log",
+        "output_log_sha256": "819d9ed7aff2ebb39a2ae4da0836b170b75e40902fd3592a85440e1a6e7bb0ce",
+        "pid": 5432,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "vivado"
+      }
+    ],
+    "schema_valid": true,
+    "sha256": "ed1fbd7de9bb4f61becedb1cbea44db9684639f9d23e243a22a3eaf84a149d57",
+    "status": "recorded",
+    "truncated": false
+  },
+  "top_module": "cordic_sincos",
+  "verification_logs": [
+    {
+      "head": "INFO: [VRFC 10-2263] Analyzing Verilog file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t6-01/tier6_je4m8_82/cordic_build/iter_000/cordic_sincos.v\" into library work\r\nINFO: [VRFC 10-311] analyzing module cordic_prerot\r\nINFO: [VRFC 10-311] analyzing module cordic_atan\r\nINFO: [VRFC 10-311] analyzing module cordic_engine\r\nINFO: [VRFC 10-311] analyzing module cordic_out\r\nINFO: [VRFC 10-311] analyzing module cordic_sincos\r\nINFO: [VRFC 10-2263] Analyzing Verilog file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t6-01/tier6_je4m8_82/cordic_build/inputs/testbench_path.v\" into library work\r\nINFO: [VRFC 10-311] analyzing module cordic_sincos_tb\r\n\r\n",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\cordic_build\\iter_000\\xvlog.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "b20d744ab95327f6f63a492d8a71a6fb8c29ef0cdec7e5a1c5bc93060091f0a5",
+      "tail": "",
+      "truncated": false
+    },
+    {
+      "head": "Vivado Simulator v2025.2\r\nCopyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\nCopyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\nRunning: C:/AMDDesignTools/2025.2/Vivado/bin/unwrapped/win64.o/xelab.exe cordic_sincos_tb -s cordic_sincos_tb_snap --debug off \r\nMulti-threading is on. Using 10 slave threads.\r\nStarting static elaboration\r\nPass Through NonSizing Optimizer\r\nCompleted static elaboration\r\nStarting simulation data flow analysis\r\nCompleted simulation data flow analysis\r\nTime Resolution for simulation is 1ps\r\nCompiling module work.cordic_prerot\r\nCompiling module work.cordic_atan\r\nCompiling module work.cordic_engine\r\nCompiling module work.cordic_out\r\nCompiling module work.cordic_sincos\r\nCompiling module work.cordic_sincos_tb\r\nBuilt simulation snapshot cordic_sincos_tb_snap\r\n\r\n",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\cordic_build\\iter_000\\xelab.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "73d400f42a731b78761734a499233172624cbd5bbac1a379717a3cdc943abbf6",
+      "tail": "",
+      "truncated": false
+    },
+    {
+      "head": "\r\n****** xsim v2025.2 (64-bit)\r\n  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025\r\n  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025\r\n  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025\r\n  **** Start of session at: Thu Nov  5 16:16:29 2026\r\n    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\n    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n\r\nsource xsim.dir/cordic_sincos_tb_snap/xsim_script.tcl\r\n# xsim {cordic_sincos_tb_snap} -autoloadwcfg -runall\r\nTime resolution is 1 ps\r\nrun -all\r\nCOVERAGE cycles=33047 accepted=1797 transfers=1795 loose_checked=1795 worst_lsb=2.187486 stalls=691 busy_offers=28324 back_to_back=1794 noise=441 busy_resets=1 ov_resets=1 pulses=2\r\nTEST PASSED\r\n$finish called at time : 330475 ns : File \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t6-01/tier6_je4m8_82/cordic_build/inputs/testbench_path.v\" Line 276\r\nexit\r\nINFO: [Common 17-206] Exiting xsim at Thu Nov  5 16:16:31 2026...\r\n\r\n",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\cordic_build\\iter_000\\sim_log.txt",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "99ad8baedf2e63c91bca8804280b95e6d43f059c457cd23c568ab742a22b40ea",
+      "tail": "",
+      "truncated": false
+    },
+    {
+      "head": "\r\n****** Vivado v2025.2 (64-bit)\r\n  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025\r\n  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025\r\n  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025\r\n  **** Start of session at: Thu Nov  5 16:16:35 2026\r\n    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\n    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n\r\nsource C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t6-01/tier6_je4m8_82/cordic_build/iter_000/synth.tcl\r\n# set_msg_config -id {VRFC 10-3609} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-9873} -new_severity ERROR\r\n# set_msg_config -id {Designutils 20-1307} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-327} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-3352} -new_severity ERROR\r\n# set_part xc7a35tcpg236-1\r\nINFO: [Coretcl 2-1500] The part has been set to 'xc7a35tcpg236-1' for the current project only. Run set_part -help for more details. To evaluate different speed grades in the current design, use the set_speed_grade command, or use the open_checkpoint -part command to change the part used by an existing checkpoint design.\r\nset_part: Time (s): cpu = 00:00:31 ; elapsed = 00:00:33 . Memory (MB): peak = 533.508 ; gain = 225.312\r\n# read_verilog \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t6-01/tier6_je4m8_82/cordic_build/iter_000/cordic_sincos.v\"\r\n# set fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t6-01/tier6_je4m8_82/cordic_build/iter_000/timing.xdc\" w]\r\n# puts $fp {create_clock -period 10.000 -name clk [get_ports clk]}\r\n# close $fp\r\n# read_xdc \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t6-01/tier6_je4m8_82/cordic_build/iter_000/timing.xdc\"\r\n# synth_design -top cordic_sincos -flatten_hierarc",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\cordic_build\\iter_000\\vivado_synth_output.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "819d9ed7aff2ebb39a2ae4da0836b170b75e40902fd3592a85440e1a6e7bb0ce",
+      "tail": "ortl-work/logs/signoff4-t6-01/tier6_je4m8_82/cordic_build/iter_000/power.rpt\r\nRunning Vector-less Activity Propagation...\r\n\r\nFinished Running Vector-less Activity Propagation\r\n0 Infos, 0 Warnings, 0 Critical Warnings and 0 Errors encountered.\r\nreport_power completed successfully\r\n# catch { report_methodology -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t6-01/tier6_je4m8_82/cordic_build/iter_000/methodology.rpt\" }\r\nCommand: report_methodology -file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t6-01/tier6_je4m8_82/cordic_build/iter_000/methodology.rpt\r\nINFO: [Timing 38-35] Done setting XDC timing constraints.\r\nINFO: [DRC 23-133] Running Methodology with 2 threads\r\nINFO: [Vivado_Tcl 2-1520] The results of Report Methodology are in file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t6-01/tier6_je4m8_82/cordic_build/iter_000/methodology.rpt.\r\nreport_methodology completed successfully\r\n# catch { report_qor_suggestions -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t6-01/tier6_je4m8_82/cordic_build/iter_000/qor_suggestions.rpt\" }\r\nCommand: report_qor_suggestions -file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t6-01/tier6_je4m8_82/cordic_build/iter_000/qor_suggestions.rpt\r\nCongestion Prediction Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.069 . Memory (MB): peak = 2013.035 ; gain = 0.000\r\nINFO: [Implflow 47-1309] PredResultString: 1:45.11:54.89\r\nfeatureProvider Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.087 . Memory (MB): peak = 2013.035 ; gain = 0.000\r\nINFO: [Implflow 47-1274] ML strategy prediction is not supported for 7-series devices.\r\nreport_qor_suggestions completed successfully\r\n# puts \"SYNTH_COMPLETE\"\r\nSYNTH_COMPLETE\r\nINFO: [Common 17-206] Exiting Vivado at Thu Nov  5 16:23:48 2026...\r\n\r\n",
+      "truncated": true
+    }
+  ]
+}

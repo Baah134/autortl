@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_3:decision:instruction:0",
+  "result": "Keep the existing `counter < {24'd0, duty}` comparison and registered `pwm_out` assignment unchanged. Replace only the counter update with an 8-bit modulo-256 counter expressed as per-bit toggles: bit 0 toggles each active cycle, and each higher bit toggles when all lower bits are one; preserve synchronous reset to zero. This differs from iteration 1\u2019s narrowed counter using a whole-vector `+ 1` expression; preserve the exact post-reset 0\u2013255 sequence and assess the result against the 7-LUT incumbent under the fixed verification and routed timing gates.",
+  "artifacts": {}
+}

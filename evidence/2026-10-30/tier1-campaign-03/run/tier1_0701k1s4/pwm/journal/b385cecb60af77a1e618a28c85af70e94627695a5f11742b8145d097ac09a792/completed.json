@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_4:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 4,
+    "instruction": "Keep the 32-bit counter, its rollover branch, and reset logic unchanged. Replace only the PWM comparison with an explicitly sized 9-bit subtraction of the zero-extended 8-bit counter and duty, deriving `pwm_out` from the carry/borrow bit so the result remains true exactly when `counter[7:0] < duty`. Preserve the existing nonblocking output register update and verify the result against the frozen testbench and routed LUT, WNS, and WHS reports.",
+    "candidates": [
+      {
+        "iteration": 4,
+        "mutation": "standard",
+        "instruction": "Keep the 32-bit counter, its rollover branch, and reset logic unchanged. Replace only the PWM comparison with an explicitly sized 9-bit subtraction of the zero-extended 8-bit counter and duty, deriving `pwm_out` from the carry/borrow bit so the result remains true exactly when `counter[7:0] < duty`. Preserve the existing nonblocking output register update and verify the result against the frozen testbench and routed LUT, WNS, and WHS reports.",
+        "generated_source_sha256": "79cefd5c73920640613340f643e0cc3c349f282ca134060de22317a30c293397",
+        "final_source_sha256": "79cefd5c73920640613340f643e0cc3c349f282ca134060de22317a30c293397",
+        "generated_code_hash": "d165f24731879e8c",
+        "final_code_hash": "d165f24731879e8c",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.737,
+          "whs_ns": 0.232,
+          "lut_used": 11,
+          "ff_used": 9,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.011,
+          "total_power_w": 0.081
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\pwm\\iter_004\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\pwm\\iter_004\\cand_standard\\synth.tcl",
+          "sha256": "f201e19617f2bc258f88dc1490ab54522a77a537fb50aa1c0ecb4d22fba0100b"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\pwm\\iter_004\\cand_standard\\pwm.v",
+          "sha256": "95f0b01d003c784a323f8e2a45596012eb4ad9f9e06e438c3b7189c47114c465"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": "79cefd5c73920640613340f643e0cc3c349f282ca134060de22317a30c293397"
+  },
+  "artifacts": {}
+}

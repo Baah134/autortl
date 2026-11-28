@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Defined behavior and integration verification: PASS \u2014 deterministic ladder is ALIVE and the unchanged integration testbench reports TEST PASSED.\n- Top interface and build: PASS \u2014 candidate defines `rr_regfile`; compile and elaboration exited successfully.\n- Top latency annotation: PASS \u2014 authoritative `declared_latency.known=false`; no numeric top annotation is required.\n- Simulation: PASS \u2014 xsim exited successfully with the exact TEST PASSED verdict.\n- Routed metrics and integrity: PASS \u2014 retained routed reports and successful synthesis evidence are provided.\n- Timing feasibility: PASS \u2014 `timing_met=true`, WNS=0.583 ns and WHS=0.082 ns.\n- Objective improvement: FAIL \u2014 both candidate and previous best are timing-feasible; LUTs increased from 40 to 46, while FFs stayed at 90, so the minimize_luts objective did not improve.\n## Summary\n- Passed: 6 of 7\n- Failed: 1 of 7\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes behavioral, tool, metric-integrity, and timing gates, and its missing top latency annotation is permitted because authoritative latency is unknown. Since the previous best already meets timing, promotion requires strict improvement in the selected objective; the candidate uses more LUTs (46 versus 40) with the same FF count, so that mandatory criterion fails.",
+      "recommendation": "REJECT",
+      "passed": 6,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

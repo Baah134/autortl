@@ -12,23 +12,23 @@ from __future__ import annotations
 import json
 import shutil
 import hashlib
-import time
 import re
 import os
 from dataclasses import asdict
 from datetime import datetime
 from pathlib import Path
 
+from .awake_clock import awake_seconds
 from .config import RunConfig
 from .contract_context import run_evidence, file_evidence, flow_evidence, save_evidence, render_fixed_optimize_contract, tool_exit_evidence
-from .spec import DesignSpec, ModuleSpec, Port, ResetSpec
+from .spec import DesignSpec, ModuleSpec
 from .linter import lint_spec, write_stub_project, top_verilog
 from .static_checks import check as static_check
 from .state import RunState, atomic_write_text
 from .roles import Planner, Generator, Evaluator, TimingDoctor, Evaluation, default_timescale
 from .budget import Budget
 from .cache import MetricsCache, code_hash
-from .triage import FailureKind, classify
+from .triage import FailureKind, SETTLED_KINDS, classify, target_capacity
 from .metrics_gate import validate as gate_metrics, MetricsGateError
 from .watchdog import inspect as watchdog_inspect
 from .taxonomy import Taxonomy
@@ -41,12 +41,25 @@ from . import vivado
 from . import companions
 from .vivado import advisor_digest
 from .report_parser import VivadoMetrics, extract_message_ids
-from .golden import GoldenModel, GoldenTimeoutError, qualify_against_examples, validate_examples
-from .tbgen import generate as generate_tb
+from .golden import (GoldenModel, GoldenTimeoutError, qualify_against_examples, validate_examples,
+                     only_example_mismatches)
+from .tbgen import generate as generate_tb, shape_errors as tb_shape_errors
 from .tbqual import qualify as qualify_tb, assertion_failure_proof, qualification_mutations
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from llm.client import declared_latency, ModelCallError
+from .fileio import file_sha256, read_json
+
+
+# golden_attempts_too_few_for_table_math: a module's oracle gets three attempts
+# (a disputed planner-written spec still returns to the planner after two).
+ORACLE_ATTEMPTS = 3
+
+# oracle_example_dispute_ends_build: the planner's instruction for a disputed module.
+SPEC_DISPUTE_INSTRUCTION = (
+    "Two independent reference models written from this module's behavior text disagree with its "
+    "examples. Make the behavior text and the examples agree (fix whichever is wrong) and keep every "
+    "other module unchanged unless it must change.")
 
 
 class VerificationEvidenceError(ValueError):
@@ -56,7 +69,7 @@ class VerificationEvidenceError(ValueError):
 def _verification_inputs(sources, tb):
     def identity(path):
         path = Path(path)
-        return {"path": str(path.resolve()), "sha256": hashlib.sha256(path.read_bytes()).hexdigest()}
+        return {"path": str(path.resolve()), "sha256": file_sha256(path)}
     return {"schema_version": 1, "sources": [identity(path) for path in sources],
             "testbench": identity(tb) if tb is not None else None}
 
@@ -64,7 +77,7 @@ def _verification_inputs(sources, tb):
 def _verification_dependencies(manifest: Path) -> dict[str, str]:
     """Bind simulated sources and TB to their recorded identities, not current guesses."""
     try:
-        data = json.loads(Path(manifest).read_text(encoding="utf-8"))
+        data = read_json(Path(manifest))
         if (not isinstance(data, dict) or type(data.get("schema_version")) is not int or
                 data.get("schema_version") != 1 or
                 not isinstance(data.get("sources"), list) or not data["sources"] or
@@ -78,7 +91,7 @@ def _verification_dependencies(manifest: Path) -> dict[str, str]:
                     not re.fullmatch(r"[a-f0-9]{64}", entry["sha256"])):
                 raise ValueError("invalid verification dependency identity")
             path = Path(entry["path"])
-            if not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest() != entry["sha256"]:
+            if not path.is_file() or file_sha256(path) != entry["sha256"]:
                 raise VerificationEvidenceError("Completed verification dependency missing or modified: " + str(path))
             dependencies[str(path.resolve())] = entry["sha256"]
         return dependencies
@@ -108,7 +121,7 @@ def _process_exit_gate(directory, provenance=None):
             log = Path(latest["output_log_path"])
             if Path(latest["cwd"]).resolve() != root.resolve():
                 reasons.append(f"{root}: {name} receipt belongs to another work directory")
-            if not log.is_file() or hashlib.sha256(log.read_bytes()).hexdigest() != latest["output_log_sha256"]:
+            if not log.is_file() or file_sha256(log) != latest["output_log_sha256"]:
                 reasons.append(f"{root}: {name} output evidence is missing or modified")
     return {"passed": not reasons, "reasons": reasons,
             "policy": "Every required tool's latest actual process exit must be zero with retained matching output; physical-only Doctor may reuse source-bound prior compile/simulation."}
@@ -144,6 +157,8 @@ class Orchestrator:
     def __init__(self, cfg: RunConfig, run_dir: Path | None = None):
         self.cfg = cfg
         self._scope = "initial"
+        self._edit_scope = None   # build mode only: whole_design or frozen_children
+        self._unit_inputs = {}    # whole_design: verified child/top/unit file identities
         self._counts = {}
         self._proposal_artifacts = {}
         self._journal_enabled = False
@@ -179,15 +194,15 @@ class Orchestrator:
         saved = self.state.load_fsm()
         if saved and saved.get("phase") == "DONE":
             summary_path = self.state.run_dir / "run_summary.json"
-            if hashlib.sha256(summary_path.read_bytes()).hexdigest() != saved.get("summary_sha256"):
+            if file_sha256(summary_path) != saved.get("summary_sha256"):
                 raise ValueError("Completed summary evidence is missing or modified")
-            summary = json.loads(summary_path.read_text(encoding="utf-8"))
+            summary = read_json(summary_path)
             winner = self.state.run_dir / f"{summary.get('top_module', self.cfg.top_module)}_best.v"
-            if not winner.exists() or hashlib.sha256(winner.read_bytes()).hexdigest() != saved.get("best_sha256"):
+            if not winner.exists() or file_sha256(winner) != saved.get("best_sha256"):
                 raise ValueError("Completed winner artifact is missing or modified")
             for name, digest in saved.get("final_artifacts", {}).items():
                 path = Path(name)
-                if not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest() != digest:
+                if not path.is_file() or file_sha256(path) != digest:
                     raise ValueError("Completed report evidence is missing or modified")
             return summary
         if saved and saved.get("phase") not in (None, "DONE"):
@@ -210,19 +225,25 @@ class Orchestrator:
                 checkpoint = self.state.load_fsm() or {}
                 # Baseline planning can fail before the first iteration snapshot.
                 best = self._verified_best_iteration()
-                result = {"status": "model_blocked", "failure_kind": FailureKind.INFRA.value,
+                # agy_endpoint_uses_tools: a tool-using reply is the model's failure and
+                # counts in rates; every other model error stays infrastructure.
+                tool_use = exc.code == "MODEL_TOOL_USE"
+                result = {"status": "model_tool_use" if tool_use else "model_blocked",
+                          "failure_kind": (FailureKind.DESIGN if tool_use else FailureKind.INFRA).value,
                           "role": exc.role, "error_code": exc.code, "error": str(exc),
                           "diagnostics": exc.metadata, "run_dir": str(self.state.run_dir),
                           "best_iteration": best, "llm_calls": self.budget.llm_calls}
                 self._snapshot(phase="MODEL_BLOCKED", blocked_phase=checkpoint.get("phase"),
                                best_iteration=best, error_code=exc.code, role=exc.role)
                 self.state.append_event({"stage": "model_worker", "scope": self._scope,
-                                         "outcome": "INFRA_FAIL", **result})
+                                         "outcome": "MODEL_TOOL_USE" if tool_use else "INFRA_FAIL", **result})
             except RuntimeError as exc:
                 if not str(exc).startswith(("LLM_BUDGET:", "TOOL_BUDGET:")):
                     raise
                 result = self._baseline_stop("budget_exhausted", str(exc))
             if result.get("status") != "done":
+                if self.cfg.verification_policy != "full":
+                    result.setdefault("verification_policy", self.cfg.verification_policy)
                 atomic_write_text(self.state.run_dir / "run_summary.json", json.dumps(result, indent=2))
             return result
         finally:
@@ -235,12 +256,12 @@ class Orchestrator:
         for directory in (root / "autortl", root / "llm", root / "data", root / ".claude" / "skills"):
             for path in sorted(directory.rglob("*")):
                 if path.is_file() and path.suffix in (".py", ".yaml", ".md", ".v"):
-                    implementation[path.relative_to(root).as_posix()] = hashlib.sha256(path.read_bytes()).hexdigest()
+                    implementation[path.relative_to(root).as_posix()] = file_sha256(path)
         runtime_path = self.state.run_dir / "runtime.json"
         runtime = {"schema_version": 1, "python": sys.version, "implementation": implementation,
                    "tools": self._cache_context(None, [])["tools"]}
         if runtime_path.exists():
-            if json.loads(runtime_path.read_text(encoding="utf-8")) != runtime:
+            if read_json(runtime_path) != runtime:
                 raise ValueError("Harness or Python changed since checkpoint; do not silently regrade an existing run")
         else:
             atomic_write_text(runtime_path, json.dumps(runtime, indent=2))
@@ -256,10 +277,10 @@ class Orchestrator:
                     raise ValueError("Resume configuration changed: " + name)
             for name in mutable_paths:
                 setattr(self.cfg, name, getattr(frozen_config, name))
-            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            manifest = read_json(manifest_path)
             for name, item in manifest.items():
                 path = Path(item["path"])
-                if not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest() != item["sha256"]:
+                if not path.is_file() or file_sha256(path) != item["sha256"]:
                     raise ValueError("Frozen input modified: " + name)
                 setattr(self.cfg, name, path)
             return
@@ -271,7 +292,7 @@ class Orchestrator:
             if original is not None and Path(original).is_file():
                 target = directory / (name + Path(original).suffix)
                 target.write_bytes(Path(original).read_bytes())
-                manifest[name] = {"path": str(target), "sha256": hashlib.sha256(target.read_bytes()).hexdigest()}
+                manifest[name] = {"path": str(target), "sha256": file_sha256(target)}
                 setattr(self.cfg, name, target)
         self.cfg.save(self.state.run_dir / "config.json")
         atomic_write_text(manifest_path, json.dumps(manifest, indent=2))
@@ -314,10 +335,10 @@ class Orchestrator:
         directory = self.state.run_dir / "journal" / hashlib.sha256(identity.encode()).hexdigest()
         completion = directory / "completed.json"
         if completion.exists():
-            saved = json.loads(completion.read_text(encoding="utf-8"))
+            saved = read_json(completion)
             for relative, digest in saved.get("artifacts", {}).items():
                 path = directory / "artifacts" / relative
-                if not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest() != digest:
+                if not path.is_file() or file_sha256(path) != digest:
                     raise ValueError("Stage evidence modified: " + identity)
                 if work:
                     target = Path(work) / relative
@@ -326,14 +347,16 @@ class Orchestrator:
             return self._unpack(saved["result"])
         directory.mkdir(parents=True, exist_ok=True)
         for attempt in range(attempts):
-            previous = json.loads((directory / "started.json").read_text(encoding="utf-8")) if (directory / "started.json").exists() else {}
+            previous = read_json((directory / "started.json")) if (directory / "started.json").exists() else {}
             count = previous.get("attempt", 0) + 1
             atomic_write_text(directory / "started.json", json.dumps({"stage": identity,
                 "args": repr(args), "kwargs": repr(kwargs), "attempt": count}, indent=2))
             self.state.append_event({"stage": identity, "attempt": count, "outcome": "RUNNING"},
                                     event_id=f"stage:{identity}:{count}:start")
             result = function()
-            blocked = isinstance(result, tuple) and len(result) == 3 and result[0] is False and result[2] != FailureKind.DESIGN
+            # A target-capacity failure is settled like a design outcome: committed,
+            # never retried as infrastructure (io_overutilization_sent_to_fixer).
+            blocked = isinstance(result, tuple) and len(result) == 3 and result[0] is False and result[2] not in SETTLED_KINDS
             self.state.append_event({"stage": identity, "attempt": count,
                                      "outcome": "INFRA_FAIL" if blocked else "COMPLETE"},
                                     event_id=f"stage:{identity}:{count}:end")
@@ -346,7 +369,7 @@ class Orchestrator:
                     if path.is_file() and (path.suffix == ".log" or path.name in ("sim_log.txt", "qualification.json")):
                         shutil.copyfile(path, evidence / path.name)
         # Infrastructure outcomes stay uncommitted, so a later resume can retry.
-        if isinstance(result, tuple) and len(result) == 3 and result[0] is False and result[2] != FailureKind.DESIGN:
+        if isinstance(result, tuple) and len(result) == 3 and result[0] is False and result[2] not in SETTLED_KINDS:
             return result
         artifacts = {}
         if work:
@@ -357,7 +380,7 @@ class Orchestrator:
                     target = directory / "artifacts" / relative
                     target.parent.mkdir(parents=True, exist_ok=True)
                     target.write_bytes(source.read_bytes())
-                    artifacts[relative] = hashlib.sha256(target.read_bytes()).hexdigest()
+                    artifacts[relative] = file_sha256(target)
         atomic_write_text(completion, json.dumps({"stage": identity, "result": self._pack(result),
                                                  "artifacts": artifacts}, indent=2))
         return result
@@ -395,9 +418,10 @@ class Orchestrator:
                     raise RuntimeError("TOOL_BUDGET: tool or wall-time budget exhausted")
                 remaining = min((self.budget.max_wall_minutes - self.budget.wall_minutes) * 60,
                                 self.budget.max_vivado_minutes * 60 - self.budget.vivado_seconds)
-                default = {"xvlog_check": 120, "xsim_run": 300, "run_synthesis": 900}[name]
+                default = {"xvlog_check": 120, "xsim_run": 300,
+                           "run_synthesis": self.cfg.synthesis_timeout_minutes * 60}[name]
                 kwargs["timeout"] = min(kwargs.get("timeout", default), remaining)
-            started = time.monotonic()
+            started = awake_seconds()
             try:
                 result = getattr(vivado, name)(*args, **kwargs)
                 if name == "xsim_run" and result[0]:
@@ -409,7 +433,7 @@ class Orchestrator:
                 return result
             finally:
                 if name != "full_metrics":
-                    self.budget.charge_vivado(max(time.monotonic() - started, vivado.vivado_seconds()))
+                    self.budget.charge_vivado(max(awake_seconds() - started, vivado.vivado_seconds()))
         result = self._stage("tool", name, execute, args, kwargs, work,
                              attempts=1 if name == "full_metrics" else self.cfg.max_infra_retries + 1)
         if name == "xsim_run" and result[0]:
@@ -420,7 +444,7 @@ class Orchestrator:
             if not manifest.is_file():
                 raise VerificationEvidenceError("Simulation verified input manifest is missing")
             try:
-                verified_inputs = json.loads(manifest.read_text(encoding="utf-8"))
+                verified_inputs = read_json(manifest)
                 current_inputs = _verification_inputs(args[0], args[1])
             except (OSError, ValueError) as exc:
                 raise VerificationEvidenceError("Simulation verified input manifest is invalid") from exc
@@ -439,7 +463,7 @@ class Orchestrator:
         attempts, missed = [], []
         root = work / "tbqual"
         root.mkdir(parents=True, exist_ok=True)
-        tb_hash = hashlib.sha256(Path(tb).read_bytes()).hexdigest() if Path(tb).is_file() else None
+        tb_hash = file_sha256(Path(tb)) if Path(tb).is_file() else None
 
         def save(status, qualified=False):
             atomic_write_text(root / "qualification.json", json.dumps({
@@ -456,8 +480,8 @@ class Orchestrator:
             log = directory / "sim_log.txt"
             attempts.append({"label": label, "description": description, "passed": passed,
                 "failure_kind": kind.value, "error": str(error)[:2000], "assertion_detected": proof,
-                "proof_reason": detail, "source_sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
-                "raw_log_sha256": hashlib.sha256(log.read_bytes()).hexdigest() if log.is_file() else None})
+                "proof_reason": detail, "source_sha256": file_sha256(path),
+                "raw_log_sha256": file_sha256(log) if log.is_file() else None})
             return passed, error, kind, proof, detail
 
         if not faults:
@@ -503,65 +527,148 @@ class Orchestrator:
         except (ValueError, KeyError, TypeError):
             raw, generated = self._model("planner", "make_spec", intent, self.cfg, self.budget), True
         # PHASE: LINT + STUB ELABORATION (Pothole 1)
-        # A supplied JSON spec is law and fails at once. A planner-written spec gets
-        # the lint errors back for a bounded repair (spec_lint_failure_skips_planner_repair).
-        attempt = 0
-        while True:
-            raw = raw[raw.find("{"): raw.rfind("}") + 1]
-            self.state.spec_path.write_text(raw, encoding="utf-8")
-            try:
-                spec = DesignSpec.load(self.state.spec_path)
-                errs = lint_spec(spec)
-            except (ValueError, KeyError, TypeError, AttributeError) as exc:
-                if not generated:
-                    raise
-                errs = [f"spec JSON does not load: {type(exc).__name__}: {str(exc)[:300]}"]
-            if not errs or not generated or attempt >= self.cfg.max_fix_attempts:
-                break
-            attempt += 1
-            print(f"[lint] planner spec repair {attempt}: " + "; ".join(errs)[:300])
-            raw = self._model("planner", "make_spec", intent, self.cfg, self.budget,
-                              feedback=f"Repair attempt {attempt}.\n" + "\n".join(errs)
-                              + "\nYour previous design_spec was:\n" + raw[:6000])
-        if errs:
-            self._snapshot(phase="PLANNING", lint_errors=errs)
-            print("[lint] spec failed structural lint:")
-            for e in errs:
-                print("   -", e)
-            return {"status": "spec_lint_failed", "errors": errs}
-        stub_dir = self.state.run_dir / "stubs"
-        stub_files = write_stub_project(spec, stub_dir)
-        ok, err, kind = self._tool("xvlog_check", stub_files, self.cfg, stub_dir)
-        if not ok:
-            return {"status": "stub_elaboration_failed" if kind == FailureKind.DESIGN else "build_blocked",
-                    "failure_kind": kind.value, "error": err}
+        # A supplied JSON spec is law and fails at once. A planner-written spec gets its
+        # lint errors (spec_lint_failure_skips_planner_repair) and any oracle-example
+        # dispute (oracle_example_dispute_ends_build) back for repair; both share one
+        # counter of at most max_fix_attempts journaled planner repairs.
+        recorded = saved or {}
+        revisions = list(recorded.get("spec_revisions", []))
+        disputes = list(recorded.get("spec_disputes", []))
+        repairs = revision = 0
+        while True:  # one pass per accepted spec revision
+            while True:
+                raw = raw[raw.find("{"): raw.rfind("}") + 1]
+                self.state.spec_path.write_text(raw, encoding="utf-8")
+                try:
+                    spec = DesignSpec.load(self.state.spec_path)
+                    errs = lint_spec(spec)
+                    if generated:  # spec_example_values_skip_planner_repair
+                        errs += [f"module {m.name}: {e}" for m in spec.modules
+                                 for e in validate_examples(m, require_anchors=True)]
+                        # fixed_latency_handshake_found_at_oracle: modules that get a generated
+                        # oracle and testbench must have a shape tbgen supports.
+                        if not (len(spec.modules) == 1 and self.cfg.testbench_path and not self.cfg.generate_golden):
+                            errs += [f"module {m.name}: {e}" for m in spec.modules for e in tb_shape_errors(m)]
+                        # requested_top_not_enforced: the request (and its testbench) fix the top name.
+                        # A single-module build may also name its only module after the request.
+                        if self.cfg.top_module and spec.top_name != self.cfg.top_module and not (
+                                len(spec.modules) == 1 and spec.modules[0].name == self.cfg.top_module):
+                            errs.append(f"top_name must be '{self.cfg.top_module}' as the request fixes it "
+                                        f"(the trusted testbench instantiates it), not '{spec.top_name}'")
+                    # multi_module_plan_without_trusted_tb: only a trusted integration testbench
+                    # can verify a multi-module build, so without one the spec must be one module.
+                    # A planner spec gets this back for repair; a supplied spec fails here, before
+                    # any module is generated, instead of as build_blocked after all of them.
+                    if not self.cfg.testbench_path and len(spec.modules) != 1:
+                        errs.append(f"no trusted integration testbench is supplied, so the design must be "
+                                    f"exactly one module holding all the logic (its generated testbench is "
+                                    f"the only verification); this spec has {len(spec.modules)}: "
+                                    f"{[m.name for m in spec.modules]}")
+                except (ValueError, KeyError, TypeError, AttributeError) as exc:
+                    if not generated:
+                        raise
+                    # partial_spec_in_repair: a repair must return the whole design_spec.
+                    errs = [f"spec JSON does not load: {type(exc).__name__}: {str(exc)[:300]}"
+                            + " (return the complete design_spec JSON object with top_name, modules,"
+                              " connections and external_ports, not only the changed part)"]
+                if not errs or not generated or repairs >= self.cfg.max_fix_attempts:
+                    break
+                repairs += 1
+                self._record_spec_repairs(repairs)
+                print(f"[lint] planner spec repair {repairs}: " + "; ".join(errs)[:300])
+                raw = self._model("planner", "make_spec", intent, self.cfg, self.budget,
+                                  feedback=f"Repair attempt {repairs}.\n" + "\n".join(errs)
+                                  + "\nYour previous design_spec was:\n" + raw[:6000])
+            if errs:
+                self._snapshot(phase="PLANNING", lint_errors=errs)
+                print("[lint] spec failed structural lint:")
+                for e in errs:
+                    print("   -", e)
+                return {"status": "spec_lint_failed", "errors": errs}
+            spec_sha = hashlib.sha256(raw.encode("utf-8")).hexdigest()
+            self._spec_generated = generated
+            if generated:
+                # A resume replays the journaled planner calls; it must reach the same
+                # accepted specs, never silently fall back to a pre-dispute one.
+                if revision < len(revisions):
+                    if revisions[revision].get("spec_sha256") != spec_sha:
+                        raise VerificationEvidenceError(
+                            f"Replayed spec revision {revision} differs from the checkpoint")
+                else:
+                    atomic_write_text(self.state.run_dir / "spec_revisions" / f"rev{revision}.json", raw)
+                    revisions.append({"revision": revision, "spec_sha256": spec_sha, "spec_repairs": repairs})
+                    self._snapshot(spec_revisions=revisions)
+            # Revision 0 keeps the historical layout; a replanned spec builds afresh.
+            suffix = "" if revision == 0 else f"_rev{revision}"
+            modules_root = self.state.run_dir / ("modules" + suffix)
+            stub_dir = self.state.run_dir / ("stubs" + suffix)
+            stub_files = write_stub_project(spec, stub_dir)
+            ok, err, kind = self._tool("xvlog_check", stub_files, self.cfg, stub_dir)
+            if not ok:
+                return {"status": "stub_elaboration_failed" if kind == FailureKind.DESIGN else "build_blocked",
+                        "failure_kind": kind.value, "error": err}
 
-        # PHASE: PER-MODULE GENERATE + VERIFY (journal-backed evidence)
-        module_files: dict[str, Path] = {}
-        for m in spec.modules:
-            self._scope = "module_" + m.name
-            mdir = self.state.run_dir / "modules" / m.name
-            mdir.mkdir(parents=True, exist_ok=True)
-            vfile = mdir / f"{m.name}.v"
-            self._build_single = len(spec.modules) == 1
-            self._build_top = spec.top_name
-            result = self._build_module(m, mdir)
-            if result is None:
-                blocker = getattr(self, "_build_blocker", None)
-                if blocker:
-                    return {"status": "build_blocked", "module": m.name, **blocker}
+            # PHASE: PER-MODULE GENERATE + VERIFY (journal-backed evidence)
+            # Every module is rebuilt for a new revision: a module verified against an
+            # earlier spec is never reused.
+            module_files: dict[str, Path] = {}
+            dispute = None
+            for m in spec.modules:
+                self._scope = "module_" + m.name + ("" if revision == 0 else f"@rev{revision}")
+                mdir = modules_root / m.name
+                mdir.mkdir(parents=True, exist_ok=True)
+                vfile = mdir / f"{m.name}.v"
+                self._build_single = len(spec.modules) == 1
+                self._build_top = spec.top_name
+                result = self._build_module(m, mdir)
+                if result is None:
+                    blocker = getattr(self, "_build_blocker", None)
+                    if blocker:
+                        return {"status": "build_blocked", "module": m.name, **blocker}
+                    dispute = getattr(self, "_oracle_dispute", None) if generated else None
+                    if dispute is None:
+                        self._check_spec_revision_reached(generated, revision, revisions)
+                        return {"status": "module_failed", "module": m.name,
+                                "error": getattr(self, "_build_failure", "module verification did not complete")}
+                    break
+                vfile.write_text(result, encoding="utf-8")
+                module_files[m.name] = vfile
+            if dispute is None:
+                self._check_spec_revision_reached(generated, revision, revisions)
+                break
+            # oracle_example_dispute_ends_build: the planner wrote behavior text and
+            # examples that two runnable reference models could not both satisfy.
+            exhausted = repairs >= self.cfg.max_fix_attempts
+            if not exhausted:
+                repairs += 1
+                self._record_spec_repairs(repairs)
+            record = {"revision": revision, "module": m.name, "spec_sha256": spec_sha,
+                      "attempts": dispute["attempts"],
+                      "outcome": "repairs_exhausted" if exhausted else "replanned",
+                      "spec_repair": None if exhausted else repairs}
+            self._record_spec_dispute(disputes, revision, record)
+            if exhausted:
                 return {"status": "module_failed", "module": m.name,
-                        "error": getattr(self, "_build_failure", "module verification did not complete")}
-            vfile.write_text(result, encoding="utf-8")
-            module_files[m.name] = vfile
+                        "error": getattr(self, "_build_failure", "module verification did not complete"),
+                        "spec_dispute": record}
+            lines = []
+            for attempt_lines in dispute["attempts"]:
+                lines += [line for line in attempt_lines if line not in lines]
+            print(f"[spec] planner spec repair {repairs}: module {m.name} examples disputed by two oracles")
+            self._scope = "build_spec"
+            raw = self._model("planner", "make_spec", intent, self.cfg, self.budget,
+                              feedback=f"Repair attempt {repairs}.\nmodule {m.name}: " + SPEC_DISPUTE_INSTRUCTION
+                              + "\nExample mismatches (expected by the spec, given by the reference models):\n"
+                              + "\n".join(lines[:10])[:1500]
+                              + "\nYour previous design_spec was:\n" + raw[:6000])
+            revision += 1
 
         # PHASE: MECHANICAL INTEGRATION (zero LLM)
         self._scope = "build_integration"
-        top_file = self.state.run_dir / "modules" / f"{spec.top_name}.v"
+        top_file = modules_root / f"{spec.top_name}.v"
         top_file.write_text(top_verilog(spec), encoding="utf-8")
         all_files = list(module_files.values()) + [top_file]
-        ok, err, kind = self._tool("xvlog_check", all_files, self.cfg,
-                                           self.state.run_dir / "modules")
+        ok, err, kind = self._tool("xvlog_check", all_files, self.cfg, modules_root)
         if not ok:
             return {"status": "integration_failed", "failure_kind": kind.value, "error": err}
         print("[build] integrated design compiles; entering optimize loop as baseline")
@@ -569,21 +676,106 @@ class Orchestrator:
         # hand off to optimize with the integrated design
         self.cfg.top_module = spec.top_name
         self.cfg.design_path = top_file
+        # The frozen supplied testbench, before any harness adaptation below.
+        supplied_tb = Path(self.cfg.testbench_path) if self.cfg.testbench_path else None
         if not self.cfg.testbench_path:
             if len(spec.modules) != 1:
                 return {"status": "build_blocked", "error": "Multi-module build requires trusted integration testbench"}
             child = spec.modules[0]
-            child_tb = self.state.run_dir / "modules" / child.name / f"{child.name}_tb.v"
+            child_tb = modules_root / child.name / f"{child.name}_tb.v"
             adapted = re.sub(r"\b" + re.escape(child.name) + r"\b", spec.top_name, child_tb.read_text(encoding="utf-8"))
             adapted = re.sub(r"\b" + re.escape(child.name + "_tb") + r"\b", spec.top_name + "_tb", adapted)
             integration_tb = self.state.run_dir / f"{spec.top_name}_tb.v"
             integration_tb.write_text(adapted, encoding="utf-8")
             self.cfg.testbench_path = integration_tb
-        return self._run_optimize(None, extra_sources=list(module_files.values()))
+        edit_scope = self._build_edit_scope(spec, supplied_tb, list(module_files))
+        recorded = (saved or {}).get("edit_scope")
+        if recorded is not None and recorded != edit_scope:
+            raise ValueError("Build edit scope changed since checkpoint")
+        self._edit_scope = edit_scope
+        self._snapshot(edit_scope=edit_scope)
+        if edit_scope["mode"] != "whole_design":
+            return self._run_optimize(None, extra_sources=list(module_files.values()))
+        # frozen_children_block_build_optimization: one editable unit holding the
+        # verified children (first) and the mechanical top (last); no companions.
+        unit = modules_root / f"{spec.top_name}_unit.v"
+        parts = [path.read_text(encoding="utf-8") for path in [*module_files.values(), top_file]]
+        unit.write_text("".join(part if part.endswith("\n") else part + "\n" for part in parts),
+                        encoding="utf-8")
+        # DONE binds the unit to the verified children it was assembled from.
+        self._unit_inputs = {str(path.resolve()): file_sha256(path)
+                             for path in [*module_files.values(), top_file, unit]}
+        self.cfg.design_path = unit
+        print(f"[build] editable unit: {', '.join(module_files)} + {spec.top_name}; "
+              f"verified by the trusted integration testbench")
+        return self._run_optimize(None, extra_sources=[])
+
+    @staticmethod
+    def _check_spec_revision_reached(generated: bool, revision: int, revisions: list) -> None:
+        """A design verdict on a spec the checkpoint already replaced is a divergent replay."""
+        if generated and revision < len(revisions) - 1:
+            raise VerificationEvidenceError(
+                f"Replay reached a verdict on spec revision {revision}, but the checkpoint records "
+                f"revision {len(revisions) - 1}")
+
+    def _record_spec_repairs(self, repairs: int) -> None:
+        """The shared planner-repair counter in state.json; a replay never lowers it."""
+        if repairs > (self.state.load_fsm() or {}).get("spec_repairs", 0):
+            self._snapshot(spec_repairs=repairs)
+
+    def _record_spec_dispute(self, disputes: list, revision: int, record: dict) -> None:
+        """Record a revision's dispute in state.json and spec_disputes/; a replay must match it.
+
+        At most one dispute ends each revision, so the revision indexes the list.
+        """
+        keys = ("revision", "module", "spec_sha256", "outcome")
+        if revision < len(disputes):
+            if {k: disputes[revision].get(k) for k in keys} != {k: record[k] for k in keys}:
+                raise VerificationEvidenceError(f"Replayed spec dispute {revision} differs from the checkpoint")
+            return
+        disputes.append(record)
+        atomic_write_text(self.state.run_dir / "spec_disputes" / f"rev{revision}.json",
+                          json.dumps(record, indent=2))
+        self._snapshot(spec_disputes=disputes)
+
+    def _build_edit_scope(self, spec: DesignSpec, supplied_tb: Path | None, children: list[str]) -> dict:
+        """Decide what the post-build optimizer may edit; recorded in harness facts.
+
+        Children become editable only when a trusted, independent integration
+        testbench (the supplied one, which instantiates the top) can verify them
+        through the top. A harness-adapted child testbench is not independent.
+        """
+        top = spec.top_name
+        frozen = lambda reason: {"mode": "frozen_children", "top": top, "children": children,
+                                 "testbench_modules": [], "reason": reason}
+        if supplied_tb is None or not supplied_tb.is_file():
+            return frozen("No trusted independent integration testbench was supplied. The integration testbench "
+                          "was adapted from the generated child testbench, so it cannot independently verify "
+                          "changed children; generated children stay frozen companions verified by their own "
+                          "generated checks, and only the top wrapper is editable.")
+        text = supplied_tb.read_text(encoding="utf-8", errors="replace")
+        if top not in companions.instantiated(text, {top}):
+            return frozen(f"The supplied testbench does not instantiate the top {top}, so it cannot verify changed "
+                          "children through the top; generated children stay frozen companions and only the top "
+                          "wrapper is editable.")
+        return {"mode": "whole_design", "top": top, "children": children,
+                "testbench_modules": sorted(companions.instantiated(text, set(children))),
+                "reason": f"The supplied testbench instantiates the top {top} and is the trusted integration "
+                          "authority, so every generated child module and the mechanical top form one editable "
+                          "unit verified through the top. Per-child generated oracles and testbenches verified "
+                          "the baseline children only and are not evidence for changed children."}
+
+    def _boundary_violation(self, source: str, extra: list[Path], tb: Path | None) -> str:
+        """The edit-boundary gate for any proposed top or editable unit ("" when acceptable)."""
+        scope = self._edit_scope
+        if scope is not None and scope["mode"] == "whole_design":
+            return companions.unit_violation(source, self.cfg.top_module, scope["testbench_modules"], tb)
+        return companions.violation(source, self.cfg.top_module, extra, tb)
 
     def _build_module(self, m: ModuleSpec, mdir: Path) -> str | None:
         """Generate one module through the ladder with best-of-N. Returns verilog."""
         self._build_blocker = None
+        self._oracle_dispute = None
         self._build_failure = "module verification did not complete"
         print(f"[module {m.name}] golden model + testbench...")
         independent_tb = None
@@ -610,20 +802,31 @@ class Orchestrator:
             return None
         golden_path = mdir / "golden.py"
         feedback = ""
+        previous_source = ""
+        previous_source_sha256 = ""
         tb = None
-        for attempt in range(1, 3):
+        # Per rejected attempt: its example-mismatch lines, or None for any other error
+        # (oracle_example_dispute_ends_build).
+        mismatch_attempts = []
+        qualified = False
+        for attempt in range(1, ORACLE_ATTEMPTS + 1):
             # Provider and storage failures propagate; only generated-program errors
             # enter this bounded oracle repair loop.
             if attempt == 1:
                 golden_src = self._model("generator", "golden_model", m, self.budget)
             else:
-                golden_src = self._model("generator", "golden_model", m, self.budget, feedback=feedback)
+                golden_src = self._model("generator", "golden_model", m, self.budget, feedback=feedback,
+                                         previous_source=previous_source,
+                                         previous_source_sha256=previous_source_sha256)
             golden_path.write_text(golden_src, encoding="utf-8")
-            digest = hashlib.sha256(golden_path.read_bytes()).hexdigest()
+            digest = file_sha256(golden_path)
+            mismatches = None
             try:
                 gm = GoldenModel(golden_path)
                 errors = qualify_against_examples(gm, m)
                 if errors:
+                    if only_example_mismatches(errors, m):
+                        mismatches = [line[:300] for line in errors[:10]]
                     raise ValueError("; ".join(errors[:10]))
                 tb = generate_tb(m, gm, mdir)
             except GoldenTimeoutError as exc:
@@ -632,24 +835,51 @@ class Orchestrator:
                 return None
             except (SyntaxError, ValueError, KeyError, TypeError) as exc:
                 feedback = f"{type(exc).__name__}: {str(exc)[:2000]}"
+                previous_source = golden_src
+                previous_source_sha256 = digest
+                mismatch_attempts.append(mismatches)
                 atomic_write_text(mdir / f"golden_attempt_{attempt}.log", json.dumps({
                     "attempt": attempt, "source_sha256": digest, "status": "oracle_rejected",
+                    "example_mismatch_only": mismatches is not None,
                     "diagnostic": feedback}, indent=2))
+                # A planner-written spec whose last two oracles both disagree only with
+                # its examples goes back to the planner at once; a third oracle would be
+                # written from the same disputed text.
+                if (getattr(self, "_spec_generated", False) and len(mismatch_attempts) >= 2
+                        and all(mismatch_attempts[-2:])):
+                    break
                 continue
             atomic_write_text(mdir / f"golden_attempt_{attempt}.log", json.dumps({
                 "attempt": attempt, "source_sha256": digest, "status": "oracle_qualified",
                 "scope": "Specification examples and generated stimulus; not formal equivalence or reset-kind proof."}, indent=2))
+            qualified = True
             break
-        else:
+        if not qualified:
             self._build_failure = feedback
+            if len(mismatch_attempts) >= 2 and all(mismatch_attempts[-2:]):
+                # Two oracles written from the behavior text both ran and disagreed only
+                # with the examples: the specification disputes itself.
+                self._oracle_dispute = {"module": m.name, "attempts": mismatch_attempts[-2:]}
             return None
         verilog = self._generate_verified(m, "(initial implementation)",
                                           "", tb, mdir, independent_tb=independent_tb)
         if verilog is None:
             return None
         # testbench qualification against the now-good module (defence #7)
-        qual_ok, reason = (self._qualify_source(verilog, tb, m.name, mdir)
-                          if self._journal_enabled else qualify_tb(verilog, tb, m.name, self.cfg, mdir))
+        if self.cfg.verification_policy == "skip_generated_tb_mutations":
+            # Benchmark arm B ablation (ablation_policy_seam_absent): only the bug-injection
+            # qualification of this generated testbench is skipped, and the skip is recorded.
+            # Candidate simulation against it already gated in _generate_verified; a supplied
+            # independent testbench below is still qualified.
+            self.state.append_event({"stage": "tb_qualification", "module": m.name,
+                                     "testbench": str(Path(tb).resolve()),
+                                     "testbench_sha256": file_sha256(Path(tb)),
+                                     "outcome": "skipped_by_policy",
+                                     "verification_policy": self.cfg.verification_policy})
+            qual_ok, reason = True, "skipped_by_policy (verification_policy=skip_generated_tb_mutations)"
+        else:
+            qual_ok, reason = (self._qualify_source(verilog, tb, m.name, mdir)
+                              if self._journal_enabled else qualify_tb(verilog, tb, m.name, self.cfg, mdir))
         print(f"[module {m.name}] tb qualification: {reason}")
         if not qual_ok:
             return None  # infra/unqualified stimulus must not silently change its own grading
@@ -727,13 +957,16 @@ class Orchestrator:
         baseline = self._full_flow([base_v] + extra_sources, tb_path,
                                    cfg.top_module, idir)
         if not baseline.sim_passed or baseline.synth_error:
-            print(f"[iter 0] baseline failed verification")
+            print("[iter 0] baseline failed verification")
             v, baseline = self._fix_loop(original, baseline, tb_path,
                                          base_v, idir, extra_sources)
             if baseline.sim_passed and not baseline.synth_error:
                 original = v
         if not baseline.sim_passed or baseline.synth_error:
             kind = self._flow_failure_kind(baseline)
+            if kind == FailureKind.TARGET:
+                # _fix_loop never ran the generator: a target failure is not a design bug.
+                return self._target_stop(baseline.synth_error)
             return self._baseline_stop(
                 "baseline_failed" if kind == FailureKind.DESIGN else "baseline_blocked",
                 baseline.sim_error or baseline.synth_error or "Baseline verification incomplete",
@@ -753,10 +986,16 @@ class Orchestrator:
         # ---- fixed harness contract: no model negotiation ----
         facts = run_evidence(cfg, baseline, [base_v] + extra_sources, tb_path,
                              idir, self._cache_context(tb_path, extra_sources),
-                             **({"build_spec_path": state.spec_path} if cfg.mode == "build" else {}))
+                             **({"build_spec_path": state.spec_path} if cfg.mode == "build" else {}),
+                             **({"edit_scope": self._edit_scope} if self._edit_scope is not None else {}))
         context = save_evidence(state.run_dir / "harness_facts.json", facts)
-        role_context = context + "\n\n" + candidate_scope(
-            cfg.top_module, extra_sources, companions.required_by_testbench(tb_path, extra_sources))
+        if self._edit_scope is not None and self._edit_scope["mode"] == "whole_design":
+            scope_text = candidate_scope(cfg.top_module, [], editable_unit={
+                "source": base_v, "testbench_modules": self._edit_scope["testbench_modules"]})
+        else:
+            scope_text = candidate_scope(
+                cfg.top_module, extra_sources, companions.required_by_testbench(tb_path, extra_sources))
+        role_context = context + "\n\n" + scope_text
         for role in (self.planner, self.generator, self.evaluator, self.doctor):
             role.run_context = role_context
         contract_md = render_fixed_optimize_contract(facts)
@@ -881,6 +1120,10 @@ class Orchestrator:
                     [cv] + extra_sources, cfg.top_module, self.cfg, cdir,
                     promotions=self.taxonomy.promotions())
                 if not ok:
+                    if kind == FailureKind.TARGET:
+                        # The ports are contract-fixed, so no candidate can fit; stop
+                        # with the verified incumbent kept (io_overutilization_sent_to_fixer).
+                        return self._target_stop(err)
                     if kind != FailureKind.DESIGN:
                         c.fail_reason = "infra: " + err[:100]
                         continue
@@ -917,7 +1160,11 @@ class Orchestrator:
                     "recommendation": "REJECT", "is_best": False,
                     "selected_source_sha256": None}))
                 stall += 1
-                state.append_progress(it, "no candidate survived the ladder", "REJECT")
+                # rejection_reason_hidden_from_planner: the planner reads progress, so say why.
+                reasons = "; ".join(f"{c.mutation}: {' '.join(str(getattr(c, 'fail_reason', '') or 'unknown').split())[:160]}"
+                                    for c in all_candidates)
+                state.append_progress(it, f"no candidate survived the ladder ({reasons}); tried: "
+                                      + " ".join(instruction.split())[:120], "REJECT")
                 state.append_design({"iteration": it, "is_best": False,
                                      "recommendation": "REJECT",
                                      "sim_passed": False})
@@ -961,12 +1208,15 @@ class Orchestrator:
                 candidate_path = idir / f"cand_{winner.mutation}" / f"{cfg.top_module}.v"
             if candidate_path.read_text(encoding="utf-8") != winner.verilog:
                 raise ValueError("Candidate source does not match evaluation evidence")
+            # timing_progress: an infeasible incumbent may yield to a verified,
+            # still-infeasible candidate with better setup WNS (never to a feasible incumbent).
+            comparison_kind = improvement_kind(wm, best_m, cfg.objective, progress=True)
             candidate_facts = {
                 "candidate_source": file_evidence(candidate_path),
                 **flow_evidence(wdir),
                 "candidate_metrics": wm.to_dict(), "previous_best_metrics": best_m.to_dict(),
-                "objective": cfg.objective, "measured_improvement": self._is_better(wm, best_m),
-                "improvement_kind": improvement_kind(wm, best_m, cfg.objective),
+                "objective": cfg.objective, "measured_improvement": comparison_kind is not None,
+                "improvement_kind": comparison_kind,
                 "candidate_timing_feasible": timing_feasible(wm),
                 "previous_best_timing_feasible": timing_feasible(best_m),
             }
@@ -975,12 +1225,12 @@ class Orchestrator:
             provenance = None
             provenance_path = Path(wdir) / "verification_provenance.json"
             if provenance_path.is_file():
-                provenance = json.loads(provenance_path.read_text(encoding="utf-8"))
-                if provenance.get("source_sha256") != hashlib.sha256(candidate_path.read_bytes()).hexdigest():
+                provenance = read_json(provenance_path)
+                if provenance.get("source_sha256") != file_sha256(candidate_path):
                     raise ValueError("Reused verification source does not match candidate evidence")
                 for evidence in provenance["evidence"]:
                     path = Path(evidence["path"])
-                    if not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest() != evidence["sha256"]:
+                    if not path.is_file() or file_sha256(path) != evidence["sha256"]:
                         raise ValueError("Reused verification evidence is missing or modified")
                 candidate_facts["verification_reuse"] = provenance
             receipt_gate = _process_exit_gate(wdir, provenance)
@@ -1005,10 +1255,11 @@ class Orchestrator:
             if fresh:
                 last_advisor = fresh
 
-            comparison_kind = improvement_kind(wm, best_m, cfg.objective)
             improved = comparison_kind is not None
+            timing_ok = comparison_kind == "timing_progress" or (
+                wm.timing_met is True and wm.wns_ns >= 0 and wm.whs_ns >= 0)
             is_best = (receipt_gate["passed"] and ev.recommendation == "ACCEPT" and ev.failed == 0 and improved
-                       and wm.timing_met is True and wm.wns_ns >= 0 and wm.whs_ns >= 0)
+                       and timing_ok)
             if is_best:
                 best_v, best_m, best_iter = winner.verilog, wm, it
                 best_artifact_dir = wdir
@@ -1067,12 +1318,33 @@ class Orchestrator:
                 stall, knobs_tried = 0, False
                 print(f"[restart {replans}/{cfg.max_replans}] new direction planned")
 
+        return self._finish_optimize(
+            baseline=baseline,
+            best_artifact_dir=best_artifact_dir,
+            best_iter=best_iter,
+            best_m=best_m,
+            best_v=best_v,
+            cfg=cfg,
+            facts=facts,
+            proposal_records=proposal_records,
+            state=state,
+            termination_reason=termination_reason)
+
+    def _finish_optimize(self, *, baseline, best_artifact_dir, best_iter, best_m, best_v, cfg, facts, proposal_records, state, termination_reason) -> dict:
+        """Write the winner, the DONE summary and every retained evidence digest.
+
+        The finish phase of _run_optimize, unchanged: it never re-blesses changed
+        bytes, only records digests observed when each artifact was verified.
+        """
         # ---- finish ----
         best_path = state.run_dir / f"{cfg.top_module}_best.v"
         summary = {"status": "done", "best_iteration": best_iter,
                    "timing_closed": timing_feasible(best_m),
-                   "improvement_kind": improvement_kind(best_m, baseline, cfg.objective) if best_iter > 0 else None,
+                   # An infeasible later best can only come from timing_progress; it is not closure.
+                   "improvement_kind": (None if best_iter == 0 else "timing_progress" if not timing_feasible(best_m)
+                                        else improvement_kind(best_m, baseline, cfg.objective)),
                    "top_module": cfg.top_module,
+                   **({"edit_scope": self._edit_scope["mode"]} if self._edit_scope is not None else {}),
                    "best_metrics": best_m.to_dict(),
                    "baseline_metrics": baseline.to_dict(),
                    "best_artifact_dir": str(best_artifact_dir),
@@ -1080,7 +1352,9 @@ class Orchestrator:
                    "run_dir": str(state.run_dir)}
         if termination_reason is not None:
             summary["termination_reason"] = termination_reason
-        final_artifacts = {str(path.resolve()): hashlib.sha256(path.read_bytes()).hexdigest()
+        if cfg.verification_policy != "full":
+            summary["verification_policy"] = cfg.verification_policy
+        final_artifacts = {str(path.resolve()): file_sha256(path)
                            for path in Path(best_artifact_dir).glob("*")
                            if path.is_file() and (path.suffix in (".v", ".sv", ".rpt", ".xdc", ".tcl", ".log")
                                                  or path.name in ("tool_exit_records.log", "verification_provenance.json", "verification_inputs.log", "sim_log.txt"))}
@@ -1108,10 +1382,10 @@ class Orchestrator:
             raise VerificationEvidenceError("Completed verification dependency manifest is missing: " + str(best_manifest))
         for provenance_path in provenance_paths:
             retained.append(provenance_path)
-            provenance = json.loads(provenance_path.read_text(encoding="utf-8"))
+            provenance = read_json(provenance_path)
             for evidence in provenance["evidence"]:
                 path = Path(evidence["path"])
-                if not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest() != evidence["sha256"]:
+                if not path.is_file() or file_sha256(path) != evidence["sha256"]:
                     raise ValueError("Reused verification evidence is missing or modified")
                 retained.append(path)
                 if path.name == "verification_inputs.log":
@@ -1127,16 +1401,18 @@ class Orchestrator:
                     not re.fullmatch(r"[a-f0-9]{64}", identity["sha256"])):
                 raise VerificationEvidenceError(label + " identity is invalid")
             path = Path(identity["path"])
-            if not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest() != identity["sha256"]:
+            if not path.is_file() or file_sha256(path) != identity["sha256"]:
                 raise VerificationEvidenceError(label + " missing or modified: " + str(path))
             final_artifacts[str(path.resolve())] = identity["sha256"]
 
         if facts.get("build_spec") is not None:
             retain_identity(facts["build_spec"], "Resolved build specification evidence")
+        for path, digest in self._unit_inputs.items():
+            retain_identity({"path": path, "sha256": digest}, "Completed verification dependency (editable unit input)")
         # Rejected Doctor reports still informed later plans. Retain their
         # originally observed digests, never freshly bless changed trial files.
         for evaluation_path in state.run_dir.glob("iter_*/evaluation_facts.json"):
-            trial = json.loads(evaluation_path.read_text(encoding="utf-8")).get("doctor_trial")
+            trial = read_json(evaluation_path).get("doctor_trial")
             if trial is None:
                 continue
             identities = [trial[key] for key in ("input_source", "trial_source", "prior_flow_script", "trial_flow_script") if key in trial]
@@ -1156,15 +1432,15 @@ class Orchestrator:
                         retain_identity(candidate[key], "Standard proposal evidence")
         for evidence_path in [state.contract_path, state.run_dir / "harness_facts.json", *state.run_dir.glob("iter_*/evaluation_facts.json"), *state.run_dir.glob("iter_*/proposal_*.json"), *retained]:
             if evidence_path.is_file():
-                final_artifacts[str(evidence_path.resolve())] = hashlib.sha256(evidence_path.read_bytes()).hexdigest()
+                final_artifacts[str(evidence_path.resolve())] = file_sha256(evidence_path)
         atomic_write_text(best_path, best_v)
         atomic_write_text(state.run_dir / "run_summary.json",
                           json.dumps(summary, indent=2, default=str))
         print(f"\nDONE — best from iter {best_iter}: LUTs={best_m.lut_used} "
               f"FFs={best_m.ff_used} WNS={best_m.wns_ns}")
         self._snapshot(phase="DONE", best_iteration=best_iter,
-                       best_sha256=hashlib.sha256(best_path.read_bytes()).hexdigest(),
-                       summary_sha256=hashlib.sha256((state.run_dir / "run_summary.json").read_bytes()).hexdigest(),
+                       best_sha256=file_sha256(best_path),
+                       summary_sha256=file_sha256((state.run_dir / "run_summary.json")),
                        final_artifacts=final_artifacts)
         return summary
 
@@ -1196,7 +1472,7 @@ class Orchestrator:
                 candidate.fail_reason = f"declared @latency {latency} != contract {contract.latency} (spec is law)"
                 return
             candidate.ladder_rungs_passed = 1
-            stale = companions.violation(candidate.verilog, self.cfg.top_module, extra, tb)
+            stale = self._boundary_violation(candidate.verilog, extra, tb)
             if stale:
                 # The testbench would grade a stale companion, not this candidate.
                 ok, error, kind = False, stale, FailureKind.DESIGN
@@ -1240,14 +1516,10 @@ class Orchestrator:
             if not _process_exit_gate(origin)["passed"]:
                 return False
             manifest = origin / "verification_inputs.log"
-            if json.loads(manifest.read_text(encoding="utf-8")) != _verification_inputs([vfile, *extra], tb):
+            if read_json(manifest) != _verification_inputs([vfile, *extra], tb):
                 return False
-            expected = vivado.SYNTH_TCL.format(
-                promotions=vivado.promotion_tcl(self.taxonomy.promotions()),
-                part=self.cfg.target_part,
-                sources=" ".join(f'"{vivado._tcl_path(path)}"' for path in [vfile, *extra]),
-                workdir=vivado._tcl_path(origin), period=f"{self.cfg.target_period_ns:.3f}",
-                top=self.cfg.top_module, extra_synth="", phys_opt="")
+            expected = vivado.synthesis_tcl([vfile, *extra], self.cfg.top_module, self.cfg, origin,
+                                            promotions=self.taxonomy.promotions())
             return script.read_text(encoding="utf-8") == expected
         except (OSError, UnicodeError, ValueError, TypeError, KeyError):
             return False
@@ -1302,7 +1574,7 @@ class Orchestrator:
             latency = declared_latency(source, self.cfg.top_module)
             if getattr(contract, "latency_known", True) and latency != contract.latency:
                 return finish("latency_violation")
-            if companions.violation(source, self.cfg.top_module, extra, tb):
+            if self._boundary_violation(source, extra, tb):
                 # doctor_surgery_skips_companion_gate: never grade against a stale companion.
                 return finish("companion_violation")
             if (source == original_source and verification_dir is not None and
@@ -1325,13 +1597,13 @@ class Orchestrator:
             if not input_manifest.is_file():
                 raise VerificationEvidenceError("Doctor prior simulation input manifest is missing")
             try:
-                verified_inputs = json.loads(input_manifest.read_text(encoding="utf-8"))
+                verified_inputs = read_json(input_manifest)
                 current_inputs = _verification_inputs([origin_source, *extra], tb)
             except (OSError, ValueError) as exc:
                 raise VerificationEvidenceError("Doctor prior simulation input evidence is invalid") from exc
             if verified_inputs != current_inputs:
                 raise VerificationEvidenceError("Doctor prior simulation sources/testbench changed after verification")
-            if hashlib.sha256(vfile.read_bytes()).hexdigest() != verified_inputs["sources"][0]["sha256"]:
+            if file_sha256(vfile) != verified_inputs["sources"][0]["sha256"]:
                 raise VerificationEvidenceError("Doctor trial bytes differ from verified source")
             prior_flow = flow_evidence(origin)
             evidence_paths = [input_manifest, origin_source, *extra]
@@ -1341,14 +1613,14 @@ class Orchestrator:
                 (path.name == "tool_exit_records.log" or path.name.endswith("_log.txt") or path.name.endswith(".log"))]
             provenance = {
                 "schema_version": 1, "mode": "source_identical_prior_verification",
-                "source_sha256": hashlib.sha256(vfile.read_bytes()).hexdigest(),
-                "prior_source_sha256": hashlib.sha256(origin_source.read_bytes()).hexdigest(),
+                "source_sha256": file_sha256(vfile),
+                "prior_source_sha256": file_sha256(origin_source),
                 "prior_directory": str(origin.resolve()),
                 "statement": "Only physical tool options changed. Compile/simulation were not rerun "
                              "in this directory; their actual prior evidence is reused for identical RTL, "
                              "testbench and companion sources. Missing prior exit receipts remain unknown.",
                 "prior_flow_evidence": prior_flow,
-                "evidence": [{"path": str(path.resolve()), "sha256": hashlib.sha256(path.read_bytes()).hexdigest()}
+                "evidence": [{"path": str(path.resolve()), "sha256": file_sha256(path)}
                              for path in dict.fromkeys(evidence_paths)],
             }
             save_evidence(work / "verification_provenance.json", provenance)
@@ -1388,16 +1660,32 @@ class Orchestrator:
         return (self.state.load_fsm() or {}).get("best_iteration")
 
     def _baseline_stop(self, status: str, error: str,
-                       kind: FailureKind | None = None) -> dict:
+                       kind: FailureKind | None = None, **details) -> dict:
         """Persist a non-success outcome without promoting or scoring a design."""
         best = self._verified_best_iteration()
         summary = {"status": status, "error": error, "best_iteration": best,
                    "run_dir": str(self.state.run_dir)}
         if kind is not None:
             summary["failure_kind"] = kind.value
+        summary.update(details)
         self._snapshot(phase=status.upper(), best_iteration=best, error=error)
         atomic_write_text(self.state.run_dir / "run_summary.json", json.dumps(summary, indent=2))
         return summary
+
+    def _target_stop(self, error: str) -> dict:
+        """End the run: the configured target cannot hold the contract's interface.
+
+        Never a fix attempt, Doctor input, design mutation or infrastructure retry
+        (io_overutilization_sent_to_fixer). The summary carries the measured port
+        count and package capacity and the configured part and implementation flow.
+        """
+        capacity = target_capacity(error) or {}
+        details = {key: capacity.get(key) for key in ("message_id", "io_ports", "available_user_io",
+                                                      "device", "package")}
+        details.update(part=self.cfg.target_part, implementation=self.cfg.implementation)
+        print(f"[target] {str(error).splitlines()[0] if error else 'target_infeasible'}")
+        return self._baseline_stop("target_infeasible", error, FailureKind.TARGET,
+                                   target_capacity=details)
 
     def _flow_failure_kind(self, metrics: VivadoMetrics) -> FailureKind:
         return getattr(self, "_last_flow_failure_kind", None) or classify(
@@ -1449,7 +1737,7 @@ class Orchestrator:
             checked = static_check(repaired, original_contract)
             latency = declared_latency(repaired, original_contract.name) if checked.passed else None
             # baseline_repair_skips_companion_check (Codex review): the same guard as other candidates.
-            companion_error = companions.violation(repaired, self.cfg.top_module, extra, tb) if tb else ""
+            companion_error = self._boundary_violation(repaired, extra, tb) if tb else ""
             if not checked.passed or (
                     getattr(original_contract, "latency_known", True) and latency != original_contract.latency) or companion_error:
                 m.sim_passed = False
@@ -1473,7 +1761,7 @@ class Orchestrator:
     def _cache_context(self, tb, extra):
         def identity(path):
             path = Path(path)
-            return {"path": str(path.resolve()), "sha256": hashlib.sha256(path.read_bytes()).hexdigest()} if path.is_file() else {"executable": str(path)}
+            return {"path": str(path.resolve()), "sha256": file_sha256(path)} if path.is_file() else {"executable": str(path)}
         return {"tb": identity(tb) if tb else None,
                 "dependencies": [identity(p) for p in extra],
                 "top": self.cfg.top_module, "part": self.cfg.target_part,
@@ -1481,4 +1769,5 @@ class Orchestrator:
                 "tools": {name: identity(shutil.which(getattr(self.cfg, name)) or getattr(self.cfg, name))
                           for name in ("vivado_bin", "xvlog_bin", "xelab_bin", "xsim_bin")},
                 "promotions": self.taxonomy.promotions(),
-                "synthesis_template": hashlib.sha256(vivado.SYNTH_TCL.encode()).hexdigest()}
+                "implementation": self.cfg.implementation,
+                "synthesis_template": hashlib.sha256(vivado.synthesis_template(self.cfg).encode()).hexdigest()}

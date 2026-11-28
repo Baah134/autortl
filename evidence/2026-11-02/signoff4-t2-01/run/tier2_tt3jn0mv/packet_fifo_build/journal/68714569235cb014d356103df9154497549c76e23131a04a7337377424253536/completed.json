@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- FIFO behavior and parameterized coverage: PASS \u2014 deterministic ladder is ALIVE; simulation reports TEST PASSED across the default wrapper and child parameter cases.\n- Top latency annotation: PASS \u2014 the top declares `// @latency 1`, matching authoritative latency 1.\n- Compile, elaboration, and simulation gates: PASS \u2014 xvlog, xelab, and xsim exited successfully.\n- Routed reports and metric integrity: PASS \u2014 retained routed reports and successful synthesis evidence are present.\n- Timing progress: PASS \u2014 setup WNS improved from -0.946 ns to -0.087 ns; hold WHS remains positive, decreasing from 0.167 ns to 0.058 ns.\n- Promotion policy: PASS \u2014 the recorded timing_progress permits this verified still-infeasible candidate to replace the timing-infeasible previous best; higher LUT and FF counts do not disqualify timing progress.\n## Summary\n- Passed: 6 of 6\n- Failed: 0 of 6\n- Improved over previous best: YES\n## Recommendation\nACCEPT\n## Reason\nThe candidate passes the deterministic behavioral and tool gates and makes substantial setup progress while preserving positive hold slack. It remains timing-infeasible, so this is progress rather than timing closure; the contract allows that progress to replace the infeasible previous best without resource savings.",
+      "recommendation": "ACCEPT",
+      "passed": 6,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}

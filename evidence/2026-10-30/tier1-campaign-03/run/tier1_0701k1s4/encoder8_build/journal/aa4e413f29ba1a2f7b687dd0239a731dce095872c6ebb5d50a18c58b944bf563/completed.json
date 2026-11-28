@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_1:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 1,
+    "instruction": "Replace the transparent `priority_encoder8_core` instance with local logic that factors request bits into upper and lower 4-bit priority groups, shares group-valid and prefix terms, and computes the highest-set-bit index plus `valid`. Register `index` and `valid` on `posedge clk` with the existing synchronous active-high reset, preserving the one-cycle behavior and declare `// @latency 1`. Target fewer than 6 LUTs with 4 FFs; preserve all 256 request cases and between-edge output holds.",
+    "candidates": [
+      {
+        "iteration": 1,
+        "mutation": "standard",
+        "instruction": "Replace the transparent `priority_encoder8_core` instance with local logic that factors request bits into upper and lower 4-bit priority groups, shares group-valid and prefix terms, and computes the highest-set-bit index plus `valid`. Register `index` and `valid` on `posedge clk` with the existing synchronous active-high reset, preserving the one-cycle behavior and declare `// @latency 1`. Target fewer than 6 LUTs with 4 FFs; preserve all 256 request cases and between-edge output holds.",
+        "generated_source_sha256": "07ec8f0556269188c019f65a96bf2d0e5ecdb6ac697b5c5fead659dc1c636237",
+        "final_source_sha256": "07ec8f0556269188c019f65a96bf2d0e5ecdb6ac697b5c5fead659dc1c636237",
+        "generated_code_hash": "954afbc04b105b38",
+        "final_code_hash": "954afbc04b105b38",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.591,
+          "whs_ns": 0.135,
+          "lut_used": 3,
+          "ff_used": 4,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.011,
+          "total_power_w": 0.081
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\encoder8_build\\iter_001\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\encoder8_build\\iter_001\\cand_standard\\synth.tcl",
+          "sha256": "0f5e05b7ec552a5d2ebed450618ebd3a0b06e06dab97a779e488acc6c4f389fb"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-03\\tier1_0701k1s4\\encoder8_build\\iter_001\\cand_standard\\priority_encoder8.v",
+          "sha256": "1faa0243cfb6b62d7a5247680d424f97b0bc96ed0284940d0ad6d3dc5f35b18e"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "ACCEPT",
+    "is_best": true,
+    "selected_source_sha256": "07ec8f0556269188c019f65a96bf2d0e5ecdb6ac697b5c5fead659dc1c636237"
+  },
+  "artifacts": {}
+}

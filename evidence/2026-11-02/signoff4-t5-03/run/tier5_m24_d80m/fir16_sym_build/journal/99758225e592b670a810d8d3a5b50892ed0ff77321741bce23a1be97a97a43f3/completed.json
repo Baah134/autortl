@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_5:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 5\n## Contract check\n- Top interface and defined behavior: PASS \u2014 candidate preserves the specified ports, five-slot handshake, FIR arithmetic, reset behavior and cycle behavior; the authoritative ladder result is ALIVE.\n- Top latency annotation: PASS \u2014 the top declares `// @latency 5`, matching authoritative latency 5.\n- Compile and simulation: PASS \u2014 xvlog, xelab and xsim exited successfully; simulation reported `TEST PASSED`.\n- Tool and metric evidence: PASS \u2014 required process exits succeeded, synthesis reported `SYNTH_COMPLETE`, and retained routed reports provide the candidate metrics.\n- Timing closure: PASS \u2014 timing_met=true, setup WNS is 1.283 ns and hold WHS is 0.024 ns.\n- Objective improvement over previous best: FAIL \u2014 with `minimize_luts`, candidate LUTs increased from 301 to 302. Lower FFs do not offset a higher primary objective; the recorded improvement_kind is null.\n## Summary\n- Passed: 5 of 6\n- Failed: 1 of 6\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes behavioral, verification and timing gates, but the previous best was already timing-feasible and the candidate does not improve the chosen objective: LUT usage rises from 301 to 302. The lower FF count does not qualify under `minimize_luts`, so the candidate fails the required promotion comparison.",
+      "recommendation": "REJECT",
+      "passed": 5,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

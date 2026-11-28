@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_2:decision:instruction:0",
+  "result": "In `packet_fifo_core`, retain the accepted `out_valid` register change and add a resettable `has_space` register that tracks whether next occupancy is below `DEPTH`; update it correctly for push-only, pop-only, simultaneous push/pop, and hold cases, including `DEPTH=1`. Drive `in_ready` from `has_space || out_ready` while preserving full simultaneous pop/push, capacity, synchronous reset priority, and all existing transfer behavior. Keep the top\u2019s `// @latency 1` annotation and interface unchanged; do not add pipeline stages.",
+  "artifacts": {}
+}

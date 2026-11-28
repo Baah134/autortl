@@ -1,0 +1,13 @@
+# PLAN — iteration 1
+
+## Current state assessment
+
+The verified incumbent uses 6 LUTs and 4 FFs and meets both timing gates (WNS 0.528 ns, WHS 0.009 ns), so this iteration must strictly reduce LUTs to improve the `minimize_luts` objective; equal LUT count with fewer FFs also qualifies. The registered outputs, synchronous active-high reset, and known top latency of 1 cycle are fixed.
+
+## Hypothesis
+
+Replacing the serial priority `if/else` chain with shared high-nibble detection and direct Boolean index equations may reduce LUT use while preserving the one-cycle registered behavior.
+
+## Instruction for generator
+
+In `priority_encoder8_core`, replace the descending `if/else` priority chain with a shared `request[7:4]` nonzero term and Boolean equations for the three highest-set-bit index bits; keep `valid_reg` equal to `request != 0`. Preserve the existing synchronous reset and the registers driving both outputs, and keep the top annotation `// @latency 1`. Check all 256 request patterns, including zero and simultaneous bits; retain the candidate only if all gates pass and routed LUT use is strictly lower than 6, or LUT use stays at 6 with fewer than 4 FFs.

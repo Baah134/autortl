@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_4:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 4\n## Contract check\n- Top interface and defined behavior: PASS \u2014 the candidate preserves the specified ports, arithmetic, reset, elastic pipeline, and transfer behavior; the unchanged integration testbench passes.\n- Top latency annotation: PASS \u2014 `fir16_sym` declares `// @latency 5`, matching authoritative latency.\n- Static checks, compilation, and elaboration: PASS \u2014 required tool exits are successful.\n- Simulation and deterministic ladder: PASS \u2014 simulation reports `TEST PASSED`; standard ladder reports 5 rungs ALIVE.\n- Routed reports and metric integrity: PASS \u2014 routed timing and utilization reports are retained, and the process exit gate passes.\n- Timing closure: PASS \u2014 timing is met with WNS 1.075 ns and WHS 0.153 ns.\n- Promotion over previous best: PASS \u2014 the previous best was timing-infeasible; this verified candidate achieves timing recovery.\n- Fixed flow and constraints: PASS \u2014 the recorded run uses the specified device, clock constraints, and out-of-context flow.\n## Summary\n- Passed: 8 of 8\n- Failed: 0 of 8\n- Improved over previous best: YES\n## Recommendation\nACCEPT\n## Reason\nThe candidate passes all deterministic and implementation gates, matches the required top latency annotation, and recovers timing feasibility from a verified infeasible previous best. Its LUT and FF counts also decrease, but acceptance is established by the valid timing recovery.",
+      "recommendation": "ACCEPT",
+      "passed": 8,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}

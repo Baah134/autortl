@@ -1,0 +1,88 @@
+"""Finite-field hint delivery and independent algebra controls, not LLM success."""
+from unittest.mock import Mock
+
+import pytest
+
+from autortl import roles
+from autortl.spec import ModuleSpec, Port
+
+
+@pytest.mark.parametrize('feedback',['','ValueError: controlled prior table failure'])
+def test_actual_oracle_prompt_supplies_field_invariants_without_answer_code(monkeypatch,feedback):
+    request=Mock(return_value='def init(): return {}\ndef step(s,i): return s,{}')
+    monkeypatch.setattr(roles,'ask',request)
+    monkeypatch.setattr(roles,'conventions',lambda:'')
+    spec=ModuleSpec('renamed_lookup','Use the field explicitly named by the contract.',
+                    [Port('a','input',8),Port('y','output',8)])
+    roles.Generator().golden_model(spec,None,feedback=feedback)
+    text=' '.join(request.call_args.args[1].split())
+    assert 'a primitive generator for the specified field' in text
+    assert 'all 255 distinct nonzero elements before repeating' in text
+    assert 'Irreducibility alone does not guarantee that x is a primitive generator' in text
+    assert 'field multiplication of the element and its computed inverse gives one' in text
+    # This hint supplies requirements, not a selected generator/table or a
+    # change to the contract. Legitimate generators depend on the field.
+    assert '0x03' not in text and '0x02' not in text
+    assert 'Use the field explicitly named by the contract' in text
+    assert request.call_args.args[0]=='generator'
+    assert ('Repair this specific failure' in text)==bool(feedback)
+
+
+def polynomial_product(a,b,modulus):
+    """Trusted polynomial convolution/reduction, no generated code executed."""
+    product=0
+    for bit in range(8):
+        if (b>>bit)&1:
+            product^=a<<bit
+    for degree in range(14,7,-1):
+        if (product>>degree)&1:
+            product^=modulus<<(degree-8)
+    return product
+
+
+def powers(generator,modulus):
+    value=1
+    result=[]
+    for _ in range(255):
+        result.append(value)
+        value=polynomial_product(value,generator,modulus)
+    return result,value
+
+
+@pytest.mark.parametrize('modulus,generator,distinct,first_return',[
+    (0x11b,0x02,51,51),
+    (0x11b,0x03,255,255),
+    (0x11d,0x02,255,255),
+])
+def test_full_nonzero_coverage_is_specific_to_generator_and_field(modulus,generator,distinct,first_return):
+    sequence,end=powers(generator,modulus)
+    assert len(set(sequence))==distinct
+    assert end==1
+    repeated=next((i for i,n in enumerate(sequence[1:],1) if n==1),255)
+    assert repeated==first_return
+    assert (set(sequence)==set(range(1,256)))==(distinct==255)
+
+
+@pytest.mark.parametrize('modulus,generator',[(0x11b,0x03),(0x11d,0x02)])
+def test_covering_power_walk_produces_valid_inverses_for_every_nonzero_byte(modulus,generator):
+    sequence,end=powers(generator,modulus)
+    assert set(sequence)==set(range(1,256)) and end==1
+    logarithm={value:index for index,value in enumerate(sequence)}
+    for byte in range(1,256):
+        inverse=sequence[(-logarithm[byte])%255]
+        assert polynomial_product(byte,inverse,modulus)==1
+
+
+def test_noncovering_walk_can_pass_some_inverses_and_still_be_wrong():
+    sequence,_=powers(0x02,0x11b)
+    logarithm=[0]*256
+    for index,value in enumerate(sequence):
+        logarithm[value]=index
+    # Reproduce only the deficient mathematical table construction as a
+    # negative control. No runtime policy rejects 0x02 for other moduli.
+    valid=[]
+    for byte in range(1,256):
+        inverse=sequence[(-logarithm[byte])%255]
+        valid.append(polynomial_product(byte,inverse,0x11b)==1)
+    assert sum(valid)==51
+    assert valid[0] is True and not all(valid)

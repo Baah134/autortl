@@ -1,0 +1,77 @@
+{
+  "candidates": [
+    {
+      "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-04\\tier2_32vakp9v\\sync_fifo_build\\iter_002\\cand_standard",
+      "cache_hit": false,
+      "final_code_hash": "015722034b2d794c",
+      "final_source_sha256": "ec9f92b8e912bda24140dc386ac142862224eb119795435c4633aca6acf20da6",
+      "flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-04\\tier2_32vakp9v\\sync_fifo_build\\iter_002\\cand_standard\\synth.tcl",
+        "sha256": "b5e974b406b1fb84a907019a24af165735445f870cb25e24835c58a18ea39030"
+      },
+      "generated_code_hash": "015722034b2d794c",
+      "generated_source_sha256": "ec9f92b8e912bda24140dc386ac142862224eb119795435c4633aca6acf20da6",
+      "instruction": "In `sync_fifo_core`, change the current full-depth `mem` organization into a registered head plus a circular buffer for only `DEPTH-1` tail entries; handle `DEPTH=1` explicitly and preserve symbolic `WIDTH`, explicit wrap for non-power-of-two depths, and full simultaneous pop/push behavior. Promote the oldest tail word into `head_data` on pop, append accepted inputs to the tail when the head remains queued, and replace the head directly when a pop and push occur with occupancy one. Keep the `sync_fifo` interface and `// @latency 1` annotation, and preserve reset, handshake, stall stability, or",
+      "iteration": 2,
+      "metrics": {
+        "bram_used": 0.0,
+        "dsp_used": 0,
+        "dynamic_power_w": 0.014,
+        "ff_used": 12,
+        "lut_used": 20,
+        "sim_passed": true,
+        "timing_met": false,
+        "total_power_w": 0.084,
+        "whs_ns": 0.106,
+        "wns_ns": -0.177
+      },
+      "mutation": "standard",
+      "reason": "",
+      "rungs": 5,
+      "source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-04\\tier2_32vakp9v\\sync_fifo_build\\iter_002\\cand_standard\\sync_fifo.v",
+        "sha256": "0ea849e14ff961c836bbc08a9ca3c29e8a0e8469758d920d26c5e59837e1cbce"
+      },
+      "status": "measured"
+    }
+  ],
+  "doctor": {
+    "action": "rtl_surgery",
+    "adopted": true,
+    "identity_count": 3,
+    "input_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-04\\tier2_32vakp9v\\sync_fifo_build\\iter_002\\cand_standard\\sync_fifo.v",
+      "sha256": "0ea849e14ff961c836bbc08a9ca3c29e8a0e8469758d920d26c5e59837e1cbce"
+    },
+    "measured_metrics": {
+      "bram_used": 0.0,
+      "dsp_used": 0,
+      "dynamic_power_w": 0.014,
+      "ff_used": 13,
+      "lut_used": 23,
+      "sim_passed": true,
+      "timing_met": true,
+      "total_power_w": 0.084,
+      "whs_ns": 0.126,
+      "wns_ns": 0.009
+    },
+    "proposed_source_text_sha256": "d413bf59946fb3f748f2031ea5e638d3ac8cc1add320153021f93fe39d893c26",
+    "reason": "policy_improvement",
+    "status": "ADOPTED",
+    "tools_ran": true,
+    "trial_flow_script": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-04\\tier2_32vakp9v\\sync_fifo_build\\iter_002\\doctor_rtl_surgery_trial\\synth.tcl",
+      "sha256": "a7aba62f99ce9dd09daa638c3209c333ac28517607e85e832fdc44a40427357e"
+    },
+    "trial_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-04\\tier2_32vakp9v\\sync_fifo_build\\iter_002\\doctor_rtl_surgery_trial\\sync_fifo.v",
+      "sha256": "ce36309d158d2a935d88b73f7753d552fe016c28175f1a09a3c76cafc51fc38f"
+    }
+  },
+  "instruction": "In `sync_fifo_core`, change the current full-depth `mem` organization into a registered head plus a circular buffer for only `DEPTH-1` tail entries; handle `DEPTH=1` explicitly and preserve symbolic `WIDTH`, explicit wrap for non-power-of-two depths, and full simultaneous pop/push behavior. Promote the oldest tail word into `head_data` on pop, append accepted inputs to the tail when the head remains queued, and replace the head directly when a pop and push occur with occupancy one. Keep the `sync_fifo` interface and `// @latency 1` annotation, and preserve reset, handshake, stall stability, or",
+  "is_best": true,
+  "iteration": 2,
+  "recommendation": "ACCEPT",
+  "schema_version": 1,
+  "selected_source_sha256": "d413bf59946fb3f748f2031ea5e638d3ac8cc1add320153021f93fe39d893c26"
+}

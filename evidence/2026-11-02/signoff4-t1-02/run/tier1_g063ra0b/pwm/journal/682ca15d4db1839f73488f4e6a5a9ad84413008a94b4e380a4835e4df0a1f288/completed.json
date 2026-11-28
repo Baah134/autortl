@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_4:decision:instruction:0",
+  "result": "Leave the counter update, reset, and registered `pwm_out` assignment timing unchanged. Replace only `counter < {24'd0, duty}` with a 9-bit difference between `{1'b0, counter[7:0]}` and `{1'b0, duty}`, and use the difference\u2019s bit 8 as the less-than result; this bit is set exactly when the 8-bit counter is less than duty. Preserve the existing reset behavior and require the fixed simulation and routed evidence; retain the candidate only if it passes every gate and improves the LUT objective over the 7-LUT incumbent.",
+  "artifacts": {}
+}

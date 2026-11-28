@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_4:decision:instruction:0",
+  "result": "Keep the eight signed 32-bit products and the final `s4a + c4a` adder, but replace only the current `s1a`\u2013`c4a` compressor grouping with a balanced Wallace-style 3:2 reduction schedule; balance the paths from `p0`\u2013`p7` so no product traverses unnecessary compressor levels. Preserve modulo-2^32 sum semantics, parameter behavior, `// @latency 1`, the delay-line registers, reset behavior, and the registered `y_out`. Do not segment the final adder or add a multiplier register; the prior segmented-adder candidate regressed setup, and the advisor trial with an added register also regressed.",
+  "artifacts": {}
+}

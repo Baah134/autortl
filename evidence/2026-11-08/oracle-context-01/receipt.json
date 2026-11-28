@@ -1,0 +1,42 @@
+{
+  "scope": "Phase2 public examples and matched immediately previous source/error. No sandbox or budget change.",
+  "canonical_runtime_files_unchanged": true,
+  "files": [
+    "autortl/roles.py",
+    "autortl/fsm.py",
+    "tests/test_oracle_context.py"
+  ],
+  "sha256": {
+    "autortl/roles.py": "e353de127964bb124d97a05ad7c71ba2b437045f4718931a922037ec7406f870",
+    "autortl/fsm.py": "9af2881c6cdab502d6de330b79414e3593b0c18c6c22c7c7c180cd767436e0cf",
+    "tests/test_oracle_context.py": "25de8cc43604180047c570fa0f7573e5709f1d4d873272c31c08cb96ceb87aa9",
+    "proposal.patch": "f54c9b5e587e30790a65788aa3a7f44779725dbba2128e156c2f52397a2ff27d"
+  },
+  "before": {
+    "exit_code": 1,
+    "summary": "5 failed, 4 passed in 4.00s",
+    "log": "before-tests.txt",
+    "command": "python -m pytest tests/test_oracle_context.py -q -p no:cacheprovider --basetemp <workspace>/nov8-oracle-context-before-final-tmp"
+  },
+  "after": {
+    "exit_code": 0,
+    "summary": "104 passed in 50.38s",
+    "log": "after-tests.txt",
+    "command": "python -m pytest tests/test_oracle_context.py tests/test_oracle_repair_context.py tests/test_golden_prompt.py tests/test_golden_recovery.py tests/test_golden_hardening.py tests/test_golden_reset_protocol.py tests/test_role_conformance.py tests/test_spec_dispute.py -q -p no:cacheprovider --basetemp <workspace>/nov8-oracle-context-after-final-tmp"
+  },
+  "retained_initial_fixture_error": {
+    "logs": [
+      "initial-before-fixture-error.txt",
+      "initial-after-fixture-error.txt"
+    ],
+    "meaning": "Journal-enabled qualification was not mocked; xvlog launcher unavailable, no vendor process started. Not a production-regression verdict."
+  },
+  "retained_pre_empty_source_edge_logs": [
+    "before-v1-tests.txt",
+    "after-v1-tests.txt"
+  ],
+  "model_calls": 0,
+  "vendor_processes_started": 0,
+  "board_access": false,
+  "limits": "Focused prompt/data/handwritten sandbox controls and FSM replay. No live model success or full harness regression claimed."
+}

@@ -1,0 +1,28 @@
+import hashlib,importlib.util,json
+from pathlib import Path
+base=Path(__file__).resolve().parent
+source=base/'nov8-benchmark-artifact-stage/benchmark/artifacts.py'
+spec=importlib.util.spec_from_file_location('inventory_review',source)
+a=importlib.util.module_from_spec(spec);spec.loader.exec_module(a)
+out=base/'nov8-benchmark-inventory-probe'
+out.mkdir(exist_ok=True)
+rtl=out/'source';rtl.mkdir(exist_ok=True)
+raw=b'module top; endmodule\n';(rtl/'top.v').write_bytes(raw)
+sha=lambda raw:hashlib.sha256(raw).hexdigest()
+manifest={'schema':1,'identity':{'dataset':{'commit':'1'*40,'format':'synthetic'},'source_commit':'2'*40,'runtime':{'commit':'3'*40,'sha256':'4'*64},'requested_model':'fixture','observed_model':None},'tasks':[{'id':'fixture','public_files':[{'path':'prompt.txt','sha256':'0'*64}],'private_files':[{'path':'test.sv','sha256':'0'*64}]}],'cells':[{'task':'fixture','trial':0,'arm':'full','budget':{'model_calls':3,'tool_seconds':5,'wall_seconds':10},'verification_policy':'full'}]}
+destination=out/'artifact'
+receipt=a.seal_candidate(manifest,{'task':'fixture','trial':0,'arm':'full'},source_root=rtl,files=[{'path':'top.v','role':'rtl','sha256':sha(raw)}],destination=destination,top='top',internal_status='rejected',selection_reason='latest_complete',termination='failed')
+hidden=destination/'unreadable-extra';hidden.mkdir();(hidden/'extra.py').write_bytes(b'unlisted extra')
+original=a.os.scandir
+def denied(path):
+    if Path(path)==hidden:raise PermissionError('synthetic denied inventory subtree')
+    return original(path)
+a.os.scandir=denied
+try:
+    a.load_artifact(destination,expected_id=receipt['id'])
+    outcome='accepted despite unreadable unlisted subtree'
+except Exception as exc:outcome=type(exc).__name__+': '+str(exc)
+finally:a.os.scandir=original
+result={'source_sha256':sha(source.read_bytes()),'outcome':outcome,'scope':'synthetic scandir permission failure; actual extra file present'}
+(out/'result.json').write_text(json.dumps(result,indent=2)+'\n',encoding='utf-8')
+print(json.dumps(result,indent=2))

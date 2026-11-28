@@ -1,0 +1,59 @@
+{"source_files": 334, "freeze": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-02-source-freeze.json"}
+{"exit_code": 0, "seconds": 754.4530000000086, "summary": "2022 passed in 752.06s (0:12:32)", "source_unchanged": true, "source_files": 334, "source_freeze_sha256": "45527af20ff706d9261d95a9cae6c03a0fee7bd2a615e2335e949e008040971a"}
+{"prelaunch": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-02-prelaunch.json", "budgets_per_entry": {"iterations": null, "best_of_n": 1, "model_calls": 30, "tool_minutes": 40, "wall_minutes": 60, "infra_retries": 1}}
+[bench] fir16_sym_build: meta.yaml sets max_vivado_minutes = 100.0; the bench value 40.0 does not apply to it
+[bench] fir16_sym_build: meta.yaml sets max_wall_minutes = 160.0; the bench value 60.0 does not apply to it
+[module fir16_sym_core] golden model + testbench...
+[module axil_wr_if] golden model + testbench...
+[module axil_wr_if] tb qualification: detected flip && to ||
+[module axil_regbank] golden model + testbench...
+[module fir16_sym_core] tb qualification: detected flip < to >
+[module fir16_sym_core] independent tb qualification: detected flip < to >
+[build] integrated design compiles; entering optimize loop as baseline
+[build] editable unit: fir16_sym_core + fir16_sym; verified by the trusted integration testbench
+[module axil_regbank] tb qualification: detected flip == to !=
+[module axil_rd_if] golden model + testbench...
+[module axil_rd_if] tb qualification: detected flip && to ||
+[build] integrated design compiles; entering optimize loop as baseline
+[build] editable unit: axil_wr_if, axil_regbank, axil_rd_if + axil_regs; verified by the trusted integration testbench
+[iter 0] baseline LUTs=95 FFs=254 WNS=5.441
+[iter 0] baseline LUTs=307 FFs=281 WNS=-8.553
+[iter 1] REJECT LUTs=95 (best iter 0, stall 1)
+[doctor] wns=-9.54 category=logic_depth action=rtl_surgery
+[iter 2] REJECT LUTs=95 (best iter 0, stall 2)
+[iter 1] *** NEW BEST *** LUTs=120 FFs=292 WNS=0.183
+[iter 3] REJECT LUTs=95 (best iter 0, stall 3)
+
+DONE — best from iter 0: LUTs=95 FFs=254 WNS=5.441
+[bench] axil_regs_build: finished (1/3)
+[module uart_rx_core] golden model + testbench...
+[module uart_rx_core] tb qualification: detected stuck-one outputs; missed: flip == to !=, stuck-zero outputs
+[module rx_fifo] golden model + testbench...
+[module rx_fifo] tb qualification: detected flip < to >
+[module rx_err_count] golden model + testbench...
+[module rx_err_count] tb qualification: detected flip < to >
+[build] integrated design compiles; entering optimize loop as baseline
+[build] editable unit: uart_rx_core, rx_fifo, rx_err_count + uart_rx_fifo; verified by the trusted integration testbench
+[iter 2] *** NEW BEST *** LUTs=85 FFs=203 WNS=0.709
+[iter 0] baseline LUTs=70 FFs=55 WNS=-1.179
+[iter 3] *** NEW BEST *** LUTs=79 FFs=202 WNS=1.645
+[iter 1] *** NEW BEST *** LUTs=72 FFs=63 WNS=0.06
+[iter 4] REJECT LUTs=178 (best iter 3, stall 1)
+[iter 2] *** NEW BEST *** LUTs=59 FFs=63 WNS=0.042
+[iter 5] REJECT LUTs=105 (best iter 3, stall 2)
+[doctor] wns=-1.179 category=port_path action=rtl_surgery
+[iter 6] *** NEW BEST *** LUTs=78 FFs=202 WNS=1.651
+[iter 3] REJECT LUTs=72 (best iter 2, stall 1)
+
+DONE — best from iter 2: LUTs=59 FFs=63 WNS=0.042
+[bench] uart_rx_fifo_build: finished (2/3)
+[iter 7] REJECT LUTs=78 (best iter 6, stall 1)
+[iter 8] REJECT LUTs=78 (best iter 6, stall 2)
+
+DONE — best from iter 6: LUTs=78 FFs=202 WNS=1.651
+[bench] fir16_sym_build: finished (3/3)
+[bench] axil_regs_build: PASS (mandatory gates passed)
+[bench] fir16_sym_build: PASS (mandatory gates passed)
+[bench] uart_rx_fifo_build: PASS (mandatory gates passed)
+[bench] tier 5: 3/3; held=False; streak=2
+{"exit_code": 0, "wall_seconds": 3537.2969999999914, "source_unchanged": true, "router_stats_prefix_unchanged": true, "history_prefix_unchanged": true, "ended_utc": "2026-11-03T16:31:36.811506+00:00"}

@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_3:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 3\n## Contract check\n- Behavioral and interface correctness: PASS \u2014 deterministic ladder is ALIVE and the fixed testbench passed.\n- Tool verification: PASS \u2014 xvlog, xelab, xsim, and Vivado exited successfully; simulation reports the required `TEST PASSED` verdict and synthesis has `SYNTH_COMPLETE`.\n- Top latency annotation: PASS \u2014 authoritative `declared_latency.known=false`, so no numeric top annotation is required.\n- Routed metrics and receipts: PASS \u2014 retained routed timing and utilization reports are present with matching evidence.\n- Timing feasibility: PASS \u2014 timing is met; WNS is 0.46 ns and WHS is 0.166 ns.\n- Objective improvement: FAIL \u2014 both candidate and previous best are timing-feasible; LUTs increased from 7 to 9 while FFs stayed at 9, so `minimize_luts` does not improve.\n## Summary\n- Passed: 5 of 6\n- Failed: 1 of 6\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes verification and timing closure, but the previous best was already timing-feasible and the candidate uses more LUTs with no FF reduction. It therefore fails the required strict `minimize_luts` improvement.",
+      "recommendation": "REJECT",
+      "passed": 5,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

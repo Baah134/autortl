@@ -1,0 +1,45 @@
+{
+  "candidates": [
+    {
+      "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t3-03\\tier3_70q5kppw\\signed_fir4_build\\iter_002\\cand_standard",
+      "cache_hit": false,
+      "final_code_hash": "78210831f6449995",
+      "final_source_sha256": "aa0c1ded21cbe46894691f757439ae5776f44599a9aa44f50422af9c751cbdb1",
+      "flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t3-03\\tier3_70q5kppw\\signed_fir4_build\\iter_002\\cand_standard\\synth.tcl",
+        "sha256": "373aa1d69bfcb9de8306406d49b1346f583cc43e4703fb4ec6c7c3d3b19db1d4"
+      },
+      "generated_code_hash": "78210831f6449995",
+      "generated_source_sha256": "aa0c1ded21cbe46894691f757439ae5776f44599a9aa44f50422af9c751cbdb1",
+      "instruction": "In `signed_fir4_core`, replace the 13-bit sign-extended operands and wide multiply/add chain in `fir_result` with explicitly sized signed intermediates: 10 bits for `3*x`, 11 bits for `5*x_prev1` and `7*x_prev2`, 9 bits for `2*x_prev3`, then 11-, 12-, and 13-bit partial sums in tap order. Sign-extend each intermediate explicitly before the next operation so truncation, signedness, and the full output range remain exact. Preserve accepted-sample history updates, all three elastic slots and their registered data/valid behavior, the registered `full` readiness tracking, synchronous reset semantic",
+      "iteration": 2,
+      "metrics": {
+        "bram_used": 0.0,
+        "dsp_used": 0,
+        "dynamic_power_w": 0.021,
+        "ff_used": 67,
+        "lut_used": 71,
+        "sim_passed": true,
+        "timing_met": true,
+        "total_power_w": 0.091,
+        "whs_ns": 0.059,
+        "wns_ns": 0.31
+      },
+      "mutation": "standard",
+      "reason": "",
+      "rungs": 5,
+      "source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t3-03\\tier3_70q5kppw\\signed_fir4_build\\iter_002\\cand_standard\\signed_fir4.v",
+        "sha256": "ba49dc30aa93ddb6b58c69ac745ae4891dc06f870cc4049940c5eb3908c1edca"
+      },
+      "status": "measured"
+    }
+  ],
+  "doctor": null,
+  "instruction": "In `signed_fir4_core`, replace the 13-bit sign-extended operands and wide multiply/add chain in `fir_result` with explicitly sized signed intermediates: 10 bits for `3*x`, 11 bits for `5*x_prev1` and `7*x_prev2`, 9 bits for `2*x_prev3`, then 11-, 12-, and 13-bit partial sums in tap order. Sign-extend each intermediate explicitly before the next operation so truncation, signedness, and the full output range remain exact. Preserve accepted-sample history updates, all three elastic slots and their registered data/valid behavior, the registered `full` readiness tracking, synchronous reset semantic",
+  "is_best": true,
+  "iteration": 2,
+  "recommendation": "ACCEPT",
+  "schema_version": 1,
+  "selected_source_sha256": "aa0c1ded21cbe46894691f757439ae5776f44599a9aa44f50422af9c751cbdb1"
+}

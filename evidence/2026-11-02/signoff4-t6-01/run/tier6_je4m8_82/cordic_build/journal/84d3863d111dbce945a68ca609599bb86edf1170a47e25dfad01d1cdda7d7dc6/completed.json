@@ -1,0 +1,5 @@
+{
+  "stage": "module_cordic_prerot:model:generator.generate:0",
+  "result": "`timescale 1ns/1ps\n// @latency 0\nmodule cordic_prerot (\n    input  wire [15:0] angle,\n    output wire [17:0] x0,\n    output wire [19:0] z0\n);\n\nwire [1:0] quadrant;\nwire       flip;\nwire [15:0] reduced_angle;\n\nassign quadrant      = angle[15:14];\nassign flip           = (quadrant == 2'b01) || (quadrant == 2'b10);\nassign reduced_angle  = flip ? (angle ^ 16'h8000) : angle;\nassign x0             = flip ? 18'd222347 : 18'd39797;\nassign z0             = {reduced_angle, 4'b0000};\n\nendmodule",
+  "artifacts": {}
+}

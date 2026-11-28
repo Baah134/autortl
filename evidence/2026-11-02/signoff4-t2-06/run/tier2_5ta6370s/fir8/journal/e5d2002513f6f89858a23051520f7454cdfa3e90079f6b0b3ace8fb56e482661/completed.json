@@ -1,0 +1,80 @@
+{
+  "stage": "iteration_3:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 3,
+    "instruction": "Change only the final `wire signed [31:0] total = s5 + c5;` reduction into a 32-bit segmented carry-select adder: compute fixed-width chunk sums for both carry-in values in parallel, then select each chunk using the preceding chunk\u2019s carry. Preserve modulo-32-bit result semantics, all signed parameter behavior, the product delay chains, reset behavior, registered `y_out`, and the existing latency annotation. Keep the carry-save tree and compare routed register-to-register WNS and hold slack against the incumbent; retain the candidate only if it passes all gates and improves the stated objectiv",
+    "candidates": [
+      {
+        "iteration": 3,
+        "mutation": "standard",
+        "instruction": "Change only the final `wire signed [31:0] total = s5 + c5;` reduction into a 32-bit segmented carry-select adder: compute fixed-width chunk sums for both carry-in values in parallel, then select each chunk using the preceding chunk\u2019s carry. Preserve modulo-32-bit result semantics, all signed parameter behavior, the product delay chains, reset behavior, registered `y_out`, and the existing latency annotation. Keep the carry-save tree and compare routed register-to-register WNS and hold slack against the incumbent; retain the candidate only if it passes all gates and improves the stated objectiv",
+        "generated_source_sha256": "27508b9154328835ea6e24aaf2aa8dd02f5ade606186424c09b90ba4a44e3d81",
+        "final_source_sha256": "27508b9154328835ea6e24aaf2aa8dd02f5ade606186424c09b90ba4a44e3d81",
+        "generated_code_hash": "10f9600f319f1a27",
+        "final_code_hash": "10f9600f319f1a27",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": false,
+          "wns_ns": -0.35,
+          "whs_ns": 0.127,
+          "lut_used": 359,
+          "ff_used": 330,
+          "dsp_used": 1,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.024,
+          "total_power_w": 0.093
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\fir8\\iter_003\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\fir8\\iter_003\\cand_standard\\synth.tcl",
+          "sha256": "eb5c3ba3b827a8069a61793ac3511c3caac055bfbef5c79d0f378424ab9e26ca"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\fir8\\iter_003\\cand_standard\\fir8.v",
+          "sha256": "1648562591ed80b89523fe4822d9e1d4ad336a3e18ce60c0c916f0da1eb1c63b"
+        }
+      }
+    ],
+    "doctor": {
+      "status": "NOT_ADOPTED",
+      "action": "tool_knobs",
+      "reason": "timing_not_closed",
+      "tools_ran": true,
+      "measured_metrics": {
+        "sim_passed": true,
+        "timing_met": false,
+        "wns_ns": -0.072,
+        "whs_ns": 0.137,
+        "lut_used": 366,
+        "ff_used": 332,
+        "dsp_used": 1,
+        "bram_used": 0.0,
+        "dynamic_power_w": 0.025,
+        "total_power_w": 0.093
+      },
+      "adopted": false,
+      "input_source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\fir8\\iter_003\\cand_standard\\fir8.v",
+        "sha256": "1648562591ed80b89523fe4822d9e1d4ad336a3e18ce60c0c916f0da1eb1c63b"
+      },
+      "trial_source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\fir8\\iter_003\\doctor_tool_knobs_trial\\fir8.v",
+        "sha256": "1648562591ed80b89523fe4822d9e1d4ad336a3e18ce60c0c916f0da1eb1c63b"
+      },
+      "trial_flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\fir8\\iter_003\\doctor_tool_knobs_trial\\synth.tcl",
+        "sha256": "eebae53c7681f683e8617538eacece7d926490cbdc4dbc7b2eb5061dab41403d"
+      },
+      "identity_count": 3
+    },
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": "27508b9154328835ea6e24aaf2aa8dd02f5ade606186424c09b90ba4a44e3d81"
+  },
+  "artifacts": {}
+}

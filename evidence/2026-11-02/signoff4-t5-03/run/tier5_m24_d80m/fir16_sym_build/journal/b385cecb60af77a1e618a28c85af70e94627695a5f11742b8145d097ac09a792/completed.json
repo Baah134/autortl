@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_4:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 4,
+    "instruction": "In `fir16_sym_core`, replace `C0`\u2013`C7` with their exact halves (`-3, -10, -12, 9, 55, 113, 165, 195`) and narrow the product registers and associated sum/partial registers only where their full signed ranges permit. Keep the five elastic slots and their ready/valid enables unchanged; compute the final rounded value from the halved accumulator using `(acc_half + 512) >>> 10`, preserving saturation and the existing pipeline stage. Preserve the top `// @latency 5` annotation and all reset, history, stall, and registered-output behavior.",
+    "candidates": [
+      {
+        "iteration": 4,
+        "mutation": "standard",
+        "instruction": "In `fir16_sym_core`, replace `C0`\u2013`C7` with their exact halves (`-3, -10, -12, 9, 55, 113, 165, 195`) and narrow the product registers and associated sum/partial registers only where their full signed ranges permit. Keep the five elastic slots and their ready/valid enables unchanged; compute the final rounded value from the halved accumulator using `(acc_half + 512) >>> 10`, preserving saturation and the existing pipeline stage. Preserve the top `// @latency 5` annotation and all reset, history, stall, and registered-output behavior.",
+        "generated_source_sha256": "8567f2ffbc9899a6abbe043747a33f6c575f32fe094d304ded1a38d2b82e5fde",
+        "final_source_sha256": "1f1436fd9f535b7f1d56d99428cf90a9e29d3a4143c356ef80e93a884ec878ca",
+        "generated_code_hash": "dc9f61db84269f78",
+        "final_code_hash": "4ef64b089e22488b",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 1.362,
+          "whs_ns": 0.048,
+          "lut_used": 304,
+          "ff_used": 368,
+          "dsp_used": 7,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.026,
+          "total_power_w": 0.095
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-03\\tier5_m24_d80m\\fir16_sym_build\\iter_004\\cand_standard\\repair_001",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-03\\tier5_m24_d80m\\fir16_sym_build\\iter_004\\cand_standard\\repair_001\\synth.tcl",
+          "sha256": "bfec9c2b78423535753eaa56da86278be0c2d14abea44c3080c23795465fa324"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-03\\tier5_m24_d80m\\fir16_sym_build\\iter_004\\cand_standard\\repair_001\\fir16_sym.v",
+          "sha256": "5674314fa7eaa7735a138d41de5f8f7a8d223cd61bce8b93628edfb361823a26"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": "1f1436fd9f535b7f1d56d99428cf90a9e29d3a4143c356ef80e93a884ec878ca"
+  },
+  "artifacts": {}
+}

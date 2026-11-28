@@ -9,16 +9,17 @@ Message severity promotion (never demotion) is applied from the taxonomy.
 from __future__ import annotations
 import re
 import json
-import hashlib
 import os
 import signal
 import subprocess
 import time
 from pathlib import Path
+from .awake_clock import awake_seconds
 from .config import RunConfig
 from .state import atomic_write_text
 from .report_parser import VivadoMetrics, parse_sim_log, parse_all, extract_message_ids
-from .triage import classify, FailureKind
+from .triage import classify, FailureKind, target_capacity, describe_target
+from .fileio import file_sha256
 
 
 def _tcl_path(p: Path) -> str:
@@ -91,7 +92,7 @@ def _append_tool_exit_record(cwd: Path, record: dict) -> None:
 
 
 def _run(cmd: list[str], cwd: Path, timeout: int, log_path: Path) -> tuple[int, str]:
-    t0 = time.monotonic()
+    t0 = awake_seconds()
     process, primary_error = None, None
     status, driver_rc, log_written = "launch_failed", None, False
     try:
@@ -136,7 +137,7 @@ def _run(cmd: list[str], cwd: Path, timeout: int, log_path: Path) -> tuple[int, 
         primary_error = exc
         raise
     finally:
-        _run.last_seconds = max(0.0, time.monotonic() - t0)
+        _run.last_seconds = max(0.0, awake_seconds() - t0)
         try:
             actual_rc = getattr(process, "returncode", None)
             pid = getattr(process, "pid", None)
@@ -150,7 +151,7 @@ def _run(cmd: list[str], cwd: Path, timeout: int, log_path: Path) -> tuple[int, 
                       "returncode": actual_rc if type(actual_rc) is int else None,
                       "driver_returncode": driver_rc, "elapsed_seconds": _run.last_seconds,
                       "output_log_path": str(Path(log_path).resolve()),
-                      "output_log_sha256": hashlib.sha256(log_path.read_bytes()).hexdigest()
+                      "output_log_sha256": file_sha256(log_path)
                                            if log_written else None}
             _append_tool_exit_record(cwd, record)
         except BaseException as receipt_error:
@@ -230,43 +231,139 @@ def xsim_run(design_files: list[Path], tb_file: Path, tb_top: str,
 
 # ---------------- Rung 5: synthesis + implementation ----------------
 
-SYNTH_TCL = """\
+# The two implementation flows are assembled from the shared blocks below, so a
+# change to a step both flows run is made once. Each block is a str.format
+# template (doubled braces are literal TCL braces). The assembled SYNTH_TCL and
+# OOC_SYNTH_TCL are pinned byte for byte by tests/test_ooc_flow.py.
+
+# Promotions, stale-marker removal, part and sources.
+_PREAMBLE = """\
 {promotions}
+file delete -force "{workdir}/no_timing_paths.txt"
 set_part {part}
 read_verilog {sources}
+"""
+
+# The clock on a port named clk; a design without one gets a virtual clock later.
+_XDC_OPEN = """\
 set fp [open "{workdir}/timing.xdc" w]
 puts $fp {{create_clock -period {period} -name clk [get_ports clk]}}
+"""
+_XDC_CLOSE = """\
 close $fp
 read_xdc "{workdir}/timing.xdc"
+"""
+
+# clockless_design_untimed_by_metrics_gate: written into each flow's constraint file.
+_VIRTUAL_CLOCK = """\
+puts $fp {{if {{[llength [get_clocks -quiet]] == 0}} {{create_clock -period {period} -name clk}}}}
+"""
+
+_POST_SYNTH_REPORTS = """\
+report_utilization -file "{workdir}/utilization.rpt"
+report_timing_summary -file "{workdir}/timing.rpt"
+opt_design
+"""
+
+_ROUTED_REPORTS = """\
+report_utilization -file "{workdir}/utilization_routed.rpt"
+report_timing_summary -file "{workdir}/timing_routed.rpt"
+"""
+
+_IMPLEMENT = """\
+place_design
+{phys_opt}
+route_design
+""" + _ROUTED_REPORTS + """\
+catch {{ if {{[llength [all_registers]] > 0}} {{ report_timing -from [all_registers] -to [all_registers] -max_paths 1 -file "{workdir}/timing_reg2reg.rpt" }} }}
+report_design_analysis -logic_level_distribution -file "{workdir}/design_analysis.rpt"
+report_power -file "{workdir}/power.rpt"
+catch {{ report_methodology -file "{workdir}/methodology.rpt" }}
+"""
+
+
+def _no_paths_marker(reason: str) -> str:
+    """empty_netlist_unplaceable: record that Vivado found no timing path at all."""
+    return ('if {{[llength [get_timing_paths -quiet -max_paths 1]] == 0}} {{ set fp [open "{workdir}/no_timing_paths.txt" w]; '
+            'puts $fp "' + reason + ' period_ns {period}"; close $fp }}\n')
+
+
+_COMPLETE = 'puts "SYNTH_COMPLETE"\n'
+
+# Chip top: every port on a package pin through an I/O buffer, zero port delays to clk.
+SYNTH_TCL = (
+    _PREAMBLE + _XDC_OPEN + _XDC_CLOSE
+    + """\
 synth_design -top {top} -flatten_hierarchy rebuilt {extra_synth}
 set fp [open "{workdir}/timing_io.tcl" w]
+""" + _VIRTUAL_CLOCK + """\
 puts $fp {{set data_inputs [get_ports -filter {{DIRECTION == IN && NAME != clk}}]}}
 puts $fp {{if {{[llength $data_inputs] > 0}} {{set_input_delay -clock clk -max 0.000 $data_inputs; set_input_delay -clock clk -min 0.000 $data_inputs}}}}
 puts $fp {{if {{[llength [all_outputs]] > 0}} {{set_output_delay -clock clk -max 0.000 [all_outputs]; set_output_delay -clock clk -min 0.000 [all_outputs]}}}}
 close $fp
 source "{workdir}/timing_io.tcl"
-report_utilization -file "{workdir}/utilization.rpt"
-report_timing_summary -file "{workdir}/timing.rpt"
-opt_design
-place_design
-{phys_opt}
-route_design
-report_utilization -file "{workdir}/utilization_routed.rpt"
-report_timing_summary -file "{workdir}/timing_routed.rpt"
-catch {{ if {{[llength [all_registers]] > 0}} {{ report_timing -from [all_registers] -to [all_registers] -max_paths 1 -file "{workdir}/timing_reg2reg.rpt" }} }}
-report_design_analysis -logic_level_distribution -file "{workdir}/design_analysis.rpt"
-report_power -file "{workdir}/power.rpt"
-catch {{ report_methodology -file "{workdir}/methodology.rpt" }}
+""" + _POST_SYNTH_REPORTS + _IMPLEMENT + """\
 catch {{ report_qor_suggestions -file "{workdir}/qor_suggestions.rpt" }}
-puts "SYNTH_COMPLETE"
-"""
+""" + _no_paths_marker("no_paths") + _COMPLETE)
+
+# Out-of-context implementation of a block that is not a chip top
+# (chip_top_flow_for_soc_block). synth_design -mode out_of_context inserts no
+# I/O buffers, so the ports never claim package pins and utilization has no
+# IOBs. The clock is created at the target period and HD.CLK_SRC models it as
+# driven by a global clock buffer, so the clock tree is real. Data ports get no
+# input or output delay: with no pads and no partition-pin locations their
+# timing is not meaningful, and they appear as unconstrained I/O in check_timing.
+# The routed WNS/WHS therefore cover the internal clocked paths only
+# (register to register, including RAM/DSP registers); combinational logic
+# between a port and its first or last register is not timed. Same reports,
+# same metrics and the same SYNTH_COMPLETE marker as the chip-top flow.
+# A design with no clock port (purely combinational) gets a virtual clock
+# named clk at the target period (clockless_design_untimed_by_metrics_gate);
+# the chip-top flow creates the same virtual clock before its existing port
+# delays. Out of context, a design with no register-to-register path (no
+# registers, or a single register stage) would have nothing timed, so its
+# data ports get zero delay to clk (single_register_design_untimed_ooc);
+# input-to-register hold is not checked there, because it depends on where the driving
+# register sits (the same reason ports are otherwise unconstrained);
+# designs with an internal path keep unconstrained ports as before.
+# empty_netlist_unplaceable: a wiring-only design has no primitive cells, so
+# place and route are skipped; a design with no timing path at all (wiring or
+# constants) leaves no_timing_paths.txt for the parser (vacuously met).
+# The clock/HD.CLK_SRC/out_of_context lines match hardware/basys3/fmax/fmax.py's
+# ooc mode, which closed timing live on Vivado 2025.2 for xc7a35tcpg236-1.
+OOC_SYNTH_TCL = (
+    _PREAMBLE + _XDC_OPEN + """\
+puts $fp {{set_property HD.CLK_SRC BUFGCTRL_X0Y0 [get_ports clk]}}
+""" + _XDC_CLOSE + """\
+synth_design -top {top} -flatten_hierarchy rebuilt -mode out_of_context {extra_synth}
+set fp [open "{workdir}/timing_virtual.tcl" w]
+""" + _VIRTUAL_CLOCK + """\
+puts $fp {{set regs [all_registers]; if {{[llength $regs] == 0 || [llength [get_timing_paths -quiet -from $regs -to $regs -max_paths 1]] == 0}} {{set data_inputs [get_ports -quiet -filter {{DIRECTION == IN && NAME != clk}}]; if {{[llength $data_inputs] > 0}} {{set_input_delay -clock clk 0.000 $data_inputs; if {{[llength $regs] > 0}} {{set_false_path -hold -from $data_inputs -to $regs}}}}; if {{[llength [all_outputs]] > 0}} {{set_output_delay -clock clk 0.000 [all_outputs]}}; set autortl_ports_timed 1}}}}
+close $fp
+source "{workdir}/timing_virtual.tcl"
+""" + _POST_SYNTH_REPORTS + """\
+if {{[llength [get_cells -quiet -hierarchical -filter {{IS_PRIMITIVE}}]] == 0}} {{
+""" + "".join("    " + line + "\n" for line in (_ROUTED_REPORTS + _no_paths_marker("empty_netlist") + _COMPLETE).splitlines()) + """\
+    exit 0
+}}
+""" + _IMPLEMENT + """\
+# report_qor_suggestions crashes Vivado 2025.2 (EXCEPTION_ACCESS_VIOLATION) once the
+# port guard above set an input-hold false path; it is advisory, so skip it then.
+if {{![info exists autortl_ports_timed]}} {{ catch {{ report_qor_suggestions -file "{workdir}/qor_suggestions.rpt" }} }}
+""" + _no_paths_marker("no_paths") + _COMPLETE)
+
+TEMPLATES = {"chip_top": SYNTH_TCL, "out_of_context": OOC_SYNTH_TCL}
 
 
-def run_synthesis(design_files: list[Path], top: str, cfg: RunConfig,
-                  work_dir: Path, promotions: dict[str, str] | None = None,
-                  retiming: bool = False, phys_opt: bool = False,
-                  timeout: int = 900, hold_fix: bool = False) -> tuple[bool, str, FailureKind]:
-    tcl = SYNTH_TCL.format(
+def synthesis_template(cfg: RunConfig) -> str:
+    """The harness template for the run's implementation flow; never model text."""
+    return TEMPLATES[cfg.implementation]
+
+
+def synthesis_tcl(design_files: list[Path], top: str, cfg: RunConfig, work_dir: Path,
+                  promotions: dict[str, str] | None = None, retiming: bool = False,
+                  phys_opt: bool = False, hold_fix: bool = False) -> str:
+    return synthesis_template(cfg).format(
         promotions=promotion_tcl(promotions or {}),
         part=cfg.target_part,
         sources=" ".join(f'"{_tcl_path(f)}"' for f in design_files),
@@ -276,14 +373,45 @@ def run_synthesis(design_files: list[Path], top: str, cfg: RunConfig,
         extra_synth="-retiming" if retiming else "",
         phys_opt="phys_opt_design -hold_fix" if hold_fix else ("phys_opt_design" if phys_opt else ""),
     )
+
+
+def crashed_only_at_exit(out: str) -> bool:
+    """True when Vivado crashed during shutdown after the script completed.
+
+    Requires, in order: a SYNTH_COMPLETE output line (not the echoed `# puts`
+    source line), Vivado's own "[Common 17-206] Exiting Vivado" line, then the
+    "Abnormal program termination" banner, with no crash banner earlier.
+    """
+    lines = out.splitlines()
+    done = next((i for i, line in enumerate(lines) if line.strip() == "SYNTH_COMPLETE"), None)
+    if done is None:
+        return False
+    crash = next((i for i, line in enumerate(lines) if "Abnormal program termination" in line), None)
+    exiting = next((i for i, line in enumerate(lines[done:], done)
+                    if "[Common 17-206] Exiting Vivado" in line), None)
+    return crash is not None and exiting is not None and done < exiting < crash
+
+
+def run_synthesis(design_files: list[Path], top: str, cfg: RunConfig,
+                  work_dir: Path, promotions: dict[str, str] | None = None,
+                  retiming: bool = False, phys_opt: bool = False,
+                  timeout: int = 900, hold_fix: bool = False) -> tuple[bool, str, FailureKind]:
+    tcl = synthesis_tcl(design_files, top, cfg, work_dir, promotions, retiming, phys_opt, hold_fix)
     script = work_dir / "synth.tcl"
     script.write_text(tcl)
     rc, out = _run([cfg.vivado_bin, "-mode", "batch", "-source", _tcl_path(script),
                     "-nojournal", "-nolog"], work_dir, timeout,
                    work_dir / "vivado_synth_output.log")
+    if rc != 0 and crashed_only_at_exit(out):
+        rc = 0  # vivado_exit_crash_after_completion: every command ran; shutdown crashed
     kind = classify(out)
     if rc != 0 and kind == FailureKind.INFRA:
         return False, _error_lines(out), kind
+    if kind == FailureKind.TARGET:
+        # io_overutilization_sent_to_fixer: the summary first, then Vivado's own
+        # two-line message, so target_capacity() can read the error text back.
+        capacity = target_capacity(out)
+        return False, describe_target(capacity) + "\n" + capacity["excerpt"], kind
     duplicate = _duplicate_module_error(out)
     if duplicate:
         return False, duplicate, FailureKind.DESIGN
@@ -342,4 +470,8 @@ def advisor_digest(work_dir: Path, taxonomy=None, max_items: int = 8) -> str:
     if qor:
         parts.append("Vivado QoR suggestions (advisory):\n"
                      + "\n".join(f"- {q}" for q in qor))
+    from .timing_doctor import path_summary  # critical_path_hidden_from_planner
+    worst = path_summary(work_dir)
+    if worst:
+        parts.insert(0, "Critical path (advisory):\n- " + worst)
     return "\n\n".join(parts)

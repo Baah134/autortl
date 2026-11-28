@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "status": "qualified",
+  "qualified": true,
+  "testbench_sha256": "f57a7e67ad067b5602e295c169a9c91917be17ca2dc82cdd6381968efbe3b41c",
+  "attempts": [
+    {
+      "label": "control",
+      "description": "unmodified control",
+      "passed": true,
+      "failure_kind": "design",
+      "error": "",
+      "assertion_detected": false,
+      "proof_reason": "simulation passed",
+      "source_sha256": "050f7a3ab0ba9ceedb8dc05ffa6017a818b4f935ca4011a4da93e896a2f2824b",
+      "raw_log_sha256": "2953d6bb5e43b875ad9edb32d7fe624ffe147af496680850cae245acaa8be0cc"
+    },
+    {
+      "label": "stuck_zero",
+      "description": "stuck-zero outputs",
+      "passed": false,
+      "failure_kind": "design",
+      "error": "Testbench failures:\nFAIL BEHAVIOR rule=exact_ready cycle=1  (x22)\nFAIL BEHAVIOR rule=exact_valid cycle=9  (x6)\nFAIL BEHAVIOR rule=slot_data_or_hold cycle=9  (x6)\nFAIL BEHAVIOR rule=accepted_history_order cycle=9  (x5)",
+      "assertion_detected": true,
+      "proof_reason": "raw assertion detail and failure verdict retained",
+      "source_sha256": "25af7b1a61ccf3fb7972ea43740006b70818ae512e27c3661262114b7a733454",
+      "raw_log_sha256": "db90f93f327845bd976e478409fc190ef1c8b8279ded9903841b36c740a3a12d"
+    }
+  ],
+  "missed": [],
+  "scope": "Minimum assertion sensitivity; missed faults remain coverage limits."
+}

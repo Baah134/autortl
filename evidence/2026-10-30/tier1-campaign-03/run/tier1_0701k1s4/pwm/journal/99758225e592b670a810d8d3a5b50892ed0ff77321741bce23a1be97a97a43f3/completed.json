@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_5:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 5\n## Contract check\n- Interface and cycle behavior: PASS \u2014 Ports, widths, synchronous reset behavior, and registered output are preserved; the split comparison is equivalent for the counter\u2019s reset-reachable range.\n- Top latency annotation: PASS \u2014 Authoritative `declared_latency.known=false`; no numeric annotation is required.\n- Deterministic verification: PASS \u2014 Ladder is ALIVE; compile, elaboration, simulation, and process exit gates passed, including the required `TEST PASSED` verdict.\n- Routed metrics and integrity: PASS \u2014 Retained routed reports and metric evidence are present and consistent.\n- Timing feasibility: PASS \u2014 `timing_met=true`, WNS is 0.594 ns, and WHS is 0.289 ns.\n- LUT objective: FAIL \u2014 Both designs are timing-feasible, but candidate LUT use increased from 7 to 8; strict LUT improvement is required.\n## Summary\n- Passed: 5 of 6\n- Failed: 1 of 6\n- Improved over previous best: NO\n## Recommendation\nRESTART\n## Reason\nThe candidate passes verification and timing gates but does not improve the chosen LUT objective, so it cannot replace the previous best. The stall count is 4, meeting the restart threshold.",
+      "recommendation": "REJECT",
+      "passed": 5,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

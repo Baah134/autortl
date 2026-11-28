@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_2:decision:instruction:0",
+  "result": "Keep the 32-bit counter, its `counter == 255` wrap logic, and all reset and registered-output behavior unchanged. Replace only `counter < {24'd0, duty}` with an exactly equivalent expression that checks `counter[31:8] == 0` and then compares `counter[7:0] < duty`. Preserve behavior for every 32-bit counter value, including values with nonzero upper bits; do not add a latency annotation.",
+  "artifacts": {}
+}

@@ -1,0 +1,45 @@
+{
+  "candidates": [
+    {
+      "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-02\\tier4_z427ytzk\\spi_master_build\\iter_003\\cand_standard",
+      "cache_hit": false,
+      "final_code_hash": "b61610046a7db717",
+      "final_source_sha256": "095982a68499e1ce5b11c7834f536d5931705fd0ff9f70b92c13c847b184997c",
+      "flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-02\\tier4_z427ytzk\\spi_master_build\\iter_003\\cand_standard\\synth.tcl",
+        "sha256": "4ca70b4d1e1b1919bfc3981ccba7b5acebd0e2358b35b6ae1816241400ac5b16"
+      },
+      "generated_code_hash": "b61610046a7db717",
+      "generated_source_sha256": "095982a68499e1ce5b11c7834f536d5931705fd0ff9f70b92c13c847b184997c",
+      "instruction": "In `spi_master_core`, remove `mosi_reg` and drive `mosi` from `tx_shift[7]`; load `cmd_data` into `tx_shift` on command acceptance, then shift it left only on the existing falling-SCLK events. Clear `tx_shift` on reset and transfer completion so MOSI is zero when idle, including while a response is held. Preserve the existing bit order, SCLK schedule for every supported `HALF_PERIOD`, handshakes, reset behavior, and top latency annotation; retain this candidate only if all gates pass and it strictly improves the incumbent LUT/FF objective.",
+      "iteration": 3,
+      "metrics": {
+        "bram_used": 0.0,
+        "dsp_used": 0,
+        "dynamic_power_w": 0.015,
+        "ff_used": 36,
+        "lut_used": 27,
+        "sim_passed": true,
+        "timing_met": true,
+        "total_power_w": 0.085,
+        "whs_ns": 0.051,
+        "wns_ns": 0.332
+      },
+      "mutation": "standard",
+      "reason": "",
+      "rungs": 5,
+      "source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-02\\tier4_z427ytzk\\spi_master_build\\iter_003\\cand_standard\\spi_master.v",
+        "sha256": "c2ad934f0a624634bbde3d757b38113011a8f46e28a1b38d0a7ef3c1cd6c5f58"
+      },
+      "status": "measured"
+    }
+  ],
+  "doctor": null,
+  "instruction": "In `spi_master_core`, remove `mosi_reg` and drive `mosi` from `tx_shift[7]`; load `cmd_data` into `tx_shift` on command acceptance, then shift it left only on the existing falling-SCLK events. Clear `tx_shift` on reset and transfer completion so MOSI is zero when idle, including while a response is held. Preserve the existing bit order, SCLK schedule for every supported `HALF_PERIOD`, handshakes, reset behavior, and top latency annotation; retain this candidate only if all gates pass and it strictly improves the incumbent LUT/FF objective.",
+  "is_best": false,
+  "iteration": 3,
+  "recommendation": "REJECT",
+  "schema_version": 1,
+  "selected_source_sha256": "095982a68499e1ce5b11c7834f536d5931705fd0ff9f70b92c13c847b184997c"
+}

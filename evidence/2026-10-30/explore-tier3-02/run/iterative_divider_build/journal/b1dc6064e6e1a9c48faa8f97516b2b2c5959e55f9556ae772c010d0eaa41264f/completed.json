@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_3:decision:instruction:0",
+  "result": "Keep the unconditional `iterative_divider_core #( .WIDTH(8) ) u_iterative_divider_core` instance and its direct output connections. Change only its `.out_ready(out_ready)` connection to use a wire equal to `out_ready && out_valid`; leave `.in_valid(in_valid)` direct, preserving the `// @latency 9` annotation and all top ports. This is equivalent because the core only retires a result while its valid flag is asserted; retain the candidate only if it passes all fixed gates and routed LUT use is strictly below 57.",
+  "artifacts": {}
+}

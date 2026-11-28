@@ -1,0 +1,15 @@
+# Lint for real errors only (pyflakes rules: undefined names, unused imports and
+# variables, redefinitions). No formatting rules, so history is not reformatted.
+target-version = "py312"
+line-length = 160
+# hardware/basys3/harness_built holds archived qualification scripts bound to
+# recorded evidence; they are kept byte-identical rather than linted.
+extend-exclude = ["evidence", "logs", "runs", ".claude", "hardware/basys3/harness_built"]
+
+[lint]
+select = ["F"]
+
+[lint.per-file-ignores]
+# Tests import pytest fixtures from other test modules and receive them as
+# parameters of the same name; pyflakes cannot see that use.
+"tests/**" = ["F401", "F811"]

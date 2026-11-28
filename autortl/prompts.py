@@ -59,13 +59,23 @@ Output ONLY JSON matching this schema (no commentary):
                 "clock_domain": "clk", "protocol": "none|valid_ready"}}],
      "latency": int, "compare_mode": "fixed_latency|scoreboard",
      "reset": {{"signal": "rst", "kind": "sync", "active_high": true,
-               "duration_cycles": 5}},
+               "duration_cycles": 5}} or null,
+     "init_cycles": int (only when reset is null), "init_inputs": {{}},
      "clock_domains": ["clk"], "parameters": {{}},
      "examples": [{{"inputs": {{}}, "expected": {{}}, "after_cycles": int}}] }}],
   "connections": [{{"src_module": str, "src_port": str,
                     "dst_module": str, "dst_port": str}}],
   "external_ports": [ports of the top level] }}
 
+Protocol valid_ready marks only handshake ports (in_valid, in_ready, out_valid,
+out_ready); payload ports such as in_data and out_data are protocol none.
+Example expected values list exactly the protocol none outputs.
+compare_mode scoreboard fits only a module with exactly one valid/ready input
+channel and one valid/ready output channel. Every other module, including a
+stream sink or source such as a UART transmitter fed by a FIFO, uses
+fixed_latency with every port protocol none, and the ports connected to it are
+none as well (protocol must match across a connection); describe the
+handshake cycle-exactly in behavior instead.
 Port signed is an optional boolean (default false). packed_dimensions is optional
 null (legacy descending [width-1:0], scalar for width 1) or a list of [left,right]
 integer bound pairs, for example [[0,7]] or [[1,0],[3,0]]. Preserve direction and
@@ -75,8 +85,45 @@ the harness derives that immutable metadata from existing source.
 Typed build modules require a known numeric latency; latency_known, if supplied,
 must be true. An absent annotation in an existing optimization source is a
 separate case and must never be interpreted as zero cycles.
+For fixed_latency, stimulus is driven at a falling edge: latency 0 is checked
+before the next rising edge, after combinational settling; latency 1 is checked
+just after that rising edge, after register updates. A Python step that returns
+the result of the current clocked state transition therefore uses latency 1;
+first-word-fall-through does not by itself determine this observation phase.
+Larger latencies add pipeline delay to that observation. Do not infer latency
+from the mere presence of clk:
+a combinational observation can still have clock/reset ports. Preserve the
+request's edge behavior; do not silently change a declared latency to fit RTL.
+This is distinct from scoreboard: scoreboard latency is the minimum
+accepted-transfer age, not the fixed_latency observation phase.
+fixed_latency compares every protocol none output on every sampled row, even
+when a valid output is zero. Define deterministic empty/invalid data values in
+behavior and examples; the typed spec has no per-cycle don't-care or output-mask
+field. Do not assume invalid data is excluded from those comparisons.
 Every module MUST include 2-3 concrete examples. Keep modules under ~60 lines
 of eventual Verilog each; split anything bigger.
+Each example holds its inputs constant for after_cycles clock steps, starting
+from the reset state, then checks the expected outputs; every inputs and
+expected value is a single integer, never a per-cycle list.
+Reset follows the requested interface exactly. NEVER add a reset port (rst,
+reset, rst_n or any other) that the request's interface does not have, and
+never drop one it has. When the requested interface has a clock but no reset
+port, write "reset": null and declare "init_cycles" (1..64) and optionally
+"init_inputs" (data input values, omitted inputs 0): the testbench drives
+init_inputs for init_cycles rising edges without checking, then compares;
+examples start from the state after that initialization. Choose init_inputs
+that make every state bit defined (for example one rising edge with a=0, b=0
+sets state=0), and say in behavior exactly how the state becomes defined.
+init_cycles and init_inputs are only for "reset": null; a module with a reset
+port omits them. A module without a reset port uses compare_mode fixed_latency.
+Behavior states only what the request states; never add behavior it does not
+state. Reset clears exactly the outputs and state the request says it clears:
+a register that the request describes as following an input (for example the
+previous input value used to detect an edge) keeps following it during reset
+unless the request says reset clears it. Keep the request's own timing words
+("at the next rising edge", "the following cycle") in behavior next to the
+rule you derive from them, and when the request leaves an output unspecified,
+say so in behavior rather than inventing a requirement.
 Each example runs the Python reference for after_cycles steps inside a fixed
 sandbox budget, so keep every after_cycles at or below 2000. For long-period
 designs (for example a UART bit lasting hundreds of cycles), make each example
@@ -152,7 +199,8 @@ PLAN = """Plan iteration {iteration} of an FPGA optimisation loop.
 {evaluations}
 # Verified incumbent measurements (may describe a different source from the generation seed)
 LUTs={lut_used} FFs={ff_used} WNS={wns_ns}ns DSP={dsp_used} BRAM={bram_used}
-Register-to-register WNS (advisory; excludes I/O pad delay): {reg2reg}
+Register-to-register WNS (excludes I/O pad delay; not a timing gate; maximize_freq compares it between timing-feasible designs that both report it): {reg2reg}
+Between timing-feasible designs, minimize_luts compares (LUTs, FFs) and minimize_ffs compares (FFs, LUTs) lexicographically: at an equal primary count, strictly fewer of the secondary is an improvement; a higher primary count never is.
 # Actual generation seed (write instructions for this source)
 ```verilog
 {generation_seed}
@@ -173,13 +221,16 @@ one paragraph
 one sentence
 ## Instruction for generator
 2-4 sentences naming the exact code pattern to change. The generator also receives
-the immutable harness facts, fixed contract and frozen compilation boundary.
+the immutable harness facts, fixed contract and immutable compilation boundary.
 Respect explicit unspecified cases in supplied build specifications; do not invent
 extra behavioral requirements. Use retained trial evidence to avoid repeating an
 unchanged failed experiment. Prior proposal outcomes are advisory observations,
 not new contract requirements. Name a concrete change from an already tried
 proposal when appropriate; identical RTL remains valid for different physical
-settings, and a new source hash alone does not establish an improvement."""
+settings, and a new source hash alone does not establish an improvement.
+Moving a child's logic into the top unchanged, or only regrouping modules, is
+not an optimization: synthesis flattens the hierarchy and routes the same design.
+Inline only together with a named logic change across the boundary."""
 
 RESTART_PLAN = """The loop has stalled ({stall_count} iterations without improvement).
 # Contract
@@ -208,7 +259,8 @@ Frozen source interface signature: {interface_signature}
 The signature is authoritative when present: retain public parameter types/default
 expressions and symbolic port dimensions, not just their resolved default widths.
 Internal localparams may change only when the external contract remains identical.
-Latency: {latency}. Reset: {reset_desc}.
+Latency: {latency}. Reset: {reset_desc}. Reset none means the interface has no
+reset port: do not add one; the behavior states how inputs define the state.
 
 **Approach for this candidate:** {mutation}
 
@@ -250,10 +302,19 @@ and immutable run facts. Judge improvement from those metrics and the recorded
 improvement_kind. A verified candidate with timing_met=true, nonnegative setup
 and hold may replace a known timing-infeasible previous best even if area/power
 is equal or higher: timing_recovery is feasibility recovery, not resource savings.
-Unknown or contradictory timing evidence cannot establish recovery. Once both
+Unknown or contradictory timing evidence cannot establish recovery. While the
+previous best is still timing-infeasible, timing progress counts: when the
+recorded improvement_kind is timing_progress (verified, still infeasible, strictly
+better setup WNS, hold not worse beyond a small tolerance), the unmet timing is
+not a failed criterion for this comparison; it is progress, not closure. Once both
 incumbent and candidate are timing-feasible, require strict improvement of the
-chosen objective. Never reject a valid timing recovery solely for higher area
-or power. Extra savings or slack margins are advisory goals, not mandatory gates. Do not invent missing
+chosen objective. minimize_luts compares (LUTs, FFs) and minimize_ffs compares
+(FFs, LUTs) lexicographically: an equal primary count with strictly fewer of the
+secondary is an objective improvement (recorded improvement_kind objective), so
+never reject it for an unchanged primary count; a higher primary count is never
+an improvement. Never reject a valid timing recovery solely for higher area
+or power, and never reject valid timing progress solely for higher area, power
+or still-negative slack. Extra savings or slack margins are advisory goals, not mandatory gates. Do not invent missing
 measurements or change the provided testbench, latency, constraints or tools.
 Use authoritative declared_latency for the current top's annotation requirement.
 If known=false, do not reject or demand investigation solely because the top has
@@ -266,7 +327,7 @@ ACCEPT requires zero failed mandatory criteria; otherwise REJECT.
 {ladder}
 # Metrics
 sim={sim_status} LUTs={lut_used} FFs={ff_used} WNS={wns_ns}ns timing_met={timing_met}
-Register-to-register WNS (advisory; excludes I/O pad delay, not a gate): {reg2reg}
+Register-to-register WNS (excludes I/O pad delay; not a timing gate; maximize_freq compares it between timing-feasible designs that both report it): {reg2reg}
 DSP={dsp_used} BRAM={bram_used}
 # Vivado notes
 {vivado_notes}
@@ -290,6 +351,10 @@ GOLDEN_MODEL = """Write a Python golden model for this module.
 Behavior: {behavior}
 Ports: {ports_table}
 Public parameter defaults: {parameters}
+Model only this module's behavior and state. Declared input ports are authoritative
+external values, including results supplied by neighboring modules. Consume those
+inputs when the contract uses them; do not recompute a neighbor's function or
+infer hidden upstream state. Legitimately unused inputs may remain unused.
 Inputs and outputs remain masked nonnegative bit patterns even for signed ports.
 For signed arithmetic, explicitly interpret two's-complement operands at their
 specified widths, then mask outputs. Signed declarations do not change this API.
@@ -308,7 +373,23 @@ Restricted Python execution, not general Python:
 Allowed builtins: {safe_builtins}
 Allowed methods: {safe_methods}
 Use integer arithmetic/bit operations, assignments, if/else and bounded loops.
-Helper functions are allowed. No imports, classes, try/except, raise, lambda,
+Execution is metered: init() has a large one-time budget, all step() calls of a
+run share a smaller one. Build constant tables (an S-box, coefficient or arctan
+table) once in init() from their definition with an efficient loop, keep them
+in state, and only look them up in step(); never rebuild them per step, and do
+not type long tables from memory. A loop of hundreds of operations per table
+entry is too slow: for GF(2^8) inverses build log/antilog tables with one
+255-step loop or use square-and-multiply, and check the table against any
+values the behavior text states.
+Log/antilog tables require a primitive generator for the specified field:
+verify that its powers visit every nonzero field element before repeating
+(255 distinct nonzero elements for GF(2^8)).
+Irreducibility alone does not guarantee that x is a primitive generator. Verify
+that field multiplication of the element and its computed inverse gives one
+for every nonzero element, and check the anchors stated in the behavior.
+Helper functions must be defined at module top level; pass required state/table
+values as explicit arguments. Nested helper calls are unsupported by this sandbox.
+No imports, classes, try/except, raise, lambda,
 f-strings, list/dict/set comprehensions, floats, decorators or default arguments.
 Generator expressions are supported. Do not use private names starting with '_'.
 Use literal port names, for example inputs.get("port_name", 0), replacing the
@@ -318,12 +399,20 @@ Comparison mode: {compare_mode}. Declared RTL latency: {latency}. Reset: {reset_
 Output keys must be exactly these data outputs: {data_outputs}; do not return
 valid/ready control outputs. Values are masked plain integers. The clock edge
 is implicit; do not read clk. Handle reset input explicitly when supplied;
-init() must represent reset state. Generated comparisons begin with asserted
+init() must represent reset state. Reset none means there is no reset port:
+every comparison and every example first runs the initialization steps the
+behavior describes (the spec's init_inputs for init_cycles steps, unchecked),
+so step() must compute the state those steps define, whatever init() returns. Generated comparisons begin with asserted
 reset steps, followed by deasserted reset and data stimulus. Spec examples may
 supply controls explicitly; use suitable inactive defaults for omitted controls.
 For fixed_latency, model one logical input/state transition per step and return
 its behavioral result. The testbench handles the declared pipeline delay; do
 not add a separate pipeline-delay queue in the Python model.
+For fixed_latency, observation phase: with latency 0 the outputs are sampled before this step's
+clock edge, so compute every returned output from the state at the start of
+step() and this step's inputs, and only then update the state for the next
+step (a registered output therefore shows its old value). With latency 1 or
+more, return the outputs of the state after this step's update.
 For scoreboard, each non-reset step is ONE ACCEPTED input transaction: return
 its eventual output payload. Do not simulate buffer occupancy, valid/ready
 scheduling, bubbles or backpressure; the testbench independently schedules and

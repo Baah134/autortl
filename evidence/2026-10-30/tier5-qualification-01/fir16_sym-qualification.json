@@ -1,0 +1,107 @@
+{
+  "entry": "curriculum\\tier5\\fir16_sym_build",
+  "top": "fir16_sym_tb",
+  "testbench_sha256": "eb01d24227f1d409bc8c69c8543db286947a54bff32da9eb88a927a2fe79a962",
+  "runs": [
+    {
+      "case": "reference",
+      "why": "control",
+      "expect_pass": true,
+      "verdict": "TEST PASSED",
+      "assertion_detected": false,
+      "as_required": true,
+      "source_sha256": "05209241a88c788e697983a00c2960f93684b6d8895fdf64a14ef0069c8ca681"
+    },
+    {
+      "case": "preadd_16bit_wrap",
+      "why": "the symmetric pre-adder keeps 16 bits, so x[n-k] + x[n-15+k] wraps for large same-sign samples",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 3788 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "714e4d8f838e7c2e861a9d97e1f33323c5294b3a5022c87d25c929d751161995"
+    },
+    {
+      "case": "truncate_not_round",
+      "why": "drops the rounding constant, so results floor instead of rounding half up",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 2252 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "06a55c9367b19fcfc2441b3c3af8c7bb6eca89aa2cdd9d9094ae3ab3b73e2bc0"
+    },
+    {
+      "case": "positive_saturation_wraps",
+      "why": "positive overflow wraps to a negative value instead of saturating at 32767",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 28 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "d6f7229c9be76ca0d20e627ef1f4b6f4cc2114e23dba17d12c54b37c3e098da0"
+    },
+    {
+      "case": "wrong_preadd_pair",
+      "why": "pairs tap 3 with tap 11 instead of its mirror tap 12",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 3630 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "e09d6153e12bc29707348d5068dde4e56f1fc495c1682795c79166df1d6457c6"
+    },
+    {
+      "case": "coefficient_sign_flip",
+      "why": "h[2] = h[13] is +24 instead of -24",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 3804 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "d47b2e3fe59b83c0f29373471aef3bb5248dd64a33cbce8fd387fddeac1d614e"
+    },
+    {
+      "case": "history_shift_on_valid",
+      "why": "the history shifts on in_valid alone, so a blocked sample enters it repeatedly",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 2256 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "81c3f895f642b8a9d77e1fd170e31991ddeea787b9baa91e376eee7ec077f803"
+    },
+    {
+      "case": "bubble_not_collapsed",
+      "why": "slot 4 advances only when the output can, so a gap in front of a stalled output never closes",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 1157 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "15930c938bc92e80218c3aa6a8bb768a5c252b6c0758a03216f17157235def1b"
+    },
+    {
+      "case": "stall_overwrites_output",
+      "why": "a valid token in slot 4 overwrites the stalled output result and is lost",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 1546 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "d0a4324f1213955f611997b530a98a2f16cf01bff39f6bee14bccdfa0c15f689"
+    },
+    {
+      "case": "reset_keeps_history",
+      "why": "reset empties the slots but leaves the old samples in the delay line",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 168 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "c1ea853fa6a8b174857c3ec85b0d8b5b5c7da75c6605d730c36d03b8a5c69a9c"
+    },
+    {
+      "case": "asynchronous_reset",
+      "why": "an off-edge reset pulse empties the pipeline and clears the history",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 32 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "3801eaa86b7201f6620ae8ad75228d8a3f55828f61082e630a4dd02f9646852a"
+    }
+  ],
+  "qualified": true
+}

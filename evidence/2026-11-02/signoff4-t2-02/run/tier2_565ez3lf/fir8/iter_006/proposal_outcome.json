@@ -1,0 +1,76 @@
+{
+  "candidates": [
+    {
+      "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-02\\tier2_565ez3lf\\fir8\\iter_006\\cand_standard",
+      "cache_hit": false,
+      "final_code_hash": "970900085f793aaf",
+      "final_source_sha256": "fb742147e49459979eb3668b98a38f53fde2b106da58c86375d0c5adcd436727",
+      "flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-02\\tier2_565ez3lf\\fir8\\iter_006\\cand_standard\\synth.tcl",
+        "sha256": "25c5748b051d6b2e08f2ad3496f93b99589bab9aec0ebd35775d0610517632c3"
+      },
+      "generated_code_hash": "970900085f793aaf",
+      "generated_source_sha256": "fb742147e49459979eb3668b98a38f53fde2b106da58c86375d0c5adcd436727",
+      "instruction": "Add an exact-default-coefficient generate branch that forms signed 17-bit sums `d[0]+d[7]`, `d[1]+d[6]`, `d[2]+d[5]`, and `d[3]+d[4]`, then applies weights 3, 7, 12, and 18 using explicit shift-add expressions. Reduce those four signed 32-bit weighted terms with a carry-save tree and one final adder to drive the existing registered `y_out`; retain the existing generic parameter path for every other coefficient set. Keep `d[0:7]`, synchronous active-high reset behavior, `// @latency 1`, and all observable cycles unchanged, and preserve signed extension and 32-bit result semantics.",
+      "iteration": 6,
+      "metrics": {
+        "bram_used": 0.0,
+        "dsp_used": 0,
+        "dynamic_power_w": 0.01,
+        "ff_used": 160,
+        "lut_used": 232,
+        "sim_passed": true,
+        "timing_met": false,
+        "total_power_w": 0.078,
+        "whs_ns": 0.019,
+        "wns_ns": -0.273
+      },
+      "mutation": "standard",
+      "reason": "",
+      "rungs": 5,
+      "source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-02\\tier2_565ez3lf\\fir8\\iter_006\\cand_standard\\fir8.v",
+        "sha256": "dac7c8a0966a04a10015e5f7aa91eaba8c2ddc9754b6433744eacc6e7f44c909"
+      },
+      "status": "measured"
+    }
+  ],
+  "doctor": {
+    "action": "tool_knobs",
+    "adopted": false,
+    "identity_count": 3,
+    "input_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-02\\tier2_565ez3lf\\fir8\\iter_006\\cand_standard\\fir8.v",
+      "sha256": "dac7c8a0966a04a10015e5f7aa91eaba8c2ddc9754b6433744eacc6e7f44c909"
+    },
+    "measured_metrics": {
+      "bram_used": 0.0,
+      "dsp_used": 0,
+      "dynamic_power_w": 0.01,
+      "ff_used": 161,
+      "lut_used": 232,
+      "sim_passed": true,
+      "timing_met": false,
+      "total_power_w": 0.078,
+      "whs_ns": 0.019,
+      "wns_ns": -0.301
+    },
+    "reason": "timing_not_closed",
+    "status": "NOT_ADOPTED",
+    "tools_ran": true,
+    "trial_flow_script": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-02\\tier2_565ez3lf\\fir8\\iter_006\\doctor_tool_knobs_trial\\synth.tcl",
+      "sha256": "5941fef117104d4a8e0c365b1beba12e296f9bad10177eb7076efb71e4b64626"
+    },
+    "trial_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-02\\tier2_565ez3lf\\fir8\\iter_006\\doctor_tool_knobs_trial\\fir8.v",
+      "sha256": "dac7c8a0966a04a10015e5f7aa91eaba8c2ddc9754b6433744eacc6e7f44c909"
+    }
+  },
+  "instruction": "Add an exact-default-coefficient generate branch that forms signed 17-bit sums `d[0]+d[7]`, `d[1]+d[6]`, `d[2]+d[5]`, and `d[3]+d[4]`, then applies weights 3, 7, 12, and 18 using explicit shift-add expressions. Reduce those four signed 32-bit weighted terms with a carry-save tree and one final adder to drive the existing registered `y_out`; retain the existing generic parameter path for every other coefficient set. Keep `d[0:7]`, synchronous active-high reset behavior, `// @latency 1`, and all observable cycles unchanged, and preserve signed extension and 32-bit result semantics.",
+  "is_best": false,
+  "iteration": 6,
+  "recommendation": "REJECT",
+  "schema_version": 1,
+  "selected_source_sha256": "fb742147e49459979eb3668b98a38f53fde2b106da58c86375d0c5adcd436727"
+}

@@ -1,0 +1,77 @@
+{
+  "candidates": [
+    {
+      "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-01\\tier2_tt3jn0mv\\fir8\\iter_003\\cand_standard",
+      "cache_hit": false,
+      "final_code_hash": "6e4b22589251bcef",
+      "final_source_sha256": "ce214cc2ff33afca571a1db4ab32b47c8000683d1de577861aba00e6d53e47de",
+      "flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-01\\tier2_tt3jn0mv\\fir8\\iter_003\\cand_standard\\synth.tcl",
+        "sha256": "6203037b7cc7dff579a3a77026f236fedb13ca0333a7b59ba3e460a7eb02c33d"
+      },
+      "generated_code_hash": "6e4b22589251bcef",
+      "generated_source_sha256": "ce214cc2ff33afca571a1db4ab32b47c8000683d1de577861aba00e6d53e47de",
+      "instruction": "Keep `// @latency 1` and preserve the synchronous reset and output cycle behavior. Replace the `x_d` and `s0`\u2013`s6` transposed recurrence with a registered sample delay line and a balanced output sum; in a generate branch where `C0==C7`, `C1==C6`, `C2==C5`, and `C3==C4`, pre-add each mirrored sample pair at 17-bit signed width and multiply by its shared coefficient, preserving the low 32 result bits. Retain a general-coefficient branch for all other parameter values, and compare routed register-to-register WNS against the 0.148 ns incumbent.",
+      "iteration": 3,
+      "metrics": {
+        "bram_used": 0.0,
+        "dsp_used": 4,
+        "dynamic_power_w": 0.008,
+        "ff_used": 128,
+        "lut_used": 64,
+        "sim_passed": true,
+        "timing_met": false,
+        "total_power_w": 0.076,
+        "whs_ns": 0.124,
+        "wns_ns": -5.307
+      },
+      "mutation": "standard",
+      "reason": "",
+      "rungs": 5,
+      "source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-01\\tier2_tt3jn0mv\\fir8\\iter_003\\cand_standard\\fir8.v",
+        "sha256": "2e65865db62143069a784a172824d740efc674dca4bf635c44299b2c0e09ebb7"
+      },
+      "status": "measured"
+    }
+  ],
+  "doctor": {
+    "action": "rtl_surgery",
+    "adopted": false,
+    "identity_count": 3,
+    "input_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-01\\tier2_tt3jn0mv\\fir8\\iter_003\\cand_standard\\fir8.v",
+      "sha256": "2e65865db62143069a784a172824d740efc674dca4bf635c44299b2c0e09ebb7"
+    },
+    "measured_metrics": {
+      "bram_used": 0.0,
+      "dsp_used": 5,
+      "dynamic_power_w": 0.011,
+      "ff_used": 160,
+      "lut_used": 150,
+      "sim_passed": true,
+      "timing_met": false,
+      "total_power_w": 0.08,
+      "whs_ns": 0.164,
+      "wns_ns": -9.799
+    },
+    "proposed_source_text_sha256": "f1b180ef6427632946d49bb7da31f86fc844c3926b4fec775c2d5b574edd5618",
+    "reason": "timing_not_closed",
+    "status": "NOT_ADOPTED",
+    "tools_ran": true,
+    "trial_flow_script": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-01\\tier2_tt3jn0mv\\fir8\\iter_003\\doctor_rtl_surgery_trial\\synth.tcl",
+      "sha256": "d48b97718a6df1cd3d9f898afe9f593b3f0a7b43402ce22dc25b332d3f4a2894"
+    },
+    "trial_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-01\\tier2_tt3jn0mv\\fir8\\iter_003\\doctor_rtl_surgery_trial\\fir8.v",
+      "sha256": "38f8b3655f9b31be4ced6dd72485b94c93e8ae9a1146439db1014de8be41fb34"
+    }
+  },
+  "instruction": "Keep `// @latency 1` and preserve the synchronous reset and output cycle behavior. Replace the `x_d` and `s0`\u2013`s6` transposed recurrence with a registered sample delay line and a balanced output sum; in a generate branch where `C0==C7`, `C1==C6`, `C2==C5`, and `C3==C4`, pre-add each mirrored sample pair at 17-bit signed width and multiply by its shared coefficient, preserving the low 32 result bits. Retain a general-coefficient branch for all other parameter values, and compare routed register-to-register WNS against the 0.148 ns incumbent.",
+  "is_best": false,
+  "iteration": 3,
+  "recommendation": "REJECT",
+  "schema_version": 1,
+  "selected_source_sha256": "ce214cc2ff33afca571a1db4ab32b47c8000683d1de577861aba00e6d53e47de"
+}

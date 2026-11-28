@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_2:decision:instruction:0",
+  "result": "In `packet_fifo_core`, remove the `not_full` register and its reset and next-state updates; derive `in_ready` as `(occupancy < DEPTH) || out_ready`, preserving full simultaneous pop/push behavior. Keep the registered head and shift-register tail, occupancy update, synchronous reset priority, and top `// @latency 1` annotation unchanged. Retain the candidate only if it passes all fixed verification and routed metric gates, remains timing-feasible, and strictly improves LUT count over 26\u2014or ties at 26 with fewer than 30 FFs.",
+  "artifacts": {}
+}

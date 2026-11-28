@@ -1,0 +1,298 @@
+{
+  "candidate_metrics": {
+    "bram_total": 50.0,
+    "bram_used": 0.0,
+    "dsp_total": 90,
+    "dsp_used": 0,
+    "dynamic_power_w": 0.051,
+    "ff_pct": 0.2283653846153846,
+    "ff_total": 41600,
+    "ff_used": 95,
+    "lut_pct": 0.9471153846153846,
+    "lut_total": 20800,
+    "lut_used": 197,
+    "reg2reg_wns_ns": 1.6,
+    "sim_error": "",
+    "sim_passed": true,
+    "synth_error": "",
+    "timing_met": true,
+    "total_power_w": 0.121,
+    "whs_ns": 0.011,
+    "wns_ns": 0.245
+  },
+  "candidate_source": {
+    "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-09\\cordic_build\\iter_003\\cand_standard\\cordic_sincos.v",
+    "sha256": "d3e151fb8486a674897f1cbe36791927f6bb4d767dfbf3c5488b835dad75d503",
+    "text": "`timescale 1ns/1ps\r\n// @latency 0\r\nmodule cordic_prerot (\r\n    input  wire [15:0] angle,\r\n    output wire [17:0] x0,\r\n    output wire [19:0] z0\r\n);\r\n\r\n    wire flip;\r\n    wire [15:0] reduced_angle;\r\n\r\n    assign flip = angle[15] ^ angle[14];\r\n    assign reduced_angle = angle ^ (flip ? 16'h8000 : 16'h0000);\r\n    assign x0 = flip ? 18'd222347 : 18'd39797;\r\n    assign z0 = {reduced_angle, 4'b0000};\r\n\r\nendmodule\r\n\r\n`timescale 1ns/1ps\r\n// @latency 0\r\nmodule cordic_atan (\r\n    input  wire [3:0]  idx,\r\n    output wire [19:0] atan\r\n);\r\n\r\n    reg [19:0] atan_value;\r\n\r\n    always @(*) begin\r\n        atan_value = 20'd0;\r\n        case (idx)\r\n            4'd0:  atan_value = 20'd131072;\r\n            4'd1:  atan_value = 20'd77376;\r\n            4'd2:  atan_value = 20'd40884;\r\n            4'd3:  atan_value = 20'd20753;\r\n            4'd4:  atan_value = 20'd10417;\r\n            4'd5:  atan_value = 20'd5213;\r\n            4'd6:  atan_value = 20'd2607;\r\n            4'd7:  atan_value = 20'd1304;\r\n            4'd8:  atan_value = 20'd652;\r\n            4'd9:  atan_value = 20'd326;\r\n            4'd10: atan_value = 20'd163;\r\n            4'd11: atan_value = 20'd81;\r\n            4'd12: atan_value = 20'd41;\r\n            4'd13: atan_value = 20'd20;\r\n            4'd14: atan_value = 20'd10;\r\n            4'd15: atan_value = 20'd5;\r\n        endcase\r\n    end\r\n\r\n    assign atan = atan_value;\r\n\r\nendmodule\r\n\r\n`timescale 1ns/1ps\r\n// @latency 1\r\nmodule cordic_engine (\r\n    input wire clk,\r\n    input wire rst,\r\n    input wire in_valid,\r\n    output wire in_ready,\r\n    input wire [17:0] x0,\r\n    input wire [19:0] z0,\r\n    input wire [19:0] atan_val,\r\n    output wire [3:0] iter,\r\n    output wire out_valid,\r\n    input wire out_ready,\r\n    output wire [17:0] x,\r\n    output wire [17:0] y,\r\n    output wire [15:0] cos_out,\r\n    output wire [15:0] sin_out\r\n);\r\n\r\n    reg busy_reg;\r\n    reg out_valid_reg;\r\n    reg in_ready_reg;\r\n    reg [3:0] i_reg;\r\n    reg signed [17:0] x_reg;\r\n    reg signed [17:0] y_reg;\r\n    reg [19:0] z_reg;\r\n    reg [15:0] cos_reg;\r\n    reg [15:0] sin_reg;\r\n\r\n    wire signed [17:0] x_shift;\r\n    wire signed [17:0] y_shift;\r\n    wire signed [17:0] x_next;\r\n    wire signed [17:0] y_next;\r\n    wire [15:0] x_next_rounded;\r\n    wire [15:0] y_next_rounded;\r\n    wire [15:0] x0_rounded;\r\n\r\n    assign x_shift = x_reg >>> i_reg;\r\n    assign y_shift = y_reg >>> i_reg;\r\n\r\n    assign x_next = !z_reg[19] ? (x_reg - y_shift) : (x_reg + y_shift);\r\n    assign y_next = !z_reg[19] ? (y_reg + x_shift) : (y_reg - x_shift);\r\n\r\n    assign x_next_rounded = x_next[17:2] + x_next[1];\r\n    assign y_next_rounded = y_next[17:2] + y_next[1];\r\n    assign x0_rounded = x0[17:2] + x0[1];\r\n\r\n    assign in_ready = in_ready_reg;\r\n    assign out_valid = out_valid_reg;\r\n    assign iter = i_reg;\r\n    assign x = x_reg;\r\n    assign y = y_reg;\r\n    assign cos_out = cos_reg;\r\n    assign sin_out = sin_reg;\r\n\r\n    always @(posedge clk) begin\r\n        if (rst) begin\r\n            busy_reg <= 1'b0;\r\n            out_valid_reg <= 1'b0;\r\n            in_ready_reg <= 1'b1;\r\n            i_reg <= 4'd0;\r\n            x_reg <= 18'd0;\r\n            y_reg <= 18'd0;\r\n            z_reg <= 20'd0;\r\n            cos_reg <= 16'd0;\r\n            sin_reg <= 16'd0;\r\n        end else if (busy_reg) begin\r\n            in_ready_reg <= 1'b0;\r\n            x_reg <= x_next;\r\n            y_reg <= y_next;\r\n            if (!z_reg[19])\r\n                z_reg <= z_reg - atan_val;\r\n            else\r\n                z_reg <= z_reg + atan_val;\r\n\r\n            cos_reg <= x_next_rounded;\r\n            sin_reg <= y_next_rounded;\r\n\r\n            i_reg <= i_reg + 4'd1;\r\n            if (i_reg == 4'd15) begin\r\n                busy_reg <= 1'b0;\r\n                out_valid_reg <= 1'b1;\r\n            end\r\n        end else if (out_valid_reg) begin\r\n            if (out_ready) begin\r\n                out_valid_reg <= 1'b0;\r\n                in_ready_reg <= 1'b1;\r\n            end else begin\r\n                in_ready_reg <= 1'b0;\r\n            end\r\n        end else if (in_valid) begin\r\n            in_ready_reg <= 1'b0;\r\n            x_reg <= x0;\r\n            y_reg <= 18'd0;\r\n            z_reg <= z0;\r\n            i_reg <= 4'd0;\r\n            busy_reg <= 1'b1;\r\n            cos_reg <= x0_rounded;\r\n            sin_reg <= 16'd0;\r\n        end else begin\r\n            in_ready_reg <= 1'b1;\r\n        end\r\n    end\r\n\r\nendmodule\r\n\r\n`timescale 1ns/1ps\r\n// @latency 0\r\nmodule cordic_out (\r\n    input  wire [17:0] x_in,\r\n    input  wire [17:0] y_in,\r\n    output wire [15:0] cos_out,\r\n    output wire [15:0] sin_out\r\n);\r\n\r\n    wire signed [18:0] x_extended = {x_in[17], x_in};\r\n    wire signed [18:0] y_extended = {y_in[17], y_in};\r\n    wire signed [18:0] x_rounded = x_extended + 19'sd2;\r\n    wire signed [18:0] y_rounded = y_extended + 19'sd2;\r\n\r\n    assign cos_out = x_rounded >>> 2;\r\n    assign sin_out = y_rounded >>> 2;\r\n\r\nendmodule\r\n\r\n`timescale 1ns/1ps\r\nmodule cordic_sincos (\r\n    input wire clk,\r\n    input wire rst,\r\n    input wire [15:0] angle,\r\n    input wire in_valid,\r\n    output wire in_ready,\r\n    output wire out_valid,\r\n    input wire out_ready,\r\n    output wire [15:0] cos_out,\r\n    output wire [15:0] sin_out\r\n);\r\n\r\n    wire [17:0] w_cordic_prerot_x0;\r\n    wire [19:0] w_cordic_prerot_z0;\r\n    wire [3:0] w_cordic_engine_iter;\r\n    wire [19:0] w_cordic_atan_atan;\r\n    wire [17:0] w_cordic_engine_x;\r\n    wire [17:0] w_cordic_engine_y;\r\n\r\n    cordic_prerot u_cordic_prerot (\r\n        .angle(angle),\r\n        .x0(w_cordic_prerot_x0),\r\n        .z0(w_cordic_prerot_z0)\r\n    );\r\n\r\n    cordic_atan u_cordic_atan (\r\n        .idx(w_cordic_engine_iter),\r\n        .atan(w_cordic_atan_atan)\r\n    );\r\n\r\n    cordic_engine u_cordic_engine (\r\n        .clk(clk),\r\n        .rst(rst),\r\n        .in_valid(in_valid),\r\n        .in_ready(in_ready),\r\n        .x0(w_cordic_prerot_x0),\r\n        .z0(w_cordic_prerot_z0),\r\n        .atan_val(w_cordic_atan_atan),\r\n        .iter(w_cordic_engine_iter),\r\n        .out_valid(out_valid),\r\n        .out_ready(out_ready),\r\n        .x(w_cordic_engine_x),\r\n        .y(w_cordic_engine_y),\r\n        .cos_out(cos_out),\r\n        .sin_out(sin_out)\r\n    );\r\n\r\nendmodule",
+    "truncated": false
+  },
+  "candidate_timing_feasible": true,
+  "first_violated_path_excerpt": null,
+  "flow_and_constraints": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-09\\cordic_build\\iter_003\\cand_standard\\synth.tcl",
+      "sha256": "ec3a65d8a164b09af982a118e2ccdfa06dde6def49a722fcc886c3cabe523be4",
+      "text": "set_msg_config -id {VRFC 10-3609} -new_severity ERROR\r\nset_msg_config -id {Synth 8-9873} -new_severity ERROR\r\nset_msg_config -id {Designutils 20-1307} -new_severity ERROR\r\nset_msg_config -id {Synth 8-327} -new_severity ERROR\r\nset_msg_config -id {Synth 8-3352} -new_severity ERROR\r\nset_part xc7a35tcpg236-1\r\nread_verilog \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-09/cordic_build/iter_003/cand_standard/cordic_sincos.v\"\r\nset fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-09/cordic_build/iter_003/cand_standard/timing.xdc\" w]\r\nputs $fp {create_clock -period 10.000 -name clk [get_ports clk]}\r\nclose $fp\r\nread_xdc \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-09/cordic_build/iter_003/cand_standard/timing.xdc\"\r\nsynth_design -top cordic_sincos -flatten_hierarchy rebuilt \r\nset fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-09/cordic_build/iter_003/cand_standard/timing_io.tcl\" w]\r\nputs $fp {set data_inputs [get_ports -filter {DIRECTION == IN && NAME != clk}]}\r\nputs $fp {if {[llength $data_inputs] > 0} {set_input_delay -clock clk -max 0.000 $data_inputs; set_input_delay -clock clk -min 0.000 $data_inputs}}\r\nputs $fp {if {[llength [all_outputs]] > 0} {set_output_delay -clock clk -max 0.000 [all_outputs]; set_output_delay -clock clk -min 0.000 [all_outputs]}}\r\nclose $fp\r\nsource \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-09/cordic_build/iter_003/cand_standard/timing_io.tcl\"\r\nreport_utilization -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-09/cordic_build/iter_003/cand_standard/utilization.rpt\"\r\nreport_timing_summary -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-09/cordic_build/iter_003/cand_standard/timing.rpt\"\r\nopt_design\r\nplace_design\r\n\r\nroute_design\r\nreport_utilization -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-09/cordic_build/iter_003/cand_standard/utilization_routed.rpt\"\r\nreport_timing_summary -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-09/cordic_build/iter_003/cand_standard/timing_routed.rpt\"\r\ncatch { if {[llength [all_registers]] > 0} { report_timing -from [all_registers] -to [all_registers] -max_paths 1 -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-09/cordic_build/iter_003/cand_standard/timing_reg2reg.rpt\" } }\r\nreport_design_analysis -logic_level_distribution -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-09/cordic_build/iter_003/cand_standard/design_analysis.rpt\"\r\nreport_power -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-09/cordic_build/iter_003/cand_standard/power.rpt\"\r\ncatch { report_methodology -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-09/cordic_build/iter_003/cand_standard/methodology.rpt\" }\r\ncatch { report_qor_suggestions -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-09/cordic_build/iter_003/cand_standard/qor_suggestions.rpt\" }\r\nputs \"SYNTH_COMPLETE\"\r\n",
+      "truncated": false
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-09\\cordic_build\\iter_003\\cand_standard\\timing.xdc",
+      "sha256": "fa142c09f0fadb5e303ca9fea08c02bc353451533e44aeee9cd9a0231cc8bede",
+      "text": "create_clock -period 10.000 -name clk [get_ports clk]\r\n",
+      "truncated": false
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-09\\cordic_build\\iter_003\\cand_standard\\timing_io.tcl",
+      "sha256": "6b38098841a48bbb3ab15de49d2bf2baf7e4384f599259ff5f3afa2c2b1daf00",
+      "text": "set data_inputs [get_ports -filter {DIRECTION == IN && NAME != clk}]\r\nif {[llength $data_inputs] > 0} {set_input_delay -clock clk -max 0.000 $data_inputs; set_input_delay -clock clk -min 0.000 $data_inputs}\r\nif {[llength [all_outputs]] > 0} {set_output_delay -clock clk -max 0.000 [all_outputs]; set_output_delay -clock clk -min 0.000 [all_outputs]}\r\n",
+      "truncated": false
+    }
+  ],
+  "improvement_kind": null,
+  "measured_improvement": false,
+  "metric_provenance": "Structured metrics are parsed from retained reports; routed utilization/timing reports take precedence when present. The manifest identifies complete files by hash. Header excerpts are bounded previews, not complete reports or an independent metric source.",
+  "objective": "minimize_luts",
+  "previous_best_metrics": {
+    "bram_total": 50.0,
+    "bram_used": 0.0,
+    "dsp_total": 90,
+    "dsp_used": 0,
+    "dynamic_power_w": 0.051,
+    "ff_pct": 0.2283653846153846,
+    "ff_total": 41600,
+    "ff_used": 95,
+    "lut_pct": 0.9326923076923077,
+    "lut_total": 20800,
+    "lut_used": 194,
+    "reg2reg_wns_ns": 1.941,
+    "sim_error": "",
+    "sim_passed": true,
+    "synth_error": "",
+    "timing_met": true,
+    "total_power_w": 0.121,
+    "whs_ns": 0.096,
+    "wns_ns": 0.076
+  },
+  "previous_best_timing_feasible": true,
+  "process_exit_gate": {
+    "passed": true,
+    "policy": "Every required tool's latest actual process exit must be zero with retained matching output; physical-only Doctor may reuse source-bound prior compile/simulation.",
+    "reasons": []
+  },
+  "report_headers": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-09\\cordic_build\\iter_003\\cand_standard\\power.rpt",
+      "sha256": "9f37abe22fa09436a32e40263d75625f6457b5f9a8481f95cfefbb3764fc44c0",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n----------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version     : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date             : Mon Nov  2 11:14:02 2026\r\n| Host             : Baah running 64-bit major release  (build 9200)\r\n| Command          : report_power -file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-09/cordic_build/iter_003/cand_standard/power.rpt\r\n| Design           : cordic_sincos\r\n| Device           : xc7a35tcpg236-1\r\n| Design State     : routed\r\n| Grade            : commercial\r\n| Process          : typical\r\n| Characterization : Production\r\n----------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nPower Report\r\n\r\nTable of Contents\r\n-----------------\r\n1. Summary\r\n1.1 On-Chip Components\r\n1.2 Power Supply Summary\r\n1.3 Confidence Level\r\n2. Settings\r\n2.1 Environment\r\n2.2 Clock Constraints\r\n3. Detailed Reports\r\n3.1 By Hierarchy\r\n\r\n1. Summary\r\n----------\r\n\r\n+--------------------------+--------------+\r\n| Total On-Chip Power (W)  | 0.121        |\r\n| Design Power Budget (W)  | Unspecified* |\r\n| Power Budget Margin (W)  | NA           |\r\n| Dynamic (W)              | 0.051        |\r\n| Device Static (W)        | 0.070        |\r\n| Effective TJA (C/W)      | 5.0          |\r\n| Max Ambient (C)          | 84.4         |\r\n| Junction Temperature (C) | 25.6         |\r\n| Confidence Level         | Low          |\r\n| Setting File             | ---          |\r\n| Simulation Activity File | ---      ",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-09\\cordic_build\\iter_003\\cand_standard\\timing.rpt",
+      "sha256": "844c827a1a3d493fa145d7d7c9a23b8ff23b9a24ff03b44f674cade34b155c28",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n--------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date         : Mon Nov  2 11:13:01 2026\r\n| Host         : Baah running 64-bit major release  (build 9200)\r\n| Command      : report_timing_summary -file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-09/cordic_build/iter_003/cand_standard/timing.rpt\r\n| Design       : cordic_sincos\r\n| Device       : 7a35t-cpg236\r\n| Speed File   : -1  PRODUCTION 1.23 2018-06-13\r\n| Design State : Synthesized\r\n--------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nTiming Summary Report\r\n\r\n------------------------------------------------------------------------------------------------\r\n| Timer Settings\r\n| --------------\r\n------------------------------------------------------------------------------------------------\r\n\r\n  Enable Multi Corner Analysis               :  Yes\r\n  Enable Pessimism Removal                   :  Yes\r\n  Pessimism Removal Resolution               :  Nearest Common Node\r\n  Enable Input Delay Default Clock           :  No\r\n  Enable Preset / Clear Arcs                 :  No\r\n  Disable Flight Delays                      :  No\r\n  Ignore I/O Paths                           :  No\r\n  Timing Early Launch at Borrowing Latches   :  No\r\n  Borrow Time for Max Delay Exceptions       :  Yes\r\n  Merge Timing Exceptions                    :  Yes\r\n  Inter-SLR Compensation                     :  Conservati",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-09\\cordic_build\\iter_003\\cand_standard\\timing_reg2reg.rpt",
+      "sha256": "3c90d26a93b32c03a4b44b9f00864b164077f9d58b07a7e054c22af70f4a9dd9",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date         : Mon Nov  2 11:14:01 2026\r\n| Host         : Baah running 64-bit major release  (build 9200)\r\n| Command      : report_timing -from [all_registers] -to [all_registers] -max_paths 1 -file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-09/cordic_build/iter_003/cand_standard/timing_reg2reg.rpt\r\n| Design       : cordic_sincos\r\n| Device       : 7a35t-cpg236\r\n| Speed File   : -1  PRODUCTION 1.23 2018-06-13\r\n| Design State : Routed\r\n---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nTiming Report\r\n\r\nSlack (MET) :             1.600ns  (required time - arrival time)\r\n  Source:                 u_cordic_engine/i_reg_reg[2]/C\r\n                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@5.000ns period=10.000ns})\r\n  Destination:            u_cordic_engine/cos_reg_reg[13]/D\r\n                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@5.000ns period=10.000ns})\r\n  Path Group:             clk\r\n  Path Type:              Setup (Max at Slow Process Corner)\r\n  Requirement:            10.000ns  (clk rise@10.000ns - clk rise@0.000ns)\r\n  Data Path Delay:        8.059ns  (logic 3.374ns (41.867%)  route 4.685ns (58.1",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-09\\cordic_build\\iter_003\\cand_standard\\timing_routed.rpt",
+      "sha256": "846d064fe37f7bc486c4e4185a90396369f0450ad91ca63b182796bd7108b580",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n---------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date         : Mon Nov  2 11:14:01 2026\r\n| Host         : Baah running 64-bit major release  (build 9200)\r\n| Command      : report_timing_summary -file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-09/cordic_build/iter_003/cand_standard/timing_routed.rpt\r\n| Design       : cordic_sincos\r\n| Device       : 7a35t-cpg236\r\n| Speed File   : -1  PRODUCTION 1.23 2018-06-13\r\n| Design State : Routed\r\n---------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nTiming Summary Report\r\n\r\n------------------------------------------------------------------------------------------------\r\n| Timer Settings\r\n| --------------\r\n------------------------------------------------------------------------------------------------\r\n\r\n  Enable Multi Corner Analysis               :  Yes\r\n  Enable Pessimism Removal                   :  Yes\r\n  Pessimism Removal Resolution               :  Nearest Common Node\r\n  Enable Input Delay Default Clock           :  No\r\n  Enable Preset / Clear Arcs                 :  No\r\n  Disable Flight Delays                      :  No\r\n  Ignore I/O Paths                           :  No\r\n  Timing Early Launch at Borrowing Latches   :  No\r\n  Borrow Time for Max Delay Exceptions       :  Yes\r\n  Merge Timing Exceptions                    :  Yes\r\n  Inter-SLR Compensation                  ",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-09\\cordic_build\\iter_003\\cand_standard\\utilization.rpt",
+      "sha256": "feb1f16799e71c4b5ee54355e5d94345d8ae32c1cadb8f48db3361a7f53a66eb",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\n----------------------------------------------------------------------------------------------------------------------------------------------------------------\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\n| Date         : Mon Nov  2 11:13:00 2026\n| Host         : Baah running 64-bit major release  (build 9200)\n| Command      : report_utilization -file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-09/cordic_build/iter_003/cand_standard/utilization.rpt\n| Design       : cordic_sincos\n| Device       : xc7a35tcpg236-1\n| Speed File   : -1\n| Design State : Synthesized\n----------------------------------------------------------------------------------------------------------------------------------------------------------------\n\nUtilization Design Information\n\nTable of Contents\n-----------------\n1. Slice Logic\n1.1 Summary of Registers by Type\n2. Memory\n3. DSP\n4. IO and GT Specific\n5. Clocking\n6. Specific Feature\n7. Primitives\n8. Black Boxes\n9. Instantiated Netlists\n\n1. Slice Logic\n--------------\n\n+-------------------------+------+-------+------------+-----------+-------+\n|        Site Type        | Used | Fixed | Prohibited | Available | Util% |\n+-------------------------+------+-------+------------+-----------+-------+\n| Slice LUTs*             |  201 |     0 |          0 |     20800 |  0.97 |\n|   LUT as Logic          |  201 |     0 |          0 |     20800 |  0.97 |\n|   LUT as Memory         |    0 |     0 |          0 |      9600 |  0.00 |\n| Slice Registers         |   95 |     0 |          0 |     41600 |  0.23 |\n|   Register as Flip Flop |   95 |     0 |          0 |     41600 |  0.23 |\n|   Regi",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-09\\cordic_build\\iter_003\\cand_standard\\utilization_routed.rpt",
+      "sha256": "3d666aa41624ffa7b381e9d7de79eceb9cc7545eec48b4b5aecda72b980acd63",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\n-----------------------------------------------------------------------------------------------------------------------------------------------------------------------\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\n| Date         : Mon Nov  2 11:14:01 2026\n| Host         : Baah running 64-bit major release  (build 9200)\n| Command      : report_utilization -file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-09/cordic_build/iter_003/cand_standard/utilization_routed.rpt\n| Design       : cordic_sincos\n| Device       : xc7a35tcpg236-1\n| Speed File   : -1\n| Design State : Routed\n-----------------------------------------------------------------------------------------------------------------------------------------------------------------------\n\nUtilization Design Information\n\nTable of Contents\n-----------------\n1. Slice Logic\n1.1 Summary of Registers by Type\n2. Slice Logic Distribution\n3. Memory\n4. DSP\n5. IO and GT Specific\n6. Clocking\n7. Specific Feature\n8. Primitives\n9. Black Boxes\n10. Instantiated Netlists\n\n1. Slice Logic\n--------------\n\n+-------------------------+------+-------+------------+-----------+-------+\n|        Site Type        | Used | Fixed | Prohibited | Available | Util% |\n+-------------------------+------+-------+------------+-----------+-------+\n| Slice LUTs              |  197 |     0 |          0 |     20800 |  0.95 |\n|   LUT as Logic          |  197 |     0 |          0 |     20800 |  0.95 |\n|   LUT as Memory         |    0 |     0 |          0 |      9600 |  0.00 |\n| Slice Registers         |   95 |     0 |          0 |     41600 |  0.23 |\n|   Register as Flip Flop |   95 |     ",
+      "truncated": true
+    }
+  ],
+  "report_manifest": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-09\\cordic_build\\iter_003\\cand_standard\\power.rpt",
+      "sha256": "9f37abe22fa09436a32e40263d75625f6457b5f9a8481f95cfefbb3764fc44c0"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-09\\cordic_build\\iter_003\\cand_standard\\timing.rpt",
+      "sha256": "844c827a1a3d493fa145d7d7c9a23b8ff23b9a24ff03b44f674cade34b155c28"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-09\\cordic_build\\iter_003\\cand_standard\\timing_reg2reg.rpt",
+      "sha256": "3c90d26a93b32c03a4b44b9f00864b164077f9d58b07a7e054c22af70f4a9dd9"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-09\\cordic_build\\iter_003\\cand_standard\\timing_routed.rpt",
+      "sha256": "846d064fe37f7bc486c4e4185a90396369f0450ad91ca63b182796bd7108b580"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-09\\cordic_build\\iter_003\\cand_standard\\utilization.rpt",
+      "sha256": "feb1f16799e71c4b5ee54355e5d94345d8ae32c1cadb8f48db3361a7f53a66eb"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-09\\cordic_build\\iter_003\\cand_standard\\utilization_routed.rpt",
+      "sha256": "3d666aa41624ffa7b381e9d7de79eceb9cc7545eec48b4b5aecda72b980acd63"
+    }
+  ],
+  "tool_exit_evidence": {
+    "history_count": 5,
+    "latest_by_tool": {
+      "vivado": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-09\\cordic_build\\iter_003\\cand_standard\\vivado_synth_output.log",
+        "output_log_sha256": "d8c43af3aca711c6bc190fdb7cfffe727f367663b254fd15b48da9c72f11c9f9",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xelab": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-09\\cordic_build\\iter_003\\cand_standard\\xelab.log",
+        "output_log_sha256": "9af04a8a1872496726b62c2f434d3e17ad86e8f1be695deaac588155781d8a22",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xsim": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-09\\cordic_build\\iter_003\\cand_standard\\xsim.log",
+        "output_log_sha256": "cb4b4894d629599b7f9d7d0fe9d3e028cf4b2577f208738430e4991aba53b028",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xvlog": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-09\\cordic_build\\iter_003\\cand_standard\\xvlog.log",
+        "output_log_sha256": "698088a21f188d051f93b84bfb833794d5de0f7710e5fbdca0ae696a9e3ba161",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      }
+    },
+    "missing_required_tools": [],
+    "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-09\\cordic_build\\iter_003\\cand_standard\\tool_exit_records.log",
+    "records": [
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-09\\cordic_build\\iter_003\\cand_standard",
+        "driver_returncode": 0,
+        "elapsed_seconds": 1.8401779000014358,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xvlog.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-09\\cordic_build\\iter_003\\cand_standard\\xvlog.log",
+        "output_log_sha256": "e665101d0f6ba34ae3d031746eca439861cca1e901e1ff1e38d0dd27857df46e",
+        "pid": 31592,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xvlog"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-09\\cordic_build\\iter_003\\cand_standard",
+        "driver_returncode": 0,
+        "elapsed_seconds": 1.632805000001099,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xvlog.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-09\\cordic_build\\iter_003\\cand_standard\\xvlog.log",
+        "output_log_sha256": "698088a21f188d051f93b84bfb833794d5de0f7710e5fbdca0ae696a9e3ba161",
+        "pid": 21688,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xvlog"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-09\\cordic_build\\iter_003\\cand_standard",
+        "driver_returncode": 0,
+        "elapsed_seconds": 3.226275400000304,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xelab.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-09\\cordic_build\\iter_003\\cand_standard\\xelab.log",
+        "output_log_sha256": "9af04a8a1872496726b62c2f434d3e17ad86e8f1be695deaac588155781d8a22",
+        "pid": 31444,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xelab"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-09\\cordic_build\\iter_003\\cand_standard",
+        "driver_returncode": 0,
+        "elapsed_seconds": 3.833415099998092,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xsim.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-09\\cordic_build\\iter_003\\cand_standard\\xsim.log",
+        "output_log_sha256": "cb4b4894d629599b7f9d7d0fe9d3e028cf4b2577f208738430e4991aba53b028",
+        "pid": 29344,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xsim"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-09\\cordic_build\\iter_003\\cand_standard",
+        "driver_returncode": 0,
+        "elapsed_seconds": 146.35197150000022,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/vivado.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-09\\cordic_build\\iter_003\\cand_standard\\vivado_synth_output.log",
+        "output_log_sha256": "d8c43af3aca711c6bc190fdb7cfffe727f367663b254fd15b48da9c72f11c9f9",
+        "pid": 21092,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "vivado"
+      }
+    ],
+    "schema_valid": true,
+    "sha256": "d4b50a23b0ad1f971719d95143d5d2d2f3695c7428531d5dae4d7d9be7adc049",
+    "status": "recorded",
+    "truncated": false
+  },
+  "verification_logs": [
+    {
+      "head": "INFO: [VRFC 10-2263] Analyzing Verilog file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-09/cordic_build/iter_003/cand_standard/cordic_sincos.v\" into library work\r\nINFO: [VRFC 10-311] analyzing module cordic_prerot\r\nINFO: [VRFC 10-311] analyzing module cordic_atan\r\nINFO: [VRFC 10-311] analyzing module cordic_engine\r\nINFO: [VRFC 10-311] analyzing module cordic_out\r\nINFO: [VRFC 10-311] analyzing module cordic_sincos\r\nINFO: [VRFC 10-2263] Analyzing Verilog file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-09/cordic_build/inputs/testbench_path.v\" into library work\r\nINFO: [VRFC 10-311] analyzing module cordic_sincos_tb\r\n\r\n",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-09\\cordic_build\\iter_003\\cand_standard\\xvlog.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "698088a21f188d051f93b84bfb833794d5de0f7710e5fbdca0ae696a9e3ba161",
+      "tail": "",
+      "truncated": false
+    },
+    {
+      "head": "Vivado Simulator v2025.2\r\nCopyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\nCopyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\nRunning: C:/AMDDesignTools/2025.2/Vivado/bin/unwrapped/win64.o/xelab.exe cordic_sincos_tb -s cordic_sincos_tb_snap --debug off \r\nMulti-threading is on. Using 10 slave threads.\r\nStarting static elaboration\r\nPass Through NonSizing Optimizer\r\nCompleted static elaboration\r\nStarting simulation data flow analysis\r\nCompleted simulation data flow analysis\r\nTime Resolution for simulation is 1ps\r\nCompiling module work.cordic_prerot\r\nCompiling module work.cordic_atan\r\nCompiling module work.cordic_engine\r\nCompiling module work.cordic_sincos\r\nCompiling module work.cordic_sincos_tb\r\nBuilt simulation snapshot cordic_sincos_tb_snap\r\n\r\n",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-09\\cordic_build\\iter_003\\cand_standard\\xelab.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "9af04a8a1872496726b62c2f434d3e17ad86e8f1be695deaac588155781d8a22",
+      "tail": "",
+      "truncated": false
+    },
+    {
+      "head": "\r\n****** xsim v2025.2 (64-bit)\r\n  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025\r\n  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025\r\n  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025\r\n  **** Start of session at: Mon Nov  2 11:11:36 2026\r\n    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\n    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n\r\nsource xsim.dir/cordic_sincos_tb_snap/xsim_script.tcl\r\n# xsim {cordic_sincos_tb_snap} -autoloadwcfg -runall\r\nTime resolution is 1 ps\r\nrun -all\r\nCOVERAGE cycles=33047 accepted=1797 transfers=1795 loose_checked=1795 worst_lsb=2.187486 stalls=691 busy_offers=28324 back_to_back=1794 noise=441 busy_resets=1 ov_resets=1 pulses=2\r\nTEST PASSED\r\n$finish called at time : 330475 ns : File \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-09/cordic_build/inputs/testbench_path.v\" Line 276\r\nexit\r\nINFO: [Common 17-206] Exiting xsim at Mon Nov  2 11:11:38 2026...\r\n\r\n",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-09\\cordic_build\\iter_003\\cand_standard\\sim_log.txt",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "cb4b4894d629599b7f9d7d0fe9d3e028cf4b2577f208738430e4991aba53b028",
+      "tail": "",
+      "truncated": false
+    },
+    {
+      "head": "\r\n****** Vivado v2025.2 (64-bit)\r\n  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025\r\n  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025\r\n  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025\r\n  **** Start of session at: Mon Nov  2 11:11:40 2026\r\n    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\n    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n\r\nsource C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-09/cordic_build/iter_003/cand_standard/synth.tcl\r\n# set_msg_config -id {VRFC 10-3609} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-9873} -new_severity ERROR\r\n# set_msg_config -id {Designutils 20-1307} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-327} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-3352} -new_severity ERROR\r\n# set_part xc7a35tcpg236-1\r\nINFO: [Coretcl 2-1500] The part has been set to 'xc7a35tcpg236-1' for the current project only. Run set_part -help for more details. To evaluate different speed grades in the current design, use the set_speed_grade command, or use the open_checkpoint -part command to change the part used by an existing checkpoint design.\r\nset_part: Time (s): cpu = 00:00:17 ; elapsed = 00:00:12 . Memory (MB): peak = 533.277 ; gain = 225.395\r\n# read_verilog \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-09/cordic_build/iter_003/cand_standard/cordic_sincos.v\"\r\n# set fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-09/cordic_build/iter_003/cand_standard/timing.xdc\" w]\r\n# puts $fp {create_clock -period 10.000 -name clk [get_ports clk]}\r\n# close $fp\r\n# read_xdc \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-09/cordic_build/iter_003/cand_standard/timing.xdc\"\r\n# synth_design -top cordic_sincos -flatten_hie",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-09\\cordic_build\\iter_003\\cand_standard\\vivado_synth_output.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "d8c43af3aca711c6bc190fdb7cfffe727f367663b254fd15b48da9c72f11c9f9",
+      "tail": "ork/logs/explore-tier6-09/cordic_build/iter_003/cand_standard/power.rpt\r\nRunning Vector-less Activity Propagation...\r\n\r\nFinished Running Vector-less Activity Propagation\r\n0 Infos, 0 Warnings, 0 Critical Warnings and 0 Errors encountered.\r\nreport_power completed successfully\r\n# catch { report_methodology -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-09/cordic_build/iter_003/cand_standard/methodology.rpt\" }\r\nCommand: report_methodology -file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-09/cordic_build/iter_003/cand_standard/methodology.rpt\r\nINFO: [Timing 38-35] Done setting XDC timing constraints.\r\nINFO: [DRC 23-133] Running Methodology with 2 threads\r\nINFO: [Vivado_Tcl 2-1520] The results of Report Methodology are in file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-09/cordic_build/iter_003/cand_standard/methodology.rpt.\r\nreport_methodology completed successfully\r\n# catch { report_qor_suggestions -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-09/cordic_build/iter_003/cand_standard/qor_suggestions.rpt\" }\r\nCommand: report_qor_suggestions -file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-09/cordic_build/iter_003/cand_standard/qor_suggestions.rpt\r\nCongestion Prediction Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.028 . Memory (MB): peak = 1989.535 ; gain = 0.000\r\nINFO: [Implflow 47-1309] PredResultString: 1:44.68:55.32\r\nfeatureProvider Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.039 . Memory (MB): peak = 1989.535 ; gain = 0.000\r\nINFO: [Implflow 47-1274] ML strategy prediction is not supported for 7-series devices.\r\nreport_qor_suggestions completed successfully\r\n# puts \"SYNTH_COMPLETE\"\r\nSYNTH_COMPLETE\r\nINFO: [Common 17-206] Exiting Vivado at Mon Nov  2 11:14:04 2026...\r\n\r\n",
+      "truncated": true
+    }
+  ]
+}

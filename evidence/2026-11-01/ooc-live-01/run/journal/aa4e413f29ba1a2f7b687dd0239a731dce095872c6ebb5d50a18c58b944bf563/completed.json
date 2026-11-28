@@ -1,0 +1,151 @@
+{
+  "stage": "iteration_1:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 1,
+    "instruction": "Keep `axil_wr_if` and `axil_rd_if` as the write and read interfaces, but replace the `axil_regbank` instance with equivalent bank state and logic inside `axil_regs`. For `ctrl_q`, `scratch_q`, and `config_q`, replace the 32-bit merged-data expressions with four independently enabled byte assignments selected by `wr_en`, `wr_idx`, and the matching `wr_strb` bit; preserve all reset values, write-count behavior, W1C set priority, status sampling, read mapping, and `ctrl`/`irq` outputs. This should reduce LUT use if byte enables map to FF clock enables; compare routed LUTs and FFs against 137/254 ",
+    "candidates": [
+      {
+        "iteration": 1,
+        "mutation": "standard",
+        "instruction": "Keep `axil_wr_if` and `axil_rd_if` as the write and read interfaces, but replace the `axil_regbank` instance with equivalent bank state and logic inside `axil_regs`. For `ctrl_q`, `scratch_q`, and `config_q`, replace the 32-bit merged-data expressions with four independently enabled byte assignments selected by `wr_en`, `wr_idx`, and the matching `wr_strb` bit; preserve all reset values, write-count behavior, W1C set priority, status sampling, read mapping, and `ctrl`/`irq` outputs. This should reduce LUT use if byte enables map to FF clock enables; compare routed LUTs and FFs against 137/254 ",
+        "generated_source_sha256": "96540787a10936d6c3ee0cddfe5a20772aef37d5d6478c6c98e79d2a3eb00c9b",
+        "final_source_sha256": "6edf4d27176064a0abd4309242068d03fe15693e929df2a6c95f6b48e2fc218f",
+        "generated_code_hash": "d60bdab412f7e4bf",
+        "final_code_hash": "138965928463e1be",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 6.288,
+          "whs_ns": 0.117,
+          "lut_used": 96,
+          "ff_used": 254,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.002,
+          "total_power_w": 0.071
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\ooc-live-01\\iter_001\\cand_standard\\repair_001",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\ooc-live-01\\iter_001\\cand_standard\\repair_001\\synth.tcl",
+          "sha256": "d7b0cdbb423b68b2e5f1b5fd0752429196441f814ab568851a6f6f6b2ab336b9"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\ooc-live-01\\iter_001\\cand_standard\\repair_001\\axil_regs.v",
+          "sha256": "174afae3802e068dfa63aec21e0517bf81b75491ef59d252007479116ca5a5fc"
+        }
+      },
+      {
+        "iteration": 1,
+        "mutation": "narrow",
+        "instruction": "Keep `axil_wr_if` and `axil_rd_if` as the write and read interfaces, but replace the `axil_regbank` instance with equivalent bank state and logic inside `axil_regs`. For `ctrl_q`, `scratch_q`, and `config_q`, replace the 32-bit merged-data expressions with four independently enabled byte assignments selected by `wr_en`, `wr_idx`, and the matching `wr_strb` bit; preserve all reset values, write-count behavior, W1C set priority, status sampling, read mapping, and `ctrl`/`irq` outputs. This should reduce LUT use if byte enables map to FF clock enables; compare routed LUTs and FFs against 137/254 ",
+        "generated_source_sha256": "3f86eae968ef4146413d16b5f59075dc36bbec783ffc1973e70cdbf836b9028c",
+        "final_source_sha256": "8f4c642d61b3c3a5ab916abca571c9c1f8151b952a893d2642632450105ed179",
+        "generated_code_hash": "0f621237c5aafd02",
+        "final_code_hash": "04419f739b84e08f",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 5.926,
+          "whs_ns": 0.109,
+          "lut_used": 104,
+          "ff_used": 254,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.002,
+          "total_power_w": 0.071
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\ooc-live-01\\iter_001\\cand_narrow\\repair_001",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\ooc-live-01\\iter_001\\cand_narrow\\repair_001\\synth.tcl",
+          "sha256": "697bc5501d8ae4c3e0d44dbae0acdc34eab4fb188b27d95a3c3c1a80c0752b74"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\ooc-live-01\\iter_001\\cand_narrow\\repair_001\\axil_regs.v",
+          "sha256": "c8d9d3e681d271be29461f06c20d3769e37eef68e627c6bf25cb621f04259cfd"
+        }
+      },
+      {
+        "iteration": 1,
+        "mutation": "share",
+        "instruction": "Keep `axil_wr_if` and `axil_rd_if` as the write and read interfaces, but replace the `axil_regbank` instance with equivalent bank state and logic inside `axil_regs`. For `ctrl_q`, `scratch_q`, and `config_q`, replace the 32-bit merged-data expressions with four independently enabled byte assignments selected by `wr_en`, `wr_idx`, and the matching `wr_strb` bit; preserve all reset values, write-count behavior, W1C set priority, status sampling, read mapping, and `ctrl`/`irq` outputs. This should reduce LUT use if byte enables map to FF clock enables; compare routed LUTs and FFs against 137/254 ",
+        "generated_source_sha256": "3b07d17a4e30de15a8ab02f3c83ae527e5233ef3a945e218493fda6d49493e59",
+        "final_source_sha256": "591c3d99697d33e447b9169b1653666f0e0069350e139d3d5d86f62c6810b253",
+        "generated_code_hash": "a332d463fbd6ccfc",
+        "final_code_hash": "6fb2d600c2cc3bae",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 6.288,
+          "whs_ns": 0.117,
+          "lut_used": 96,
+          "ff_used": 254,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.002,
+          "total_power_w": 0.071
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\ooc-live-01\\iter_001\\cand_share\\repair_001",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\ooc-live-01\\iter_001\\cand_share\\repair_001\\synth.tcl",
+          "sha256": "d186964127d3c5c259973ca3d4d427feb93a279270507cdcb1998a0731d8869f"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\ooc-live-01\\iter_001\\cand_share\\repair_001\\axil_regs.v",
+          "sha256": "14eecf4b9115db4d45068f6cf61e89f8ff9b6dd33c1a6e989cb8a708973bbf32"
+        }
+      },
+      {
+        "iteration": 1,
+        "mutation": "wildcard",
+        "instruction": "Keep `axil_wr_if` and `axil_rd_if` as the write and read interfaces, but replace the `axil_regbank` instance with equivalent bank state and logic inside `axil_regs`. For `ctrl_q`, `scratch_q`, and `config_q`, replace the 32-bit merged-data expressions with four independently enabled byte assignments selected by `wr_en`, `wr_idx`, and the matching `wr_strb` bit; preserve all reset values, write-count behavior, W1C set priority, status sampling, read mapping, and `ctrl`/`irq` outputs. This should reduce LUT use if byte enables map to FF clock enables; compare routed LUTs and FFs against 137/254 ",
+        "generated_source_sha256": "4046f90d229070ebd9f253b40318a3cebf41cf13317ee10f41888cb1a824198d",
+        "final_source_sha256": "68c9480d1f6cf53804534cd59ca949211e2293bca8244d1c3803d4bb93dd272f",
+        "generated_code_hash": "bae26f1520b51d61",
+        "final_code_hash": "e6322a9b46b5d071",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 6.031,
+          "whs_ns": 0.158,
+          "lut_used": 101,
+          "ff_used": 254,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.002,
+          "total_power_w": 0.071
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\ooc-live-01\\iter_001\\cand_wildcard\\repair_003",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\ooc-live-01\\iter_001\\cand_wildcard\\repair_003\\synth.tcl",
+          "sha256": "82f08aa03d60a475c72d6ee1ba52fe88f9993c1c2342a9a08bed7fc009e5bf62"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\ooc-live-01\\iter_001\\cand_wildcard\\repair_003\\axil_regs.v",
+          "sha256": "2c464efdd8461f31dc5458b4b1c222bade01b3910921d4c9280c65dfd134a5f1"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "ACCEPT",
+    "is_best": true,
+    "selected_source_sha256": "591c3d99697d33e447b9169b1653666f0e0069350e139d3d5d86f62c6810b253"
+  },
+  "artifacts": {}
+}

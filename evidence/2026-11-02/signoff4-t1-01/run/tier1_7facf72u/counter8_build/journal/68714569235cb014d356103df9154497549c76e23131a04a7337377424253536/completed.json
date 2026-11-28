@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Top interface and latency annotation: PASS \u2014 `counter8` preserves the required ports and has `// @latency 1`.\n- Defined behavior and cycle semantics: PASS \u2014 the toggle logic implements synchronous active-high reset priority, enabled modulo-256 increment, hold when disabled, and registered output behavior; the authoritative ladder is ALIVE.\n- Deterministic verification: PASS \u2014 compilation, elaboration, and simulation succeeded; simulation reported `TEST PASSED`.\n- Synthesis and tool gates: PASS \u2014 required tool exits succeeded and synthesis reported `SYNTH_COMPLETE`.\n- Routed metrics, integrity, and timing closure: PASS \u2014 retained routed evidence reports 6 LUTs, 8 FFs, WNS 0.554 ns, WHS 0.238 ns, and `timing_met=true`.\n- Required improvement over previous best: FAIL \u2014 both designs are timing-feasible, but LUTs and FFs are unchanged (6 and 8), so `minimize_luts` has no strict objective improvement. The WNS increase does not satisfy the selected objective.\n## Summary\n- Passed: 5 of 6\n- Failed: 1 of 6\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes the behavioral, verification, synthesis, metric-integrity, and timing-closure gates, but the previous best was already timing-feasible and the candidate does not strictly improve the `minimize_luts` objective: LUT and FF counts are unchanged. The reported timing improvement cannot substitute for the required objective improvement.",
+      "recommendation": "REJECT",
+      "passed": 5,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

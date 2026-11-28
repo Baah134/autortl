@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_1:decision:instruction:0",
+  "result": "In `packet_fifo_core`, replace the integer `occupancy` counter with a one-hot state vector of `DEPTH+1` bits, where bit `i` means occupancy is `i`; update it for push-only and pop-only, and hold it for simultaneous push/pop or neither. Drive `in_ready` from `!full_state || out_ready` and `out_valid` from the nonempty state, preserving the specified same-cycle ready dependence; do not register `in_ready`. Also size `read_ptr` and `write_ptr` to the minimum width that represents `0..DEPTH-1`, including a one-bit minimum for `DEPTH=1`, and retain explicit wrap at `DEPTH-1`. Preserve the top interface, `// @latency 1`, reset behavior, FIFO ordering, stalls, and all supported parameter configurations.",
+  "artifacts": {}
+}

@@ -1,0 +1,737 @@
+## Current — GF regression and finite AES04 supervisor
+
+Final V2 field guidance is integrated and independently reviewed. Full software
+regression runs as PID23756 (pytest15792); supervisor23364 waits for its results.
+Read workspace work/nov8-gf-full-tests-01/results.json and
+work/nov8-gf-pipeline-status.json; recheck actual processes before acting.
+Supervisor commits, audits, verifies and pushes only on successful unchanged-input
+results, then launches one fresh AES04 with the original limits. Preserve the
+frozen runtime and do not launch a duplicate. After AES04, stop AES-specific
+prompt tuning regardless of outcome and move to benchmark/release work.
+No board programming, JTAG, serial, reset or hardware-server action is included.
+Earlier live-job notes below are historical.
+
+## Current — AES03 completed; controller recovered, round still fails
+
+Published source defd87f passed2087 harness+323 tooling tests,1 Windows privilege
+skip,342inputsunchanged and committedaudit. AES03completed119.7s/5modelcalls/
+32.954vendorseconds: controlleroracle firsttry, RTL/unitpositive/mutation gates
+passed; aes_round rejected2setup-budget programs and1wrong-output program.
+All342runinputsunchanged; no top/PPA/curriculum/board success.116-entry archive
+retained at evidence/2026-11-08/explore-aes-20261108-03. No active campaign.
+
+Context pairing/examples are verified in roundrepairs; lastmodeluses a51-cycle
+GFgenerator where255distinct nonzero values are required. This is a modelmath
+failure correctly rejected. Assessment: docs/CASE_STUDY_ORACLE_CONTEXT.md.
+Any further domain guidance is a separate finite, preregistered decision;
+no budgets, sandbox, expected values or role count are to be relaxed.
+Current review/archive files await publication. Earlier live notes are historical.
+
+## Current — AES03 running on published context repair
+
+Published defd87f with2087 harness+323 tooling passes,one native Windows
+symlink-privilege skip;342 inputsunchanged; committedaudit/72archiveblobsverified.
+AES03 is active: parent16668,explorer23132,supervisor tool74485. Requery actual
+processes/launch-result; sourcefreeze is logs/explore-aes-20261108-03-source-freeze.json.
+Controlleroracle passedfirstattempt SHA31bcce019523f4b0528095f9ebb4ccb7c41415e03eb16e1ce0239d3346928ef2.
+This covers specification examples/generatedstimulus only; RTL/wholeAES/PPA are
+stillpending. No board operation. Do not modifyfrozen source or duplicatejobs.
+The wrapper archives finaloutcome; outerexit0 alone is notdesignsuccess.
+Earlier pending/running notes below are historical.
+
+## Latest — oracle context validated
+
+Bounded oracle-context change validated: 2087 passed in 467.00s (0:07:47); 323 passed, 1 skipped in 63.86s (0:01:03); 342 frozen inputs unchanged.
+Public contract examples are included as complete bounded records, with explicit
+omissions and fresh-init/repeated-step semantics. Repairs receive the exact
+immediately preceding same-module source, raw-file digest and error; normalized
+text has a separately labelled digest and explicit truncation. Empty failed
+artifacts retain their hash/context. Three attempts, qualifiers, sandbox and
+all budgets remain unchanged.104focused tests and independent review passed.
+AES02 remains a failed run, not evidence of improvement. Next: one fresh AES03
+on this committed source with original budgets. No board access or programming.
+
+## Current live stage — bounded oracle context validation
+
+Phase2 roles/FSM context correction is integrated;104focused tests and
+independent review passed. Before:5failed4passed. Full tests run in session57475,
+workspace work/nov8-context-full-tests-01, with 342 frozen selected inputs.
+Do not edit runtime sources or launch duplicate jobs.
+
+Supervisor session74485 runs work/nov8_context_pipeline.py. It waits for both
+successful unchanged-input receipts, commits/audits/verifies/pushes, then starts
+one fresh explore-aes-20261108-03 with original limits. It stops on failure. Status is
+work/nov8-context-pipeline-status.json. No AES03 success is inferred in advance.
+Current qualified CLI0.167 SHA4b3286e35d7fe866c6b0eb3f07d7a4cdb5e96489576170dfd6b3a15aa1c67382.
+If CLI changes, preserve the stopped preflight and requalify; do not drop guards.
+All earlier running/pending notes below are historical. Board remains untouched.
+
+## Current — bounded oracle context stage
+
+Published df056cc:2078 harness+323 tooling passed,1 native Windows symlink skip;
+341 frozen inputs unchanged; archive/audit/remote verified. AES02 subsequently
+failed aes_ctrl oracle generation (extend/setup/setup); no design success or
+board access.44-entry archive is retained under evidence/2026-11-07.
+CLI had updated to0.167 and was independently requalified before AES02; this
+prevents controlled attribution to the Phase1 prompt change alone.
+
+No model/vendor job is active. New acceptance/taxonomy for bounded public
+examples and matching failed-source/error context is recorded in
+evidence/2026-11-08/oracle-context-01. Isolated work is being prepared under
+workspace work/nov8-oracle-context-stage. Do not copy without review/testing.
+All earlier live-test/pipeline/running-AES notes below are historical.
+
+## Latest — oracle clarification validated
+
+Oracle clarification validation: 2078 passed in 518.77s (0:08:38); 323 passed, 1 skipped in 59.24s; 341 frozen inputs unchanged.
+Only generic module-boundary and top-level-helper instructions changed; no
+roles/FSM/sandbox/budget changes. AES01 remains a failed oracle build, with
+three rejected attempts and no new hardware or curriculum verdict. The next
+fresh run is AES02 on the published correction with original limits.
+
+## Current live stage — oracle prompt correction
+
+Minimal prompt-only change is integrated with four new regression cases;
+95 focused tests passed and independent review approved it. Source scope is
+autortl/prompts.py plus tests/test_oracle_repair_context.py and recorded taxonomy.
+No roles/FSM/sandbox/budget change. Full software tests run in tool session92018,
+with receipts in workspace work/nov7-oracle-full-tests-01.
+
+Supervised tool session60432 runs work/nov7_oracle_pipeline.py: wait for both
+successful unchanged-input software receipts; finalize/audit/verify/push; then
+one fresh AES02 exploration. It stops on test/publication failure. Read
+work/nov7-oracle-pipeline-status.json before acting. Do not launch duplicates
+or edit frozen source. The child AES wrapper records actual outcome/source
+drift and archives it; an outer launcher0 does not mean successful design.
+No board, JTAG, serial, programming or reset operation is part of this stage.
+Earlier pending notes below are historical; query actual jobs and SQLite lease.
+
+## Latest November7 — AES attempt completed; oracle diagnosis
+
+Published worker milestone26e18f4:2074 harness+323 tooling passed,1 Windows
+symlink-privilege skip;340 frozen inputs unchanged; audit and remote verified.
+The AES exploration finished in110.8s (child103s,exit1) with module_failed
+aes_ctrl. No synthesis or board access. Original340 source inputs unchanged.
+The outer launcher exit0 is not success; the actual child failed. Archive
+evidence/2026-11-07/explore-aes-20261107-01 has 43 verified entries.
+No model/vendor job is active. Do not restart this completed attempt in place.
+
+Diagnose oracle failures: attempt1 ct/rk mismatch;2setup-budget;3nestedhelper
+sub_word unsupported. Model appears to recompute neighbor logic instead of
+reading round_out/key_next inputs. Prompt omits public examples; repair lacks
+failed source. Independent reports are being prepared before scoped changes.
+Earlier pending/running notes below are historical. Check SQLite ownership.
+
+# Current AutoRTL checkpoint
+
+Updated November 7, 2026 (America/New_York). Verify files, Git, ownership and
+actual jobs before acting. Canonical checkout: Downloads/autortl-work. Preserve
+the separate Downloads/autortl copy. User choice: command-line Vivado.
+
+## Current — November 7: reviewed reliability batch and software checks
+
+Coordinator: Codex / reliability fixes Nov7, normal claim after expired lease.
+Private token remains outside Git. Claim/status in SQLite is authoritative.
+Original Python signoff/gate processes are gone; no board jobs were found.
+The user connected the FPGA and requested care. This stage makes no serial,
+JTAG, hardware-server, programming, flash or reset calls.
+
+Development b59d077 is pushed: 22 completed archives / 49,435 committed blobs
+verified; repository evidence audit passed. Main remains ca61dbc. Original
+signoff4-t6-02 was archived with 96 matching entries but lacks its final launch
+receipt. It passed 2022 harness tests, then all three entries were model_blocked
+with CODEX_QUOTA. Controller gate_exit 1073807364; no verdict and no t6-03.
+The latest valid tier6 record remains 2/3/not held. Do not resume that attempt.
+
+Before edits, all 334 original frozen files matched. New taxonomy entries and
+acceptance preceded the patches. Integrated only explicit planner observation
+guidance plus pruning .claude/worktrees before traversal, with six sampling
+tests and six identity tests (one native Windows symlink-privilege skip).
+Independent isolated sampling review: 114 passed. Identity comparison preserves
+exact selected raw-byte hashes, including executed Windows junction controls;
+excluded synthetic subtree scandir visits went from 8 to 0.
+
+Three real XSIM controls met their declared outcomes: combinational0 PASS,
+clocked1 PASS, identical clocked RTL/oracle/stimulus at0 failed through exactly
+three data assertions. Nine process exits were zero. No model benefit inferred.
+README review corrects measurement scope, hand-written board integration,
+150MHz FIR16 OOC versus 100MHz board, and timing progress versus closure.
+
+Software checks completed: 2028 harness passed (822.21s); 323 tooling passed
+and one Windows symbolic-link privilege test skipped (78.81s). Both exited0;
+all337 frozen inputs remained unchanged. Portable sampling replay also passed
+all three outcomes. Sessions57697/42151 completed; do not poll obsolete jobs.
+Raw receipts/source freeze are archived in evidence/2026-11-07/reliability-01.
+FIR and verifier case studies are added for readers; their evidence links were
+checked. Local doctor passed, which does not establish available model quota.
+
+Publication is the reviewed batch following b59d077; verify latest Git/remote
+and workspace work/nov7-publication.json for the actual pushed commit and audit.
+No model/vendor campaign is active. Next AES exploration is fully specified in
+the archive, but must wait for a verified worker tool restriction: the current
+Codex adapter inherits local MCP configuration and asks rather than enforces
+no tools. An isolated proposal is being prepared in work/nov7-worker-boundary-stage;
+do not copy it without review/tests or alter auth/sandbox/security policies.
+One planned fresh current-tier AES exploration retains original budgets and
+does not access the board. Preserve the no-intermediate-rehold rule.
+Public benchmark adapter review is research only; no scored trials have run.
+Earlier checkpoints below are historical and can name obsolete live jobs.
+
+## Previous — November6: release plan and existing sign-off supervision
+
+User requested continued work, an action plan and subagents where useful.
+Codex claimed the expired lease normally for supervision/documentation. The
+existing signoff4 tree remains untouched: Python19924 runs signoff,5980 runs
+signoff4-t6-02,18808 was its regression process at inspection. Re-query actual
+processes/results rather than assuming those IDs are still running.
+
+Base e61665c5; remote development matched it, remote main ca61dbc. All334
+inputs in signoff4-t6-02-source-freeze.json match at this checkpoint. No runtime
+implementation or experiment configuration was changed.
+
+Actual latest full records: tiers0–5 held; tier3 is4/5 with uart_fifo_build
+failing. Tier6 is2/3/notheld: AES golden generation failed; CORDIC/RV32I passed.
+Current tier6-02 has no completed test/bench receipt at initial inspection.
+The latest completed regression records2022passes; README2258 is the historical
+2021harness+237tooling total at8abd6eb9, not a new test result on this HEAD.
+Twelve archived designs have50k/50k hardware results each; independent reviews
+checked positive/negative controls and source identities. Board FIR16 is100MHz;
+150MHz is separate out-of-context timing evidence.
+
+Authoritative finite plan: docs/ACTION_PLAN.md. First preserve/publish completed
+signoff evidence and observe current tier6 result. Diagnose AES/UART failures
+from actual logs before changing code. Preserve the user rule against mid-project
+re-holding completed tiers. Then freeze the release candidate, run a predeclared
+public-task comparison with an independent grader, and produce the release/CV
+package. Earlier PLAN_24H and sections below are historical, not current orders.
+
+Subagents completed independent signoff and hardware/release-claim reviews; no
+worker launched another tool/model queue. No old October29 patch should be
+reapplied: the earlier hardening work has since been integrated.
+
+## Latest - November 1 (Claude Code): harder tiers, roles taught by tiers 3-5
+
+- **User directive (November 1): finished tiers are not re-held during the project.** After a harness change, run pytest and explorations of the current and harder tiers only; do not launch tier0_gate.py for tiers already done, and do not fast-forward `main`, until the end-of-project re-hold pass. A tier still in progress may be gated until it is done. (tier0 campaign 31 and tier1 campaign 05 were stopped after their test receipts for this reason; they recorded no bench verdict.)
+
+- **Branch `codex/contract-context`** (pushed to aac85448; later local commits
+  listed by `git log origin/codex/contract-context..`). `main` is still ca61dbc:
+  every tier hold is on the older identity and must be re-earned on the
+  current one before `main` moves (tier0 then tier1 gates, `--jobs 4`).
+- **Tier1 campaign 04: 3/4, not qualifying** (debouncer spec examples written
+  as per-cycle lists; fixed: `spec_example_values_skip_planner_repair`).
+- **Tier5 added and qualified in xsim** (AXI4-Lite registers, UART RX + FIFO,
+  16-tap symmetric FIR at 150 MHz; 30/30 mutants caught;
+  evidence/2026-10-30/tier5-qualification-01).
+- **Explorations (no verdicts) on tiers 2-5**, archived under
+  evidence/2026-10-30/explore-*: tier4 3/3 built; tier3 4/5 built (dot4 325 -> 17
+  LUT via DSP); editable children (whole-design edit scope) turned no-op
+  optimization into gains: divider 33 -> 27 LUT, SPI 25 -> 19 LUT, UART RX +
+  FIFO recovered timing then 70 -> 55 LUT; FIR16 at 150 MHz progressed
+  -10.77 -> -3.02 ns but did not close; fir8 timing progress -9.92 -> -2.77 ns.
+- **Harness changes merged this round** (each with a taxonomy entry and tests):
+  whole-design edit scope, planner spec repair of example values / payload
+  tagging / testbench shapes / oracle-example disputes, inlining guidance,
+  port attributes, rejection reasons in progress, distinct failure kinds for
+  the fixer, oracle augmented subscripts, maximize_freq on reg2reg slack,
+  equal-LUT flip-flop tie-break, child annotations never a criterion, dead
+  lock owner check, mistyped backend prefix, explore doctor preflight.
+- **In flight:** out-of-context flow and a target-capacity failure kind
+  (branch `ooc-flow`): the tier5 AXI top has 165 I/O against the package's 106,
+  so placement fails and the old triage sent a correct design to the fixer.
+  Needs one live Vivado check before merge. Then rerun tier5 AXI.
+- **Codex binary** moved to bin/22cfb1d302613eae; explore.py and the gate run
+  the doctor first.
+
+## October 30 midday (Claude Code): tier0 held, tier1 qualifying
+
+- **Tier0 held on ca61dbc** (campaigns 28-30, cohort f82bccb9, model
+  gpt-6-luna requested). `main` was fast-forwarded to ca61dbc.
+- **Tier1:** tier1-campaign-03 passed 4/4 (debouncer from prose 6 -> 3 LUT,
+  encoder8 6 -> 3); 04 running; 05 next. Gates use `--jobs 4`.
+- **Tier2 exploration** (tools/explore.py, no history writes;
+  evidence/2026-10-30/explore-tier2-01): skid/sync/packet FIFO builds recovered
+  timing; fir8 showed `infeasible_progress_discarded`.
+- **Staged, merge after the tier1 hold:** worktree Downloads/autortl-portability,
+  branch claude/post-hold (1,915 tests): tier-concurrent history
+  (`cross_tier_benches_serialized`), the live-companion rule (resolves the
+  companion-boundary decision; 0 extra historical rejections), timing_progress
+  selection (`infeasible_progress_discarded`), DESIGN stale-lock sentence.
+- Codex CLI: `...\OpenAI\Codex\bin\0ab0e7a8f3779036\codex.exe`.
+
+## October 30 morning (Claude Code): taking over Codex's review
+
+- Correction to the October 29 late note below: the golden-sandbox hardening
+  (branch `golden-hardening`, d71c49c) was NOT in 0cf7413. The agent had
+  committed it on a branch it created; Claude merged the agent's stale
+  worktree branch instead, and its ancestry check passed against that same
+  stale branch. Codex's review caught it.
+- Taken over on claude/next-batch: golden-hardening merged for real (latency
+  and Doctor guards verified intact), Codex's RTL/triage stage applied
+  unchanged (string-aware comment tokenizing; host failures outrank tool-ID
+  errors), the baseline-repair companion gate, Codex's board-proof stage
+  applied unchanged, plus the stale-lock and per-entry model-identity fixes.
+  Codex's stricter transparent-boundary companion rule is deferred as a
+  decision in docs/TASKS.md.
+- contract-campaign-26 (Codex usage limit) and -27 (stopped: its freeze
+  included Codex's uncommitted taxonomy edit) gave no verdict. Tier0 on
+  0cf7413 reached streak 2 (campaigns 24, 25); the series restarts on the
+  merged identity.
+
+## Codex resumed October29 after explicit user takeover
+
+User: follow off from where Claude usage stopped. Root claimed an8h lease with
+a recorded reason; no vendor/model jobs active, Claude GUI processes untouched.
+Read actual ownership, not the older Claude checkpoint below.
+
+- Base749d6d1, remote development verified at that commit; remote main0939c43.
+- Independent frozen-copy review:1654harness tests passed532.84s (actual tests/,
+  not README1742); tooling181passed plus local-clone test passed separately
+  outside restricted sandbox. Audit43719claims passes with171known losses.
+- Campaign25 finished2/2, streak2/heldfalse, old272source unchanged. Archived
+ 428files before source changes. Campaign26 and tier1 03..05 contain prepared
+ archive helpers only, not launched measurements. Preserve them.
+- Missing golden-hardening d71c49c was never merged despite prior claims.
+ Root recorded new failure taxonomy and acceptance plan before patches.
+ Current canonical changes: taxonomy + review/progress notes and review evidence.
+ Implementation is being prepared in isolated workspace stages only.
+- Isolated work (workspace Documents/Codex/2026-10-15/hey/work):
+ resume-golden-stage (golden files/tests plus exact timeout-only FSM delta);
+ resume-rtl-triage-stage (5scopedfiles,149focus passed;14originalfailures);
+ resume-board-proof-stage (board process/mutation/program identity checks);
+ resume-fsm-stage (companion boundary/baseline repair,44focus passed;
+ original6failed/1passed retained in resume-fsm-before). Do not copy whole
+ golden branch diff: it would revert newer latency and Doctor guards.
+- No vendor/model job currently owned. Review pytest sessions21437 and88411
+ completed; prior restricted harness attempt was intentionally stopped.
+ Review snapshot and probes are read-only under work/review-oct29-749d6d1;
+ full reviewed evidence is evidence/2026-10-29/codex-resume-review-01.
+- Next: review all staged deltas, integrate only claimed files and exact
+ golden timeout catch, run combined focused + complete harness/tooling checks,
+ freeze/commit tested source, then a NEW fulltier0 gate with existing budgets.
+ Do not edit frozen sources during gates or resume older runtime experiments.
+- Coordinator token is private outside repo; task claims in SQLite. No custom
+ concurrent-worker sessions were added; development agents still take turns.
+
+Earlier checkpoint sections below are historical and may report stale jobs.
+
+## Latest - October 29 late (Claude Code): hardened identity
+
+- **Hardened identity 0cf7413** (272 files, 1,742 tests, audit PASS, pushed).
+  A whole-harness review found a critical gap: model-written RTL could print
+  its own TEST PASSED or use `ifdef / translate_off / hierarchical references
+  to evade the simulation gate. None of 466 archived model-produced files did;
+  `static_checks.rtl_safety_violations` now rejects all of them. Also fixed:
+  triage read every synthesis log as infrastructure (routine "Got license"
+  lines); ladder infra outcomes reached history; deleted @latency skipped the
+  latency check; doctor surgery skipped the companion gate; supervisor parser
+  overflow; golden sandbox copy/slice/decorator/timeout gaps (subagent).
+- **Tier4 added** (CRC-16 stream, SPI master, arbiter + register file); all
+  three testbenches qualified in Vivado, 30/30 mutants caught
+  (evidence/2026-10-29/tier4-qualification-01).
+- **Codex CLI moved** when the desktop app updated (20:24): use
+  `AUTORTL_CODEX_BIN=C:\Users\prince.baah\AppData\Local\OpenAI\Codex\bin\0ab0e7a8f3779036\codex.exe`.
+  Gates now run `run.py doctor` first. contract-campaign-22 (host sleep) and
+  -23 (moved binary) gave no verdict.
+- **Tools:** `tools/run_view.py` (HTML page per run/campaign);
+  docs/DESIGN.md and DOCUMENTATION.md cover the day's features.
+- **Now:** tier0 on the hardened identity: campaign24 passed (streak 1),
+  25 running, then 26; then tier1-campaign-03..05 with `--jobs 4`.
+
+## October 29 evening (Claude Code): final identity, any-model harness
+
+- **Merged into codex/contract-context (7c592d6, pushed, audit PASS, 1,689
+  tests):** model-portable parsers and `--model`; planner spec repair; seed
+  timescale; append-safe history; advisory register-to-register slack;
+  infrastructure never enters history; `run.py doctor`; `bench --jobs N`;
+  per-run token accounting; primitive guidance; an OpenAI-compatible backend
+  (`--model openai.<model>`); user-defined endpoints in
+  `llm/endpoints.local.yaml` (any OpenAI-compatible URL or any AI command
+  line); `scripts/demo.py` (offline walkthrough); configurable Vivado folder
+  (`--vivado-bin` / `AUTORTL_VIVADO_BIN`). Every failure mode has a taxonomy
+  entry committed before its fix.
+- **Independent review** (a Claude subagent) found 4 confirmed bugs, all
+  fixed with regression tests; none let a contract-breaking design through.
+- **Model matrix 01** (evidence/2026-10-29/model-matrix-01): tier0 2/2 on
+  gpt-6-luna, gpt-5.6-luna, gpt-6.1-sol and gpt-6-astra. sol and astra's
+  verified 53-LUT counters were lost to the blank-line verdict bug the review
+  had found; the fixed parser reads all eight verdicts as written.
+- **No valid verdicts** from tier1-campaign-02 (host standby, mid-run merge)
+  or campaign19 (aborted: subagent worktrees under .claude/worktrees, now
+  excluded from the gate identity). Both archived.
+- **Now:** the final-identity series on the 249-file identity:
+  contract-campaign-20..22 (tier0, `--model gpt-6-luna --jobs 2`) then
+  tier1-campaign-03..05 (`--jobs 4`). Never edit frozen files in this
+  checkout while a gate runs; keep the laptop awake (Modern Standby stalls
+  Vivado; check the System log, Kernel-Power 506/507).
+- All 12 stale "blocked" coordination tasks were verified against the repo
+  and closed with evidence pointers.
+
+## October 29 (Claude Code): tier1 started; model-portability branch
+
+The user's direction: the harness's roles do the design work; Claude
+supervises, reads the roles' logs and improves the harness and roles so any
+LLM can work in it. The user overrode CLAUDE.md's Codex-only rule. The
+working plan is docs/PLAN_24H.md (on claude/model-portability until merged).
+
+- **tier1-campaign-01** (old 232-file identity): 3/4, not qualifying
+  (evidence/2026-10-29/tier1-campaign-01). counter8 and encoder8 (6 -> 5
+  LUT) passed; pwm passed with no gain; debouncer ended at spec lint.
+- **Branch claude/model-portability** (worktree Downloads/autortl-portability):
+  six taxonomy entries, each committed before its fix: fence tags other
+  models write, golden fence tags, evaluator verdict forms, a run-pinned
+  model (`--model`, recorded in the cohort), planner spec repair with the
+  structural rules in the prompt, and a mechanical default timescale for the
+  verified seed copy. Also tools/role_report.py (per-role calls, verdicts,
+  repairs) and a reworked README. Not merged yet.
+- Codex CLI accepts other models on this login (gpt-5.6-luna, gpt-6.1-sol
+  tested). Gemini CLI is refused (free tier unsupported); the Claude CLI is
+  not logged in for headless use.
+- Run benches one at a time: run_tier rewrites the whole history, so a
+  concurrent bench drops a record (append-safe fix in progress).
+
+## October 29 (Claude Code): tier0 held on the changed harness
+
+- **Tier0 is held**, for the first time in the project's history.
+  campaign15, 16 and 17 all ran `tools/tier0_gate.py` on the same 232-file
+  freeze (`a611829c…`, cohort `78b298ad…`) and each passed 2/2 with 1,461
+  tests and every prefix unchanged. The streak reached 3, and the last
+  curriculum record has `held: true` (evidence/2026-10-29/contract-campaign-16
+  and -17). Counter: 53, 31 and 53 LUTs from a 55-LUT baseline; mux4 stayed
+  at 8. campaign16's 31-LUT winner takes overflow from the increment's
+  carry-out.
+- A held cohort now protects its passing entries: a later run on this
+  identity that fails counter or mux4 is a held regression and does not
+  qualify. Any frozen-source change starts a new cohort.
+- The golden worker's fixed budget is documented in docs/DESIGN.md (item 3),
+  with measured UART limits (2,500 to 3,000 cycles per example).
+
+## October 29 (Claude Code): harness-built design on the board; two harness fixes
+
+The user gave Claude full authority over the repo, including running the
+harness.
+
+- **Harness-built UART TX on the Basys 3.** `run.py build` on
+  hardware/basys3/harness_built/uart_tx/design_spec.json produced a UART TX
+  (run 03: 34 to 22 LUTs, 14 calls, 9.4 min). The unedited winner drives the
+  board's TX pin and echoed 100,000 of 100,000 bytes. Evidence:
+  evidence/2026-10-29/harness-uart-tx-01, including the two failed runs.
+- **Harness fix 1 (bc959cc), stale_companion_masks_inlined_candidate.** A
+  candidate that stops instantiating a companion the trusted testbench
+  instantiates is now rejected (autortl/companions.py). Run 04 on the fixed
+  harness kept the child and its parameter: 39/28, the same board results
+  (evidence/2026-10-29/harness-uart-tx-02).
+- **Harness fix 2 (e062271), checkpoint_replace_denied.** A locked
+  checkpoint raises CheckpointLockedError, and run.py reports
+  `infra_blocked` with exit code 3.
+- **The merge gate passed, and main is integrated.** campaign15
+  (`tools/tier0_gate.py`: campaign14's budgets on the fresh 232-file
+  freeze) passed 2/2, with 1,461 tests and every prefix unchanged
+  (evidence/2026-10-29/contract-campaign-15). main was fast-forwarded to
+  30d16a4, the same commit as codex/contract-context, and CI is green on both.
+  campaign14 is superseded and must not be launched: its freeze is stale.
+- **The v2 UART spec (shortened stop bit) streamed 1,000,000 of 1,000,000
+  bytes** at line rate on the board, with a 24-LUT harness winner
+  (evidence/2026-10-29/harness-uart-tx-v2-01).
+- The Fmax study of all six winners is archived
+  (evidence/2026-10-29/fmax-characterization-01).
+- Next options: (done Oct 29: tests/test_module_latency_gates.py now matches its blob, LF only),
+  since every freeze needs a reconstruct rule for it. Decide the
+  io_dominated_timing_metric question in docs/TASKS.md. (Holding tier0 is
+  done: campaign16 and 17.)
+- Never `tail -F` a live run file on Windows; it crashed run 02.
+
+## October 28, session 3 (Claude Code): repository-wide evidence audit
+
+- **`tools/evidence_audit.py`** checks every SHA-256 claim in every claim
+  file under evidence/ against committed blobs (PUBLICATION.md step 5, which
+  had been applied to seven archives only). Claim files are the manifests plus
+  source freezes, launch-source lists, launch plans' runtime_source and
+  tested-source identities; deleting a claim file fails. CI's `evidence` job
+  runs it with full history on every push. 45 tests in `tools/tests` use fixtures of each
+  real layout. Run `--worktree` before committing a new archive. Run records
+  (journals, state, results) are out of scope and counted in each report.
+- At fef63d4 it finds **837 failing claims** of 27,073. 532 never-copied
+  archive files (XSIM .pb/.jou, xsim.dir logs, reports) were restored
+  byte-exact from their own runs under logs/. The 8 tested bitstreams are
+  archived in basys3-bitstreams-01. 27 tested sources that were never
+  committed are proven from archived source snapshots (21) or copies
+  recovered from Codex staging folders (6). Everything else is
+  in `tools/evidence_exceptions.json` (schema 2): each claim is pinned by
+  digest and failure status, and is either proven by readable bytes or
+  recorded as a loss. That file is generated by
+  evidence-integrity-01/make_exceptions.py; edit the rules there, not the
+  JSON. The full account is in evidence/2026-10-28/evidence-integrity-01.
+  docs/PUBLICATION.md has six new taxonomy entries.
+- Two independent review rounds (798, then 817 failures) found coverage,
+  silent-pass and exception-matching gaps; eebedce closes them.
+- **For Codex:** a source freeze of a Windows working copy is checked as a
+  CRLF checkout of a committed blob. tests/test_module_latency_gates.py has
+  one CRLF line in the working copy, so every freeze needs a `reconstruct`
+  rule for it. Normalizing that file's line endings and committing it would
+  stop the repeats. A new freeze, manifest or lost archive file now fails CI
+  until it verifies or is classified in make_exceptions.py.
+- Board suite: `python -m hwsuite program|hw --design NAME --bit FILE` tests
+  an archived bitstream from a fresh clone, with no synthesis. `program`
+  records what it loaded (build/programmed.json), and `hw` reports that. All
+  six winners were replayed from the archive on the board, and every result
+  reproduced exactly (basys3-bitstream-replay-01).
+- No frozen source, runtime or run result changed. Campaign14 is still the
+  next gate and still Codex's.
+
+## October 28, session 2 (Claude Code): Basys 3 hardware and agent mailbox
+
+Claude Code claimed the released lease normally (no takeover) and checkpoints
+there; query `python scripts/session.py status` for the live owner. Read your
+messages first: `python coordination/mail.py inbox --for codex`.
+
+Completed and verified this session:
+
+- **First physical-hardware evidence.** A hand-written UART echo
+  (`hardware/basys3/uart_echo`) runs on the user's Basys 3. Version 01 passed
+  chunked tests but lost bytes under a line-rate stream (first loss at byte
+  9,696), as an independent review predicted; evidence/2026-10-28/basys3-uart-echo-01.
+  Version 02 shortens the transmitted stop bit by 1/16 bit, waits for the
+  line to go high after a frame error (break handling), and adds overflow and
+  frame-error LEDs. It streamed 1,000,000 bytes at line rate with 0 loss; the
+  wrong-baud control failed as required. Each fix has a fault check that fails
+  when that fix is reverted. Build: 0 warnings, WNS +4.529 / WHS +0.106 ns,
+  77 LUT / 94 FF; evidence/2026-10-28/basys3-uart-echo-02.
+  The board's UART is COM10 and its JTAG target is Digilent 210183B31D15A.
+- **Agent mailbox.** `coordination/mail.py` with `coordination/messages.jsonl`
+  for questions, requests and blockers between agents (21 tests in
+  `coordination/test_mail.py` with fixture logs). See coordination/README.md and DECISIONS.
+- Arrival/departure steps in AGENTS, AGENT_HANDOFF and START_HERE now include
+  the inbox.
+
+- **Campaign13 assessed and archived** (evidence/2026-10-28/campaign13-interrupted-01).
+  Only `counter` started; it stopped during iteration 1 synthesis after 2 model
+  calls, with no completion receipt or history record. It is not a pass and is
+  not resumed. The 230 frozen identities still match its prelaunch record.
+  **Next gate: campaign14**, a fresh full tier0 run with the original budgets.
+  `work/run_campaign14.py` differs from run_campaign13.py only in its output
+  paths. It is not launched yet: the session's keep-awake request was denied,
+  and a PC sleeping mid-run is the likely cause of campaign13's interruption.
+  The user decides how to proceed. Launch with the Codex 3.12 Python,
+  PYTHONPATH=work/review_deps and AUTORTL_CODEX_BIN set to the installed Codex
+  CLI (codex is not on PATH in non-Codex shells).
+- README rewritten as a portfolio front page (0d468ff, development only; main
+  still shows the old README until the gates allow integration).
+- **Harness FIR on hardware.** `hardware/basys3/fir4_on_board` runs the FIR01
+  winner, byte-identical (SHA-256 55e3c7d0…), behind a hand-written UART
+  shell. On the board, 100,000 samples matched a Python model with 0
+  mismatches and 4 break-restarts, and a wrong-coefficient model failed as
+  required. In simulation, faulted copies (coefficient, missing reset) fail.
+  Build: 0 warnings, WNS +2.718 ns. Evidence: evidence/2026-10-28/basys3-fir4-01.
+  No harness source was touched; it is a board-level replay of an existing result.
+- Campaign14 is left for Codex (user decision); see mailbox #3.
+- **Every harness winner on hardware** (`hardware/basys3/harness_winners`,
+  evidence/2026-10-28/basys3-harness-winners-01). One generic tested shell with
+  thin adapters runs all six archived winners, unedited and hash-checked
+  against run state: FIR, elastic dot4, pipelined dot4, divider, packet FIFO
+  and sync FIFO.
+  - Each design: sim of 1,200 transactions with a restart and coverage gates,
+    an injected fault that must fail, 0 build warnings, positive timing,
+    50,000 hardware transactions with 0 mismatches and 10 restarts, and a
+    wrong-model control that fails.
+  - Independent Python models are written from the frozen specs.
+  - Board builds reproduce the harness's resource measurements. The divider's
+    8-FF gap is standalone `opt_design` replicas
+    (evidence/2026-10-28/divider-ff-replica-analysis-01).
+  - Run: `python -m hwsuite all` from that folder. It needs the system Python,
+    which has pyserial; tests need pytest.
+- **CI** (`.github/workflows/tests.yml`): the full harness suite on Windows,
+  plus the mailbox and board-suite tests on Windows and Ubuntu. A clean
+  fresh-clone run of the harness suite passed 1,450 tests in 320 s with no
+  Vivado and no ignored directories.
+  - On the first GitHub run the harness job passed, but the tooling jobs
+    failed: `*.log` in .gitignore had kept three board-suite fixtures out of
+    the commit. Fixed in 96b250a.
+  - All jobs have been green since 2d8ee81. Actions are at checkout@v7 and
+    setup-python@v7 (no Node.js 20 warning).
+- Removed the stray 0-byte root `xelab.pb` (from 387fe0e; nothing referenced
+  it, and it is outside the frozen sets). Root `/*.pb` and `/xsim.dir/` are
+  now ignored.
+- `docs/WALKTHROUGH.md`: a guided code tour for the user, with 66 file:line
+  references checked against the code. Re-check those references after any
+  change to `fsm.py`, `bestofn.py`, `tbgen.py` or `vivado.py`, since line
+  numbers will shift.
+
+State at Claude's handoff: development `codex/contract-context` at the
+commit that adds this line. CI is green; the working tree is clean. No
+Vivado or board job is running. The board holds the sync_fifo shell
+bitstream (volatile). `main` is unchanged at 185dadc. Codex's next action
+is still campaign14 (mailbox #3); read messages #1-#6 first.
+
+Deliberately untouched: every file in the frozen 230- and 201-file identity
+sets (autortl/, llm/, tests/, curriculum/, scripts/, data/, .claude/, run.py),
+and campaign13 and its output. The previously pending Codex docs/TARGETS.md and
+docs/TASKS.md edits and the FIR02 archive (642 files verified against its
+manifest) were committed unchanged in b0e6c61. The Codex next action below is
+still open.
+
+User direction recorded this session: the project's goal is a strong portfolio
+piece for FPGA graduate roles. The agreed flagship is a harness-built design
+running on the Basys 3 with real pin constraints and a hardware-in-the-loop
+check against the Python reference. A fixed-point CORDIC/exponential unit is
+the candidate block; it must be a fresh design unless the user's research
+advisor approves reuse. Harness support needs a checked-in board XDC (never
+model-generated), a bitstream step and an optional programming step. These
+touch frozen source, so start only after campaign13 has a recovery decision.
+
+Tooling note: the default `python` here is 3.14 without pytest. Tests ran with
+`C:/Users/prince.baah/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe`
+and `PYTHONPATH=C:/Users/prince.baah/Documents/Codex/2026-10-15/hey/work/review_deps`.
+
+## Earlier October 28 checkpoint (Codex): sequential-agent accommodation
+
+The user clarified that Codex and Claude Code take turns. No concurrent-worker
+runtime or schema was implemented. The existing transactional coordinator lease,
+task scopes, checkpoint and handoff commands remain the coordination mechanism.
+Follow the new arrival/departure checklist in docs/AGENT_HANDOFF.md. Existing
+coordination tests passed15/15 (2.36s); all201 checked implementation/design
+input identities were unchanged. Evidence: evidence/2026-10-28/agent-coexistence.
+This documentation milestone is published only to development; the active
+coordinator releases its lease after publication. Query live status to confirm.
+
+At the inspection, no Claude Code, Python, Vivado or XSIM process was visible
+in the local process-name check. This is a point-in-time check, not a guarantee
+that another agent cannot start later. Query live ownership before editing.
+The October26 Codex lease had expired; a documentation-only coordinator claimed
+it normally without takeover. The current lease state must come from session.py.
+
+Development HEAD before this documentation change: cbab6cf. Local main:185dadc.
+No runtime implementation, test, hardware fixture or previous archive was edited.
+Unrelated pending docs/TARGETS.md and docs/TASKS.md changes and the untracked
+evidence/2026-10-26/generated-signed-fir4-attempt-02 archive are preserved.
+
+Important correction to the historical snapshot below: FIR02 is completed,
+not active64015. Its launch receipt reports exit0, source unchanged and
+1404.719s CLI wall time. Its independent evidence archive reports84LUT/69FF,
+setup+.147ns/hold+.071ns,800cycles,14calls. Keep its separate original52LUT result.
+Campaign13 has only the counter run; the last events show synthesis RUNNING,
+but no completion/launch-result receipt was found and no vendor process was
+visible. Treat this campaign as interrupted/unverified. Do not claim tier0 passed,
+merge the changed runtime to main, rerun into its old directory, or resume it
+without preserving/reconciling its original inputs, budgets and tool receipts.
+
+Next engineering action: inspect campaign13's complete saved state and receipts,
+preserve the interrupted attempt, then choose only a supported source-bound
+recovery or a separately budgeted fresh gate. Do not run the archive helper that
+requires a passing complete campaign against this incomplete attempt. The
+provisional MAC12 fixture has not started; finish runtime gates first.
+
+## Historical October26 checkpoint (superseded job status)
+
+The following records preserve the earlier checkpoint; its ACTIVE process IDs
+and exact-next-action list are historical. Use the current section above and
+actual files/processes rather than treating those jobs as still running.
+
+## Published milestone
+
+GitHub main and development were verified at
+185dadc119ebf7e8755c7257dc16d3e6576fd087. Local main was fast-forwarded without
+checking out or changing working files. All 1,155 committed archive blobs match
+three manifests. This is the original 227-file FIR milestone, before the local
+verification correction below. The published harness runtime matches be60de7.
+
+- Full regression: 1,429 passed in 558.54 seconds, all 227 identities unchanged.
+- Independent FIR admission: control plus 27 compiling behavioral faults, 28/28.
+- Generated signed FIR: 78 to 52 LUTs, 66 to 67 FFs, no DSPs; setup -0.327 to
+  +0.169 ns, hold +0.106 ns; reported estimated power unchanged at 0.088 W.
+- First feasible design used 80 LUTs. Final result used 12 model calls,
+  1,190.343 charged tool seconds and 1,429.016 CLI wall seconds.
+- Exact saved top and frozen child independently passed 800 cycles. Actual
+  DONE reuse succeeded; six restored tamper probes failed as required. All
+  454 protected identities, budget, router statistics and file set stayed intact.
+- The original run and its 610-file archive are never resumed or regraded after
+  runtime changes. This does not prove arbitrary in-flight crash or formal safety.
+
+## Current local work: verification correction; full regression active
+
+Frozen original generated-grader audit measured 18/27 faults detected, nine
+missed, zero ungraded. Independent verification detected all 27. That audit is
+archived with 287 files before correction; original run/budget/statistics intact.
+
+The correction uses existing mechanisms: six alternating signed boundary
+payloads, legal invalid bubbles/noise, and wholly off-edge pulses for synchronous
+reset contracts. Producer hold uses the previous rising-edge handshake. Oracle,
+schema, roles, budgets and severity/verdict policy are unchanged. Taxonomy and
+acceptance criteria were recorded before implementation.
+
+- Signed-only proof: same original generated oracle/reference/truncation fault;
+  old fault passed, corrected grader emitted five assertions, both controls
+  passed. 104 to 110 payloads; original prefix/random inputs preserved; expected
+  range reaches -2169 and 2166. Intermediate 228-file snapshot archived (266 files).
+- Driver proof: all five nominal controls passed coverage, including zero-latency,
+  busy operation, 16-cycle input blocking, renamed active-low and async reset.
+  A deliberately bad producer driver triggered nine monitor errors. Those six
+  probes are separate from the RTL fault denominator.
+- Full corrected audit: 22/27 detected, five missed, zero ungraded; same old
+  oracle/reference/faults and byte-identical signed-only payload/expected arrays.
+  No models or synthesis; 415.375 diagnostic wall seconds. Archive has 597 files
+  and the exact staged 230-file source. Independent review found no blocker.
+- Remaining faults concern occupied reset retention and FIR-specific port values
+  during asserted reset. Generic ResetSpec lacks pending flush/preserve policy;
+  the independent contract checker continues to cover these properties.
+- Pure staged focus: 117 passed in 6.83 seconds; original four failed/six passed
+  preserved. Signed-only focus 107 passed; its original seven/four retained.
+
+Canonical source now exactly matches the vendor-tested 230-file stage. Only
+autortl/tbgen.py and data/taxonomy.yaml differ in the runtime implementation;
+three new test/helper files and a fixture README correction are also local.
+No further source, test or fixture edits during frozen experiments.
+
+Full regression 56345 completed: **1450 passed in 457.63 seconds**.
+All 230 identities stayed unchanged. Archive: evidence/2026-10-26/
+fir4-coverage-tests-01. No test/vendor/model job currently active. Tested runtime cbab6cf2a69070a0f3f4f19f78f7eab69453329c is pushed to
+development; all 2,556 committed archive blobs verified. NEW FIRbuild02 ACTIVE
+64015, original admitted spec/TB and original fixed budgets. Source230 stays
+frozen. Fullsuite56345 completed; do not edit source during build02/campaign13.
+
+Temporary system-awake helper: 96281, watching work/fir4-coverage-awake.flag,
+bounded 120 minutes since about 09:41. Previous 6908 released and completed.
+Remove the current flag and verify helper exit when the queue ends; no permanent
+power settings changed.
+
+## Exact next actions
+
+1. Finish 56345; inspect fir4-coverage-full-result-01.json. If passing, run
+   work/archive_fir4_coverage_tests01.py; preserve any failure before edits.
+2. Publish the reviewed tested runtime to development. Verify exact source230
+   and committed archive blobs. Main remains the completed original milestone
+   until the changed runtime's remaining gates pass.
+3. Launch work/run_signed_fir4_build02.py in a fresh output directory. Same
+   admitted spec/TB; N=1, at most 3 iterations, 16 calls, 25 tool / 35 wall minutes,
+   one infrastructure retry, no qualification-reference seed. Do not modify or
+   resume original01 under this runtime. Preserve all new outcomes and costs.
+4. On actual DONE, independently verify exact winner/child and restored probes,
+   then archive02 BEFORE another model job (router record slicing is bound).
+5. Run work/run_campaign13.py: fresh FULL tier0 runtime gate, original budgets.
+   This is a required regression, not a new counter design objective. No higher
+   tier is held. Archive actual history/cohort and source verification.
+6. Integrate main only after these gates; verify remote heads and committed
+   manifest blob bytes. Update README from actual results and refresh shared
+   memory. Release temporary awake request when the owned queue ends.
+
+## Evidence and ownership
+
+Workspace: C:/Users/prince.baah/Documents/Codex/2026-10-15/hey. Helpers in work/;
+raw outputs in outputs/. Canonical evidence/2026-10-26 contains generated FIR01,
+original generated-grader audit, signed-boundary comparison and driver comparison.
+Independent admission remains evidence/2026-10-25/signed-fir4-admission-attempt-01.
+Git and PROGRESS preserve prior FIFO/divider/dot-product milestones.
+
+Coordinator: Codex / signed FIR4 Oct26, eight-hour lease. Root owns canonical
+fixture, notes/evidence and signed-scoreboard-corners scopes. Isolated stages:
+fir4-signed-corners-stage and fir4-driver-stage; do not rewrite their frozen proof.
+One coordinator and one vendor queue. No automatic scheduling/provider failover.
+
+Target: xc7a35tcpg236-1, 100 MHz, ideal zero min/max I/O; no board deployment.
+Prior runtime gate was campaign12, 2/2, new-cohort streak one, held false.
+No controlled weak-model or product-superiority claim is made.
+
+Next-design feasibility: raw4x4matrix238IOBs exceeds106 available. Provisional
+MAC12 (79IOBs, signed25 result, age13) is recorded in TASKS; no implementation
+started. Freeze and admit its full contract only after currentruntime gates.
+
+November7 worker milestone: 2074 passed in 646.94s (0:10:46); 323 passed, 1 skipped in 110.73s (0:01:50); 340 frozen inputs unchanged. Restricted text control passed; model identity unobserved, no board access. Evidence: evidence/2026-11-07/worker-boundary-01. Previous worker-stage pending notes are superseded by this receipt. Next is one fresh tier6 AES exploration with original budgets, no lower-tier reholds.

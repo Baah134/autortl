@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Ports and interface: PASS \u2014 module name, ports, directions and widths match the frozen source.\n- Reset and cycle behavior: PASS \u2014 synchronous active-high reset and registered mux output are preserved.\n- Top latency annotation: PASS \u2014 authoritative latency is unknown, so no numeric annotation is required.\n- Compile and elaboration: PASS \u2014 xvlog and xelab exited successfully.\n- Simulation: PASS \u2014 xsim exited successfully and reported `TEST PASSED`.\n- Synthesis and receipts: PASS \u2014 Vivado exited successfully with `SYNTH_COMPLETE`; required tool exits and retained reports are recorded.\n- Metrics and timing feasibility: PASS \u2014 routed metrics are provided; timing is met with WNS 0.579 ns and WHS 0.092 ns.\n- LUT objective: FAIL \u2014 LUT use remains 8, equal to the previous best; strict improvement is required when both are timing-feasible.\n## Summary\n- Passed: 7 of 8\n- Failed: 1 of 8\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate preserves the interface, reset, and registered mux behavior and passes the reported deterministic verification and timing gates. However, both candidate and previous best use 8 LUTs, so the candidate does not strictly improve the `minimize_luts` objective.",
+      "recommendation": "REJECT",
+      "passed": 7,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

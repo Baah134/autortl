@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_3:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 3\n## Contract check\n- Interface and reset behavior: PASS \u2014 Ports, widths, reset behavior, and registered output are preserved.\n- Observable PWM behavior: PASS \u2014 The split 4-bit counters form the same modulo-256 count and comparison; the authoritative ladder reports 5 rungs ALIVE.\n- Top latency annotation: PASS \u2014 Top latency is unknown, so a missing numeric annotation is not a failure.\n- Compile and elaboration: PASS \u2014 xvlog and xelab exited successfully.\n- Simulation: PASS \u2014 xsim exited successfully with the required `TEST PASSED` verdict.\n- Metric and report integrity: PASS \u2014 Retained routed reports and successful synthesis evidence are supplied.\n- Timing feasibility: PASS \u2014 `timing_met=true`, WNS is 0.46 ns, and WHS is 0.166 ns.\n- Objective improvement: FAIL \u2014 Both candidate and previous best are timing-feasible; LUT use increased from 7 to 9, so the required strict LUT reduction is absent.\n## Summary\n- Passed: 7 of 8\n- Failed: 1 of 8\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate preserves the stated PWM behavior and passes the verification and timing gates, but it uses more LUTs than the timing-feasible previous best. With no strict reduction in the chosen objective, it cannot be promoted.",
+      "recommendation": "REJECT",
+      "passed": 7,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

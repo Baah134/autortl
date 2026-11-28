@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_3:decision:instruction:0",
+  "result": "In `debouncer_top`, keep `clean_reg` and the 3-bit debounce state, but replace the binary increment and saturation checks with a zero-idle, nonzero LFSR progression and terminal-state detection. Reset the LFSR state synchronously to zero; hold it at zero whenever `noisy == clean_reg`, and update `clean_reg` and clear the state at the same consecutive-sample age as the current implementation. Preserve the ports, synchronous active-high reset, registered output, and `// @latency 0`; do not add state or alter observable cycles.",
+  "artifacts": {}
+}

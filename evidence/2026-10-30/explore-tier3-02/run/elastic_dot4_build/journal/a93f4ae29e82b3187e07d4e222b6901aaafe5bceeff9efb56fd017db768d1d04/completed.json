@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_3:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 3\n## Contract check\n- Top interface and declared latency: PASS \u2014 the candidate preserves the specified ports and includes `// @latency 2`, matching the authoritative top latency.\n- Defined behavior and deterministic checks: PASS \u2014 ladder is ALIVE and the frozen testbench reports `TEST PASSED`.\n- Compile, elaboration, simulation, and synthesis gates: PASS \u2014 required tools exited successfully; synthesis reports `SYNTH_COMPLETE`.\n- Routed reports and metric integrity: PASS \u2014 retained routed reports and structured metrics are present.\n- Timing closure: FAIL \u2014 setup WNS is -0.01 ns and `timing_met=false`; hold WHS is positive at 0.098 ns.\n- Improvement over previous best and promotion: FAIL \u2014 the previous best is timing-feasible at 20 LUTs; this candidate is infeasible at 328 LUTs, with no qualifying improvement kind.\n## Summary\n- Passed: 4 of 6\n- Failed: 2 of 6\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate preserves the defined behavior and passes the deterministic verification and tool gates, but it misses setup timing and cannot replace the timing-feasible previous best. Its LUT count is also higher, so it establishes no accepted improvement.",
+      "recommendation": "REJECT",
+      "passed": 4,
+      "failed": 2
+    }
+  },
+  "artifacts": {}
+}

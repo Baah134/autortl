@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_2:decision:instruction:0",
+  "result": "Replace the 16-bit sample delay line with 32-bit signed product delay chains: for each tap `i`, capture `x_in * C_i` and delay that product through `i` additional registers, so the value at tap `i` matches the original `d[i] * C_i` on every output update. Sum the eight aligned products with a balanced tree into the existing registered `y_out`; preserve 32-bit modular arithmetic, parameter signedness, synchronous reset of all state, interface, and `// @latency 1`. This trades FFs for a register boundary after multiplication; it must preserve the impulse response and all defined cycle behavior.",
+  "artifacts": {}
+}

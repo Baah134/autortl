@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_2:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 2\n## Contract check\n- Interface and compilation: PASS \u2014 candidate defines `fir16_sym` with the required ports; xvlog and xelab exited successfully.\n- Top latency annotation: PASS \u2014 the top declares `// @latency 5`, matching authoritative latency.\n- Deterministic behavior: PASS \u2014 simulation passed with the required `TEST PASSED` verdict.\n- Tool exits and routed evidence: PASS \u2014 required tools exited successfully; routed reports and metric evidence are present.\n- Timing promotion: FAIL \u2014 WNS is \u22122.433 ns and `timing_met=false`; `improvement_kind` is null, so the timing progress exception does not apply.\n- Objective improvement: FAIL \u2014 LUTs increased from 161 to 189; this does not improve the `minimize_luts` objective.\n## Summary\n- Passed: 4 of 6\n- Failed: 2 of 6\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes the interface, latency annotation, simulation, and tool evidence checks, and setup WNS improves from \u22129.368 ns to \u22122.433 ns. However, it remains timing-infeasible and has no recorded `timing_progress` classification to qualify for the progress exception. It also uses more LUTs than the previous best, so it does not meet the objective or promotion requirements.",
+      "recommendation": "REJECT",
+      "passed": 4,
+      "failed": 2
+    }
+  },
+  "artifacts": {}
+}

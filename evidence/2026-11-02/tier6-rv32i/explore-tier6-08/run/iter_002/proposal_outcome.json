@@ -1,0 +1,45 @@
+{
+  "candidates": [
+    {
+      "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-08\\rv32i_core_build\\iter_002\\cand_standard",
+      "cache_hit": false,
+      "final_code_hash": "b459090496950df1",
+      "final_source_sha256": "7eb78a5594775c89c008bc65f9ddf934e6bb6641804b9a2d8acf9a1af99c08af",
+      "flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-08\\rv32i_core_build\\iter_002\\cand_standard\\synth.tcl",
+        "sha256": "0fac3e9dcbb45fa35dc500dbc8c1dcad3e4bb79e6a27fe42185fdeaae74215ae"
+      },
+      "generated_code_hash": "b459090496950df1",
+      "generated_source_sha256": "7eb78a5594775c89c008bc65f9ddf934e6bb6641804b9a2d8acf9a1af99c08af",
+      "instruction": "In `rv_alu`, replace the separate `a << b[4:0]`, `a >> b[4:0]`, and signed `a >>> b[4:0]` shift paths with one right-shift network: reverse the input and output bit order for left shifts, and use sign extension only for arithmetic right shift (`op[2:0] == 3'b101 && op[3]`). Preserve the low-five-bit shift amount, the ALU result for every operation, and the raw `rs1_val`/`rs2_val` comparison flags. Keep all registers, top-level behavior, and latency unchanged; retain the candidate only if the unchanged verification gates pass and routed LUTs improve on 2,138 with nonnegative setup and hold slac",
+      "iteration": 2,
+      "metrics": {
+        "bram_used": 0.0,
+        "dsp_used": 0,
+        "dynamic_power_w": 0.032,
+        "ff_used": 4353,
+        "lut_used": 2030,
+        "sim_passed": true,
+        "timing_met": true,
+        "total_power_w": 0.1,
+        "whs_ns": 0.075,
+        "wns_ns": 0.63
+      },
+      "mutation": "standard",
+      "reason": "",
+      "rungs": 5,
+      "source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-08\\rv32i_core_build\\iter_002\\cand_standard\\rv32i_core.v",
+        "sha256": "7cb0b774a73a8ef27dd9487bea179770d82dd914e86fcf4fb9025198c4188a88"
+      },
+      "status": "measured"
+    }
+  ],
+  "doctor": null,
+  "instruction": "In `rv_alu`, replace the separate `a << b[4:0]`, `a >> b[4:0]`, and signed `a >>> b[4:0]` shift paths with one right-shift network: reverse the input and output bit order for left shifts, and use sign extension only for arithmetic right shift (`op[2:0] == 3'b101 && op[3]`). Preserve the low-five-bit shift amount, the ALU result for every operation, and the raw `rs1_val`/`rs2_val` comparison flags. Keep all registers, top-level behavior, and latency unchanged; retain the candidate only if the unchanged verification gates pass and routed LUTs improve on 2,138 with nonnegative setup and hold slac",
+  "is_best": true,
+  "iteration": 2,
+  "recommendation": "ACCEPT",
+  "schema_version": 1,
+  "selected_source_sha256": "7eb78a5594775c89c008bc65f9ddf934e6bb6641804b9a2d8acf9a1af99c08af"
+}

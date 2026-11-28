@@ -1,0 +1,81 @@
+{
+  "stage": "iteration_3:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 3,
+    "instruction": "Keep the ports, parameter declarations, delay registers, reset logic, sequential assignments, and `// @latency 1` unchanged. Replace only the `sum_pipe0` arithmetic: use a generate-time symmetry check for `C0==C7`, `C1==C6`, `C2==C5`, and `C3==C4`; in that branch, add the corresponding signed 16-bit delay samples as signed 17-bit values, multiply the four pair sums by their matching signed coefficients, then combine the products with a balanced 32-bit addition tree. For non-symmetric parameter values, retain the fully general original arithmetic so every supported parameter combination preserv",
+    "candidates": [
+      {
+        "iteration": 3,
+        "mutation": "standard",
+        "instruction": "Keep the ports, parameter declarations, delay registers, reset logic, sequential assignments, and `// @latency 1` unchanged. Replace only the `sum_pipe0` arithmetic: use a generate-time symmetry check for `C0==C7`, `C1==C6`, `C2==C5`, and `C3==C4`; in that branch, add the corresponding signed 16-bit delay samples as signed 17-bit values, multiply the four pair sums by their matching signed coefficients, then combine the products with a balanced 32-bit addition tree. For non-symmetric parameter values, retain the fully general original arithmetic so every supported parameter combination preserv",
+        "generated_source_sha256": "c347977005f05b1d5a911c6508ee541e6154354e3bf5c72952fe6e24a64ebf87",
+        "final_source_sha256": "c347977005f05b1d5a911c6508ee541e6154354e3bf5c72952fe6e24a64ebf87",
+        "generated_code_hash": "deb7696fee209e7e",
+        "final_code_hash": "deb7696fee209e7e",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": false,
+          "wns_ns": -3.797,
+          "whs_ns": 0.1,
+          "lut_used": 0,
+          "ff_used": 160,
+          "dsp_used": 4,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.07,
+          "total_power_w": 0.14
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\fir8\\iter_003\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\fir8\\iter_003\\cand_standard\\synth.tcl",
+          "sha256": "e0d3c8b6b467c31f9ebada29b9ac344d2af72e677bd38a895e3f9bcfe6366d2f"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\fir8\\iter_003\\cand_standard\\fir8.v",
+          "sha256": "46912c5d899b01a3d0c477de409ac63ba2db2ca9a26ed58ffd674a8955a89f40"
+        }
+      }
+    ],
+    "doctor": {
+      "status": "NOT_ADOPTED",
+      "action": "rtl_surgery",
+      "reason": "timing_not_closed",
+      "tools_ran": true,
+      "measured_metrics": {
+        "sim_passed": true,
+        "timing_met": false,
+        "wns_ns": -3.797,
+        "whs_ns": 0.1,
+        "lut_used": 0,
+        "ff_used": 160,
+        "dsp_used": 4,
+        "bram_used": 0.0,
+        "dynamic_power_w": 0.07,
+        "total_power_w": 0.14
+      },
+      "adopted": false,
+      "input_source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\fir8\\iter_003\\cand_standard\\fir8.v",
+        "sha256": "46912c5d899b01a3d0c477de409ac63ba2db2ca9a26ed58ffd674a8955a89f40"
+      },
+      "trial_source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\fir8\\iter_003\\doctor_rtl_surgery_trial\\fir8.v",
+        "sha256": "2c48c5d73be437ff7da0cca7979fcaa53f2cfb07bbee58b92d145721dd9aa6d1"
+      },
+      "trial_flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier2-01\\fir8\\iter_003\\doctor_rtl_surgery_trial\\synth.tcl",
+        "sha256": "c18ec22d6e4c0ecd2de848ea9dfbc156b39b64bc5fa3f548bdb47b85a18e23d4"
+      },
+      "identity_count": 3,
+      "proposed_source_text_sha256": "e3c6706bee337ff3d17a56f6a0fb5b0d696b8410287a612e8397b8c9e97ccc00"
+    },
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": "c347977005f05b1d5a911c6508ee541e6154354e3bf5c72952fe6e24a64ebf87"
+  },
+  "artifacts": {}
+}

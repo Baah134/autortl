@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_2:decision:instruction:0",
+  "result": "In `fir16_sym_core`, keep the 28-bit `rounded` calculation unchanged and replace the comparisons against `28'sd32767` and `-28'sd32768` with sign-extension checks: positive overflow is `!rounded[27] && |rounded[26:15]`, and negative overflow is `rounded[27] && !(&rounded[26:15])`. Retain the same saturated constants and the `rounded[15:0]` result for in-range values. Preserve the five-slot handshake, reset, registered output, and `// @latency 5` on the top.",
+  "artifacts": {}
+}

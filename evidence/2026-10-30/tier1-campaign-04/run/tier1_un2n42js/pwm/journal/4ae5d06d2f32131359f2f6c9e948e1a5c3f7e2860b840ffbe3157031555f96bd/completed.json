@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_2:decision:instruction:0",
+  "result": "Change only `pwm_out <= (counter < {24'd0, duty});` to compare `counter[7:0]` directly with `duty`. Keep the 32-bit counter, `counter == 32'd255` wrap branch, synchronous reset, and sequential assignments unchanged. This is a distinct comparator-focused trial from iteration 1; retain it only if the frozen simulation and all routed metric gates pass and LUT use is strictly below 7.",
+  "artifacts": {}
+}

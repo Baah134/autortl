@@ -1,0 +1,81 @@
+{
+  "stage": "iteration_3:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 3,
+    "instruction": "In `uart_rx_core`, replace the three repeated pairwise-AND/OR majority expressions with one shared `majority_vote` wire, expressed as `(vote_a & vote_b) | ((vote_a | vote_b) & line_sample)`. Use that same value for start-bit validation, data-bit capture, and stop-bit validation. Preserve the existing vote sample edges, state transitions, data-bit ordering, registered outputs, reset behavior, and supported `OVERSAMPLE_DIV` timing.",
+    "candidates": [
+      {
+        "iteration": 3,
+        "mutation": "standard",
+        "instruction": "In `uart_rx_core`, replace the three repeated pairwise-AND/OR majority expressions with one shared `majority_vote` wire, expressed as `(vote_a & vote_b) | ((vote_a | vote_b) & line_sample)`. Use that same value for start-bit validation, data-bit capture, and stop-bit validation. Preserve the existing vote sample edges, state transitions, data-bit ordering, registered outputs, reset behavior, and supported `OVERSAMPLE_DIV` timing.",
+        "generated_source_sha256": "eb8a8dd62d866ae60424ac5de4e713047166cbc79421667021ac7b853290d5d8",
+        "final_source_sha256": "eb8a8dd62d866ae60424ac5de4e713047166cbc79421667021ac7b853290d5d8",
+        "generated_code_hash": "b0d67bf7e0328e9b",
+        "final_code_hash": "b0d67bf7e0328e9b",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": false,
+          "wns_ns": -1.179,
+          "whs_ns": 0.035,
+          "lut_used": 70,
+          "ff_used": 55,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.006,
+          "total_power_w": 0.077
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-02\\tier5_sjw1itjc\\uart_rx_fifo_build\\iter_003\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-02\\tier5_sjw1itjc\\uart_rx_fifo_build\\iter_003\\cand_standard\\synth.tcl",
+          "sha256": "517644b13421822dd88f9b0a54307ac04f0bc516fcd9e017d0e145e213b4ae85"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-02\\tier5_sjw1itjc\\uart_rx_fifo_build\\iter_003\\cand_standard\\uart_rx_fifo.v",
+          "sha256": "72019134a243795d8f5998f6182af533f46f4d79b41f957387f03ffc12afddc7"
+        }
+      }
+    ],
+    "doctor": {
+      "status": "ADOPTED",
+      "action": "rtl_surgery",
+      "reason": "policy_improvement",
+      "tools_ran": true,
+      "measured_metrics": {
+        "sim_passed": true,
+        "timing_met": true,
+        "wns_ns": 0.06,
+        "whs_ns": 0.13,
+        "lut_used": 72,
+        "ff_used": 63,
+        "dsp_used": 0,
+        "bram_used": 0.0,
+        "dynamic_power_w": 0.004,
+        "total_power_w": 0.074
+      },
+      "adopted": true,
+      "input_source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-02\\tier5_sjw1itjc\\uart_rx_fifo_build\\iter_003\\cand_standard\\uart_rx_fifo.v",
+        "sha256": "72019134a243795d8f5998f6182af533f46f4d79b41f957387f03ffc12afddc7"
+      },
+      "trial_source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-02\\tier5_sjw1itjc\\uart_rx_fifo_build\\iter_003\\doctor_rtl_surgery_trial\\uart_rx_fifo.v",
+        "sha256": "e6390b78b2a7111deced818d47749cb1b79fe3a9d9c76ba854904ef1c544a4fa"
+      },
+      "trial_flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-02\\tier5_sjw1itjc\\uart_rx_fifo_build\\iter_003\\doctor_rtl_surgery_trial\\synth.tcl",
+        "sha256": "d085bbfe402204627c42c1eb5eee08c53a0842df844c402596ffc83a7e182e98"
+      },
+      "identity_count": 3,
+      "proposed_source_text_sha256": "ac9b8b2f017a726d7f3968654c85618ed27834604c647e58866b4b1a2765f80d"
+    },
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": "ac9b8b2f017a726d7f3968654c85618ed27834604c647e58866b4b1a2765f80d"
+  },
+  "artifacts": {}
+}

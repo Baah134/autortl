@@ -1,0 +1,45 @@
+{
+  "candidates": [
+    {
+      "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier4-02\\crc16_stream_build\\iter_002\\cand_standard",
+      "cache_hit": false,
+      "final_code_hash": "c17a2ed69acf4d20",
+      "final_source_sha256": "89e1861933adf183f80bfeecc6c3024979526c2e95780b507107b7a859c57785",
+      "flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier4-02\\crc16_stream_build\\iter_002\\cand_standard\\synth.tcl",
+        "sha256": "9f0d2a7a086cc2f73c1272fcea7c64174dde3181932245b1e3feee063c582d58"
+      },
+      "generated_code_hash": "c17a2ed69acf4d20",
+      "generated_source_sha256": "89e1861933adf183f80bfeecc6c3024979526c2e95780b507107b7a859c57785",
+      "instruction": "In `crc16_stream_core`, replace the separate `frame_crc` state and `out_crc_reg` storage with one 16-bit CRC register plus a seed flag: compute each accepted byte from `16'hFFFF` when the flag is set, otherwise from the shared CRC register, and set the flag from `in_last`. Preserve the shared register\u2019s update only on accepted transfers, hold it during stalls, and keep `out_last_reg`, `out_valid_reg`, readiness, synchronous reset priority, and the top\u2019s `// @latency 1` unchanged. Fold seed selection into the CRC Boolean equations where useful, then require the unchanged integration checks and ",
+      "iteration": 2,
+      "metrics": {
+        "bram_used": 0.0,
+        "dsp_used": 0,
+        "dynamic_power_w": 0.018,
+        "ff_used": 19,
+        "lut_used": 16,
+        "sim_passed": true,
+        "timing_met": true,
+        "total_power_w": 0.088,
+        "whs_ns": 0.109,
+        "wns_ns": 0.445
+      },
+      "mutation": "standard",
+      "reason": "",
+      "rungs": 5,
+      "source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier4-02\\crc16_stream_build\\iter_002\\cand_standard\\crc16_stream.v",
+        "sha256": "b7d985e76fd22908ac38cd2bf3ea4c67230862fa508e09289ae49ade81f89b95"
+      },
+      "status": "measured"
+    }
+  ],
+  "doctor": null,
+  "instruction": "In `crc16_stream_core`, replace the separate `frame_crc` state and `out_crc_reg` storage with one 16-bit CRC register plus a seed flag: compute each accepted byte from `16'hFFFF` when the flag is set, otherwise from the shared CRC register, and set the flag from `in_last`. Preserve the shared register\u2019s update only on accepted transfers, hold it during stalls, and keep `out_last_reg`, `out_valid_reg`, readiness, synchronous reset priority, and the top\u2019s `// @latency 1` unchanged. Fold seed selection into the CRC Boolean equations where useful, then require the unchanged integration checks and ",
+  "is_best": false,
+  "iteration": 2,
+  "recommendation": "REJECT",
+  "schema_version": 1,
+  "selected_source_sha256": "89e1861933adf183f80bfeecc6c3024979526c2e95780b507107b7a859c57785"
+}

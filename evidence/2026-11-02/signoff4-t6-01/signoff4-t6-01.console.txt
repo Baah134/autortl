@@ -1,0 +1,57 @@
+{"source_files": 334, "freeze": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01-source-freeze.json"}
+{"exit_code": 0, "seconds": 988.625, "summary": "2022 passed in 986.16s (0:16:26)", "source_unchanged": true, "source_files": 334, "source_freeze_sha256": "45527af20ff706d9261d95a9cae6c03a0fee7bd2a615e2335e949e008040971a"}
+{"prelaunch": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01-prelaunch.json", "budgets_per_entry": {"iterations": null, "best_of_n": 1, "model_calls": 30, "tool_minutes": 40, "wall_minutes": 60, "infra_retries": 1}}
+[bench] aes128_core_build: meta.yaml sets max_vivado_minutes = 150.0; the bench value 40.0 does not apply to it
+[bench] aes128_core_build: meta.yaml sets max_wall_minutes = 240.0; the bench value 60.0 does not apply to it
+[bench] rv32i_core_build: meta.yaml sets max_vivado_minutes = 180.0; the bench value 40.0 does not apply to it
+[bench] rv32i_core_build: meta.yaml sets max_wall_minutes = 300.0; the bench value 60.0 does not apply to it
+[module aes_ctrl] golden model + testbench...
+[module cordic_prerot] golden model + testbench...
+[module cordic_prerot] tb qualification: detected flip == to !=
+[module cordic_atan] golden model + testbench...
+[module aes_ctrl] tb qualification: detected flip == to !=
+[module aes_round] golden model + testbench...
+[module cordic_atan] tb qualification: detected stuck-zero outputs
+[module cordic_engine] golden model + testbench...
+[bench] aes128_core_build: finished (1/3)
+[module rv_imem] golden model + testbench...
+[module cordic_engine] tb qualification: detected flip == to !=
+[module cordic_out] golden model + testbench...
+[module rv_imem] tb qualification: detected flip < to >
+[module rv_decode] golden model + testbench...
+[module cordic_out] tb qualification: detected stuck-zero outputs
+[build] integrated design compiles; entering optimize loop as baseline
+[build] editable unit: cordic_prerot, cordic_atan, cordic_engine, cordic_out + cordic_sincos; verified by the trusted integration testbench
+[module rv_decode] tb qualification: detected flip == to !=
+[module rv_regfile] golden model + testbench...
+[module rv_regfile] tb qualification: detected flip < to >
+[module rv_alu] golden model + testbench...
+[module rv_alu] tb qualification: detected flip < to >
+[module rv_dmem] golden model + testbench...
+[module rv_dmem] tb qualification: detected flip < to >
+[module rv_ctrl] golden model + testbench...
+[module rv_ctrl] tb qualification: detected flip == to !=
+[build] integrated design compiles; entering optimize loop as baseline
+[build] editable unit: rv_imem, rv_decode, rv_regfile, rv_alu, rv_dmem, rv_ctrl + rv32i_core; verified by the trusted integration testbench
+[iter 0] baseline LUTs=155 FFs=62 WNS=-1.759
+[iter 0] baseline LUTs=2139 FFs=4357 WNS=0.694
+[doctor] wns=-0.279 category=port_path action=rtl_surgery
+[iter 1] *** NEW BEST *** LUTs=195 FFs=94 WNS=-0.279
+[iter 1] *** NEW BEST *** LUTs=2137 FFs=4357 WNS=0.449
+[iter 2] *** NEW BEST *** LUTs=194 FFs=95 WNS=0.076
+[iter 2] *** NEW BEST *** LUTs=2030 FFs=4357 WNS=0.41
+[iter 3] REJECT LUTs=195 (best iter 2, stall 1)
+[iter 4] REJECT LUTs=195 (best iter 2, stall 2)
+
+DONE — best from iter 2: LUTs=194 FFs=95 WNS=0.076
+[bench] cordic_build: finished (2/3)
+[iter 3] *** NEW BEST *** LUTs=1992 FFs=4357 WNS=0.526
+[iter 4] REJECT LUTs=1993 (best iter 3, stall 1)
+
+DONE — best from iter 3: LUTs=1992 FFs=4357 WNS=0.526
+[bench] rv32i_core_build: finished (3/3)
+[bench] aes128_core_build: FAIL (run did not complete successfully)
+[bench] cordic_build: PASS (mandatory gates passed)
+[bench] rv32i_core_build: PASS (mandatory gates passed)
+[bench] tier 6: 2/3; held=False; streak=0
+{"exit_code": 1, "wall_seconds": 3489.8910000000033, "source_unchanged": true, "router_stats_prefix_unchanged": true, "history_prefix_unchanged": true, "ended_utc": "2026-11-05T22:16:40.694608+00:00"}

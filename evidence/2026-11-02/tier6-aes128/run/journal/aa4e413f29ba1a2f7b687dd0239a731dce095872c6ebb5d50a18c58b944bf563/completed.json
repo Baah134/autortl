@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_1:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 1,
+    "instruction": "In `aes_round`, replace the `gf_mul` based exponentiation inside `aes_sbox` with a complete 256-entry case lookup matching the existing `aes_key_step` S-box table, preserving the current byte ordering, ShiftRows, MixColumns, final-round selection, and round-key XOR. Keep the controller and its reset and handshake behavior unchanged, and do not add pipeline stages or infer a numeric latency annotation for the top. Check the full integration testbench and all compile, routed metric integrity, setup, and hold gates; the expected benefit is fewer logic levels on the `ct_reg` feedback path, with LU",
+    "candidates": [
+      {
+        "iteration": 1,
+        "mutation": "standard",
+        "instruction": "In `aes_round`, replace the `gf_mul` based exponentiation inside `aes_sbox` with a complete 256-entry case lookup matching the existing `aes_key_step` S-box table, preserving the current byte ordering, ShiftRows, MixColumns, final-round selection, and round-key XOR. Keep the controller and its reset and handshake behavior unchanged, and do not add pipeline stages or infer a numeric latency annotation for the top. Check the full integration testbench and all compile, routed metric integrity, setup, and hold gates; the expected benefit is fewer logic levels on the `ct_reg` feedback path, with LU",
+        "generated_source_sha256": "c4a95c9fde4a2ac1a6db5588157b43e78de9a101abc37b376fa497280fc75d4b",
+        "final_source_sha256": "c4a95c9fde4a2ac1a6db5588157b43e78de9a101abc37b376fa497280fc75d4b",
+        "generated_code_hash": "5373504b99f935e1",
+        "final_code_hash": "5373504b99f935e1",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 2.27,
+          "whs_ns": 0.177,
+          "lut_used": 627,
+          "ff_used": 262,
+          "dsp_used": 0,
+          "bram_used": 5.0,
+          "dynamic_power_w": 0.041,
+          "total_power_w": 0.11
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-07\\aes128_core_build\\iter_001\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-07\\aes128_core_build\\iter_001\\cand_standard\\synth.tcl",
+          "sha256": "07dd3172364fde40f570c145ed549639a319bced4d9ef2b3e1692f20807f8cb8"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-07\\aes128_core_build\\iter_001\\cand_standard\\aes128_core.v",
+          "sha256": "bfecbd329efca49d32b6833ab2a00dad65f85b1e99e4412897da688de24a4e09"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "ACCEPT",
+    "is_best": true,
+    "selected_source_sha256": "c4a95c9fde4a2ac1a6db5588157b43e78de9a101abc37b376fa497280fc75d4b"
+  },
+  "artifacts": {}
+}

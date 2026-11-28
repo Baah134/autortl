@@ -1,0 +1,77 @@
+{
+  "candidates": [
+    {
+      "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-04\\tier2_32vakp9v\\sync_fifo_build\\iter_001\\cand_standard",
+      "cache_hit": false,
+      "final_code_hash": "34539686ae2002f9",
+      "final_source_sha256": "ef49e4f2a040117daf7def58fbb46f52336e831b6f97068b5820881ed118aea3",
+      "flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-04\\tier2_32vakp9v\\sync_fifo_build\\iter_001\\cand_standard\\synth.tcl",
+        "sha256": "bfe814411467a1d5d7129a69d4649a3f3fbd1066a8095a033ae1ed071e6d82a8"
+      },
+      "generated_code_hash": "34539686ae2002f9",
+      "generated_source_sha256": "ef49e4f2a040117daf7def58fbb46f52336e831b6f97068b5820881ed118aea3",
+      "instruction": "In `sync_fifo_core`, add a head-data register and replace the asynchronous `mem[rd_ptr]` output with a direct connection from that register; update it from `in_data` when a push makes the queue\u2019s head, and from the next queued slot when a pop advances a nonempty queue. Handle simultaneous pop/push, including depth one and a full FIFO, so the new head is correct immediately after the edge; preserve the existing occupancy, ready/valid, reset, wrap, stall, and minimum-transfer-age behavior for every supported WIDTH and DEPTH. Keep `sync_fifo`\u2019s interface and matching `// @latency 1` annotation, a",
+      "iteration": 1,
+      "metrics": {
+        "bram_used": 0.0,
+        "dsp_used": 0,
+        "dynamic_power_w": 0.014,
+        "ff_used": 14,
+        "lut_used": 18,
+        "sim_passed": true,
+        "timing_met": false,
+        "total_power_w": 0.084,
+        "whs_ns": 0.045,
+        "wns_ns": -0.137
+      },
+      "mutation": "standard",
+      "reason": "",
+      "rungs": 5,
+      "source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-04\\tier2_32vakp9v\\sync_fifo_build\\iter_001\\cand_standard\\sync_fifo.v",
+        "sha256": "3f122d2290b5cdee7304778f212cde2c93c13dea0ce85a2a3a0e96a913f94a08"
+      },
+      "status": "measured"
+    }
+  ],
+  "doctor": {
+    "action": "rtl_surgery",
+    "adopted": true,
+    "identity_count": 3,
+    "input_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-04\\tier2_32vakp9v\\sync_fifo_build\\iter_001\\cand_standard\\sync_fifo.v",
+      "sha256": "3f122d2290b5cdee7304778f212cde2c93c13dea0ce85a2a3a0e96a913f94a08"
+    },
+    "measured_metrics": {
+      "bram_used": 0.0,
+      "dsp_used": 0,
+      "dynamic_power_w": 0.014,
+      "ff_used": 15,
+      "lut_used": 23,
+      "sim_passed": true,
+      "timing_met": true,
+      "total_power_w": 0.084,
+      "whs_ns": 0.082,
+      "wns_ns": 0.155
+    },
+    "proposed_source_text_sha256": "47f1994001e6a9810d53ada561dbd7adb71bc4e3ee81a54f606ea38fbab7b37f",
+    "reason": "policy_improvement",
+    "status": "ADOPTED",
+    "tools_ran": true,
+    "trial_flow_script": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-04\\tier2_32vakp9v\\sync_fifo_build\\iter_001\\doctor_rtl_surgery_trial\\synth.tcl",
+      "sha256": "ecbfa041154edb8d1a8356b08ad6634bdb694c029a662cb6f94ad683c5455f52"
+    },
+    "trial_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-04\\tier2_32vakp9v\\sync_fifo_build\\iter_001\\doctor_rtl_surgery_trial\\sync_fifo.v",
+      "sha256": "2648e18f0b0d3ebedd50378e7c3eaa758aea7f15f3202851c29b8139c4b898c7"
+    }
+  },
+  "instruction": "In `sync_fifo_core`, add a head-data register and replace the asynchronous `mem[rd_ptr]` output with a direct connection from that register; update it from `in_data` when a push makes the queue\u2019s head, and from the next queued slot when a pop advances a nonempty queue. Handle simultaneous pop/push, including depth one and a full FIFO, so the new head is correct immediately after the edge; preserve the existing occupancy, ready/valid, reset, wrap, stall, and minimum-transfer-age behavior for every supported WIDTH and DEPTH. Keep `sync_fifo`\u2019s interface and matching `// @latency 1` annotation, a",
+  "is_best": true,
+  "iteration": 1,
+  "recommendation": "ACCEPT",
+  "schema_version": 1,
+  "selected_source_sha256": "47f1994001e6a9810d53ada561dbd7adb71bc4e3ee81a54f606ea38fbab7b37f"
+}

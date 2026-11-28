@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Interface and cycle behavior: PASS \u2014 Ports, synchronous reset behavior, 8-bit modulo-256 counter, and registered PWM output are preserved.\n- Top latency annotation: PASS \u2014 Authoritative `declared_latency.known=false`; no numeric annotation is required.\n- Compilation and simulation: PASS \u2014 Required tool exits succeeded and the frozen testbench reported `TEST PASSED`.\n- Routed metric integrity: PASS \u2014 Retained routed reports and required synthesis completion evidence are present.\n- Timing closure: PASS \u2014 `timing_met=true`, WNS is 0.412 ns, and WHS is 0.196 ns.\n- Objective improvement: FAIL \u2014 Both candidate and previous best are timing-feasible; LUTs increased from 7 to 10 and FFs stayed at 9, so the `minimize_luts` objective did not improve.\n## Summary\n- Passed: 5 of 6\n- Failed: 1 of 6\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes behavior, verification, metric integrity, and timing gates, but it does not improve the required objective over the timing-feasible previous best: LUT usage rises from 7 to 10 with no FF reduction.",
+      "recommendation": "REJECT",
+      "passed": 5,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

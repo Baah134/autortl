@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_5:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 5\n## Contract check\n- Interface, reset, and observable behavior: PASS \u2014 ports and synchronous reset are preserved; the counter and registered PWM output retain the defined cycle behavior.\n- Top latency annotation: PASS \u2014 authoritative latency is unknown, so no numeric annotation is required.\n- Deterministic verification: PASS \u2014 ladder is ALIVE; compilation, elaboration, simulation, and the exact TEST PASSED verdict succeeded.\n- Routed metrics and timing closure: PASS \u2014 retained routed metrics are available; WNS is 0.604 ns and WHS is 0.162 ns.\n- Objective improvement: FAIL \u2014 both designs are timing-feasible, but LUTs increased from 7 to 29, so the minimize_luts objective did not improve.\n- Promotion evidence: PASS \u2014 required tool exits and SYNTH_COMPLETE evidence succeeded.\n## Summary\n- Passed: 5 of 6\n- Failed: 1 of 6\n- Improved over previous best: NO\n## Recommendation\nRESTART\n## Reason\nThe candidate passes verification and timing closure, but it uses more LUTs than the timing-feasible previous best, so it does not satisfy the minimize_luts objective. With stall count 4, the recommendation is RESTART.",
+      "recommendation": "REJECT",
+      "passed": 5,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

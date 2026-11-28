@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_1:decision:instruction:0",
+  "result": "Replace the transparent `debouncer` instance with equivalent top-level sequential logic, retaining `clean`, the sampled input, and the three-bit stability count with synchronous active-high reset. Factor the count update into per-bit increment/toggle equations with explicit mismatch-to-one and terminal-count hold behavior, so synthesis can share the terminal detection instead of rebuilding separate increment and equality mux logic. Preserve the first changed sample as count 1, update `clean` on the eighth consecutive matching sample, and keep `clean` unchanged otherwise; retain `// @latency 0`.",
+  "artifacts": {}
+}

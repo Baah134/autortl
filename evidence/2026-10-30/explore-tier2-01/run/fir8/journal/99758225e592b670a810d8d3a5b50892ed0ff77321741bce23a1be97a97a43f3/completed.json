@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_5:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 5\n## Contract check\n- Behavioral, interface, reset, and cycle contract: PASS \u2014 deterministic ladder reports 5 rungs ALIVE; simulation passed.\n- Top latency annotation: PASS \u2014 `// @latency 1` matches the authoritative value.\n- Compile and elaboration: PASS \u2014 xvlog and xelab exited successfully.\n- Simulation: PASS \u2014 xsim exited successfully with the exact `TEST PASSED` verdict.\n- Routed report and metric integrity: PASS \u2014 retained routed reports and successful synthesis evidence are present.\n- Timing feasibility: FAIL \u2014 setup WNS is -2.766 ns and `timing_met=false`; hold WHS is +0.151 ns.\n- Improvement over previous best: FAIL \u2014 the candidate remains timing-infeasible, so it establishes no timing recovery or promotion; `improvement_kind` is null.\n## Summary\n- Passed: 5 of 7\n- Failed: 2 of 7\n- Improved over previous best: NO\n## Recommendation\nRESTART\n## Reason\nThe candidate passes the deterministic correctness and tool gates, but fails mandatory setup timing and does not establish an accepted improvement over the timing-infeasible previous best. The stall count is 4, meeting the condition for RESTART.",
+      "recommendation": "REJECT",
+      "passed": 5,
+      "failed": 2
+    }
+  },
+  "artifacts": {}
+}

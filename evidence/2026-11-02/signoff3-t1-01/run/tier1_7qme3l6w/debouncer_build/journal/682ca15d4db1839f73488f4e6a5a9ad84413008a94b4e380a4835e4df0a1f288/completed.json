@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_4:decision:instruction:0",
+  "result": "Keep the top interface and `// @latency 0`, but replace `previous_noisy` tracking with a 3-bit consecutive-difference counter: clear it when `noisy == clean`, increment it while `noisy != clean`, and update `clean` when the old count is 7. Clear the counter when `clean` updates, and retain the synchronous reset that sets both `clean` and the counter to zero. This should preserve the first update on the eighth consecutive sample differing from `clean`; verify reversals, reset, and the output hold behavior, then compare routed LUTs and FFs against the 3-LUT, 5-FF incumbent.",
+  "artifacts": {}
+}

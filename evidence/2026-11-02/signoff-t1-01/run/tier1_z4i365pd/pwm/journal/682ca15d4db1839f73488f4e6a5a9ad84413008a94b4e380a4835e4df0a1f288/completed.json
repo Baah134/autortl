@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_4:decision:instruction:0",
+  "result": "Keep the synchronous reset and registered `pwm_out` comparison unchanged. Replace the counter\u2019s `counter == 255` clear branch and `counter + 1` update with bitwise toggle equations for `counter[7:0]`: bit 0 toggles every cycle, and each higher bit toggles when all lower bits are 1; keep `counter[31:8]` zero on each nonreset cycle. This implements modulo-256 counting from the reset state; retain the exact observable cycles and accept the candidate only if the unchanged simulation, routed metric integrity, setup and hold gates pass and LUT usage strictly improves over the incumbent.",
+  "artifacts": {}
+}

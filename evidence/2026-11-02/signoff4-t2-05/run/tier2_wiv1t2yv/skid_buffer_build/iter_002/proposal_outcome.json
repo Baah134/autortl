@@ -1,0 +1,45 @@
+{
+  "candidates": [
+    {
+      "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-05\\tier2_wiv1t2yv\\skid_buffer_build\\iter_002\\cand_standard",
+      "cache_hit": false,
+      "final_code_hash": "db3c07ff964a8162",
+      "final_source_sha256": "cba2da49c0cba3ac7b89366db8cd1c499427779c29c9b6efdc2cde224d091680",
+      "flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-05\\tier2_wiv1t2yv\\skid_buffer_build\\iter_002\\cand_standard\\synth.tcl",
+        "sha256": "7a4e0cb8c9ef7eba73a86754be191514bfb987ec3dd20426b11e0c2b4860de65"
+      },
+      "generated_code_hash": "db3c07ff964a8162",
+      "generated_source_sha256": "cba2da49c0cba3ac7b89366db8cd1c499427779c29c9b6efdc2cde224d091680",
+      "instruction": "In `skid_buffer_core`, replace `occupancy` and `occupancy_next` with `valid` and `full` registers; drive `out_valid` from `valid` and `in_ready` from `!full || out_ready`. Update the flags from the existing `push` and `pop` handshakes: `valid` tracks whether the queue is nonempty, and `full` sets when a push without a pop fills the second slot and clears on a pop without a push. Translate the data-register update conditions to use `valid` and `full`, preserving FIFO ordering, simultaneous transfers, stall stability, synchronous reset behavior, and the top\u2019s `// @latency 1` annotation.",
+      "iteration": 2,
+      "metrics": {
+        "bram_used": 0.0,
+        "dsp_used": 0,
+        "dynamic_power_w": 0.013,
+        "ff_used": 18,
+        "lut_used": 11,
+        "sim_passed": true,
+        "timing_met": true,
+        "total_power_w": 0.083,
+        "whs_ns": 0.064,
+        "wns_ns": 0.438
+      },
+      "mutation": "standard",
+      "reason": "",
+      "rungs": 5,
+      "source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-05\\tier2_wiv1t2yv\\skid_buffer_build\\iter_002\\cand_standard\\skid_buffer.v",
+        "sha256": "a7b427b7f10f7ed51a49ef34dbdc75a316cb856306230a0cd656db8e951c5c66"
+      },
+      "status": "measured"
+    }
+  ],
+  "doctor": null,
+  "instruction": "In `skid_buffer_core`, replace `occupancy` and `occupancy_next` with `valid` and `full` registers; drive `out_valid` from `valid` and `in_ready` from `!full || out_ready`. Update the flags from the existing `push` and `pop` handshakes: `valid` tracks whether the queue is nonempty, and `full` sets when a push without a pop fills the second slot and clears on a pop without a push. Translate the data-register update conditions to use `valid` and `full`, preserving FIFO ordering, simultaneous transfers, stall stability, synchronous reset behavior, and the top\u2019s `// @latency 1` annotation.",
+  "is_best": true,
+  "iteration": 2,
+  "recommendation": "ACCEPT",
+  "schema_version": 1,
+  "selected_source_sha256": "cba2da49c0cba3ac7b89366db8cd1c499427779c29c9b6efdc2cde224d091680"
+}

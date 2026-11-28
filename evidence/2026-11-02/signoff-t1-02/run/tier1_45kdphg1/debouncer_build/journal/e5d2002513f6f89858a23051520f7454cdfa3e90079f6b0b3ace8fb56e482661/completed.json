@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_3:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 3,
+    "instruction": "In `debouncer_top`, replace the saturating up-counter with a 3-bit down-counter: synchronously reset it to `3'b111`, reload it to `3'b111` whenever `noisy == clean_reg`, and decrement it on each differing cycle. When the prior count is zero and `noisy != clean_reg`, update `clean_reg` to `noisy` on that edge; preserve the `// @latency 0` annotation, synchronous active-high reset, ports, and exact 8-consecutive-cycle behavior. Check the transition where `noisy` returns to `clean_reg` on the terminal cycle, and retain the candidate only if all deterministic gates pass and routed LUT count is str",
+    "candidates": [
+      {
+        "iteration": 3,
+        "mutation": "standard",
+        "instruction": "In `debouncer_top`, replace the saturating up-counter with a 3-bit down-counter: synchronously reset it to `3'b111`, reload it to `3'b111` whenever `noisy == clean_reg`, and decrement it on each differing cycle. When the prior count is zero and `noisy != clean_reg`, update `clean_reg` to `noisy` on that edge; preserve the `// @latency 0` annotation, synchronous active-high reset, ports, and exact 8-consecutive-cycle behavior. Check the transition where `noisy` returns to `clean_reg` on the terminal cycle, and retain the candidate only if all deterministic gates pass and routed LUT count is str",
+        "generated_source_sha256": "45245797c315e162e6b2c6adb5033bfb38f4672526cc77b90cbafeb70cb00d8e",
+        "final_source_sha256": "45245797c315e162e6b2c6adb5033bfb38f4672526cc77b90cbafeb70cb00d8e",
+        "generated_code_hash": "0b1c074142063cec",
+        "final_code_hash": "0b1c074142063cec",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.578,
+          "whs_ns": 0.188,
+          "lut_used": 3,
+          "ff_used": 4,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.003,
+          "total_power_w": 0.073
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff-t1-02\\tier1_45kdphg1\\debouncer_build\\iter_003\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff-t1-02\\tier1_45kdphg1\\debouncer_build\\iter_003\\cand_standard\\synth.tcl",
+          "sha256": "c6bb895456c60789fbd1da7767239e48484cee43bab64cc4af78adb3570d7fde"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff-t1-02\\tier1_45kdphg1\\debouncer_build\\iter_003\\cand_standard\\debouncer_top.v",
+          "sha256": "71a0e1bd1ff935300ce6f301d09f343d7f87ea962a250dc984ce689a3fe2dfd8"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": "45245797c315e162e6b2c6adb5033bfb38f4672526cc77b90cbafeb70cb00d8e"
+  },
+  "artifacts": {}
+}

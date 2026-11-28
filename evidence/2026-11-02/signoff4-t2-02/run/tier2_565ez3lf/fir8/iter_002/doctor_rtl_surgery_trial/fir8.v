@@ -1,0 +1,54 @@
+`timescale 1ns/1ps
+// @latency 1
+module fir8 (
+    input  wire               clk,
+    input  wire               rst,
+    input  wire signed [15:0] x_in,
+    output reg  signed [31:0] y_out
+);
+    parameter signed [15:0] C0=16'd3, C1=16'd7, C2=16'd12, C3=16'd18,
+                            C4=16'd18, C5=16'd12, C6=16'd7,  C7=16'd3;
+
+    reg signed [15:0] d [0:7];
+    reg signed [31:0] p0, p1, p2, p3, p4, p5, p6, p7;
+    integer i;
+
+    wire signed [31:0] pair0 = p0 + p1;
+    wire signed [31:0] pair1 = p2 + p3;
+    wire signed [31:0] pair2 = p4 + p5;
+    wire signed [31:0] pair3 = p6 + p7;
+    wire signed [31:0] sum0 = pair0 + pair1;
+    wire signed [31:0] sum1 = pair2 + pair3;
+    wire signed [31:0] total = sum0 + sum1;
+
+    always @(posedge clk) begin
+        if (rst) begin
+            for (i = 0; i < 8; i = i + 1)
+                d[i] <= 16'sd0;
+            p0 <= 32'sd0;
+            p1 <= 32'sd0;
+            p2 <= 32'sd0;
+            p3 <= 32'sd0;
+            p4 <= 32'sd0;
+            p5 <= 32'sd0;
+            p6 <= 32'sd0;
+            p7 <= 32'sd0;
+            y_out <= 32'sd0;
+        end else begin
+            d[0] <= x_in;
+            for (i = 1; i < 8; i = i + 1)
+                d[i] <= d[i-1];
+
+            p0 <= x_in * C0;
+            p1 <= d[0] * C1;
+            p2 <= d[1] * C2;
+            p3 <= d[2] * C3;
+            p4 <= d[3] * C4;
+            p5 <= d[4] * C5;
+            p6 <= d[5] * C6;
+            p7 <= d[6] * C7;
+
+            y_out <= total;
+        end
+    end
+endmodule

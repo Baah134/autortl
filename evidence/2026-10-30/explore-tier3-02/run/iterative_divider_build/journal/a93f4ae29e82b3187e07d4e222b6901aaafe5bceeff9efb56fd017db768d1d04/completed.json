@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_3:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 3\n## Contract check\n- Interface, behavior, and required live child instance: PASS \u2014 the candidate preserves the wrapper ports and connects the frozen core; gating `out_ready` with `out_valid` does not change the core\u2019s held-result retirement behavior.\n- Declared top latency: PASS \u2014 the known top latency is 9, and the source declares `// @latency 9`.\n- Deterministic verification: PASS \u2014 ladder is ALIVE; simulation passed with successful compile and elaboration.\n- Routed metrics and evidence: PASS \u2014 retained routed reports and tool exits are valid; candidate has 57 LUTs, 59 FFs, and timing evidence.\n- Timing closure: PASS \u2014 timing is met with WNS 0.324 ns and WHS 0.152 ns.\n- Objective improvement over previous best: FAIL \u2014 both designs are timing-feasible, but LUT usage is unchanged at 57, so the required strict LUT reduction is absent.\n## Summary\n- Passed: 5 of 6\n- Failed: 1 of 6\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes behavioral, latency, verification, and timing gates, but the previous best is already timing-feasible and the chosen objective requires strictly fewer LUTs. The candidate uses the same 57 LUTs, so it does not qualify for promotion.",
+      "recommendation": "REJECT",
+      "passed": 5,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

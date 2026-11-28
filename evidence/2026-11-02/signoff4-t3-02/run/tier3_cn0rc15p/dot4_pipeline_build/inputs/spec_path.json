@@ -1,0 +1,270 @@
+{
+  "top_name": "dot4_pipeline",
+  "modules": [
+    {
+      "name": "dot4_pair01",
+      "behavior": "At each rising clk edge synchronous active-high rst sets pair01_sum=0. Otherwise register the unsigned exact sum a0*b0 + a1*b1, range 0..130050, without truncating product or addition carry. Each operand is independently unsigned 8-bit including 128..255. Outputs hold between rising edges, including during off-edge reset pulses. Throughput one input sample per edge. Python oracle returns arithmetic result for the current sample; the driver supplies latency, do not add a pipeline queue.",
+      "ports": [
+        {
+          "name": "clk",
+          "direction": "input",
+          "width": 1
+        },
+        {
+          "name": "rst",
+          "direction": "input",
+          "width": 1
+        },
+        {
+          "name": "a0",
+          "direction": "input",
+          "width": 8
+        },
+        {
+          "name": "b0",
+          "direction": "input",
+          "width": 8
+        },
+        {
+          "name": "a1",
+          "direction": "input",
+          "width": 8
+        },
+        {
+          "name": "b1",
+          "direction": "input",
+          "width": 8
+        },
+        {
+          "name": "pair01_sum",
+          "direction": "output",
+          "width": 17
+        }
+      ],
+      "latency": 1,
+      "latency_known": true,
+      "compare_mode": "fixed_latency",
+      "reset": {
+        "signal": "rst",
+        "kind": "sync",
+        "active_high": true,
+        "duration_cycles": 3
+      },
+      "examples": [
+        {
+          "inputs": {
+            "rst": 0,
+            "a0": 255,
+            "b0": 255,
+            "a1": 255,
+            "b1": 255
+          },
+          "expected": {
+            "pair01_sum": 130050
+          },
+          "after_cycles": 1
+        }
+      ]
+    },
+    {
+      "name": "dot4_pair23",
+      "behavior": "At each rising clk edge synchronous active-high rst sets pair23_sum=0. Otherwise register the unsigned exact sum a2*b2 + a3*b3, range 0..130050, without truncating product or addition carry. Each operand is independently unsigned 8-bit including 128..255. Outputs hold between rising edges, including during off-edge reset pulses. Throughput one input sample per edge. Python oracle returns arithmetic result for the current sample; the driver supplies latency, do not add a pipeline queue.",
+      "ports": [
+        {
+          "name": "clk",
+          "direction": "input",
+          "width": 1
+        },
+        {
+          "name": "rst",
+          "direction": "input",
+          "width": 1
+        },
+        {
+          "name": "a2",
+          "direction": "input",
+          "width": 8
+        },
+        {
+          "name": "b2",
+          "direction": "input",
+          "width": 8
+        },
+        {
+          "name": "a3",
+          "direction": "input",
+          "width": 8
+        },
+        {
+          "name": "b3",
+          "direction": "input",
+          "width": 8
+        },
+        {
+          "name": "pair23_sum",
+          "direction": "output",
+          "width": 17
+        }
+      ],
+      "latency": 1,
+      "latency_known": true,
+      "compare_mode": "fixed_latency",
+      "reset": {
+        "signal": "rst",
+        "kind": "sync",
+        "active_high": true,
+        "duration_cycles": 3
+      },
+      "examples": [
+        {
+          "inputs": {
+            "rst": 0,
+            "a2": 255,
+            "b2": 255,
+            "a3": 255,
+            "b3": 255
+          },
+          "expected": {
+            "pair23_sum": 130050
+          },
+          "after_cycles": 1
+        }
+      ]
+    },
+    {
+      "name": "dot4_merge",
+      "behavior": "At each rising clk edge synchronous active-high rst sets dot_result=0. Otherwise register the unsigned exact sum left_sum + right_sum, each independent unsigned 17-bit input 0..131071; output range 0..262142, including combinations not reachable from the pair modules. Zero-extend operands before addition; preserve the carry. Output holds between edges, including off-edge reset pulses. Throughput one input sample per edge. Python oracle returns current arithmetic result; driver supplies latency, do not queue samples.",
+      "ports": [
+        {
+          "name": "clk",
+          "direction": "input",
+          "width": 1
+        },
+        {
+          "name": "rst",
+          "direction": "input",
+          "width": 1
+        },
+        {
+          "name": "left_sum",
+          "direction": "input",
+          "width": 17
+        },
+        {
+          "name": "right_sum",
+          "direction": "input",
+          "width": 17
+        },
+        {
+          "name": "dot_result",
+          "direction": "output",
+          "width": 18
+        }
+      ],
+      "latency": 1,
+      "latency_known": true,
+      "compare_mode": "fixed_latency",
+      "reset": {
+        "signal": "rst",
+        "kind": "sync",
+        "active_high": true,
+        "duration_cycles": 3
+      },
+      "examples": [
+        {
+          "inputs": {
+            "rst": 0,
+            "left_sum": 131071,
+            "right_sum": 131071
+          },
+          "expected": {
+            "dot_result": 262142
+          },
+          "after_cycles": 1
+        },
+        {
+          "inputs": {
+            "rst": 0,
+            "left_sum": 65535,
+            "right_sum": 1
+          },
+          "expected": {
+            "dot_result": 65536
+          },
+          "after_cycles": 1
+        }
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "src_module": "dot4_pair01",
+      "src_port": "pair01_sum",
+      "dst_module": "dot4_merge",
+      "dst_port": "left_sum"
+    },
+    {
+      "src_module": "dot4_pair23",
+      "src_port": "pair23_sum",
+      "dst_module": "dot4_merge",
+      "dst_port": "right_sum"
+    }
+  ],
+  "external_ports": [
+    {
+      "name": "clk",
+      "direction": "input",
+      "width": 1
+    },
+    {
+      "name": "rst",
+      "direction": "input",
+      "width": 1
+    },
+    {
+      "name": "a0",
+      "direction": "input",
+      "width": 8
+    },
+    {
+      "name": "b0",
+      "direction": "input",
+      "width": 8
+    },
+    {
+      "name": "a1",
+      "direction": "input",
+      "width": 8
+    },
+    {
+      "name": "b1",
+      "direction": "input",
+      "width": 8
+    },
+    {
+      "name": "a2",
+      "direction": "input",
+      "width": 8
+    },
+    {
+      "name": "b2",
+      "direction": "input",
+      "width": 8
+    },
+    {
+      "name": "a3",
+      "direction": "input",
+      "width": 8
+    },
+    {
+      "name": "b3",
+      "direction": "input",
+      "width": 8
+    },
+    {
+      "name": "dot_result",
+      "direction": "output",
+      "width": 18
+    }
+  ]
+}

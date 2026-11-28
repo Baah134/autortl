@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_3:decision:instruction:0",
+  "result": "In `packet_fifo_core`, replace the full-depth `data_mem`/`last_mem` plus duplicated head storage with a registered head tuple and a circular tail buffer of capacity `DEPTH-1`; use a dedicated `DEPTH==1` case so all supported configurations elaborate correctly. On an empty push, load the head; on a pop with more than one queued tuple, load the old tail head and advance its read pointer; write accepted tuples behind the head, including full simultaneous pop/push. Preserve explicit pointer wrap, occupancy, synchronous reset priority, the ready equation, minimum transfer age, stall stability, all payload bits, and the top\u2019s `// @latency 1`; evaluate LUT reduction only if simulation, routed setup, and hold gates all pass.",
+  "artifacts": {}
+}

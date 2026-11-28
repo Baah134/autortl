@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_3:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 3\n## Contract check\n- Defined debounce behavior and reset: PASS \u2014 seven prior matching samples plus the current sample trigger `clean` on the eighth consecutive sample; synchronous active-high reset clears history and `clean`.\n- Top interface and edit boundary: PASS \u2014 `debouncer_top` preserves the specified ports and only replaces the editable top; the frozen child remains untouched.\n- Declared latency: PASS \u2014 top source declares `// @latency 0`, matching authoritative latency.\n- Deterministic verification and tool exits: PASS \u2014 ladder is ALIVE; simulation passed, and required tool exits succeeded.\n- Routed metrics and timing closure: PASS \u2014 retained routed evidence; WNS 0.591 ns and WHS 0.057 ns are nonnegative.\n- Objective improvement: PASS \u2014 LUTs decrease from 4 to 2, improving `minimize_luts` despite FFs increasing from 5 to 8.\n\n## Summary\n- Passed: 6 of 6\n- Failed: 0 of 6\n- Improved over previous best: YES\n\n## Recommendation\nACCEPT\n\n## Reason\nThe candidate preserves the specified debounce behavior, reset behavior, interface, and declared latency, and passes the deterministic verification and timing gates. It strictly improves the primary objective by reducing LUT use from 4 to 2; the higher FF count does not negate that lexicographic improvement.",
+      "recommendation": "ACCEPT",
+      "passed": 6,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}

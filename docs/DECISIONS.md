@@ -48,6 +48,90 @@ No schema, lease rule or harness runtime changed. Revisit by folding it into
 the coordination store once the frozen campaigns are resolved, if both agents
 use it.
 
+## 2026-11-20 — Pre-registered decision rule for the final comparison
+
+Fixed before any final-02 cell was graded (123 of 360 cells sealed;
+`benchmark.report grade` refuses to run until all are sealed, so no verdict
+existed). Implemented as `benchmark/claim.py` and applied by
+`python -m benchmark.finish`; the published claim is that module's output.
+
+- **Primary endpoint:** upstream-compatible pass on the official testbench.
+- **Primary comparison:** arm C (full harness) minus arm A (single call),
+  mean of per-task differences with the 95% task-clustered bootstrap interval
+  over the 40 registered tasks.
+- **Verdict:** interval above 0 → `harness_better`; below 0 →
+  `single_call_better`; inside ±10 percentage points → `no_material_difference`;
+  otherwise `inconclusive` ("no difference shown; cannot rule out 10 pp").
+- **Completeness:** if more than 10% of any arm's cells were stopped by
+  infrastructure (model quota, interruption), the verdict is downgraded to
+  `inconclusive` and the result is reported as descriptive only.
+- **False acceptance:** every internally accepted design that fails the
+  official testbench is named. Above 5% of an arm's accepted designs, the
+  claim must say internal acceptance is not a reliable correctness signal on
+  these tasks.
+- **Always reported:** C minus B and B minus A as secondary, descriptive
+  readings; model calls per pass, C over A; every non-`done` termination.
+- **Not allowed:** removing tasks or cells, rerunning cells, changing a
+  threshold after grading. A later change needs a new dated decision and the
+  original verdict reported beside it.
+
+ROADMAP B2 now reduces to recording this rule's output and, if it shows a
+recurring planner failure, the follow-up (former task C4).
+
+## 2026-11-21 — Fixes found on final-02 tasks stay out of its claim
+
+Two harness failure causes seen in final-02's internal logs (before grading)
+are fixed on branch `bench-fixes`: `multi_module_plan_without_trusted_tb`
+(Prob131) and a recurrence of `fixed_latency_observation_ambiguous`
+(Prob153_gshare). Both are general (a structural check and a prompt
+clarification); neither weakens a check.
+
+- They merge only after final-02 finishes (flash-02 was later withdrawn), so no registered
+  runtime changes.
+- final-02 is reported as run. No cell is rerun with the fixes.
+- Any later number on the same 40 tasks is tuned on them. It is reported as
+  such, beside the registered result, never in place of it.
+
+## 2026-11-21 — flash-01 had tools; flash-02 withdrawn before any cell
+
+A live check of the Antigravity bridge found that `agy` runs Gemini as an agent
+with web search, shell commands and file tools; `--sandbox` restricts only its
+terminal, and permission deny rules did not stop `search_web`. On the
+Prob131 planner prompt Flash-high made 46 web searches (one for
+`"VerilogEval" "mt2015_q4"`) and 14 commands and took 6 minutes, more than
+the harness's 180-second call limit. Flash-low used no tools there and took
+18 seconds.
+
+- **flash-01** (Flash-high, single call, 110/120) ran with these tools
+  available, and the bridge recorded no tool events. The published references
+  are on the web, so it is not a closed-book single call and is not compared
+  with Codex arm A. It stays archived as run, described as "Gemini 3.8 Flash
+  through the Antigravity agent, web search available". Call times are
+  consistent with tool use in many cells (median 18 s against 7 s for a
+  trivial prompt) but cannot show which cells used tools.
+- **flash-02** (registered November 20, 0 cells run) is withdrawn: as
+  registered, its planner calls would exceed the call limit, and its replies
+  could use the web. Its auto-start watcher was stopped.
+- The bridge now refuses any reply produced with a tool call
+  (`agy_endpoint_uses_tools`). Any new Flash run needs a new registration that
+  uses the guarded bridge and a model variant that fits the call limit.
+
+## 2026-11-25 — flash-03: closed-book Flash-low single call, registered before any cell
+
+A second model on arm A, done properly this time: Gemini 3.8 Flash-low through
+the guarded bridge (tool-using replies refused and counted as failures), the
+same 40 tasks and 120 single-call cells as `flash-01`, runtime `1c341f798`.
+Registration: `evidence/2026-11-25/flash-03-registration-02`, which
+supersedes `-01` (re-frozen the same evening, before any cell ran, on runtime
+`202a6daa6`). A trivial Flash-low call took 105 to 138 s even on an idle host:
+the Antigravity CLI updated that day lingers about 100 s after its result and
+the bridge waited for it (`agy_exits_late_after_result`); the fixed bridge
+returns at the result in 6 s. Only the runtime commit changed. The comparison
+with `final-02` arm A is descriptive (different model, different week), never
+a harness claim. The run starts once a trivial probe answers within 30 s, so
+timeouts measure the model, not the CLI. Harness arms with Flash need their
+own registration later, when Vivado time is free.
+
 ## Continuing contracts
 
 Use command-line Vivado. Specifications and independent verification control

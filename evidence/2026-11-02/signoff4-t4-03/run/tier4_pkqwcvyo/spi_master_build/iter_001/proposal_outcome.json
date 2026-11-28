@@ -1,0 +1,45 @@
+{
+  "candidates": [
+    {
+      "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-03\\tier4_pkqwcvyo\\spi_master_build\\iter_001\\cand_standard",
+      "cache_hit": false,
+      "final_code_hash": "1484b306fc55cd65",
+      "final_source_sha256": "49c707c0eabab9e785216f27398d177c51ab3e94a469ec3053dc5ed6266e3139",
+      "flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-03\\tier4_pkqwcvyo\\spi_master_build\\iter_001\\cand_standard\\synth.tcl",
+        "sha256": "355e9627a2d203d7c26a777890c26d24b414ee3c16e4fe1b79d68835d0576cbc"
+      },
+      "generated_code_hash": "1484b306fc55cd65",
+      "generated_source_sha256": "49c707c0eabab9e785216f27398d177c51ab3e94a469ec3053dc5ed6266e3139",
+      "instruction": "In `spi_master_core`, remove `rsp_data_reg` and assign `rsp_data` from the registered `rx_shift`; retain its synchronous reset and shift-on-MISO-sample behavior. On the final half-period edge, assert `rsp_valid` as before and rely on the completed shift register value, which was updated at the preceding rising-SCLK edge, to hold the response through stalls until reset or the next accepted command. Preserve the full `HALF_PERIOD` range, all SCLK/MOSI/CS timing, handshakes, reset priority, and the top\u2019s `// @latency 33` annotation.",
+      "iteration": 1,
+      "metrics": {
+        "bram_used": 0.0,
+        "dsp_used": 0,
+        "dynamic_power_w": 0.015,
+        "ff_used": 32,
+        "lut_used": 19,
+        "sim_passed": true,
+        "timing_met": true,
+        "total_power_w": 0.085,
+        "whs_ns": 0.04,
+        "wns_ns": 0.343
+      },
+      "mutation": "standard",
+      "reason": "",
+      "rungs": 5,
+      "source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-03\\tier4_pkqwcvyo\\spi_master_build\\iter_001\\cand_standard\\spi_master.v",
+        "sha256": "2d82fbb71047a4581517e0c2aa45bab076ac7bc933c2b650a6a95170a4a8830e"
+      },
+      "status": "measured"
+    }
+  ],
+  "doctor": null,
+  "instruction": "In `spi_master_core`, remove `rsp_data_reg` and assign `rsp_data` from the registered `rx_shift`; retain its synchronous reset and shift-on-MISO-sample behavior. On the final half-period edge, assert `rsp_valid` as before and rely on the completed shift register value, which was updated at the preceding rising-SCLK edge, to hold the response through stalls until reset or the next accepted command. Preserve the full `HALF_PERIOD` range, all SCLK/MOSI/CS timing, handshakes, reset priority, and the top\u2019s `// @latency 33` annotation.",
+  "is_best": true,
+  "iteration": 1,
+  "recommendation": "ACCEPT",
+  "schema_version": 1,
+  "selected_source_sha256": "49c707c0eabab9e785216f27398d177c51ab3e94a469ec3053dc5ed6266e3139"
+}

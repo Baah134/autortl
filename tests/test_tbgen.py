@@ -79,3 +79,22 @@ def test_direct_testbench_apis_reject_unknown_or_nonboolean_latency(tmp_path, kn
             generate_fixed_latency_tb(spec, [{"a": 1, "b": 2}], [{"y": 3}])
         else:
             generate(spec, None, tmp_path, n_random=0)
+
+
+def test_shape_errors_catch_fixed_latency_with_handshake_ports_before_any_oracle():
+    # fixed_latency_handshake_found_at_oracle (explore-tier3-03 uart_fifo_build)
+    import copy
+    from autortl.tbgen import shape_errors
+    from autortl.spec import DesignSpec
+    root = Path(__file__).resolve().parents[1]
+    spec = DesignSpec.from_json((root / "curriculum/tier5/fir16_sym_build/design_spec.json").read_text(encoding="utf-8"))
+    core = spec.modules[0]
+    assert core.compare_mode == "scoreboard" and shape_errors(core) == []
+    wrong = copy.deepcopy(core)
+    wrong.compare_mode = "fixed_latency"
+    errors = shape_errors(wrong)
+    assert errors and "fixed latency does not accept handshake ports" in errors[0]
+    assert "otherwise use fixed_latency with every port none" in errors[0]
+    # one_sided_handshake_has_no_oracle_shape: the prompt states the shape that always fits
+    from autortl import prompts
+    assert "stream sink or source such as a UART transmitter" in prompts.SPEC_PROMPT

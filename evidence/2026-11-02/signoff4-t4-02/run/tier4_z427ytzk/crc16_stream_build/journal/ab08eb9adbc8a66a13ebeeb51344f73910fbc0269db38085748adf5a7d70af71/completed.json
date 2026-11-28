@@ -1,0 +1,5 @@
+{
+  "stage": "module_crc16_stream_core:model:generator.golden_model:0",
+  "result": "def init():\n    return dict(frame=65535)\n\ndef step(state, inputs):\n    outputs = dict()\n    rst = int(inputs.get(\"rst\", 0)) & 1\n\n    if rst:\n        state[\"frame\"] = 65535\n        outputs[\"out_crc\"] = 0\n        outputs[\"out_last\"] = 0\n    else:\n        data = int(inputs.get(\"in_data\", 0)) & 255\n        last = int(inputs.get(\"in_last\", 0)) & 1\n        crc = (int(state.get(\"frame\", 65535)) & 65535) ^ (data << 8)\n\n        for index in range(8):\n            if crc & 32768:\n                crc = ((crc << 1) ^ 4129) & 65535\n            else:\n                crc = (crc << 1) & 65535\n\n        outputs[\"out_crc\"] = crc\n        outputs[\"out_last\"] = last\n        if last:\n            state[\"frame\"] = 65535\n        else:\n            state[\"frame\"] = crc\n\n    return state, outputs",
+  "artifacts": {}
+}

@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_2:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 2,
+    "instruction": "In `crc16_stream_core`, remove `frame_crc` and use `out_crc_reg` as the input state to `crc16_update` on each accepted byte; after `in_last`, select `16'hFFFF` as the next update seed instead of storing a separate frame state. Preserve the existing output register, valid/ready replacement and stall behavior, and synchronous reset semantics; ensure a stalled output remains stable while the next update uses the reset frame seed when the preceding accepted byte had `in_last=1`. Keep `// @latency 1` on the top and verify the complete unit against the frozen integration testbench and routed gates.",
+    "candidates": [
+      {
+        "iteration": 2,
+        "mutation": "standard",
+        "instruction": "In `crc16_stream_core`, remove `frame_crc` and use `out_crc_reg` as the input state to `crc16_update` on each accepted byte; after `in_last`, select `16'hFFFF` as the next update seed instead of storing a separate frame state. Preserve the existing output register, valid/ready replacement and stall behavior, and synchronous reset semantics; ensure a stalled output remains stable while the next update uses the reset frame seed when the preceding accepted byte had `in_last=1`. Keep `// @latency 1` on the top and verify the complete unit against the frozen integration testbench and routed gates.",
+        "generated_source_sha256": "e1848fc073bdf2f437d64cb2ef38822712d5242fa45f7d0196e79eaa3fd5a6ae",
+        "final_source_sha256": "e1848fc073bdf2f437d64cb2ef38822712d5242fa45f7d0196e79eaa3fd5a6ae",
+        "generated_code_hash": "d60cfd57935233a6",
+        "final_code_hash": "d60cfd57935233a6",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.445,
+          "whs_ns": 0.011,
+          "lut_used": 16,
+          "ff_used": 18,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.018,
+          "total_power_w": 0.088
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-02\\tier4_z427ytzk\\crc16_stream_build\\iter_002\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-02\\tier4_z427ytzk\\crc16_stream_build\\iter_002\\cand_standard\\synth.tcl",
+          "sha256": "e63bb56d7feed6a66fdd7ddb55576c8a9103ab6d73fe867f3c6fee98a5ffc36b"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-02\\tier4_z427ytzk\\crc16_stream_build\\iter_002\\cand_standard\\crc16_stream.v",
+          "sha256": "063a40e20e244bcca69283ceb7f4b13f3082421cc5153e6a223075afd87345d7"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "ACCEPT",
+    "is_best": true,
+    "selected_source_sha256": "e1848fc073bdf2f437d64cb2ef38822712d5242fa45f7d0196e79eaa3fd5a6ae"
+  },
+  "artifacts": {}
+}

@@ -1,0 +1,26 @@
+FF....                                                                   [100%]
+================================== FAILURES ===================================
+_______ test_planner_receives_explicit_fixed_latency_sampling_semantics _______
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000023119423AD0>
+
+    def test_planner_receives_explicit_fixed_latency_sampling_semantics(monkeypatch):
+        prompt = rendered_prompt(monkeypatch)
+>       assert "latency 0 is checked before the next rising edge" in prompt
+E       assert 'latency 0 is checked before the next rising edge' in "Produce a design_spec JSON for this request. **Request:** Build a renamed clocked accumulator. **Target:** xc7a35tcpg...es). Fix exactly these errors and output the complete corrected JSON only: Preserve the request's exact edge behavior."
+
+tests\test_spec_sampling_guidance.py:69: AssertionError
+______ test_planner_defines_invalid_data_without_inventing_output_masks _______
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000023119422E10>
+
+    def test_planner_defines_invalid_data_without_inventing_output_masks(monkeypatch):
+        prompt = rendered_prompt(monkeypatch)
+>       assert "fixed_latency compares every protocol none output on every sampled row" in prompt
+E       assert 'fixed_latency compares every protocol none output on every sampled row' in "Produce a design_spec JSON for this request. **Request:** Build a renamed clocked accumulator. **Target:** xc7a35tcpg...es). Fix exactly these errors and output the complete corrected JSON only: Preserve the request's exact edge behavior."
+
+tests\test_spec_sampling_guidance.py:78: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_spec_sampling_guidance.py::test_planner_receives_explicit_fixed_latency_sampling_semantics
+FAILED tests/test_spec_sampling_guidance.py::test_planner_defines_invalid_data_without_inventing_output_masks
+2 failed, 4 passed in 4.52s

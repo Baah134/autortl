@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_5:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 5,
+    "instruction": "Keep the counter and its update unchanged; replace only `pwm_out <= (counter < {24'd0, duty});` with a 4-bit high-nibble less-than comparison, combined with a low-nibble less-than comparison when the high nibbles are equal. Preserve the comparison against the current counter value and the existing clocked assignment, reset behavior, and output registration. Do not add a numeric latency annotation; retain the candidate only if all deterministic and routed gates pass and LUT usage is strictly below 7.",
+    "candidates": [
+      {
+        "iteration": 5,
+        "mutation": "standard",
+        "instruction": "Keep the counter and its update unchanged; replace only `pwm_out <= (counter < {24'd0, duty});` with a 4-bit high-nibble less-than comparison, combined with a low-nibble less-than comparison when the high nibbles are equal. Preserve the comparison against the current counter value and the existing clocked assignment, reset behavior, and output registration. Do not add a numeric latency annotation; retain the candidate only if all deterministic and routed gates pass and LUT usage is strictly below 7.",
+        "generated_source_sha256": "581dab543cbfc2dec15c39895da82778b0deb69ff23ea56d5b8874a4fd33880b",
+        "final_source_sha256": "581dab543cbfc2dec15c39895da82778b0deb69ff23ea56d5b8874a4fd33880b",
+        "generated_code_hash": "cfe78939ca58533f",
+        "final_code_hash": "cfe78939ca58533f",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.594,
+          "whs_ns": 0.289,
+          "lut_used": 8,
+          "ff_used": 9,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.011,
+          "total_power_w": 0.081
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff-t1-03\\tier1_b9ba9ss_\\pwm\\iter_005\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff-t1-03\\tier1_b9ba9ss_\\pwm\\iter_005\\cand_standard\\synth.tcl",
+          "sha256": "920f04564a23791d1d2abff772b4c56efda89a15f900cfedbf8049ee6e949d4d"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff-t1-03\\tier1_b9ba9ss_\\pwm\\iter_005\\cand_standard\\pwm.v",
+          "sha256": "260faa9ffe3f5166fa127d03caa94635e69bcd1db7d3e9f2dc9a45ad0777b9c0"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": "581dab543cbfc2dec15c39895da82778b0deb69ff23ea56d5b8874a4fd33880b"
+  },
+  "artifacts": {}
+}

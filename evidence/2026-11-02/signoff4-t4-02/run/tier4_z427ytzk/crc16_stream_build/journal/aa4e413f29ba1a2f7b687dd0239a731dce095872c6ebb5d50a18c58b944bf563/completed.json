@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_1:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 1,
+    "instruction": "Replace the loop-based `crc16_update` function with explicit, factored GF(2) XOR equations for the same 16-bit state and 8-bit data inputs, preserving the `0x1021` polynomial and MSB-first CRC-16/CCITT-FALSE result. Keep the frame-state, output registers, valid/ready logic, synchronous reset priority, and top-level `// @latency 1` behavior unchanged. Preserve acceptance and stall behavior, including stable output payload while blocked; check reset during traffic, consecutive frame endings, and high-bit input patterns.",
+    "candidates": [
+      {
+        "iteration": 1,
+        "mutation": "standard",
+        "instruction": "Replace the loop-based `crc16_update` function with explicit, factored GF(2) XOR equations for the same 16-bit state and 8-bit data inputs, preserving the `0x1021` polynomial and MSB-first CRC-16/CCITT-FALSE result. Keep the frame-state, output registers, valid/ready logic, synchronous reset priority, and top-level `// @latency 1` behavior unchanged. Preserve acceptance and stall behavior, including stable output payload while blocked; check reset during traffic, consecutive frame endings, and high-bit input patterns.",
+        "generated_source_sha256": "e627645d3f7ade5cf6c346b7320488f70142d7702b37eaa2e04d942a32e47bf6",
+        "final_source_sha256": "e627645d3f7ade5cf6c346b7320488f70142d7702b37eaa2e04d942a32e47bf6",
+        "generated_code_hash": "6dc945bccb5ee229",
+        "final_code_hash": "6dc945bccb5ee229",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.445,
+          "whs_ns": 0.208,
+          "lut_used": 16,
+          "ff_used": 34,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.017,
+          "total_power_w": 0.088
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-02\\tier4_z427ytzk\\crc16_stream_build\\iter_001\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-02\\tier4_z427ytzk\\crc16_stream_build\\iter_001\\cand_standard\\synth.tcl",
+          "sha256": "7434093c2d02b2093781d04b896bc856554dceb71fc1ecc86738a78a684ad4cd"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-02\\tier4_z427ytzk\\crc16_stream_build\\iter_001\\cand_standard\\crc16_stream.v",
+          "sha256": "49de853c2c1f81daf1b07e14e1212c1d39739727845e9041dccfa54b761fbf9c"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": "e627645d3f7ade5cf6c346b7320488f70142d7702b37eaa2e04d942a32e47bf6"
+  },
+  "artifacts": {}
+}

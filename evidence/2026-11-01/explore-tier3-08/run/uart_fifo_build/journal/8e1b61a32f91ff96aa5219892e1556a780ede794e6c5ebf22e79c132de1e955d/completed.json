@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_3:model:planner.plan:0",
+  "result": "# PLAN \u2014 iteration 3\n## Current state assessment\nThe verified incumbent uses 119 LUTs and 89 FFs and meets setup and hold by 0.011 ns and 0.113 ns. Timing is feasible, so iteration 3 must strictly reduce LUTs (or tie LUTs and reduce FFs) to improve the `minimize_luts` objective. The seed\u2019s UART bit timer uses an 8-bit counter even though `CLKS_PER_BIT` is supported from 2 through 255.\n\n## Hypothesis\nSizing the UART timer counter to `$clog2(CLKS_PER_BIT)` will reduce counter flops and increment/compare logic, with the strongest opportunity at the default value of 16.\n\n## Instruction for generator\nIn `uart_tx`, replace the fixed `reg [7:0] clk_count` with a counter whose width is derived from `CLKS_PER_BIT`, using at least one bit. Keep the terminal comparison against `CLKS_PER_BIT - 1` and preserve the existing state transitions, reset value, and count timing. Preserve behavior across the full supported parameter range of 2 through 255, including the directly tested values 2, 3, and 7; keep the `uart_tx` instance live under `uart_fifo`.",
+  "artifacts": {}
+}

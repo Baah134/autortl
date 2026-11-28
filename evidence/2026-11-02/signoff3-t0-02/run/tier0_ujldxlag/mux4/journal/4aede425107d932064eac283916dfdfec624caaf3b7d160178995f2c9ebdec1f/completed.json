@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_1:decision:instruction:0",
+  "result": "Replace the `case (sel)` data selection with a balanced two-level conditional expression: select `a`/`b` and `c`/`d` using `sel[0]`, then select between those results using `sel[1]`. Keep the existing synchronous active-high reset to zero and the registered `y` update on every rising edge, with no added state or cycle. The expected benefit is fewer LUTs if Vivado infers dedicated mux resources; confirm it through routed utilization and timing reports, and retain the candidate only if simulation and all promotion gates pass and it strictly improves the LUT objective.",
+  "artifacts": {}
+}

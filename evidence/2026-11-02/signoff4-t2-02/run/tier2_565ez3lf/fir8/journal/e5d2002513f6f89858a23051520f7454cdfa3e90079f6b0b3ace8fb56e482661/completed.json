@@ -1,0 +1,81 @@
+{
+  "stage": "iteration_3:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 3,
+    "instruction": "Keep `d[0:7]`, the synchronous active-high reset, registered `y_out`, and `// @latency 1` unchanged. Add a generate-time fast path for the exact default coefficients `(3,7,12,18,18,12,7,3)`, computing the symmetric pair products with 32-bit sign-extended shift-add forms; leave the existing parameterized paths intact for every other supported coefficient set. Preserve the existing balanced sum structure and 32-bit result semantics, including signed inputs and overflow. Do not register intermediate products or change cycle behavior; judge the proposal using the fixed verification gates and route",
+    "candidates": [
+      {
+        "iteration": 3,
+        "mutation": "standard",
+        "instruction": "Keep `d[0:7]`, the synchronous active-high reset, registered `y_out`, and `// @latency 1` unchanged. Add a generate-time fast path for the exact default coefficients `(3,7,12,18,18,12,7,3)`, computing the symmetric pair products with 32-bit sign-extended shift-add forms; leave the existing parameterized paths intact for every other supported coefficient set. Preserve the existing balanced sum structure and 32-bit result semantics, including signed inputs and overflow. Do not register intermediate products or change cycle behavior; judge the proposal using the fixed verification gates and route",
+        "generated_source_sha256": "787bacb10a169e5bf6184caf74328c26ee6c2d51a2a00fa1810e142c71487660",
+        "final_source_sha256": "787bacb10a169e5bf6184caf74328c26ee6c2d51a2a00fa1810e142c71487660",
+        "generated_code_hash": "b6b58450eb9ce96b",
+        "final_code_hash": "b6b58450eb9ce96b",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": false,
+          "wns_ns": -0.865,
+          "whs_ns": 0.176,
+          "lut_used": 213,
+          "ff_used": 160,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.01,
+          "total_power_w": 0.078
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-02\\tier2_565ez3lf\\fir8\\iter_003\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-02\\tier2_565ez3lf\\fir8\\iter_003\\cand_standard\\synth.tcl",
+          "sha256": "4fd3274716b95d1b410d9f000a175eddaa2315f1b6886fbdd7602b18cceae10c"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-02\\tier2_565ez3lf\\fir8\\iter_003\\cand_standard\\fir8.v",
+          "sha256": "ffee198c9d4b63f6e031b1ab3546e336b26288af163fa3e7785a6fa02ef47f76"
+        }
+      }
+    ],
+    "doctor": {
+      "status": "NOT_ADOPTED",
+      "action": "rtl_surgery",
+      "reason": "timing_not_closed",
+      "tools_ran": true,
+      "measured_metrics": {
+        "sim_passed": true,
+        "timing_met": false,
+        "wns_ns": -0.273,
+        "whs_ns": 0.019,
+        "lut_used": 232,
+        "ff_used": 160,
+        "dsp_used": 0,
+        "bram_used": 0.0,
+        "dynamic_power_w": 0.01,
+        "total_power_w": 0.078
+      },
+      "adopted": false,
+      "input_source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-02\\tier2_565ez3lf\\fir8\\iter_003\\cand_standard\\fir8.v",
+        "sha256": "ffee198c9d4b63f6e031b1ab3546e336b26288af163fa3e7785a6fa02ef47f76"
+      },
+      "trial_source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-02\\tier2_565ez3lf\\fir8\\iter_003\\doctor_rtl_surgery_trial\\fir8.v",
+        "sha256": "3f69f774d007bb635f022ffa01931b1f96f22547102b24a82be25a0fcab33d61"
+      },
+      "trial_flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-02\\tier2_565ez3lf\\fir8\\iter_003\\doctor_rtl_surgery_trial\\synth.tcl",
+        "sha256": "92baadc61f31fc65d6dcdb2a1bbeb0f99396db693688befcb680598283d5016f"
+      },
+      "identity_count": 3,
+      "proposed_source_text_sha256": "c81de8a26f71d479c81b9308fb7061770a19c22644712e5e4ea42bcf5474d9e6"
+    },
+    "recommendation": "ACCEPT",
+    "is_best": true,
+    "selected_source_sha256": "787bacb10a169e5bf6184caf74328c26ee6c2d51a2a00fa1810e142c71487660"
+  },
+  "artifacts": {}
+}

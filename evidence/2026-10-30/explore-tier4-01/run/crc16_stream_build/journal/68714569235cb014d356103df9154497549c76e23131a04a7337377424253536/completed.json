@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Interface and declared latency: PASS \u2014 Top ports match the contract, and `// @latency 1` matches the authoritative latency.\n- Deterministic behavioral verification: PASS \u2014 The unchanged testbench reports `TEST PASSED`; ladder results are ALIVE.\n- Tool gates: PASS \u2014 xvlog, xelab, xsim, and Vivado exited successfully; synthesis includes `SYNTH_COMPLETE`.\n- Metric integrity: PASS \u2014 Retained routed reports and structured metrics are present and consistent.\n- Timing closure: PASS \u2014 `timing_met=true`, WNS is 0.445 ns, and WHS is 0.208 ns.\n- Objective improvement: FAIL \u2014 Both candidate and previous best are timing-feasible, but LUT usage is unchanged at 16; strict LUT reduction is required.\n## Summary\n- Passed: 5 of 6\n- Failed: 1 of 6\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes behavioral, tool, metric, latency, and timing gates, but it does not improve the chosen objective: LUT usage remains 16 against a timing-feasible previous best, so the required strict reduction is absent.",
+      "recommendation": "REJECT",
+      "passed": 5,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

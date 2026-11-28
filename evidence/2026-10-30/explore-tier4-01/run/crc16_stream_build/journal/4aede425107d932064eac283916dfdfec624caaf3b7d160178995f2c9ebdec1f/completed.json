@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_1:decision:instruction:0",
+  "result": "Replace the `crc16_stream_core` instance with top-level state and slot logic, and implement the byte update as a factored parallel XOR network for the CRC-16/CCITT-FALSE polynomial rather than eight serial shift-and-conditional-XOR rounds. Preserve the exact `in_ready` equation, accepted-byte behavior, synchronous active-high reset priority, frame restart on `in_last`, registered output hold during stalls, and minimum accepted-transfer age of one cycle; retain `// @latency 1`. The experiment succeeds only if the unchanged verification gates pass and routed LUT use is strictly below 16, with setup WNS and hold WHS both nonnegative.",
+  "artifacts": {}
+}

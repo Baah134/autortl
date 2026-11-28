@@ -1,0 +1,45 @@
+{
+  "candidates": [
+    {
+      "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-03\\tier2_g47m0rx8\\skid_buffer_build\\iter_001\\cand_standard",
+      "cache_hit": false,
+      "final_code_hash": "50f5bd53713e24ff",
+      "final_source_sha256": "b4487faa0f1049350f53f486d329bd639e98391a9c919a1aabacdda82abdfa0b",
+      "flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-03\\tier2_g47m0rx8\\skid_buffer_build\\iter_001\\cand_standard\\synth.tcl",
+        "sha256": "dc62af770ae2ef0e300f23f5acb9c5d1413c32cd94cb35df6d98a72a6203c3e7"
+      },
+      "generated_code_hash": "50f5bd53713e24ff",
+      "generated_source_sha256": "b4487faa0f1049350f53f486d329bd639e98391a9c919a1aabacdda82abdfa0b",
+      "instruction": "Replace the combinational `out_valid = (occupancy != 0)` decode with an `out_valid` register, reset synchronously to zero and updated from the pre-edge occupancy and accepted push/pop events so it always matches whether the queue is nonempty after that edge. Keep occupancy-based `in_ready`, the two data registers, and all queue transitions so full-throughput transfers, stalls, reset priority, ordering, and minimum transfer age remain unchanged. Preserve the top interface and its required `// @latency 1` annotation; do not add a pipeline stage.",
+      "iteration": 1,
+      "metrics": {
+        "bram_used": 0.0,
+        "dsp_used": 0,
+        "dynamic_power_w": 0.013,
+        "ff_used": 19,
+        "lut_used": 11,
+        "sim_passed": true,
+        "timing_met": true,
+        "total_power_w": 0.083,
+        "whs_ns": 0.162,
+        "wns_ns": 0.146
+      },
+      "mutation": "standard",
+      "reason": "",
+      "rungs": 5,
+      "source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-03\\tier2_g47m0rx8\\skid_buffer_build\\iter_001\\cand_standard\\skid_buffer.v",
+        "sha256": "0703eae99abf130665c9cd0df68ccd0ae17fe9e07028ae55068743c737a68471"
+      },
+      "status": "measured"
+    }
+  ],
+  "doctor": null,
+  "instruction": "Replace the combinational `out_valid = (occupancy != 0)` decode with an `out_valid` register, reset synchronously to zero and updated from the pre-edge occupancy and accepted push/pop events so it always matches whether the queue is nonempty after that edge. Keep occupancy-based `in_ready`, the two data registers, and all queue transitions so full-throughput transfers, stalls, reset priority, ordering, and minimum transfer age remain unchanged. Preserve the top interface and its required `// @latency 1` annotation; do not add a pipeline stage.",
+  "is_best": true,
+  "iteration": 1,
+  "recommendation": "ACCEPT",
+  "schema_version": 1,
+  "selected_source_sha256": "b4487faa0f1049350f53f486d329bd639e98391a9c919a1aabacdda82abdfa0b"
+}

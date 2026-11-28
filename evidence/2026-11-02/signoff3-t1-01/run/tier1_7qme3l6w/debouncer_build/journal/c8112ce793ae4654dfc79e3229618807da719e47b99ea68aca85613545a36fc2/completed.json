@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_2:model:planner.plan:0",
+  "result": "# PLAN \u2014 iteration 2\n## Current state assessment\nIteration 1 passed behavior, verification, metric integrity, and timing gates, but inline-equivalent logic kept the incumbent at 4 LUTs and 5 FFs, so it did not improve the objective. The incumbent is already timing-feasible at WNS 0.731 ns and WHS 0.126 ns; iteration 2 needs a strict LUT reduction, or equal LUTs with fewer FFs, to be promoted.\n\n## Hypothesis\nAllowing the 3-bit stability counter to wrap after the eighth stable sample may remove the saturating hold logic and reduce LUT use without changing `clean`\u2019s observable update cycles.\n\n## Instruction for generator\nKeep `// @latency 0` and inline the frozen child\u2019s logic in `debouncer_top`, changing the counter\u2019s saturated `stable_count != 3'd7` branch. On each unchanged `noisy` sample, increment the counter modulo 8; when its pre-edge value is 7, also update `clean_reg` to `noisy` on that edge. Preserve reset priority and the noisy-change branch that records `previous_noisy` and sets the count to 1.",
+  "artifacts": {}
+}

@@ -1,0 +1,81 @@
+{
+  "stage": "iteration_5:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 5,
+    "instruction": "In the exact-default-coefficients specialization, change the 32-bit `acc` partial-sum registers and associated sum expressions to signed 23-bit values; sign-extend the final sum into the existing 32-bit `y_out`. Keep the general parameterized fallback unchanged, along with the delay register, synchronous active-high reset, registered output, and `// @latency 1`. The default-coefficient bound is a signed sum of at most 80 products of signed 16-bit samples, which fits in 23 bits; confirm the fixed testbench and all mandatory routed timing and metric gates before promotion.",
+    "candidates": [
+      {
+        "iteration": 5,
+        "mutation": "standard",
+        "instruction": "In the exact-default-coefficients specialization, change the 32-bit `acc` partial-sum registers and associated sum expressions to signed 23-bit values; sign-extend the final sum into the existing 32-bit `y_out`. Keep the general parameterized fallback unchanged, along with the delay register, synchronous active-high reset, registered output, and `// @latency 1`. The default-coefficient bound is a signed sum of at most 80 products of signed 16-bit samples, which fits in 23 bits; confirm the fixed testbench and all mandatory routed timing and metric gates before promotion.",
+        "generated_source_sha256": "3f1c1123215fbe35e2050d017c8faa019eaf26e521c7fe9722f22af5ffa54f1c",
+        "final_source_sha256": "c0f1f3a2a0820e865cc7f8e114369e0c2cc020d9d3dbb3bed1b99ad0a7496bba",
+        "generated_code_hash": "88e527d8d32a191c",
+        "final_code_hash": "1c5971a3dd6d2e87",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": false,
+          "wns_ns": -9.981,
+          "whs_ns": 0.171,
+          "lut_used": 101,
+          "ff_used": 128,
+          "dsp_used": 6,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.012,
+          "total_power_w": 0.081
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-02\\tier2_565ez3lf\\fir8\\iter_005\\cand_standard\\repair_001",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-02\\tier2_565ez3lf\\fir8\\iter_005\\cand_standard\\repair_001\\synth.tcl",
+          "sha256": "f53ea8d2cb65d8f830e54e2111319ead147d809833f5e5fb3dd666a167231b2e"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-02\\tier2_565ez3lf\\fir8\\iter_005\\cand_standard\\repair_001\\fir8.v",
+          "sha256": "8715dadf651587ec39ebbdba7f545decb0419a991f1289b754aeac8790406890"
+        }
+      }
+    ],
+    "doctor": {
+      "status": "NOT_ADOPTED",
+      "action": "rtl_surgery",
+      "reason": "timing_not_closed",
+      "tools_ran": true,
+      "measured_metrics": {
+        "sim_passed": true,
+        "timing_met": false,
+        "wns_ns": -5.933,
+        "whs_ns": 0.118,
+        "lut_used": 0,
+        "ff_used": 64,
+        "dsp_used": 8,
+        "bram_used": 0.0,
+        "dynamic_power_w": 0.009,
+        "total_power_w": 0.078
+      },
+      "adopted": false,
+      "input_source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-02\\tier2_565ez3lf\\fir8\\iter_005\\cand_standard\\repair_001\\fir8.v",
+        "sha256": "8715dadf651587ec39ebbdba7f545decb0419a991f1289b754aeac8790406890"
+      },
+      "trial_source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-02\\tier2_565ez3lf\\fir8\\iter_005\\doctor_rtl_surgery_trial\\fir8.v",
+        "sha256": "7ba3cf26fda7e6a78892808b0193766689d3b3f6ee275908a86fc7b43fb99b35"
+      },
+      "trial_flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-02\\tier2_565ez3lf\\fir8\\iter_005\\doctor_rtl_surgery_trial\\synth.tcl",
+        "sha256": "3fc45574f4dfd2c2615a3640456ecb84bbfc38fe12f9aa29a4af4c1e674cad59"
+      },
+      "identity_count": 3,
+      "proposed_source_text_sha256": "581a1beabcc6e289ca7a119f9e4b9533715f48b16bb730fe04e026765df6e7d1"
+    },
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": "c0f1f3a2a0820e865cc7f8e114369e0c2cc020d9d3dbb3bed1b99ad0a7496bba"
+  },
+  "artifacts": {}
+}

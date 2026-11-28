@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_1:decision:instruction:0",
+  "result": "Inline the debouncer logic in `debouncer_top` and replace its binary counter with a 3-bit LFSR: use zero as the idle state, load a nonzero seed on the first differing `noisy` cycle, advance on subsequent differing cycles, and update `clean` when the state reached after seven such cycles is observed on the eighth. Preserve synchronous active-high reset, clearing both state and `clean`, and clear the LFSR whenever `noisy == clean`; retain the exact interface and `// @latency 0` annotation. Check reset, interrupted input runs, and both transition directions; accept the candidate only if the fixed simulation, routed setup and hold, metric integrity, and all other promotion gates pass, with a strict LUT improvement over the incumbent.",
+  "artifacts": {}
+}

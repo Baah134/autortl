@@ -1,0 +1,58 @@
+{
+  "top_name": "uart_fifo",
+  "modules": [
+    {
+      "name": "sync_fifo",
+      "behavior": "Qualification reference decomposition only (not the entry spec). First-word-fall-through byte FIFO holding DEPTH entries: in_ready = count < DEPTH, out_valid = count != 0, out_data is the oldest entry; push on in_valid && in_ready, pop on out_valid && out_ready; synchronous active-high rst empties it.",
+      "ports": [
+        {"name": "clk", "direction": "input", "width": 1, "protocol": "none", "signed": false},
+        {"name": "rst", "direction": "input", "width": 1, "protocol": "none", "signed": false},
+        {"name": "in_data", "direction": "input", "width": 8, "protocol": "none", "signed": false},
+        {"name": "in_valid", "direction": "input", "width": 1, "protocol": "none", "signed": false},
+        {"name": "in_ready", "direction": "output", "width": 1, "protocol": "none", "signed": false},
+        {"name": "out_data", "direction": "output", "width": 8, "protocol": "none", "signed": false},
+        {"name": "out_valid", "direction": "output", "width": 1, "protocol": "none", "signed": false},
+        {"name": "out_ready", "direction": "input", "width": 1, "protocol": "none", "signed": false}
+      ],
+      "latency": 1,
+      "latency_known": true,
+      "compare_mode": "fixed_latency",
+      "reset": {"signal": "rst", "kind": "sync", "active_high": true, "duration_cycles": 5},
+      "clock_domains": ["clk"],
+      "parameters": {"DEPTH": 8},
+      "examples": []
+    },
+    {
+      "name": "uart_tx",
+      "behavior": "Qualification reference decomposition only (not the entry spec). 8N1 transmitter with CLKS_PER_BIT clk cycles per bit, exactly as spec.md defines uart_tx.",
+      "ports": [
+        {"name": "clk", "direction": "input", "width": 1, "protocol": "none", "signed": false},
+        {"name": "rst", "direction": "input", "width": 1, "protocol": "none", "signed": false},
+        {"name": "tx_data", "direction": "input", "width": 8, "protocol": "none", "signed": false},
+        {"name": "tx_valid", "direction": "input", "width": 1, "protocol": "none", "signed": false},
+        {"name": "tx_ready", "direction": "output", "width": 1, "protocol": "none", "signed": false},
+        {"name": "tx", "direction": "output", "width": 1, "protocol": "none", "signed": false}
+      ],
+      "latency": 1,
+      "latency_known": true,
+      "compare_mode": "fixed_latency",
+      "reset": {"signal": "rst", "kind": "sync", "active_high": true, "duration_cycles": 5},
+      "clock_domains": ["clk"],
+      "parameters": {"CLKS_PER_BIT": 16},
+      "examples": []
+    }
+  ],
+  "connections": [
+    {"src_module": "sync_fifo", "src_port": "out_data", "dst_module": "uart_tx", "dst_port": "tx_data"},
+    {"src_module": "sync_fifo", "src_port": "out_valid", "dst_module": "uart_tx", "dst_port": "tx_valid"},
+    {"src_module": "uart_tx", "src_port": "tx_ready", "dst_module": "sync_fifo", "dst_port": "out_ready"}
+  ],
+  "external_ports": [
+    {"name": "clk", "direction": "input", "width": 1, "protocol": "none", "signed": false},
+    {"name": "rst", "direction": "input", "width": 1, "protocol": "none", "signed": false},
+    {"name": "in_data", "direction": "input", "width": 8, "protocol": "none", "signed": false},
+    {"name": "in_valid", "direction": "input", "width": 1, "protocol": "none", "signed": false},
+    {"name": "in_ready", "direction": "output", "width": 1, "protocol": "none", "signed": false},
+    {"name": "tx", "direction": "output", "width": 1, "protocol": "none", "signed": false}
+  ]
+}

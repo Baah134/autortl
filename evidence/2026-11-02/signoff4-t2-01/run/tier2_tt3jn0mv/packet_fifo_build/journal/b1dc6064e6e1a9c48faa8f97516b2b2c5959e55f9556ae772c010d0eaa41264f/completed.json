@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_3:decision:instruction:0",
+  "result": "In `packet_fifo_core`, keep the registered `head_data` and `head_last` outputs, but replace `data_mem` and `last_mem` with a tail of `DEPTH-1` tuples that shifts toward the head on pop; append accepted inputs at the position determined by occupancy, including full simultaneous pop/push. Preserve the existing top annotation `// @latency 1`, ready/valid behavior, reset priority, and all supported WIDTH and DEPTH values, including DEPTH=1 and non-power-of-two depths. Preserve tuple order and stall stability, and leave invalid output payload unspecified; the expected benefit is fewer LUTs from removing the dynamic RAM access structure, which must be confirmed in routed utilization while every verification and timing gate still passes.",
+  "artifacts": {}
+}

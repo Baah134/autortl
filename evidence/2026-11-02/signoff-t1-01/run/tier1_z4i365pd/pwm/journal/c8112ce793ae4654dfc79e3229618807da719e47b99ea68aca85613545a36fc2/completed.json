@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_2:model:planner.plan:0",
+  "result": "# PLAN \u2014 iteration 2\n## Current state assessment\nThe timing-feasible incumbent uses 7 LUTs and 9 FFs, so this iteration must strictly reduce LUTs to improve the `minimize_luts` objective. Iteration 1 passed behavior and timing but raised LUT use to 10; its 8-bit counter with natural wrap was rejected. The top\u2019s numeric latency is unknown, so no numeric annotation is required.\n\n## Hypothesis\nExpressing the unsigned PWM comparison as an upper-bits-zero check plus an 8-bit comparison may let Vivado use a smaller comparator while preserving the existing 32-bit counter behavior.\n\n## Instruction for generator\nKeep the 32-bit counter, its `counter == 255` clear branch, the synchronous reset, and the registered `pwm_out` update unchanged. Replace only `counter < {24'd0, duty}` with the equivalent condition `counter[31:8] == 0` and `counter[7:0] < duty`. This is a trial for strict LUT reduction; preserve all behavior and retain it only if the fixed simulation and routed gates pass and LUT usage is below 7.",
+  "artifacts": {}
+}

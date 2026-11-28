@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_2:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 2\n## Contract check\n- Top interface and defined behavior: PASS \u2014 ladder is ALIVE; integration simulation passed, with the candidate preserving the specified arbitration, registered writes, read-first behavior, and resets.\n- Top latency annotation: PASS \u2014 authoritative top latency is unknown, so the missing top annotation is not a failure.\n- Compile, elaborate, and simulate: PASS \u2014 xvlog, xelab, and xsim exited successfully; the required `TEST PASSED` verdict is present.\n- Metrics and retained evidence: PASS \u2014 routed reports and successful synthesis completion are recorded; required tool exits passed.\n- Timing closure: PASS \u2014 candidate timing is feasible, with WNS 0.57 ns and WHS 0.146 ns.\n- Objective improvement over previous best: FAIL \u2014 both designs are timing-feasible; for `minimize_luts`, LUTs increased from 42 to 50, while FFs stayed at 90. The recorded improvement kind is null.\n## Summary\n- Passed: 5 of 6\n- Failed: 1 of 6\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes behavioral, build, evidence, and timing checks, but the previous best is already timing-feasible and the candidate uses more LUTs with no FF reduction. It therefore does not meet the required strict `minimize_luts` objective improvement. Stall count is 1, below the RESTART threshold.",
+      "recommendation": "REJECT",
+      "passed": 5,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

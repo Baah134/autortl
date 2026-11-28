@@ -1,0 +1,45 @@
+{
+  "candidates": [
+    {
+      "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff-t1-01\\tier1_z4i365pd\\pwm\\iter_003\\cand_standard",
+      "cache_hit": false,
+      "final_code_hash": "52d8124ab2f5e216",
+      "final_source_sha256": "7e2e0c0d4333a02e111c50cc0d96afd18a4c04563b53328d550d7695fc5c9247",
+      "flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff-t1-01\\tier1_z4i365pd\\pwm\\iter_003\\cand_standard\\synth.tcl",
+        "sha256": "f7128ab173133125189bea464422113fe73ff2a0b1e40bd2baeef33c04c30e92"
+      },
+      "generated_code_hash": "52d8124ab2f5e216",
+      "generated_source_sha256": "7e2e0c0d4333a02e111c50cc0d96afd18a4c04563b53328d550d7695fc5c9247",
+      "instruction": "Keep the 32-bit counter, its `counter == 32'd255` clear branch, synchronous reset, and registered `pwm_out` update unchanged. Replace only the `counter < {24'd0, duty}` expression with an equivalent comparison that first checks `counter[31:8] == 0`, then compares the high nibbles of `counter[7:0]` and `duty`, using low-nibble comparison only when the high nibbles are equal. Preserve the exact output for every counter and duty value; retain this candidate only if routed evidence shows strict objective improvement and all verification and timing gates pass.",
+      "iteration": 3,
+      "metrics": {
+        "bram_used": 0.0,
+        "dsp_used": 0,
+        "dynamic_power_w": 0.011,
+        "ff_used": 9,
+        "lut_used": 8,
+        "sim_passed": true,
+        "timing_met": true,
+        "total_power_w": 0.081,
+        "whs_ns": 0.289,
+        "wns_ns": 0.594
+      },
+      "mutation": "standard",
+      "reason": "",
+      "rungs": 5,
+      "source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff-t1-01\\tier1_z4i365pd\\pwm\\iter_003\\cand_standard\\pwm.v",
+        "sha256": "6d7296f4ec4c4256f3edbdb006dadc1d350d468603dd852c053710b94669186f"
+      },
+      "status": "measured"
+    }
+  ],
+  "doctor": null,
+  "instruction": "Keep the 32-bit counter, its `counter == 32'd255` clear branch, synchronous reset, and registered `pwm_out` update unchanged. Replace only the `counter < {24'd0, duty}` expression with an equivalent comparison that first checks `counter[31:8] == 0`, then compares the high nibbles of `counter[7:0]` and `duty`, using low-nibble comparison only when the high nibbles are equal. Preserve the exact output for every counter and duty value; retain this candidate only if routed evidence shows strict objective improvement and all verification and timing gates pass.",
+  "is_best": false,
+  "iteration": 3,
+  "recommendation": "REJECT",
+  "schema_version": 1,
+  "selected_source_sha256": "7e2e0c0d4333a02e111c50cc0d96afd18a4c04563b53328d550d7695fc5c9247"
+}

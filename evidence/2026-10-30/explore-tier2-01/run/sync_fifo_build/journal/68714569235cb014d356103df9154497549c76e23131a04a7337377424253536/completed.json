@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Top interface and latency annotation: PASS \u2014 Ports match the contract, and the top declares `// @latency 1`.\n- FIFO behavior and required child instantiation: PASS \u2014 The top instantiates `sync_fifo_core`; its FIFO state preserves the specified transfers, ordering, stall stability, reset behavior, and cycle timing. The deterministic ladder is ALIVE.\n- Compile, elaboration, and simulation: PASS \u2014 `xvlog`, `xelab`, and `xsim -runall` exited successfully; the unchanged testbench reports `TEST PASSED`.\n- Synthesis and process receipts: PASS \u2014 Required process evidence is successful, and the synthesis log contains `SYNTH_COMPLETE`.\n- Routed metrics and integrity: PASS \u2014 Retained routed reports support the candidate metrics: 21 LUTs, WNS 0.063 ns, and WHS 0.099 ns.\n- Timing feasibility: PASS \u2014 `timing_met=true`; setup and hold slack are nonnegative.\n- Improvement over previous best: PASS \u2014 The previous best had known infeasible setup timing (WNS \u22120.931 ns). This candidate\u2019s verified timing recovery qualifies despite using more LUTs.\n- Objective and improvement classification: PASS \u2014 `timing_recovery` is the correct classification; strict LUT reduction applies only once both designs are timing-feasible.\n## Summary\n- Passed: 8 of 8\n- Failed: 0 of 8\n- Improved over previous best: YES\n## Recommendation\nACCEPT\n## Reason\nThe candidate passes the mandatory behavioral, verification, receipt, and routed metric gates, and recovers timing feasibility from a known setup failure. The LUT increase does not disqualify this timing recovery.",
+      "recommendation": "ACCEPT",
+      "passed": 8,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}

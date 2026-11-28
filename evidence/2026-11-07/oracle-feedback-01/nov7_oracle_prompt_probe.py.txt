@@ -1,0 +1,43 @@
+import ast, json, sys, hashlib
+from pathlib import Path
+root=Path('C:/Users/prince.baah/Downloads/autortl-work')
+work=Path(__file__).resolve().parent
+sys.path.insert(0,str(root))
+from autortl import roles, golden_worker
+from autortl.spec import DesignSpec
+spec=DesignSpec.from_json((root/'curriculum/tier6/aes128_core_build/design_spec.json').read_text(encoding='utf-8')).module('aes_ctrl')
+captured=[]
+sources=['# REJECTED_SOURCE_A_SENTINEL_8e29\ndef init(): return {}\ndef step(s,i): return s,{}',
+         '# REJECTED_SOURCE_B_SENTINEL_7540\ndef init(): return {}\ndef step(s,i): return s,{}',
+         'def init(): return {}\ndef step(s,i): return s,{}']
+def capture(*args, **kwargs):
+    captured.append(args[1]); return sources[len(captured)-1]
+roles.ask=capture
+roles.conventions=lambda:''
+g=roles.Generator()
+g.golden_model(spec,None)
+g.golden_model(spec,None,feedback='ValueError: FIRST_MATCHING_ERROR_8e29')
+g.golden_model(spec,None,feedback='ValueError: SECOND_MATCHING_ERROR_7540')
+source=(root/'logs/explore-aes-20261107-01/aes128_core_build/modules/aes_ctrl/golden.py').read_text(encoding='utf-8')
+tree=ast.parse(source)
+try:golden_worker.validate_source(source)
+except ValueError as e:validation=str(e)
+else:validation='accepted'
+report={
+ 'prompt_count':len(captured),'model_dispatches':0,
+ 'repair1_contains_latest_error':'FIRST_MATCHING_ERROR_8e29' in captured[1],
+ 'repair2_contains_latest_error':'SECOND_MATCHING_ERROR_7540' in captured[2],
+ 'repair1_contains_failed_source':'REJECTED_SOURCE_A_SENTINEL_8e29' in captured[1],
+ 'repair2_contains_failed_source':'REJECTED_SOURCE_B_SENTINEL_7540' in captured[2],
+ 'prompt_has_helper_permission':'Helper functions are allowed.' in captured[0],
+ 'prompt_has_top_level_helper_constraint':'top-level' in captured[0],
+ 'public_examples_count':len(spec.examples),
+ 'prompt_contains_exact_example_outputs':[{k:str(v) in captured[0] for k,v in e.expected.items()} for e in spec.examples],
+ 'top_level_function_names':[n.name for n in tree.body if isinstance(n,ast.FunctionDef)],
+ 'nested_function_names':[n.name for n in ast.walk(tree) if isinstance(n,ast.FunctionDef) and n not in tree.body],
+ 'pure_ast_validation':validation,
+ 'source_sha256':hashlib.sha256((root/'logs/explore-aes-20261107-01/aes128_core_build/modules/aes_ctrl/golden.py').read_bytes()).hexdigest(),
+ 'limits':'Prompt capture and AST validation only; generated Python was not executed; no vendor, model, or board action.'
+}
+(work/'nov7-oracle-prompt-probe.json').write_text(json.dumps(report,indent=2)+'\n',encoding='utf-8')
+print(json.dumps(report))

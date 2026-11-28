@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_1:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 1,
+    "instruction": "In `priority_encoder8_core`, replace the descending `if/else` index selection with explicit equations: `index[2]` is the OR of `request[7:4]`; `index[1]` selects requests 7/6, or requests 3/2 when no upper-half request is set; `index[0]` is true for request 7, request 5 when 7/6 are clear, request 3 when 7:4 are clear, or request 1 when 7:2 are clear. Keep `valid` as the OR reduction of all request bits, and register these results with the existing reset behavior and output registers. Preserve the top interface and its `// @latency 1` annotation; add no state or cycles. This is a LUT-count hyp",
+    "candidates": [
+      {
+        "iteration": 1,
+        "mutation": "standard",
+        "instruction": "In `priority_encoder8_core`, replace the descending `if/else` index selection with explicit equations: `index[2]` is the OR of `request[7:4]`; `index[1]` selects requests 7/6, or requests 3/2 when no upper-half request is set; `index[0]` is true for request 7, request 5 when 7/6 are clear, request 3 when 7:4 are clear, or request 1 when 7:2 are clear. Keep `valid` as the OR reduction of all request bits, and register these results with the existing reset behavior and output registers. Preserve the top interface and its `// @latency 1` annotation; add no state or cycles. This is a LUT-count hyp",
+        "generated_source_sha256": "8640dd5c26b46cb37e7dbb13255b9bfd154c45ab478b5ef5ef98b0605ae2b4ca",
+        "final_source_sha256": "8640dd5c26b46cb37e7dbb13255b9bfd154c45ab478b5ef5ef98b0605ae2b4ca",
+        "generated_code_hash": "13bc22c4d1f0112b",
+        "final_code_hash": "13bc22c4d1f0112b",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.591,
+          "whs_ns": 0.1,
+          "lut_used": 4,
+          "ff_used": 4,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.011,
+          "total_power_w": 0.081
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff-t1-03\\tier1_b9ba9ss_\\encoder8_build\\iter_001\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff-t1-03\\tier1_b9ba9ss_\\encoder8_build\\iter_001\\cand_standard\\synth.tcl",
+          "sha256": "6e05b56cf00f92f818f3456564536b01c9aab6c769cf15fc911144f3e576c4c6"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff-t1-03\\tier1_b9ba9ss_\\encoder8_build\\iter_001\\cand_standard\\priority_encoder8.v",
+          "sha256": "513b5c5aa58ba54949d7f1d14b2ae22e6c01f09fddf9cbf459ea7ed7284d9120"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "ACCEPT",
+    "is_best": true,
+    "selected_source_sha256": "8640dd5c26b46cb37e7dbb13255b9bfd154c45ab478b5ef5ef98b0605ae2b4ca"
+  },
+  "artifacts": {}
+}

@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_4:model:planner.plan:0",
+  "result": "# PLAN \u2014 iteration 4\n## Current state assessment\nThe verified incumbent remains timing-infeasible at WNS \u22122.766 ns, with WHS +0.168 ns; the objective is still timing progress toward closure. The advisor trial identifies an output path from a `y_out` replica register through an OBUF, while the original baseline\u2019s critical path was a deep DSP cascade. Iterations 1 and 2 were accepted; iteration 3 was rejected, but its failed proposal is unspecified. The current top already declares the required `// @latency 1`.\n\n## Hypothesis\nPacking the existing registered `y_out` bits into 7-series I/O blocks may shorten the output path and improve setup WNS without changing its cycle behavior.\n\n## Instruction for generator\nApply Xilinx `(* IOB = \"TRUE\" *)` to the existing `y_out` output register. Keep its assignment, synchronous reset, and all pipeline registers unchanged so the output remains registered with identical cycle behavior. Preserve the parameterized symmetric and general coefficient paths; retain the `// @latency 1` annotation.",
+  "artifacts": {}
+}

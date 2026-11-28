@@ -1,0 +1,25 @@
+[lint] planner spec repair 1: connection: unknown src module 'uart_fifo'; connection: unknown src module 'uart_fifo'; connection: unknown src module 'uart_fifo'; connection: unknown src module 'uart_fifo'; connection: unknown dst module 'uart_fifo'; connection: unknown src module 'uart_fifo'; connection: unknown src module 'uart
+[lint] planner spec repair 2: top_name must be 'uart_fifo' as the request fixes it (the trusted testbench instantiates it), not 'uart_fifo_top'
+[module byte_fifo] golden model + testbench...
+[module byte_fifo] tb qualification: detected flip < to >
+[module uart_tx] golden model + testbench...
+[module uart_tx] tb qualification: detected flip == to !=
+[build] integrated design compiles; entering optimize loop as baseline
+[build] editable unit: byte_fifo, uart_tx + uart_fifo; verified by the trusted integration testbench
+[iter 0] baseline LUTs=170 FFs=117 WNS=-1.188
+[doctor] wns=-0.827 category=high_fanout action=rtl_surgery
+[iter 1] *** NEW BEST *** LUTs=120 FFs=89 WNS=-0.827
+[doctor] wns=-0.057 category=high_fanout action=tool_knobs
+[iter 2] *** NEW BEST *** LUTs=119 FFs=89 WNS=0.011
+[iter 3] *** NEW BEST *** LUTs=112 FFs=85 WNS=0.058
+[iter 4] *** NEW BEST *** LUTs=36 FFs=27 WNS=0.179
+[doctor] wns=-0.92 category=unknown action=rtl_surgery
+[iter 5] REJECT LUTs=39 (best iter 4, stall 1)
+[doctor] wns=-0.92 category=unknown action=rtl_surgery
+[iter 6] REJECT LUTs=39 (best iter 4, stall 2)
+[doctor] wns=-0.944 category=unknown action=rtl_surgery
+{
+  "status": "budget_exhausted",
+  "best_iteration": 4,
+  "run_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier3-08\\uart_fifo_build"
+}

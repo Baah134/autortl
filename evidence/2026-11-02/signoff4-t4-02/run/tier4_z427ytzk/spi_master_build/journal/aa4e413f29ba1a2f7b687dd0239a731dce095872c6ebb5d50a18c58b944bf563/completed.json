@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_1:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 1,
+    "instruction": "In `spi_master_core`, remove `rsp_data_reg` and drive `rsp_data` from `rx_shift`; remove its reset and completion assignments. Preserve the receive shift schedule so its final sampled byte is held unchanged throughout `rsp_valid`, including response stalls, and changes only when the next command is accepted or reset occurs. Keep the top annotation `// @latency 33`, and preserve all `HALF_PERIOD` timing, handshake, reset, and bus behavior.",
+    "candidates": [
+      {
+        "iteration": 1,
+        "mutation": "standard",
+        "instruction": "In `spi_master_core`, remove `rsp_data_reg` and drive `rsp_data` from `rx_shift`; remove its reset and completion assignments. Preserve the receive shift schedule so its final sampled byte is held unchanged throughout `rsp_valid`, including response stalls, and changes only when the next command is accepted or reset occurs. Keep the top annotation `// @latency 33`, and preserve all `HALF_PERIOD` timing, handshake, reset, and bus behavior.",
+        "generated_source_sha256": "814295801352aaf784457681c4d102153eb5bdc6d9ab081a747b248da80ff555",
+        "final_source_sha256": "814295801352aaf784457681c4d102153eb5bdc6d9ab081a747b248da80ff555",
+        "generated_code_hash": "b74073a08534e053",
+        "final_code_hash": "b74073a08534e053",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.33,
+          "whs_ns": 0.051,
+          "lut_used": 27,
+          "ff_used": 36,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.015,
+          "total_power_w": 0.085
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-02\\tier4_z427ytzk\\spi_master_build\\iter_001\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-02\\tier4_z427ytzk\\spi_master_build\\iter_001\\cand_standard\\synth.tcl",
+          "sha256": "7a0e1b483e4d0458b2c5f04ec6db3838dd6ce6e80946512298312b57c5f3b844"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-02\\tier4_z427ytzk\\spi_master_build\\iter_001\\cand_standard\\spi_master.v",
+          "sha256": "2ff804b614b3798ccebd70c46c1a6d33853ee3541cf38b61cff772b09ba06b7d"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "ACCEPT",
+    "is_best": true,
+    "selected_source_sha256": "814295801352aaf784457681c4d102153eb5bdc6d9ab081a747b248da80ff555"
+  },
+  "artifacts": {}
+}

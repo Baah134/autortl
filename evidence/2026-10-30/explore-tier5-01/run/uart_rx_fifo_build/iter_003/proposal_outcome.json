@@ -1,0 +1,45 @@
+{
+  "candidates": [
+    {
+      "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_003\\cand_standard",
+      "cache_hit": false,
+      "final_code_hash": "10a3845938ceaa00",
+      "final_source_sha256": "ac6034af0e03a9284763a7af685388aab7c670650ff77529428470862fee7204",
+      "flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_003\\cand_standard\\synth.tcl",
+        "sha256": "48838ea9786ee09e9af60123d98b5bac754b85f74d69b01f638aa7f78818ec91"
+      },
+      "generated_code_hash": "10a3845938ceaa00",
+      "generated_source_sha256": "ac6034af0e03a9284763a7af685388aab7c670650ff77529428470862fee7204",
+      "instruction": "In `uart_rx_core`, replace `rx_shift[bit_index - 1'b1] <= majority_vote` in the data-bit branch with a right shift that inserts `majority_vote` at bit 7; after the eighth data decision, the register holds the byte in normal bit order. Keep the existing `bit_index` qualification, sample/decision edges, start-of-frame clear, reset behavior, and stop-bit capture unchanged. Preserve behavior for every supported `OVERSAMPLE_DIV`, then rely on the frozen integration testbench and routed reports to establish correctness, strict LUT improvement, and setup/hold closure.",
+      "iteration": 3,
+      "metrics": {
+        "bram_used": 0.0,
+        "dsp_used": 0,
+        "dynamic_power_w": 0.004,
+        "ff_used": 59,
+        "lut_used": 55,
+        "sim_passed": true,
+        "timing_met": true,
+        "total_power_w": 0.074,
+        "whs_ns": 0.024,
+        "wns_ns": 0.443
+      },
+      "mutation": "standard",
+      "reason": "",
+      "rungs": 5,
+      "source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build\\iter_003\\cand_standard\\uart_rx_fifo.v",
+        "sha256": "19f76fbe2e41bc7ae978b9947f4572ac754735b4f7d0e5dbad3e7cc9c399fcfb"
+      },
+      "status": "measured"
+    }
+  ],
+  "doctor": null,
+  "instruction": "In `uart_rx_core`, replace `rx_shift[bit_index - 1'b1] <= majority_vote` in the data-bit branch with a right shift that inserts `majority_vote` at bit 7; after the eighth data decision, the register holds the byte in normal bit order. Keep the existing `bit_index` qualification, sample/decision edges, start-of-frame clear, reset behavior, and stop-bit capture unchanged. Preserve behavior for every supported `OVERSAMPLE_DIV`, then rely on the frozen integration testbench and routed reports to establish correctness, strict LUT improvement, and setup/hold closure.",
+  "is_best": true,
+  "iteration": 3,
+  "recommendation": "ACCEPT",
+  "schema_version": 1,
+  "selected_source_sha256": "ac6034af0e03a9284763a7af685388aab7c670650ff77529428470862fee7204"
+}

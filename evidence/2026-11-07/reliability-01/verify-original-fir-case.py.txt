@@ -1,0 +1,51 @@
+from pathlib import Path
+import hashlib
+import json
+import re
+
+HERE = Path(__file__).resolve().parent
+ROOT = Path('C:/Users/prince.baah/Downloads/autortl-work')
+DOC = HERE / 'docs/CASE_STUDY_FIR.md'
+text = DOC.read_text(encoding='utf-8')
+
+def sha(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+links = re.findall(r'\]\(([^)]+)\)', text)
+verified = []
+for target in links:
+    resolved = (ROOT / 'docs' / target).resolve()
+    resolved.relative_to(ROOT.resolve())
+    assert resolved.is_file(), target
+    verified.append({'target': target, 'sha256': sha(resolved)})
+
+run = ROOT / 'evidence/2026-10-26/generated-signed-fir4-attempt-01'
+result = json.loads((run / 'result.json').read_text())
+expected = {
+    'lut_used': (78, 52), 'ff_used': (66, 67), 'dsp_used': (0, 0),
+    'bram_used': (0, 0), 'wns_ns': (-0.327, 0.169),
+    'whs_ns': (0.029, 0.106), 'total_power_w': (0.088, 0.088),
+}
+assert all((result['baseline_metrics'][k], result['best_metrics'][k]) == v
+           for k, v in expected.items())
+winner = run / 'run/signed_fir4_best.v'
+board = ROOT / 'hardware/basys3/fir4_on_board/dut/signed_fir4.v'
+assert sha(winner) == sha(board) == '55e3c7d068fe65961dbbda2f7b5e40deb4b28692b1f1d45ef5689e2437b4ba62'
+baseline_timing = (run / 'run/iter_000/timing_routed.rpt').read_text()
+winner_timing = (run / 'run/iter_003/cand_standard/timing_routed.rpt').read_text()
+assert '5.653ns' in baseline_timing and 'LUT4=1 OBUF=1' in baseline_timing
+assert '5.156ns' in winner_timing and 'LUT2=1 OBUF=1' in winner_timing
+independent = json.loads((run / 'verification/independent/result.json').read_text())
+assert independent['passed'] is True
+assert all(row['returncode'] == 0 for row in independent['process_exits']['records'])
+word_count = len(re.findall(r"\S+", re.sub(r'\]\([^)]+\)', ']', text)))
+assert word_count <= 650, word_count
+report = {
+    'word_count': word_count, 'links_checked': len(verified), 'missing_links': [],
+    'doc_sha256': sha(DOC), 'winner_board_match': True,
+    'verified_metrics': {k: list(v) for k, v in expected.items()},
+    'independent_simulator_exits': [row['returncode'] for row in independent['process_exits']['records']],
+    'links': verified, 'vendor_jobs_launched': 0, 'board_actions': 0,
+}
+(HERE / 'verification.json').write_text(json.dumps(report, indent=2) + '\n')
+print(json.dumps({k: v for k, v in report.items() if k != 'links'}))

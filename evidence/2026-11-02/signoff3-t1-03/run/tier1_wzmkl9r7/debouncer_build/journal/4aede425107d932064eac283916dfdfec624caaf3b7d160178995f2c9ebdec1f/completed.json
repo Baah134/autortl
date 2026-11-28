@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_1:decision:instruction:0",
+  "result": "Keep the top interface and `// @latency 0` annotation, and replace the child instance with top-local registered logic: retain `clean`, `candidate`, and a 3-bit counter; load 3'd7 on a candidate mismatch, decrement on matching samples until zero, and update `clean` on a matching sample when the counter is zero. Reset remains synchronous active-high, setting `clean` and `candidate` to zero and the counter to zero; verify that both the initial stable-zero case and every transition still change `clean` only after eight consecutive samples. This is a LUT-reduction experiment, not a guaranteed improvement; preserve all gates and promote only on verified routed evidence.",
+  "artifacts": {}
+}

@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_2:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 2,
+    "instruction": "In `spi_master_core`, replace the fixed `reg [3:0] half_count` with a parameter-sized counter using a local width of at least one bit, such as `max(1, $clog2(HALF_PERIOD))`. Keep its reset, transfer-start, terminal-count comparison, increment, and clear behavior cycle-identical for every supported `HALF_PERIOD`; retain the existing edge counter and direct receive accumulation. Keep the top interface and `// @latency 33` annotation unchanged.",
+    "candidates": [
+      {
+        "iteration": 2,
+        "mutation": "standard",
+        "instruction": "In `spi_master_core`, replace the fixed `reg [3:0] half_count` with a parameter-sized counter using a local width of at least one bit, such as `max(1, $clog2(HALF_PERIOD))`. Keep its reset, transfer-start, terminal-count comparison, increment, and clear behavior cycle-identical for every supported `HALF_PERIOD`; retain the existing edge counter and direct receive accumulation. Keep the top interface and `// @latency 33` annotation unchanged.",
+        "generated_source_sha256": "5a7ada4813104ad838e5c82a84f2e8dde548a5a82a286621178dfccbcc77608e",
+        "final_source_sha256": "5a7ada4813104ad838e5c82a84f2e8dde548a5a82a286621178dfccbcc77608e",
+        "generated_code_hash": "8c83189661f67915",
+        "final_code_hash": "8c83189661f67915",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.313,
+          "whs_ns": 0.177,
+          "lut_used": 20,
+          "ff_used": 31,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.015,
+          "total_power_w": 0.085
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-01\\tier4_609n_qcd\\spi_master_build\\iter_002\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-01\\tier4_609n_qcd\\spi_master_build\\iter_002\\cand_standard\\synth.tcl",
+          "sha256": "f166628bd80c3ad8f244eedaf0d4aaa4924f2026f65ec3a7477f8b01bee4ec5e"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-01\\tier4_609n_qcd\\spi_master_build\\iter_002\\cand_standard\\spi_master.v",
+          "sha256": "bad6a6f29d79a5825363217f30e2db049d932969dfdf303a2da8db1d5ee9844b"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": "5a7ada4813104ad838e5c82a84f2e8dde548a5a82a286621178dfccbcc77608e"
+  },
+  "artifacts": {}
+}

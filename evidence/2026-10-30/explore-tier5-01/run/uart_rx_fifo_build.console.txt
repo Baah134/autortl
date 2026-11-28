@@ -1,0 +1,23 @@
+[module uart_rx_core] golden model + testbench...
+[module uart_rx_core] tb qualification: detected stuck-one outputs; missed: flip == to !=, stuck-zero outputs
+[module rx_fifo] golden model + testbench...
+[module rx_fifo] tb qualification: detected flip < to >
+[module rx_err_count] golden model + testbench...
+[module rx_err_count] tb qualification: detected flip < to >
+[build] integrated design compiles; entering optimize loop as baseline
+[build] editable unit: uart_rx_core, rx_fifo, rx_err_count + uart_rx_fifo; verified by the trusted integration testbench
+[iter 0] baseline LUTs=65 FFs=55 WNS=-1.166
+[doctor] wns=-0.298 category=high_fanout action=tool_knobs
+[iter 1] *** NEW BEST *** LUTs=70 FFs=78 WNS=0.042
+[doctor] wns=-0.123 category=high_fanout action=rtl_surgery
+[iter 2] *** NEW BEST *** LUTs=66 FFs=59 WNS=0.548
+[iter 3] *** NEW BEST *** LUTs=55 FFs=59 WNS=0.443
+
+DONE — best from iter 3: LUTs=55 FFs=59 WNS=0.443
+{
+  "status": "done",
+  "best_iteration": 3,
+  "timing_closed": true,
+  "improvement_kind": "timing_recovery",
+  "run_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\uart_rx_fifo_build"
+}

@@ -1,0 +1,36 @@
+﻿{"source_files": 273, "freeze": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-04-source-freeze.json"}
+{"exit_code": 0, "seconds": 347.06300000008196, "summary": "1706 passed in 346.03s (0:05:46)", "source_unchanged": true, "source_files": 273, "source_freeze_sha256": "d1c4d77c0aba08f3aa3d3a0953247c3e43415c29df10496f1dbda39137a4dc9c"}
+{"prelaunch": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\tier1-campaign-04-prelaunch.json", "budgets_per_entry": {"iterations": null, "best_of_n": 1, "model_calls": 30, "tool_minutes": 40, "wall_minutes": 60, "infra_retries": 1}}
+[bench] debouncer_build: finished (1/4)
+[bench] counter8_build: finished (2/4)
+[bench] encoder8_build: finished (3/4)
+[bench] pwm: finished (4/4)
+[module counter8_core] golden model + testbench...
+[build] integrated design compiles; entering optimize loop as baseline
+[iter 0] baseline LUTs=6 FFs=8 WNS=0.424
+[iter 1] REJECT LUTs=6 (best iter 0, stall 1)
+
+DONE — best from iter 0: LUTs=6 FFs=8 WNS=0.424
+[module debouncer] golden model + testbench...
+[module priority_encoder8_core] golden model + testbench...
+[build] integrated design compiles; entering optimize loop as baseline
+[iter 0] baseline LUTs=6 FFs=4 WNS=0.528
+[iter 1] *** NEW BEST *** LUTs=3 FFs=4 WNS=0.591
+
+DONE — best from iter 1: LUTs=3 FFs=4 WNS=0.591
+[iter 0] baseline LUTs=7 FFs=9 WNS=0.553
+[iter 1] REJECT LUTs=10 (best iter 0, stall 1)
+[iter 2] REJECT LUTs=7 (best iter 0, stall 2)
+[iter 3] REJECT LUTs=11 (best iter 0, stall 3)
+[watchdog] STAGNATION: 3 consecutive iterations without improvement
+[iter 4] REJECT LUTs=10 (best iter 0, stall 4)
+[watchdog] STAGNATION: 3 consecutive iterations without improvement
+[iter 5] REJECT LUTs=10 (best iter 0, stall 5)
+
+DONE — best from iter 0: LUTs=7 FFs=9 WNS=0.553
+[bench] counter8_build: PASS (mandatory gates passed)
+[bench] debouncer_build: FAIL (run did not complete successfully)
+[bench] encoder8_build: PASS (mandatory gates passed)
+[bench] pwm: PASS (mandatory gates passed)
+[bench] tier 1: 3/4; held=False; streak=0
+{"exit_code": 1, "wall_seconds": 1278.765999999945, "source_unchanged": true, "router_stats_prefix_unchanged": true, "history_prefix_unchanged": true, "ended_utc": "2026-10-30T16:25:08.532032+00:00"}

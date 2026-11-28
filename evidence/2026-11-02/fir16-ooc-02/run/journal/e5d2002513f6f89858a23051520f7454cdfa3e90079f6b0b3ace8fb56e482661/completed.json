@@ -1,0 +1,81 @@
+{
+  "stage": "iteration_3:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 3,
+    "instruction": "Keep `pair1` and the ready/valid chain unchanged, but replace `acc2 <= total_acc` with eight signed 27-bit product registers for `p0` through `p7`, captured under `ready2 && v1`; hold their payload when slot 2 stalls. In slot 3, sum those registered products with a balanced tree into the exact signed 28-bit accumulator, then carry it through the existing elastic slots and register the rounded value in slot 4 so slot 5 only performs the existing saturation and output hold. Preserve the top interface, reset and valid behavior, exact arithmetic, and `// @latency 5`; if the candidate remains infea",
+    "candidates": [
+      {
+        "iteration": 3,
+        "mutation": "standard",
+        "instruction": "Keep `pair1` and the ready/valid chain unchanged, but replace `acc2 <= total_acc` with eight signed 27-bit product registers for `p0` through `p7`, captured under `ready2 && v1`; hold their payload when slot 2 stalls. In slot 3, sum those registered products with a balanced tree into the exact signed 28-bit accumulator, then carry it through the existing elastic slots and register the rounded value in slot 4 so slot 5 only performs the existing saturation and output hold. Preserve the top interface, reset and valid behavior, exact arithmetic, and `// @latency 5`; if the candidate remains infea",
+        "generated_source_sha256": "5f32d3e20997cbe4e18c5183f1e3b74dbdb1143f10b6a9908712b9fdae1d72de",
+        "final_source_sha256": "5f32d3e20997cbe4e18c5183f1e3b74dbdb1143f10b6a9908712b9fdae1d72de",
+        "generated_code_hash": "738d65867bf45077",
+        "final_code_hash": "738d65867bf45077",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": false,
+          "wns_ns": -5.856,
+          "whs_ns": 0.122,
+          "lut_used": 161,
+          "ff_used": 278,
+          "dsp_used": 8,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.016,
+          "total_power_w": 0.085
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\fir16-ooc-02\\iter_003\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\fir16-ooc-02\\iter_003\\cand_standard\\synth.tcl",
+          "sha256": "04163bb9c0fbcd3eadeaca6d759905dc24314cda4c79e37619d41a36f768f5c3"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\fir16-ooc-02\\iter_003\\cand_standard\\fir16_sym.v",
+          "sha256": "28c05171eb2bddc118791c7d153b6cd203ef4f6ee73956f4f9b5c1d539391a2a"
+        }
+      }
+    ],
+    "doctor": {
+      "status": "NOT_ADOPTED",
+      "action": "rtl_surgery",
+      "reason": "timing_not_closed",
+      "tools_ran": true,
+      "measured_metrics": {
+        "sim_passed": true,
+        "timing_met": false,
+        "wns_ns": -5.856,
+        "whs_ns": 0.146,
+        "lut_used": 161,
+        "ff_used": 279,
+        "dsp_used": 8,
+        "bram_used": 0.0,
+        "dynamic_power_w": 0.016,
+        "total_power_w": 0.085
+      },
+      "adopted": false,
+      "input_source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\fir16-ooc-02\\iter_003\\cand_standard\\fir16_sym.v",
+        "sha256": "28c05171eb2bddc118791c7d153b6cd203ef4f6ee73956f4f9b5c1d539391a2a"
+      },
+      "trial_source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\fir16-ooc-02\\iter_003\\doctor_rtl_surgery_trial\\fir16_sym.v",
+        "sha256": "5a7b2c47498a8e5ff68927027af8e4172adca07310ba5cf3dbb675f9f358eb44"
+      },
+      "trial_flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\fir16-ooc-02\\iter_003\\doctor_rtl_surgery_trial\\synth.tcl",
+        "sha256": "4befcd954ff54f411de86e57d52c60cbae0d04d219ea4302b461ef29c7cd1de9"
+      },
+      "identity_count": 3,
+      "proposed_source_text_sha256": "beef7696b4e2f7617f6912ca0151e30377c80c525a62535c94ab3c9de9286c7e"
+    },
+    "recommendation": "ACCEPT",
+    "is_best": true,
+    "selected_source_sha256": "5f32d3e20997cbe4e18c5183f1e3b74dbdb1143f10b6a9908712b9fdae1d72de"
+  },
+  "artifacts": {}
+}

@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_2:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 2\n## Contract check\n- Interface, reset, cycle behavior, and supported parameters: PASS \u2014 the trusted temporal testbench passed across the default wrapper and all five additional parameter configurations.\n- Top latency annotation: PASS \u2014 `sync_fifo` declares `// @latency 1`, matching the authoritative latency.\n- Compile, elaboration, and simulation gates: PASS \u2014 xvlog, xelab, and xsim exited successfully; xsim reported the exact `TEST PASSED` verdict.\n- Routed report and metric integrity: PASS \u2014 required retained routed reports and successful synthesis evidence are present.\n- Timing closure: PASS \u2014 timing is met with WNS 0.153 ns and WHS 0.128 ns.\n- Objective and promotion: PASS \u2014 LUTs tie the previous best at 23, while FFs improve from 15 to 13, a strict lexicographic improvement for `minimize_luts`.\n- Stall threshold: PASS \u2014 stall count is 0, below the RESTART threshold.\n## Summary\n- Passed: 7 of 7\n- Failed: 0 of 7\n- Improved over previous best: YES\n## Recommendation\nACCEPT\n## Reason\nThe candidate passes the deterministic verification and implementation gates, closes timing, and improves the chosen objective by reducing FFs while keeping LUTs equal to the previous best.",
+      "recommendation": "ACCEPT",
+      "passed": 7,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}

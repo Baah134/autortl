@@ -1,0 +1,80 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025
+| Date         : Fri Oct 30 18:37:15 2026
+| Host         : Baah running 64-bit major release  (build 9200)
+| Command      : report_timing -from [all_registers] -to [all_registers] -max_paths 1 -file C:/Users/prince.baah/Downloads/autortl-portability/logs/explore-tier3-02/iterative_divider_build/iter_002/cand_standard/timing_reg2reg.rpt
+| Design       : iterative_divider
+| Device       : 7a35t-cpg236
+| Speed File   : -1  PRODUCTION 1.23 2018-06-13
+| Design State : Routed
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Timing Report
+
+Slack (MET) :             4.991ns  (required time - arrival time)
+  Source:                 u_iterative_divider_core/divisor_work_reg[3]/C
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            u_iterative_divider_core/quotient_work_reg[0]/D
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            10.000ns  (clk rise@10.000ns - clk rise@0.000ns)
+  Data Path Delay:        4.892ns  (logic 1.774ns (36.265%)  route 3.118ns (63.735%))
+  Logic Levels:           4  (CARRY4=2 LUT3=1 LUT4=1)
+  Clock Path Skew:        -0.020ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    4.268ns = ( 14.268 - 10.000 ) 
+    Source Clock Delay      (SCD):    4.624ns
+    Clock Pessimism Removal (CPR):    0.336ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+    M18                                               0.000     0.000 r  clk (IN)
+                         net (fo=0)                   0.000     0.000    clk
+    M18                  IBUF (Prop_ibuf_I_O)         0.938     0.938 r  clk_IBUF_inst/O
+                         net (fo=1, routed)           1.972     2.910    clk_IBUF
+    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.096     3.006 r  clk_IBUF_BUFG_inst/O
+                         net (fo=59, routed)          1.618     4.624    u_iterative_divider_core/CLK
+    SLICE_X3Y24          FDRE                                         r  u_iterative_divider_core/divisor_work_reg[3]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X3Y24          FDRE (Prop_fdre_C_Q)         0.456     5.080 r  u_iterative_divider_core/divisor_work_reg[3]/Q
+                         net (fo=5, routed)           1.142     6.222    u_iterative_divider_core/divisor_work[3]
+    SLICE_X5Y26          LUT4 (Prop_lut4_I1_O)        0.124     6.346 r  u_iterative_divider_core/subtract_bit_carry_i_7/O
+                         net (fo=1, routed)           0.000     6.346    u_iterative_divider_core/subtract_bit_carry_i_7_n_0
+    SLICE_X5Y26          CARRY4 (Prop_carry4_S[1]_CO[3])
+                                                      0.550     6.896 r  u_iterative_divider_core/subtract_bit_carry/CO[3]
+                         net (fo=1, routed)           0.000     6.896    u_iterative_divider_core/subtract_bit_carry_n_0
+    SLICE_X5Y27          CARRY4 (Prop_carry4_CI_CO[0])
+                                                      0.271     7.167 r  u_iterative_divider_core/subtract_bit_carry__0/CO[0]
+                         net (fo=18, routed)          0.667     7.834    u_iterative_divider_core/quotient_step[0]
+    SLICE_X2Y24          LUT3 (Prop_lut3_I0_O)        0.373     8.207 r  u_iterative_divider_core/quotient_work[0]_i_1/O
+                         net (fo=1, routed)           1.309     9.516    u_iterative_divider_core/quotient_work[0]_i_1_n_0
+    SLICE_X1Y23          FDRE                                         r  u_iterative_divider_core/quotient_work_reg[0]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)       10.000    10.000 r  
+    M18                                               0.000    10.000 r  clk (IN)
+                         net (fo=0)                   0.000    10.000    clk
+    M18                  IBUF (Prop_ibuf_I_O)         0.805    10.805 r  clk_IBUF_inst/O
+                         net (fo=1, routed)           1.868    12.673    clk_IBUF
+    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.091    12.764 r  clk_IBUF_BUFG_inst/O
+                         net (fo=59, routed)          1.504    14.268    u_iterative_divider_core/CLK
+    SLICE_X1Y23          FDRE                                         r  u_iterative_divider_core/quotient_work_reg[0]/C
+                         clock pessimism              0.336    14.604    
+                         clock uncertainty           -0.035    14.569    
+    SLICE_X1Y23          FDRE (Setup_fdre_C_D)       -0.062    14.507    u_iterative_divider_core/quotient_work_reg[0]
+  -------------------------------------------------------------------
+                         required time                         14.507    
+                         arrival time                          -9.516    
+  -------------------------------------------------------------------
+                         slack                                  4.991    
+
+
+
+

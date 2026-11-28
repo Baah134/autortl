@@ -1,0 +1,81 @@
+{
+  "stage": "iteration_2:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 2,
+    "instruction": "Keep the delay register, synchronous active-high reset, registered `y_out`, and `// @latency 1` unchanged. Add an elaboration-time fast path for `C0==C7`, `C1==C6`, `C2==C5`, and `C3==C4`: form four sign-extended 17-bit mirrored-sample sums, multiply each by its shared signed coefficient, then combine the 32-bit products with a balanced tree. Retain a general path for all other parameter combinations that preserves the existing signed 32-bit product and sum behavior; run the unchanged verification and routed flow, and compare setup and hold against iteration 1.",
+    "candidates": [
+      {
+        "iteration": 2,
+        "mutation": "standard",
+        "instruction": "Keep the delay register, synchronous active-high reset, registered `y_out`, and `// @latency 1` unchanged. Add an elaboration-time fast path for `C0==C7`, `C1==C6`, `C2==C5`, and `C3==C4`: form four sign-extended 17-bit mirrored-sample sums, multiply each by its shared signed coefficient, then combine the 32-bit products with a balanced tree. Retain a general path for all other parameter combinations that preserves the existing signed 32-bit product and sum behavior; run the unchanged verification and routed flow, and compare setup and hold against iteration 1.",
+        "generated_source_sha256": "4640a725b9da83c1bc71c9c61ac719de236ccb5d9648110268e6a1e74142ea68",
+        "final_source_sha256": "4640a725b9da83c1bc71c9c61ac719de236ccb5d9648110268e6a1e74142ea68",
+        "generated_code_hash": "17303c881a75c08b",
+        "final_code_hash": "17303c881a75c08b",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": false,
+          "wns_ns": -5.32,
+          "whs_ns": 0.177,
+          "lut_used": 64,
+          "ff_used": 128,
+          "dsp_used": 4,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.008,
+          "total_power_w": 0.076
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-02\\tier2_565ez3lf\\fir8\\iter_002\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-02\\tier2_565ez3lf\\fir8\\iter_002\\cand_standard\\synth.tcl",
+          "sha256": "e1d465d348844184c052527b509d07a089506f075d7d72e1f18e7692ce404852"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-02\\tier2_565ez3lf\\fir8\\iter_002\\cand_standard\\fir8.v",
+          "sha256": "21b3531dc1d034828aa0fda6199c258247ed46ea91336b8d68d474c045178225"
+        }
+      }
+    ],
+    "doctor": {
+      "status": "NOT_ADOPTED",
+      "action": "rtl_surgery",
+      "reason": "timing_not_closed",
+      "tools_ran": true,
+      "measured_metrics": {
+        "sim_passed": true,
+        "timing_met": false,
+        "wns_ns": -5.933,
+        "whs_ns": 0.118,
+        "lut_used": 0,
+        "ff_used": 64,
+        "dsp_used": 8,
+        "bram_used": 0.0,
+        "dynamic_power_w": 0.009,
+        "total_power_w": 0.078
+      },
+      "adopted": false,
+      "input_source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-02\\tier2_565ez3lf\\fir8\\iter_002\\cand_standard\\fir8.v",
+        "sha256": "21b3531dc1d034828aa0fda6199c258247ed46ea91336b8d68d474c045178225"
+      },
+      "trial_source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-02\\tier2_565ez3lf\\fir8\\iter_002\\doctor_rtl_surgery_trial\\fir8.v",
+        "sha256": "9fcc456bf34be508c7c190bcde4b9c6613e588a593deee697dadd041384e7152"
+      },
+      "trial_flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-02\\tier2_565ez3lf\\fir8\\iter_002\\doctor_rtl_surgery_trial\\synth.tcl",
+        "sha256": "a5016cc068e5d446528c4362133162c42fd3e18bf2cdd27448a59148797b06a5"
+      },
+      "identity_count": 3,
+      "proposed_source_text_sha256": "eb2a11a5e1b08f3106c8b555e292d1e4839e811dcdafcec24f7673af9d65392f"
+    },
+    "recommendation": "ACCEPT",
+    "is_best": true,
+    "selected_source_sha256": "4640a725b9da83c1bc71c9c61ac719de236ccb5d9648110268e6a1e74142ea68"
+  },
+  "artifacts": {}
+}

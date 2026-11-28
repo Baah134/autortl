@@ -1,0 +1,81 @@
+{
+  "stage": "iteration_1:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 1,
+    "instruction": "In `skid_buffer_core`, replace the `storage[read_ptr]` indexed output with explicit 8-bit head and tail registers, and drive `out_data` directly from the head register; update them on push/pop combinations so the oldest word remains at the head, including simultaneous push/pop when full. Preserve the exact occupancy-based `in_ready` and `out_valid` behavior, synchronous active-high reset, stalled payload stability, and one-cycle minimum transfer age; leave data unspecified when `out_valid` is low. Keep the top module interface and its `// @latency 1` annotation unchanged.",
+    "candidates": [
+      {
+        "iteration": 1,
+        "mutation": "standard",
+        "instruction": "In `skid_buffer_core`, replace the `storage[read_ptr]` indexed output with explicit 8-bit head and tail registers, and drive `out_data` directly from the head register; update them on push/pop combinations so the oldest word remains at the head, including simultaneous push/pop when full. Preserve the exact occupancy-based `in_ready` and `out_valid` behavior, synchronous active-high reset, stalled payload stability, and one-cycle minimum transfer age; leave data unspecified when `out_valid` is low. Keep the top module interface and its `// @latency 1` annotation unchanged.",
+        "generated_source_sha256": "3ba052a98772697e7b15ba7319cdc5a0d3ec76bec7f8196120ac7a4c2f2a9117",
+        "final_source_sha256": "3ba052a98772697e7b15ba7319cdc5a0d3ec76bec7f8196120ac7a4c2f2a9117",
+        "generated_code_hash": "cfc9529d24faf671",
+        "final_code_hash": "cfc9529d24faf671",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": false,
+          "wns_ns": -0.053,
+          "whs_ns": 0.116,
+          "lut_used": 12,
+          "ff_used": 18,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.013,
+          "total_power_w": 0.083
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-02\\tier2_565ez3lf\\skid_buffer_build\\iter_001\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-02\\tier2_565ez3lf\\skid_buffer_build\\iter_001\\cand_standard\\synth.tcl",
+          "sha256": "fd05085663197dd2e4885fd0f9e57c949d63b24d41ba916c4a5a47830773afd8"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-02\\tier2_565ez3lf\\skid_buffer_build\\iter_001\\cand_standard\\skid_buffer.v",
+          "sha256": "366a39a374fe307baf08e8061a1004ebac118e91723c29300288327f563e184d"
+        }
+      }
+    ],
+    "doctor": {
+      "status": "ADOPTED",
+      "action": "rtl_surgery",
+      "reason": "policy_improvement",
+      "tools_ran": true,
+      "measured_metrics": {
+        "sim_passed": true,
+        "timing_met": true,
+        "wns_ns": 0.146,
+        "whs_ns": 0.013,
+        "lut_used": 11,
+        "ff_used": 19,
+        "dsp_used": 0,
+        "bram_used": 0.0,
+        "dynamic_power_w": 0.013,
+        "total_power_w": 0.083
+      },
+      "adopted": true,
+      "input_source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-02\\tier2_565ez3lf\\skid_buffer_build\\iter_001\\cand_standard\\skid_buffer.v",
+        "sha256": "366a39a374fe307baf08e8061a1004ebac118e91723c29300288327f563e184d"
+      },
+      "trial_source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-02\\tier2_565ez3lf\\skid_buffer_build\\iter_001\\doctor_rtl_surgery_trial\\skid_buffer.v",
+        "sha256": "d2b8ce9ea6edddea00dedd0b4cdc47d27876e764d3fbb8d0145593ec1f5bc7bb"
+      },
+      "trial_flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-02\\tier2_565ez3lf\\skid_buffer_build\\iter_001\\doctor_rtl_surgery_trial\\synth.tcl",
+        "sha256": "d7e62bc3a395bad1dee0284a1023d388c7ea269ede8f48b1e89248fa1955a889"
+      },
+      "identity_count": 3,
+      "proposed_source_text_sha256": "9524062fe197182e3b178a88c5fe1767da8b5be72e850c8057ae03434481b415"
+    },
+    "recommendation": "ACCEPT",
+    "is_best": true,
+    "selected_source_sha256": "9524062fe197182e3b178a88c5fe1767da8b5be72e850c8057ae03434481b415"
+  },
+  "artifacts": {}
+}

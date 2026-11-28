@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Interface and cycle behavior: PASS \u2014 ports and widths are preserved; the registered mux and synchronous active-high reset behavior are equivalent.\n- Top latency annotation: PASS \u2014 authoritative latency is unknown, so no numeric annotation is required.\n- Deterministic verification: PASS \u2014 all five ladder rungs are ALIVE; compile, elaboration, and simulation passed with the required verdict.\n- Routed metrics and process integrity: PASS \u2014 required tool exits succeeded and routed metrics are retained.\n- Timing closure: PASS \u2014 timing is feasible, with WNS 0.579 ns and WHS 0.092 ns.\n- Objective improvement: FAIL \u2014 both candidate and previous best are timing-feasible, but LUTs and FFs are unchanged; no strict objective improvement is recorded.\n## Summary\n- Passed: 5 of 6\n- Failed: 1 of 6\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nBecause both designs meet timing, the contract requires a strict improvement in the minimize_luts objective. The candidate ties the previous best at 8 LUTs and 8 FFs, and `improvement_kind` is null, so it does not qualify for promotion.",
+      "recommendation": "REJECT",
+      "passed": 5,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

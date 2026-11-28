@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_2:model:planner.plan:0",
+  "result": "# PLAN \u2014 iteration 2\n## Current state assessment\nIteration 1 is accepted and timing-feasible at 20 LUTs and 31 FFs, improving the baseline LUT count of 21; the current seed already uses its direct receive accumulation. The top must retain `// @latency 33`, and iteration 2 should preserve the SPI schedule and all `HALF_PERIOD` behavior for values 1 through 8.\n\n## Hypothesis\nSizing `half_count` to `HALF_PERIOD` instead of keeping it four bits may reduce LUT use by simplifying its increment and terminal comparison logic, while also reducing FF use; the improvement must be confirmed in routed reports.\n\n## Instruction for generator\nIn `spi_master_core`, replace the fixed `reg [3:0] half_count` with a parameter-sized counter using a local width of at least one bit, such as `max(1, $clog2(HALF_PERIOD))`. Keep its reset, transfer-start, terminal-count comparison, increment, and clear behavior cycle-identical for every supported `HALF_PERIOD`; retain the existing edge counter and direct receive accumulation. Keep the top interface and `// @latency 33` annotation unchanged.",
+  "artifacts": {}
+}

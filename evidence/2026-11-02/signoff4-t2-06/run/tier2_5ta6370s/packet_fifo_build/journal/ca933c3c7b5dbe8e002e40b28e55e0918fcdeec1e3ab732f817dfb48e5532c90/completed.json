@@ -1,0 +1,81 @@
+{
+  "stage": "iteration_2:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 2,
+    "instruction": "In `packet_fifo_core`, remove the `not_full` register and its reset and next-state updates; derive `in_ready` as `(occupancy < DEPTH) || out_ready`, preserving full simultaneous pop/push behavior. Keep the registered head and shift-register tail, occupancy update, synchronous reset priority, and top `// @latency 1` annotation unchanged. Retain the candidate only if it passes all fixed verification and routed metric gates, remains timing-feasible, and strictly improves LUT count over 26\u2014or ties at 26 with fewer than 30 FFs.",
+    "candidates": [
+      {
+        "iteration": 2,
+        "mutation": "standard",
+        "instruction": "In `packet_fifo_core`, remove the `not_full` register and its reset and next-state updates; derive `in_ready` as `(occupancy < DEPTH) || out_ready`, preserving full simultaneous pop/push behavior. Keep the registered head and shift-register tail, occupancy update, synchronous reset priority, and top `// @latency 1` annotation unchanged. Retain the candidate only if it passes all fixed verification and routed metric gates, remains timing-feasible, and strictly improves LUT count over 26\u2014or ties at 26 with fewer than 30 FFs.",
+        "generated_source_sha256": "2064cddf5f464b61db311dc67108f623580303da0cfca82703e7d42e938580fc",
+        "final_source_sha256": "2064cddf5f464b61db311dc67108f623580303da0cfca82703e7d42e938580fc",
+        "generated_code_hash": "dc39a18c83612146",
+        "final_code_hash": "dc39a18c83612146",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": false,
+          "wns_ns": -0.068,
+          "whs_ns": 0.179,
+          "lut_used": 23,
+          "ff_used": 29,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.014,
+          "total_power_w": 0.084
+        },
+        "cache_hit": true,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\packet_fifo_build\\iter_001\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\packet_fifo_build\\iter_001\\cand_standard\\synth.tcl",
+          "sha256": "25abb19095a2fcdbedce9d367739a66fe2070e48402456b0358ec36fad7eb308"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\packet_fifo_build\\iter_001\\cand_standard\\packet_fifo.v",
+          "sha256": "555cc56adf216fe55ba7fb1ddc02c84e5d58990bd545c6e061913def50ea09ca"
+        }
+      }
+    ],
+    "doctor": {
+      "status": "ADOPTED",
+      "action": "rtl_surgery",
+      "reason": "policy_improvement",
+      "tools_ran": true,
+      "measured_metrics": {
+        "sim_passed": true,
+        "timing_met": true,
+        "wns_ns": 0.323,
+        "whs_ns": 0.039,
+        "lut_used": 26,
+        "ff_used": 30,
+        "dsp_used": 0,
+        "bram_used": 0.0,
+        "dynamic_power_w": 0.014,
+        "total_power_w": 0.084
+      },
+      "adopted": true,
+      "input_source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\packet_fifo_build\\iter_001\\cand_standard\\packet_fifo.v",
+        "sha256": "555cc56adf216fe55ba7fb1ddc02c84e5d58990bd545c6e061913def50ea09ca"
+      },
+      "trial_source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\packet_fifo_build\\iter_002\\doctor_rtl_surgery_trial\\packet_fifo.v",
+        "sha256": "8164647077ab816d071dfdb29b06e5f613a99766d8e772a5e0f6f647c0670ac3"
+      },
+      "trial_flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\packet_fifo_build\\iter_002\\doctor_rtl_surgery_trial\\synth.tcl",
+        "sha256": "29f83d67394afa31392812fe1eda80077c79ea9d94f4479dc0b4f5c810f98b09"
+      },
+      "identity_count": 3,
+      "proposed_source_text_sha256": "e9e0e829d4bd15b226d42b9768f1b60fce3f632e2e4adf747e863fd81a4ca94e"
+    },
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": "e9e0e829d4bd15b226d42b9768f1b60fce3f632e2e4adf747e863fd81a4ca94e"
+  },
+  "artifacts": {}
+}

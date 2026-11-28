@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_3:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 3,
+    "instruction": "Keep the unconditional `iterative_divider_core #( .WIDTH(8) ) u_iterative_divider_core` instance and its direct output connections. Change only its `.out_ready(out_ready)` connection to use a wire equal to `out_ready && out_valid`; leave `.in_valid(in_valid)` direct, preserving the `// @latency 9` annotation and all top ports. This is equivalent because the core only retires a result while its valid flag is asserted; retain the candidate only if it passes all fixed gates and routed LUT use is strictly below 57.",
+    "candidates": [
+      {
+        "iteration": 3,
+        "mutation": "standard",
+        "instruction": "Keep the unconditional `iterative_divider_core #( .WIDTH(8) ) u_iterative_divider_core` instance and its direct output connections. Change only its `.out_ready(out_ready)` connection to use a wire equal to `out_ready && out_valid`; leave `.in_valid(in_valid)` direct, preserving the `// @latency 9` annotation and all top ports. This is equivalent because the core only retires a result while its valid flag is asserted; retain the candidate only if it passes all fixed gates and routed LUT use is strictly below 57.",
+        "generated_source_sha256": "bdef599ea0fab9851a6fe74ffdd0284e76bc66c862193fdf31d874014f0f42ff",
+        "final_source_sha256": "bdef599ea0fab9851a6fe74ffdd0284e76bc66c862193fdf31d874014f0f42ff",
+        "generated_code_hash": "aef5a320833355e5",
+        "final_code_hash": "aef5a320833355e5",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.324,
+          "whs_ns": 0.152,
+          "lut_used": 57,
+          "ff_used": 59,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.022,
+          "total_power_w": 0.092
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-portability\\logs\\explore-tier3-02\\iterative_divider_build\\iter_003\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-portability\\logs\\explore-tier3-02\\iterative_divider_build\\iter_003\\cand_standard\\synth.tcl",
+          "sha256": "1769c9720709fe297691057b0487e2c7621528c533797c45ca4139bd6b0b22c0"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-portability\\logs\\explore-tier3-02\\iterative_divider_build\\iter_003\\cand_standard\\iterative_divider.v",
+          "sha256": "016f94e20a481161b7c08243c221483ef26df7d63c239d96e3bab2edceb7cd20"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": "bdef599ea0fab9851a6fe74ffdd0284e76bc66c862193fdf31d874014f0f42ff"
+  },
+  "artifacts": {}
+}

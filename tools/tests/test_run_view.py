@@ -156,3 +156,10 @@ def test_cli_writes_the_default_and_the_named_file(tmp_path):
 def test_empty_folder_fails(tmp_path, capsys):
     assert run_view.main([str(tmp_path)]) == 1
     assert "no runs found" in capsys.readouterr().err
+
+
+def test_tokens_are_marked_incomplete_when_calls_reported_no_usage():
+    # command_endpoint_tokens_reported_as_zero
+    budget = {"tokens": {"input_tokens": 0, "output_tokens": 0}, "calls_without_token_usage": 2}
+    assert run_view._tokens(budget) == "0 in / 0 out (incomplete: 2 calls unreported)"
+    assert run_view._tokens({"tokens": {"input_tokens": 5, "output_tokens": 1}}) == "5 in / 1 out"

@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_1:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 1,
+    "instruction": "In `spi_master_core`, remove `rsp_data_reg` and assign `rsp_data` from the registered `rx_shift`; retain its synchronous reset and shift-on-MISO-sample behavior. On the final half-period edge, assert `rsp_valid` as before and rely on the completed shift register value, which was updated at the preceding rising-SCLK edge, to hold the response through stalls until reset or the next accepted command. Preserve the full `HALF_PERIOD` range, all SCLK/MOSI/CS timing, handshakes, reset priority, and the top\u2019s `// @latency 33` annotation.",
+    "candidates": [
+      {
+        "iteration": 1,
+        "mutation": "standard",
+        "instruction": "In `spi_master_core`, remove `rsp_data_reg` and assign `rsp_data` from the registered `rx_shift`; retain its synchronous reset and shift-on-MISO-sample behavior. On the final half-period edge, assert `rsp_valid` as before and rely on the completed shift register value, which was updated at the preceding rising-SCLK edge, to hold the response through stalls until reset or the next accepted command. Preserve the full `HALF_PERIOD` range, all SCLK/MOSI/CS timing, handshakes, reset priority, and the top\u2019s `// @latency 33` annotation.",
+        "generated_source_sha256": "49c707c0eabab9e785216f27398d177c51ab3e94a469ec3053dc5ed6266e3139",
+        "final_source_sha256": "49c707c0eabab9e785216f27398d177c51ab3e94a469ec3053dc5ed6266e3139",
+        "generated_code_hash": "1484b306fc55cd65",
+        "final_code_hash": "1484b306fc55cd65",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.343,
+          "whs_ns": 0.04,
+          "lut_used": 19,
+          "ff_used": 32,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.015,
+          "total_power_w": 0.085
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-03\\tier4_pkqwcvyo\\spi_master_build\\iter_001\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-03\\tier4_pkqwcvyo\\spi_master_build\\iter_001\\cand_standard\\synth.tcl",
+          "sha256": "355e9627a2d203d7c26a777890c26d24b414ee3c16e4fe1b79d68835d0576cbc"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-03\\tier4_pkqwcvyo\\spi_master_build\\iter_001\\cand_standard\\spi_master.v",
+          "sha256": "2d82fbb71047a4581517e0c2aa45bab076ac7bc933c2b650a6a95170a4a8830e"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "ACCEPT",
+    "is_best": true,
+    "selected_source_sha256": "49c707c0eabab9e785216f27398d177c51ab3e94a469ec3053dc5ed6266e3139"
+  },
+  "artifacts": {}
+}

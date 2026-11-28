@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_3:model:planner.plan:0",
+  "result": "# PLAN \u2014 iteration 3\n## Current state assessment\nThe verified incumbent meets timing at 7 LUTs and 9 FFs, so iteration 3 must strictly reduce LUTs to improve the `minimize_luts` objective. The two prior candidates preserved behavior and met timing but increased LUT use; the current top latency annotation is unknown, so no numeric annotation is required.\n\n## Hypothesis\nSplitting the modulo-256 phase increment into low- and high-nibble updates may reduce increment and carry logic enough to lower LUT use, though added enable logic could erase the gain.\n\n## Instruction for generator\nKeep the existing 32-bit counter declaration and registered `pwm_out` comparison unchanged. Replace only the counter update with an 8-bit modulo-256 update expressed as a 4-bit low-nibble increment and a 4-bit high-nibble increment enabled when the old low nibble is `4'hF`; preserve reset-to-zero and the current cycle sequence. Leave `pwm_out <= (counter < {24'd0, duty})` and its reset behavior unchanged, and add no numeric latency annotation.",
+  "artifacts": {}
+}

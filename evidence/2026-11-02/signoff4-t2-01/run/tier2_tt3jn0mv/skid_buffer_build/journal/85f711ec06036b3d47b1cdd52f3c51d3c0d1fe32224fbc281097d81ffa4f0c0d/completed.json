@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_2:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 2\n## Contract check\n- Defined FIFO behavior: PASS \u2014 Source preserves two-entry ordering, handshakes, stall stability, synchronous reset, and minimum one-cycle transfer age; the authoritative ladder is ALIVE.\n- Top interface and latency: PASS \u2014 Top ports match the contract and `// @latency 1` matches the known top latency.\n- Compile, elaborate, and simulate: PASS \u2014 Required tools exited successfully; simulation reports the exact `TEST PASSED` verdict.\n- Routed metrics and metric integrity: PASS \u2014 Retained routed reports and matching tool evidence are present; candidate WNS is 0.009 ns and WHS is 0.043 ns.\n- Timing recovery: PASS \u2014 The previous best was timing-infeasible; the verified candidate meets setup and hold timing.\n- Improvement classification: PASS \u2014 `timing_recovery` is supported. The LUT increase from 8 to 12 does not disqualify recovery.\n## Summary\n- Passed: 6 of 6\n- Failed: 0 of 6\n- Improved over previous best: YES\n## Recommendation\nACCEPT\n## Reason\nThe candidate passes the behavioral and deterministic verification gates and recovers timing feasibility from a known infeasible previous best. Its higher LUT count is permitted for this recovery.",
+      "recommendation": "ACCEPT",
+      "passed": 6,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}

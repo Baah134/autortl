@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_3:decision:instruction:0",
+  "result": "Keep the ports, parameter declarations, delay registers, reset logic, sequential assignments, and `// @latency 1` unchanged. Replace only the `sum_pipe0` arithmetic: use a generate-time symmetry check for `C0==C7`, `C1==C6`, `C2==C5`, and `C3==C4`; in that branch, add the corresponding signed 16-bit delay samples as signed 17-bit values, multiply the four pair sums by their matching signed coefficients, then combine the products with a balanced 32-bit addition tree. For non-symmetric parameter values, retain the fully general original arithmetic so every supported parameter combination preserves its behavior.",
+  "artifacts": {}
+}

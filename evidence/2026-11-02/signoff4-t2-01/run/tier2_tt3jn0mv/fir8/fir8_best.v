@@ -1,0 +1,99 @@
+`timescale 1ns/1ps
+// @latency 1
+module fir8 (
+    input  wire               clk,
+    input  wire               rst,
+    input  wire signed [15:0] x_in,
+    output reg  signed [31:0] y_out
+);
+    parameter signed [15:0] C0=16'd3, C1=16'd7, C2=16'd12, C3=16'd18,
+                            C4=16'd18, C5=16'd12, C6=16'd7,  C7=16'd3;
+
+    reg signed [15:0] x_d;
+    reg signed [31:0] s0, s1, s2, s3, s4, s5, s6;
+
+    wire signed [31:0] x_ext = {{16{x_d[15]}}, x_d};
+
+    wire signed [31:0] p0 = (C0 == 16'sd3)  ? ((x_ext <<< 1) + x_ext)         : (x_ext * C0);
+    wire signed [31:0] p1 = (C1 == 16'sd7)  ? ((x_ext <<< 3) - x_ext)         : (x_ext * C1);
+    wire signed [31:0] p2 = (C2 == 16'sd12) ? ((x_ext <<< 3) + (x_ext <<< 2)) : (x_ext * C2);
+    wire signed [31:0] p3 = (C3 == 16'sd18) ? ((x_ext <<< 4) + (x_ext <<< 1)) : (x_ext * C3);
+    wire signed [31:0] p4 = (C4 == 16'sd18) ? ((x_ext <<< 4) + (x_ext <<< 1)) : (x_ext * C4);
+    wire signed [31:0] p5 = (C5 == 16'sd12) ? ((x_ext <<< 3) + (x_ext <<< 2)) : (x_ext * C5);
+    wire signed [31:0] p6 = (C6 == 16'sd7)  ? ((x_ext <<< 3) - x_ext)         : (x_ext * C6);
+    wire signed [31:0] p7 = (C7 == 16'sd3)  ? ((x_ext <<< 1) + x_ext)         : (x_ext * C7);
+
+    wire [31:0] a0 = x_ext <<< 1;
+    wire [31:0] b0 = x_ext;
+    wire [31:0] s0_sum = a0 ^ b0 ^ s0;
+    wire [31:0] s0_carry = ((a0 & b0) | (a0 & s0) | (b0 & s0)) << 1;
+    wire signed [31:0] q0 = (C0 == 16'sd3) ? (s0_sum + s0_carry) : (p0 + s0);
+
+    wire [31:0] a1 = x_ext <<< 3;
+    wire [31:0] b1 = ~x_ext;
+    wire [31:0] s1_sum_a = a1 ^ b1 ^ s1;
+    wire [31:0] s1_carry_a = ((a1 & b1) | (a1 & s1) | (b1 & s1)) << 1;
+    wire [31:0] s1_sum_b = s1_sum_a ^ s1_carry_a ^ 32'd1;
+    wire [31:0] s1_carry_b = ((s1_sum_a & s1_carry_a) |
+                               (s1_sum_a & 32'd1) |
+                               (s1_carry_a & 32'd1)) << 1;
+    wire signed [31:0] q1 = (C1 == 16'sd7) ? (s1_sum_b + s1_carry_b) : (p1 + s1);
+
+    wire [31:0] a2 = x_ext <<< 3;
+    wire [31:0] b2 = x_ext <<< 2;
+    wire [31:0] s2_sum = a2 ^ b2 ^ s2;
+    wire [31:0] s2_carry = ((a2 & b2) | (a2 & s2) | (b2 & s2)) << 1;
+    wire signed [31:0] q2 = (C2 == 16'sd12) ? (s2_sum + s2_carry) : (p2 + s2);
+
+    wire [31:0] a3 = x_ext <<< 4;
+    wire [31:0] b3 = x_ext <<< 1;
+    wire [31:0] s3_sum = a3 ^ b3 ^ s3;
+    wire [31:0] s3_carry = ((a3 & b3) | (a3 & s3) | (b3 & s3)) << 1;
+    wire signed [31:0] q3 = (C3 == 16'sd18) ? (s3_sum + s3_carry) : (p3 + s3);
+
+    wire [31:0] a4 = x_ext <<< 4;
+    wire [31:0] b4 = x_ext <<< 1;
+    wire [31:0] s4_sum = a4 ^ b4 ^ s4;
+    wire [31:0] s4_carry = ((a4 & b4) | (a4 & s4) | (b4 & s4)) << 1;
+    wire signed [31:0] q4 = (C4 == 16'sd18) ? (s4_sum + s4_carry) : (p4 + s4);
+
+    wire [31:0] a5 = x_ext <<< 3;
+    wire [31:0] b5 = x_ext <<< 2;
+    wire [31:0] s5_sum = a5 ^ b5 ^ s5;
+    wire [31:0] s5_carry = ((a5 & b5) | (a5 & s5) | (b5 & s5)) << 1;
+    wire signed [31:0] q5 = (C5 == 16'sd12) ? (s5_sum + s5_carry) : (p5 + s5);
+
+    wire [31:0] a6 = x_ext <<< 3;
+    wire [31:0] b6 = ~x_ext;
+    wire [31:0] s6_sum_a = a6 ^ b6 ^ s6;
+    wire [31:0] s6_carry_a = ((a6 & b6) | (a6 & s6) | (b6 & s6)) << 1;
+    wire [31:0] s6_sum_b = s6_sum_a ^ s6_carry_a ^ 32'd1;
+    wire [31:0] s6_carry_b = ((s6_sum_a & s6_carry_a) |
+                               (s6_sum_a & 32'd1) |
+                               (s6_carry_a & 32'd1)) << 1;
+    wire signed [31:0] q6 = (C6 == 16'sd7) ? (s6_sum_b + s6_carry_b) : (p6 + s6);
+
+    always @(posedge clk) begin
+        if (rst) begin
+            x_d   <= 16'sd0;
+            s0    <= 32'sd0;
+            s1    <= 32'sd0;
+            s2    <= 32'sd0;
+            s3    <= 32'sd0;
+            s4    <= 32'sd0;
+            s5    <= 32'sd0;
+            s6    <= 32'sd0;
+            y_out <= 32'sd0;
+        end else begin
+            x_d   <= x_in;
+            s6    <= p7;
+            s5    <= q6;
+            s4    <= q5;
+            s3    <= q4;
+            s2    <= q3;
+            s1    <= q2;
+            s0    <= q1;
+            y_out <= q0;
+        end
+    end
+endmodule

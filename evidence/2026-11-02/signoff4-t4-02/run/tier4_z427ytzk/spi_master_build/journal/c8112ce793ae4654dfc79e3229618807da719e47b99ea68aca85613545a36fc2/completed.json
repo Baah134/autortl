@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_2:model:planner.plan:0",
+  "result": "# PLAN \u2014 iteration 2\n## Current state assessment\nIteration 1 is the verified incumbent at 27 LUTs and 36 FFs, with routed WNS 0.33 ns and WHS 0.051 ns; it passed the fixed simulation and promotion gates. Its response register has already been removed, so repeat that change only if required to retain the current seed behavior; the known top latency annotation must remain `// @latency 33`.\n\n## Hypothesis\nReducing `toggle_count` from five bits to four and omitting its unused terminal value 16 may save one FF and simplify the counter logic without changing transfer timing.\n\n## Instruction for generator\nIn `spi_master_core`, change `toggle_count` to `[3:0]`; keep the terminal check at 15, but remove the assignment of 16 on completion because the counter is unused while idle and is reset on command acceptance. Preserve the existing half-period divider, toggle/sample ordering, and completion edge for every supported `HALF_PERIOD` value. Keep reset and handshake behavior, registered outputs, and the top\u2019s `// @latency 33` annotation unchanged.",
+  "artifacts": {}
+}

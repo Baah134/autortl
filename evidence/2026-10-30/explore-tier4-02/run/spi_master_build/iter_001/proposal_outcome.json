@@ -1,0 +1,45 @@
+{
+  "candidates": [
+    {
+      "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier4-02\\spi_master_build\\iter_001\\cand_standard",
+      "cache_hit": false,
+      "final_code_hash": "7c875b331a5a8a21",
+      "final_source_sha256": "317b92377367b0d214588eacd8a3607502e2a538c05d883812b035eed683447a",
+      "flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier4-02\\spi_master_build\\iter_001\\cand_standard\\synth.tcl",
+        "sha256": "c4cb08f2a792dd74df235591e17a7d71da9cb07163f92e9d1b639a712a8cdb1d"
+      },
+      "generated_code_hash": "7c875b331a5a8a21",
+      "generated_source_sha256": "317b92377367b0d214588eacd8a3607502e2a538c05d883812b035eed683447a",
+      "instruction": "In `spi_master_core`, remove `rx_shift` and shift sampled `miso` bits directly into `rsp_data_reg` on the existing odd-toggle sample edges; at completion, assert `rsp_valid_reg` without copying a separate receive register. Keep `rsp_data_reg` reset behavior and ensure its value is stable from response assertion through retirement; its intermediate value while `rsp_valid` is low is unspecified by the contract. Preserve the existing toggle schedule, `HALF_PERIOD` behavior, handshakes, reset priority, output registration, top interface, and top `// @latency 33` annotation. Expect fewer LUTs from ",
+      "iteration": 1,
+      "metrics": {
+        "bram_used": 0.0,
+        "dsp_used": 0,
+        "dynamic_power_w": 0.014,
+        "ff_used": 35,
+        "lut_used": 20,
+        "sim_passed": true,
+        "timing_met": true,
+        "total_power_w": 0.084,
+        "whs_ns": 0.015,
+        "wns_ns": 0.354
+      },
+      "mutation": "standard",
+      "reason": "",
+      "rungs": 5,
+      "source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier4-02\\spi_master_build\\iter_001\\cand_standard\\spi_master.v",
+        "sha256": "193bd72f7ed697be36d41291cd447d69b8844e7a1755d531793827a963c79582"
+      },
+      "status": "measured"
+    }
+  ],
+  "doctor": null,
+  "instruction": "In `spi_master_core`, remove `rx_shift` and shift sampled `miso` bits directly into `rsp_data_reg` on the existing odd-toggle sample edges; at completion, assert `rsp_valid_reg` without copying a separate receive register. Keep `rsp_data_reg` reset behavior and ensure its value is stable from response assertion through retirement; its intermediate value while `rsp_valid` is low is unspecified by the contract. Preserve the existing toggle schedule, `HALF_PERIOD` behavior, handshakes, reset priority, output registration, top interface, and top `// @latency 33` annotation. Expect fewer LUTs from ",
+  "is_best": true,
+  "iteration": 1,
+  "recommendation": "ACCEPT",
+  "schema_version": 1,
+  "selected_source_sha256": "317b92377367b0d214588eacd8a3607502e2a538c05d883812b035eed683447a"
+}

@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_2:decision:instruction:0",
+  "result": "Keep the registered vacancy tracking introduced in iteration 1, but change the `in_ready`/`r1` logic so the external `in_ready` signal is driven directly by a registered readiness state rather than the current `vacancy || out_ready` expression; update that state from the next-slot occupancy logic so it remains equivalent at every cycle boundary. Preserve three-slot elastic transfer, full retire/advance/replace, history updates only on accepted input, synchronous reset behavior, and the `// @latency 3` top annotation. Check that reset, every occupancy pattern, stalls, and simultaneous full-queue replacement preserve exact ready/valid and held-data behavior; judge the candidate by routed WNS/WHS and resource counts against the incumbent.",
+  "artifacts": {}
+}

@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "status": "qualified",
+  "qualified": true,
+  "testbench_sha256": "66c073ae3e3f9e92194c2d5b1d8f30c48af72f51d580d69d6b1db3cec818d9d9",
+  "attempts": [
+    {
+      "label": "control",
+      "description": "unmodified control",
+      "passed": true,
+      "failure_kind": "design",
+      "error": "",
+      "assertion_detected": false,
+      "proof_reason": "simulation passed",
+      "source_sha256": "566ec8da86d10d1a16e8ead21fafa7775102a704d145109cd09a4600b2c37007",
+      "raw_log_sha256": "571f260205341097a5e884cc37d9b7a993808f34cbb8f4a4784ff0afe1b9b24e"
+    },
+    {
+      "label": "mutant",
+      "description": "flip < to >",
+      "passed": false,
+      "failure_kind": "design",
+      "error": "Testbench failures:\nFAIL case=5 WIDTH=16 DEPTH=8 cycle=0 queued=0: exact capacity / full simultaneous readiness  (x46)\nFAIL case=5 WIDTH=16 DEPTH=8 cycle=2 queued=1: nonempty validity / no empty bypass  (x12)\nFAIL case=5 WIDTH=16 DEPTH=8 cycle=2 queued=1: oldest full-width data / order / stall stability  (x7)\nFAIL case=5 WIDTH=16 DEPTH=8 cycle=2 queued=1: oldest marker / tuple alignment / stall stability  (x7)",
+      "assertion_detected": true,
+      "proof_reason": "raw assertion detail and failure verdict retained",
+      "source_sha256": "7783efa501b77cc24247e468699386a0987d19b179da6e7f7c5febf17400e850",
+      "raw_log_sha256": "773e4eb5903db22339269d4ca31fa3b8619b015f3d69e89e92095420ff0b5d54"
+    }
+  ],
+  "missed": [],
+  "scope": "Minimum assertion sensitivity; missed faults remain coverage limits."
+}

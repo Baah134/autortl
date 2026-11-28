@@ -3,7 +3,6 @@
 This is a bounded supervised generation trial, not the full optimization FSM.
 """
 import argparse
-import hashlib
 import json
 import sys
 import time
@@ -19,6 +18,8 @@ from autortl.static_checks import check
 from autortl.triage import FailureKind
 from autortl import vivado
 from llm import client
+from autortl.doctor import tool_bins
+from autortl.fileio import file_sha256
 
 PROMPT = """Write synthesizable Verilog for exactly one module named counter8.
 Ports: input clk, input rst, input enable, output reg [7:0] count.
@@ -68,9 +69,7 @@ def main():
 
     try:
         budget = Budget(1, 20, 25, out / "budget.json")
-        cfg = RunConfig(mode="optimize", **{
-            name + "_bin": str(args.bin_dir.resolve() / (name + ".bat"))
-            for name in ("vivado", "xvlog", "xelab", "xsim")})
+        cfg = RunConfig(mode="optimize", **tool_bins(args.bin_dir))
         result.update(part=cfg.target_part, period_ns=cfg.target_period_ns)
         (out / "prompt.txt").write_text(PROMPT, encoding="utf-8")
         if args.source:
@@ -87,8 +86,8 @@ def main():
         dut.write_text(source, encoding="utf-8")
         tb = out / "counter8_tb.v"
         tb.write_bytes((ROOT / "tests/fixtures/counter8_tb.v").read_bytes())
-        result["source_sha256"] = hashlib.sha256(dut.read_bytes()).hexdigest()
-        result["testbench_sha256"] = hashlib.sha256(tb.read_bytes()).hexdigest()
+        result["source_sha256"] = file_sha256(dut)
+        result["testbench_sha256"] = file_sha256(tb)
         record("source_import" if args.source else "generation", True)
         spec = ModuleSpec("counter8", "8-bit enabled synchronous counter", [
             Port("clk", "input", 1), Port("rst", "input", 1),

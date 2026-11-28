@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_4:model:planner.plan:0",
+  "result": "# PLAN \u2014 iteration 4\n## Current state assessment\nThe verified incumbent already meets timing (WNS 0.553 ns, WHS 0.135 ns) at 7 LUTs and 9 FFs, so this iteration needs a strict LUT reduction to improve the objective. Earlier attempts either increased LUT use or changed behavior by narrowing the counter; preserve the full 32-bit state and its behavior for every possible state.\n\n## Hypothesis\nExplicitly share the counter\u2019s upper-bit-zero decode between the terminal-count test and PWM comparison, potentially reducing duplicated LUT logic while preserving the full counter behavior.\n\n## Instruction for generator\nKeep the 32-bit counter and its existing increment and terminal-count wrap behavior. Define a shared predicate for `counter[31:8] == 0`; use it in both the terminal-count check together with `counter[7:0] == 8'hff`, and the registered PWM comparison together with `counter[7:0] < duty`. Preserve reset and registered-output behavior, and do not add a numeric latency annotation because the authoritative top latency is unknown.",
+  "artifacts": {}
+}

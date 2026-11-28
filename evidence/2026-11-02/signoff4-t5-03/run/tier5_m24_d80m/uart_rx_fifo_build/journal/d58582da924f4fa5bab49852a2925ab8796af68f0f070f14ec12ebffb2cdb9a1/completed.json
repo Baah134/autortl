@@ -1,0 +1,5 @@
+{
+  "stage": "module_rx_fifo:model:generator.golden_model:0",
+  "result": "def init():\n    return dict(queue=[], depth=4, overflow=0)\n\ndef step(state, inputs):\n    queue = state.get(\"queue\", [])\n    depth = state.get(\"depth\", 4)\n\n    if inputs.get(\"rst\", 0):\n        queue = []\n        overflow = 0\n    else:\n        pop = bool(inputs.get(\"out_ready\", 0)) and len(queue) != 0\n        if pop:\n            queue.pop(0)\n\n        wr_en = bool(inputs.get(\"wr_en\", 0))\n        push = wr_en and (len(queue) < depth or pop)\n        overflow = 0\n\n        if push:\n            queue.append(int(inputs.get(\"wr_data\", 0)) & 255)\n        elif wr_en:\n            overflow = 1\n\n    state[\"queue\"] = queue\n    state[\"depth\"] = depth\n    state[\"overflow\"] = overflow\n\n    out_valid = int(len(queue) != 0)\n    out_data = queue[0] if out_valid else 0\n    outputs = dict(\n        out_data=out_data & 255,\n        out_valid=out_valid,\n        overflow=overflow\n    )\n    return state, outputs",
+  "artifacts": {}
+}

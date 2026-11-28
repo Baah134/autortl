@@ -1,0 +1,1649 @@
+{
+  "allowed_flow_variations": "The harness may enable retiming or physical optimization. The candidate's retained synthesis script is authoritative for its actual settings.",
+  "authority": "Harness evidence is fixed. Proposed architectural goals cannot redefine it.",
+  "baseline_metrics": {
+    "bram_total": 50.0,
+    "bram_used": 0.0,
+    "dsp_total": 90,
+    "dsp_used": 0,
+    "dynamic_power_w": 0.014,
+    "ff_pct": 10.471153846153847,
+    "ff_total": 41600,
+    "ff_used": 4356,
+    "lut_pct": 10.0625,
+    "lut_total": 20800,
+    "lut_used": 2093,
+    "reg2reg_wns_ns": 1.201,
+    "sim_error": "",
+    "sim_passed": true,
+    "synth_error": "",
+    "timing_met": true,
+    "total_power_w": 0.082,
+    "whs_ns": 0.053,
+    "wns_ns": 1.201
+  },
+  "build_spec": {
+    "authority": "Complete resolved typed build contract. Defined behavior is mandatory; explicitly unspecified cases remain unspecified. Frozen implementation identities do not turn incidental values in unspecified cases into requirements.",
+    "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-06\\rv32i_core_build\\design_spec.json",
+    "resolved_spec": {
+      "connections": [
+        {
+          "dst_module": "rv_imem",
+          "dst_port": "imem_raddr",
+          "src_module": "rv_ctrl",
+          "src_port": "imem_raddr"
+        },
+        {
+          "dst_module": "rv_decode",
+          "dst_port": "instr",
+          "src_module": "rv_imem",
+          "src_port": "imem_rdata"
+        },
+        {
+          "dst_module": "rv_regfile",
+          "dst_port": "raddr1",
+          "src_module": "rv_decode",
+          "src_port": "rs1"
+        },
+        {
+          "dst_module": "rv_regfile",
+          "dst_port": "raddr2",
+          "src_module": "rv_decode",
+          "src_port": "rs2"
+        },
+        {
+          "dst_module": "rv_alu",
+          "dst_port": "rs1_val",
+          "src_module": "rv_regfile",
+          "src_port": "rdata1"
+        },
+        {
+          "dst_module": "rv_alu",
+          "dst_port": "rs2_val",
+          "src_module": "rv_regfile",
+          "src_port": "rdata2"
+        },
+        {
+          "dst_module": "rv_ctrl",
+          "dst_port": "rs2_val",
+          "src_module": "rv_regfile",
+          "src_port": "rdata2"
+        },
+        {
+          "dst_module": "rv_alu",
+          "dst_port": "pc_val",
+          "src_module": "rv_ctrl",
+          "src_port": "pc"
+        },
+        {
+          "dst_module": "rv_alu",
+          "dst_port": "imm",
+          "src_module": "rv_decode",
+          "src_port": "imm"
+        },
+        {
+          "dst_module": "rv_alu",
+          "dst_port": "op",
+          "src_module": "rv_decode",
+          "src_port": "alu_op"
+        },
+        {
+          "dst_module": "rv_alu",
+          "dst_port": "a_sel",
+          "src_module": "rv_decode",
+          "src_port": "a_sel"
+        },
+        {
+          "dst_module": "rv_alu",
+          "dst_port": "b_sel",
+          "src_module": "rv_decode",
+          "src_port": "b_sel"
+        },
+        {
+          "dst_module": "rv_ctrl",
+          "dst_port": "kind",
+          "src_module": "rv_decode",
+          "src_port": "kind"
+        },
+        {
+          "dst_module": "rv_ctrl",
+          "dst_port": "funct3",
+          "src_module": "rv_decode",
+          "src_port": "funct3"
+        },
+        {
+          "dst_module": "rv_ctrl",
+          "dst_port": "rd",
+          "src_module": "rv_decode",
+          "src_port": "rd"
+        },
+        {
+          "dst_module": "rv_ctrl",
+          "dst_port": "y",
+          "src_module": "rv_alu",
+          "src_port": "y"
+        },
+        {
+          "dst_module": "rv_ctrl",
+          "dst_port": "eq",
+          "src_module": "rv_alu",
+          "src_port": "eq"
+        },
+        {
+          "dst_module": "rv_ctrl",
+          "dst_port": "lt",
+          "src_module": "rv_alu",
+          "src_port": "lt"
+        },
+        {
+          "dst_module": "rv_ctrl",
+          "dst_port": "ltu",
+          "src_module": "rv_alu",
+          "src_port": "ltu"
+        },
+        {
+          "dst_module": "rv_regfile",
+          "dst_port": "we",
+          "src_module": "rv_ctrl",
+          "src_port": "rf_we"
+        },
+        {
+          "dst_module": "rv_regfile",
+          "dst_port": "waddr",
+          "src_module": "rv_ctrl",
+          "src_port": "rf_waddr"
+        },
+        {
+          "dst_module": "rv_regfile",
+          "dst_port": "wdata",
+          "src_module": "rv_ctrl",
+          "src_port": "rf_wdata"
+        },
+        {
+          "dst_module": "rv_dmem",
+          "dst_port": "we",
+          "src_module": "rv_ctrl",
+          "src_port": "dmem_we"
+        },
+        {
+          "dst_module": "rv_dmem",
+          "dst_port": "addr",
+          "src_module": "rv_ctrl",
+          "src_port": "dmem_addr"
+        },
+        {
+          "dst_module": "rv_dmem",
+          "dst_port": "wdata",
+          "src_module": "rv_ctrl",
+          "src_port": "dmem_wdata"
+        },
+        {
+          "dst_module": "rv_ctrl",
+          "dst_port": "dmem_rdata",
+          "src_module": "rv_dmem",
+          "src_port": "rdata"
+        }
+      ],
+      "external_ports": [
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "clk",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "rst",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "run",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "imem_we",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "imem_waddr",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 6
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "input",
+          "name": "imem_wdata",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 32
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "output",
+          "name": "pc",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 32
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "output",
+          "name": "retire",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "output",
+          "name": "rf_we",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "output",
+          "name": "rf_waddr",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 5
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "output",
+          "name": "rf_wdata",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 32
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "output",
+          "name": "dmem_we",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 1
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "output",
+          "name": "dmem_addr",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 5
+        },
+        {
+          "clock_domain": "clk",
+          "direction": "output",
+          "name": "dmem_wdata",
+          "packed_dimensions": null,
+          "protocol": "none",
+          "signed": false,
+          "width": 32
+        }
+      ],
+      "modules": [
+        {
+          "behavior": "Instruction memory of 64 words of 32 bits with one write port (the core's program loader) and one registered read port. State: mem[0..63] and the imem_rdata register; imem_rdata is a view of that register only. At each rising edge with rst low, using pre-edge values: imem_rdata = mem[imem_raddr] (read-first: a word written at this same edge is read with its old value), and if imem_we = 1 then mem[imem_waddr] = imem_wdata. A synchronous active-high rst at a rising edge clears all 64 words and imem_rdata to 0 and ignores imem_we at that edge; reset has no effect between edges. The contents are defined by that reset, never by initial values (initial blocks are rejected in RTL), so the program is loaded after reset. Python oracle: cycle-level model, one step per rising edge; keep the registers in state and return every output as it is after that edge. The driver applies the fixed latency of 1; do not add a delay queue. init() is the reset state and a supplied rst must be handled.",
+          "clock_domains": [
+            "clk"
+          ],
+          "compare_mode": "fixed_latency",
+          "examples": [
+            {
+              "after_cycles": 1,
+              "expected": {
+                "imem_rdata": 0
+              },
+              "inputs": {
+                "imem_raddr": 5,
+                "imem_waddr": 5,
+                "imem_wdata": 10485907,
+                "imem_we": 1,
+                "rst": 0
+              }
+            },
+            {
+              "after_cycles": 2,
+              "expected": {
+                "imem_rdata": 10485907
+              },
+              "inputs": {
+                "imem_raddr": 5,
+                "imem_waddr": 5,
+                "imem_wdata": 10485907,
+                "imem_we": 1,
+                "rst": 0
+              }
+            },
+            {
+              "after_cycles": 3,
+              "expected": {
+                "imem_rdata": 0
+              },
+              "inputs": {
+                "imem_raddr": 62,
+                "imem_waddr": 63,
+                "imem_wdata": 3735928559,
+                "imem_we": 1,
+                "rst": 0
+              }
+            }
+          ],
+          "golden_model": "",
+          "interface_signature": null,
+          "latency": 1,
+          "latency_known": true,
+          "name": "rv_imem",
+          "parameters": {},
+          "ports": [
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "clk",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "rst",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "imem_we",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "imem_waddr",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 6
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "imem_wdata",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 32
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "imem_raddr",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 6
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "imem_rdata",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 32
+            }
+          ],
+          "reset": {
+            "active_high": true,
+            "duration_cycles": 3,
+            "kind": "sync",
+            "signal": "rst"
+          }
+        },
+        {
+          "behavior": "Combinational RV32I decoder for the word instr. Fields always shown: rs1 = instr[19:15], rs2 = instr[24:20], rd = instr[11:7], funct3 = instr[14:12]. Immediates (sign extension replicates instr[31]): I = sext(instr[31:20]); S = sext({instr[31:25], instr[11:7]}); B = sext({instr[31], instr[7], instr[30:25], instr[11:8], 0}) (13 bits); U = {instr[31:12], 12 zero bits}; J = sext({instr[31], instr[19:12], instr[20], instr[30:21], 0}) (21 bits). By the full 7-bit opcode instr[6:0] (kind, a_sel, b_sel, alu_op, imm): 0110011 OP: kind 0, a_sel 0, b_sel 0, alu_op = {instr[30], funct3}, imm 0. 0010011 OP-IMM: kind 0, a_sel 0, b_sel 1, imm I, alu_op = {instr[30], funct3} when funct3 = 101 (SRLI/SRAI) else {0, funct3} (bit 30 is immediate data for the other OP-IMM instructions). 0110111 LUI: kind 0, a_sel 2, b_sel 1, alu_op 0, imm U. 0010111 AUIPC: kind 0, a_sel 1, b_sel 1, alu_op 0, imm U. 1101111 JAL: kind 4, a_sel 1, b_sel 1, alu_op 0, imm J. 1100111 JALR: kind 5, a_sel 0, b_sel 1, alu_op 0, imm I (funct3 ignored). 1100011 BRANCH: kind 3, a_sel 1, b_sel 1, alu_op 0, imm B. 0000011 LOAD: kind 1, a_sel 0, b_sel 1, alu_op 0, imm I (every load is a word load; funct3 ignored). 0100011 STORE: kind 2, a_sel 0, b_sel 1, alu_op 0, imm S (every store is a word store). Any other opcode: kind 6 (no operation), a_sel 0, b_sel 0, alu_op 0, imm 0. kind 7 is never produced. All outputs are functions of instr only. Python oracle: combinational and stateless; step returns the outputs for this step's inputs (latency 0, no clock and no reset port).",
+          "clock_domains": [
+            "clk"
+          ],
+          "compare_mode": "fixed_latency",
+          "examples": [
+            {
+              "after_cycles": 1,
+              "expected": {
+                "a_sel": 0,
+                "alu_op": 13,
+                "b_sel": 1,
+                "funct3": 5,
+                "imm": 1037,
+                "kind": 0,
+                "rd": 5,
+                "rs1": 1,
+                "rs2": 13
+              },
+              "inputs": {
+                "instr": 1087427219
+              }
+            },
+            {
+              "after_cycles": 1,
+              "expected": {
+                "a_sel": 1,
+                "alu_op": 0,
+                "b_sel": 1,
+                "funct3": 4,
+                "imm": 4294967288,
+                "kind": 3,
+                "rd": 25,
+                "rs1": 1,
+                "rs2": 2
+              },
+              "inputs": {
+                "instr": 4263562467
+              }
+            },
+            {
+              "after_cycles": 1,
+              "expected": {
+                "a_sel": 1,
+                "alu_op": 0,
+                "b_sel": 1,
+                "funct3": 0,
+                "imm": 4293918720,
+                "kind": 4,
+                "rd": 0,
+                "rs1": 0,
+                "rs2": 0
+              },
+              "inputs": {
+                "instr": 2147483759
+              }
+            }
+          ],
+          "golden_model": "",
+          "interface_signature": null,
+          "latency": 0,
+          "latency_known": true,
+          "name": "rv_decode",
+          "parameters": {},
+          "ports": [
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "instr",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 32
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "rs1",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 5
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "rs2",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 5
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "rd",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 5
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "imm",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 32
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "alu_op",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 4
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "a_sel",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 2
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "b_sel",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "kind",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 3
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "funct3",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 3
+            }
+          ],
+          "reset": {
+            "active_high": true,
+            "duration_cycles": 3,
+            "kind": "sync",
+            "signal": "rst"
+          }
+        },
+        {
+          "behavior": "RV32I register file: 32 registers of 32 bits, x0 always reads 0, two registered read ports and one write port. State: x1..x31, rdata1 and rdata2 (outputs are views of those two registers only). At each rising edge with rst low, using pre-edge values: rdata1 = x[raddr1] and rdata2 = x[raddr2] (0 for index 0; read-first: a register written at this same edge is read with its old value), and if we = 1 and waddr != 0 then x[waddr] = wdata (writes to x0 are ignored). A synchronous active-high rst at a rising edge clears x1..x31, rdata1 and rdata2 to 0 and ignores we at that edge; reset has no effect between edges. Contents are defined by that reset, never by initial values. Python oracle: cycle-level model, one step per rising edge; keep the registers in state and return every output as it is after that edge. The driver applies the fixed latency of 1; do not add a delay queue. init() is the reset state and a supplied rst must be handled.",
+          "clock_domains": [
+            "clk"
+          ],
+          "compare_mode": "fixed_latency",
+          "examples": [
+            {
+              "after_cycles": 1,
+              "expected": {
+                "rdata1": 0,
+                "rdata2": 0
+              },
+              "inputs": {
+                "raddr1": 7,
+                "raddr2": 0,
+                "rst": 0,
+                "waddr": 7,
+                "wdata": 305419896,
+                "we": 1
+              }
+            },
+            {
+              "after_cycles": 2,
+              "expected": {
+                "rdata1": 305419896,
+                "rdata2": 305419896
+              },
+              "inputs": {
+                "raddr1": 7,
+                "raddr2": 7,
+                "rst": 0,
+                "waddr": 7,
+                "wdata": 305419896,
+                "we": 1
+              }
+            },
+            {
+              "after_cycles": 2,
+              "expected": {
+                "rdata1": 0,
+                "rdata2": 0
+              },
+              "inputs": {
+                "raddr1": 0,
+                "raddr2": 0,
+                "rst": 0,
+                "waddr": 0,
+                "wdata": 4294967295,
+                "we": 1
+              }
+            }
+          ],
+          "golden_model": "",
+          "interface_signature": null,
+          "latency": 1,
+          "latency_known": true,
+          "name": "rv_regfile",
+          "parameters": {},
+          "ports": [
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "clk",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "rst",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "we",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "waddr",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 5
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "wdata",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 32
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "raddr1",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 5
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "raddr2",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 5
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "rdata1",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 32
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "rdata2",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 32
+            }
+          ],
+          "reset": {
+            "active_high": true,
+            "duration_cycles": 3,
+            "kind": "sync",
+            "signal": "rst"
+          }
+        },
+        {
+          "behavior": "Combinational RV32I ALU with operand selection. a = rs1_val when a_sel = 0, pc_val when a_sel = 1, 0 when a_sel = 2 or 3; b = imm when b_sel = 1, else rs2_val. y by op[2:0], all modulo 2^32: 000 a + b when op[3] = 0, a - b when op[3] = 1; 001 a << b[4:0]; 010 1 if a < b as two's complement signed numbers else 0; 011 1 if a < b unsigned else 0; 100 a ^ b; 101 a >> b[4:0] logical when op[3] = 0, arithmetic (sign bit replicated) when op[3] = 1; 110 a | b; 111 a & b. op[3] is ignored for every op[2:0] other than 000 and 101. Comparison flags always compare the raw rs1_val and rs2_val (not a or b): eq = (rs1_val == rs2_val), lt = rs1_val < rs2_val signed, ltu = rs1_val < rs2_val unsigned. Python oracle: combinational and stateless; step returns the outputs for this step's inputs (latency 0, no clock and no reset port).",
+          "clock_domains": [
+            "clk"
+          ],
+          "compare_mode": "fixed_latency",
+          "examples": [
+            {
+              "after_cycles": 1,
+              "expected": {
+                "eq": 0,
+                "lt": 1,
+                "ltu": 0,
+                "y": 4160749569
+              },
+              "inputs": {
+                "a_sel": 0,
+                "b_sel": 0,
+                "imm": 0,
+                "op": 13,
+                "pc_val": 0,
+                "rs1_val": 2147483664,
+                "rs2_val": 4
+              }
+            },
+            {
+              "after_cycles": 1,
+              "expected": {
+                "eq": 0,
+                "lt": 1,
+                "ltu": 0,
+                "y": 1
+              },
+              "inputs": {
+                "a_sel": 0,
+                "b_sel": 1,
+                "imm": 1,
+                "op": 2,
+                "pc_val": 64,
+                "rs1_val": 4294967295,
+                "rs2_val": 1
+              }
+            },
+            {
+              "after_cycles": 1,
+              "expected": {
+                "eq": 1,
+                "lt": 0,
+                "ltu": 0,
+                "y": 72
+              },
+              "inputs": {
+                "a_sel": 1,
+                "b_sel": 1,
+                "imm": 4294967288,
+                "op": 8,
+                "pc_val": 64,
+                "rs1_val": 5,
+                "rs2_val": 5
+              }
+            }
+          ],
+          "golden_model": "",
+          "interface_signature": null,
+          "latency": 0,
+          "latency_known": true,
+          "name": "rv_alu",
+          "parameters": {},
+          "ports": [
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "a_sel",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 2
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "b_sel",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "op",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 4
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "rs1_val",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 32
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "rs2_val",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 32
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "pc_val",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 32
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "imm",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 32
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "y",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 32
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "eq",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "lt",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "ltu",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            }
+          ],
+          "reset": {
+            "active_high": true,
+            "duration_cycles": 3,
+            "kind": "sync",
+            "signal": "rst"
+          }
+        },
+        {
+          "behavior": "Data memory of 32 words of 32 bits with one shared address. State: mem[0..31] and the rdata register; rdata is a view of that register only. At each rising edge with rst low, using pre-edge values: rdata = mem[addr] (read-first: old contents when this edge also writes addr), and if we = 1 then mem[addr] = wdata. A synchronous active-high rst at a rising edge clears all 32 words and rdata to 0 and ignores we at that edge; reset has no effect between edges. Contents are defined by that reset, never by initial values. Python oracle: cycle-level model, one step per rising edge; keep the registers in state and return every output as it is after that edge. The driver applies the fixed latency of 1; do not add a delay queue. init() is the reset state and a supplied rst must be handled.",
+          "clock_domains": [
+            "clk"
+          ],
+          "compare_mode": "fixed_latency",
+          "examples": [
+            {
+              "after_cycles": 1,
+              "expected": {
+                "rdata": 0
+              },
+              "inputs": {
+                "addr": 9,
+                "rst": 0,
+                "wdata": 3405705229,
+                "we": 1
+              }
+            },
+            {
+              "after_cycles": 2,
+              "expected": {
+                "rdata": 3405705229
+              },
+              "inputs": {
+                "addr": 9,
+                "rst": 0,
+                "wdata": 3405705229,
+                "we": 1
+              }
+            }
+          ],
+          "golden_model": "",
+          "interface_signature": null,
+          "latency": 1,
+          "latency_known": true,
+          "name": "rv_dmem",
+          "parameters": {},
+          "ports": [
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "clk",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "rst",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "we",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "addr",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 5
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "wdata",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 32
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "rdata",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 32
+            }
+          ],
+          "reset": {
+            "active_high": true,
+            "duration_cycles": 3,
+            "kind": "sync",
+            "signal": "rst"
+          }
+        },
+        {
+          "behavior": "Multi-cycle RV32I sequencer. Every output is a function of registered state only (no combinational path from any input). Registers, all reset to 0: state in {F=0, D=1, E=2, M=3, L=4, W=5}, pc[31:0], npc[31:0], res[31:0], sdata[31:0], rd_q[4:0], wb_q, st_q, ld_q. Outputs: pc = pc; imem_raddr = pc[7:2]; retire = (state == W); rf_we = (state == W) && wb_q; rf_waddr = rd_q; rf_wdata = res; dmem_we = (state == M) && st_q; dmem_addr = res[6:2]; dmem_wdata = sdata. Neighbours: kind, funct3 and rd come from the decoder of the fetched word, y/eq/lt/ltu from the ALU, rs2_val from register read port 2, dmem_rdata from data memory. At each rising edge with rst low, using pre-edge values: in F, state = D when run = 1, else stay in F (run is sampled only in F). In D, state = E. In E: wb_q = 1 when kind is 0, 1, 4 or 5, else 0; st_q = (kind == 2); ld_q = (kind == 1); rd_q = rd; sdata = rs2_val; res = pc + 4 when kind is 4 or 5, else y; with link = pc + 4 and branch condition taken by funct3 (000 eq, 001 !eq, 100 lt, 101 !lt, 110 ltu, 111 !ltu, 010 and 011 never taken): npc = y when kind == 4 or (kind == 3 and taken), npc = y with bit 0 cleared when kind == 5, else npc = link; state = M when kind is 1 or 2, else W. In M, state = L when ld_q, else W. In L, res = dmem_rdata and state = W. In W, pc = npc and state = F. Any other state value goes to F. kinds 6 and 7 are no-operations (no write, npc = link). So an instruction takes 4 cycles (F with run, D, E, W), a store 5 and a load 6; the register write and retire are visible during W, a store's dmem_we during M. Arithmetic is modulo 2^32. Synchronous active-high rst at a rising edge returns every register to its reset value; reset has no effect between edges. Python oracle: cycle-level model, one step per rising edge; keep the registers in state and return every output as it is after that edge. The driver applies the fixed latency of 1; do not add a delay queue. init() is the reset state and a supplied rst must be handled.",
+          "clock_domains": [
+            "clk"
+          ],
+          "compare_mode": "fixed_latency",
+          "examples": [
+            {
+              "after_cycles": 3,
+              "expected": {
+                "dmem_addr": 13,
+                "dmem_wdata": 85,
+                "dmem_we": 0,
+                "imem_raddr": 0,
+                "pc": 0,
+                "retire": 1,
+                "rf_waddr": 3,
+                "rf_wdata": 4660,
+                "rf_we": 1
+              },
+              "inputs": {
+                "dmem_rdata": 119,
+                "eq": 0,
+                "funct3": 0,
+                "kind": 0,
+                "lt": 0,
+                "ltu": 0,
+                "rd": 3,
+                "rs2_val": 85,
+                "rst": 0,
+                "run": 1,
+                "y": 4660
+              }
+            },
+            {
+              "after_cycles": 8,
+              "expected": {
+                "dmem_addr": 18,
+                "dmem_wdata": 85,
+                "dmem_we": 0,
+                "imem_raddr": 18,
+                "pc": 72,
+                "retire": 0,
+                "rf_waddr": 9,
+                "rf_wdata": 72,
+                "rf_we": 0
+              },
+              "inputs": {
+                "dmem_rdata": 119,
+                "eq": 0,
+                "funct3": 1,
+                "kind": 3,
+                "lt": 1,
+                "ltu": 0,
+                "rd": 9,
+                "rs2_val": 85,
+                "rst": 0,
+                "run": 1,
+                "y": 72
+              }
+            },
+            {
+              "after_cycles": 5,
+              "expected": {
+                "dmem_addr": 8,
+                "dmem_wdata": 43981,
+                "dmem_we": 0,
+                "imem_raddr": 0,
+                "pc": 0,
+                "retire": 1,
+                "rf_waddr": 12,
+                "rf_wdata": 2271560481,
+                "rf_we": 1
+              },
+              "inputs": {
+                "dmem_rdata": 2271560481,
+                "eq": 1,
+                "funct3": 2,
+                "kind": 1,
+                "lt": 0,
+                "ltu": 0,
+                "rd": 12,
+                "rs2_val": 43981,
+                "rst": 0,
+                "run": 1,
+                "y": 156
+              }
+            }
+          ],
+          "golden_model": "",
+          "interface_signature": null,
+          "latency": 1,
+          "latency_known": true,
+          "name": "rv_ctrl",
+          "parameters": {},
+          "ports": [
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "clk",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "rst",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "run",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "kind",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 3
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "funct3",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 3
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "rd",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 5
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "y",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 32
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "eq",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "lt",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "ltu",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "rs2_val",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 32
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "input",
+              "name": "dmem_rdata",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 32
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "pc",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 32
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "imem_raddr",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 6
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "retire",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "rf_we",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "rf_waddr",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 5
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "rf_wdata",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 32
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "dmem_we",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 1
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "dmem_addr",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 5
+            },
+            {
+              "clock_domain": "clk",
+              "direction": "output",
+              "name": "dmem_wdata",
+              "packed_dimensions": null,
+              "protocol": "none",
+              "signed": false,
+              "width": 32
+            }
+          ],
+          "reset": {
+            "active_high": true,
+            "duration_cycles": 3,
+            "kind": "sync",
+            "signal": "rst"
+          }
+        }
+      ],
+      "top_name": "rv32i_core"
+    },
+    "sha256": "d929f337047f7bb940f69810db39b096a401f49b578661e9ee0a5b81ca45ee8c",
+    "truncated": false
+  },
+  "clock_period_ns": 10.0,
+  "declared_latency": {
+    "cycles": null,
+    "known": false,
+    "meaning": "A source annotation declares numeric latency only when present. This known/cycles pair is authoritative for the current top module's annotation requirement. Only known=true requires a matching numeric top annotation. Child typed-module latency does not invent a top annotation for arbitrary aggregate wrappers. When known=false, absence of a top annotation is not a failed or unverifiable criterion. Unannotated numeric latency is UNKNOWN, not zero. Preserve the source's exact observable cycles and registered behavior. Annotation presence or absence alone is not independent proof of behavioral correctness; use the fixed source contract, all defined typed latency/minimum transfer age and deterministic verification, without inventing a numeric requirement.",
+    "source_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-06\\rv32i_core_build\\iter_000\\rv32i_core.v",
+    "source_sha256": "a03d15f8693c8945a8f18c6dc9bc6e3ac1758034605717267206d623bb70dda8"
+  },
+  "edit_scope": {
+    "children": [
+      "rv_imem",
+      "rv_decode",
+      "rv_regfile",
+      "rv_alu",
+      "rv_dmem",
+      "rv_ctrl"
+    ],
+    "mode": "whole_design",
+    "reason": "The supplied testbench instantiates the top rv32i_core and is the trusted integration authority, so every generated child module and the mechanical top form one editable unit verified through the top. Per-child generated oracles and testbenches verified the baseline children only and are not evidence for changed children.",
+    "testbench_modules": [],
+    "top": "rv32i_core"
+  },
+  "execution_context": {
+    "dependencies": [],
+    "implementation": "out_of_context",
+    "part": "xc7a35tcpg236-1",
+    "period_ns": 10.0,
+    "promotions": {
+      "Designutils 20-1307": "ERROR",
+      "Synth 8-327": "ERROR",
+      "Synth 8-3352": "ERROR",
+      "Synth 8-9873": "ERROR",
+      "VRFC 10-3609": "ERROR"
+    },
+    "synthesis_template": "61e44d95134130552d86e050a4db65035952d348028dc942b327b8aced90b3d1",
+    "tb": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-06\\rv32i_core_build\\inputs\\testbench_path.v",
+      "sha256": "9504eb14e21f244002c7baa797758dd7834564fd2144019d91eade6a40f825dc"
+    },
+    "tools": {
+      "vivado_bin": {
+        "path": "C:\\AMDDesignTools\\2025.2\\Vivado\\bin\\vivado.bat",
+        "sha256": "4f9c05aea82a71c7086a9e5edf01ba16ea70255f69cf3420c58b805ec113e994"
+      },
+      "xelab_bin": {
+        "path": "C:\\AMDDesignTools\\2025.2\\Vivado\\bin\\xelab.bat",
+        "sha256": "512a29ace988992d7fab14ca84f20f0b4515bb69ef1d5fef0a57c5f28b72c9b1"
+      },
+      "xsim_bin": {
+        "path": "C:\\AMDDesignTools\\2025.2\\Vivado\\bin\\xsim.bat",
+        "sha256": "8819fbb54fdf9cbcaaf24c2bf72801b403d5c93e0990ba32408b56c666761d21"
+      },
+      "xvlog_bin": {
+        "path": "C:\\AMDDesignTools\\2025.2\\Vivado\\bin\\xvlog.bat",
+        "sha256": "512a29ace988992d7fab14ca84f20f0b4515bb69ef1d5fef0a57c5f28b72c9b1"
+      }
+    },
+    "top": "rv32i_core"
+  },
+  "first_violated_path_excerpt": null,
+  "flow_and_constraints": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-06\\rv32i_core_build\\iter_000\\synth.tcl",
+      "sha256": "853862f8f726d2a7010a7adbe730e637e4c7dad83aafd7159d9c848c1750498e",
+      "text": "set_msg_config -id {VRFC 10-3609} -new_severity ERROR\r\nset_msg_config -id {Synth 8-9873} -new_severity ERROR\r\nset_msg_config -id {Designutils 20-1307} -new_severity ERROR\r\nset_msg_config -id {Synth 8-327} -new_severity ERROR\r\nset_msg_config -id {Synth 8-3352} -new_severity ERROR\r\nset_part xc7a35tcpg236-1\r\nread_verilog \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-06/rv32i_core_build/iter_000/rv32i_core.v\"\r\nset fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-06/rv32i_core_build/iter_000/timing.xdc\" w]\r\nputs $fp {create_clock -period 10.000 -name clk [get_ports clk]}\r\nputs $fp {set_property HD.CLK_SRC BUFGCTRL_X0Y0 [get_ports clk]}\r\nclose $fp\r\nread_xdc \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-06/rv32i_core_build/iter_000/timing.xdc\"\r\nsynth_design -top rv32i_core -flatten_hierarchy rebuilt -mode out_of_context \r\nreport_utilization -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-06/rv32i_core_build/iter_000/utilization.rpt\"\r\nreport_timing_summary -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-06/rv32i_core_build/iter_000/timing.rpt\"\r\nopt_design\r\nplace_design\r\n\r\nroute_design\r\nreport_utilization -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-06/rv32i_core_build/iter_000/utilization_routed.rpt\"\r\nreport_timing_summary -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-06/rv32i_core_build/iter_000/timing_routed.rpt\"\r\ncatch { if {[llength [all_registers]] > 0} { report_timing -from [all_registers] -to [all_registers] -max_paths 1 -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-06/rv32i_core_build/iter_000/timing_reg2reg.rpt\" } }\r\nreport_design_analysis -logic_level_distribution -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-06/rv32i_core_build/iter_000/design_analysis.rpt\"\r\nreport_power -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-06/rv32i_core_build/iter_000/power.rpt\"\r\ncatch { report_methodology -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-06/rv32i_core_build/iter_000/methodology.rpt\" }\r\ncatch { report_qor_suggestions -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-06/rv32i_core_build/iter_000/qor_suggestions.rpt\" }\r\nputs \"SYNTH_COMPLETE\"\r\n",
+      "truncated": false
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-06\\rv32i_core_build\\iter_000\\timing.xdc",
+      "sha256": "64b6a06a567f5142e3b71c9ec44440c46d1ff02057a9207ab3820113a8e3e958",
+      "text": "create_clock -period 10.000 -name clk [get_ports clk]\r\nset_property HD.CLK_SRC BUFGCTRL_X0Y0 [get_ports clk]\r\n",
+      "truncated": false
+    }
+  ],
+  "hard_gates": [
+    "Preserve typed build spec defined behavior, ports, parameter defaults, reset and observable cycles; explicitly unspecified cases remain unspecified.",
+    "Use the fixed provided testbench, tools, device and constraints without modification.",
+    "Static/interface checks, compile, simulation and real routed metric integrity must pass.",
+    "Timing closure requires setup slack >= 0 and hold slack >= 0.",
+    "Unknown or absent evidence cannot count as success."
+  ],
+  "implementation": {
+    "meaning": "Out-of-context implementation (chip_top_flow_for_soc_block): the top is a block inside a larger design, synthesized with synth_design -mode out_of_context and placed and routed without I/O buffers or package pins. clk is constrained at the target period and modeled as driven by a global clock buffer (HD.CLK_SRC). Data ports have no input or output delay and no pad delay, so they are unconstrained I/O; the routed WNS and WHS, and timing acceptance, cover the internal clocked paths only, and combinational logic between a port and its first or last register is not timed. Utilization excludes I/O buffers.",
+    "mode": "out_of_context"
+  },
+  "metric_provenance": "Structured metrics are parsed from retained reports; routed utilization/timing reports take precedence when present. The manifest identifies complete files by hash. Header excerpts are bounded previews, not complete reports or an independent metric source.",
+  "objective": "minimize_luts",
+  "objective_policy": "First establish timing feasibility. A verified timing-feasible candidate may replace a known timing-infeasible previous best even with higher area or power; classify this as timing_recovery, not objective savings. While the previous best is timing-infeasible, a verified still-infeasible candidate with strictly better setup WNS and hold not worse beyond a small tolerance may replace it as timing_progress, which is not closure; a feasible candidate always outranks it. Once both are timing-feasible, require strict improvement of the chosen objective; for maximize_freq that is register-to-register setup slack (reg2reg_wns_ns) when both designs report it, otherwise full setup WNS for both, while feasibility stays on full WNS and WHS. minimize_luts compares (lut_used, ff_used) and minimize_ffs compares (ff_used, lut_used) lexicographically: an equal primary metric with a strictly lower secondary is an objective improvement, a higher primary never is, and a secondary missing from either design gives no tie-break. Unknown or contradictory incumbent timing evidence cannot establish recovery. A completed experiment may find no improvement. Do not invent mandatory savings, slack margins, tool versions, timing corners, new tests, thresholds, code-style quotas or external environment requirements.",
+  "part": "xc7a35tcpg236-1",
+  "report_headers": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-06\\rv32i_core_build\\iter_000\\power.rpt",
+      "sha256": "2321621efc6a0d27767b9ef8ccf086610361498637c98911532706d1a9a46121",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version     : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date             : Mon Nov  2 10:09:41 2026\r\n| Host             : Baah running 64-bit major release  (build 9200)\r\n| Command          : report_power -file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-06/rv32i_core_build/iter_000/power.rpt\r\n| Design           : rv32i_core\r\n| Device           : xc7a35tcpg236-1\r\n| Design State     : routed\r\n| Grade            : commercial\r\n| Process          : typical\r\n| Characterization : Production\r\n------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nPower Report\r\n\r\nTable of Contents\r\n-----------------\r\n1. Summary\r\n1.1 On-Chip Components\r\n1.2 Power Supply Summary\r\n1.3 Confidence Level\r\n2. Settings\r\n2.1 Environment\r\n2.2 Clock Constraints\r\n3. Detailed Reports\r\n3.1 By Hierarchy\r\n\r\n1. Summary\r\n----------\r\n\r\n+--------------------------+--------------+\r\n| Total On-Chip Power (W)  | 0.082        |\r\n| Design Power Budget (W)  | Unspecified* |\r\n| Power Budget Margin (W)  | NA           |\r\n| Dynamic (W)              | 0.014        |\r\n| Device Static (W)        | 0.068        |\r\n| Effective TJA (C/W)      | 5.0          |\r\n| Max Ambient (C)          | 84.6         |\r\n| Junction Temperature (C) | 25.4         |\r\n| Confidence Level         | Medium       |\r\n| Setting File             | ---          |\r\n| Simulation Activity File | ---          |\r\n| Design Nets Matched     ",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-06\\rv32i_core_build\\iter_000\\timing.rpt",
+      "sha256": "28433bfc887f0c80554dd4ec81e7f829395439e5f84e41850e2c5617bffcc962",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n----------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date         : Mon Nov  2 10:06:10 2026\r\n| Host         : Baah running 64-bit major release  (build 9200)\r\n| Command      : report_timing_summary -file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-06/rv32i_core_build/iter_000/timing.rpt\r\n| Design       : rv32i_core\r\n| Device       : 7a35t-cpg236\r\n| Speed File   : -1  PRODUCTION 1.23 2018-06-13\r\n| Design State : Synthesized\r\n----------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nTiming Summary Report\r\n\r\n------------------------------------------------------------------------------------------------\r\n| Timer Settings\r\n| --------------\r\n------------------------------------------------------------------------------------------------\r\n\r\n  Enable Multi Corner Analysis               :  Yes\r\n  Enable Pessimism Removal                   :  Yes\r\n  Pessimism Removal Resolution               :  Nearest Common Node\r\n  Enable Input Delay Default Clock           :  No\r\n  Enable Preset / Clear Arcs                 :  No\r\n  Disable Flight Delays                      :  No\r\n  Ignore I/O Paths                           :  No\r\n  Timing Early Launch at Borrowing Latches   :  No\r\n  Borrow Time for Max Delay Exceptions       :  Yes\r\n  Merge Timing Exceptions                    :  Yes\r\n  Inter-SLR Compensation                     :  Conservative\r\n\r\n  Corner  Analyze    Analyz",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-06\\rv32i_core_build\\iter_000\\timing_reg2reg.rpt",
+      "sha256": "beaecfde391ae55cd6dda213f865e8531db9580b8b95d0b401ead560a63c13f5",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date         : Mon Nov  2 10:09:34 2026\r\n| Host         : Baah running 64-bit major release  (build 9200)\r\n| Command      : report_timing -from [all_registers] -to [all_registers] -max_paths 1 -file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-06/rv32i_core_build/iter_000/timing_reg2reg.rpt\r\n| Design       : rv32i_core\r\n| Device       : 7a35t-cpg236\r\n| Speed File   : -1  PRODUCTION 1.23 2018-06-13\r\n| Design State : Routed\r\n-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nTiming Report\r\n\r\nSlack (MET) :             1.201ns  (required time - arrival time)\r\n  Source:                 u_rv_imem/imem_rdata_reg_reg[0]/C\r\n                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@5.000ns period=10.000ns})\r\n  Destination:            u_rv_ctrl/npc_reg[18]/D\r\n                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@5.000ns period=10.000ns})\r\n  Path Group:             clk\r\n  Path Type:              Setup (Max at Slow Process Corner)\r\n  Requirement:            10.000ns  (clk rise@10.000ns - clk rise@0.000ns)\r\n  Data Path Delay:        8.672ns  (logic 1.736ns (20.018%)  route 6.936ns (79.982%))\r\n  Logic Levels:           8  (LUT",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-06\\rv32i_core_build\\iter_000\\timing_routed.rpt",
+      "sha256": "7667c2c33ebb12319ab8c8183530bdb284df235a2d80684d481259ac12b4156e",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n-----------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date         : Mon Nov  2 10:09:33 2026\r\n| Host         : Baah running 64-bit major release  (build 9200)\r\n| Command      : report_timing_summary -file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-06/rv32i_core_build/iter_000/timing_routed.rpt\r\n| Design       : rv32i_core\r\n| Device       : 7a35t-cpg236\r\n| Speed File   : -1  PRODUCTION 1.23 2018-06-13\r\n| Design State : Routed\r\n-----------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nTiming Summary Report\r\n\r\n------------------------------------------------------------------------------------------------\r\n| Timer Settings\r\n| --------------\r\n------------------------------------------------------------------------------------------------\r\n\r\n  Enable Multi Corner Analysis               :  Yes\r\n  Enable Pessimism Removal                   :  Yes\r\n  Pessimism Removal Resolution               :  Nearest Common Node\r\n  Enable Input Delay Default Clock           :  No\r\n  Enable Preset / Clear Arcs                 :  No\r\n  Disable Flight Delays                      :  No\r\n  Ignore I/O Paths                           :  No\r\n  Timing Early Launch at Borrowing Latches   :  No\r\n  Borrow Time for Max Delay Exceptions       :  Yes\r\n  Merge Timing Exceptions                    :  Yes\r\n  Inter-SLR Compensation                     :  Conservative\r\n\r\n  Corner  A",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-06\\rv32i_core_build\\iter_000\\utilization.rpt",
+      "sha256": "9919e1437d09e9fd2a2e494081d1f46b2934a985c60cff499aac8f01b789df12",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\n------------------------------------------------------------------------------------------------------------------------------------------------------\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\n| Date         : Mon Nov  2 10:05:47 2026\n| Host         : Baah running 64-bit major release  (build 9200)\n| Command      : report_utilization -file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-06/rv32i_core_build/iter_000/utilization.rpt\n| Design       : rv32i_core\n| Device       : xc7a35tcpg236-1\n| Speed File   : -1\n| Design State : Synthesized\n------------------------------------------------------------------------------------------------------------------------------------------------------\n\nUtilization Design Information\n\nTable of Contents\n-----------------\n1. Slice Logic\n1.1 Summary of Registers by Type\n2. Memory\n3. DSP\n4. IO and GT Specific\n5. Clocking\n6. Specific Feature\n7. Primitives\n8. Black Boxes\n9. Instantiated Netlists\n\n1. Slice Logic\n--------------\n\n+-------------------------+------+-------+------------+-----------+-------+\n|        Site Type        | Used | Fixed | Prohibited | Available | Util% |\n+-------------------------+------+-------+------------+-----------+-------+\n| Slice LUTs*             | 2128 |     0 |          0 |     20800 | 10.23 |\n|   LUT as Logic          | 2128 |     0 |          0 |     20800 | 10.23 |\n|   LUT as Memory         |    0 |     0 |          0 |      9600 |  0.00 |\n| Slice Registers         | 4356 |     0 |          0 |     41600 | 10.47 |\n|   Register as Flip Flop | 4356 |     0 |          0 |     41600 | 10.47 |\n|   Register as Latch     |    0 |     0 ",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-06\\rv32i_core_build\\iter_000\\utilization_routed.rpt",
+      "sha256": "336871aa42d58f1befb7641a2f81d528108b687974f405e95ab99fef8db6773c",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\n-------------------------------------------------------------------------------------------------------------------------------------------------------------\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\n| Date         : Mon Nov  2 10:09:26 2026\n| Host         : Baah running 64-bit major release  (build 9200)\n| Command      : report_utilization -file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-06/rv32i_core_build/iter_000/utilization_routed.rpt\n| Design       : rv32i_core\n| Device       : xc7a35tcpg236-1\n| Speed File   : -1\n| Design State : Routed\n-------------------------------------------------------------------------------------------------------------------------------------------------------------\n\nUtilization Design Information\n\nTable of Contents\n-----------------\n1. Slice Logic\n1.1 Summary of Registers by Type\n2. Slice Logic Distribution\n3. Memory\n4. DSP\n5. IO and GT Specific\n6. Clocking\n7. Specific Feature\n8. Primitives\n9. Black Boxes\n10. Instantiated Netlists\n\n1. Slice Logic\n--------------\n\n+-------------------------+------+-------+------------+-----------+-------+\n|        Site Type        | Used | Fixed | Prohibited | Available | Util% |\n+-------------------------+------+-------+------------+-----------+-------+\n| Slice LUTs              | 2093 |     0 |          0 |     20800 | 10.06 |\n|   LUT as Logic          | 2093 |     0 |          0 |     20800 | 10.06 |\n|   LUT as Memory         |    0 |     0 |          0 |      9600 |  0.00 |\n| Slice Registers         | 4356 |     0 |          0 |     41600 | 10.47 |\n|   Register as Flip Flop | 4356 |     0 |          0 |     41600 | 10.4",
+      "truncated": true
+    }
+  ],
+  "report_manifest": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-06\\rv32i_core_build\\iter_000\\power.rpt",
+      "sha256": "2321621efc6a0d27767b9ef8ccf086610361498637c98911532706d1a9a46121"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-06\\rv32i_core_build\\iter_000\\timing.rpt",
+      "sha256": "28433bfc887f0c80554dd4ec81e7f829395439e5f84e41850e2c5617bffcc962"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-06\\rv32i_core_build\\iter_000\\timing_reg2reg.rpt",
+      "sha256": "beaecfde391ae55cd6dda213f865e8531db9580b8b95d0b401ead560a63c13f5"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-06\\rv32i_core_build\\iter_000\\timing_routed.rpt",
+      "sha256": "7667c2c33ebb12319ab8c8183530bdb284df235a2d80684d481259ac12b4156e"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-06\\rv32i_core_build\\iter_000\\utilization.rpt",
+      "sha256": "9919e1437d09e9fd2a2e494081d1f46b2934a985c60cff499aac8f01b789df12"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-06\\rv32i_core_build\\iter_000\\utilization_routed.rpt",
+      "sha256": "336871aa42d58f1befb7641a2f81d528108b687974f405e95ab99fef8db6773c"
+    }
+  ],
+  "schema_version": 1,
+  "simulation": {
+    "failure_verdict": "TEST FAILED",
+    "required_verdict": "TEST PASSED",
+    "scope": "Provided testbench checks; not a formal equivalence proof.",
+    "tools": [
+      "xvlog",
+      "xelab",
+      "xsim -runall"
+    ]
+  },
+  "sources": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-06\\rv32i_core_build\\iter_000\\rv32i_core.v",
+      "sha256": "a03d15f8693c8945a8f18c6dc9bc6e3ac1758034605717267206d623bb70dda8",
+      "text": "`timescale 1ns/1ps\r\n// @latency 1\r\nmodule rv_imem (\r\n    input wire clk,\r\n    input wire rst,\r\n    input wire imem_we,\r\n    input wire [5:0] imem_waddr,\r\n    input wire [31:0] imem_wdata,\r\n    input wire [5:0] imem_raddr,\r\n    output wire [31:0] imem_rdata\r\n);\r\n\r\n    reg [31:0] mem [0:63];\r\n    reg [31:0] imem_rdata_reg;\r\n    integer i;\r\n\r\n    assign imem_rdata = imem_rdata_reg;\r\n\r\n    always @(posedge clk) begin\r\n        if (rst) begin\r\n            for (i = 0; i < 64; i = i + 1)\r\n                mem[i] <= 32'b0;\r\n            imem_rdata_reg <= 32'b0;\r\n        end else begin\r\n            imem_rdata_reg <= mem[imem_raddr];\r\n            if (imem_we)\r\n                mem[imem_waddr] <= imem_wdata;\r\n        end\r\n    end\r\n\r\nendmodule\r\n`timescale 1ns/1ps\r\n// @latency 0\r\nmodule rv_decode (\r\n    input  wire [31:0] instr,\r\n    output wire [4:0]  rs1,\r\n    output wire [4:0]  rs2,\r\n    output wire [4:0]  rd,\r\n    output wire [31:0] imm,\r\n    output wire [3:0]  alu_op,\r\n    output wire [1:0]  a_sel,\r\n    output wire        b_sel,\r\n    output wire [2:0]  kind,\r\n    output wire [2:0]  funct3\r\n);\r\n\r\n    wire [6:0] opcode;\r\n    wire [31:0] imm_i;\r\n    wire [31:0] imm_s;\r\n    wire [31:0] imm_b;\r\n    wire [31:0] imm_u;\r\n    wire [31:0] imm_j;\r\n\r\n    assign opcode = instr[6:0];\r\n\r\n    assign rs1    = instr[19:15];\r\n    assign rs2    = instr[24:20];\r\n    assign rd     = instr[11:7];\r\n    assign funct3 = instr[14:12];\r\n\r\n    assign imm_i = {{20{instr[31]}}, instr[31:20]};\r\n    assign imm_s = {{20{instr[31]}}, instr[31:25], instr[11:7]};\r\n    assign imm_b = {{19{instr[31]}}, instr[31], instr[7],\r\n                    instr[30:25], instr[11:8], 1'b0};\r\n    assign imm_u = {instr[31:12], 12'b0};\r\n    assign imm_j = {{11{instr[31]}}, instr[31], instr[19:12],\r\n                    instr[20], instr[30:21], 1'b0};\r\n\r\n    assign kind =\r\n        (opcode == 7'b0110011 || opcode == 7'b0010011 ||\r\n         opcode == 7'b0110111 || opcode == 7'b0010111) ? 3'd0 :\r\n        (opcode == 7'b0000011) ? 3'd1 :\r\n        (opcode == 7'b0100011) ? 3'd2 :\r\n        (opcode == 7'b1100011) ? 3'd3 :\r\n        (opcode == 7'b1101111) ? 3'd4 :\r\n        (opcode == 7'b1100111) ? 3'd5 : 3'd6;\r\n\r\n    assign a_sel =\r\n        (opcode == 7'b0110111) ? 2'd2 :\r\n        (opcode == 7'b0010111 || opcode == 7'b1101111 ||\r\n         opcode == 7'b1100011) ? 2'd1 : 2'd0;\r\n\r\n    assign b_sel =\r\n        (opcode == 7'b0110011) ? 1'b0 :\r\n        (opcode == 7'b0010011 || opcode == 7'b0110111 ||\r\n         opcode == 7'b0010111 || opcode == 7'b1101111 ||\r\n         opcode == 7'b1100111 || opcode == 7'b1100011 ||\r\n         opcode == 7'b0000011 || opcode == 7'b0100011) ? 1'b1 : 1'b0;\r\n\r\n    assign alu_op =\r\n        (opcode == 7'b0110011) ? {instr[30], funct3} :\r\n        (opcode == 7'b0010011) ?\r\n            ((funct3 == 3'b101) ? {instr[30], funct3} : {1'b0, funct3}) :\r\n        4'b0000;\r\n\r\n    assign imm =\r\n        (opcode == 7'b0010011 || opcode == 7'b1100111 ||\r\n         opcode == 7'b0000011) ? imm_i :\r\n        (opcode == 7'b0100011) ? imm_s :\r\n        (opcode == 7'b1100011) ? imm_b :\r\n        (opcode == 7'b0110111 || opcode == 7'b0010111) ? imm_u :\r\n        (opcode == 7'b1101111) ? imm_j :\r\n        32'b0;\r\n\r\nendmodule\r\n`timescale 1ns/1ps\r\n// @latency 1\r\nmodule rv_regfile (\r\n    input wire clk,\r\n    input wire rst,\r\n    input wire we,\r\n    input wire [4:0] waddr,\r\n    input wire [31:0] wdata,\r\n    input wire [4:0] raddr1,\r\n    input wire [4:0] raddr2,\r\n    output wire [31:0] rdata1,\r\n    output wire [31:0] rdata2\r\n);\r\n\r\n    reg [31:0] x [1:31];\r\n    reg [31:0] rdata1_reg;\r\n    reg [31:0] rdata2_reg;\r\n    integer i;\r\n\r\n    assign rdata1 = rdata1_reg;\r\n    assign rdata2 = rdata2_reg;\r\n\r\n    always @(posedge clk) begin\r\n        if (rst) begin\r\n            for (i = 1; i < 32; i = i + 1)\r\n                x[i] <= 32'b0;\r\n            rdata1_reg <= 32'b0;\r\n            rdata2_reg <= 32'b0;\r\n        end else begin\r\n            if (raddr1 == 5'b0)\r\n                rdata1_reg <= 32'b0;\r\n            else\r\n                rdata1_reg <= x[raddr1];\r\n\r\n            if (raddr2 == 5'b0)\r\n                rdata2_reg <= 32'b0;\r\n            else\r\n                rdata2_reg <= x[raddr2];\r\n\r\n            if (we && (waddr != 5'b0))\r\n                x[waddr] <= wdata;\r\n        end\r\n    end\r\n\r\nendmodule\r\n`timescale 1ns/1ps\r\n// @latency 0\r\nmodule rv_alu (\r\n    input  wire [1:0]  a_sel,\r\n    input  wire        b_sel,\r\n    input  wire [3:0]  op,\r\n    input  wire [31:0] rs1_val,\r\n    input  wire [31:0] rs2_val,\r\n    input  wire [31:0] pc_val,\r\n    input  wire [31:0] imm,\r\n    output wire [31:0] y,\r\n    output wire        eq,\r\n    output wire        lt,\r\n    output wire        ltu\r\n);\r\n\r\n    wire [31:0] a;\r\n    wire [31:0] b;\r\n    wire signed [31:0] a_signed;\r\n    wire [31:0] arithmetic_right_shift;\r\n    reg  [31:0] y_comb;\r\n\r\n    assign a = (a_sel == 2'd0) ? rs1_val :\r\n               (a_sel == 2'd1) ? pc_val  : 32'd0;\r\n    assign b = b_sel ? imm : rs2_val;\r\n    assign a_signed = a;\r\n    assign arithmetic_right_shift = a_signed >>> b[4:0];\r\n\r\n    always @(*) begin\r\n        y_comb = 32'd0;\r\n        case (op[2:0])\r\n            3'b000: y_comb = op[3] ? (a - b) : (a + b);\r\n            3'b001: y_comb = a << b[4:0];\r\n            3'b010: y_comb = ($signed(a) < $signed(b)) ? 32'd1 : 32'd0;\r\n            3'b011: y_comb = (a < b) ? 32'd1 : 32'd0;\r\n            3'b100: y_comb = a ^ b;\r\n            3'b101: y_comb = op[3] ? arithmetic_right_shift : (a >> b[4:0]);\r\n            3'b110: y_comb = a | b;\r\n            3'b111: y_comb = a & b;\r\n            default: y_comb = 32'd0;\r\n        endcase\r\n    end\r\n\r\n    assign y   = y_comb;\r\n    assign eq  = (rs1_val == rs2_val);\r\n    assign lt  = ($signed(rs1_val) < $signed(rs2_val));\r\n    assign ltu = (rs1_val < rs2_val);\r\n\r\nendmodule\r\n`timescale 1ns/1ps\r\n// @latency 1\r\nmodule rv_dmem (\r\n    input wire clk,\r\n    input wire rst,\r\n    input wire we,\r\n    input wire [4:0] addr,\r\n    input wire [31:0] wdata,\r\n    output wire [31:0] rdata\r\n);\r\n\r\n    reg [31:0] mem [0:31];\r\n    reg [31:0] rdata_reg;\r\n    integer i;\r\n\r\n    assign rdata = rdata_reg;\r\n\r\n    always @(posedge clk) begin\r\n        if (rst) begin\r\n            for (i = 0; i < 32; i = i + 1)\r\n                mem[i] <= 32'b0;\r\n            rdata_reg <= 32'b0;\r\n        end else begin\r\n            rdata_reg <= mem[addr];\r\n            if (we)\r\n                mem[addr] <= wdata;\r\n        end\r\n    end\r\n\r\nendmodule\r\n`timescale 1ns/1ps\r\n// @latency 1\r\nmodule rv_ctrl (\r\n    input wire clk,\r\n    input wire rst,\r\n    input wire run,\r\n    input wire [2:0] kind,\r\n    input wire [2:0] funct3,\r\n    input wire [4:0] rd,\r\n    input wire [31:0] y,\r\n    input wire eq,\r\n    input wire lt,\r\n    input wire ltu,\r\n    input wire [31:0] rs2_val,\r\n    input wire [31:0] dmem_rdata,\r\n    output wire [31:0] pc,\r\n    output wire [5:0] imem_raddr,\r\n    output wire retire,\r\n    output wire rf_we,\r\n    output wire [4:0] rf_waddr,\r\n    output wire [31:0] rf_wdata,\r\n    output wire dmem_we,\r\n    output wire [4:0] dmem_addr,\r\n    output wire [31:0] dmem_wdata\r\n);\r\n\r\n    localparam [2:0] F = 3'd0;\r\n    localparam [2:0] D = 3'd1;\r\n    localparam [2:0] E = 3'd2;\r\n    localparam [2:0] M = 3'd3;\r\n    localparam [2:0] L = 3'd4;\r\n    localparam [2:0] W = 3'd5;\r\n\r\n    reg [2:0] state;\r\n    reg [31:0] pc_q;\r\n    reg [31:0] npc;\r\n    reg [31:0] res;\r\n    reg [31:0] sdata;\r\n    reg [4:0] rd_q;\r\n    reg wb_q;\r\n    reg st_q;\r\n    reg ld_q;\r\n    reg taken;\r\n\r\n    always @(*) begin\r\n        taken = 1'b0;\r\n        case (funct3)\r\n            3'b000: taken = eq;\r\n            3'b001: taken = ~eq;\r\n            3'b100: taken = lt;\r\n            3'b101: taken = ~lt;\r\n            3'b110: taken = ltu;\r\n            3'b111: taken = ~ltu;\r\n            default: taken = 1'b0;\r\n        endcase\r\n    end\r\n\r\n    always @(posedge clk) begin\r\n        if (rst) begin\r\n            state <= F;\r\n            pc_q <= 32'b0;\r\n            npc <= 32'b0;\r\n            res <= 32'b0;\r\n            sdata <= 32'b0;\r\n            rd_q <= 5'b0;\r\n            wb_q <= 1'b0;\r\n            st_q <= 1'b0;\r\n            ld_q <= 1'b0;\r\n        end else begin\r\n            case (state)\r\n                F: begin\r\n                    if (run)\r\n                        state <= D;\r\n                    else\r\n                        state <= F;\r\n                end\r\n\r\n                D: begin\r\n                    state <= E;\r\n                end\r\n\r\n                E: begin\r\n                    wb_q <= (kind == 3'd0) || (kind == 3'd1) ||\r\n                            (kind == 3'd4) || (kind == 3'd5);\r\n                    st_q <= (kind == 3'd2);\r\n                    ld_q <= (kind == 3'd1);\r\n                    rd_q <= rd;\r\n                    sdata <= rs2_val;\r\n\r\n                    if ((kind == 3'd4) || (kind == 3'd5))\r\n                        res <= pc_q + 32'd4;\r\n                    else\r\n                        res <= y;\r\n\r\n                    if ((kind == 3'd4) || ((kind == 3'd3) && taken))\r\n                        npc <= y;\r\n                    else if (kind == 3'd5)\r\n                        npc <= {y[31:1], 1'b0};\r\n                    else\r\n                        npc <= pc_q + 32'd4;\r\n\r\n                    if ((kind == 3'd1) || (kind == 3'd2))\r\n                        state <= M;\r\n                    else\r\n                        state <= W;\r\n                end\r\n\r\n                M: begin\r\n                    if (ld_q)\r\n                        state <= L;\r\n                    else\r\n                        state <= W;\r\n                end\r\n\r\n                L: begin\r\n                    res <= dmem_rdata;\r\n                    state <= W;\r\n                end\r\n\r\n                W: begin\r\n                    pc_q <= npc;\r\n                    state <= F;\r\n                end\r\n\r\n                default: begin\r\n                    state <= F;\r\n                end\r\n            endcase\r\n        end\r\n    end\r\n\r\n    assign pc = pc_q;\r\n    assign imem_raddr = pc_q[7:2];\r\n    assign retire = (state == W);\r\n    assign rf_we = (state == W) && wb_q;\r\n    assign rf_waddr = rd_q;\r\n    assign rf_wdata = res;\r\n    assign dmem_we = (state == M) && st_q;\r\n    assign dmem_addr = res[6:2];\r\n    assign dmem_wdata = sdata;\r\n\r\nendmodule\r\n`timescale 1ns/1ps\r\nmodule rv32i_core (\r\n    input wire clk,\r\n    input wire rst,\r\n    input wire run,\r\n    input wire imem_we,\r\n    input wire [5:0] imem_waddr,\r\n    input wire [31:0] imem_wdata,\r\n    output wire [31:0] pc,\r\n    output wire retire,\r\n    output wire rf_we,\r\n    output wire [4:0] rf_waddr,\r\n    output wire [31:0] rf_wdata,\r\n    output wire dmem_we,\r\n    output wire [4:0] dmem_addr,\r\n    output wire [31:0] dmem_wdata\r\n);\r\n    wire [5:0] w_rv_ctrl_imem_raddr;\r\n    wire [31:0] w_rv_imem_imem_rdata;\r\n    wire [4:0] w_rv_decode_rs1;\r\n    wire [4:0] w_rv_decode_rs2;\r\n    wire [31:0] w_rv_regfile_rdata1;\r\n    wire [31:0] w_rv_regfile_rdata2;\r\n    wire [31:0] w_rv_ctrl_pc;\r\n    wire [31:0] w_rv_decode_imm;\r\n    wire [3:0] w_rv_decode_alu_op;\r\n    wire [1:0] w_rv_decode_a_sel;\r\n    wire w_rv_decode_b_sel;\r\n    wire [2:0] w_rv_decode_kind;\r\n    wire [2:0] w_rv_decode_funct3;\r\n    wire [4:0] w_rv_decode_rd;\r\n    wire [31:0] w_rv_alu_y;\r\n    wire w_rv_alu_eq;\r\n    wire w_rv_alu_lt;\r\n    wire w_rv_alu_ltu;\r\n    wire w_rv_ctrl_rf_we;\r\n    wire [4:0] w_rv_ctrl_rf_waddr;\r\n    wire [31:0] w_rv_ctrl_rf_wdata;\r\n    wire w_rv_ctrl_dmem_we;\r\n    wire [4:0] w_rv_ctrl_dmem_addr;\r\n    wire [31:0] w_rv_ctrl_dmem_wdata;\r\n    wire [31:0] w_rv_dmem_rdata;\r\n    rv_imem u_rv_imem (\r\n        .clk(clk),\r\n        .rst(rst),\r\n        .imem_we(imem_we),\r\n        .imem_waddr(imem_waddr),\r\n        .imem_wdata(imem_wdata),\r\n        .imem_raddr(w_rv_ctrl_imem_raddr),\r\n        .imem_rdata(w_rv_imem_imem_rdata)\r\n    );\r\n    rv_decode u_rv_decode (\r\n        .instr(w_rv_imem_imem_rdata),\r\n        .rs1(w_rv_decode_rs1),\r\n        .rs2(w_rv_decode_rs2),\r\n        .rd(w_rv_decode_rd),\r\n        .imm(w_rv_decode_imm),\r\n        .alu_op(w_rv_decode_alu_op),\r\n        .a_sel(w_rv_decode_a_sel),\r\n        .b_sel(w_rv_decode_b_sel),\r\n        .kind(w_rv_decode_kind),\r\n        .funct3(w_rv_decode_funct3)\r\n    );\r\n    rv_regfile u_rv_regfile (\r\n        .clk(clk),\r\n        .rst(rst),\r\n        .we(w_rv_ctrl_rf_we),\r\n        .waddr(w_rv_ctrl_rf_waddr),\r\n        .wdata(w_rv_ctrl_rf_wdata),\r\n        .raddr1(w_rv_decode_rs1),\r\n        .raddr2(w_rv_decode_rs2),\r\n        .rdata1(w_rv_regfile_rdata1),\r\n        .rdata2(w_rv_regfile_rdata2)\r\n    );\r\n    rv_alu u_rv_alu (\r\n        .a_sel(w_rv_decode_a_sel),\r\n        .b_sel(w_rv_decode_b_sel),\r\n        .op(w_rv_decode_alu_op),\r\n        .rs1_val(w_rv_regfile_rdata1),\r\n        .rs2_val(w_rv_regfile_rdata2),\r\n        .pc_val(w_rv_ctrl_pc),\r\n        .imm(w_rv_decode_imm),\r\n        .y(w_rv_alu_y),\r\n        .eq(w_rv_alu_eq),\r\n        .lt(w_rv_alu_lt),\r\n        .ltu(w_rv_alu_ltu)\r\n    );\r\n    rv_dmem u_rv_dmem (\r\n        .clk(clk),\r\n        .rst(rst),\r\n        .we(w_rv_ctrl_dmem_we),\r\n        .addr(w_rv_ctrl_dmem_addr),\r\n        .wdata(w_rv_ctrl_dmem_wdata),\r\n        .rdata(w_rv_dmem_rdata)\r\n    );\r\n    assign pc = w_rv_ctrl_pc;\r\n    assign rf_we = w_rv_ctrl_rf_we;\r\n    assign rf_waddr = w_rv_ctrl_rf_waddr;\r\n    assign rf_wdata = w_rv_ctrl_rf_wdata;\r\n    assign dmem_we = w_rv_ctrl_dmem_we;\r\n    assign dmem_addr = w_rv_ctrl_dmem_addr;\r\n    assign dmem_wdata = w_rv_ctrl_dmem_wdata;\r\n    rv_ctrl u_rv_ctrl (\r\n        .clk(clk),\r\n        .rst(rst),\r\n        .run(run),\r\n        .kind(w_rv_decode_kind),\r\n        .funct3(w_rv_decode_funct3),\r\n        .rd(w_rv_decode_rd),\r\n        .y(w_rv_alu_y),\r\n        .eq(w_rv_alu_eq),\r\n        .lt(w_rv_alu_lt),\r\n        .ltu(w_rv_alu_ltu),\r\n        .rs2_val(w_rv_regfile_rdata2),\r\n        .dmem_rdata(w_rv_dmem_rdata),\r\n        .pc(w_rv_ctrl_pc),\r\n        .imem_raddr(w_rv_ctrl_imem_raddr),\r\n        .retire(retire),\r\n        .rf_we(w_rv_ctrl_rf_we),\r\n        .rf_waddr(w_rv_ctrl_rf_waddr),\r\n        .rf_wdata(w_rv_ctrl_rf_wdata),\r\n        .dmem_we(w_rv_ctrl_dmem_we),\r\n        .dmem_addr(w_rv_ctrl_dmem_addr),\r\n        .dmem_wdata(w_rv_ctrl_dmem_wdata)\r\n    );\r\nendmodule\r\n",
+      "truncated": false
+    }
+  ],
+  "testbench": {
+    "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-06\\rv32i_core_build\\inputs\\testbench_path.v",
+    "sha256": "9504eb14e21f244002c7baa797758dd7834564fd2144019d91eade6a40f825dc",
+    "text": "`timescale 1ns/1ps\r\n// Independent ISA-level and cycle-exact checker for the multi-cycle RV32I core.\r\n// It keeps its own architectural state (pc, x0..x31, 32 data words, the\r\n// instruction image it loaded), executes each instruction from the RV32I\r\n// definition when the core fetches it, and checks every port before each rising\r\n// edge: retire and the register write in W, the store in M, pc always, and the\r\n// exact cycle count of every instruction (4, store 5, load 6, plus fetch\r\n// cycles held by run = 0). Programs: four hand-assembled ones (ALU and\r\n// immediate corner cases, Fibonacci with a sum loop, memory fill and copy with\r\n// address aliasing, every branch taken and not taken plus JAL/JALR links) and\r\n// forty seeded random programs with forward-only control flow. Stimulus never\r\n// depends on DUT outputs and the checker never reads DUT internals.\r\nmodule rv32i_core_tb;\r\n    reg clk=0, rst=1, run=0, imem_we=0;\r\n    reg [5:0] imem_waddr=0;\r\n    reg [31:0] imem_wdata=0;\r\n    wire [31:0] pc, rf_wdata, dmem_wdata;\r\n    wire retire, rf_we, dmem_we;\r\n    wire [4:0] rf_waddr, dmem_addr;\r\n    rv32i_core dut(.clk(clk),.rst(rst),.run(run),.imem_we(imem_we),.imem_waddr(imem_waddr),\r\n        .imem_wdata(imem_wdata),.pc(pc),.retire(retire),.rf_we(rf_we),.rf_waddr(rf_waddr),\r\n        .rf_wdata(rf_wdata),.dmem_we(dmem_we),.dmem_addr(dmem_addr),.dmem_wdata(dmem_wdata));\r\n    always #5 clk=~clk;\r\n\r\n    localparam P_F=0, P_D=1, P_E=2, P_M=3, P_L=4, P_W=5;\r\n    // Reference state.\r\n    reg [31:0] img [0:63];   // image the next program load writes\r\n    reg [31:0] im [0:63];    // instruction memory as written through the load port\r\n    reg [31:0] xr [0:31];\r\n    reg [31:0] dm [0:31];\r\n    reg [31:0] mpc=0;\r\n    integer ph=0;\r\n    // The instruction in flight, executed from the RV32I definition at its fetch edge.\r\n    reg [31:0] ins=0, e_val=0, e_npc=0, e_sdata=0;\r\n    reg [4:0] e_rd=0, e_saddr=0;\r\n    reg e_wb=0, e_ld=0, e_st=0;\r\n    integer e_cls=0;\r\n    integer cov [0:47];\r\n    integer cycle=0, errors=0, started=0, halts=0, retired=0, in_run=0, i, n, mr;\r\n    integer f_stalls=0, idle_run_low=0, busy_resets=0, pulses=0, x0_writes=0, programs=0;\r\n    reg [31:0] seed=32'h6b8b4567;\r\n\r\n    task fail;\r\n        input [511:0] rule;\r\n        begin\r\n            errors=errors+1;\r\n            if(errors<=40) $display(\"FAIL BEHAVIOR rule=%0s cycle=%0d pc=%h\",rule,cycle,mpc);\r\n        end\r\n    endtask\r\n    task checker_fail;\r\n        input [511:0] rule;\r\n        begin errors=errors+1; $display(\"CHECKER_FAIL rule=%0s cycle=%0d\",rule,cycle); end\r\n    endtask\r\n    task coverage_fail;\r\n        input [511:0] rule;\r\n        begin errors=errors+1; $display(\"COVERAGE_FAIL rule=%0s\",rule); end\r\n    endtask\r\n\r\n    function [31:0] advance;\r\n        input [31:0] v;\r\n        reg [31:0] x;\r\n        begin x=v^(v<<13); x=x^(x>>17); advance=x^(x<<5); end\r\n    endfunction\r\n\r\n    // RV32I encoders for the random program generator.\r\n    function [31:0] enc_r;\r\n        input [6:0] f7; input [2:0] f3; input [4:0] rd, rs1, rs2;\r\n        enc_r={f7,rs2,rs1,f3,rd,7'b0110011};\r\n    endfunction\r\n    function [31:0] enc_i;\r\n        input [11:0] imm; input [2:0] f3; input [6:0] op; input [4:0] rd, rs1;\r\n        enc_i={imm,rs1,f3,rd,op};\r\n    endfunction\r\n    function [31:0] enc_s;\r\n        input [11:0] imm; input [4:0] rs1, rs2;\r\n        enc_s={imm[11:5],rs2,rs1,3'b010,imm[4:0],7'b0100011};\r\n    endfunction\r\n    function [31:0] enc_b;\r\n        input [12:0] off; input [2:0] f3; input [4:0] rs1, rs2;\r\n        enc_b={off[12],off[10:5],rs2,rs1,f3,off[4:1],off[11],7'b1100011};\r\n    endfunction\r\n    function [31:0] enc_j;\r\n        input [20:0] off; input [4:0] rd;\r\n        enc_j={off[20],off[10:1],off[11],off[19:12],rd,7'b1101111};\r\n    endfunction\r\n\r\n    task model_reset;\r\n        begin\r\n            for(mr=0;mr<32;mr=mr+1) begin xr[mr]=0; dm[mr]=0; end\r\n            for(mr=0;mr<64;mr=mr+1) im[mr]=0;\r\n            mpc=0; ph=P_F; e_wb=0; e_ld=0; e_st=0;\r\n        end\r\n    endtask\r\n\r\n    // Execute the instruction at mpc from the ISA definition (word loads and\r\n    // stores, address bits [6:2] select one of 32 data words, bits [1:0] are\r\n    // ignored; FENCE, SYSTEM and unknown opcodes do nothing; funct3 010 and 011\r\n    // branches are never taken). Effects are committed at retirement.\r\n    task fetch_execute;\r\n        reg [6:0] op;\r\n        reg [2:0] f3;\r\n        reg [31:0] a, b, imm_i, imm_s, ea;\r\n        reg t;\r\n        begin\r\n            ins=im[mpc[7:2]];\r\n            op=ins[6:0]; f3=ins[14:12];\r\n            a=xr[ins[19:15]]; b=xr[ins[24:20]];\r\n            imm_i={{20{ins[31]}},ins[31:20]};\r\n            imm_s={{20{ins[31]}},ins[31:25],ins[11:7]};\r\n            e_rd=ins[11:7]; e_wb=0; e_ld=0; e_st=0; e_val=0; e_sdata=0; e_saddr=0;\r\n            e_npc=mpc+32'd4; e_cls=47;\r\n            case(op)\r\n                7'b0110111: begin e_wb=1; e_val={ins[31:12],12'd0}; e_cls=20; end\r\n                7'b0010111: begin e_wb=1; e_val=mpc+{ins[31:12],12'd0}; e_cls=21; end\r\n                7'b1101111: begin\r\n                    e_wb=1; e_val=mpc+32'd4; e_cls=22;\r\n                    e_npc=mpc+{{12{ins[31]}},ins[19:12],ins[20],ins[30:21],1'b0};\r\n                end\r\n                7'b1100111: begin e_wb=1; e_val=mpc+32'd4; e_npc=(a+imm_i)&32'hfffffffe; e_cls=23; end\r\n                7'b1100011: begin\r\n                    case(f3)\r\n                        3'd0: t=(a==b);\r\n                        3'd1: t=(a!=b);\r\n                        3'd4: t=($signed(a)<$signed(b));\r\n                        3'd5: t=($signed(a)>=$signed(b));\r\n                        3'd6: t=(a<b);\r\n                        3'd7: t=(a>=b);\r\n                        default: t=0;\r\n                    endcase\r\n                    if(t) e_npc=mpc+{{20{ins[31]}},ins[7],ins[30:25],ins[11:8],1'b0};\r\n                    e_cls=24+2*f3+t;\r\n                end\r\n                7'b0000011: begin e_wb=1; e_ld=1; ea=a+imm_i; e_val=dm[ea[6:2]]; e_cls=40; end\r\n                7'b0100011: begin e_st=1; ea=a+imm_s; e_saddr=ea[6:2]; e_sdata=b; e_cls=41; end\r\n                7'b0010011, 7'b0110011: begin\r\n                    e_wb=1;\r\n                    if(op==7'b0010011) b=imm_i;\r\n                    if(op==7'b0110011) e_cls=(ins[30] && f3==3'd0) ? 8 : (ins[30] && f3==3'd5) ? 9 : f3;\r\n                    else e_cls=(ins[30] && f3==3'd5) ? 18 : 10+f3;\r\n                    case(f3)\r\n                        3'd0: if(op==7'b0110011 && ins[30]) e_val=a-b; else e_val=a+b;\r\n                        3'd1: e_val=a<<b[4:0];\r\n                        3'd2: e_val=($signed(a)<$signed(b)) ? 32'd1 : 32'd0;\r\n                        3'd3: e_val=(a<b) ? 32'd1 : 32'd0;\r\n                        3'd4: e_val=a^b;\r\n                        3'd5: if(ins[30]) e_val=$signed(a)>>>b[4:0]; else e_val=a>>b[4:0];\r\n                        3'd6: e_val=a|b;\r\n                        default: e_val=a&b;\r\n                    endcase\r\n                end\r\n                default: e_cls=42;\r\n            endcase\r\n        end\r\n    endtask\r\n\r\n    task check_ports;\r\n        begin\r\n            if(retire !== (ph==P_W)) fail(\"retire_exactly_in_writeback\");\r\n            if(rf_we !== (ph==P_W && e_wb)) fail(\"rf_we_for_writing_instructions_in_writeback\");\r\n            if(ph==P_W && e_wb) begin\r\n                if(rf_waddr !== e_rd) fail(\"rf_waddr_is_rd\");\r\n                if(rf_wdata !== e_val) fail(\"rf_wdata_is_the_architectural_result\");\r\n            end\r\n            if(dmem_we !== (ph==P_M && e_st)) fail(\"dmem_we_for_stores_in_memory_phase\");\r\n            if(ph==P_M && e_st) begin\r\n                if(dmem_addr !== e_saddr) fail(\"store_word_address\");\r\n                if(dmem_wdata !== e_sdata) fail(\"store_data_is_rs2\");\r\n            end\r\n            if(pc !== mpc) fail(\"pc_of_the_instruction_in_flight\");\r\n        end\r\n    endtask\r\n\r\n    // Model the contract sequencer at a rising edge with the sampled inputs.\r\n    task clock_edge;\r\n        begin\r\n            if(rst) begin\r\n                if(ph!=P_F || mpc!=0) busy_resets=busy_resets+1;\r\n                model_reset;\r\n            end else begin\r\n                case(ph)\r\n                    P_F: if(run) begin fetch_execute; ph=P_D; end else if(in_run) f_stalls=f_stalls+1;\r\n                    P_D: begin ph=P_E; if(!run) idle_run_low=idle_run_low+1; end\r\n                    P_E: ph=(e_ld || e_st) ? P_M : P_W;\r\n                    P_M: ph=e_ld ? P_L : P_W;\r\n                    P_L: ph=P_W;\r\n                    default: begin\r\n                        if(e_wb && e_rd!=0) xr[e_rd]=e_val;\r\n                        if(e_wb && e_rd==0 && ins!=32'h0000006f) x0_writes=x0_writes+1;\r\n                        if(e_st) dm[e_saddr]=e_sdata;\r\n                        mpc=e_npc; ph=P_F; retired=retired+1;\r\n                        cov[e_cls]=cov[e_cls]+1;\r\n                        if(ins==32'h0000006f) halts=halts+1;\r\n                    end\r\n                endcase\r\n                // The fetch above read the pre-edge image (read-first).\r\n                if(imem_we) im[imem_waddr]=imem_wdata;\r\n            end\r\n        end\r\n    endtask\r\n\r\n    // One clock cycle: inputs change at the falling edge, ports are checked\r\n    // before the rising edge; pulse adds an off-edge reset pulse.\r\n    task step;\r\n        input r, rn, we;\r\n        input [5:0] wa;\r\n        input [31:0] wd;\r\n        input pulse;\r\n        begin\r\n            @(negedge clk);\r\n            rst=r; run=rn; imem_we=we; imem_waddr=wa; imem_wdata=wd;\r\n            #1; if(started) check_ports;\r\n            if(pulse) begin #1 rst=1; #2 rst=0; pulses=pulses+1; end\r\n            @(posedge clk);\r\n            cycle=cycle+1;\r\n            clock_edge;\r\n            if(rst) started=1;\r\n        end\r\n    endtask\r\n\r\n    task hand_program;\r\n        input integer which;\r\n        begin\r\n            for(n=0;n<64;n=n+1) img[n]=32'h0000006f;\r\n            case(which)\r\n            0: begin // alu\r\n                img[0] = 32'h800000b7; // lui x1, 0x80000\r\n                img[1] = 32'h01008093; // addi x1, x1, 16\r\n                img[2] = 32'hfff00113; // addi x2, x0, -1\r\n                img[3] = 32'h00100193; // addi x3, x0, 1\r\n                img[4] = 32'h00208233; // add x4, x1, x2\r\n                img[5] = 32'h402182b3; // sub x5, x3, x2\r\n                img[6] = 32'h40310333; // sub x6, x2, x3\r\n                img[7] = 32'h0020f3b3; // and x7, x1, x2\r\n                img[8] = 32'h0030e433; // or x8, x1, x3\r\n                img[9] = 32'h0020c4b3; // xor x9, x1, x2\r\n                img[10] = 32'h00312533; // slt x10, x2, x3\r\n                img[11] = 32'h003135b3; // sltu x11, x2, x3\r\n                img[12] = 32'h0021a633; // slt x12, x3, x2\r\n                img[13] = 32'h0021b6b3; // sltu x13, x3, x2\r\n                img[14] = 32'h00400713; // addi x14, x0, 4\r\n                img[15] = 32'h00e097b3; // sll x15, x1, x14\r\n                img[16] = 32'h00e0d833; // srl x16, x1, x14\r\n                img[17] = 32'h40e0d8b3; // sra x17, x1, x14\r\n                img[18] = 32'h02400913; // addi x18, x0, 36\r\n                img[19] = 32'h012199b3; // sll x19, x3, x18\r\n                img[20] = 32'h41215933; // sra x18, x2, x18\r\n                img[21] = 32'h01f11a13; // slli x20, x2, 31\r\n                img[22] = 32'h01f0da93; // srli x21, x1, 31\r\n                img[23] = 32'h41f0db13; // srai x22, x1, 31\r\n                img[24] = 32'h4000db93; // srai x23, x1, 0\r\n                img[25] = 32'h00012c13; // slti x24, x2, 0\r\n                img[26] = 32'hfff1bc93; // sltiu x25, x3, -1\r\n                img[27] = 32'hfff13d13; // sltiu x26, x2, -1\r\n                img[28] = 32'hfff0cd93; // xori x27, x1, -1\r\n                img[29] = 32'h7f01ee13; // ori x28, x3, 0x7f0\r\n                img[30] = 32'h80017e93; // andi x29, x2, -2048\r\n                img[31] = 32'h12345f17; // auipc x30, 0x12345\r\n                img[32] = 32'hffffffb7; // lui x31, 0xfffff\r\n                img[33] = 32'h00500013; // addi x0, x0, 5\r\n                img[34] = 32'h000002b3; // add x5, x0, x0\r\n                img[35] = 32'h7ff00313; // addi x6, x0, 0x7ff\r\n                img[36] = 32'h80000393; // addi x7, x0, -2048\r\n                img[37] = 32'h00730433; // add x8, x6, x7\r\n                img[38] = 32'h401004b3; // sub x9, x0, x1\r\n                img[39] = 32'h0060a533; // slt x10, x1, x6\r\n                img[40] = 32'h0060b5b3; // sltu x11, x1, x6\r\n                img[41] = 32'h00115613; // srli x12, x2, 1\r\n                img[42] = 32'h40115693; // srai x13, x2, 1\r\n                img[43] = 32'h0ff0000f; // .word 0x0ff0000f\r\n                img[44] = 32'h00000073; // .word 0x00000073\r\n                img[45] = 32'h01ff4733; // xor x14, x30, x31\r\n                img[46] = 32'h000067b3; // or x15, x0, x0\r\n                img[47] = 32'h00402023; // sw x4, 0(x0)\r\n                img[48] = 32'h00002803; // lw x16, 0(x0)\r\n                img[49] = 32'h0000006f; // halt\r\n            end\r\n            1: begin // fib\r\n                img[0] = 32'h00000093; // addi x1, x0, 0\r\n                img[1] = 32'h00100113; // addi x2, x0, 1\r\n                img[2] = 32'h00000193; // addi x3, x0, 0\r\n                img[3] = 32'h05000213; // addi x4, x0, 80\r\n                img[4] = 32'h0011a023; // sw x1, 0(x3)\r\n                img[5] = 32'h002082b3; // add x5, x1, x2\r\n                img[6] = 32'h00010093; // addi x1, x2, 0\r\n                img[7] = 32'h00028113; // addi x2, x5, 0\r\n                img[8] = 32'h00418193; // addi x3, x3, 4\r\n                img[9] = 32'hfe41c6e3; // blt x3, x4, fill\r\n                img[10] = 32'h00000193; // addi x3, x0, 0\r\n                img[11] = 32'h00000313; // addi x6, x0, 0\r\n                img[12] = 32'h0001a383; // lw x7, 0(x3)\r\n                img[13] = 32'h00730333; // add x6, x6, x7\r\n                img[14] = 32'h00418193; // addi x3, x3, 4\r\n                img[15] = 32'hfe419ae3; // bne x3, x4, sum\r\n                img[16] = 32'h04602a23; // sw x6, 84(x0)\r\n                img[17] = 32'h04c02403; // lw x8, 76(x0)\r\n                img[18] = 32'h04802483; // lw x9, 72(x0)\r\n                img[19] = 32'h40940533; // sub x10, x8, x9\r\n                img[20] = 32'h0000006f; // halt\r\n            end\r\n            2: begin // memcpy\r\n                img[0] = 32'h012340b7; // lui x1, 0x01234\r\n                img[1] = 32'h56708093; // addi x1, x1, 0x567\r\n                img[2] = 32'h00000113; // addi x2, x0, 0\r\n                img[3] = 32'h02000193; // addi x3, x0, 32\r\n                img[4] = 32'h00112023; // sw x1, 0(x2)\r\n                img[5] = 32'h00209293; // slli x5, x1, 2\r\n                img[6] = 32'h005080b3; // add x1, x1, x5\r\n                img[7] = 32'h5a50c093; // xori x1, x1, 0x5a5\r\n                img[8] = 32'h00410113; // addi x2, x2, 4\r\n                img[9] = 32'hfe3166e3; // bltu x2, x3, fill\r\n                img[10] = 32'h00000113; // addi x2, x0, 0\r\n                img[11] = 32'h04000213; // addi x4, x0, 64\r\n                img[12] = 32'h00012303; // lw x6, 0(x2)\r\n                img[13] = 32'h00622023; // sw x6, 0(x4)\r\n                img[14] = 32'h00410113; // addi x2, x2, 4\r\n                img[15] = 32'h00420213; // addi x4, x4, 4\r\n                img[16] = 32'hfe3118e3; // bne x2, x3, copy\r\n                img[17] = 32'h05c00213; // addi x4, x0, 92\r\n                img[18] = 32'hfe422383; // lw x7, -28(x4)\r\n                img[19] = 32'h00022403; // lw x8, 0(x4)\r\n                img[20] = 32'hfc022483; // lw x9, -64(x4)\r\n                img[21] = 32'h08402503; // lw x10, 132(x0)\r\n                img[22] = 32'h06a02e23; // sw x10, 124(x0)\r\n                img[23] = 32'h0fc02583; // lw x11, 252(x0)\r\n                img[24] = 32'h00602603; // lw x12, 6(x0)\r\n                img[25] = 32'hfec22fa3; // sw x12, -1(x4)\r\n                img[26] = 32'h05802683; // lw x13, 88(x0)\r\n                img[27] = 32'h0000006f; // halt\r\n            end\r\n            3: begin // branch\r\n                img[0] = 32'hfff00093; // addi x1, x0, -1\r\n                img[1] = 32'h00100113; // addi x2, x0, 1\r\n       ",
+    "truncated": true
+  },
+  "testbench_top": "rv32i_core_tb",
+  "tool_exit_evidence": {
+    "history_count": 4,
+    "latest_by_tool": {
+      "vivado": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-06\\rv32i_core_build\\iter_000\\vivado_synth_output.log",
+        "output_log_sha256": "8a8ad838a38467bb366d330715a0ab9c92fc363e678d8a8b33ca6a51369307ae",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xelab": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-06\\rv32i_core_build\\iter_000\\xelab.log",
+        "output_log_sha256": "d1e454cfa46e7e62b33bb6ff769314b86a699605a4198393d50568f5455634ac",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xsim": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-06\\rv32i_core_build\\iter_000\\xsim.log",
+        "output_log_sha256": "f061e0e22a9a900c643dce79f2a8774f7c71bbf1670f37b76652b7d5a58b01a7",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xvlog": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-06\\rv32i_core_build\\iter_000\\xvlog.log",
+        "output_log_sha256": "01a38cd12f60f14d377e39a3fbb1a8576275e722c0588df8a9b7ea03501a7495",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      }
+    },
+    "missing_required_tools": [],
+    "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-06\\rv32i_core_build\\iter_000\\tool_exit_records.log",
+    "records": [
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-06\\rv32i_core_build\\iter_000",
+        "driver_returncode": 0,
+        "elapsed_seconds": 3.0669060000000172,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xvlog.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-06\\rv32i_core_build\\iter_000\\xvlog.log",
+        "output_log_sha256": "01a38cd12f60f14d377e39a3fbb1a8576275e722c0588df8a9b7ea03501a7495",
+        "pid": 27672,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xvlog"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-06\\rv32i_core_build\\iter_000",
+        "driver_returncode": 0,
+        "elapsed_seconds": 9.174423399999796,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xelab.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-06\\rv32i_core_build\\iter_000\\xelab.log",
+        "output_log_sha256": "d1e454cfa46e7e62b33bb6ff769314b86a699605a4198393d50568f5455634ac",
+        "pid": 20660,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xelab"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-06\\rv32i_core_build\\iter_000",
+        "driver_returncode": 0,
+        "elapsed_seconds": 5.599923800000397,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xsim.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-06\\rv32i_core_build\\iter_000\\xsim.log",
+        "output_log_sha256": "f061e0e22a9a900c643dce79f2a8774f7c71bbf1670f37b76652b7d5a58b01a7",
+        "pid": 3348,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xsim"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-06\\rv32i_core_build\\iter_000",
+        "driver_returncode": 0,
+        "elapsed_seconds": 457.8163590000004,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/vivado.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-06\\rv32i_core_build\\iter_000\\vivado_synth_output.log",
+        "output_log_sha256": "8a8ad838a38467bb366d330715a0ab9c92fc363e678d8a8b33ca6a51369307ae",
+        "pid": 29800,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "vivado"
+      }
+    ],
+    "schema_valid": true,
+    "sha256": "e9684504e6e8cfad210a06356032a31ce5a63fe7348ff09a7b39f628ac048ae9",
+    "status": "recorded",
+    "truncated": false
+  },
+  "top_module": "rv32i_core",
+  "verification_logs": [
+    {
+      "head": "INFO: [VRFC 10-2263] Analyzing Verilog file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-06/rv32i_core_build/iter_000/rv32i_core.v\" into library work\r\nINFO: [VRFC 10-311] analyzing module rv_imem\r\nINFO: [VRFC 10-311] analyzing module rv_decode\r\nINFO: [VRFC 10-311] analyzing module rv_regfile\r\nINFO: [VRFC 10-311] analyzing module rv_alu\r\nINFO: [VRFC 10-311] analyzing module rv_dmem\r\nINFO: [VRFC 10-311] analyzing module rv_ctrl\r\nINFO: [VRFC 10-311] analyzing module rv32i_core\r\nINFO: [VRFC 10-2263] Analyzing Verilog file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-06/rv32i_core_build/inputs/testbench_path.v\" into library work\r\nINFO: [VRFC 10-311] analyzing module rv32i_core_tb\r\n\r\n",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-06\\rv32i_core_build\\iter_000\\xvlog.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "01a38cd12f60f14d377e39a3fbb1a8576275e722c0588df8a9b7ea03501a7495",
+      "tail": "",
+      "truncated": false
+    },
+    {
+      "head": "Vivado Simulator v2025.2\r\nCopyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\nCopyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\nRunning: C:/AMDDesignTools/2025.2/Vivado/bin/unwrapped/win64.o/xelab.exe rv32i_core_tb -s rv32i_core_tb_snap --debug off \r\nMulti-threading is on. Using 10 slave threads.\r\nStarting static elaboration\r\nPass Through NonSizing Optimizer\r\nCompleted static elaboration\r\nStarting simulation data flow analysis\r\nCompleted simulation data flow analysis\r\nTime Resolution for simulation is 1ps\r\nCompiling module work.rv_imem\r\nCompiling module work.rv_decode\r\nCompiling module work.rv_regfile\r\nCompiling module work.rv_alu\r\nCompiling module work.rv_dmem\r\nCompiling module work.rv_ctrl\r\nCompiling module work.rv32i_core\r\nCompiling module work.rv32i_core_tb\r\nBuilt simulation snapshot rv32i_core_tb_snap\r\n\r\n",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-06\\rv32i_core_build\\iter_000\\xelab.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "d1e454cfa46e7e62b33bb6ff769314b86a699605a4198393d50568f5455634ac",
+      "tail": "",
+      "truncated": false
+    },
+    {
+      "head": "\r\n****** xsim v2025.2 (64-bit)\r\n  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025\r\n  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025\r\n  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025\r\n  **** Start of session at: Mon Nov  2 10:02:16 2026\r\n    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\n    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n\r\nsource xsim.dir/rv32i_core_tb_snap/xsim_script.tcl\r\n# xsim {rv32i_core_tb_snap} -autoloadwcfg -runall\r\nTime resolution is 1 ps\r\nrun -all\r\nPROGRESS hand programs done cycle=2075 retired=420\r\nCOVERAGE cycles=13937 programs=45 retired=2556 halts=88 loads=149 stores=141 nops=74 x0_writes=113 f_stalls=164 run_low_in_decode=122 busy_resets=45 pulses=2\r\nTEST PASSED\r\n$finish called at time : 139375 ns : File \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-06/rv32i_core_build/inputs/testbench_path.v\" Line 491\r\nexit\r\nINFO: [Common 17-206] Exiting xsim at Mon Nov  2 10:02:19 2026...\r\n\r\n",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-06\\rv32i_core_build\\iter_000\\sim_log.txt",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "f061e0e22a9a900c643dce79f2a8774f7c71bbf1670f37b76652b7d5a58b01a7",
+      "tail": "",
+      "truncated": false
+    },
+    {
+      "head": "\r\n****** Vivado v2025.2 (64-bit)\r\n  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025\r\n  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025\r\n  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025\r\n  **** Start of session at: Mon Nov  2 10:02:23 2026\r\n    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\n    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n\r\nsource C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-06/rv32i_core_build/iter_000/synth.tcl\r\n# set_msg_config -id {VRFC 10-3609} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-9873} -new_severity ERROR\r\n# set_msg_config -id {Designutils 20-1307} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-327} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-3352} -new_severity ERROR\r\n# set_part xc7a35tcpg236-1\r\nINFO: [Coretcl 2-1500] The part has been set to 'xc7a35tcpg236-1' for the current project only. Run set_part -help for more details. To evaluate different speed grades in the current design, use the set_speed_grade command, or use the open_checkpoint -part command to change the part used by an existing checkpoint design.\r\nset_part: Time (s): cpu = 00:00:30 ; elapsed = 00:00:23 . Memory (MB): peak = 533.492 ; gain = 227.727\r\n# read_verilog \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-06/rv32i_core_build/iter_000/rv32i_core.v\"\r\n# set fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-06/rv32i_core_build/iter_000/timing.xdc\" w]\r\n# puts $fp {create_clock -period 10.000 -name clk [get_ports clk]}\r\n# puts $fp {set_property HD.CLK_SRC BUFGCTRL_X0Y0 [get_ports clk]}\r\n# close $fp\r\n# read_xdc \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-06/rv32i_core_build/iter_000/timing.xdc\"\r\n# synth_design -top r",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-06\\rv32i_core_build\\iter_000\\vivado_synth_output.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "8a8ad838a38467bb366d330715a0ab9c92fc363e678d8a8b33ca6a51369307ae",
+      "tail": " 00:00:06 ; elapsed = 00:00:05 . Memory (MB): peak = 2043.957 ; gain = 0.000\r\n# catch { report_methodology -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-06/rv32i_core_build/iter_000/methodology.rpt\" }\r\nCommand: report_methodology -file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-06/rv32i_core_build/iter_000/methodology.rpt\r\nINFO: [Timing 38-35] Done setting XDC timing constraints.\r\nINFO: [DRC 23-133] Running Methodology with 2 threads\r\nWARNING: [DRC 23-814] Not all possible (connectivity based) DRCs may have been run because this design is seen as Out of Context.\r\nINFO: [Vivado_Tcl 2-1520] The results of Report Methodology are in file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-06/rv32i_core_build/iter_000/methodology.rpt.\r\nreport_methodology completed successfully\r\n# catch { report_qor_suggestions -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-06/rv32i_core_build/iter_000/qor_suggestions.rpt\" }\r\nCommand: report_qor_suggestions -file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-06/rv32i_core_build/iter_000/qor_suggestions.rpt\r\nCongestion Prediction Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.704 . Memory (MB): peak = 2043.957 ; gain = 0.000\r\nINFO: [Implflow 47-1309] PredResultString: 0:54.03:45.97\r\nfeatureProvider Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.346 . Memory (MB): peak = 2043.957 ; gain = 0.000\r\nINFO: [Implflow 47-1274] ML strategy prediction is not supported for 7-series devices.\r\nreport_qor_suggestions completed successfully\r\nreport_qor_suggestions: Time (s): cpu = 00:00:16 ; elapsed = 00:00:10 . Memory (MB): peak = 2043.957 ; gain = 0.000\r\n# puts \"SYNTH_COMPLETE\"\r\nSYNTH_COMPLETE\r\nINFO: [Common 17-206] Exiting Vivado at Mon Nov  2 10:09:55 2026...\r\n\r\n",
+      "truncated": true
+    }
+  ]
+}

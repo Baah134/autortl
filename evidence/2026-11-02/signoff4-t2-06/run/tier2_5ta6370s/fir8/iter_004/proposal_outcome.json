@@ -1,0 +1,77 @@
+{
+  "candidates": [
+    {
+      "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\fir8\\iter_004\\cand_standard",
+      "cache_hit": false,
+      "final_code_hash": "fd829fd25ec93e22",
+      "final_source_sha256": "375652b699d94c5945b85981a5ff49f0e01cbb68ac1b256b7c7b3cd4cb8d969e",
+      "flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\fir8\\iter_004\\cand_standard\\synth.tcl",
+        "sha256": "77bf0f0ab73aaa6ee364db348f43a64772127d592ea8c60c44b5430436b5d51b"
+      },
+      "generated_code_hash": "fd829fd25ec93e22",
+      "generated_source_sha256": "375652b699d94c5945b85981a5ff49f0e01cbb68ac1b256b7c7b3cd4cb8d969e",
+      "instruction": "Keep the product delay chains, carry-save reduction, reset logic, output register, interface, and `// @latency 1` unchanged. Change only `wire signed [31:0] total = s5 + c5;` to a 32-bit adder split into four 8-bit blocks, with bitwise propagate/generate, explicit lookahead carry equations between blocks, and an 8-bit local sum per block. Preserve modulo-32-bit result and signed interpretation; verify simulation and routed setup and hold slack against the fixed gates.",
+      "iteration": 4,
+      "metrics": {
+        "bram_used": 0.0,
+        "dsp_used": 1,
+        "dynamic_power_w": 0.028,
+        "ff_used": 330,
+        "lut_used": 361,
+        "sim_passed": true,
+        "timing_met": false,
+        "total_power_w": 0.096,
+        "whs_ns": 0.124,
+        "wns_ns": -1.905
+      },
+      "mutation": "standard",
+      "reason": "",
+      "rungs": 5,
+      "source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\fir8\\iter_004\\cand_standard\\fir8.v",
+        "sha256": "392c558ba008c3600365e57afc9afc35fc0dc901fb848b0bcfd76f90cab653af"
+      },
+      "status": "measured"
+    }
+  ],
+  "doctor": {
+    "action": "rtl_surgery",
+    "adopted": true,
+    "identity_count": 3,
+    "input_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\fir8\\iter_004\\cand_standard\\fir8.v",
+      "sha256": "392c558ba008c3600365e57afc9afc35fc0dc901fb848b0bcfd76f90cab653af"
+    },
+    "measured_metrics": {
+      "bram_used": 0.0,
+      "dsp_used": 1,
+      "dynamic_power_w": 0.021,
+      "ff_used": 308,
+      "lut_used": 274,
+      "sim_passed": true,
+      "timing_met": true,
+      "total_power_w": 0.09,
+      "whs_ns": 0.076,
+      "wns_ns": 0.329
+    },
+    "proposed_source_text_sha256": "dd74f42afe8bb4f6eb8f88f1e3a6728b01092acae6ad9e4327a6620b9c87b33f",
+    "reason": "policy_improvement",
+    "status": "ADOPTED",
+    "tools_ran": true,
+    "trial_flow_script": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\fir8\\iter_004\\doctor_rtl_surgery_trial\\synth.tcl",
+      "sha256": "0cc05d61ede0bace0c22fa8a9ef54733cd3dd7889cf97f492cbfb176fcf3583c"
+    },
+    "trial_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\fir8\\iter_004\\doctor_rtl_surgery_trial\\fir8.v",
+      "sha256": "d17fefb6e01ef0b43101c577bf9374c6dd02208576b9c1e8c8d747530715fc59"
+    }
+  },
+  "instruction": "Keep the product delay chains, carry-save reduction, reset logic, output register, interface, and `// @latency 1` unchanged. Change only `wire signed [31:0] total = s5 + c5;` to a 32-bit adder split into four 8-bit blocks, with bitwise propagate/generate, explicit lookahead carry equations between blocks, and an 8-bit local sum per block. Preserve modulo-32-bit result and signed interpretation; verify simulation and routed setup and hold slack against the fixed gates.",
+  "is_best": false,
+  "iteration": 4,
+  "recommendation": "REJECT",
+  "schema_version": 1,
+  "selected_source_sha256": "dd74f42afe8bb4f6eb8f88f1e3a6728b01092acae6ad9e4327a6620b9c87b33f"
+}

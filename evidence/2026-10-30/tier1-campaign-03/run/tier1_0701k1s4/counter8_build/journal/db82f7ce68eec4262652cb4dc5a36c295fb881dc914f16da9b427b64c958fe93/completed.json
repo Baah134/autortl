@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_1:model:planner.plan:0",
+  "result": "# PLAN \u2014 iteration 1\n\n## Current state assessment\n\nThe design is a registered 8-bit modulo counter with synchronous active-high reset and enable-controlled increment; the top currently wires through the frozen `counter8_core`. The incumbent is timing-feasible at WNS 0.424 ns and WHS 0.226 ns, with 6 LUTs and 8 FFs. The objective is strictly fewer LUTs while preserving the known top annotation `// @latency 1` and all defined cycle behavior.\n\n## Hypothesis\n\nInlining the counter as per-bit toggle logic may let Vivado reduce LUT use below 6 while retaining the same eight registers and routed timing feasibility.\n\n## Instruction for generator\n\nReplace the top\u2019s `counter8_core` instance with a top-level 8-bit registered counter, keeping the existing ports and `// @latency 1` annotation. Use synchronous reset with priority, and otherwise toggle bit 0 on `enable` and each higher bit when `enable` and all lower bits are one; hold the count when disabled. Preserve modulo-256 wraparound and registered outputs, and do not add registers or alter observable cycles.",
+  "artifacts": {}
+}

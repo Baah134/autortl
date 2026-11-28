@@ -16,6 +16,7 @@ from autortl.spec import DesignSpec
 from autortl.state import atomic_write_text
 from autortl.triage import FailureKind
 from autortl.vivado import xsim_run
+from autortl.fileio import file_sha256, read_json
 
 
 def prepare(run, testbench, output):
@@ -24,7 +25,7 @@ def prepare(run, testbench, output):
     if config.mode != "build" or config.spec_path is None:
         raise ValueError("requires a typed completed build")
     spec = DesignSpec.load(config.spec_path)
-    summary = json.loads((run / "run_summary.json").read_text(encoding="utf-8"))
+    summary = read_json((run / "run_summary.json"))
     if summary.get("status") != "done" or summary.get("top_module") != spec.top_name:
         raise ValueError("build has not completed with the declared top")
     sources = [run / (spec.top_name + "_best.v")]
@@ -62,7 +63,7 @@ def main(argv=None):
     result = {"ok": ok, "passed": passed, "error": error, "failure_kind": kind.value,
               "top": top, "scope": "Independent simulation of the saved winner and exact declared children."}
     atomic_write_text(output / "result.json", json.dumps(result, indent=2))
-    manifest = {p.relative_to(output).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()
+    manifest = {p.relative_to(output).as_posix(): file_sha256(p)
                 for p in sorted(output.iterdir()) if p.is_file()}
     atomic_write_text(output / "archive-manifest.json", json.dumps(manifest, indent=2))
     print(json.dumps(result), flush=True)

@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_2:decision:instruction:0",
+  "result": "Replace the seed\u2019s `head`/`middle`/`tail` shift-register update cases with a three-slot circular buffer, explicit wrap for its read and write pointers, occupancy tracking, and a registered head cache. Update the cache on an empty push and on a pop when another word becomes head; handle simultaneous pop/push at occupancy one by loading the incoming word, and retain the registered output, reset behavior, full simultaneous transfer, and exact one-cycle minimum age. Keep the required `sync_fifo_core` instantiation and the top\u2019s `// @latency 1` annotation; preserve the interface and verify all gates, since the expected LUT reduction and routed timing are hypotheses until measured.",
+  "artifacts": {}
+}

@@ -1,0 +1,12 @@
+# PLAN — iteration 1
+## Current state assessment
+
+The registered 8-bit 4:1 mux uses 8 LUTs and 8 FFs, with routed WNS of 0.579 ns and WHS of 0.052 ns on the xc7a35tcpg236-1 at 10 ns. The frozen simulation and implementation stages passed, and timing is feasible. The objective is strictly fewer LUTs; the top’s numeric latency is unknown, so no numeric annotation is required.
+
+## Hypothesis
+
+Replacing the `case` mux with a balanced two-level mux tree may let Vivado map its data path to the 7-series MUXF7/MUXF8 resources, reducing LUT use while retaining the same registered output and synchronous reset.
+
+## Instruction for generator
+
+Replace the `case (sel)` data selection with two 2:1 muxes controlled by `sel[0]`, followed by a 2:1 mux controlled by `sel[1]`, and keep the existing `posedge clk` register and synchronous `rst`-to-zero behavior. Preserve the exact input-to-output cycle behavior and verify all four select values, reset cycles, and high bits using the frozen testbench and gates. Check routed LUT and FF counts plus setup WNS and hold WHS; retain the candidate only if it passes all gates and strictly improves the LUT objective.

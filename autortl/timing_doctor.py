@@ -18,6 +18,7 @@ class TimingCategory(Enum):
     HIGH_FANOUT = "high_fanout"     # one net drives too much -> replicate / max_fanout
     CDC = "cdc"                     # cross-clock path -> synchroniser / constraint
     HOLD = "hold"                   # physical minimum-delay violation
+    PORT_PATH = "port_path"         # pad + clock insertion dominate -> register at the port
     UNKNOWN = "unknown"
 
 
@@ -108,6 +109,35 @@ def parse_worst_path(timing_rpt: Path) -> tuple[float, int, int, str]:
     return (metrics.wns_ns,path["logic_levels"] or 0,path["fanout"] or 0,path["text"]) if path else (metrics.wns_ns,0,0,"")
 
 
+def port_endpoints(path: dict | None) -> dict:
+    """Ports at either end of a reported path, from Vivado's own endpoint labels."""
+    found = {}
+    text = (path or {}).get("text") or ""
+    for side in ("Source", "Destination"):
+        m = re.search(rf"^\s*{side}:\s*(\S+)\s*\r?\n\s*\((input|output) port\b", text, re.MULTILINE)
+        if m:
+            found[side.lower()] = {"port": m[1], "direction": m[2]}
+    return found
+
+
+def path_summary(work_dir: Path) -> str:
+    """One planner-facing line naming the worst violated setup path (empty when met)."""
+    rpt = work_dir / "timing_routed.rpt"
+    text = rpt.read_bytes().decode("utf-8", errors="replace") if rpt.is_file() else ""
+    path = first_violated_path(text, category="setup")
+    if not path:
+        return ""
+    ports = port_endpoints(path)
+    line = (f"Worst violated setup path: {path['source']} -> {path['destination']}, slack {path['slack_ns']} ns, "
+            f"{path['logic_levels']} logic levels.")
+    if ports:
+        names = ", ".join(f"{v['direction']} port {v['port']}" for v in ports.values())
+        line += (f" It touches {names}: pad and clock-insertion delay dominate, so rewriting the expression "
+                 "cannot close it; drive the port directly from a register by computing the value one stage "
+                 "earlier at the same latency (critical_path_hidden_from_planner).")
+    return line
+
+
 def diagnose(work_dir: Path, already_tried_knobs: bool) -> Diagnosis:
     rpt = work_dir / "timing_routed.rpt"
     if not rpt.exists():
@@ -136,6 +166,18 @@ def diagnose(work_dir: Path, already_tried_knobs: bool) -> Diagnosis:
         return Diagnosis(TimingCategory.UNKNOWN, wns, "timing met", "none", "")
 
     # categorise
+    ports = port_endpoints(path) if path and path.get("category") == "setup" else {}
+    if ports:
+        cat = TimingCategory.PORT_PATH
+        names = ", ".join(f"{v['direction']} port {v['port']}" for v in ports.values())
+        surgery = (f"The critical path touches {names}. Pad and clock-insertion delay dominate such a path, "
+                   "so restructuring the expression alone cannot close it. Keep the same observable cycles but "
+                   "make the port a direct register output (compute the value one stage earlier and register the "
+                   "final result) or, for an input port, register it before any logic where the contract's "
+                   "timing allows.")
+        return Diagnosis(cat, wns, snippet, "rtl_surgery", surgery +
+                         " Preserve observable latency, throughput, interface, reset semantics, and parameter behavior. "
+                         "Do not add pipeline stages, extra cycles, new clocks, or RTL delay chains.")
     if levels >= 8:
         cat = TimingCategory.LOGIC_DEPTH
         surgery = (f"The critical path has {levels} logic levels. Rebalance existing pipeline "

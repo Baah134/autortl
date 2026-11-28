@@ -1,0 +1,93 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025
+| Date         : Mon Nov  2 17:11:55 2026
+| Host         : Baah running 64-bit major release  (build 9200)
+| Command      : report_timing -from [all_registers] -to [all_registers] -max_paths 1 -file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-fir8-03/fir8/iter_001/doctor_rtl_surgery_trial/timing_reg2reg.rpt
+| Design       : fir8
+| Device       : 7a35t-cpg236
+| Speed File   : -1  PRODUCTION 1.23 2018-06-13
+| Design State : Routed
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Timing Report
+
+Slack (VIOLATED) :        -2.840ns  (required time - arrival time)
+  Source:                 p3/CLK
+                            (rising edge-triggered cell DSP48E1 clocked by clk  {rise@0.000ns fall@3.333ns period=6.667ns})
+  Destination:            y_out_reg[30]/D
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@3.333ns period=6.667ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            6.667ns  (clk rise@6.667ns - clk rise@0.000ns)
+  Data Path Delay:        9.450ns  (logic 6.706ns (70.963%)  route 2.744ns (29.037%))
+  Logic Levels:           11  (CARRY4=8 LUT3=2 LUT5=1)
+  Clock Path Skew:        -0.131ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    1.452ns = ( 8.119 - 6.667 ) 
+    Source Clock Delay      (SCD):    1.662ns
+    Clock Pessimism Removal (CPR):    0.079ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=193, unset)          1.662     1.662    clk
+    DSP48_X0Y0           DSP48E1                                      r  p3/CLK
+  -------------------------------------------------------------------    -------------------
+    DSP48_X0Y0           DSP48E1 (Prop_dsp48e1_CLK_P[4])
+                                                      4.009     5.671 r  p3/P[4]
+                         net (fo=3, routed)           0.874     6.545    p3_n_101
+    SLICE_X8Y0           LUT3 (Prop_lut3_I1_O)        0.124     6.669 r  y_out[12]_i_40/O
+                         net (fo=1, routed)           0.354     7.023    y_out[12]_i_40_n_0
+    SLICE_X11Y1          CARRY4 (Prop_carry4_DI[1]_CO[3])
+                                                      0.507     7.530 r  y_out_reg[12]_i_17/CO[3]
+                         net (fo=1, routed)           0.000     7.530    y_out_reg[12]_i_17_n_0
+    SLICE_X11Y2          CARRY4 (Prop_carry4_CI_CO[3])
+                                                      0.114     7.644 r  y_out_reg[16]_i_17/CO[3]
+                         net (fo=1, routed)           0.000     7.644    y_out_reg[16]_i_17_n_0
+    SLICE_X11Y3          CARRY4 (Prop_carry4_CI_CO[3])
+                                                      0.114     7.758 r  y_out_reg[20]_i_17/CO[3]
+                         net (fo=1, routed)           0.000     7.758    y_out_reg[20]_i_17_n_0
+    SLICE_X11Y4          CARRY4 (Prop_carry4_CI_O[1])
+                                                      0.334     8.092 r  y_out_reg[24]_i_11/O[1]
+                         net (fo=3, routed)           0.479     8.571    y_out_reg[24]_i_11_n_6
+    SLICE_X13Y6          LUT3 (Prop_lut3_I1_O)        0.303     8.874 r  y_out[20]_i_13/O
+                         net (fo=2, routed)           0.559     9.432    y_out[20]_i_13_n_0
+    SLICE_X13Y8          LUT5 (Prop_lut5_I1_O)        0.124     9.556 r  y_out[20]_i_4/O
+                         net (fo=1, routed)           0.478    10.035    y_out[20]_i_4_n_0
+    SLICE_X12Y4          CARRY4 (Prop_carry4_DI[1]_CO[3])
+                                                      0.520    10.555 r  y_out_reg[20]_i_1/CO[3]
+                         net (fo=1, routed)           0.000    10.555    y_out_reg[20]_i_1_n_0
+    SLICE_X12Y5          CARRY4 (Prop_carry4_CI_CO[3])
+                                                      0.117    10.672 r  y_out_reg[24]_i_1/CO[3]
+                         net (fo=1, routed)           0.000    10.672    y_out_reg[24]_i_1_n_0
+    SLICE_X12Y6          CARRY4 (Prop_carry4_CI_CO[3])
+                                                      0.117    10.789 r  y_out_reg[28]_i_1/CO[3]
+                         net (fo=1, routed)           0.000    10.789    y_out_reg[28]_i_1_n_0
+    SLICE_X12Y7          CARRY4 (Prop_carry4_CI_O[1])
+                                                      0.323    11.112 r  y_out_reg[31]_i_1/O[1]
+                         net (fo=1, routed)           0.000    11.112    sum[30]
+    SLICE_X12Y7          FDRE                                         r  y_out_reg[30]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        6.667     6.667 r  
+                                                      0.000     6.667 r  clk (IN)
+                         net (fo=193, unset)          1.452     8.119    clk
+    SLICE_X12Y7          FDRE                                         r  y_out_reg[30]/C
+                         clock pessimism              0.079     8.198    
+                         clock uncertainty           -0.035     8.163    
+    SLICE_X12Y7          FDRE (Setup_fdre_C_D)        0.109     8.272    y_out_reg[30]
+  -------------------------------------------------------------------
+                         required time                          8.272    
+                         arrival time                         -11.112    
+  -------------------------------------------------------------------
+                         slack                                 -2.840    
+
+
+
+

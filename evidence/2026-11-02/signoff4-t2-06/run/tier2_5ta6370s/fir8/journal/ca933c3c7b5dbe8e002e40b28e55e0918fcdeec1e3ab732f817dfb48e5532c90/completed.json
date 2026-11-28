@@ -1,0 +1,81 @@
+{
+  "stage": "iteration_2:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 2,
+    "instruction": "Replace the 16-bit sample delay line with 32-bit signed product delay chains: for each tap `i`, capture `x_in * C_i` and delay that product through `i` additional registers, so the value at tap `i` matches the original `d[i] * C_i` on every output update. Sum the eight aligned products with a balanced tree into the existing registered `y_out`; preserve 32-bit modular arithmetic, parameter signedness, synchronous reset of all state, interface, and `// @latency 1`. This trades FFs for a register boundary after multiplication; it must preserve the impulse response and all defined cycle behavior.",
+    "candidates": [
+      {
+        "iteration": 2,
+        "mutation": "standard",
+        "instruction": "Replace the 16-bit sample delay line with 32-bit signed product delay chains: for each tap `i`, capture `x_in * C_i` and delay that product through `i` additional registers, so the value at tap `i` matches the original `d[i] * C_i` on every output update. Sum the eight aligned products with a balanced tree into the existing registered `y_out`; preserve 32-bit modular arithmetic, parameter signedness, synchronous reset of all state, interface, and `// @latency 1`. This trades FFs for a register boundary after multiplication; it must preserve the impulse response and all defined cycle behavior.",
+        "generated_source_sha256": "aff1cfcfba4e089768fd09580a6bd57ee37d915389a0861e10de714cdb11ed58",
+        "final_source_sha256": "aff1cfcfba4e089768fd09580a6bd57ee37d915389a0861e10de714cdb11ed58",
+        "generated_code_hash": "0a78a80421ca8ffa",
+        "final_code_hash": "0a78a80421ca8ffa",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": false,
+          "wns_ns": -2.402,
+          "whs_ns": 0.024,
+          "lut_used": 282,
+          "ff_used": 308,
+          "dsp_used": 1,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.017,
+          "total_power_w": 0.085
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\fir8\\iter_002\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\fir8\\iter_002\\cand_standard\\synth.tcl",
+          "sha256": "8482e696fa6ef4b2cf9b1969cf9f531f233564b94d284ab90679db3d9a86f84f"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\fir8\\iter_002\\cand_standard\\fir8.v",
+          "sha256": "6c40a7e2b34ded876c59f427f363005ec3c9f9bdd06031985b39c32673cc093e"
+        }
+      }
+    ],
+    "doctor": {
+      "status": "ADOPTED",
+      "action": "rtl_surgery",
+      "reason": "policy_improvement",
+      "tools_ran": true,
+      "measured_metrics": {
+        "sim_passed": true,
+        "timing_met": true,
+        "wns_ns": 0.329,
+        "whs_ns": 0.076,
+        "lut_used": 274,
+        "ff_used": 308,
+        "dsp_used": 1,
+        "bram_used": 0.0,
+        "dynamic_power_w": 0.021,
+        "total_power_w": 0.09
+      },
+      "adopted": true,
+      "input_source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\fir8\\iter_002\\cand_standard\\fir8.v",
+        "sha256": "6c40a7e2b34ded876c59f427f363005ec3c9f9bdd06031985b39c32673cc093e"
+      },
+      "trial_source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\fir8\\iter_002\\doctor_rtl_surgery_trial\\fir8.v",
+        "sha256": "e55817f0f1d02e5e3edc186c82a04afe54515b698866daf3cfb12ca7cf61d07d"
+      },
+      "trial_flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\fir8\\iter_002\\doctor_rtl_surgery_trial\\synth.tcl",
+        "sha256": "37d0b04cb8c0dbee20e7ef81b58e546c9f41dc109e4ddf9fe81b08418abbdc32"
+      },
+      "identity_count": 3,
+      "proposed_source_text_sha256": "d22505126da03262335e7248bab03df27b61b4bccaf2c21173f4013c95b120b6"
+    },
+    "recommendation": "ACCEPT",
+    "is_best": true,
+    "selected_source_sha256": "d22505126da03262335e7248bab03df27b61b4bccaf2c21173f4013c95b120b6"
+  },
+  "artifacts": {}
+}

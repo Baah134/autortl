@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_1:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 1,
+    "instruction": "In `priority_encoder8_core`, replace the descending `if/else` encoder with a factored 8-bit priority encoder: share upper-half and pair-detect terms, then derive the three index bits from the selected group while preserving highest-set-bit priority. Keep `valid` registered from `request != 0` and keep the existing synchronous reset of both output registers; preserve the top interface and `// @latency 1`. Do not add pipeline stages; judge any LUT reduction only after the unchanged simulation and routed timing, hold, and metric-integrity gates pass.",
+    "candidates": [
+      {
+        "iteration": 1,
+        "mutation": "standard",
+        "instruction": "In `priority_encoder8_core`, replace the descending `if/else` encoder with a factored 8-bit priority encoder: share upper-half and pair-detect terms, then derive the three index bits from the selected group while preserving highest-set-bit priority. Keep `valid` registered from `request != 0` and keep the existing synchronous reset of both output registers; preserve the top interface and `// @latency 1`. Do not add pipeline stages; judge any LUT reduction only after the unchanged simulation and routed timing, hold, and metric-integrity gates pass.",
+        "generated_source_sha256": "447169f647fec9d03738208027bd4f3145a57dcff28f770e9dc05f8b340219a9",
+        "final_source_sha256": "447169f647fec9d03738208027bd4f3145a57dcff28f770e9dc05f8b340219a9",
+        "generated_code_hash": "0ecae8d8ab319646",
+        "final_code_hash": "0ecae8d8ab319646",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.531,
+          "whs_ns": 0.161,
+          "lut_used": 5,
+          "ff_used": 4,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.011,
+          "total_power_w": 0.081
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff-t1-02\\tier1_45kdphg1\\encoder8_build\\iter_001\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff-t1-02\\tier1_45kdphg1\\encoder8_build\\iter_001\\cand_standard\\synth.tcl",
+          "sha256": "7351c9f790fed3aea23f5543ec84cd8da9b51570491e80653acd3f460941b450"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff-t1-02\\tier1_45kdphg1\\encoder8_build\\iter_001\\cand_standard\\priority_encoder8.v",
+          "sha256": "98ef4615b07d74d35d4738adf6fb585ae50e24ed38e5ab6f73b04466f3489246"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "ACCEPT",
+    "is_best": true,
+    "selected_source_sha256": "447169f647fec9d03738208027bd4f3145a57dcff28f770e9dc05f8b340219a9"
+  },
+  "artifacts": {}
+}

@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Interface, reset, and observable cycle behavior: PASS \u2014 ports and registered reset behavior are preserved; the 8-bit counter matches the original counter\u2019s reachable 0\u2013255 sequence.\n- Top latency annotation: PASS \u2014 authoritative `declared_latency.known=false`; no numeric annotation is required.\n- Deterministic verification: PASS \u2014 ladder is ALIVE; compile, elaboration, and simulation succeed, with `TEST PASSED`.\n- Routed metrics and timing closure: PASS \u2014 retained routed evidence reports WNS 0.412 ns, WHS 0.196 ns, and `timing_met=true`.\n- Minimize-LUTs objective: FAIL \u2014 candidate uses 10 LUTs versus 7 for the timing-feasible previous best; equal FF count does not offset the higher primary metric.\n## Summary\n- Passed: 4 of 5\n- Failed: 1 of 5\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate preserves the observable PWM behavior and passes deterministic verification with valid timing closure, but both designs are timing-feasible and the candidate increases LUT use from 7 to 10 under the minimize-LUTs objective. The recorded improvement kind is null, so this does not qualify as an objective improvement.",
+      "recommendation": "REJECT",
+      "passed": 4,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

@@ -1,0 +1,114 @@
+Return only the requested response. Do not use tools or change files.
+
+Task instructions:
+# AutoRTL Conventions (LAW — always in force)
+
+## Fixed contract
+The contract is law. Preserve exact module/port names, widths, signedness,
+parameter behavior over every supported value, reset kind/polarity/priority,
+enable/hold behavior, cycle latency, throughput and registered outputs.
+Use the supplied clock names; do not invent or rename clocks.
+When the contract supplies a known numeric latency, declare `// @latency N`
+equal to it. For an existing source with no annotation, declared latency is
+unknown: preserve its exact observable cycle behavior and do not invent a
+numeric annotation. Unknown does not mean zero or combinational. Typed child
+module contracts require an explicit numeric latency. For optimization, only
+the authoritative current top declared_latency.known=true requires its matching
+numeric annotation. Child metadata does not create an annotation requirement
+for an unannotated aggregate top. Scoreboard latency is minimum accepted
+transfer age; backpressure can delay delivery. Preserve all defined behavior.
+Changing that comment does not authorize changing behavior. If an architecture
+cannot meet this contract, report the limitation and request replanning; never
+amend it to pass a test. Retiming existing registers is allowed only when all
+observable behavior remains identical.
+
+## Output and code boundaries
+Return generated RTL in exactly one verilog fence, golden Python in one python
+fence. Put quoted reference/testbench material in text fences. Follow the role's
+requested format for reviews/specifications; do not emit replacement RTL there.
+LLM output belongs only in .v/.py files. Harness templates own Tcl, shell and
+paths. Never propose message suppression, altered clocks or relaxed constraints.
+
+## Coding rules
+One driver per signal. Assign combinational defaults before branches.
+Use nonblocking sequential assignments. Reset behavior follows the contract,
+including data registers when specified; never remove a required reset.
+No synthesis initial blocks. Preserve high bits, overflow and signed arithmetic.
+Vivado severities may be promoted to ERROR, never demoted or suppressed.
+Simulation, setup, hold, metric integrity and independent reference gates all
+remain mandatory. Infrastructure failures are not design failures.
+
+
+Request:
+Write a Python golden model for this module.
+Behavior: Iterative AES-128 encryption sequencer (FIPS-197) with a valid/ready-style input and output; the handshake ports are plain protocol none signals. Blocks are 128-bit big-endian byte strings: byte 0 is bits [127:120]. Registers, all reset to 0: busy, out_valid, rnd[3:0], ct[127:0] (the state), rk[127:0] (the round key). Outputs, all views of registered state: in_ready = !busy && !out_valid; out_valid; ct; rk; last = (rnd == 10); rcon = 01, 02, 04, 08, 10, 20, 40, 80, 1b, 36 (hex) for rnd = 0..9 and 00 for rnd = 10..15. Neighbours: round_out = AES round of (ct, round key rk, final round = last); key_next = key-schedule step of (rk, rcon). At each rising edge with rst low, using pre-edge values: if busy: rk = key_next; then if rnd == 0 (key preparation) rnd = 1; else ct = round_out and, when rnd == 10, busy = 0, out_valid = 1, rnd = 0, otherwise rnd = rnd + 1. Else if out_valid: out_valid = 0 when out_ready = 1 (ct holds). Else (idle) if in_valid = 1: accept: ct = pt ^ key (initial AddRoundKey), rk = key, rnd = 0, busy = 1. key, pt and in_valid are ignored except at the accepting edge, out_ready only while out_valid. An accepted block takes 11 busy edges (key preparation, rounds 1..10) and out_valid with ct = ciphertext appears after the 11th; the next block can be accepted at the edge after the output transfer at the earliest. Synchronous active-high rst at a rising edge returns every register to its reset value; reset has no effect between edges. Python oracle: cycle-level model, one step per rising edge; keep the registers in state and return every output as it is after that edge. The driver applies the fixed latency of 1; do not add a delay queue. init() is the reset state and a supplied rst must be handled.
+Ports:   input wire clk (clock=clk, protocol=none)
+  input wire rst (clock=clk, protocol=none)
+  input wire in_valid (clock=clk, protocol=none)
+  output wire in_ready (clock=clk, protocol=none)
+  input wire [127:0] key (clock=clk, protocol=none)
+  input wire [127:0] pt (clock=clk, protocol=none)
+  output wire out_valid (clock=clk, protocol=none)
+  input wire out_ready (clock=clk, protocol=none)
+  output wire [127:0] ct (clock=clk, protocol=none)
+  output wire [127:0] rk (clock=clk, protocol=none)
+  output wire [7:0] rcon (clock=clk, protocol=none)
+  output wire last (clock=clk, protocol=none)
+  input wire [127:0] round_out (clock=clk, protocol=none)
+  input wire [127:0] key_next (clock=clk, protocol=none)
+Public parameter defaults: {}
+Model only this module's behavior and state. Declared input ports are authoritative
+external values, including results supplied by neighboring modules. Consume those
+inputs when the contract uses them; do not recompute a neighbor's function or
+infer hidden upstream state. Legitimately unused inputs may remain unused.
+Inputs and outputs remain masked nonnegative bit patterns even for signed ports.
+For signed arithmetic, explicitly interpret two's-complement operands at their
+specified widths, then mask outputs. Signed declarations do not change this API.
+Required API scaffold (syntax only, not a complete behavioral implementation):
+```python
+def init():
+    return dict()
+
+def step(state, inputs):
+    outputs = dict()
+    return state, outputs
+```
+Replace the empty state/output placeholders with the specified behavior; fill
+outputs with every named data output below. Use unannotated function signatures.
+Restricted Python execution, not general Python:
+Allowed builtins: abs, all, any, bool, dict, enumerate, int, len, list, max, min, range, sum, tuple, zip
+Allowed methods: append, copy, get, pop
+Use integer arithmetic/bit operations, assignments, if/else and bounded loops.
+Execution is metered: init() has a large one-time budget, all step() calls of a
+run share a smaller one. Build constant tables (an S-box, coefficient or arctan
+table) once in init() from their definition with an efficient loop, keep them
+in state, and only look them up in step(); never rebuild them per step, and do
+not type long tables from memory. A loop of hundreds of operations per table
+entry is too slow: for GF(2^8) inverses build log/antilog tables with one
+255-step loop or use square-and-multiply, and check the table against any
+values the behavior text states.
+Helper functions must be defined at module top level; pass required state/table
+values as explicit arguments. Nested helper calls are unsupported by this sandbox.
+No imports, classes, try/except, raise, lambda,
+f-strings, list/dict/set comprehensions, floats, decorators or default arguments.
+Generator expressions are supported. Do not use private names starting with '_'.
+Use literal port names, for example inputs.get("port_name", 0), replacing the
+placeholder with a declared name. str() and .format() are unsupported; do not
+construct port names with string formatting. No file/network/system access.
+Comparison mode: fixed_latency. Declared RTL latency: 1. Reset: sync, active_high 'rst'.
+Output keys must be exactly these data outputs: ["in_ready", "out_valid", "ct", "rk", "rcon", "last"]; do not return
+valid/ready control outputs. Values are masked plain integers. The clock edge
+is implicit; do not read clk. Handle reset input explicitly when supplied;
+init() must represent reset state. Generated comparisons begin with asserted
+reset steps, followed by deasserted reset and data stimulus. Spec examples may
+supply controls explicitly; use suitable inactive defaults for omitted controls.
+For fixed_latency, model one logical input/state transition per step and return
+its behavioral result. The testbench handles the declared pipeline delay; do
+not add a separate pipeline-delay queue in the Python model.
+For scoreboard, each non-reset step is ONE ACCEPTED input transaction: return
+its eventual output payload. Do not simulate buffer occupancy, valid/ready
+scheduling, bubbles or backpressure; the testbench independently schedules and
+checks those RTL behaviors. Supplied handshake inputs are 1 for accepted
+transactions and 0 during reset. Output ONLY python in one ```python fence.
+
+The previous Python reference failed validation. Repair this specific failure ValueError: unsupported golden attribute: extend

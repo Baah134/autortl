@@ -1,0 +1,298 @@
+{
+  "candidate_metrics": {
+    "bram_total": 50.0,
+    "bram_used": 0.0,
+    "dsp_total": 90,
+    "dsp_used": 4,
+    "dynamic_power_w": 0.079,
+    "ff_pct": 0.04807692307692308,
+    "ff_total": 41600,
+    "ff_used": 20,
+    "lut_pct": 0.09615384615384616,
+    "lut_total": 20800,
+    "lut_used": 20,
+    "reg2reg_wns_ns": 6.106,
+    "sim_error": "",
+    "sim_passed": true,
+    "synth_error": "",
+    "timing_met": true,
+    "total_power_w": 0.149,
+    "whs_ns": 0.18,
+    "wns_ns": 0.105
+  },
+  "candidate_source": {
+    "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t3-02\\tier3_cn0rc15p\\elastic_dot4_build\\iter_002\\cand_standard\\elastic_dot4.v",
+    "sha256": "469731dc3ab72280a4e866de31eb95d40db5c05bfe8c28e8e1888fff28386bef",
+    "text": "`timescale 1ns/1ps\r\n// @latency 2\r\nmodule elastic_dot4_core (\r\n    input wire clk,\r\n    input wire rst,\r\n    input wire [7:0] a0,\r\n    input wire [7:0] b0,\r\n    input wire [7:0] a1,\r\n    input wire [7:0] b1,\r\n    input wire [7:0] a2,\r\n    input wire [7:0] b2,\r\n    input wire [7:0] a3,\r\n    input wire [7:0] b3,\r\n    input wire in_valid,\r\n    output wire in_ready,\r\n    output wire [17:0] out_data,\r\n    output wire out_valid,\r\n    input wire out_ready\r\n);\r\n\r\n    reg [16:0] partial_sum_01;\r\n    reg [16:0] partial_sum_23;\r\n    reg valid_stage1;\r\n    reg [17:0] result_stage2;\r\n    reg valid_stage2;\r\n\r\n    (* use_dsp = \"yes\" *) wire [16:0] input_sum_01 =\r\n        ({9'b0, a0} * {9'b0, b0}) +\r\n        ({9'b0, a1} * {9'b0, b1});\r\n    (* use_dsp = \"yes\" *) wire [16:0] input_sum_23 =\r\n        ({9'b0, a2} * {9'b0, b2}) +\r\n        ({9'b0, a3} * {9'b0, b3});\r\n\r\n    wire [17:0] stage1_sum = {1'b0, partial_sum_01} + {1'b0, partial_sum_23};\r\n\r\n    wire stage2_ready = !valid_stage2 || out_ready;\r\n\r\n    assign in_ready = !valid_stage1 || stage2_ready;\r\n    assign out_valid = valid_stage2;\r\n    assign out_data = result_stage2;\r\n\r\n    always @(posedge clk) begin\r\n        if (rst) begin\r\n            valid_stage1 <= 1'b0;\r\n            valid_stage2 <= 1'b0;\r\n        end else begin\r\n            if (stage2_ready) begin\r\n                valid_stage2 <= valid_stage1;\r\n                if (valid_stage1)\r\n                    result_stage2 <= stage1_sum;\r\n            end\r\n\r\n            if (in_ready) begin\r\n                valid_stage1 <= in_valid;\r\n                if (in_valid) begin\r\n                    partial_sum_01 <= input_sum_01;\r\n                    partial_sum_23 <= input_sum_23;\r\n                end\r\n            end\r\n        end\r\n    end\r\n\r\nendmodule\r\n\r\n`timescale 1ns/1ps\r\n// @latency 2\r\n// Inherited minimum accepted-transfer age from transparent typed child wiring; not measured timing.\r\nmodule elastic_dot4 (\r\n    input wire clk,\r\n    input wire rst,\r\n    input wire [7:0] a0,\r\n    input wire [7:0] b0,\r\n    input wire [7:0] a1,\r\n    input wire [7:0] b1,\r\n    input wire [7:0] a2,\r\n    input wire [7:0] b2,\r\n    input wire [7:0] a3,\r\n    input wire [7:0] b3,\r\n    input wire in_valid,\r\n    output wire in_ready,\r\n    output wire [17:0] out_data,\r\n    output wire out_valid,\r\n    input wire out_ready\r\n);\r\n    elastic_dot4_core u_elastic_dot4_core (\r\n        .clk(clk),\r\n        .rst(rst),\r\n        .a0(a0),\r\n        .b0(b0),\r\n        .a1(a1),\r\n        .b1(b1),\r\n        .a2(a2),\r\n        .b2(b2),\r\n        .a3(a3),\r\n        .b3(b3),\r\n        .in_valid(in_valid),\r\n        .in_ready(in_ready),\r\n        .out_data(out_data),\r\n        .out_valid(out_valid),\r\n        .out_ready(out_ready)\r\n    );\r\nendmodule",
+    "truncated": false
+  },
+  "candidate_timing_feasible": true,
+  "first_violated_path_excerpt": null,
+  "flow_and_constraints": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t3-02\\tier3_cn0rc15p\\elastic_dot4_build\\iter_002\\cand_standard\\synth.tcl",
+      "sha256": "4ebdd75692b01a9cf6f0439453ada4c2f1799c3af86034b63ff83a06e913fd4c",
+      "text": "set_msg_config -id {VRFC 10-3609} -new_severity ERROR\r\nset_msg_config -id {Synth 8-9873} -new_severity ERROR\r\nset_msg_config -id {Designutils 20-1307} -new_severity ERROR\r\nset_msg_config -id {Synth 8-327} -new_severity ERROR\r\nset_msg_config -id {Synth 8-3352} -new_severity ERROR\r\nset_part xc7a35tcpg236-1\r\nread_verilog \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t3-02/tier3_cn0rc15p/elastic_dot4_build/iter_002/cand_standard/elastic_dot4.v\"\r\nset fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t3-02/tier3_cn0rc15p/elastic_dot4_build/iter_002/cand_standard/timing.xdc\" w]\r\nputs $fp {create_clock -period 10.000 -name clk [get_ports clk]}\r\nclose $fp\r\nread_xdc \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t3-02/tier3_cn0rc15p/elastic_dot4_build/iter_002/cand_standard/timing.xdc\"\r\nsynth_design -top elastic_dot4 -flatten_hierarchy rebuilt \r\nset fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t3-02/tier3_cn0rc15p/elastic_dot4_build/iter_002/cand_standard/timing_io.tcl\" w]\r\nputs $fp {set data_inputs [get_ports -filter {DIRECTION == IN && NAME != clk}]}\r\nputs $fp {if {[llength $data_inputs] > 0} {set_input_delay -clock clk -max 0.000 $data_inputs; set_input_delay -clock clk -min 0.000 $data_inputs}}\r\nputs $fp {if {[llength [all_outputs]] > 0} {set_output_delay -clock clk -max 0.000 [all_outputs]; set_output_delay -clock clk -min 0.000 [all_outputs]}}\r\nclose $fp\r\nsource \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t3-02/tier3_cn0rc15p/elastic_dot4_build/iter_002/cand_standard/timing_io.tcl\"\r\nreport_utilization -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t3-02/tier3_cn0rc15p/elastic_dot4_build/iter_002/cand_standard/utilization.rpt\"\r\nreport_timing_summary -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t3-02/tier3_cn0rc15p/elastic_dot4_build/iter_002/cand_standard/timing.rpt\"\r\nopt_design\r\nplace_design\r\n\r\nroute_design\r\nreport_utilization -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t3-02/tier3_cn0rc15p/elastic_dot4_build/iter_002/cand_standard/utilization_routed.rpt\"\r\nreport_timing_summary -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t3-02/tier3_cn0rc15p/elastic_dot4_build/iter_002/cand_standard/timing_routed.rpt\"\r\ncatch { if {[llength [all_registers]] > 0} { report_timing -from [all_registers] -to [all_registers] -max_paths 1 -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t3-02/tier3_cn0rc15p/elastic_dot4_build/iter_002/cand_standard/timing_reg2reg.rpt\" } }\r\nreport_design_analysis -logic_level_distribution -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t3-02/tier3_cn0rc15p/elastic_dot4_build/iter_002/cand_standard/design_analysis.rpt\"\r\nreport_power -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t3-02/tier3_cn0rc15p/elastic_dot4_build/iter_002/cand_standard/power.rpt\"\r\ncatch { report_methodology -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t3-02/tier3_cn0rc15p/elastic_dot4_build/iter_002/cand_standard/methodology.rpt\" }\r\ncatch { report_qor_suggestions -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t3-02/tier3_cn0rc15p/elastic_dot4_build/iter_002/cand_standard/qor_suggestions.rpt\" }\r\nputs \"SYNTH_COMPLETE\"\r\n",
+      "truncated": false
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t3-02\\tier3_cn0rc15p\\elastic_dot4_build\\iter_002\\cand_standard\\timing.xdc",
+      "sha256": "fa142c09f0fadb5e303ca9fea08c02bc353451533e44aeee9cd9a0231cc8bede",
+      "text": "create_clock -period 10.000 -name clk [get_ports clk]\r\n",
+      "truncated": false
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t3-02\\tier3_cn0rc15p\\elastic_dot4_build\\iter_002\\cand_standard\\timing_io.tcl",
+      "sha256": "6b38098841a48bbb3ab15de49d2bf2baf7e4384f599259ff5f3afa2c2b1daf00",
+      "text": "set data_inputs [get_ports -filter {DIRECTION == IN && NAME != clk}]\r\nif {[llength $data_inputs] > 0} {set_input_delay -clock clk -max 0.000 $data_inputs; set_input_delay -clock clk -min 0.000 $data_inputs}\r\nif {[llength [all_outputs]] > 0} {set_output_delay -clock clk -max 0.000 [all_outputs]; set_output_delay -clock clk -min 0.000 [all_outputs]}\r\n",
+      "truncated": false
+    }
+  ],
+  "improvement_kind": null,
+  "measured_improvement": false,
+  "metric_provenance": "Structured metrics are parsed from retained reports; routed utilization/timing reports take precedence when present. The manifest identifies complete files by hash. Header excerpts are bounded previews, not complete reports or an independent metric source.",
+  "objective": "minimize_luts",
+  "previous_best_metrics": {
+    "bram_total": 50.0,
+    "bram_used": 0.0,
+    "dsp_total": 90,
+    "dsp_used": 4,
+    "dynamic_power_w": 0.079,
+    "ff_pct": 0.04807692307692308,
+    "ff_total": 41600,
+    "ff_used": 20,
+    "lut_pct": 0.09615384615384616,
+    "lut_total": 20800,
+    "lut_used": 20,
+    "reg2reg_wns_ns": 6.106,
+    "sim_error": "",
+    "sim_passed": true,
+    "synth_error": "",
+    "timing_met": true,
+    "total_power_w": 0.149,
+    "whs_ns": 0.18,
+    "wns_ns": 0.105
+  },
+  "previous_best_timing_feasible": true,
+  "process_exit_gate": {
+    "passed": true,
+    "policy": "Every required tool's latest actual process exit must be zero with retained matching output; physical-only Doctor may reuse source-bound prior compile/simulation.",
+    "reasons": []
+  },
+  "report_headers": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t3-02\\tier3_cn0rc15p\\elastic_dot4_build\\iter_002\\cand_standard\\power.rpt",
+      "sha256": "c3e4982c4868a840edc00b6abe1bb228b17af16adc89e503822e60ee49dd98ed",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version     : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date             : Tue Nov  3 06:08:27 2026\r\n| Host             : Baah running 64-bit major release  (build 9200)\r\n| Command          : report_power -file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t3-02/tier3_cn0rc15p/elastic_dot4_build/iter_002/cand_standard/power.rpt\r\n| Design           : elastic_dot4\r\n| Device           : xc7a35tcpg236-1\r\n| Design State     : routed\r\n| Grade            : commercial\r\n| Process          : typical\r\n| Characterization : Production\r\n-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nPower Report\r\n\r\nTable of Contents\r\n-----------------\r\n1. Summary\r\n1.1 On-Chip Components\r\n1.2 Power Supply Summary\r\n1.3 Confidence Level\r\n2. Settings\r\n2.1 Environment\r\n2.2 Clock Constraints\r\n3. Detailed Reports\r\n3.1 By Hierarchy\r\n\r\n1. Summary\r\n----------\r\n\r\n+--------------------------+--------------+\r\n| Total On-Chip Power (W)  | 0.149        |\r\n| Design Power Budget (W)  | Unspecified* |\r\n| Power Budget Margin (W)  | NA           |\r\n| Dynamic (W)              | 0.079        |\r\n| Device Static (W)        | 0.070        |\r\n| Effective TJA (C/W)      | 5.0          |\r\n| Max Ambient (C)          | 84.3         |\r\n| Junction Temperature (C) | 25.7         |\r\n| Confidence Level         | Low          |\r\n| Setting File             ",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t3-02\\tier3_cn0rc15p\\elastic_dot4_build\\iter_002\\cand_standard\\timing.rpt",
+      "sha256": "f55c91109b8cf425aa294fad4cdba788b62c5acb49e765018fe78bc2ce98e6e4",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date         : Tue Nov  3 06:07:54 2026\r\n| Host         : Baah running 64-bit major release  (build 9200)\r\n| Command      : report_timing_summary -file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t3-02/tier3_cn0rc15p/elastic_dot4_build/iter_002/cand_standard/timing.rpt\r\n| Design       : elastic_dot4\r\n| Device       : 7a35t-cpg236\r\n| Speed File   : -1  PRODUCTION 1.23 2018-06-13\r\n| Design State : Synthesized\r\n---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nTiming Summary Report\r\n\r\n------------------------------------------------------------------------------------------------\r\n| Timer Settings\r\n| --------------\r\n------------------------------------------------------------------------------------------------\r\n\r\n  Enable Multi Corner Analysis               :  Yes\r\n  Enable Pessimism Removal                   :  Yes\r\n  Pessimism Removal Resolution               :  Nearest Common Node\r\n  Enable Input Delay Default Clock           :  No\r\n  Enable Preset / Clear Arcs                 :  No\r\n  Disable Flight Delays                      :  No\r\n  Ignore I/O Paths                           :  No\r\n  Timing Early Launch at Borrowing Latches   :  No\r\n  Borrow Time for Max Delay Exceptions       :  Yes\r\n  Merge Timing Exceptions                    :  Yes\r\n  ",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t3-02\\tier3_cn0rc15p\\elastic_dot4_build\\iter_002\\cand_standard\\timing_reg2reg.rpt",
+      "sha256": "91f8db1403bc88e9acb4076ea5e89b0998fb2e3c243b12f7ff487d2ee251c9d7",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date         : Tue Nov  3 06:08:27 2026\r\n| Host         : Baah running 64-bit major release  (build 9200)\r\n| Command      : report_timing -from [all_registers] -to [all_registers] -max_paths 1 -file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t3-02/tier3_cn0rc15p/elastic_dot4_build/iter_002/cand_standard/timing_reg2reg.rpt\r\n| Design       : elastic_dot4\r\n| Device       : 7a35t-cpg236\r\n| Speed File   : -1  PRODUCTION 1.23 2018-06-13\r\n| Design State : Routed\r\n----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nTiming Report\r\n\r\nSlack (MET) :             6.106ns  (required time - arrival time)\r\n  Source:                 u_elastic_dot4_core/valid_stage1_reg/C\r\n                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@5.000ns period=10.000ns})\r\n  Destination:            u_elastic_dot4_core/partial_sum_01_reg/CEP\r\n                            (rising edge-triggered cell DSP48E1 clocked by clk  {rise@0.000ns fall@5.000ns period=10.000ns})\r\n  Path Group:             clk\r\n  Path Type:              Setup (Max at Slow Process Corner)\r\n  Requirement:            10.000ns  (clk rise@10.000ns - clk rise@0.000ns)\r\n  Da",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t3-02\\tier3_cn0rc15p\\elastic_dot4_build\\iter_002\\cand_standard\\timing_routed.rpt",
+      "sha256": "43e056611212b2d3dfffc83b001184ae6ed31220455fddf811b7738e6ac106ce",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date         : Tue Nov  3 06:08:27 2026\r\n| Host         : Baah running 64-bit major release  (build 9200)\r\n| Command      : report_timing_summary -file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t3-02/tier3_cn0rc15p/elastic_dot4_build/iter_002/cand_standard/timing_routed.rpt\r\n| Design       : elastic_dot4\r\n| Device       : 7a35t-cpg236\r\n| Speed File   : -1  PRODUCTION 1.23 2018-06-13\r\n| Design State : Routed\r\n----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nTiming Summary Report\r\n\r\n------------------------------------------------------------------------------------------------\r\n| Timer Settings\r\n| --------------\r\n------------------------------------------------------------------------------------------------\r\n\r\n  Enable Multi Corner Analysis               :  Yes\r\n  Enable Pessimism Removal                   :  Yes\r\n  Pessimism Removal Resolution               :  Nearest Common Node\r\n  Enable Input Delay Default Clock           :  No\r\n  Enable Preset / Clear Arcs                 :  No\r\n  Disable Flight Delays                      :  No\r\n  Ignore I/O Paths                           :  No\r\n  Timing Early Launch at Borrowing Latches   :  No\r\n  Borrow Time for Max Delay Exceptions       :  Yes\r\n  Merge Timing Exceptions              ",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t3-02\\tier3_cn0rc15p\\elastic_dot4_build\\iter_002\\cand_standard\\utilization.rpt",
+      "sha256": "9951e09d72c7dc999bab9f88404adddeee212159be36a7baafd4c5883bbbc06c",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\n-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\n| Date         : Tue Nov  3 06:07:54 2026\n| Host         : Baah running 64-bit major release  (build 9200)\n| Command      : report_utilization -file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t3-02/tier3_cn0rc15p/elastic_dot4_build/iter_002/cand_standard/utilization.rpt\n| Design       : elastic_dot4\n| Device       : xc7a35tcpg236-1\n| Speed File   : -1\n| Design State : Synthesized\n-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n\nUtilization Design Information\n\nTable of Contents\n-----------------\n1. Slice Logic\n1.1 Summary of Registers by Type\n2. Memory\n3. DSP\n4. IO and GT Specific\n5. Clocking\n6. Specific Feature\n7. Primitives\n8. Black Boxes\n9. Instantiated Netlists\n\n1. Slice Logic\n--------------\n\n+-------------------------+------+-------+------------+-----------+-------+\n|        Site Type        | Used | Fixed | Prohibited | Available | Util% |\n+-------------------------+------+-------+------------+-----------+-------+\n| Slice LUTs*             |   21 |     0 |          0 |     20800 |  0.10 |\n|   LUT as Logic          |   21 |     0 |          0 |     20800 |  0.10 |\n|   LUT as Memory         |    0 |     0 |          0 |      9600 |  0.00 |\n| Slice Registers         |   20 |     0 |          0 |     41600 |  0.05 |\n|   Register as Flip Flop | ",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t3-02\\tier3_cn0rc15p\\elastic_dot4_build\\iter_002\\cand_standard\\utilization_routed.rpt",
+      "sha256": "2de7d2af68e6d82352371e12087510ec53017bb7c2e16dea0387fdfe45ee84de",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\n------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\n| Date         : Tue Nov  3 06:08:27 2026\n| Host         : Baah running 64-bit major release  (build 9200)\n| Command      : report_utilization -file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t3-02/tier3_cn0rc15p/elastic_dot4_build/iter_002/cand_standard/utilization_routed.rpt\n| Design       : elastic_dot4\n| Device       : xc7a35tcpg236-1\n| Speed File   : -1\n| Design State : Routed\n------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n\nUtilization Design Information\n\nTable of Contents\n-----------------\n1. Slice Logic\n1.1 Summary of Registers by Type\n2. Slice Logic Distribution\n3. Memory\n4. DSP\n5. IO and GT Specific\n6. Clocking\n7. Specific Feature\n8. Primitives\n9. Black Boxes\n10. Instantiated Netlists\n\n1. Slice Logic\n--------------\n\n+-------------------------+------+-------+------------+-----------+-------+\n|        Site Type        | Used | Fixed | Prohibited | Available | Util% |\n+-------------------------+------+-------+------------+-----------+-------+\n| Slice LUTs              |   20 |     0 |          0 |     20800 |  0.10 |\n|   LUT as Logic          |   20 |     0 |          0 |     20800 |  0.10 |\n|   LUT as Memory         |    0 |     0 |          0 |      9600 |  0.00 |\n| Slice Registers         |   20 |     0 |          0 |    ",
+      "truncated": true
+    }
+  ],
+  "report_manifest": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t3-02\\tier3_cn0rc15p\\elastic_dot4_build\\iter_002\\cand_standard\\power.rpt",
+      "sha256": "c3e4982c4868a840edc00b6abe1bb228b17af16adc89e503822e60ee49dd98ed"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t3-02\\tier3_cn0rc15p\\elastic_dot4_build\\iter_002\\cand_standard\\timing.rpt",
+      "sha256": "f55c91109b8cf425aa294fad4cdba788b62c5acb49e765018fe78bc2ce98e6e4"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t3-02\\tier3_cn0rc15p\\elastic_dot4_build\\iter_002\\cand_standard\\timing_reg2reg.rpt",
+      "sha256": "91f8db1403bc88e9acb4076ea5e89b0998fb2e3c243b12f7ff487d2ee251c9d7"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t3-02\\tier3_cn0rc15p\\elastic_dot4_build\\iter_002\\cand_standard\\timing_routed.rpt",
+      "sha256": "43e056611212b2d3dfffc83b001184ae6ed31220455fddf811b7738e6ac106ce"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t3-02\\tier3_cn0rc15p\\elastic_dot4_build\\iter_002\\cand_standard\\utilization.rpt",
+      "sha256": "9951e09d72c7dc999bab9f88404adddeee212159be36a7baafd4c5883bbbc06c"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t3-02\\tier3_cn0rc15p\\elastic_dot4_build\\iter_002\\cand_standard\\utilization_routed.rpt",
+      "sha256": "2de7d2af68e6d82352371e12087510ec53017bb7c2e16dea0387fdfe45ee84de"
+    }
+  ],
+  "tool_exit_evidence": {
+    "history_count": 5,
+    "latest_by_tool": {
+      "vivado": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t3-02\\tier3_cn0rc15p\\elastic_dot4_build\\iter_002\\cand_standard\\vivado_synth_output.log",
+        "output_log_sha256": "8b23b91a9900cb66ad4b8b48392a3dce0926a8bef1f825524bce1bc0a0b1e51d",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xelab": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t3-02\\tier3_cn0rc15p\\elastic_dot4_build\\iter_002\\cand_standard\\xelab.log",
+        "output_log_sha256": "188d09eebc6f785209361a286b2b7e42a175c33e5e5791f42252bf17dca5c763",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xsim": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t3-02\\tier3_cn0rc15p\\elastic_dot4_build\\iter_002\\cand_standard\\xsim.log",
+        "output_log_sha256": "1ab9d8572bcd01e08c6a780ece8c6730b51a306e52ba31f7b584bf9f13f16661",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xvlog": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t3-02\\tier3_cn0rc15p\\elastic_dot4_build\\iter_002\\cand_standard\\xvlog.log",
+        "output_log_sha256": "171baaf406bad7071ddcd64f201872a8a98bfbb6ff83766f4d90037065a22f48",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      }
+    },
+    "missing_required_tools": [],
+    "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t3-02\\tier3_cn0rc15p\\elastic_dot4_build\\iter_002\\cand_standard\\tool_exit_records.log",
+    "records": [
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t3-02\\tier3_cn0rc15p\\elastic_dot4_build\\iter_002\\cand_standard",
+        "driver_returncode": 0,
+        "elapsed_seconds": 1.190340400004061,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xvlog.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t3-02\\tier3_cn0rc15p\\elastic_dot4_build\\iter_002\\cand_standard\\xvlog.log",
+        "output_log_sha256": "44cc49ae17cef03ce42c06f68b4b2473e81d0bd15b2d23670506a751be88cd91",
+        "pid": 11868,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xvlog"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t3-02\\tier3_cn0rc15p\\elastic_dot4_build\\iter_002\\cand_standard",
+        "driver_returncode": 0,
+        "elapsed_seconds": 0.9802133999910438,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xvlog.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t3-02\\tier3_cn0rc15p\\elastic_dot4_build\\iter_002\\cand_standard\\xvlog.log",
+        "output_log_sha256": "171baaf406bad7071ddcd64f201872a8a98bfbb6ff83766f4d90037065a22f48",
+        "pid": 19908,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xvlog"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t3-02\\tier3_cn0rc15p\\elastic_dot4_build\\iter_002\\cand_standard",
+        "driver_returncode": 0,
+        "elapsed_seconds": 1.6837415999907535,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xelab.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t3-02\\tier3_cn0rc15p\\elastic_dot4_build\\iter_002\\cand_standard\\xelab.log",
+        "output_log_sha256": "188d09eebc6f785209361a286b2b7e42a175c33e5e5791f42252bf17dca5c763",
+        "pid": 15224,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xelab"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t3-02\\tier3_cn0rc15p\\elastic_dot4_build\\iter_002\\cand_standard",
+        "driver_returncode": 0,
+        "elapsed_seconds": 2.846948699996574,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xsim.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t3-02\\tier3_cn0rc15p\\elastic_dot4_build\\iter_002\\cand_standard\\xsim.log",
+        "output_log_sha256": "1ab9d8572bcd01e08c6a780ece8c6730b51a306e52ba31f7b584bf9f13f16661",
+        "pid": 28676,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xsim"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t3-02\\tier3_cn0rc15p\\elastic_dot4_build\\iter_002\\cand_standard",
+        "driver_returncode": 0,
+        "elapsed_seconds": 87.35331140000199,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/vivado.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t3-02\\tier3_cn0rc15p\\elastic_dot4_build\\iter_002\\cand_standard\\vivado_synth_output.log",
+        "output_log_sha256": "8b23b91a9900cb66ad4b8b48392a3dce0926a8bef1f825524bce1bc0a0b1e51d",
+        "pid": 2932,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "vivado"
+      }
+    ],
+    "schema_valid": true,
+    "sha256": "55765e2819842714bd02cd32936c7bbd08ea8fde4ae74321e5d8a2931763d3f2",
+    "status": "recorded",
+    "truncated": false
+  },
+  "verification_logs": [
+    {
+      "head": "INFO: [VRFC 10-2263] Analyzing Verilog file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t3-02/tier3_cn0rc15p/elastic_dot4_build/iter_002/cand_standard/elastic_dot4.v\" into library work\r\nINFO: [VRFC 10-311] analyzing module elastic_dot4_core\r\nINFO: [VRFC 10-311] analyzing module elastic_dot4\r\nINFO: [VRFC 10-2263] Analyzing Verilog file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t3-02/tier3_cn0rc15p/elastic_dot4_build/inputs/testbench_path.v\" into library work\r\nINFO: [VRFC 10-311] analyzing module elastic_dot4_tb\r\n\r\n",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t3-02\\tier3_cn0rc15p\\elastic_dot4_build\\iter_002\\cand_standard\\xvlog.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "171baaf406bad7071ddcd64f201872a8a98bfbb6ff83766f4d90037065a22f48",
+      "tail": "",
+      "truncated": false
+    },
+    {
+      "head": "Vivado Simulator v2025.2\r\nCopyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\nCopyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\nRunning: C:/AMDDesignTools/2025.2/Vivado/bin/unwrapped/win64.o/xelab.exe elastic_dot4_tb -s elastic_dot4_tb_snap --debug off \r\nMulti-threading is on. Using 10 slave threads.\r\nStarting static elaboration\r\nPass Through NonSizing Optimizer\r\nCompleted static elaboration\r\nStarting simulation data flow analysis\r\nCompleted simulation data flow analysis\r\nTime Resolution for simulation is 1ps\r\nCompiling module work.elastic_dot4_core\r\nCompiling module work.elastic_dot4_tb\r\nBuilt simulation snapshot elastic_dot4_tb_snap\r\n\r\n",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t3-02\\tier3_cn0rc15p\\elastic_dot4_build\\iter_002\\cand_standard\\xelab.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "188d09eebc6f785209361a286b2b7e42a175c33e5e5791f42252bf17dca5c763",
+      "tail": "",
+      "truncated": false
+    },
+    {
+      "head": "\r\n****** xsim v2025.2 (64-bit)\r\n  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025\r\n  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025\r\n  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025\r\n  **** Start of session at: Tue Nov  3 06:06:59 2026\r\n    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\n    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n\r\nsource xsim.dir/elastic_dot4_tb_snap/xsim_script.tcl\r\n# xsim {elastic_dot4_tb_snap} -autoloadwcfg -runall\r\nTime resolution is 1 ps\r\nrun -all\r\nCOVERAGE cycles=852 accepted=639 retired=631 discarded=8 fullstall=98 replacement=508 steady=266 bubbles=118 reset1=1 reset2=1 resetboth=3 resetstall=3 pulses=2 pulse1=1 pulseboth=1\r\nTEST PASSED\r\n$finish called at time : 8527 ns : File \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t3-02/tier3_cn0rc15p/elastic_dot4_build/inputs/testbench_path.v\" Line 207\r\nexit\r\nINFO: [Common 17-206] Exiting xsim at Tue Nov  3 06:07:01 2026...\r\n\r\n",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t3-02\\tier3_cn0rc15p\\elastic_dot4_build\\iter_002\\cand_standard\\sim_log.txt",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "1ab9d8572bcd01e08c6a780ece8c6730b51a306e52ba31f7b584bf9f13f16661",
+      "tail": "",
+      "truncated": false
+    },
+    {
+      "head": "\r\n****** Vivado v2025.2 (64-bit)\r\n  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025\r\n  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025\r\n  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025\r\n  **** Start of session at: Tue Nov  3 06:07:02 2026\r\n    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\n    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n\r\nsource C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t3-02/tier3_cn0rc15p/elastic_dot4_build/iter_002/cand_standard/synth.tcl\r\n# set_msg_config -id {VRFC 10-3609} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-9873} -new_severity ERROR\r\n# set_msg_config -id {Designutils 20-1307} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-327} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-3352} -new_severity ERROR\r\n# set_part xc7a35tcpg236-1\r\nINFO: [Coretcl 2-1500] The part has been set to 'xc7a35tcpg236-1' for the current project only. Run set_part -help for more details. To evaluate different speed grades in the current design, use the set_speed_grade command, or use the open_checkpoint -part command to change the part used by an existing checkpoint design.\r\nset_part: Time (s): cpu = 00:00:11 ; elapsed = 00:00:08 . Memory (MB): peak = 531.254 ; gain = 223.949\r\n# read_verilog \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t3-02/tier3_cn0rc15p/elastic_dot4_build/iter_002/cand_standard/elastic_dot4.v\"\r\n# set fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t3-02/tier3_cn0rc15p/elastic_dot4_build/iter_002/cand_standard/timing.xdc\" w]\r\n# puts $fp {create_clock -period 10.000 -name clk [get_ports clk]}\r\n# close $fp\r\n# read_xdc \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t3-02/tier3_cn0rc15p/elastic_dot4_build/iter_00",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t3-02\\tier3_cn0rc15p\\elastic_dot4_build\\iter_002\\cand_standard\\vivado_synth_output.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "8b23b91a9900cb66ad4b8b48392a3dce0926a8bef1f825524bce1bc0a0b1e51d",
+      "tail": "tivity Propagation...\r\n\r\nFinished Running Vector-less Activity Propagation\r\n0 Infos, 0 Warnings, 0 Critical Warnings and 0 Errors encountered.\r\nreport_power completed successfully\r\n# catch { report_methodology -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t3-02/tier3_cn0rc15p/elastic_dot4_build/iter_002/cand_standard/methodology.rpt\" }\r\nCommand: report_methodology -file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t3-02/tier3_cn0rc15p/elastic_dot4_build/iter_002/cand_standard/methodology.rpt\r\nINFO: [Timing 38-35] Done setting XDC timing constraints.\r\nINFO: [DRC 23-133] Running Methodology with 2 threads\r\nINFO: [Vivado_Tcl 2-1520] The results of Report Methodology are in file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t3-02/tier3_cn0rc15p/elastic_dot4_build/iter_002/cand_standard/methodology.rpt.\r\nreport_methodology completed successfully\r\n# catch { report_qor_suggestions -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t3-02/tier3_cn0rc15p/elastic_dot4_build/iter_002/cand_standard/qor_suggestions.rpt\" }\r\nCommand: report_qor_suggestions -file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t3-02/tier3_cn0rc15p/elastic_dot4_build/iter_002/cand_standard/qor_suggestions.rpt\r\nCongestion Prediction Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.012 . Memory (MB): peak = 1941.848 ; gain = 0.000\r\nINFO: [Implflow 47-1309] PredResultString: 1:43.25:56.75\r\nfeatureProvider Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.025 . Memory (MB): peak = 1941.848 ; gain = 0.000\r\nINFO: [Implflow 47-1274] ML strategy prediction is not supported for 7-series devices.\r\nreport_qor_suggestions completed successfully\r\n# puts \"SYNTH_COMPLETE\"\r\nSYNTH_COMPLETE\r\nINFO: [Common 17-206] Exiting Vivado at Tue Nov  3 06:08:28 2026...\r\n\r\n",
+      "truncated": true
+    }
+  ]
+}

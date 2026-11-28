@@ -50,7 +50,10 @@ def ask(model_alias, prompt, system="", timeout_s=180, max_turns=1, *, argv, mod
     tail = redact(stderr or "", secrets)[-MAX_STDERR:]
     if process.returncode != 0:
         meta["stderr_tail"] = tail
-        raise CodexError(_failure_code(tail, "CODEX_UNAVAILABLE"),
+        # agy_endpoint_uses_tools: a command that reports MODEL_TOOL_USE refused a reply
+        # the model produced with tools; that is the model's failure, not infrastructure.
+        code = "MODEL_TOOL_USE" if "MODEL_TOOL_USE" in tail else _failure_code(tail, "CODEX_UNAVAILABLE")
+        raise CodexError(code,
                          f"endpoint {label} exited {process.returncode}: {tail[-300:]}", meta)
     text = (stdout or "").strip()
     if not text:

@@ -1,0 +1,45 @@
+{
+  "candidates": [
+    {
+      "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff3-t1-02\\tier1_jvz8t4lf\\pwm\\iter_003\\cand_standard",
+      "cache_hit": false,
+      "final_code_hash": "1d3c821a9bc1d4f2",
+      "final_source_sha256": "0a7e04dfe1dacccd374bd50907bad6d91ffe9356cbf4004670dc9edc445ed681",
+      "flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff3-t1-02\\tier1_jvz8t4lf\\pwm\\iter_003\\cand_standard\\synth.tcl",
+        "sha256": "1f46e2ad95999f03303a340cae0c4cb917b36a498c90b7d576ce83e5a8109348"
+      },
+      "generated_code_hash": "1d3c821a9bc1d4f2",
+      "generated_source_sha256": "0a7e04dfe1dacccd374bd50907bad6d91ffe9356cbf4004670dc9edc445ed681",
+      "instruction": "Keep the 32-bit counter, its increment and `counter == 32'd255` wrap branch, reset assignments, and registered `pwm_out` timing unchanged. Replace only the PWM comparison with `(~|counter[31:8]) && (counter[7:0] < duty)`, which is equivalent to comparing the full counter against the zero-extended duty for all counter values. Do not add a latency annotation; retain all reset and cycle behavior.",
+      "iteration": 3,
+      "metrics": {
+        "bram_used": 0.0,
+        "dsp_used": 0,
+        "dynamic_power_w": 0.011,
+        "ff_used": 9,
+        "lut_used": 7,
+        "sim_passed": true,
+        "timing_met": true,
+        "total_power_w": 0.081,
+        "whs_ns": 0.135,
+        "wns_ns": 0.553
+      },
+      "mutation": "standard",
+      "reason": "",
+      "rungs": 5,
+      "source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff3-t1-02\\tier1_jvz8t4lf\\pwm\\iter_003\\cand_standard\\pwm.v",
+        "sha256": "641a6eda05fa9483ed60168b0c394e2c2a981fe1966bc509f440c2d97e0ac29c"
+      },
+      "status": "measured"
+    }
+  ],
+  "doctor": null,
+  "instruction": "Keep the 32-bit counter, its increment and `counter == 32'd255` wrap branch, reset assignments, and registered `pwm_out` timing unchanged. Replace only the PWM comparison with `(~|counter[31:8]) && (counter[7:0] < duty)`, which is equivalent to comparing the full counter against the zero-extended duty for all counter values. Do not add a latency annotation; retain all reset and cycle behavior.",
+  "is_best": false,
+  "iteration": 3,
+  "recommendation": "REJECT",
+  "schema_version": 1,
+  "selected_source_sha256": "0a7e04dfe1dacccd374bd50907bad6d91ffe9356cbf4004670dc9edc445ed681"
+}

@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_3:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 3\n## Contract check\n- Top interface and latency annotation: PASS \u2014 top ports match the contract and `// @latency 3` matches authoritative latency.\n- Defined behavior and cycle semantics: PASS \u2014 the unchanged deterministic ladder passed, including transfer age, handshakes, stalls, reset, and signed data checks.\n- Compile, elaboration, simulation, and synthesis stages: PASS \u2014 required tools exited successfully, simulation reported `TEST PASSED`, and synthesis recorded `SYNTH_COMPLETE`.\n- Routed reports and metric integrity: PASS \u2014 retained routed timing, utilization, and power reports are present with matching evidence.\n- Timing closure: PASS \u2014 timing is met with WNS 0.433 ns and WHS 0.082 ns.\n- Objective versus previous best: FAIL \u2014 both designs are timing-feasible, but LUT usage increased from 80 to 81; the objective requires a strict LUT reduction.\n## Summary\n- Passed: 5 of 6\n- Failed: 1 of 6\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes the behavioral, verification, metric, and timing gates, but it does not improve the selected objective: against the already timing-feasible previous best, it uses one more LUT. The recorded improvement kind is null, so this comparison does not establish an accepted improvement.",
+      "recommendation": "REJECT",
+      "passed": 5,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_3:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 3\n## Contract check\n- Top interface and latency annotation: PASS \u2014 top ports match the contract and `// @latency 1` matches the authoritative latency.\n- Defined behavior: PASS \u2014 candidate preserves CRC updates, framing, one-slot handshakes, registered outputs, reset behavior, and minimum transfer age; the testbench passes.\n- Compile and elaboration: PASS \u2014 xvlog and xelab exited successfully.\n- Simulation: PASS \u2014 xsim exited successfully with the required `TEST PASSED` verdict.\n- Synthesis and tool exits: PASS \u2014 required tools exited successfully and synthesis logged `SYNTH_COMPLETE`.\n- Routed metrics and integrity: PASS \u2014 retained routed reports and metric evidence are present and consistent.\n- Timing feasibility: PASS \u2014 timing is met; setup WNS is 0.318 ns and hold WHS is 0.156 ns.\n- Objective improvement: PASS \u2014 LUTs are unchanged at 15 and FFs decreased from 19 to 18, improving the `minimize_luts` lexicographic objective.\n\n## Summary\n- Passed: 8 of 8\n- Failed: 0 of 8\n- Improved over previous best: YES\n\n## Recommendation\nACCEPT\n\n## Reason\nThe candidate passes the deterministic verification and metric gates, meets setup and hold timing, and strictly improves the selected objective through fewer FFs at equal LUT count. The single recorded stall does not meet the restart threshold.",
+      "recommendation": "ACCEPT",
+      "passed": 8,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}

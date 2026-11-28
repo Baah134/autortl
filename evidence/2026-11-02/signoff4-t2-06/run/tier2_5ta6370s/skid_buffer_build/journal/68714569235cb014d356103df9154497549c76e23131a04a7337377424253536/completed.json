@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Top interface and latency annotation: PASS \u2014 `skid_buffer` preserves the specified ports and has the required `// @latency 1`.\n- Defined FIFO behavior: PASS \u2014 ladder is ALIVE; the candidate preserves the two-entry queue, handshake rules, reset behavior, ordering, throughput, and minimum transfer age.\n- Compile, elaboration, and simulation: PASS \u2014 required tools exited successfully and the unchanged testbench reported `TEST PASSED`.\n- Routed metric integrity: PASS \u2014 retained routed timing and utilization reports are present, with matching manifest hashes and consistent metrics.\n- Timing closure: PASS \u2014 timing is met; setup WNS is 0.122 ns and hold WHS is 0.104 ns.\n- Improvement over previous best: PASS \u2014 `timing_recovery` is valid: the previous best was timing-infeasible, while this verified candidate is timing-feasible.\n- Fixed flow and constraints: PASS \u2014 candidate uses the specified device, clock, testbench, and constraints.\n## Summary\n- Passed: 7 of 7\n- Failed: 0 of 7\n- Improved over previous best: YES\n## Recommendation\nACCEPT\n## Reason\nThe candidate passes the deterministic verification and metric gates and recovers timing feasibility over the known infeasible previous best. LUTs remain at 12 and FFs increase from 4 to 18, but resource savings are not required for valid timing recovery.",
+      "recommendation": "ACCEPT",
+      "passed": 7,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}

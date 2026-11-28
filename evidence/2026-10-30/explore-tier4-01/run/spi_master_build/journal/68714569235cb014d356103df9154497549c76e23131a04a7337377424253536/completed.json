@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Interface and frozen companion: PASS \u2014 preserves the top ports and directly connects outputs from the required `spi_master_core` instance.\n- Top latency annotation: PASS \u2014 declares `// @latency 33`, matching authoritative latency.\n- Deterministic verification: PASS \u2014 ladder is ALIVE; compile, elaboration, and simulation passed with the required `TEST PASSED` verdict.\n- Tool and metric evidence: PASS \u2014 required tool exits succeeded, `SYNTH_COMPLETE` is recorded, and routed reports are retained.\n- Timing closure: PASS \u2014 `timing_met=true`, setup WNS is 0.343 ns, and hold WHS is 0.14 ns.\n- Objective improvement: FAIL \u2014 LUT usage is unchanged at 25 versus the feasible previous best; strict LUT reduction is required.\n## Summary\n- Passed: 5 of 6\n- Failed: 1 of 6\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate meets the behavioral, verification, evidence, and timing gates, but it does not improve the chosen objective: LUT usage is unchanged from the timing-feasible previous best. It therefore cannot be promoted.",
+      "recommendation": "REJECT",
+      "passed": 5,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

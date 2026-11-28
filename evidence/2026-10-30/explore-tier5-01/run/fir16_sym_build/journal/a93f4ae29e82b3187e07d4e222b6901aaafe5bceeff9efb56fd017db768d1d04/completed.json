@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_3:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 3\n## Contract check\n- Behavioral and interface checks: PASS \u2014 authoritative ladder result is ALIVE; simulation passed.\n- Top latency annotation: PASS \u2014 top declares `// @latency 5`, matching the authoritative latency.\n- Compile, elaboration, simulation and process gates: PASS \u2014 required tools exited successfully; simulation reported `TEST PASSED`.\n- Routed metric integrity: PASS \u2014 routed reports are retained, and their metrics are consistent with the candidate metrics.\n- Improvement and promotion: FAIL \u2014 candidate remains timing-infeasible at WNS -10.77 ns. It worsens setup slack from the previous best\u2019s -3.024 ns, so it does not qualify as timing progress; LUTs also increase from 165 to 394. No improvement kind is recorded.\n## Summary\n- Passed: 4 of 5\n- Failed: 1 of 5\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes the reported deterministic verification and build gates, but it is not timing-feasible and does not meet the exception for replacing an infeasible previous best: setup WNS regresses, and LUT usage is higher. No accepted improvement is established.",
+      "recommendation": "REJECT",
+      "passed": 4,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

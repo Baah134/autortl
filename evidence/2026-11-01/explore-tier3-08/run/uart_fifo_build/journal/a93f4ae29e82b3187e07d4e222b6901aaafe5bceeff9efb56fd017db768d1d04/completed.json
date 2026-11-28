@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_3:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 3\n## Contract check\n- Top interface and child reachability: PASS \u2014 `uart_fifo` retains its required ports; `uart_tx` is defined and live-reached from the top.\n- FIFO behavior: PASS \u2014 the narrowed occupancy counter preserves depth-eight full/empty status, ordering, handshakes, and synchronous reset behavior.\n- UART behavior and parameter range: PASS \u2014 shift-register transmission preserves bit order and frame timing; the counter width supports `CLKS_PER_BIT` values 2 through 255.\n- Top latency annotation: PASS \u2014 authoritative top latency is unknown, so no numeric annotation is required; child annotations do not set top latency.\n- Deterministic verification: PASS \u2014 ladder is ALIVE; compile, elaboration, simulation, and the exact `TEST PASSED` verdict are recorded with successful exits.\n- Routed metrics and timing: PASS \u2014 retained routed evidence reports 112 LUTs, 85 FFs, WNS 0.058 ns, and WHS 0.069 ns; both timing slacks are nonnegative.\n- Improvement over previous best: PASS \u2014 with both designs timing-feasible, LUTs improve from 119 to 112, satisfying `minimize_luts`; FFs also fall from 89 to 85.\n## Summary\n- Passed: 7 of 7\n- Failed: 0\n- Improved over previous best: YES\n## Recommendation\nACCEPT\n## Reason\nThe candidate passes the deterministic gates and preserves the specified interface and behavior. Its routed setup and hold slack are nonnegative, and it strictly improves the chosen LUT objective over the timing-feasible previous best.",
+      "recommendation": "ACCEPT",
+      "passed": 7,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}

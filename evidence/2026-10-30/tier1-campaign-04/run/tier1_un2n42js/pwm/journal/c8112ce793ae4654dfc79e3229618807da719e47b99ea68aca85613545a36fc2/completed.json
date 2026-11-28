@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_2:model:planner.plan:0",
+  "result": "# PLAN \u2014 iteration 2\n## Current state assessment\nIteration 1 passed simulation and timing, but its 8-bit counter with natural wrap used 10 LUTs, above the timing-feasible incumbent\u2019s 7 LUTs. The objective therefore remains a strict LUT reduction; top numeric latency is unknown, and no annotation is required.\n\n## Hypothesis\nKeeping the current 32-bit counter and explicit terminal-count wrap while narrowing only the PWM comparison to `counter[7:0] < duty` may reduce comparator logic without changing the counter or registered output behavior.\n\n## Instruction for generator\nChange only `pwm_out <= (counter < {24'd0, duty});` to compare `counter[7:0]` directly with `duty`. Keep the 32-bit counter, `counter == 32'd255` wrap branch, synchronous reset, and sequential assignments unchanged. This is a distinct comparator-focused trial from iteration 1; retain it only if the frozen simulation and all routed metric gates pass and LUT use is strictly below 7.",
+  "artifacts": {}
+}

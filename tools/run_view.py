@@ -410,7 +410,11 @@ def _tokens(budget):
         return "—"
     cached = tokens.get("cached_input_tokens")
     text = f"{tokens.get('input_tokens', 0):,} in / {tokens.get('output_tokens', 0):,} out"
-    return text + (f" ({cached:,} cached)" if cached else "")
+    text += f" ({cached:,} cached)" if cached else ""
+    unreported = budget.get("calls_without_token_usage")
+    if type(unreported) is int and unreported > 0:  # command_endpoint_tokens_reported_as_zero
+        text += f" (incomplete: {unreported} calls unreported)"
+    return text
 
 
 def _delta(value, base, kind):

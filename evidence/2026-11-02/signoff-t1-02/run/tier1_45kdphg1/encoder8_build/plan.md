@@ -1,0 +1,13 @@
+# PLAN — iteration 1
+
+## Current state assessment
+
+The incumbent passes simulation and timing with 6 LUTs, 4 FFs, routed WNS 0.528 ns, and WHS 0.009 ns. Timing is already feasible; the objective is strictly fewer LUTs, with FFs as a tie-break. The top must retain `// @latency 1`, registered outputs, and synchronous active-high reset behavior.
+
+## Hypothesis
+
+Replacing the descending priority mux chain with shared upper/lower group-valid terms and factored index-bit equations may reduce LUT use below 6 while retaining 4 FFs, though the small baseline leaves limited optimization headroom.
+
+## Instruction for generator
+
+In `priority_encoder8_core`, replace the descending `if/else` encoder with a factored 8-bit priority encoder: share upper-half and pair-detect terms, then derive the three index bits from the selected group while preserving highest-set-bit priority. Keep `valid` registered from `request != 0` and keep the existing synchronous reset of both output registers; preserve the top interface and `// @latency 1`. Do not add pipeline stages; judge any LUT reduction only after the unchanged simulation and routed timing, hold, and metric-integrity gates pass.

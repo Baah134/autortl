@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Interface, reset, and observable cycle behavior: PASS \u2014 ports and registered output are preserved; the 8-bit counter wraps at the same 256-cycle period as the reset 32-bit counter.\n- Deterministic ladder: PASS \u2014 standard rung reports 5 rungs ALIVE.\n- Top latency annotation: PASS \u2014 authoritative `known=false`; no numeric annotation is required.\n- Compile and elaboration: PASS \u2014 xvlog and xelab exited successfully.\n- Simulation: PASS \u2014 xsim exited successfully with the exact `TEST PASSED` verdict.\n- Synthesis and tool exits: PASS \u2014 Vivado exited successfully and the log contains `SYNTH_COMPLETE`.\n- Routed metrics and timing feasibility: PASS \u2014 retained routed metrics show timing_met=true, WNS 0.412 ns and WHS 0.196 ns.\n- Objective improvement: FAIL \u2014 both candidate and previous best are timing-feasible, but LUT use increased from 7 to 10 for the minimize_luts objective.\n## Summary\n- Passed: 7 of 8\n- Failed: 1 of 8\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes the behavioral and verification gates and meets setup and hold timing, but it does not improve the chosen objective: LUT use rose from 7 to 10 while the previous best was already timing-feasible.",
+      "recommendation": "REJECT",
+      "passed": 7,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

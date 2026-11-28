@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_2:decision:instruction:0",
+  "result": "In `skid_buffer_core`, replace `occupancy` and `occupancy_next` with `valid` and `full` registers; drive `out_valid` from `valid` and `in_ready` from `!full || out_ready`. Update the flags from the existing `push` and `pop` handshakes: `valid` tracks whether the queue is nonempty, and `full` sets when a push without a pop fills the second slot and clears on a pop without a push. Translate the data-register update conditions to use `valid` and `full`, preserving FIFO ordering, simultaneous transfers, stall stability, synchronous reset behavior, and the top\u2019s `// @latency 1` annotation.",
+  "artifacts": {}
+}

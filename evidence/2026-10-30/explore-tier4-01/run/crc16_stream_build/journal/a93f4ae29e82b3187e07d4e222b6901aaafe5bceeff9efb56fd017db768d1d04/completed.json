@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_3:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 3\n## Contract check\n- Behavioral contract: PASS \u2014 ladder is ALIVE; the candidate preserves the specified CRC, handshake, reset, and cycle behavior.\n- Interface and static checks: PASS \u2014 top name and ports match the contract.\n- Top latency annotation: PASS \u2014 `// @latency 1` matches authoritative latency 1.\n- Compile and elaboration: PASS \u2014 xvlog and xelab exited successfully.\n- Simulation: PASS \u2014 xsim exited successfully with the required `TEST PASSED` verdict.\n- Routed metrics and integrity: PASS \u2014 retained routed reports and successful synthesis evidence are provided.\n- Timing closure: PASS \u2014 timing is met; WNS is 0.449 ns and WHS is 0.083 ns.\n- Objective improvement: FAIL \u2014 both candidate and previous best meet timing, but LUT usage is unchanged at 16; the objective requires strictly fewer LUTs.\n## Summary\n- Passed: 7 of 8\n- Failed: 1 of 8\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes behavioral and deterministic verification, declares the required latency, and meets setup and hold timing. Since the previous best was already timing-feasible, promotion requires a strict LUT reduction; the routed candidate uses 16 LUTs, equal to the previous best. Lower FF count and power and slightly better slack do not satisfy the selected LUT objective.",
+      "recommendation": "REJECT",
+      "passed": 7,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

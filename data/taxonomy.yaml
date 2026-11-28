@@ -78,10 +78,92 @@ messages:
     meaning: "Simulation step failed; see the referenced log for the true cause"
     repair: "Read compile.log/elaborate.log message IDs and repair those; this ID is only a wrapper"
     severity_override: null
+  "Place 30-415":
+    meaning: "The top has more I/O ports than the target package has user I/O pins (target capacity, not an RTL bug); the Place 30-68 not-placed and Place 30-99 lines that follow are its consequences"
+    repair: "Not a design repair: the contract fixes the ports. The harness stops the run as target_infeasible (failure_kind target); use a block's out-of-context implementation or a larger package"
+    severity_override: null
 
 # Methodology violations (report_methodology, UG1292 IDs). ADVISORY ONLY:
 # these never kill candidates; they are digested into the planner's context.
 harness_failures:
+  concurrent_run_export_unexcluded:
+    meaning: "Current Orchestrator.run has no whole-run process mutex; checkpoint replacement retries do not exclude a concurrent candidate exporter"
+    repair: "Use one cooperative OS file lock for generation and export, retain its inode/path, fail on contention and prove automatic release after process death; do not infer exclusion from a checkpoint marker"
+  complete_candidate_provenance_missing:
+    meaning: "DONE-only winner files and module journals do not explicitly identify a complete ordered top-level submission after every failed or interrupted run"
+    repair: "Record exact complete source bundles at generation and actual incumbent transitions, select deterministically without grader feedback, reject drift and legacy filename reconstruction, and bind export to frozen run metadata"
+  pilot_runner_double_hid_cli_rejection:
+    meaning: "The pilot arm C runner passed --iterations 0, which run.py rejects before any run (max_iterations must be positive); its unit tests used a process double, so the first real cell ended in 1.5 s with no run summary and was sealed missing"
+    repair: "Check every runner flag against run.py's own argument validation in a test that executes the real parser; treat a spent pilot attempt as aborted evidence and refreeze under the corrected runtime instead of rerunning its cells"
+  pilot_vivado_tools_unresolved:
+    meaning: "A build launched with default bare tool names failed at once with xvlog not found ([WinError 2]): Windows cannot start a .bat by bare name. The run summary was build_blocked with failure_kind unknown, so triage did not recognise a missing simulator as infrastructure"
+    repair: "Pass absolute Vivado tool paths resolved like run.py doctor and stop before the cell directory if any is missing; map infra summaries to interrupted, never failed. Triage still classifies xvlog not found as unknown: open harness repair"
+  clockless_design_untimed_by_metrics_gate:
+    meaning: "Synthesis TCL always constrains a port named clk; a purely combinational design has none, so no path is timed, WNS/WHS stay -999 and the metrics integrity gate stops the baseline as infra. Observed on VerilogEval Prob036_ringer and Prob033_ece241_2014_q1c (pilot-03); it blocks every clockless design"
+    repair: "When no clock exists after synthesis, create a virtual clock named clk at the target period and constrain all inputs and outputs against it, so input-to-output paths yield real WNS/WHS. Designs with a clk port are unchanged; the gate is not relaxed"
+  pilot_submission_missing_children:
+    meaning: "A build with edit_scope frozen_children names a mechanical top (TopModule_top) and keeps the requested module as a verified child; sealing only <top>_best.v omits the module the official testbench instantiates. Observed on Prob038_count15 (pilot-03)"
+    repair: "For frozen_children, submit the resolved spec's verified child sources in order, then the winning top; refuse a submission that never defines TopModule"
+  pilot_outer_timeout_discarded_done:
+    meaning: "The pilot's outer wall-clock timeout counts machine sleep; Prob038_count15 reached DONE (verified, timing met) after the host slept for hours, but the cell was sealed interrupted"
+    repair: "Seal a DONE summary with its complete sources even when the outer safety net fired, recording outer_timeout in accounting; keep the machine awake during pilots"
+  missing_tool_classified_unknown:
+    meaning: "A tool that cannot be started (xvlog/xelab/xsim/vivado: FileNotFoundError or PermissionError at launch, e.g. 'xvlog not found: [WinError 2] The system cannot find the file specified') matched no triage signature, so the build ended build_blocked with failure_kind unknown instead of infra"
+    repair: "Classify launch failures from vivado._run ('<tool> not found: [WinError N]' / '<tool> could not launch: ...') as FailureKind.INFRA in triage; genuine VRFC/Synth design errors stay design"
+  ablation_policy_seam_absent:
+    meaning: "Benchmark arm B (same bounded loop as arm C with generated-testbench mutation qualification skipped) had no harness seam: removing that one safeguard would need code edits or inference from other flags, so the ablation could not be run as an explicit, recorded experiment setting"
+    repair: "RunConfig.verification_policy (full | skip_generated_tb_mutations, default full, saved in config.json, resume refuses a change, older configs load as full) and run.py --verification-policy for build/optimize only. Under skip_generated_tb_mutations the FSM skips only the bug-injection qualification of a generated module testbench, records a tb_qualification event with outcome skipped_by_policy and the policy in the run summary; candidate simulation against that testbench still gates, and a supplied trusted or independent testbench is qualified exactly as before"
+  resetless_sequential_unrepresentable:
+    meaning: "A sequential request whose interface has no reset port (VerilogEval Prob147_circuit10: clk, a, b -> q, state; state is established by driven inputs) could not be typed: \"reset\": null crashed spec loading, ResetSpec rejected an empty signal, and tbgen required a reset port for latency > 0. The planner gave up (pilot-03) or added an rst port (pilot-04), changing the requested interface"
+    repair: "Typed no-reset state: \"reset\": null loads as ResetSpec.none() (signal '', kind none); a clocked resetless module must declare init_cycles 1..64 and optional init_inputs, which the generated TB drives unchecked before comparing and the oracle and examples replay first; resetless scoreboard is rejected; a given reset keeps every existing check; SPEC_PROMPT forbids adding a reset port the request lacks"
+  planner_spec_error_shared_by_oracle_and_rtl:
+    meaning: "On VerilogEval Prob135_m2014_q6b (pilot-04) the planner derived the next-state table wrongly (state D, w=0 gives Y1=1; the request's transition D--0-->F gives 0). The generated golden model and the RTL both implemented the wrong spec, its three examples avoided the error, and arm C accepted a design the official testbench rejects (6/100 mismatches). Arm A, reading the request directly, passed. Recurred as the main cause of the final-02 gap (November 21): Prob066_edgecapture (4 harness cells) - the planner added that reset also clears the previous-input register, which the request never states and the reference does not do, so the first edge after reset is lost (91/266 mismatches); Prob139_2013_q2bfsm (4 cells) - the planner sampled x on the edge that clears f, one cycle before the reference, so g rises a cycle early (198/1002); Prob070_ece241_2013_q2 (1 cell) - a different but valid don't-care cover that the official test checks. Oracle, generated testbench and RTL all followed the planner, so each was internally accepted; arm A passed all three tasks"
+    repair: "Open. Internal verification only checks RTL against the planner spec, so a spec derivation error is invisible to it. Partial mitigation (November 21, after final-02, untested live): SPEC_PROMPT forbids behavior the request does not state, says reset clears only what the request says it clears (a register that follows an input keeps following it), and keeps the request's own timing words beside the derived rule; its effect must be measured on tasks outside final-02. Candidate mitigations to measure, not yet adopted: an independent second derivation of examples from the original request, or deriving the oracle from the request rather than the planner spec. Count false acceptances as a primary benchmark metric"
+  official_reference_contradicts_request:
+    meaning: "In final-02 two VerilogEval references disagree with their own prose: Prob093_ece241_2014_q3 (the reference's mux_in[2] = ~d contradicts the Karnaugh map at cd=11) and Prob149_ece241_2013_q4 (the prose says dfr rises with the level; the reference outputs the opposite). Every arm fails them, arm A included with identical mismatch counts; the harness arms followed the prose and internally accepted, so 5 of arm C's 11 false acceptances (and 5 of B's 10) come from these two tasks"
+    repair: "No harness change: following the stated request is correct. Graded verdicts stay as registered; the report lists the tasks so readers can see how much of the false-acceptance rate they explain"
+  grader_rejects_vendor_attribute:
+    meaning: "final-02 Prob027_fadd full trial 2: the RTL is functionally correct but puts (* LUTNM = \"full_adder\" *) before a continuous assign; Vivado (xsim) accepts it, while the Icarus-based official grader stops with 'Invalid module item', so the cell is graded compile_error"
+    repair: "Open. The registered verdict is kept (grading rules were fixed before grading). Candidate: in the benchmark, check the submission with the grader's compiler before acceptance, or tell the generator that synthesis attributes are not portable to the evaluation simulator"
+  single_register_design_untimed_ooc:
+    meaning: "Out-of-context implementation leaves data ports untimed, so a clocked design with no register-to-register path (one register stage between ports, e.g. a DFF or the planner's circuit10 state <= a & b) has nothing timed; WNS/WHS stay -999 and the metrics gate stops the baseline. Observed on VerilogEval Prob147_circuit10 arm C (pilot-04)"
+    repair: "After synthesis, if there are no registers or no register-to-register timing path, constrain the data ports with zero delay to clk (virtual if absent) so the port-to-register and register-to-port paths are setup-timed, excluding input-to-register hold only (it depends on the unknown driver placement; excluding all input hold removed every hold path of a combinational design, WHS -999, pilot-05 Prob036_ringer arm B; a zero min delay against the BUFG-modelled clock gave an artificial -0.83 ns on a DFF); designs with an internal path keep unconstrained ports. The gate is unchanged"
+  vivado_crash_classified_design:
+    meaning: "Vivado 2025.2 crashed (Abnormal program termination (EXCEPTION_ACCESS_VIOLATION), hs_err_pid log) inside report_qor_suggestions after all metrics reports were written, reproducibly on an out-of-context DFF once an input-hold false path was set; triage matched no infra signature and classified the crash as DESIGN"
+    repair: "Classify the Abnormal program termination banner as INFRA; skip the advisory report_qor_suggestions in the out-of-context flow when the port-timing guard fired"
+  empty_netlist_unplaceable:
+    meaning: "A wiring-only design (VerilogEval Prob015_vector1, Prob042_vector4: outputs are bit selects or replication of inputs) synthesizes to zero primitive cells; out of context place_design then fails with [Place 30-494] The design is empty, which the harness graded as a design failure and sent to the repair loop (final-01, five cells, aborted). A constant-output design has cells but no timing path, so WNS/WHS are absent and the metrics gate stops it"
+    repair: "After opt_design, an out-of-context netlist with no primitive cells skips place and route, writes utilization and timing reports and completes. When Vivado reports no timing path at all, the script writes no_timing_paths.txt with the target period; the parser then records WNS equal to the period and WHS 0 (vacuously met) only if the timing report has no numeric WNS/WHS. The marker is deleted at script start so it can never be stale. The metrics gate is unchanged"
+  vivado_exit_crash_after_completion:
+    meaning: "Vivado 2025.2 ran every command of the synthesis script for an empty out-of-context netlist, printed SYNTH_COMPLETE and its own Exiting Vivado line, then crashed during shutdown (Abnormal program termination (EXCEPTION_ACCESS_VIOLATION)); the nonzero exit made a completed run with valid reports an infrastructure failure"
+    repair: "run_synthesis treats the exit code as zero only when the log shows, in order, a SYNTH_COMPLETE output line, the [Common 17-206] Exiting Vivado line and then the crash banner. A crash at any earlier point stays an infrastructure failure"
+  benchmark_artifact_contract_validation:
+    meaning: "Independent review of the staged benchmark artifact foundation reproduced UTF-16/32 acceptance under a UTF-8 contract, integer time conversion overflow, and fail-open inventory traversal"
+    repair: "Decode UTF-8 strictly, reject unsupported machine-time budgets with ArtifactError, fail closed on traversal errors, and require an externally retained artifact ID. Artifact sealing does not establish RTL correctness or OS isolation"
+  oracle_log_table_generator_unchecked:
+    meaning: "AES03 followed the existing log/antilog-table hint but used a nonprimitive generator, leaving 204 nonzero logarithms unfilled; the public examples correctly rejected its outputs"
+    repair: "Qualify the existing advice with its general prerequisite: primitive generator, complete nonzero-element coverage before repetition and field-product inverse checks. Do not supply a generator constant, reference code, S-box table or expected round outputs; preserve all gates and budgets"
+  oracle_contract_examples_omitted:
+    meaning: "Oracle generation omitted public ModuleSpec examples; AES02's controller models again recomputed neighbor logic while the independently driven example inputs that disambiguate the boundary were never included in their prompt"
+    repair: "Serialize bounded public examples with explicit index, expected outputs, held-input cycle count and fresh-init semantics; mark omitted content without silently truncating JSON; never expose hidden testbenches or reference implementations"
+  oracle_repair_without_matching_source:
+    meaning: "The repair prompt asked to repair a specific oracle failure but supplied only its error, so repeated AES oracle retries regenerated unrelated whole-AES programs without the failed source"
+    repair: "Pass the immediately preceding module-local source and matching raw-file digest with its latest error; bound and explicitly label untrusted/truncated source text, preserve three attempts and journal replay, and keep provider/storage/timeout failures out of repair"
+  oracle_reimplements_neighbor_inputs:
+    meaning: "AES exploration01's three controller oracles ignored supplied round_out/key_next inputs and recomputed neighboring AES logic, causing example mismatches and unnecessary setup-budget exhaustion"
+    repair: "State generic module-local semantics: consume declared input values, including values supplied by neighbors, rather than replacing inputs with internal computations of those neighbors; preserve the immutable behavior and example checks"
+  oracle_helper_scope_ambiguous:
+    meaning: "Golden prompt allowed helper functions without saying their definitions must be top-level; nested sub_word calls in AES exploration01 were correctly rejected by the callable-name whitelist"
+    repair: "Document top-level helper definitions and explicit data/state arguments in the prompt; keep the sandbox callable whitelist, budgets and verification unchanged"
+  codex_worker_inherits_tool_capabilities:
+    meaning: "The text-generation backend inherited enabled local MCP tools despite read-only cwd and a no-tools instruction; empty MCP overrides still left node_repl enabled in model-free checks"
+    repair: "Restrict child execution capabilities and web, ignore user config for execution while preserving auth/security environment, replace configured MCP entries with inert disabled transports and verify none remain enabled before a turn; reject tool/unknown response items as protocol infrastructure failures. This is a checked CLI configuration boundary, not universal OS isolation or a way to undo side effects after execution"
+  fixed_latency_observation_ambiguous:
+    meaning: "Three signoff4 tier3 UART/FIFO plans used fixed_latency 0 for oracles returning post-transition state; the generated driver correctly compared before the next rising edge, causing repeated child assertions"
+    repair: "Teach the existing fixed-latency observation phase explicitly in the planner prompt: 0 before the next rising edge, 1 after its register updates; distinguish scoreboard transfer age and require deterministic invalid data for compared protocol-none outputs; never rewrite the requested contract or weaken comparisons. Recurred in VerilogEval final-02 (Prob153_gshare, 2 harness cells): the golden model returned post-edge outputs at latency 0, so the golden-model prompt now says latency 0 outputs come from the state at the start of step() and the current inputs, before the update"
+  identity_walk_enters_excluded_worktrees:
+    meaning: "The gate excluded .claude/worktrees only after Path.rglob recursively enumerated their contents, so identity checks still traversed unrelated checkouts and tool outputs"
+    repair: "Prune the exact excluded subtree before traversal while preserving source selection, raw-byte hashes and sorted keys; compare against the legacy selector and observe traversal on synthetic trees, including link behavior"
   stale_companion_masks_inlined_candidate:
     meaning: "An optimized top inlined a frozen companion it no longer instantiates, while the trusted testbench still instantiated that companion directly, so the stale companion file kept that part of the testbench passing without testing the candidate"
     repair: "Before compiling, require every frozen companion the trusted testbench instantiates to stay reachable from the candidate top; otherwise reject it as a design failure with that reason inside the bounded repair loop, and name those companions in the candidate context"
@@ -130,6 +212,33 @@ harness_failures:
   spec_prompt_omits_example_budget:
     meaning: "The planner's spec prompt never stated the golden sandbox's per-example budget, so a prose request for a long-period design (tier3 uart_fifo_build: UART at DIV=868, a 8,680-cycle frame) invites full-frame examples the oracle cannot run (predicted by an offline pre-flight of tier2/tier3, not yet observed)"
     repair: "State the limit in the spec prompt (after_cycles at or below 2000) and tell the planner to check an early part of long-period behavior in examples, leaving full frames to the generated and independent testbenches"
+  host_sleep_charged_to_run_budget:
+    meaning: "The laptop slept on battery at 00:28 and hibernated until 09:25; the wall budget used time.time() and Vivado charges used time.monotonic(), both of which include suspended time on Windows, so fir16-ooc-01, explore-tier6-01 rv32i_core_build and explore-tier6-02 aes128_core_build all ended budget_exhausted after about 32,000 s, an infrastructure event charged as design budget"
+    repair: "Measure run budgets with an awake clock that excludes suspend (QueryUnbiasedInterruptTime on Windows, CLOCK_MONOTONIC elsewhere); tool timeouts may stay on wall time because a timeout is already infrastructure"
+  golden_table_setup_exhausts_step_budget:
+    meaning: "The AES round oracle ran out of the sandbox's single 200,000-line budget (setup, init and every step shared it), then a second attempt computed a wrong ciphertext, so tier6 aes128_core_build ended module_failed with two oracle attempts and a supplied spec that cannot be replanned (explore-tier6-01)"
+    repair: "Give module setup and init() their own larger budget, name the phase in the budget error, and tell the oracle prompt to derive constant tables once in init() with an efficient loop rather than per step or from memory"
+  met_hold_counted_as_regression:
+    meaning: "A CORDIC candidate registered its rounded outputs (setup WNS -1.757 -> -0.279 ns, testbench passed) but its hold slack fell from +0.086 to +0.020 ns, more than the 0.05 ns progress tolerance, so it was not timing progress although hold was still met (explore-tier6-07 cordic_build iteration 1)"
+    repair: "A candidate whose hold slack is non-negative meets the hold condition of timing progress; the tolerance only limits trading setup for failing hold"
+  fixed_synthesis_timeout_blocks_heavy_designs:
+    meaning: "The AES-128 baseline passed its independent testbench, then synthesis hit the fixed 900 s per-call timeout twice (about 20 S-box ROMs, 4 GB peak, ten minutes before timing optimization); infrastructure classification was correct but no entry could ask for more (explore-tier6-05)"
+    repair: "Make the synthesis timeout a run setting (synthesis_timeout_minutes; default 15, still capped by the remaining tool budget) that meta.yaml and run.py can raise, and let an entry raise its exploration tool and wall budgets"
+  critical_path_hidden_from_planner:
+    meaning: "CORDIC met timing internally (register-to-register +0.585 ns) but its worst path ran from the engine register through the output rounding adder to the sin_out pin (WNS -1.757 ns); the planner never saw the path and twice rewrote the adder's form, which cannot beat pad and clock-insertion delay, and the timing doctor had no port-path category (explore-tier6-03 cordic_build)"
+    repair: "Name the worst violated setup path (source, destination, slack, levels, port endpoints from Vivado's labels) in the planner's advisory evidence, and give the timing doctor a port_path category whose surgery drives the port from a register at the same latency"
+  editable_unit_inventory_overflow:
+    meaning: "The RV32I core's editable unit (six modules + top) built and met timing, then the run crashed with a traceback because the advisory module inventory, pretty-printed, exceeded the 16,000-character candidate context; the complete unit text is the generation seed, so nothing required failing (explore-tier6-03 rv32i_core_build)"
+    repair: "Compact the inventory JSON, then list child modules by port names, then by name, always keeping the top's full interface; fail only when even names do not fit"
+  golden_attempts_too_few_for_table_math:
+    meaning: "With budgets fixed, the AES round oracle's first attempt built inverses as a^254 by 254 sequential multiplications (about 5 million traced lines) and the second built log tables with a slip (value ^ (value >> 1) instead of value ^ xtime(value)), giving S(01)=0x42; two attempts ended the build of a supplied spec that cannot be replanned (explore-tier6-04)"
+    repair: "Give each module's oracle three attempts (a disputed planner-written spec still returns to the planner after two), and name efficient table constructions in the oracle prompt"
+  golden_step_budget_below_wall_timeout:
+    meaning: "With setup fixed, the AES round oracle exhausted the 200,000-line step budget: it needs about 5,600 traced lines per cycle (670,000 for 120 cycles) yet runs them in 0.28 s, so the line budget, not the worker's 5 s wall timeout, rejected a correct-sized model (explore-tier6-03)"
+    repair: "Size the step budget from measured cost against the wall timeout (2,000,000 lines, about 1 s); the timeout remains the infrastructure bound"
+  incomplete_block_preferred:
+    meaning: "A generated candidate reached the ladder as an unclosed draft (fir16_sym_core ending in '// placeholder', no endmodule) and was rejected before any tool ran (fir16-long-01 iteration 2); when a reply holds a draft and then a complete version of the same module, the first-block rule would pick the draft. The raw reply was not retained (Codex runs ephemeral), so which case occurred is unknown"
+    repair: "Never extract a block whose module/endmodule count does not balance when a complete block exists; keep first-wins among complete blocks; retain raw replies for diagnosis (TASKS)"
   fence_tag_drops_generated_modules:
     meaning: "A model fenced its Verilog with a tag other than lowercase verilog/systemverilog/sv (Verilog, v, SystemVerilog), so extraction fell back to the first module...endmodule span and silently dropped every later module of a multi-module answer"
     repair: "Match fence tags case-insensitively and accept v; then accept any fenced block that starts a module before falling back to raw spans; never return a partial multi-module answer as if complete"
@@ -139,9 +248,60 @@ harness_failures:
   evaluator_verdict_format_rejects_verified_gain:
     meaning: "An evaluator wrote its verdict as 'Recommendation: ACCEPT', '**Recommendation:** ACCEPT' or '**ACCEPT**' instead of the heading-newline form; the parser read REJECT, so a deterministically verified improvement was discarded"
     repair: "Read the first verdict token after a Recommendation heading or label, ignoring emphasis and punctuation; keep the count-consistency and unresolved-criterion vetoes unchanged"
+  one_sided_handshake_has_no_oracle_shape:
+    meaning: "A UART transmitter consumes a valid/ready stream but drives a plain serial line, so it fits neither generated-oracle shape (scoreboard needs both channels, fixed_latency forbids handshake ports); the planner cycled through all three wrong taggings and the spec failed lint (explore-tier3-04 uart_fifo_build)"
+    repair: "State in the spec prompt and the shape error that scoreboard fits only one input and one output channel and every other module uses fixed_latency with all ports none, its neighbors' connected ports none too, the handshake described cycle-exactly in behavior"
+  golden_augmented_subscript_rejected:
+    meaning: "The oracle sandbox refused every augmented assignment on a subscript, so a natural per-cycle model writing state[\"count\"] -= 1 was rejected and the module's last oracle attempt was lost (explore-tier3-03 uart_fifo_build, uart_tx)"
+    repair: "Rewrite name[constant] op= value and name[name] op= value as a plain assignment through the same bounded arithmetic; keep refusing other targets with a message naming the supported forms"
+  fixed_latency_handshake_found_at_oracle:
+    meaning: "A planner-written spec paired compare_mode fixed_latency with valid_ready ports; the generated-testbench shape rule refused it only when the oracle ran, costing one of the module's two oracle attempts (explore-tier3-03 uart_fifo_build, uart_tx)"
+    repair: "Check every generated-oracle module against the testbench generator's shape rules in the planner spec-repair loop, with a hint naming the two valid shapes"
+  repeated_failure_hides_other_rules:
+    meaning: "The fixer receives the first 15 testbench FAIL lines; in tier5 axil_regs_build, after a repair broke the design, one rule (rdata value) filled all 15 and hid four other violated AXI rules (awready/wready independence, bvalid with the update, ctrl) from the next repair (explore-tier5-01; the repair loop itself was wrongly entered, see io_overutilization_sent_to_fixer)"
+    repair: "Report each distinct failure kind once (digits ignored) with its count, up to 15 kinds, so every violated rule reaches the repair prompt"
+  port_attribute_rejected:
+    meaning: "A candidate put a legal Verilog attribute instance on a port declaration ((* IOB = \"TRUE\" *) on fir8's registered output, to pack it into the I/O block against pad-dominated timing); the interface parser refused it as an unsupported port declaration before any tool ran (explore-fir8-02, three iterations)"
+    repair: "Skip attribute instances before reading a port declaration; they never change direction, width, signedness or name, and the RTL safety gate still applies"
+  rejection_reason_hidden_from_planner:
+    meaning: "When no candidate survived the ladder, progress.md said only that, so the planner, which reads progress but not the off-by-default proposal feedback, re-proposed the same rejected change three times (explore-fir8-02 iterations 3-5)"
+    repair: "Write each candidate's bounded rejection reason and the tried instruction into the progress entry the planner reads"
+  payload_ports_tagged_valid_ready:
+    meaning: "The planner tagged a scoreboard FIFO's payload ports (in_data, out_data) protocol valid_ready, so no protocol none output was left for examples to check; the error said only 'all data output ports' and three repairs repeated the mistake (explore-tier3-02 uart_fifo_build)"
+    repair: "Name the required protocol none outputs in the example error and state in the spec prompt that only handshake ports are valid_ready and payload ports are none"
   spec_lint_failure_skips_planner_repair:
     meaning: "In build mode from a prose request, the planner named the top after its only module, which the prompt never forbade; structural lint rejected the spec and the run ended at once with spec_lint_failed, with no feedback round (tier1-campaign-01 debouncer_build)"
     repair: "State the structural rules (top_name differs from every module name, binding rules) in the spec prompt; give a planner-written spec its lint or load errors back for at most max_fix_attempts repairs; a supplied JSON spec stays law and fails at once"
+  requested_top_not_enforced:
+    meaning: "A build request fixes the top module name (meta.yaml top, run.py --top) because its trusted testbench instantiates it, but a planner-written spec could choose another top_name and the mismatch surfaced only at elaboration (found while qualifying tier3 uart_fifo_build)"
+    repair: "In the planner spec-repair loop, require top_name to equal the requested top (or, for a single-module build, the only module's name) and say why"
+  agy_exits_late_after_result:
+    meaning: "The Antigravity CLI build installed November 25 printed its result event about 3 s into a trivial Flash-low call, then kept running for about 100 s before exiting; the bridge waited for exit, so a trivial call took 105 to 138 s against the 180 s call limit, and real prompts would have timed out as infrastructure stops measuring the CLI, not the model"
+    repair: "scripts/agy_bridge.py reads agy's stream line by line and returns at the result event, then ends agy and its children (taskkill /T on Windows); an agy that exits without a result is still reported with its stderr. Live: the same trivial call takes 6 s and leaves no agy process. flash-03 was re-frozen on the fixed runtime before any cell ran"
+  agy_endpoint_uses_tools:
+    meaning: "The Antigravity CLI runs models as agents: with --sandbox and permission deny rules, Gemini 3.8 Flash-high still web-searched the task name ('VerilogEval mt2015_q4'), ran shell commands and took 6 minutes for one planner prompt (November 21 probe); flash-01 ran with these tools available"
+    repair: "scripts/agy_bridge.py refuses any reply whose stream contains a tool call (exit 1, MODEL_TOOL_USE); the command backend maps it to MODEL_TOOL_USE, the client never falls through to another backend on it, and a run or single call ends as a failed cell (status model_tool_use, kind design), never excluded infrastructure; flash-01 is described as tool-enabled and not compared with Codex arm A; flash-02 withdrawn before any cell"
+  multi_module_plan_without_trusted_tb:
+    meaning: "A prose build with no trusted integration testbench (VerilogEval final-02, Prob131_mt2015_q4, 4 harness cells) got a multi-module plan; every module was generated and verified, then the build stopped with build_blocked 'Multi-module build requires trusted integration testbench'"
+    repair: "Check it in the planner spec-repair loop: without a supplied testbench the spec must have exactly one module, and the error names the modules; repairs stay bounded by max_fix_attempts and a supplied testbench still allows multi-module plans. A supplied multi-module JSON spec without a testbench fails the same check at lint (spec_lint_failed) before any module is generated"
+  unnamed_example_input_error:
+    meaning: "An example error said only that inputs must be declared non-clock input ports, without naming the stray keys, so planner repairs kept the wrong names (explore-tier3-06 uart_fifo_build, sync_fifo and uart_tx)"
+    repair: "Name the keys that are not inputs of the module and list the allowed input names"
+  partial_spec_in_repair:
+    meaning: "A planner repair returned JSON without a modules list (only part of the spec), which failed to load and spent the last repair (explore-tier3-05 and -06 uart_fifo_build)"
+    repair: "Tell the planner in the load error to return the complete design_spec object with top_name, modules, connections and external_ports"
+  spec_example_values_skip_planner_repair:
+    meaning: "The planner wrote spec examples as per-cycle lists instead of held integer values; structural lint did not check example values, so the run ended at golden qualification with invalid_spec_examples and no repair round (tier1-campaign-04 debouncer_build)"
+    repair: "Check a planner-written spec's examples with the oracle's own validate_examples inside the spec-repair loop and return the errors to the planner; state in the spec prompt that every example value is a single integer held constant for after_cycles steps from the reset state"
+  oracle_example_dispute_ends_build:
+    meaning: "A planner-written spec's behavior text and its own examples disagreed: uart_tx's prose accepts each presented byte and starts transmitting at once, while its examples expect idle tx=1 after 1 and 2 cycles. Both generated oracles followed the prose and failed qualify_against_examples with the same mismatches, so the module failed (module_failed) and the run ended although the spec was planner-written and repairable (explore-tier3-05 uart_fifo_build)"
+    repair: "For a planner-written spec only, when a module's oracle attempts are exhausted and the last two failed only with example mismatches (no sandbox, validation or timeout error, no infra), return to the planner spec-repair step with the module, the bounded mismatch lines and an instruction to make the behavior text and the examples agree, then relint and rebuild every module from the new spec; planner lint repairs and disputes share one max_fix_attempts counter; a supplied JSON spec stays law and fails as before; infra never counts as a dispute"
+  hierarchy_inlining_as_optimization:
+    meaning: "With frozen children, the planner proposed copying a child's logic into the editable top unchanged; Vivado flattens hierarchy during synthesis, so the routed design and its metrics were identical and the iteration was spent for nothing (explore-tier4-01: 2 of 5 rr_regfile and crc16_stream proposals)"
+    repair: "Tell the planner and the candidate boundary that inlining by itself changes nothing after synthesis; inline only to make a stated logic change across the boundary, such as sharing or removing state or simplifying a cross-module path"
+  frozen_children_block_build_optimization:
+    meaning: "After a build, the optimize loop could edit only the mechanical top wrapper while every generated child stayed a frozen companion, so the only lever was copying child logic into the wrapper; in explore-tier4-01 all 8 post-build candidates (crc16_stream, rr_regfile, spi_master) verified and met timing but none could change the LUT count"
+    repair: "When the build's trusted independent integration testbench (the supplied testbench that instantiates the top) is present, hand the optimizer one editable source holding every generated child module and the mechanical top (children first, top last, the verified text) with no frozen companions; the top's interface, reset, clocking and latency rules stay the contract, candidates must still define the top, modules the trusted testbench instantiates directly must stay defined and live-reached from the top, and the trusted testbench plus every other gate verifies each candidate; per-child generated oracles are never claimed for changed children. Without a trusted testbench keep the children frozen and record why in the harness facts"
   unpinned_model_identity:
     meaning: "Runs called the Codex CLI default model without naming it, and the CLI does not report the model, so a change of the desktop default would silently change the model inside one cohort"
     repair: "Let a run name its model (RunConfig.model, run.py --model); route every role through it, save it in config.json, and record it as the requested model identity in the bench cohort"
@@ -151,6 +311,9 @@ harness_failures:
   concurrent_bench_drops_history:
     meaning: "run_tier reads the curriculum history when a campaign starts and rewrites the whole file when it ends, so a second bench finishing in between had its record silently overwritten (found by reading the runner while planning parallel work)"
     repair: "Keep the history bytes read at the start; under a short exclusive lock, rewrite only if they are unchanged; otherwise fail closed as infrastructure (exit 3) with the record kept in the campaign's summary.json"
+  cross_tier_benches_serialized:
+    meaning: "The concurrent_bench_drops_history repair failed a campaign closed whenever the history changed at all, so benches of different tiers (tier1 and tier2 at once) could not share a machine: the later one exited 3 with its verdict kept out of the history, although governance for a tier reads only that tier's earlier records (user request, Oct 30)"
+    repair: "Under the same lock, commit when the history has only grown since the campaign started (its start bytes are an exact prefix of the current bytes) and every record appended meanwhile is for a different tier; append the record after the current bytes without re-serializing earlier records; a rewritten history or a same-tier record appended meanwhile still fails closed (exit 3)"
   io_dominated_timing_metric:
     meaning: "With I/O buffers and zero external delay, every harness-flow critical path of the six winners ends at an OBUF (101-107.5 MHz) while their logic closes at 181.8-425.5 MHz out of context, so candidate timing comparisons mostly measured pad delay (fmax-characterization-01; the 31-LUT counter: WNS +0.126 ns, worst register-to-register path +1.460 ns)"
     repair: "Keep acceptance on the full I/O-constrained WNS/WHS; also report register-to-register setup slack from the same routed design (guarded, since report_timing errors with no registers, Vivado 12-4739) as an advisory metric shown to the planner and evaluator"
@@ -181,6 +344,9 @@ harness_failures:
   infeasible_incumbent_blocks_recovery:
     meaning: "A smaller timing-invalid incumbent or candidate outranks a timing-closed design"
     repair: "Require verified timing feasibility before objective comparison; record timing recovery separately from area or power gain"
+  infeasible_progress_discarded:
+    meaning: "With a timing-infeasible incumbent (fir8 seed WNS -9.918 ns at 100 MHz), verified candidates that were still infeasible but much closer (WNS -3.797, -2.766) were all rejected because none met timing, so every iteration restarted from the seed and the run exhausted its budget without retaining any progress"
+    repair: "While the incumbent is timing-infeasible, promote a verified, still-infeasible candidate with strictly better setup WNS and hold not worse beyond a small tolerance as timing_progress so the next iteration builds on it; a timing-feasible candidate always outranks an infeasible one, a feasible incumbent is never replaced by an infeasible candidate, and final timing_closed and curriculum acceptance still require closure"
   missing_editable_hierarchy_boundary:
     meaning: "An optimizer redeclared frozen companion RTL because generation and repair omitted dependency evidence"
     repair: "Provide the editable top and immutable companion identities to generation, repair and timing surgery; keep duplicate-module rejection"
@@ -476,6 +642,84 @@ harness_failures:
   missing_sync_reset_pulse_stimulus:
     meaning: "Startup-only reset stimulus missed asynchronous history and validity changes under a synchronous-reset contract"
     repair: "Pulse reset wholly between sampling edges for synchronous contracts only; retain oracle and queue state and compare normal transfers after deassertion"
+  mistyped_endpoint_routes_to_codex:
+    meaning: "A model whose backend prefix was misspelled (olama.x for ollama.x), or any dotted model while the endpoints file was unreadable, was silently treated as a plain alias and sent to Codex as codex.olama.x (docs review, Oct 29)"
+    repair: "Resolve the model before the run starts and again on every call: a dotted model with an unreadable endpoints file, or a prefix within one edit (two for names of six or more letters) of a built-in backend or defined endpoint, is a configuration error naming the near match; nothing is sent to Codex"
+  command_endpoint_tokens_reported_as_zero:
+    meaning: "Command endpoints return no usage, so budget.json and the run reports showed zero tokens for runs that spent real tokens, indistinguishable from a run that used none (docs review, Oct 29)"
+    repair: "Count successful calls whose backend reported no usable usage as calls_without_token_usage in budget.json and show the token totals as incomplete when it is nonzero; never invent an estimate"
+  maximize_freq_ranks_on_pad_delay:
+    meaning: "maximize_freq compared timing-feasible candidates on the full I/O-constrained WNS, which mostly measures OBUF pad delay, so a candidate with much better logic timing could lose or tie on a pad path it cannot change (docs review, Oct 29; follows io_dominated_timing_metric)"
+    repair: "Keep acceptance, feasibility, infeasible ranking and timing_progress on the full wns_ns/whs_ns; only the maximize_freq objective comparison between two timing-feasible verified designs uses reg2reg_wns_ns when both have a finite value, otherwise wns_ns for both (never mixed), in improvement_kind, best-of-N selection and the fixed contract wording"
+  dead_bench_lock_blocks_until_stale:
+    meaning: "A bench killed inside the history commit left results.jsonl.lock, and every bench in the next ten minutes still exited 3 although the lock's owner was gone (docs review, Oct 29; follows stale_history_lock_blocks_benches)"
+    repair: "Write the owning process ID into the lock; a lock whose recorded owner is no longer running (checked without signalling it, OpenProcess on Windows) is stale at once; a lock with no readable owner keeps the ten-minute rule"
+  gate_jobs_zero_silently_serial:
+    meaning: "tools/tier0_gate.py accepted --jobs 0 or a negative value and quietly ran the bench one entry at a time instead of rejecting the argument (docs review, Oct 29; follows backend_configuration_rough_edges)"
+    repair: "Validate --jobs as a positive integer in argparse for every tool that takes it, so 0 is a usage error before anything runs"
+  equal_lut_ff_saving_discarded:
+    meaning: "Under minimize_luts a verified, timing-feasible candidate with equal LUTs and strictly fewer flip-flops was not an objective improvement, so a real saving was discarded once LUTs sat at their floor (explore-tier4-01 crc16_stream_build iteration 3: 16 LUT, 34 -> 18 FF, REJECTED; explore-tier4-02 iteration 2: 16 LUT, 34 -> 19 FF, REJECTED)"
+    repair: "Between two verified timing-feasible designs, minimize_luts compares (lut_used, ff_used) lexicographically and minimize_ffs compares (ff_used, lut_used): equal primary with a strictly lower secondary is an objective improvement, a worse primary never is, and a missing or non-finite secondary gives no tie-break; apply it in improvement_kind, best-of-N selection, the fixed contract and the planner and evaluator prompts; maximize_freq and minimize_power are unchanged"
+  rtl_comment_literal_hides_forbidden_tasks:
+    meaning: "Comment delimiters inside Verilog strings hid later forbidden tasks from safety scanning"
+    repair: "Tokenize strings and comments in source order and regress forbidden-task, directive and pragma hiding"
+  baseline_repair_skips_companion_check:
+    meaning: "Baseline repair omitted the frozen-companion gate applied to normal and doctor candidates"
+    repair: "Apply the same companion guard before any repaired-source flow and retain failure evidence"
+  companion_instance_does_not_prove_top_behavior:
+    meaning: "Textual instances in dead or disconnected logic do not establish that a separately tested companion implements the optimized top"
+    repair: "Use a mechanically checked transparent-wrapper boundary when qualification depends on child-only behavior; otherwise require independent top behavior checks"
+  tool_id_masks_host_failure:
+    meaning: "Tool-ID precedence classified real permission failures and mixed host-failure logs as design bugs"
+    repair: "Recognize decisive host failures across the log without treating routine informational license acquisition as infrastructure"
+  board_simulation_outcome_not_proven:
+    meaning: "Board-suite simulation ignored XSIM exit and counted elaboration or missing-verdict failures as killed behavioral faults"
+    repair: "Require explicit process completion and assertion failure for fault detection; infrastructure and missing evidence never count"
+  board_image_assumed_without_programming:
+    meaning: "Hardware checking could label a requested bitstream as programmed without a programming receipt"
+    repair: "Require a successful programming record matching the selected payload before reporting verified board image identity"
+  golden_hardening_not_integrated:
+    meaning: "Handoff and README described pending worker-branch code and tests as integrated into the frozen harness"
+    repair: "Integrate the exact reviewed changes without reverting subsequent guards, then derive counts and gates from the actual combined source"
+  evaluator_requires_child_latency_annotation:
+    meaning: "In the whole-design edit scope the evaluator failed a verified, timing-met candidate (spi_master 19 -> 17 LUT) for a missing // @latency annotation on the child spi_master_core, a criterion the contract never states; only the top carries an annotation rule (explore-tier4-02 iteration 3)"
+    repair: "State in the edit-boundary contract that child latency fields and annotations bind nothing on their own and a missing or changed child annotation is never a failed criterion"
+  fir8_testbench_input_race:
+    meaning: "tier2 fir8's testbench wrote the DUT input and reset with blocking assignments at the clock edge, so which edge sampled the impulse depended on simulator event order; under xsim the supplied seed always failed its own testbench and every run depended on a model 'repair' shifting the design to match, until sign-off pass 3 got a repair that broke the latency contract (signoff3-t2-01, 3/4)"
+    repair: "Drive testbench inputs 1 ns after the edge and define the expected timing from the seed's real behavior; the seed now passes in plain xsim and a coefficient mutant fails"
+  chip_top_pad_floor_exceeds_period:
+    meaning: "At 150 MHz on xc7a35tcpg236-1 a register-to-output-pin path costs about 4.6 ns of clock insertion before launch plus about 3 ns through the output buffer, more than the 6.67 ns period, so no RTL can close the chip-top I/O-constrained WNS; tier5 fir16_sym spent a whole run (explore-tier5-01) and six iterations of fir16-long-01 chasing full_q -> in_ready (worst path 4.877 ns data + 4.636 ns source clock delay, WNS -2.881 ns) while register-to-register slack was -1.433 ns"
+    repair: "Run stream blocks above the pad floor out of context (meta implementation: out_of_context), where acceptance covers routed internal paths; report the floor rather than spending iterations on port paths"
+  io_overutilization_sent_to_fixer:
+    meaning: "The tier5 AXI4-Lite top axil_regs passed its independent testbench, then place_design failed with ERROR [Place 30-415] IO overutilization (165 I/O ports, 106 user I/O on xc7a35tcpg236-1) and one [Place 30-68] not-placed line per buffer; triage called it a design failure, so the baseline fix loop sent a correct design to the generator three times and the repairs broke it (the final unit failed five testbench rules) (explore-tier5-01 and explore-tier5-02 axil_regs_build)"
+    repair: "Classify a log with ERROR [Place 30-415] (its Place 30-68 and 30-99 consequences included) as failure_kind target, after host failures: never the generator fix loop or the Timing Doctor, never a design mutation, retry or fix attempt; commit it like a design outcome, stop the run as target_infeasible with the port count and package capacity, and count the curriculum entry as a FAIL of its configuration with that reason, not as infrastructure"
+  chip_top_flow_for_soc_block:
+    meaning: "The only implementation flow treated every top as a chip top, placing each port bit on a package pin through an I/O buffer, so a block meant to sit inside an SoC (the AXI4-Lite slave axil_regs, 169 port bits) could never be implemented on the 106-I/O Basys 3 package, and its slack would mostly measure pad delay (explore-tier5-01 and explore-tier5-02 axil_regs_build)"
+    repair: "Let an entry opt in with implementation: out_of_context (run.py --implementation out_of_context, a harness choice, never model text): synth_design -mode out_of_context with no I/O buffers, the clock created at the target period on a global buffer (HD.CLK_SRC), opt/place/route out of context, I/O ports left unconstrained so WNS and WHS cover the routed internal paths; record the mode in the run config, checkpoint, cache context and contract evidence"
+  gate_limited_to_tiers_zero_and_one:
+    meaning: "tools/tier0_gate.py defined budgets only for tiers 0 and 1, so the final formal sign-off pass could not gate tiers 2 to 6 at all; --tier 2 was a usage error"
+    repair: "Give tiers 2 to 6 the tier1 per-entry budgets (best_of_n 1, 30 model calls, 40 tool minutes, 60 wall minutes, one infra retry, iterations from each entry's meta.yaml), the same budgets tools/explore.py used, and leave the tier0 and tier1 budget dictionaries byte-identical"
+  gate_frequency_overrides_entry_meta:
+    meaning: "The gate always passed --target-freq-mhz 100 to run.py bench, and the runner applied CLI overrides after each entry's meta.yaml, so tier2 fir8 and tier5 fir16_sym_build (meta target_freq_mhz 150.0) would have been gated at 100 MHz, a weaker contract than the entry states"
+    repair: "The gate passes no frequency; an entry's own meta.yaml target_freq_mhz (validated as a positive finite number) wins over any bench --target-freq-mhz, which only applies to entries that declare none; the effective frequency is in each entry's recorded config and so in the cohort"
+  held_under_old_runtime_blocks:
+    meaning: "After a harness implementation file (data/taxonomy.yaml) changed, tier 1's hold from sign-off pass 3 belonged to another cohort, yet the gate's governance-only check would still refuse to re-gate tier 0 beneath it"
+    repair: "A higher tier also stops blocking when its held campaign's frozen implementation hashes (runtime.json) differ from the current harness files; an unreadable record still blocks"
+  entry_budgets_ignored_by_bench:
+    meaning: "A heavy entry could raise its budgets only for exploration (meta.yaml explore_budgets, read by tools/explore.py alone), so a gate or bench would run AES-128 and RV32I at the default 40 tool minutes and 60 wall minutes that explore-tier6-05 and explore-tier6-06 had already shown are too short"
+    repair: "Rename explore_budgets to budgets (keys model_calls, tool_minutes, wall_minutes; positive numbers; model_calls an integer), validated in the runner's metadata check; both tools/explore.py and the bench apply them to that entry only, over the tier defaults, and the effective limits are in the entry's recorded config and cohort"
+  held_under_old_governance_blocks:
+    meaning: "After the governance code (curriculum/runner.py) changed, tier 1's hold from sign-off pass 1 belonged to another cohort, yet the gate's higher-held-tier rule would still refuse to re-gate tier 0 beneath it"
+    repair: "A higher tier blocks only while its latest full-tier record is held under the current governance hash"
+  dead_worker_pool_recorded_as_fail:
+    meaning: "When the bench's worker processes died (sign-off pass 1 was stopped by hand mid tier 2), every entry's future raised BrokenProcessPool, each became an ordinary FAIL, and the campaign entered the history as a real 0/4 verdict although no design was judged"
+    repair: "A worker process that terminates abruptly is infrastructure: record the entry as infra_blocked so the campaign gets no verdict and nothing enters the history"
+  stale_held_record_trusted_by_signoff:
+    meaning: "Sign-off pass 2's tier 0 gate refused to run (a higher tier was held) and recorded nothing, but the driver read tier 0's older held record as that campaign's verdict and moved on"
+    repair: "The sign-off driver trusts a verdict only when its campaign added a new full-tier history record; a refusal stops the pass and an infrastructure no-verdict is retried"
+  stale_held_record_blocks_lower_gates:
+    meaning: "The gate refused a tier whenever any earlier history record of a higher tier was ever held, so once a higher tier had been held (or held and then lost), the lower tiers could never be gated again, even after that higher tier was re-gated on the changed harness and was no longer held"
+    repair: "Held is a state, not an event: a higher tier blocks the gate only while its latest full-tier record is held. Re-gating that higher tier on the changed harness (its own gate) starts its new cohort and releases the lower tiers; a subset run never does"
 
 methodology:
   "TIMING-6":
@@ -502,31 +746,3 @@ methodology:
   "LUTAR-1":
     meaning: "LUT on a clock or combinational clock path"
     advice: "Never gate or generate clocks in logic; plan clock enables instead"
-
-  rtl_comment_literal_hides_forbidden_tasks:
-    meaning: "Comment delimiters inside Verilog strings hid later forbidden tasks from safety scanning"
-    repair: "Tokenize strings and comments in source order and regress forbidden-task, directive and pragma hiding"
-
-  baseline_repair_skips_companion_check:
-    meaning: "Baseline repair omitted the frozen-companion gate applied to normal and doctor candidates"
-    repair: "Apply the same companion guard before any repaired-source flow and retain failure evidence"
-
-  companion_instance_does_not_prove_top_behavior:
-    meaning: "Textual instances in dead or disconnected logic do not establish that a separately tested companion implements the optimized top"
-    repair: "Use a mechanically checked transparent-wrapper boundary when qualification depends on child-only behavior; otherwise require independent top behavior checks"
-
-  tool_id_masks_host_failure:
-    meaning: "Tool-ID precedence classified real permission failures and mixed host-failure logs as design bugs"
-    repair: "Recognize decisive host failures across the log without treating routine informational license acquisition as infrastructure"
-
-  board_simulation_outcome_not_proven:
-    meaning: "Board-suite simulation ignored XSIM exit and counted elaboration or missing-verdict failures as killed behavioral faults"
-    repair: "Require explicit process completion and assertion failure for fault detection; infrastructure and missing evidence never count"
-
-  board_image_assumed_without_programming:
-    meaning: "Hardware checking could label a requested bitstream as programmed without a programming receipt"
-    repair: "Require a successful programming record matching the selected payload before reporting verified board image identity"
-
-  golden_hardening_not_integrated:
-    meaning: "Handoff and README described pending worker-branch code and tests as integrated into the frozen harness"
-    repair: "Integrate the exact reviewed changes without reverting subsequent guards, then derive counts and gates from the actual combined source"

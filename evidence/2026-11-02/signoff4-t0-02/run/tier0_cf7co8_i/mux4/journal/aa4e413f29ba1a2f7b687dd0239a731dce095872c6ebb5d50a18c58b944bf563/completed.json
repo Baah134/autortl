@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_1:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 1,
+    "instruction": "Replace the `case (sel)` data selection with two 2:1 muxes controlled by `sel[0]`, followed by a 2:1 mux controlled by `sel[1]`, and keep the existing `posedge clk` register and synchronous `rst`-to-zero behavior. Preserve the exact input-to-output cycle behavior and verify all four select values, reset cycles, and high bits using the frozen testbench and gates. Check routed LUT and FF counts plus setup WNS and hold WHS; retain the candidate only if it passes all gates and strictly improves the LUT objective.",
+    "candidates": [
+      {
+        "iteration": 1,
+        "mutation": "standard",
+        "instruction": "Replace the `case (sel)` data selection with two 2:1 muxes controlled by `sel[0]`, followed by a 2:1 mux controlled by `sel[1]`, and keep the existing `posedge clk` register and synchronous `rst`-to-zero behavior. Preserve the exact input-to-output cycle behavior and verify all four select values, reset cycles, and high bits using the frozen testbench and gates. Check routed LUT and FF counts plus setup WNS and hold WHS; retain the candidate only if it passes all gates and strictly improves the LUT objective.",
+        "generated_source_sha256": "ad56a9e455343f837ca49ea079cc866433cc18fbb49da0b381fff83dd5786765",
+        "final_source_sha256": "ad56a9e455343f837ca49ea079cc866433cc18fbb49da0b381fff83dd5786765",
+        "generated_code_hash": "20ff370d3c4d62f0",
+        "final_code_hash": "20ff370d3c4d62f0",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.579,
+          "whs_ns": 0.057,
+          "lut_used": 8,
+          "ff_used": 8,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.04,
+          "total_power_w": 0.111
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t0-02\\tier0_cf7co8_i\\mux4\\iter_001\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t0-02\\tier0_cf7co8_i\\mux4\\iter_001\\cand_standard\\synth.tcl",
+          "sha256": "ac5fe4330582dbba640f72cfb2f0b91a66225fe289d05e2e93bb881dc69cfa27"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t0-02\\tier0_cf7co8_i\\mux4\\iter_001\\cand_standard\\mux4.v",
+          "sha256": "b43688a783bd6a642f37d51c2eb640b96ed871ec93207d857fa2bf94686f2d87"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": "ad56a9e455343f837ca49ea079cc866433cc18fbb49da0b381fff83dd5786765"
+  },
+  "artifacts": {}
+}

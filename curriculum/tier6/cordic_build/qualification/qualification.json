@@ -1,0 +1,107 @@
+{
+  "entry": "curriculum\\tier6\\cordic_build",
+  "top": "cordic_sincos_tb",
+  "testbench_sha256": "06dcda38a5298f97ee9ddb045dc93e61191fe691fec2b69834aef83b7424032f",
+  "runs": [
+    {
+      "case": "reference",
+      "why": "control",
+      "expect_pass": true,
+      "verdict": "TEST PASSED",
+      "assertion_detected": false,
+      "as_required": true,
+      "source_sha256": "2fd15fd2028fcc1789bd19a083b87e31cc3cfdab44c578b41c9544796e4d9719"
+    },
+    {
+      "case": "atan_entry_3_off_by_one",
+      "why": "one arctangent table entry is rounded the wrong way (20754 instead of 20753)",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 293 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "ccf86f0d8ee16171bbb5fefa0f329a0a6fa341c35d0e4332f863705634ff399f"
+    },
+    {
+      "case": "atan_entry_1_digits_swapped",
+      "why": "a transcription error in the second table entry (77736 instead of 77376)",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 6724 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "3159cd8c4db75fcabb9093558e7ee6a233c4e34c409e76d319b56f80a744b7bc"
+    },
+    {
+      "case": "logical_shift_of_y",
+      "why": "y is shifted logically, so negative y feeds a huge positive term into x",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 3596 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "82d944f24f0c6f5f53b4c4b1cd8737fe3098c3d30eee83b64f5735204257a1b5"
+    },
+    {
+      "case": "zero_residual_rotates_down",
+      "why": "the direction test uses z > 0, so a zero residual angle rotates the wrong way",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 36 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "629447d1269a0f62d8e8dc412c967217180e7c5c76f93720936d9a8d9c25c1a2"
+    },
+    {
+      "case": "fold_on_sign_not_quadrant",
+      "why": "the half-turn fold is chosen by the sign bit instead of quadrants 01 and 10",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 3264 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "5838971bde668398822d672a8e3e094bc2368820cab63248d74594a68235087c"
+    },
+    {
+      "case": "gain_constant_off_by_one",
+      "why": "the CORDIC gain compensation K is truncated (39796) instead of rounded (39797)",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 1568 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "196636fc0d941540d8721d9863e369ee6718ce7c08e8371adafe01f4d2ebecbb"
+    },
+    {
+      "case": "z0_not_scaled",
+      "why": "the 16-bit angle is sign-extended into z instead of scaled by 16 to 2^-20 turn units",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 6743 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "e458e73178be900ea3f01779cc9b7852a0afe4831e8468cec59c201dd3422a5b"
+    },
+    {
+      "case": "cos_truncates_instead_of_rounding",
+      "why": "cos_out drops the round-half-up offset and truncates",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 1289 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "aab1652be211b7ca8711e8c19bcf4cf05d6246deded4697e57e883e4734fd127"
+    },
+    {
+      "case": "fifteen_iterations",
+      "why": "the engine stops after fifteen micro-rotations and raises out_valid one edge early",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 13549 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "80051c0da2c39d2d12306f0c8fa4abfe529b071b4577ed704110182d12e6b7ae"
+    },
+    {
+      "case": "y_update_sign_flipped",
+      "why": "a positive residual rotates y the wrong way",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 6760 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "3790b0d55d3357013bd7c175e2cd4b758875ad2dd3b02f86af401e2227ccee21"
+    }
+  ],
+  "qualified": true
+}

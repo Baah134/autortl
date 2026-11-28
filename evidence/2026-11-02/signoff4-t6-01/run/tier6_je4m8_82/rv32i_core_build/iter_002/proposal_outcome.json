@@ -1,0 +1,45 @@
+{
+  "candidates": [
+    {
+      "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\rv32i_core_build\\iter_002\\cand_standard",
+      "cache_hit": false,
+      "final_code_hash": "a3d7d77e35b35b2d",
+      "final_source_sha256": "a647a2058b9589c1c8745f82900917334f49ccfa9907bfe93fb5206c619f695b",
+      "flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\rv32i_core_build\\iter_002\\cand_standard\\synth.tcl",
+        "sha256": "f4331f09bd4d8ebbb2ec41c9c742c0123cd8356ea47239ba1e395dadb5432535"
+      },
+      "generated_code_hash": "a3d7d77e35b35b2d",
+      "generated_source_sha256": "a647a2058b9589c1c8745f82900917334f49ccfa9907bfe93fb5206c619f695b",
+      "instruction": "In `rv_alu`, replace the separate `a << b[4:0]`, logical right shift, and arithmetic right shift expressions with one right-shift barrel datapath: reverse the bits of `a` before shifting and the result afterward for `op[2:0] == 3'b001`, and use sign fill only for arithmetic right shift (`op[2:0] == 3'b101 && op[3]`). Preserve the exact shift amount `b[4:0]`, operand selection, all other ALU operations and comparison flags, and the top\u2019s cycle behavior. This is a LUT reduction hypothesis; retain the candidate only if simulation, routed report integrity, WNS and WHS, and the strict objective com",
+      "iteration": 2,
+      "metrics": {
+        "bram_used": 0.0,
+        "dsp_used": 0,
+        "dynamic_power_w": 0.014,
+        "ff_used": 4357,
+        "lut_used": 2030,
+        "sim_passed": true,
+        "timing_met": true,
+        "total_power_w": 0.083,
+        "whs_ns": 0.07,
+        "wns_ns": 0.41
+      },
+      "mutation": "standard",
+      "reason": "",
+      "rungs": 5,
+      "source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\rv32i_core_build\\iter_002\\cand_standard\\rv32i_core.v",
+        "sha256": "7b62f973080c36f0c96e8dec1e070ae12d17f0dbacf6fad5dee9caac18098b4a"
+      },
+      "status": "measured"
+    }
+  ],
+  "doctor": null,
+  "instruction": "In `rv_alu`, replace the separate `a << b[4:0]`, logical right shift, and arithmetic right shift expressions with one right-shift barrel datapath: reverse the bits of `a` before shifting and the result afterward for `op[2:0] == 3'b001`, and use sign fill only for arithmetic right shift (`op[2:0] == 3'b101 && op[3]`). Preserve the exact shift amount `b[4:0]`, operand selection, all other ALU operations and comparison flags, and the top\u2019s cycle behavior. This is a LUT reduction hypothesis; retain the candidate only if simulation, routed report integrity, WNS and WHS, and the strict objective com",
+  "is_best": true,
+  "iteration": 2,
+  "recommendation": "ACCEPT",
+  "schema_version": 1,
+  "selected_source_sha256": "a647a2058b9589c1c8745f82900917334f49ccfa9907bfe93fb5206c619f695b"
+}

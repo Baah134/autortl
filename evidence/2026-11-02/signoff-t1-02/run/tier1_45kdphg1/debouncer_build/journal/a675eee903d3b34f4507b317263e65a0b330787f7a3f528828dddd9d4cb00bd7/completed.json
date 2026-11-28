@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_4:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 4\n## Contract check\n- Top interface and edit scope: PASS \u2014 Candidate preserves the required ports and replaces only `debouncer_top`.\n- Defined debounce behavior and reset: PASS \u2014 The 3-bit counter updates `clean` after 8 consecutive sampled cycles at the opposite level and resets synchronously as specified.\n- Top latency annotation: PASS \u2014 `// @latency 0` matches the authoritative known latency.\n- Compilation and simulation: PASS \u2014 Required tool exits succeeded; simulation reported `TEST PASSED`.\n- Routed metrics and timing closure: PASS \u2014 Retained routed metrics show WNS 0.57 ns and WHS 0.057 ns, with `timing_met=true`.\n- Objective improvement over previous best: FAIL \u2014 Candidate and previous best both have 3 LUTs and 4 FFs; no strict improvement for `minimize_luts` is established.\n## Summary\n- Passed: 6 of 7\n- Failed: 1 of 7\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate satisfies the behavioral, latency, verification, and timing gates, but it does not improve on the already timing-feasible previous best: its LUT and FF counts are unchanged. The recorded improvement kind is null, so the required objective improvement for promotion is absent.",
+      "recommendation": "REJECT",
+      "passed": 6,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

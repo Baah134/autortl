@@ -1,0 +1,77 @@
+{
+  "candidates": [
+    {
+      "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-03\\tier2_g47m0rx8\\sync_fifo_build\\iter_001\\cand_standard",
+      "cache_hit": false,
+      "final_code_hash": "7e42235bf988192d",
+      "final_source_sha256": "57ad5cd20d7bfb36ffd27954898cf815f16e0012fdef645286d81627d05a5ac3",
+      "flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-03\\tier2_g47m0rx8\\sync_fifo_build\\iter_001\\cand_standard\\synth.tcl",
+        "sha256": "daed9731aab1e8627c6129ea0b5647b8e524eb9294d22ba7a9350a7b1632fef7"
+      },
+      "generated_code_hash": "7e42235bf988192d",
+      "generated_source_sha256": "57ad5cd20d7bfb36ffd27954898cf815f16e0012fdef645286d81627d05a5ac3",
+      "instruction": "In `sync_fifo_core`, replace `integer rd_ptr`, `integer wr_ptr`, and `integer occupancy` with unsigned registers sized for the supported `DEPTH` range, including a valid width for `DEPTH=1`; retain explicit wrap at `DEPTH-1`. Keep `in_ready` combinationally equal to `(occupancy < DEPTH) || out_ready`, and preserve push/pop behavior when full, reset priority, output ordering, stalls, and one-transfer-per-cycle throughput. Preserve the top\u2019s `// @latency 1` annotation and verify the full parameter range, especially `DEPTH=1` and non-power-of-two depths.",
+      "iteration": 1,
+      "metrics": {
+        "bram_used": 0.0,
+        "dsp_used": 0,
+        "dynamic_power_w": 0.015,
+        "ff_used": 6,
+        "lut_used": 13,
+        "sim_passed": true,
+        "timing_met": false,
+        "total_power_w": 0.085,
+        "whs_ns": 0.091,
+        "wns_ns": -0.931
+      },
+      "mutation": "standard",
+      "reason": "",
+      "rungs": 5,
+      "source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-03\\tier2_g47m0rx8\\sync_fifo_build\\iter_001\\cand_standard\\sync_fifo.v",
+        "sha256": "d26627d9e46b40b4c22c0043388a3e4e001d34fc6a120f68eab83d516c660f65"
+      },
+      "status": "measured"
+    }
+  ],
+  "doctor": {
+    "action": "rtl_surgery",
+    "adopted": false,
+    "identity_count": 3,
+    "input_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-03\\tier2_g47m0rx8\\sync_fifo_build\\iter_001\\cand_standard\\sync_fifo.v",
+      "sha256": "d26627d9e46b40b4c22c0043388a3e4e001d34fc6a120f68eab83d516c660f65"
+    },
+    "measured_metrics": {
+      "bram_used": 0.0,
+      "dsp_used": 0,
+      "dynamic_power_w": 0.014,
+      "ff_used": 14,
+      "lut_used": 22,
+      "sim_passed": true,
+      "timing_met": false,
+      "total_power_w": 0.084,
+      "whs_ns": 0.097,
+      "wns_ns": -0.101
+    },
+    "proposed_source_text_sha256": "e376c09fa40253adf62c61dd26dec208fd12a83ce72615b718bb38ee22c55c4b",
+    "reason": "timing_not_closed",
+    "status": "NOT_ADOPTED",
+    "tools_ran": true,
+    "trial_flow_script": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-03\\tier2_g47m0rx8\\sync_fifo_build\\iter_001\\doctor_rtl_surgery_trial\\synth.tcl",
+      "sha256": "c804622e6fb65f0e1ed0795ae2b3c000a4f2152156231ac477655cccd4399054"
+    },
+    "trial_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-03\\tier2_g47m0rx8\\sync_fifo_build\\iter_001\\doctor_rtl_surgery_trial\\sync_fifo.v",
+      "sha256": "190ee4e7518139ef6dc18f55a865f1cac327d6ecdbdb441a32d6a2f077287855"
+    }
+  },
+  "instruction": "In `sync_fifo_core`, replace `integer rd_ptr`, `integer wr_ptr`, and `integer occupancy` with unsigned registers sized for the supported `DEPTH` range, including a valid width for `DEPTH=1`; retain explicit wrap at `DEPTH-1`. Keep `in_ready` combinationally equal to `(occupancy < DEPTH) || out_ready`, and preserve push/pop behavior when full, reset priority, output ordering, stalls, and one-transfer-per-cycle throughput. Preserve the top\u2019s `// @latency 1` annotation and verify the full parameter range, especially `DEPTH=1` and non-power-of-two depths.",
+  "is_best": true,
+  "iteration": 1,
+  "recommendation": "ACCEPT",
+  "schema_version": 1,
+  "selected_source_sha256": "57ad5cd20d7bfb36ffd27954898cf815f16e0012fdef645286d81627d05a5ac3"
+}

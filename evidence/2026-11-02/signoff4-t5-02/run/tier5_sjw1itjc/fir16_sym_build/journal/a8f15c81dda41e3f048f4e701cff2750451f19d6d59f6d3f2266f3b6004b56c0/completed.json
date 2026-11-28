@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_8:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 8,
+    "instruction": "In `fir16_sym_core`, replace the `always @(*)` saturation branches that compare `rounded[16:15]` against `2'b01` and `2'b10` with a check for `rounded[16] != rounded[15]`; select positive saturation when `rounded[16]` is 0 and negative saturation when it is 1. When the bits match, keep `rounded[15:0]` unchanged. Preserve the five-stage handshake, registered outputs, reset behavior, and top `// @latency 5`; evaluate against all fixed gates and promote only if routed LUTs strictly improve over 78 while timing remains feasible.",
+    "candidates": [
+      {
+        "iteration": 8,
+        "mutation": "standard",
+        "instruction": "In `fir16_sym_core`, replace the `always @(*)` saturation branches that compare `rounded[16:15]` against `2'b01` and `2'b10` with a check for `rounded[16] != rounded[15]`; select positive saturation when `rounded[16]` is 0 and negative saturation when it is 1. When the bits match, keep `rounded[15:0]` unchanged. Preserve the five-stage handshake, registered outputs, reset behavior, and top `// @latency 5`; evaluate against all fixed gates and promote only if routed LUTs strictly improve over 78 while timing remains feasible.",
+        "generated_source_sha256": "e8f3777b66f8f1a9bbf1a9772073a09a1a5fab93fe371ce63cdf654f082215cb",
+        "final_source_sha256": "e8f3777b66f8f1a9bbf1a9772073a09a1a5fab93fe371ce63cdf654f082215cb",
+        "generated_code_hash": "aa6a142e8f80c9ad",
+        "final_code_hash": "aa6a142e8f80c9ad",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 1.729,
+          "whs_ns": 0.105,
+          "lut_used": 78,
+          "ff_used": 202,
+          "dsp_used": 10,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.017,
+          "total_power_w": 0.085
+        },
+        "cache_hit": true,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-02\\tier5_sjw1itjc\\fir16_sym_build\\iter_007\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-02\\tier5_sjw1itjc\\fir16_sym_build\\iter_007\\cand_standard\\synth.tcl",
+          "sha256": "5bab6948f6d18c5d78984bb4d30e9331b057d06de2114b68fbb6d065275df056"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-02\\tier5_sjw1itjc\\fir16_sym_build\\iter_007\\cand_standard\\fir16_sym.v",
+          "sha256": "ca28918da4dba9385d52deb8d2ae81f805bbbc57a097a2c612dead04a9a1c5b2"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": "e8f3777b66f8f1a9bbf1a9772073a09a1a5fab93fe371ce63cdf654f082215cb"
+  },
+  "artifacts": {}
+}

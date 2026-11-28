@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_6:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 6\n## Contract check\n- Behavioral correctness: PASS \u2014 deterministic ladder reports 5 rungs ALIVE and simulation passed.\n- Interface and latency: PASS \u2014 candidate preserves the listed top ports and declares `// @latency 1`, matching authoritative latency.\n- Tool verification: PASS \u2014 xvlog, xelab, xsim, and Vivado exits succeeded; simulation returned the required `TEST PASSED` verdict.\n- Metric integrity: PASS \u2014 retained routed reports and metric provenance are present.\n- Timing closure: FAIL \u2014 setup WNS is -0.095 ns, so `timing_met` is false; hold WHS is 0.362 ns.\n- Promotion over previous best: FAIL \u2014 the previous best is timing-feasible with WNS +0.807 ns; this candidate is infeasible and has lower register-to-register WNS (-0.095 ns).\n\n## Summary\n- Passed: 4 of 6\n- Failed: 2 of 6\n- Improved over previous best: NO\n\n## Recommendation\nREJECT\n\n## Reason\nThe candidate passes the deterministic correctness and tool gates, and its latency annotation matches the known top latency. It does not close timing, and the previous best remains timing-feasible with better setup slack; this infeasible candidate cannot replace it. The stall count is 1, below the threshold for RESTART.",
+      "recommendation": "REJECT",
+      "passed": 4,
+      "failed": 2
+    }
+  },
+  "artifacts": {}
+}

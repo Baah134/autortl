@@ -5,6 +5,12 @@ import math
 import re
 from pathlib import Path
 from .state import atomic_write_text
+from .fileio import read_json
+
+IMPLEMENTATIONS = ("chip_top", "out_of_context")
+# Benchmark arm B ablation (ablation_policy_seam_absent). "full" is the shipped
+# behaviour; the other value is an explicit experiment setting only.
+VERIFICATION_POLICIES = ("full", "skip_generated_tb_mutations")
 
 
 @dataclass
@@ -35,10 +41,23 @@ class RunConfig:
     generate_golden: bool = False             # build: also generate/qualify a unit oracle with --tb
     proposal_feedback: bool = False           # experimental prior-proposal context; journal always retained
     model: str | None = None                  # model alias for every role; None = the backend's own default
+    # Harness-chosen implementation flow (chip_top_flow_for_soc_block): chip_top places
+    # every port on a package pin; out_of_context implements a block without I/O buffers.
+    implementation: str = "chip_top"
+    # fixed_synthesis_timeout_blocks_heavy_designs: one synthesis/implementation call's
+    # limit; the remaining tool budget still caps it.
+    synthesis_timeout_minutes: float = 15.0
+    # Experiment-only ablation: skip_generated_tb_mutations skips bug-injection
+    # qualification of generated module testbenches; never inferred from other flags.
+    verification_policy: str = "full"
 
     def validate(self) -> None:
         if self.mode not in ("build", "optimize"):
             raise ValueError("invalid run mode")
+        if self.implementation not in IMPLEMENTATIONS:
+            raise ValueError("implementation must be one of: " + ", ".join(IMPLEMENTATIONS))
+        if self.verification_policy not in VERIFICATION_POLICIES:
+            raise ValueError("verification_policy must be one of: " + ", ".join(VERIFICATION_POLICIES))
         if type(self.proposal_feedback) is not bool:
             raise ValueError("proposal_feedback must be boolean")
         if type(self.generate_golden) is not bool:
@@ -60,6 +79,9 @@ class RunConfig:
                 raise ValueError(f"{name} must be a finite nonnegative number")
         if self.target_freq_mhz == 0:
             raise ValueError("target_freq_mhz must be positive")
+        timeout = self.synthesis_timeout_minutes
+        if type(timeout) not in (int, float) or not math.isfinite(timeout) or not 1 <= timeout <= 240:
+            raise ValueError("synthesis_timeout_minutes must be between 1 and 240")
         if type(self.parallel_candidates) is not bool:
             raise ValueError("parallel_candidates must be boolean")
         if self.parallel_candidates:
@@ -96,6 +118,12 @@ class RunConfig:
         data.setdefault("proposal_feedback", False)
         # Runs saved before model pinning used the backend default model.
         data.setdefault("model", None)
+        # Runs saved before the out-of-context flow implemented a chip top.
+        data.setdefault("implementation", "chip_top")
+        # Runs saved before the setting used the fixed 900 s synthesis limit.
+        data.setdefault("synthesis_timeout_minutes", 15.0)
+        # Runs saved before the arm B seam qualified every generated testbench.
+        data.setdefault("verification_policy", "full")
         allowed = {item.name for item in fields(cls)}
         if set(data) - allowed:
             raise ValueError("unknown run config fields: " + ", ".join(sorted(set(data) - allowed)))
@@ -119,7 +147,7 @@ class RunConfig:
 
     @classmethod
     def load(cls, path: Path) -> "RunConfig":
-        return cls.from_dict(json.loads(Path(path).read_text(encoding="utf-8")))
+        return cls.from_dict(read_json(Path(path)))
 
     @property
     def target_period_ns(self) -> float:

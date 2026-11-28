@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_1:decision:instruction:0",
+  "result": "In `signed_fir4_core`, replace the cascaded `r3`/`r2`/`r1` readiness calculation for `in_ready` with a registered flag that tracks whether all three slots are occupied, then form `in_ready` from that flag and the current `out_ready`. Update the flag from the exact next-state valid values, including simultaneous advance, replacement, stalls, and synchronous reset, so readiness remains cycle-for-cycle identical; preserve all data and history behavior. Keep the top interface and `// @latency 3` annotation unchanged, and judge the result by the unchanged simulation and routed timing gates.",
+  "artifacts": {}
+}

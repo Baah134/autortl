@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Top interface and defined FIFO behavior: PASS \u2014 ports and widths match; the candidate preserves two-entry ordering, handshakes, registered valid behavior, reset behavior, and the minimum one-cycle transfer age. Unspecified data while invalid does not add a requirement.\n- Top latency annotation: PASS \u2014 the top declares `// @latency 1`, matching authoritative latency 1.\n- Deterministic verification: PASS \u2014 ladder reports 5 rungs ALIVE; xvlog, xelab, and xsim exit successfully, and the frozen testbench reports `TEST PASSED`.\n- Routed metric and receipt integrity: PASS \u2014 required tools have verified zero exits; synthesis has the `SYNTH_COMPLETE` marker; retained routed reports and metric evidence are present.\n- Timing closure and recovery: PASS \u2014 candidate WNS is 0.133 ns and WHS is 0.039 ns, both nonnegative; the previous best was timing-infeasible with WNS -0.053 ns and WHS 0.116 ns. This establishes timing recovery.\n- Objective and promotion: PASS \u2014 improvement kind is `timing_recovery`; the candidate may replace the timing-infeasible previous best. LUTs also decreased from 12 to 11; the increase from 18 to 19 FFs does not block recovery.\n## Summary\n- Passed: 6 of 6\n- Failed: 0 of 6\n- Improved over previous best: YES\n## Recommendation\nACCEPT\n## Reason\nThe candidate passes deterministic verification and the required tool and routed metric gates, preserves the defined top-level behavior and latency, and closes setup and hold timing where the previous best failed setup. Its recorded timing recovery qualifies for promotion; the LUT reduction further improves the chosen objective.",
+      "recommendation": "ACCEPT",
+      "passed": 6,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}

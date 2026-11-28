@@ -1,0 +1,81 @@
+{
+  "stage": "iteration_1:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 1,
+    "instruction": "In `fir16_sym_core`, replace the combinational path from the eight symmetric pair sums through `acc`, rounding, and saturation into `data1` with staged arithmetic carried by the existing data slots. Capture the eight signed products in slot 1, combine them as balanced pairwise sums in slots 2 and 3, form the full-width accumulator in slot 4, and perform round-half-up scaling and saturation in slot 5. Keep each slot\u2019s arithmetic payload and valid bit under the same ready/hold conditions, and preserve signed widths sufficient for the exact 28-bit accumulator; do not add pipeline stages. Preserve",
+    "candidates": [
+      {
+        "iteration": 1,
+        "mutation": "standard",
+        "instruction": "In `fir16_sym_core`, replace the combinational path from the eight symmetric pair sums through `acc`, rounding, and saturation into `data1` with staged arithmetic carried by the existing data slots. Capture the eight signed products in slot 1, combine them as balanced pairwise sums in slots 2 and 3, form the full-width accumulator in slot 4, and perform round-half-up scaling and saturation in slot 5. Keep each slot\u2019s arithmetic payload and valid bit under the same ready/hold conditions, and preserve signed widths sufficient for the exact 28-bit accumulator; do not add pipeline stages. Preserve",
+        "generated_source_sha256": "9250b1418c7392a5c70f353dcee8c5803c1292561611aa5b712e1db81f07c886",
+        "final_source_sha256": "9250b1418c7392a5c70f353dcee8c5803c1292561611aa5b712e1db81f07c886",
+        "generated_code_hash": "afca3a7dc96c7873",
+        "final_code_hash": "afca3a7dc96c7873",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": false,
+          "wns_ns": -3.7,
+          "whs_ns": 0.107,
+          "lut_used": 160,
+          "ff_used": 261,
+          "dsp_used": 11,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.053,
+          "total_power_w": 0.124
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\fir16_sym_build\\iter_001\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\fir16_sym_build\\iter_001\\cand_standard\\synth.tcl",
+          "sha256": "7be3d4698d7dbccd808bd263af0c246d90f304b62932c20478a646e4e123743b"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\fir16_sym_build\\iter_001\\cand_standard\\fir16_sym.v",
+          "sha256": "e793f1bd4553087153f32b4e818d3cb6af14e7855f2aaa5210570f9634aa4a26"
+        }
+      }
+    ],
+    "doctor": {
+      "status": "NOT_ADOPTED",
+      "action": "rtl_surgery",
+      "reason": "timing_not_closed",
+      "tools_ran": true,
+      "measured_metrics": {
+        "sim_passed": true,
+        "timing_met": false,
+        "wns_ns": -3.55,
+        "whs_ns": 0.138,
+        "lut_used": 160,
+        "ff_used": 262,
+        "dsp_used": 11,
+        "bram_used": 0.0,
+        "dynamic_power_w": 0.053,
+        "total_power_w": 0.124
+      },
+      "adopted": false,
+      "input_source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\fir16_sym_build\\iter_001\\cand_standard\\fir16_sym.v",
+        "sha256": "e793f1bd4553087153f32b4e818d3cb6af14e7855f2aaa5210570f9634aa4a26"
+      },
+      "trial_source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\fir16_sym_build\\iter_001\\doctor_rtl_surgery_trial\\fir16_sym.v",
+        "sha256": "2059f1bcd2c593c94f00706450d3bf0780c695321a74794eb4d463f65a05c216"
+      },
+      "trial_flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier5-01\\fir16_sym_build\\iter_001\\doctor_rtl_surgery_trial\\synth.tcl",
+        "sha256": "2ebdecc9c8e205b88b6abeac10e5de16327053f626ae16ccbae1d4f86a626336"
+      },
+      "identity_count": 3,
+      "proposed_source_text_sha256": "db2e87f9b0fc0d12dd3aa387a3ba3c0ba0c53edb405320b44d337e404da5827a"
+    },
+    "recommendation": "ACCEPT",
+    "is_best": true,
+    "selected_source_sha256": "9250b1418c7392a5c70f353dcee8c5803c1292561611aa5b712e1db81f07c886"
+  },
+  "artifacts": {}
+}

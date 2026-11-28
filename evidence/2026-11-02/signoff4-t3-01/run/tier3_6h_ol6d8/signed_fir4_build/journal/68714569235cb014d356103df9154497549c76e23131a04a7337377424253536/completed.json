@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Top interface and latency annotation: PASS \u2014 top is `signed_fir4` with the required `// @latency 3`.\n- Defined behavior: PASS \u2014 the unchanged integration testbench passed, including stalls, resets, transfer age, and signed output extrema.\n- Compile and simulation gates: PASS \u2014 xvlog, xelab, and xsim exited successfully; simulation reported `TEST PASSED`.\n- Routed report and metric integrity: PASS \u2014 retained routed reports and successful synthesis evidence are present; reported metrics are consistent.\n- Timing feasibility: PASS \u2014 timing is met with WNS 0.333 ns and WHS 0.103 ns.\n- Promotion over previous best: PASS \u2014 the previous best was timing-infeasible; this verified feasible candidate qualifies as `timing_recovery`.\n- Objective accounting: PASS \u2014 higher LUT, FF, and power values do not disqualify valid timing recovery.\n## Summary\n- Passed: 7 of 7\n- Failed: 0 of 7\n- Improved over previous best: YES\n## Recommendation\nACCEPT\n## Reason\nThe candidate passes the deterministic verification and metric gates, and closes timing where the previous best failed setup. Its resource counts and power are higher, but the recorded `timing_recovery` qualifies for promotion under the contract.",
+      "recommendation": "ACCEPT",
+      "passed": 7,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}

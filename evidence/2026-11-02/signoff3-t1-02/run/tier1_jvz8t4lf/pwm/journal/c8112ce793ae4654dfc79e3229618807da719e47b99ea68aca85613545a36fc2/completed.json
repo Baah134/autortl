@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_2:model:planner.plan:0",
+  "result": "# PLAN \u2014 iteration 2\n## Current state assessment\nThe incumbent is timing-feasible at 7 LUTs and 9 FFs, with WNS 0.553 ns and WHS 0.135 ns. Iteration 1 passed verification and timing but used 10 LUTs, so it failed the minimize-LUTs objective; do not repeat its 8-bit counter and unconditional-increment change. Top numeric latency is unknown, so no numeric annotation is required.\n\n## Hypothesis\nRewriting the 8-bit PWM comparison as two 4-bit comparisons with an equality condition may reduce LUT use through better LUT packing, while keeping the counter logic unchanged.\n\n## Instruction for generator\nKeep the counter declaration, increment, wrap-at-255 branch, reset, and registered `pwm_out` assignment timing unchanged. Change only `counter < {24'd0, duty}` to a logically equivalent comparison using high-nibble less-than and, when the high nibbles match, low-nibble less-than. Preserve the existing reset and cycle behavior; retain this candidate only if verification passes and routed LUT count is strictly below 7, with setup and hold slack both nonnegative.",
+  "artifacts": {}
+}

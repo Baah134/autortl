@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Interface and defined behavior: PASS \u2014 ports, parameters, reset behavior, and cycle structure are preserved; the authoritative ladder reports 5 rungs ALIVE.\n- Top latency annotation: PASS \u2014 `// @latency 1` matches the authoritative latency.\n- Compile, elaborate, and simulation: PASS \u2014 required tools exited successfully and simulation reported `TEST PASSED`.\n- Routed metrics and receipt integrity: PASS \u2014 routed reports are retained, synthesis completed, and the process exit gate passed.\n- Timing feasibility: FAIL \u2014 `timing_met=false` and setup WNS is \u221210.294 ns; positive hold slack does not satisfy the setup gate.\n- Improvement over previous best: FAIL \u2014 candidate WNS worsened from \u22129.918 ns to \u221210.294 ns, and the candidate does not recover timing feasibility.\n## Summary\n- Passed: 4 of 6\n- Failed: 2 of 6\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes behavioral verification, the latency annotation check, and the build and metric integrity gates, but fails mandatory setup timing. Its WNS is also lower than the previous best, so it establishes neither timing recovery nor an objective improvement.",
+      "recommendation": "REJECT",
+      "passed": 4,
+      "failed": 2
+    }
+  },
+  "artifacts": {}
+}

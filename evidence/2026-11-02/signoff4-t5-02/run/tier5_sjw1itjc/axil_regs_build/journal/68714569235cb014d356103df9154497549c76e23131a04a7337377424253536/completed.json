@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Defined behavior and interface: PASS \u2014 deterministic ladder result is ALIVE; the candidate preserves the specified top behavior.\n- Top latency annotation: PASS \u2014 authoritative top latency is unknown, so no numeric annotation is required.\n- Compile and elaboration: PASS \u2014 xvlog and xelab exited successfully.\n- Simulation: PASS \u2014 xsim exited successfully with the required `TEST PASSED` verdict.\n- Metric and report integrity: PASS \u2014 routed reports are retained and the required tool exits succeeded.\n- Timing closure: PASS \u2014 timing is met; WNS is 5.441 ns and WHS is 0.134 ns.\n- Objective improvement: FAIL \u2014 both designs are timing-feasible, but LUTs and FFs are unchanged at 95 and 254; no strict objective improvement is recorded.\n\n## Summary\n- Passed: 6 of 7\n- Failed: 1 of 7\n- Improved over previous best: NO\n\n## Recommendation\nREJECT\n\n## Reason\nThe candidate passes behavioral, simulation, implementation, and timing gates, and the missing top latency annotation is permitted because authoritative top latency is unknown. However, the previous best is already timing-feasible and the candidate has identical LUT and FF counts, so it does not meet the required strict improvement for `minimize_luts`.",
+      "recommendation": "REJECT",
+      "passed": 6,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

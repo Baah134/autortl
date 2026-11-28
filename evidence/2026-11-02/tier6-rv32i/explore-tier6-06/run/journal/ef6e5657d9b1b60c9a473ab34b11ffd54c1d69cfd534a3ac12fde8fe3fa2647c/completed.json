@@ -1,0 +1,5 @@
+{
+  "stage": "module_rv_imem:model:generator.golden_model:0",
+  "result": "def init():\n    mem = []\n    for i in range(64):\n        mem.append(0)\n    return dict(mem=mem, rdata=0)\n\n\ndef step(state, inputs):\n    if inputs.get(\"rst\", 0):\n        for i in range(64):\n            state[\"mem\"][i] = 0\n        state[\"rdata\"] = 0\n    else:\n        raddr = int(inputs.get(\"imem_raddr\", 0)) & 63\n        waddr = int(inputs.get(\"imem_waddr\", 0)) & 63\n        wdata = int(inputs.get(\"imem_wdata\", 0)) & 4294967295\n        state[\"rdata\"] = state[\"mem\"][raddr]\n        if inputs.get(\"imem_we\", 0):\n            state[\"mem\"][waddr] = wdata\n\n    outputs = dict(imem_rdata=state[\"rdata\"] & 4294967295)\n    return state, outputs",
+  "artifacts": {}
+}

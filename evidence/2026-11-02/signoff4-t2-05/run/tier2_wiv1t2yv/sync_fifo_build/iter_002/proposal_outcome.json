@@ -1,0 +1,45 @@
+{
+  "candidates": [
+    {
+      "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-05\\tier2_wiv1t2yv\\sync_fifo_build\\iter_002\\cand_standard",
+      "cache_hit": false,
+      "final_code_hash": "a403a054a96baf16",
+      "final_source_sha256": "c144aa61ce197fd7f307b295724278050c2797271319390b49604f429b958042",
+      "flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-05\\tier2_wiv1t2yv\\sync_fifo_build\\iter_002\\cand_standard\\synth.tcl",
+        "sha256": "6bb558da5bbf0b527588f884238c51451516e064df82b70c79dfd9e9bf48f9c1"
+      },
+      "generated_code_hash": "a403a054a96baf16",
+      "generated_source_sha256": "c144aa61ce197fd7f307b295724278050c2797271319390b49604f429b958042",
+      "instruction": "In `sync_fifo_core`, replace the combinational `assign out_valid = (occupancy != 0)` with a resettable `valid_reg` that directly drives `out_valid`, updating it on push/pop so it always represents whether the post-edge occupancy is nonzero. Preserve synchronous active-high reset, full simultaneous pop/push behavior, empty no-bypass behavior, and valid stability during stalls; leave the top interface and `// @latency 1` unchanged. Keep the shift-register queue and its oldest-word output path for this iteration.",
+      "iteration": 2,
+      "metrics": {
+        "bram_used": 0.0,
+        "dsp_used": 0,
+        "dynamic_power_w": 0.013,
+        "ff_used": 27,
+        "lut_used": 21,
+        "sim_passed": true,
+        "timing_met": true,
+        "total_power_w": 0.084,
+        "whs_ns": 0.021,
+        "wns_ns": 0.004
+      },
+      "mutation": "standard",
+      "reason": "",
+      "rungs": 5,
+      "source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-05\\tier2_wiv1t2yv\\sync_fifo_build\\iter_002\\cand_standard\\sync_fifo.v",
+        "sha256": "e859fb3d778f2fef372ffc79ff49ce7b7685c576cb8ed3a12860a249f296e302"
+      },
+      "status": "measured"
+    }
+  ],
+  "doctor": null,
+  "instruction": "In `sync_fifo_core`, replace the combinational `assign out_valid = (occupancy != 0)` with a resettable `valid_reg` that directly drives `out_valid`, updating it on push/pop so it always represents whether the post-edge occupancy is nonzero. Preserve synchronous active-high reset, full simultaneous pop/push behavior, empty no-bypass behavior, and valid stability during stalls; leave the top interface and `// @latency 1` unchanged. Keep the shift-register queue and its oldest-word output path for this iteration.",
+  "is_best": true,
+  "iteration": 2,
+  "recommendation": "ACCEPT",
+  "schema_version": 1,
+  "selected_source_sha256": "c144aa61ce197fd7f307b295724278050c2797271319390b49604f429b958042"
+}

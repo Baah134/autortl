@@ -4,49 +4,34 @@
 
 **An agentic FPGA design loop where the model only proposes and verification decides.**
 
-AutoRTL writes and optimizes Verilog with a team of LLM agent roles, driving
-AMD Vivado from the command line. Every candidate must pass static checks,
-simulation against a testbench that has itself been shown to catch injected
-bugs, and place-and-route timing before it can replace the current design.
-The agents read the specification but cannot change it, the testbench, the
-TCL or the acceptance gates.
+AutoRTL writes and optimizes Verilog with bounded LLM roles, driving AMD
+Vivado from the command line. Before a candidate becomes the working best, it
+must pass static checks, compilation and simulation with a fault-qualified
+testbench. Routed reports govern selection: resource-saving wins require setup
+and hold closure; an improvement toward closure can be retained explicitly as
+timing progress.
 
-Everything below was produced by the harness's own roles and measured by
-Vivado 2025.2 on the Basys 3's FPGA (`xc7a35tcpg236-1`), then run on a real
-board. Every number links to an archived run.
+The planner creates and repairs prose-derived specifications. RTL optimization
+keeps the current contract, trusted testbench, TCL and acceptance gates fixed.
 
-## Highlights
+The generated cores below were measured with Vivado 2025.2 for the Basys 3's
+FPGA (`xc7a35tcpg236-1`). Twelve were also checked on a real board through
+hand-written shells and independent reference models. Archived runs distinguish
+standalone implementation, simulation and hardware results.
 
-- **Harness-built logic drives a real pin.** From a typed specification, the
-  harness generated and optimized a UART transmitter (40 → 24 LUTs). That
-  exact file drives the Basys 3's USB-UART pin and **streamed 1,000,000 of
-  1,000,000 bytes at full line rate with 0 errors**
-  ([evidence](evidence/2026-10-29/harness-uart-tx-v2-01/README.md)).
-- **Six optimized designs, all verified on hardware.** A signed FIR filter,
-  two dot products, a divider and two FIFOs. Each ran unedited on the board
-  and passed 50,000 transactions against an independent model under
-  randomized backpressure, with 0 mismatches.
-- **Real optimization, not just passing tests.** The FIR went from failing
-  timing at 78 LUTs to 52 LUTs with positive slack, and a dot product from
-  328 to 20 LUTs by moving arithmetic into DSP slices.
-- **Verifiers that are tested themselves.** Before a testbench may grade
-  anything, it must pass a correct design and fail deliberately broken ones.
-  An audit injected 27 faults into the FIR: generated testbenches first caught
-  18, improved stimulus raised that to 22, and the independent checker caught
-  all 27.
-- **Bring your own model.** Every role can run on the Codex CLI, any
-  OpenAI-compatible API (OpenAI, Ollama, vLLM and others), or any AI command
-  line you name in a local config file. The same tier0 bench passed on four
-  different models, and the role parsers read each model's own output format
-  ([model matrix](evidence/2026-10-29/model-matrix-01/README.md)).
-- **Reproducible by construction.** 1,742 regression tests, crash-safe
-  resumable runs, fixed model-call and tool-time budgets, per-run token
-  accounting, and a CI audit that checks over 34,000 recorded SHA-256 claims
-  against the committed bytes. Curriculum tier 0 is held: three consecutive
-  fresh runs on the same frozen harness passed every gate
-  ([campaign 17](evidence/2026-10-29/contract-campaign-17/README.md)).
-  `python run.py doctor` checks a new machine, and `python scripts/demo.py`
-  walks through a full run in seconds with no model or Vivado.
+## Results at a glance
+
+| Claim | Evidence |
+|---|---|
+| **Generated cores run on real hardware.** Twelve optimized designs (RV32I CPU, AES-128, CORDIC, 16-tap FIR, SPI, CRC-16, FIFOs and more) each passed 50,000 transactions on a Basys 3 against an independent model with 0 mismatches. | [first six](evidence/2026-10-28/basys3-harness-winners-01/README.md), [CPU/CRC/SPI](evidence/2026-11-02/basys3-tier46-board-01/README.md), [AES/CORDIC/FIR16](evidence/2026-11-02/basys3-tier56-board-01/README.md) |
+| **Agent-built UART echo.** Receiver and transmitter built by the roles echoed 1,000,000 of 1,000,000 bytes at full line rate. | [echo](evidence/2026-11-01/basys3-harness-echo-01/README.md) |
+| **Real optimization.** AES-128: 9,108 to 614 LUTs, from missing timing by 9.8 ns to +2.2 ns. FIR16 closes 150 MHz (394 to 148 LUTs). Dot product: 328 to 20 LUTs through DSP inference. | [results in detail](docs/RESULTS.md) |
+| **Verifiers are tested.** A testbench must pass a correct design and fail injected faults before it grades anything; an audit of 27 FIR faults went from 18 to 22 caught by generated testbenches, 27 by the independent checker. | [case study](docs/CASE_STUDY_VERIFIER.md) |
+| **Registered comparison with a single model call: the single call wins.** 40 public VerilogEval tasks, three arms, three trials; tasks and decision rule fixed before grading. A single model call passes more tasks than the full harness: 94.1% vs 86.1%, difference -9.2 pp (95% CI -19.2 to -0.8), at 1/7.4 of the model calls per pass. 9.1% and 10.0% of the designs the harness arms accepted fail the official testbench, so internal acceptance is not a reliable correctness signal on these tasks. Infrastructure stops (2, 2 and 5 cells) are excluded from rates. | [results](evidence/2026-11-21/final-02-results/README.md), [registration](evidence/2026-11-14/final-registration-01/README.md), [decision rule](docs/DECISIONS.md) |
+| **Reproducible.** About 2,300 harness tests and 320 tooling tests run in CI without Vivado, a model or a board; CI audits every evidence hash against committed bytes. | [tests](.github/workflows/tests.yml), [publication policy](docs/PUBLICATION.md) |
+
+Measured with Vivado 2025.2 for the Basys 3 FPGA (`xc7a35tcpg236-1`). Board
+checks use hand-written shells around unedited generated cores.
 
 ## How it works
 
@@ -66,8 +51,9 @@ flowchart LR
 
 ### Agent roles
 
-Each role gets an isolated view of the run and one job. None of them can
-change the specification, the testbench or the gates.
+Each role receives the context for one job. The planner can create or repair
+a prose-derived spec; optimization candidates cannot amend their current
+contract or trusted verification inputs.
 
 | Role | Sees | Produces |
 |---|---|---|
@@ -84,9 +70,10 @@ TCL, shell commands or paths.
 
 ### Guarantees
 
-- **Fixed contracts.** Interfaces, reset behavior and cycle latency come from
-  a typed specification. A candidate that changes them fails; it is never
-  renegotiated.
+- **Fixed contracts.** A supplied typed spec is immutable. RTL optimization
+  preserves the current interface, reset behavior and cycle latency.
+  Planner-written specs may be repaired during build, rebuilding modules under
+  each revision.
 - **Measured selection.** Timing feasibility comes before resource savings.
   Candidates are deduplicated by exact source, and every score comes from
   routed Vivado reports.
@@ -97,295 +84,45 @@ TCL, shell commands or paths.
   constraints, tool version and raw reports
   ([audit](evidence/2026-10-28/evidence-integrity-01/README.md)).
 
-## What the agent actually changed
-
-In the FIR run, the baseline core passed the backpressure signal through a
-three-stage combinational chain and multiplied by constants:
-
-```verilog
-wire ready3 = !valid3 || out_ready;
-wire ready2 = !valid2 || ready3;
-wire ready1 = !valid1 || ready2;
-assign in_ready = ready1;
-...
-(x_wide * 16'sd3) - (history1_wide * 16'sd5) + (history2_wide * 16'sd7) - (history3_wide * 16'sd2)
-```
-
-The verified winner tracks pipeline occupancy in a register instead, which
-cuts the input-ready path to a single gate, and it uses shift-and-add terms:
-
-```verilog
-assign in_ready = !full || out_ready;
-...
-full <= next_valid1 && next_valid2 && next_valid3;   // inside the clocked block
-...
-wire signed [15:0] x_times3        = (x_wide <<< 1) + x_wide;
-wire signed [15:0] history1_times5 = (history1_wide <<< 2) + history1_wide;
-wire signed [15:0] history2_times7 = (history2_wide <<< 3) - history2_wide;
-```
-
-Full sources: [baseline core](evidence/2026-10-26/generated-signed-fir4-attempt-01/run/modules/signed_fir4_core/signed_fir4_core.v)
-and [winner](evidence/2026-10-26/generated-signed-fir4-attempt-01/run/signed_fir4_best.v).
-
-## Verified results
-
-| Design | Result | Verification |
-|---|---|---|
-| Signed stateful FIR filter | 78 → 52 LUTs · setup −0.327 → +0.169 ns · hold +0.106 ns | Independent 800-cycle test |
-| Elastic dot product | 328 → 20 LUTs · 4 DSPs · setup +0.155 ns · hold +0.206 ns | Independent 852-cycle test |
-| Three-module pipelined dot product | 325 → 17 LUTs · 4 DSPs | Independent 685-cycle test |
-| Iterative divider (8-bit) | 38 → 26 LUTs · setup +0.315 ns · hold +0.129 ns | Independent test of the saved winner |
-| FIFO timing recovery | Setup −0.931 → +0.108 ns · hold +0.076 ns · 22 LUTs / 13 FFs | 50,000 transactions on the board |
-| Packet-tagged FIFO | 23 LUTs / 31 FFs · setup +0.078 ns · hold +0.106 ns | Independent test of the saved winner |
-| UART transmitter (harness-built) | 40 → 24 LUTs | 1,000,000-byte line-rate stream on the board |
-| Fault-qualified verification | 27 FIR, 18 elastic dot-product and 20 divider faults detected | Correct controls passed |
-| Curriculum tier 0 (counter, mux4) | Held: 3 consecutive qualifying runs · counter 55 → 31 LUTs | All mandatory gates |
-
-All at 100 MHz with ideal zero I/O delays; the dot products map their
-arithmetic onto DSP slices. Details: [hardware targets](docs/TARGETS.md).
-
-**Fmax.** Out of context, the six winners close at 181.8 MHz (FIR) to
-425.5 MHz (packet FIFO). The harness reports both the board-level
-I/O-constrained slack it accepts on and the register-to-register slack of the
-same routed design ([Fmax study](hardware/basys3/fmax/README.md)).
-
-Evidence: [signed FIR](evidence/2026-10-26/generated-signed-fir4-attempt-01/README.md),
-[FIR fault qualification](evidence/2026-10-25/signed-fir4-admission-attempt-01/README.md),
-[second FIR run](evidence/2026-10-26/generated-signed-fir4-attempt-02/README.md),
-[generated-verifier audit](evidence/2026-10-26/fir4-driver-comparison-01/README.md),
-[elastic dot product](evidence/2026-10-25/generated-elastic-dot4-attempt-02/README.md),
-[three-module dot product](evidence/2026-10-24/generated-dot4-attempt-01/README.md),
-[divider](evidence/2026-10-23/generated-divider-attempt-01/README.md),
-[FIFO](evidence/2026-10-22/generated-fifo-attempt-05/README.md),
-[packet FIFO](evidence/2026-10-22/generated-packet-attempt-01/README.md),
-[Fmax](evidence/2026-10-29/fmax-characterization-01/README.md).
-
-## Hardware validation on a Basys 3
-
-[`hardware/basys3/harness_winners`](hardware/basys3/harness_winners/README.md)
-runs every harness winner on the board through one generic, tested shell:
-
-| Design | On board vs model | Winner LUT / FF / DSP on board | Harness-measured |
-|---|---|---:|---:|
-| Signed FIR | 50,000/50,000 | 51 / 67 / 0 | 52 / 67 / 0 |
-| Elastic dot product | 50,000/50,000 | 20 / 20 / 4 | 20 / 20 / 4 |
-| Pipelined dot product | 50,000/50,000 | 17 / 18 / 4 | 17 / 18 / 4 |
-| Iterative divider | 50,000/50,000 | 26 / 30 / 0 | 26 / 38 / 0 |
-| Packet FIFO | 50,000/50,000 | 22 / 29 / 0 | 23 / 31 / 0 |
-| Sync FIFO | 50,000/50,000 | 21 / 13 / 0 | 22 / 13 / 0 |
-
-- **Independent models.** Each design is checked against a Python model
-  written from the frozen specification, not from the harness's own oracle.
-- **Real backpressure.** An LFSR traffic shaper creates the valid/ready stress
-  that UART traffic alone never would. Coverage counters prove it happened,
-  and each design's injected fault must make its simulation fail.
-- **Explained differences.** The divider's 8-FF difference turned out to be
-  `opt_design` replicas that exist only when it is built standalone
-  ([analysis](evidence/2026-10-28/divider-ff-replica-analysis-01/README.md)).
-- **Replayable.** The tested bitstreams are archived and tied by hash to the
-  hardware runs, so a board and a fresh clone can rerun every check without
-  synthesis. A replay reproduced all six results exactly
-  ([replay](evidence/2026-10-28/basys3-bitstream-replay-01/README.md)).
-
-### Harness-built UART transmitter
-
-The harness generated a UART transmitter from a typed specification written
-for the board (34 → 22 LUTs, 14 model calls, 9.4 minutes). The unedited file
-drives the board's TX pin and echoed 100,000 of 100,000 bytes, while a
-wrong-baud control failed as required. No human-written RTL is in the
-transmit path ([design](hardware/basys3/harness_built/uart_tx/README.md),
-[evidence](evidence/2026-10-29/harness-uart-tx-01/README.md)).
-
-Line-rate testing on the board then refined the specification itself: a
-stop bit shortened by 1/16 tolerates the PC's slightly faster clock. The
-harness regenerated the transmitter from the revised spec, and it streamed
-1,000,000 bytes with 0 errors
-([evidence](evidence/2026-10-29/harness-uart-tx-v2-01/README.md)).
-
-<details>
-<summary>Board bring-up history</summary>
-
-- **UART echo.** The board path was proven first with a hand-written echo
-  ([`uart_echo`](hardware/basys3/uart_echo/README.md)), tested at full line
-  rate: it streamed 1,000,000 bytes with zero loss, and each design rule it
-  depends on has a simulation that fails when the rule is reverted
-  ([evidence](evidence/2026-10-28/basys3-uart-echo-02/README.md)).
-- **FIR alone.** [`fir4_on_board`](hardware/basys3/fir4_on_board/README.md)
-  ran the FIR winner, byte-identical to the verified file, behind a
-  hand-written UART shell: 100,000 samples matched across 4 restarts, a model
-  with one wrong coefficient failed on 4,965 of 5,000 outputs, and the build
-  had 0 warnings with +2.718 ns setup slack
-  ([evidence](evidence/2026-10-28/basys3-fir4-01/README.md)).
-
-</details>
-
-## How the harness improves itself
-
-- **Every failure mode becomes a rule.** Each problem a run surfaces gets an
-  entry in the error taxonomy ([`data/taxonomy.yaml`](data/taxonomy.yaml))
-  before its fix lands, so the harness, its prompts and its repair hints grow
-  with every campaign.
-- **Verifiers are measured, then strengthened.** Signed boundary values,
-  legal idle traffic and off-edge reset pulses raised the generated
-  testbenches' fault detection from 18 to 22 of 27 injected faults with no
-  extra model calls, and the independent checker catches all 27.
-- **Candidates cannot game the tests.** Before any tool runs, model-written
-  RTL is rejected if it uses system tasks, preprocessor directives, synthesis
-  pragmas, hierarchical references or escaped identifiers, the constructs a
-  design could use to fake a pass or show simulation and synthesis different
-  logic. A candidate that stops instantiating a component the trusted
-  testbench checks is rejected too
-  ([evidence](evidence/2026-10-29/harness-uart-tx-02/README.md)).
-- **Every check must catch a fault.** New checks ship with a deliberately
-  broken design that they are required to fail.
-- **Independent review.** Harness changes, and the harness as a whole, are
-  reviewed by separate agents; each confirmed finding gets a taxonomy entry
-  and a regression test before it is fixed.
-- **New tiers are qualified first.** Tier 4 (a CRC-16 stream, an SPI master
-  and a two-module arbiter with a register file) entered the curriculum only
-  after each independent testbench passed its reference design and caught all
-  ten planted faults
-  ([qualification](evidence/2026-10-29/tier4-qualification-01/README.md)).
-- **The evidence is audited.** CI checks every recorded SHA-256 claim, over
-  34,000 of them, against the committed bytes
-  ([audit](evidence/2026-10-28/evidence-integrity-01/README.md)).
-
 ## Quick start
-
-Requirements: Python 3.12, Vivado with the target device installed, and, for
-model-driven runs, an authenticated Codex CLI or any other model endpoint
-(see Bring your own model below). Roles are routed through
-[`llm/routing.yaml`](llm/routing.yaml).
 
 ```powershell
 python -m pip install -r requirements.txt
+python scripts/demo.py          # one simulated run, no Vivado or model needed
+python run.py doctor            # checks Python, Vivado tools and the model CLI
+python -m pytest tests/ -q      # harness regression suite
 ```
 
-To see one run's pipeline without Vivado or a model login, run the simulated
-walkthrough. It optimizes `mux4` once with fixed stand-ins, measures nothing,
-and prints where the run's journal, events and summary are:
+Build a design from a plain-English request or a typed spec, or optimize an
+existing one, with bounded model calls and tool time:
 
 ```powershell
-python scripts/demo.py
+python run.py build --spec request.txt --top TopModule --generate-golden --output-dir runs/my-build
+python run.py optimize --design curriculum/tier0/mux4/mux4.v --tb curriculum/tier0/mux4/mux4_tb.v --top mux4 --output-dir runs/mux
 ```
 
-Set the Vivado installation path. The following examples use PowerShell:
+Every role can run on the Codex CLI, any OpenAI-compatible API or a local
+command. Full instructions, model selection and the evaluation commands are in
+[docs/USAGE.md](docs/USAGE.md).
 
-```powershell
-$vivadoBin = "C:/path/to/Vivado/bin"
-$vivadoArgs = @(
-  "--vivado", "$vivadoBin/vivado.bat",
-  "--xvlog", "$vivadoBin/xvlog.bat",
-  "--xelab", "$vivadoBin/xelab.bat",
-  "--xsim", "$vivadoBin/xsim.bat"
-)
-```
+## Known limits
 
-Check the machine first. `doctor` finds Python and its packages, the four
-Vivado tools and the Codex CLI login, and prints the exact fix for anything
-missing. It runs no design and sends nothing to a model:
+- On single-module functional tasks a single model call beats the harness:
+  94.1% vs 86.1% on 40 VerilogEval tasks, at about a seventh of the model
+  calls (registered comparison). The harness's measured value is in
+  optimization, multi-module builds and hardware-proven results.
+- Internal verification checks RTL against the planner's reading of the
+  request; a misread request can be verified and accepted
+  ([recorded case](evidence/2026-11-14/pilot-04-results-01/README.md)).
+- One FPGA family and tool version; Windows development host.
 
-```powershell
-python run.py doctor @vivadoArgs
-```
+## Where to read next
 
-Then run the repeatable counter tool check without model calls:
-
-```powershell
-python scripts/check_counter_cli.py --bin-dir $vivadoBin --output runs/counter-check
-```
-
-Optimize an existing design with a testbench and bounded resources:
-
-```powershell
-python run.py optimize --design curriculum/tier0/mux4/mux4.v `
-  --tb curriculum/tier0/mux4/mux4_tb.v --top mux4 `
-  --iterations 1 --best-of-n 1 --max-llm-calls 16 `
-  --max-vivado-minutes 20 --max-wall-minutes 30 `
-  --output-dir runs/mux-trial @vivadoArgs
-```
-
-`build` accepts a typed JSON specification or a prose request. The repository
-includes [signed FIR](curriculum/tier3/signed_fir4_build/),
-[counter8](curriculum/tier1/counter8_build/) and
-[priority encoder](curriculum/tier1/encoder8_build/) specifications with
-independent top-level testbenches. Supply these using `--spec`, `--tb` and `--top`.
-Add `--generate-golden` to combine generated Python/unit verification with the
-independent testbench. See the
-[golden verification guide](docs/GOLDEN_VERIFICATION.md) for semantics and limits.
-
-Choose the model with `--model` (any model alias the Codex CLI accepts, for
-example `gpt-6-luna` or `gpt-5.6-luna`). Every role uses it, it is saved in the
-run's `config.json`, and the curriculum records it as the requested model
-identity, so runs on different models never share a cohort. Without `--model`
-the CLI's own default is used and the model identity is recorded as unobserved.
-The role parsers accept the fence tags and verdict layouts different models
-write (`Verilog`, `v`, `py`, `Recommendation: ACCEPT`), and a planner-written
-spec that fails the structural check gets its errors back for a bounded repair.
-
-To run the roles on any OpenAI-compatible chat-completions API instead of the
-Codex CLI, set `AUTORTL_OPENAI_API_KEY` in the environment and pass
-`--model openai.<model>` (for example `--model openai.gpt-4o-mini`). The
-endpoint defaults to `https://api.openai.com/v1`; set
-`AUTORTL_OPENAI_BASE_URL` to use another provider or a local server such as
-Ollama (`http://localhost:11434/v1`) or vLLM (`http://localhost:8000/v1`).
-Local servers that ignore the key still need a placeholder value. The key is
-read only from the environment and is never written to run files or logs.
-`python run.py doctor` reports whether the key is set.
-
-**Bring your own model.** To plug in any AI, name it in
-`endpoints.local.yaml` at the repository root (Git ignores it; copy
-[`llm/endpoints.example.yaml`](llm/endpoints.example.yaml)) and pass
-`--model <endpoint>.<model>`. An endpoint is either an OpenAI-compatible URL,
-with an optional `api_key_env` naming the variable that holds its key, or a
-command line that reads the prompt on stdin and prints the answer, such as
-another vendor's CLI or your own script:
-
-```yaml
-endpoints:
-  ollama:
-    kind: openai
-    base_url: http://localhost:11434/v1
-  mine:
-    kind: command
-    argv: [python, my_model.py]
-    model_flag: --model
-```
-
-`--model ollama.llama3.1` or `--model mine.small` then routes every role to
-it. Several endpoints can be defined side by side, `doctor` checks each one,
-and an endpoint's definition is part of the bench cohort, so editing it starts
-a new cohort. Commands run without a shell from an empty temporary folder and
-only ever receive the prompt on stdin; AutoRTL does not sandbox them, so give
-them no tools they do not need.
-
-Resume an interrupted experiment using its saved configuration:
-
-```powershell
-python run.py resume --run runs/mux-trial
-```
-
-Use a fresh output directory for each new experiment. Resume checks the saved
-inputs and execution environment; see [recovery behavior](docs/RECOVERY.md).
-
-The same steps in bash (Linux or Git Bash). On Linux the tools have no
-`.bat` suffix; in Git Bash, add it as in the PowerShell example:
-
-```bash
-vivado_bin=/path/to/Vivado/bin
-vivado_args=(--vivado "$vivado_bin/vivado" --xvlog "$vivado_bin/xvlog"
-             --xelab "$vivado_bin/xelab" --xsim "$vivado_bin/xsim")
-
-python run.py doctor "${vivado_args[@]}"
-
-python scripts/check_counter_cli.py --bin-dir "$vivado_bin" --output runs/counter-check
-
-python run.py optimize --design curriculum/tier0/mux4/mux4.v \
-  --tb curriculum/tier0/mux4/mux4_tb.v --top mux4 \
-  --iterations 1 --best-of-n 1 --max-llm-calls 16 \
-  --max-vivado-minutes 20 --max-wall-minutes 30 \
-  --output-dir runs/mux-trial "${vivado_args[@]}"
-```
+[Results in detail](docs/RESULTS.md) · [usage](docs/USAGE.md) ·
+[architecture](docs/DESIGN.md) · [guided code tour](docs/WALKTHROUGH.md) ·
+[benchmark runbook](docs/BENCHMARK_PILOT.md) ·
+[review](docs/REVIEW_2026-11-15.md) and [roadmap](docs/ROADMAP.md) ·
+[engineering log](docs/PROGRESS.md)
 
 ## Repository map
 
@@ -393,6 +130,7 @@ python run.py optimize --design curriculum/tier0/mux4/mux4.v \
 |---|---|
 | [`autortl/`](autortl/) | The harness: orchestrator (`fsm.py`), roles, prompts, verification ladder, Vivado driver |
 | [`llm/`](llm/) | Model client, backend adapter and role routing |
+| [`benchmark/`](benchmark/) | VerilogEval adapter, grader, arm runners, campaign runner and report for the registered comparison |
 | [`curriculum/`](curriculum/) | Tiered benchmark designs and the promotion rules |
 | [`data/taxonomy.yaml`](data/taxonomy.yaml) | Vivado message IDs and recorded harness failure modes |
 | [`hardware/basys3/`](hardware/basys3/) | Board shells, constraints, bitstream builds and PC-side checkers |
@@ -400,46 +138,12 @@ python run.py optimize --design curriculum/tier0/mux4/mux4.v \
 | [`tests/`](tests/) | Harness regression suite |
 | [`docs/`](docs/) | Architecture, code tour, recovery guide and progress log |
 
-## Development and evaluation
-
-Continuous integration
-([`.github/workflows/tests.yml`](.github/workflows/tests.yml)) runs the full
-harness suite on Windows, the mailbox and board-suite tests on Windows and
-Ubuntu, and the evidence audit. None of these need Vivado, a model login or a
-board.
-
-```powershell
-python -m pytest tests/ -q
-python -m pytest coordination hardware/basys3/harness_winners/tests -q
-python tools/evidence_audit.py --rev HEAD
-python run.py bench --tier 0 --iterations 1 --best-of-n 1 `
-  --max-llm-calls 16 --max-vivado-minutes 20 --max-wall-minutes 30 `
-  --output-dir runs/tier0 @vivadoArgs
-```
-
-Add `--jobs 4` to run up to four entries at once as separate processes; the
-cohort and promotion rules do not change. Each run's `budget.json` records the
-model tokens it used, and `python tools/role_report.py <campaign>` summarizes
-every role's calls, tokens, verdicts and repairs.
-
-`python tools/run_view.py <run-or-campaign> [--out FILE]` writes the same
-records as one static HTML page (default `<dir>/run-view.html`): a summary
-table across entries, then per run the role calls, the stage timeline from
-`events.jsonl`, each iteration's metrics against the baseline with the
-evaluator's report, the repairs, and the winning RTL as a diff against the
-baseline. It uses only the standard library, loads no external resources and
-escapes all text read from run files.
-
-Curriculum promotion requires three consecutive qualifying full runs with the
-same experiment cohort. Subset runs cannot promote a tier, and regressions in
-previously passing entries of a held cohort block qualification.
-
-Start with the [guided code tour](docs/WALKTHROUGH.md), which follows one run
-through the code with file and line references. Then read the
-[architecture](docs/DESIGN.md), [recovery and validation guide](docs/RECOVERY.md),
-[research and adoption decisions](docs/RESEARCH.md),
-and [engineering evidence log](docs/PROGRESS.md).
-
 ## Author
 
 Prince Baah-Mensah. AutoRTL is a personal FPGA and verification project.
+
+Development uses AI coding agents under the author's direction. The repository retains verification evidence, rejected attempts and known limits.
+
+## License
+
+MIT, see [LICENSE](LICENSE). The VerilogEval benchmark (NVIDIA, MIT) is not redistributed here; three short simulator logs produced with its testbenches are kept as parser fixtures with attribution ([note](tests/fixtures/verilogeval/README.md)).

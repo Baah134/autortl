@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_2:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 2,
+    "instruction": "Change the 32-bit `counter` to 8 bits and keep an explicit `if (counter == 8'hFF) counter <= 8'h00; else counter <= counter + 8'd1;` update, instead of iteration 1\u2019s unconditional natural-wrap increment. Keep the synchronous active-high reset and registered `pwm_out <= (counter < duty)` behavior unchanged, including sampling the current counter and duty each cycle. Preserve all observable cycles and reset behavior; do not add a numeric latency annotation.",
+    "candidates": [
+      {
+        "iteration": 2,
+        "mutation": "standard",
+        "instruction": "Change the 32-bit `counter` to 8 bits and keep an explicit `if (counter == 8'hFF) counter <= 8'h00; else counter <= counter + 8'd1;` update, instead of iteration 1\u2019s unconditional natural-wrap increment. Keep the synchronous active-high reset and registered `pwm_out <= (counter < duty)` behavior unchanged, including sampling the current counter and duty each cycle. Preserve all observable cycles and reset behavior; do not add a numeric latency annotation.",
+        "generated_source_sha256": "5d85030a91e71c098b39663f42303f16cb7bc8e7592b56b55d978ff72acbfcba",
+        "final_source_sha256": "5d85030a91e71c098b39663f42303f16cb7bc8e7592b56b55d978ff72acbfcba",
+        "generated_code_hash": "ca3fc40dc1392f3d",
+        "final_code_hash": "ca3fc40dc1392f3d",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.463,
+          "whs_ns": 0.227,
+          "lut_used": 10,
+          "ff_used": 9,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.01,
+          "total_power_w": 0.081
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t1-03\\tier1_thbzfnr6\\pwm\\iter_002\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t1-03\\tier1_thbzfnr6\\pwm\\iter_002\\cand_standard\\synth.tcl",
+          "sha256": "cff64a8066526238540b84d8bf8a160679c866b17223fc8d1992942a96f1c16f"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t1-03\\tier1_thbzfnr6\\pwm\\iter_002\\cand_standard\\pwm.v",
+          "sha256": "336f0c6df81d094b97521cab616454e9ea7d8babe180cc85a8754bd8bde1d070"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": "5d85030a91e71c098b39663f42303f16cb7bc8e7592b56b55d978ff72acbfcba"
+  },
+  "artifacts": {}
+}

@@ -1,0 +1,23 @@
+[
+  {"name": "aw_ready_waits_for_w", "why": "AWREADY waits for WVALID, coupling the address channel to the data channel",
+   "find": "assign awready = !aw_full;", "replace": "assign awready = !aw_full && wvalid;"},
+  {"name": "write_while_response_pending", "why": "a held pair is written while the previous response is stalled, so that response is overwritten",
+   "find": "wire do_write = aw_full && w_full && !bvalid;", "replace": "wire do_write = aw_full && w_full;"},
+  {"name": "slverr_never_reported", "why": "out-of-range writes respond OKAY",
+   "find": "bresp <= aw_addr[5] ? 2'b10 : 2'b00;", "replace": "bresp <= 2'b00;"},
+  {"name": "out_of_range_write_aliases", "why": "an out-of-range write lands in the register its low address bits alias",
+   "find": "assign wr_en = do_write && !aw_addr[5];", "replace": "assign wr_en = do_write;"},
+  {"name": "index_from_low_address_bits", "why": "the register index uses byte-address bits 2:0 instead of word bits 4:2",
+   "find": "assign wr_idx = aw_addr[4:2];", "replace": "assign wr_idx = aw_addr[2:0];"},
+  {"name": "byte_strobes_ignored", "why": "read/write registers take all four bytes whatever WSTRB says",
+   "find": "wire [31:0] strobe_mask = {{8{wr_strb[3]}}, {8{wr_strb[2]}}, {8{wr_strb[1]}}, {8{wr_strb[0]}}};",
+   "replace": "wire [31:0] strobe_mask = 32'hffffffff;"},
+  {"name": "w1c_clear_beats_set", "why": "a flag raised at the same edge as its write-1-to-clear is lost",
+   "find": "pend_q <= (pend_q & ~w1c_clear) | irq_set; // set_wins", "replace": "pend_q <= (pend_q | irq_set) & ~w1c_clear; // set_wins"},
+  {"name": "read_reaccept_while_stalled", "why": "a new ARVALID is captured while R is stalled, changing RDATA under backpressure",
+   "find": "end else if (arvalid && !rvalid) begin // ar_handshake", "replace": "end else if (arvalid) begin // ar_handshake"},
+  {"name": "out_of_range_read_aliases", "why": "an out-of-range read returns the aliased register instead of zero",
+   "find": "rdata <= araddr[5] ? 32'd0 : selected;", "replace": "rdata <= selected;"},
+  {"name": "irq_ignores_mask", "why": "the interrupt output ignores IRQ_MASK",
+   "find": "assign irq = |(pend_q & mask_q);", "replace": "assign irq = |pend_q;"}
+]

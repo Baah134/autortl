@@ -1,0 +1,105 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025
+| Date         : Thu Nov  5 17:08:57 2026
+| Host         : Baah running 64-bit major release  (build 9200)
+| Command      : report_timing -from [all_registers] -to [all_registers] -max_paths 1 -file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t6-01/tier6_je4m8_82/rv32i_core_build/iter_004/cand_standard/timing_reg2reg.rpt
+| Design       : rv32i_core
+| Device       : 7a35t-cpg236
+| Speed File   : -1  PRODUCTION 1.23 2018-06-13
+| Design State : Routed
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Timing Report
+
+Slack (MET) :             0.597ns  (required time - arrival time)
+  Source:                 u_rv_imem/imem_rdata_reg_reg[6]/C
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            u_rv_ctrl/npc_reg[0]/D
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            10.000ns  (clk rise@10.000ns - clk rise@0.000ns)
+  Data Path Delay:        9.375ns  (logic 3.346ns (35.692%)  route 6.029ns (64.308%))
+  Logic Levels:           17  (CARRY4=9 LUT2=1 LUT3=1 LUT5=1 LUT6=5)
+  Clock Path Skew:        -0.022ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    1.455ns = ( 11.455 - 10.000 ) 
+    Source Clock Delay      (SCD):    1.556ns
+    Clock Pessimism Removal (CPR):    0.079ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+                                                      0.000     0.000 r  clk (IN)
+                         net (fo=4356, unset)         1.556     1.556    u_rv_imem/clk
+    SLICE_X40Y19         FDRE                                         r  u_rv_imem/imem_rdata_reg_reg[6]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X40Y19         FDRE (Prop_fdre_C_Q)         0.456     2.012 r  u_rv_imem/imem_rdata_reg_reg[6]/Q
+                         net (fo=16, routed)          1.643     3.655    u_rv_imem/w_rv_imem_imem_rdata[6]
+    SLICE_X45Y36         LUT6 (Prop_lut6_I0_O)        0.124     3.779 r  u_rv_imem/res[11]_i_8/O
+                         net (fo=26, routed)          1.137     4.916    u_rv_imem/res[11]_i_8_n_0
+    SLICE_X49Y38         LUT6 (Prop_lut6_I0_O)        0.124     5.040 r  u_rv_imem/res[30]_i_10/O
+                         net (fo=1, routed)           0.154     5.194    u_rv_imem/w_rv_decode_imm[0]
+    SLICE_X49Y38         LUT3 (Prop_lut3_I0_O)        0.124     5.318 r  u_rv_imem/res[30]_i_4/O
+                         net (fo=44, routed)          0.943     6.260    u_rv_imem/u_rv_alu/p_0_in__0[0]
+    SLICE_X45Y39         LUT2 (Prop_lut2_I1_O)        0.124     6.384 r  u_rv_imem/res[3]_i_9/O
+                         net (fo=1, routed)           0.474     6.859    u_rv_imem/u_rv_alu/addsub_b[0]
+    SLICE_X47Y39         CARRY4 (Prop_carry4_CYINIT_CO[3])
+                                                      0.580     7.439 r  u_rv_imem/res_reg[3]_i_7/CO[3]
+                         net (fo=1, routed)           0.000     7.439    u_rv_imem/res_reg[3]_i_7_n_0
+    SLICE_X47Y40         CARRY4 (Prop_carry4_CI_CO[3])
+                                                      0.114     7.553 r  u_rv_imem/res_reg[7]_i_7/CO[3]
+                         net (fo=1, routed)           0.000     7.553    u_rv_imem/res_reg[7]_i_7_n_0
+    SLICE_X47Y41         CARRY4 (Prop_carry4_CI_CO[3])
+                                                      0.114     7.667 r  u_rv_imem/res_reg[11]_i_10/CO[3]
+                         net (fo=1, routed)           0.000     7.667    u_rv_imem/res_reg[11]_i_10_n_0
+    SLICE_X47Y42         CARRY4 (Prop_carry4_CI_CO[3])
+                                                      0.114     7.781 r  u_rv_imem/res_reg[19]_i_12/CO[3]
+                         net (fo=1, routed)           0.000     7.781    u_rv_imem/res_reg[19]_i_12_n_0
+    SLICE_X47Y43         CARRY4 (Prop_carry4_CI_CO[3])
+                                                      0.114     7.895 r  u_rv_imem/res_reg[19]_i_7/CO[3]
+                         net (fo=1, routed)           0.000     7.895    u_rv_imem/res_reg[19]_i_7_n_0
+    SLICE_X47Y44         CARRY4 (Prop_carry4_CI_CO[3])
+                                                      0.114     8.009 r  u_rv_imem/res_reg[23]_i_8/CO[3]
+                         net (fo=1, routed)           0.000     8.009    u_rv_imem/res_reg[23]_i_8_n_0
+    SLICE_X47Y45         CARRY4 (Prop_carry4_CI_CO[3])
+                                                      0.114     8.123 r  u_rv_imem/res_reg[31]_i_16/CO[3]
+                         net (fo=1, routed)           0.000     8.123    u_rv_imem/res_reg[31]_i_16_n_0
+    SLICE_X47Y46         CARRY4 (Prop_carry4_CI_CO[3])
+                                                      0.114     8.237 r  u_rv_imem/res_reg[31]_i_9/CO[3]
+                         net (fo=1, routed)           0.000     8.237    u_rv_imem/res_reg[31]_i_9_n_0
+    SLICE_X47Y47         CARRY4 (Prop_carry4_CI_CO[0])
+                                                      0.271     8.508 f  u_rv_imem/res_reg[0]_i_8/CO[0]
+                         net (fo=1, routed)           0.639     9.147    u_rv_imem/res_reg[0]_i_8_n_3
+    SLICE_X48Y46         LUT5 (Prop_lut5_I1_O)        0.373     9.520 r  u_rv_imem/res[0]_i_6/O
+                         net (fo=1, routed)           0.280     9.799    u_rv_imem/res[0]_i_6_n_0
+    SLICE_X48Y46         LUT6 (Prop_lut6_I2_O)        0.124     9.923 r  u_rv_imem/res[0]_i_3/O
+                         net (fo=1, routed)           0.453    10.376    u_rv_imem/res[0]_i_3_n_0
+    SLICE_X49Y46         LUT6 (Prop_lut6_I0_O)        0.124    10.500 r  u_rv_imem/res[0]_i_2/O
+                         net (fo=2, routed)           0.307    10.807    u_rv_imem/w_rv_alu_y[0]
+    SLICE_X49Y47         LUT6 (Prop_lut6_I4_O)        0.124    10.931 r  u_rv_imem/npc[0]_i_1/O
+                         net (fo=1, routed)           0.000    10.931    u_rv_ctrl/npc_reg[31]_0[0]
+    SLICE_X49Y47         FDRE                                         r  u_rv_ctrl/npc_reg[0]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)       10.000    10.000 r  
+                                                      0.000    10.000 r  clk (IN)
+                         net (fo=4356, unset)         1.455    11.455    u_rv_ctrl/clk
+    SLICE_X49Y47         FDRE                                         r  u_rv_ctrl/npc_reg[0]/C
+                         clock pessimism              0.079    11.534    
+                         clock uncertainty           -0.035    11.499    
+    SLICE_X49Y47         FDRE (Setup_fdre_C_D)        0.029    11.528    u_rv_ctrl/npc_reg[0]
+  -------------------------------------------------------------------
+                         required time                         11.528    
+                         arrival time                         -10.931    
+  -------------------------------------------------------------------
+                         slack                                  0.597    
+
+
+
+

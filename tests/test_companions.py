@@ -89,6 +89,74 @@ def test_violation_message_names_the_companion_and_the_fix(tmp_path):
     assert companions.violation(INLINED, "uart_tx", extra, tb) == ""     # inlining is fine when nothing names the child
 
 
+# taxonomy: companion_instance_does_not_prove_top_behavior -- a textual instance must also be live.
+OWN_LOGIC = """module uart_tx (input wire clk, input wire rst, output wire tx);
+    reg tx_reg; assign tx = tx_reg;
+    always @(posedge clk) tx_reg <= rst;
+"""
+GENERATE_DEAD = OWN_LOGIC + """    generate if (0) begin : g_dead
+        uart_tx_core u_core(.clk(clk), .rst(rst), .tx(tx));
+    end endgenerate
+endmodule
+"""
+BARE_IF_DEAD = OWN_LOGIC + "    if (0) uart_tx_core u_core(.clk(clk), .rst(rst), .tx(tx));\nendmodule\n"
+OUTPUTS_OPEN = OWN_LOGIC + "    uart_tx_core u_core(.clk(clk), .rst(rst), .tx());\nendmodule\n"
+OUTPUTS_OMITTED = OWN_LOGIC + "    uart_tx_core u_core(.clk(clk), .rst(rst));\nendmodule\n"
+OUTPUT_TO_UNUSED_WIRE = OWN_LOGIC + "    wire spare;\n    uart_tx_core u_core(.clk(clk), .rst(rst), .tx(spare));\nendmodule\n"
+REGISTERED = """module uart_tx (input wire clk, input wire rst, output reg tx);
+    wire core_tx;
+    uart_tx_core #(.DIV(4)) u_core(.clk(clk), .rst(rst), .tx(core_tx));
+    always @(posedge clk) begin
+        if (rst) tx <= 1'b1;
+        else tx <= core_tx;
+    end
+endmodule
+"""
+THROUGH_ASSIGN = """module uart_tx (input wire clk, input wire rst, output wire tx);
+    wire core_tx, inverted;
+    uart_tx_core u_core(clk, rst, core_tx);          // positional binding
+    assign inverted = ~core_tx;
+    assign tx = ~inverted;
+endmodule
+"""
+
+
+def test_live_instance_driving_an_output_passes(tmp_path):
+    extra, tb = files(tmp_path, TB_NAMES_CORE)
+    for source in (TOP, REGISTERED, THROUGH_ASSIGN):
+        assert companions.not_live(source, "uart_tx", extra, ["uart_tx_core"]) == []
+        assert companions.violation(source, "uart_tx", extra, tb) == ""
+
+
+def test_dead_conditional_or_disconnected_instances_are_rejected(tmp_path):
+    extra, tb = files(tmp_path, TB_NAMES_CORE)
+    for source in (GENERATE_DEAD, BARE_IF_DEAD, OUTPUTS_OPEN, OUTPUTS_OMITTED, OUTPUT_TO_UNUSED_WIRE):
+        assert companions.unreachable(source, "uart_tx", extra, ["uart_tx_core"]) == []   # textually present
+        assert companions.not_live(source, "uart_tx", extra, ["uart_tx_core"]) == ["uart_tx_core"]
+        message = companions.violation(source, "uart_tx", extra, tb)
+        assert message.startswith("ERROR:") and "companion_instance_does_not_prove_top_behavior" in message
+        assert "Keep a live instance of uart_tx_core" in message
+    extra, tb = files(tmp_path, TB_TOP_ONLY)
+    assert companions.violation(GENERATE_DEAD, "uart_tx", extra, tb) == ""   # nothing to prove without a child check
+
+
+def test_liveness_through_helpers_requires_every_hop_live(tmp_path):
+    extra, _ = files(tmp_path, TB_NAMES_CORE)
+    helper = """module uart_tx (input wire clk, input wire rst, output wire tx);
+        wrap w(.clk(clk), .rst(rst), .q(tx)); endmodule
+    module wrap (input wire clk, input wire rst, output wire q);
+        uart_tx_core c(.clk(clk), .rst(rst), .tx(q)); endmodule"""
+    assert companions.not_live(helper, "uart_tx", extra, ["uart_tx_core"]) == []
+    dead_hop = helper.replace(".q(tx)", ".q()").replace("endmodule", "assign tx = rst; endmodule", 1)
+    assert companions.not_live(dead_hop, "uart_tx", extra, ["uart_tx_core"]) == ["uart_tx_core"]
+
+
+def test_one_live_instance_suffices_beside_a_dead_one(tmp_path):
+    extra, _ = files(tmp_path, TB_NAMES_CORE)
+    both = TOP.replace("endmodule", "    generate if (0) begin : g uart_tx_core spare(.clk(clk), .rst(rst), .tx()); end endgenerate\nendmodule")
+    assert companions.not_live(both, "uart_tx", extra, ["uart_tx_core"]) == []
+
+
 def setup(tmp_path, monkeypatch, tb_text, source, fixed):
     o = fsm.Orchestrator(RunConfig(mode="optimize", top_module="uart_tx", max_fix_attempts=1), tmp_path / "run")
     extra, tb = files(tmp_path, tb_text)
@@ -115,6 +183,14 @@ def test_inlined_candidate_fails_when_repair_keeps_inlining(tmp_path, monkeypatc
     o._verify_optimization_candidate(c, contract, tb, extra, o.state.iter_dir(1), [])
     assert not c.alive and "uart_tx_core" in c.fail_reason and c.ladder_rungs_passed == 1
     assert tools == []
+
+
+def test_dead_instance_candidate_is_repaired_before_any_tool_runs(tmp_path, monkeypatch):
+    o, c, contract, extra, tb, repair, tools = setup(tmp_path, monkeypatch, TB_NAMES_CORE, GENERATE_DEAD, TOP)
+    errors = []
+    o._verify_optimization_candidate(c, contract, tb, extra, o.state.iter_dir(1), errors)
+    assert repair.call_count == 1 and "Keep a live instance of uart_tx_core" in errors[0]
+    assert c.alive and c.verilog == TOP and tools == ["xvlog_check", "xsim_run"]
 
 
 def test_inlining_is_allowed_when_the_testbench_only_uses_the_top(tmp_path, monkeypatch):

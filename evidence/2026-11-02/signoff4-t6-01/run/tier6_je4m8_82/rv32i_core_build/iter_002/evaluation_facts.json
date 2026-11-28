@@ -1,0 +1,292 @@
+{
+  "candidate_metrics": {
+    "bram_total": 50.0,
+    "bram_used": 0.0,
+    "dsp_total": 90,
+    "dsp_used": 0,
+    "dynamic_power_w": 0.014,
+    "ff_pct": 10.473557692307692,
+    "ff_total": 41600,
+    "ff_used": 4357,
+    "lut_pct": 9.759615384615385,
+    "lut_total": 20800,
+    "lut_used": 2030,
+    "reg2reg_wns_ns": 0.41,
+    "sim_error": "",
+    "sim_passed": true,
+    "synth_error": "",
+    "timing_met": true,
+    "total_power_w": 0.083,
+    "whs_ns": 0.07,
+    "wns_ns": 0.41
+  },
+  "candidate_source": {
+    "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\rv32i_core_build\\iter_002\\cand_standard\\rv32i_core.v",
+    "sha256": "7b62f973080c36f0c96e8dec1e070ae12d17f0dbacf6fad5dee9caac18098b4a",
+    "text": "`timescale 1ns/1ps\r\n// @latency 1\r\nmodule rv_imem (\r\n    input wire clk,\r\n    input wire rst,\r\n    input wire imem_we,\r\n    input wire [5:0] imem_waddr,\r\n    input wire [31:0] imem_wdata,\r\n    input wire [5:0] imem_raddr,\r\n    output wire [31:0] imem_rdata\r\n);\r\n\r\n    reg [31:0] mem [0:63];\r\n    reg [31:0] imem_rdata_reg;\r\n    integer i;\r\n\r\n    assign imem_rdata = imem_rdata_reg;\r\n\r\n    always @(posedge clk) begin\r\n        if (rst) begin\r\n            for (i = 0; i < 64; i = i + 1)\r\n                mem[i] <= 32'b0;\r\n            imem_rdata_reg <= 32'b0;\r\n        end else begin\r\n            imem_rdata_reg <= mem[imem_raddr];\r\n            if (imem_we)\r\n                mem[imem_waddr] <= imem_wdata;\r\n        end\r\n    end\r\n\r\nendmodule\r\n\r\n`timescale 1ns/1ps\r\n// @latency 0\r\nmodule rv_decode (\r\n    input  wire [31:0] instr,\r\n    output wire [4:0]  rs1,\r\n    output wire [4:0]  rs2,\r\n    output wire [4:0]  rd,\r\n    output reg  [31:0] imm,\r\n    output reg  [3:0]  alu_op,\r\n    output reg  [1:0]  a_sel,\r\n    output reg         b_sel,\r\n    output reg  [2:0]  kind,\r\n    output wire [2:0]  funct3\r\n);\r\n\r\nassign rs1    = instr[19:15];\r\nassign rs2    = instr[24:20];\r\nassign rd     = instr[11:7];\r\nassign funct3 = instr[14:12];\r\n\r\nalways @(*) begin\r\n    imm    = 32'b0;\r\n    alu_op = 4'b0;\r\n    a_sel  = 2'b0;\r\n    b_sel  = 1'b0;\r\n    kind   = 3'd6;\r\n\r\n    case (instr[6:0])\r\n        7'b0110011: begin\r\n            kind   = 3'd0;\r\n            alu_op = {instr[30], funct3};\r\n        end\r\n\r\n        7'b0010011: begin\r\n            kind   = 3'd0;\r\n            b_sel  = 1'b1;\r\n            imm    = {{20{instr[31]}}, instr[31:20]};\r\n            if (funct3 == 3'b101)\r\n                alu_op = {instr[30], funct3};\r\n            else\r\n                alu_op = {1'b0, funct3};\r\n        end\r\n\r\n        7'b0110111: begin\r\n            kind   = 3'd0;\r\n            a_sel  = 2'd2;\r\n            b_sel  = 1'b1;\r\n            imm    = {instr[31:12], 12'b0};\r\n        end\r\n\r\n        7'b0010111: begin\r\n            kind   = 3'd0;\r\n            a_sel  = 2'd1;\r\n            b_sel  = 1'b1;\r\n            imm    = {instr[31:12], 12'b0};\r\n        end\r\n\r\n        7'b1101111: begin\r\n            kind   = 3'd4;\r\n            a_sel  = 2'd1;\r\n            b_sel  = 1'b1;\r\n            imm    = {{11{instr[31]}}, instr[31], instr[19:12],\r\n                      instr[20], instr[30:21], 1'b0};\r\n        end\r\n\r\n        7'b1100111: begin\r\n            kind   = 3'd5;\r\n            b_sel  = 1'b1;\r\n            imm    = {{20{instr[31]}}, instr[31:20]};\r\n        end\r\n\r\n        7'b1100011: begin\r\n            kind   = 3'd3;\r\n            a_sel  = 2'd1;\r\n            b_sel  = 1'b1;\r\n            imm    = {{19{instr[31]}}, instr[31], instr[7],\r\n                      instr[30:25], instr[11:8], 1'b0};\r\n        end\r\n\r\n        7'b0000011: begin\r\n            kind   = 3'd1;\r\n            b_sel  = 1'b1;\r\n            imm    = {{20{instr[31]}}, instr[31:20]};\r\n        end\r\n\r\n        7'b0100011: begin\r\n            kind   = 3'd2;\r\n            b_sel  = 1'b1;\r\n            imm    = {{20{instr[31]}}, instr[31:25], instr[11:7]};\r\n        end\r\n\r\n        default: begin\r\n            kind   = 3'd6;\r\n            a_sel  = 2'b0;\r\n            b_sel  = 1'b0;\r\n            alu_op = 4'b0;\r\n            imm    = 32'b0;\r\n        end\r\n    endcase\r\nend\r\n\r\nendmodule\r\n\r\n`timescale 1ns/1ps\r\n// @latency 1\r\nmodule rv_regfile (\r\n    input wire clk,\r\n    input wire rst,\r\n    input wire we,\r\n    input wire [4:0] waddr,\r\n    input wire [31:0] wdata,\r\n    input wire [4:0] raddr1,\r\n    input wire [4:0] raddr2,\r\n    output wire [31:0] rdata1,\r\n    output wire [31:0] rdata2\r\n);\r\n\r\n    reg [31:0] regs [1:31];\r\n    reg [31:0] rdata1_reg;\r\n    reg [31:0] rdata2_reg;\r\n    integer i;\r\n\r\n    assign rdata1 = rdata1_reg;\r\n    assign rdata2 = rdata2_reg;\r\n\r\n    always @(posedge clk) begin\r\n        if (rst) begin\r\n            for (i = 1; i < 32; i = i + 1)\r\n                regs[i] <= 32'b0;\r\n            rdata1_reg <= 32'b0;\r\n            rdata2_reg <= 32'b0;\r\n        end else begin\r\n            if (raddr1 == 5'b0)\r\n                rdata1_reg <= 32'b0;\r\n            else\r\n                rdata1_reg <= regs[raddr1];\r\n\r\n            if (raddr2 == 5'b0)\r\n                rdata2_reg <= 32'b0;\r\n            else\r\n                rdata2_reg <= regs[raddr2];\r\n\r\n            if (we && (waddr != 5'b0))\r\n                regs[waddr] <= wdata;\r\n        end\r\n    end\r\n\r\nendmodule\r\n\r\n`timescale 1ns/1ps\r\n// @latency 0\r\nmodule rv_alu (\r\n    input wire [1:0] a_sel,\r\n    input wire b_sel,\r\n    input wire [3:0] op,\r\n    input wire [31:0] rs1_val,\r\n    input wire [31:0] rs2_val,\r\n    input wire [31:0] pc_val,\r\n    input wire [31:0] imm,\r\n    output wire [31:0] y,\r\n    output wire eq,\r\n    output wire lt,\r\n    output wire ltu\r\n);\r\n\r\n    reg [31:0] a;\r\n    reg [31:0] b;\r\n    reg [31:0] y_comb;\r\n    wire [31:0] addsub_b;\r\n    wire [31:0] addsub_result;\r\n    wire [31:0] shift_data;\r\n    wire [32:0] shift_ext;\r\n    wire [32:0] shifted_ext;\r\n    wire arithmetic_shift;\r\n\r\n    function [31:0] reverse_bits;\r\n        input [31:0] value;\r\n        integer bit_index;\r\n        begin\r\n            for (bit_index = 0; bit_index < 32; bit_index = bit_index + 1)\r\n                reverse_bits[bit_index] = value[31-bit_index];\r\n        end\r\n    endfunction\r\n\r\n    assign addsub_b = b ^ {32{op[3]}};\r\n    assign addsub_result = a + addsub_b + op[3];\r\n\r\n    assign arithmetic_shift = (op[2:0] == 3'b101) && op[3];\r\n    assign shift_data = (op[2:0] == 3'b001) ? reverse_bits(a) : a;\r\n    assign shift_ext = {(arithmetic_shift & shift_data[31]), shift_data};\r\n    assign shifted_ext = $signed(shift_ext) >>> b[4:0];\r\n\r\n    always @(*) begin\r\n        a = 32'b0;\r\n        case (a_sel)\r\n            2'b00: a = rs1_val;\r\n            2'b01: a = pc_val;\r\n            default: a = 32'b0;\r\n        endcase\r\n\r\n        b = rs2_val;\r\n        if (b_sel)\r\n            b = imm;\r\n\r\n        y_comb = 32'b0;\r\n        case (op[2:0])\r\n            3'b000: y_comb = addsub_result;\r\n            3'b001: y_comb = reverse_bits(shifted_ext[31:0]);\r\n            3'b010: y_comb = ($signed(a) < $signed(b)) ? 32'd1 : 32'd0;\r\n            3'b011: y_comb = (a < b) ? 32'd1 : 32'd0;\r\n            3'b100: y_comb = a ^ b;\r\n            3'b101: y_comb = shifted_ext[31:0];\r\n            3'b110: y_comb = a | b;\r\n            3'b111: y_comb = a & b;\r\n        endcase\r\n    end\r\n\r\n    assign y = y_comb;\r\n    assign eq = (rs1_val == rs2_val);\r\n    assign lt = ($signed(rs1_val) < $signed(rs2_val));\r\n    assign ltu = (rs1_val < rs2_val);\r\n\r\nendmodule\r\n\r\n`timescale 1ns/1ps\r\n// @latency 1\r\nmodule rv_dmem (\r\n    input wire clk,\r\n    input wire rst,\r\n    input wire we,\r\n    input wire [4:0] addr,\r\n    input wire [31:0] wdata,\r\n    output wire [31:0] rdata\r\n);\r\n\r\n    reg [31:0] mem [0:31];\r\n    reg [31:0] rdata_reg;\r\n    integer i;\r\n\r\n    assign rdata = rdata_reg;\r\n\r\n    always @(posedge clk) begin\r\n        if (rst) begin\r\n            rdata_reg <= 32'b0;\r\n            for (i = 0; i < 32; i = i + 1)\r\n                mem[i] <= 32'b0;\r\n        end else begin\r\n            rdata_reg <= mem[addr];\r\n            if (we)\r\n                mem[addr] <= wdata;\r\n        end\r\n    end\r\n\r\nendmodule\r\n\r\n`timescale 1ns/1ps\r\n// @latency 1\r\nmodule rv_ctrl (\r\n    input wire clk,\r\n    input wire rst,\r\n    input wire run,\r\n    input wire [2:0] kind,\r\n    input wire [2:0] funct3,\r\n    input wire [4:0] rd,\r\n    input wire [31:0] y,\r\n    input wire eq,\r\n    input wire lt,\r\n    input wire ltu,\r\n    input wire [31:0] rs2_val,\r\n    input wire [31:0] dmem_rdata,\r\n    output wire [31:0] pc,\r\n    output wire [5:0] imem_raddr,\r\n    output wire retire,\r\n    output wire rf_we,\r\n    output wire [4:0] rf_waddr,\r\n    output wire [31:0] rf_wdata,\r\n    output wire dmem_we,\r\n    output wire [4:0] dmem_addr,\r\n    output wire [31:0] dmem_wdata\r\n);\r\n\r\n    localparam [2:0] F = 3'd0;\r\n    localparam [2:0] D = 3'd1;\r\n    localparam [2:0] E = 3'd2;\r\n    localparam [2:0] M = 3'd3;\r\n    localparam [2:0] L = 3'd4;\r\n    localparam [2:0] W = 3'd5;\r\n\r\n    reg [2:0] state;\r\n    reg [31:0] pc_q;\r\n    reg [31:0] npc;\r\n    reg [31:0] res;\r\n    reg [31:0] sdata;\r\n    reg [4:0] rd_q;\r\n    reg wb_q;\r\n    reg st_q;\r\n    reg ld_q;\r\n\r\n    reg taken;\r\n\r\n    always @(*) begin\r\n        taken = 1'b0;\r\n        case (funct3)\r\n            3'b000: taken = eq;\r\n            3'b001: taken = ~eq;\r\n            3'b100: taken = lt;\r\n            3'b101: taken = ~lt;\r\n            3'b110: taken = ltu;\r\n            3'b111: taken = ~ltu;\r\n            default: taken = 1'b0;\r\n        endcase\r\n    end\r\n\r\n    assign pc = pc_q;\r\n    assign imem_raddr = pc_q[7:2];\r\n    assign retire = (state == W);\r\n    assign rf_we = (state == W) && wb_q;\r\n    assign rf_waddr = rd_q;\r\n    assign rf_wdata = res;\r\n    assign dmem_we = (state == M) && st_q;\r\n    assign dmem_addr = res[6:2];\r\n    assign dmem_wdata = sdata;\r\n\r\n    always @(posedge clk) begin\r\n        if (rst) begin\r\n            state <= F;\r\n            pc_q <= 32'b0;\r\n            npc <= 32'b0;\r\n            res <= 32'b0;\r\n            sdata <= 32'b0;\r\n            rd_q <= 5'b0;\r\n            wb_q <= 1'b0;\r\n            st_q <= 1'b0;\r\n            ld_q <= 1'b0;\r\n        end else begin\r\n            case (state)\r\n                F: begin\r\n                    if (run)\r\n                        state <= D;\r\n                    else\r\n                        state <= F;\r\n                end\r\n                D: begin\r\n                    state <= E;\r\n                end\r\n                E: begin\r\n                    wb_q <= (kind == 3'd0) ||\r\n                            (kind == 3'd1) ||\r\n                            (kind == 3'd4) ||\r\n                            (kind == 3'd5);\r\n                    st_q <= (kind == 3'd2);\r\n                    ld_q <= (kind == 3'd1);\r\n                    rd_q <= rd;\r\n                    sdata <= rs2_val;\r\n                    if ((kind == 3'd4) || (kind == 3'd5))\r\n                        res <= pc_q + 32'd4;\r\n                    else\r\n                        res <= y;\r\n\r\n                    if ((kind == 3'd4) || ((kind == 3'd3) && taken))\r\n                        npc <= y;\r\n                    else if (kind == 3'd5)\r\n                        npc <= {y[31:1], 1'b0};\r\n                    else\r\n                        npc <= pc_q + 32'd4;\r\n\r\n                    if ((kind == 3'd1) || (kind == 3'd2))\r\n                        state <= M;\r\n                    else\r\n                        state <= W;\r\n                end\r\n                M: begin\r\n                    if (ld_q)\r\n                        state <= L;\r\n                    else\r\n                        state <= W;\r\n                end\r\n                L: begin\r\n                    res <= dmem_rdata;\r\n                    state <= W;\r\n                end\r\n                W: begin\r\n                    pc_q <= npc;\r\n                    state <= F;\r\n                end\r\n                default: begin\r\n                    state <= F;\r\n                end\r\n            endcase\r\n        end\r\n    end\r\n\r\nendmodule\r\n\r\n`timescale 1ns/1ps\r\nmodule rv32i_core (\r\n    input wire clk,\r\n    input wire rst,\r\n    input wire run,\r\n    input wire imem_we,\r\n    input wire [5:0] imem_waddr,\r\n    input wire [31:0] imem_wdata,\r\n    output wire [31:0] pc,\r\n    output wire retire,\r\n    output wire rf_we,\r\n    output wire [4:0] rf_waddr,\r\n    output wire [31:0] rf_wdata,\r\n    output wire dmem_we,\r\n    output wire [4:0] dmem_addr,\r\n    output wire [31:0] dmem_wdata\r\n);\r\n    wire [5:0] w_rv_ctrl_imem_raddr;\r\n    wire [31:0] w_rv_imem_imem_rdata;\r\n    wire [4:0] w_rv_decode_rs1;\r\n    wire [4:0] w_rv_decode_rs2;\r\n    wire [31:0] w_rv_regfile_rdata1;\r\n    wire [31:0] w_rv_regfile_rdata2;\r\n    wire [31:0] w_rv_ctrl_pc;\r\n    wire [31:0] w_rv_decode_imm;\r\n    wire [3:0] w_rv_decode_alu_op;\r\n    wire [1:0] w_rv_decode_a_sel;\r\n    wire w_rv_decode_b_sel;\r\n    wire [2:0] w_rv_decode_kind;\r\n    wire [2:0] w_rv_decode_funct3;\r\n    wire [4:0] w_rv_decode_rd;\r\n    wire [31:0] w_rv_alu_y;\r\n    wire w_rv_alu_eq;\r\n    wire w_rv_alu_lt;\r\n    wire w_rv_alu_ltu;\r\n    wire w_rv_ctrl_rf_we;\r\n    wire [4:0] w_rv_ctrl_rf_waddr;\r\n    wire [31:0] w_rv_ctrl_rf_wdata;\r\n    wire w_rv_ctrl_dmem_we;\r\n    wire [4:0] w_rv_ctrl_dmem_addr;\r\n    wire [31:0] w_rv_ctrl_dmem_wdata;\r\n    wire [31:0] w_rv_dmem_rdata;\r\n\r\n    rv_imem u_rv_imem (\r\n        .clk(clk),\r\n        .rst(rst),\r\n        .imem_we(imem_we),\r\n        .imem_waddr(imem_waddr),\r\n        .imem_wdata(imem_wdata),\r\n        .imem_raddr(w_rv_ctrl_imem_raddr),\r\n        .imem_rdata(w_rv_imem_imem_rdata)\r\n    );\r\n\r\n    rv_decode u_rv_decode (\r\n        .instr(w_rv_imem_imem_rdata),\r\n        .rs1(w_rv_decode_rs1),\r\n        .rs2(w_rv_decode_rs2),\r\n        .rd(w_rv_decode_rd),\r\n        .imm(w_rv_decode_imm),\r\n        .alu_op(w_rv_decode_alu_op),\r\n        .a_sel(w_rv_decode_a_sel),\r\n        .b_sel(w_rv_decode_b_sel),\r\n        .kind(w_rv_decode_kind),\r\n        .funct3(w_rv_decode_funct3)\r\n    );\r\n\r\n    rv_regfile u_rv_regfile (\r\n        .clk(clk),\r\n        .rst(rst),\r\n        .we(w_rv_ctrl_rf_we),\r\n        .waddr(w_rv_ctrl_rf_waddr),\r\n        .wdata(w_rv_ctrl_rf_wdata),\r\n        .raddr1(w_rv_decode_rs1),\r\n        .raddr2(w_rv_decode_rs2),\r\n        .rdata1(w_rv_regfile_rdata1),\r\n        .rdata2(w_rv_regfile_rdata2)\r\n    );\r\n\r\n    rv_alu u_rv_alu (\r\n        .a_sel(w_rv_decode_a_sel),\r\n        .b_sel(w_rv_decode_b_sel),\r\n        .op(w_rv_decode_alu_op),\r\n        .rs1_val(w_rv_regfile_rdata1),\r\n        .rs2_val(w_rv_regfile_rdata2),\r\n        .pc_val(w_rv_ctrl_pc),\r\n        .imm(w_rv_decode_imm),\r\n        .y(w_rv_alu_y),\r\n        .eq(w_rv_alu_eq),\r\n        .lt(w_rv_alu_lt),\r\n        .ltu(w_rv_alu_ltu)\r\n    );\r\n\r\n    rv_dmem u_rv_dmem (\r\n        .clk(clk),\r\n        .rst(rst),\r\n        .we(w_rv_ctrl_dmem_we),\r\n        .addr(w_rv_ctrl_dmem_addr),\r\n        .wdata(w_rv_ctrl_dmem_wdata),\r\n        .rdata(w_rv_dmem_rdata)\r\n    );\r\n\r\n    assign pc = w_rv_ctrl_pc;\r\n    assign rf_we = w_rv_ctrl_rf_we;\r\n    assign rf_waddr = w_rv_ctrl_rf_waddr;\r\n    assign rf_wdata = w_rv_ctrl_rf_wdata;\r\n    assign dmem_we = w_rv_ctrl_dmem_we;\r\n    assign dmem_addr = w_rv_ctrl_dmem_addr;\r\n    assign dmem_wdata = w_rv_ctrl_dmem_wdata;\r\n\r\n    rv_ctrl u_rv_ctrl (\r\n        .clk(clk),\r\n        .rst(rst),\r\n        .run(run),\r\n        .kind(w_rv_decode_kind),\r\n        .funct3(w_rv_decode_funct3),\r\n        .rd(w_rv_decode_rd),\r\n        .y(w_rv_alu_y),\r\n        .eq(w_rv_alu_eq),\r\n        .lt(w_rv_alu_lt),\r\n        .ltu(w_rv_alu_ltu),\r\n        .rs2_val(w_rv_regfile_rdata2),\r\n        .dmem_rdata(w_rv_dmem_rdata),\r\n        .pc(w_rv_ctrl_pc),\r\n        .imem_raddr(w_rv_ctrl_imem_raddr),\r\n        .retire(retire),\r\n        .rf_we(w_rv_ctrl_rf_we),\r\n        .rf_waddr(w_rv_ctrl_rf_waddr),\r\n        .rf_wdata(w_rv_ctrl_rf_wdata),\r\n        .dmem_we(w_rv_ctrl_dmem_we),\r\n        .dmem_addr(w_rv_ctrl_dmem_addr),\r\n        .dmem_wdata(w_rv_ctrl_dmem_wdata)\r\n    );\r\nendmodule",
+    "truncated": false
+  },
+  "candidate_timing_feasible": true,
+  "first_violated_path_excerpt": null,
+  "flow_and_constraints": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\rv32i_core_build\\iter_002\\cand_standard\\synth.tcl",
+      "sha256": "f4331f09bd4d8ebbb2ec41c9c742c0123cd8356ea47239ba1e395dadb5432535",
+      "text": "set_msg_config -id {VRFC 10-3609} -new_severity ERROR\r\nset_msg_config -id {Synth 8-9873} -new_severity ERROR\r\nset_msg_config -id {Designutils 20-1307} -new_severity ERROR\r\nset_msg_config -id {Synth 8-327} -new_severity ERROR\r\nset_msg_config -id {Synth 8-3352} -new_severity ERROR\r\nset_part xc7a35tcpg236-1\r\nread_verilog \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t6-01/tier6_je4m8_82/rv32i_core_build/iter_002/cand_standard/rv32i_core.v\"\r\nset fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t6-01/tier6_je4m8_82/rv32i_core_build/iter_002/cand_standard/timing.xdc\" w]\r\nputs $fp {create_clock -period 10.000 -name clk [get_ports clk]}\r\nputs $fp {set_property HD.CLK_SRC BUFGCTRL_X0Y0 [get_ports clk]}\r\nclose $fp\r\nread_xdc \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t6-01/tier6_je4m8_82/rv32i_core_build/iter_002/cand_standard/timing.xdc\"\r\nsynth_design -top rv32i_core -flatten_hierarchy rebuilt -mode out_of_context \r\nreport_utilization -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t6-01/tier6_je4m8_82/rv32i_core_build/iter_002/cand_standard/utilization.rpt\"\r\nreport_timing_summary -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t6-01/tier6_je4m8_82/rv32i_core_build/iter_002/cand_standard/timing.rpt\"\r\nopt_design\r\nplace_design\r\n\r\nroute_design\r\nreport_utilization -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t6-01/tier6_je4m8_82/rv32i_core_build/iter_002/cand_standard/utilization_routed.rpt\"\r\nreport_timing_summary -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t6-01/tier6_je4m8_82/rv32i_core_build/iter_002/cand_standard/timing_routed.rpt\"\r\ncatch { if {[llength [all_registers]] > 0} { report_timing -from [all_registers] -to [all_registers] -max_paths 1 -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t6-01/tier6_je4m8_82/rv32i_core_build/iter_002/cand_standard/timing_reg2reg.rpt\" } }\r\nreport_design_analysis -logic_level_distribution -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t6-01/tier6_je4m8_82/rv32i_core_build/iter_002/cand_standard/design_analysis.rpt\"\r\nreport_power -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t6-01/tier6_je4m8_82/rv32i_core_build/iter_002/cand_standard/power.rpt\"\r\ncatch { report_methodology -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t6-01/tier6_je4m8_82/rv32i_core_build/iter_002/cand_standard/methodology.rpt\" }\r\ncatch { report_qor_suggestions -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t6-01/tier6_je4m8_82/rv32i_core_build/iter_002/cand_standard/qor_suggestions.rpt\" }\r\nputs \"SYNTH_COMPLETE\"\r\n",
+      "truncated": false
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\rv32i_core_build\\iter_002\\cand_standard\\timing.xdc",
+      "sha256": "64b6a06a567f5142e3b71c9ec44440c46d1ff02057a9207ab3820113a8e3e958",
+      "text": "create_clock -period 10.000 -name clk [get_ports clk]\r\nset_property HD.CLK_SRC BUFGCTRL_X0Y0 [get_ports clk]\r\n",
+      "truncated": false
+    }
+  ],
+  "improvement_kind": "objective",
+  "measured_improvement": true,
+  "metric_provenance": "Structured metrics are parsed from retained reports; routed utilization/timing reports take precedence when present. The manifest identifies complete files by hash. Header excerpts are bounded previews, not complete reports or an independent metric source.",
+  "objective": "minimize_luts",
+  "previous_best_metrics": {
+    "bram_total": 50.0,
+    "bram_used": 0.0,
+    "dsp_total": 90,
+    "dsp_used": 0,
+    "dynamic_power_w": 0.014,
+    "ff_pct": 10.473557692307692,
+    "ff_total": 41600,
+    "ff_used": 4357,
+    "lut_pct": 10.274038461538462,
+    "lut_total": 20800,
+    "lut_used": 2137,
+    "reg2reg_wns_ns": 0.449,
+    "sim_error": "",
+    "sim_passed": true,
+    "synth_error": "",
+    "timing_met": true,
+    "total_power_w": 0.082,
+    "whs_ns": 0.049,
+    "wns_ns": 0.449
+  },
+  "previous_best_timing_feasible": true,
+  "process_exit_gate": {
+    "passed": true,
+    "policy": "Every required tool's latest actual process exit must be zero with retained matching output; physical-only Doctor may reuse source-bound prior compile/simulation.",
+    "reasons": []
+  },
+  "report_headers": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\rv32i_core_build\\iter_002\\cand_standard\\power.rpt",
+      "sha256": "d4610150caff2dad982c7d101a71e7dec0b31d14cb6c325c947d0498681776b8",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version     : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date             : Thu Nov  5 16:49:37 2026\r\n| Host             : Baah running 64-bit major release  (build 9200)\r\n| Command          : report_power -file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t6-01/tier6_je4m8_82/rv32i_core_build/iter_002/cand_standard/power.rpt\r\n| Design           : rv32i_core\r\n| Device           : xc7a35tcpg236-1\r\n| Design State     : routed\r\n| Grade            : commercial\r\n| Process          : typical\r\n| Characterization : Production\r\n---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nPower Report\r\n\r\nTable of Contents\r\n-----------------\r\n1. Summary\r\n1.1 On-Chip Components\r\n1.2 Power Supply Summary\r\n1.3 Confidence Level\r\n2. Settings\r\n2.1 Environment\r\n2.2 Clock Constraints\r\n3. Detailed Reports\r\n3.1 By Hierarchy\r\n\r\n1. Summary\r\n----------\r\n\r\n+--------------------------+--------------+\r\n| Total On-Chip Power (W)  | 0.083        |\r\n| Design Power Budget (W)  | Unspecified* |\r\n| Power Budget Margin (W)  | NA           |\r\n| Dynamic (W)              | 0.014        |\r\n| Device Static (W)        | 0.068        |\r\n| Effective TJA (C/W)      | 5.0          |\r\n| Max Ambient (C)          | 84.6         |\r\n| Junction Temperature (C) | 25.4         |\r\n| Confidence Level         | Medium       |\r\n| Setting File             | ---   ",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\rv32i_core_build\\iter_002\\cand_standard\\timing.rpt",
+      "sha256": "5f087d12bc89830d0c6226e00855fdae626051b2638e2660176aad0e33a4e13c",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date         : Thu Nov  5 16:46:26 2026\r\n| Host         : Baah running 64-bit major release  (build 9200)\r\n| Command      : report_timing_summary -file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t6-01/tier6_je4m8_82/rv32i_core_build/iter_002/cand_standard/timing.rpt\r\n| Design       : rv32i_core\r\n| Device       : 7a35t-cpg236\r\n| Speed File   : -1  PRODUCTION 1.23 2018-06-13\r\n| Design State : Synthesized\r\n-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nTiming Summary Report\r\n\r\n------------------------------------------------------------------------------------------------\r\n| Timer Settings\r\n| --------------\r\n------------------------------------------------------------------------------------------------\r\n\r\n  Enable Multi Corner Analysis               :  Yes\r\n  Enable Pessimism Removal                   :  Yes\r\n  Pessimism Removal Resolution               :  Nearest Common Node\r\n  Enable Input Delay Default Clock           :  No\r\n  Enable Preset / Clear Arcs                 :  No\r\n  Disable Flight Delays                      :  No\r\n  Ignore I/O Paths                           :  No\r\n  Timing Early Launch at Borrowing Latches   :  No\r\n  Borrow Time for Max Delay Exceptions       :  Yes\r\n  Merge Timing Exceptions                    :  Yes\r\n  Inter-SL",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\rv32i_core_build\\iter_002\\cand_standard\\timing_reg2reg.rpt",
+      "sha256": "fd3226c4a042013aafbe5e28bf11fa46150016ad6bbf8f8871fe400c6cc67764",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date         : Thu Nov  5 16:49:32 2026\r\n| Host         : Baah running 64-bit major release  (build 9200)\r\n| Command      : report_timing -from [all_registers] -to [all_registers] -max_paths 1 -file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t6-01/tier6_je4m8_82/rv32i_core_build/iter_002/cand_standard/timing_reg2reg.rpt\r\n| Design       : rv32i_core\r\n| Device       : 7a35t-cpg236\r\n| Speed File   : -1  PRODUCTION 1.23 2018-06-13\r\n| Design State : Routed\r\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nTiming Report\r\n\r\nSlack (MET) :             0.410ns  (required time - arrival time)\r\n  Source:                 u_rv_imem/imem_rdata_reg_reg[0]/C\r\n                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@5.000ns period=10.000ns})\r\n  Destination:            u_rv_ctrl/res_reg[0]/D\r\n                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@5.000ns period=10.000ns})\r\n  Path Group:             clk\r\n  Path Type:              Setup (Max at Slow Process Corner)\r\n  Requirement:            10.000ns  (clk rise@10.000ns - clk rise@0.000ns)\r\n  Data Path Delay:        9.526ns  (logi",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\rv32i_core_build\\iter_002\\cand_standard\\timing_routed.rpt",
+      "sha256": "7ec9392d22007ede10890e777dc8228e6af1255ebaa812dc4297ec8e1bdec209",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date         : Thu Nov  5 16:49:31 2026\r\n| Host         : Baah running 64-bit major release  (build 9200)\r\n| Command      : report_timing_summary -file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t6-01/tier6_je4m8_82/rv32i_core_build/iter_002/cand_standard/timing_routed.rpt\r\n| Design       : rv32i_core\r\n| Device       : 7a35t-cpg236\r\n| Speed File   : -1  PRODUCTION 1.23 2018-06-13\r\n| Design State : Routed\r\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nTiming Summary Report\r\n\r\n------------------------------------------------------------------------------------------------\r\n| Timer Settings\r\n| --------------\r\n------------------------------------------------------------------------------------------------\r\n\r\n  Enable Multi Corner Analysis               :  Yes\r\n  Enable Pessimism Removal                   :  Yes\r\n  Pessimism Removal Resolution               :  Nearest Common Node\r\n  Enable Input Delay Default Clock           :  No\r\n  Enable Preset / Clear Arcs                 :  No\r\n  Disable Flight Delays                      :  No\r\n  Ignore I/O Paths                           :  No\r\n  Timing Early Launch at Borrowing Latches   :  No\r\n  Borrow Time for Max Delay Exceptions       :  Yes\r\n  Merge Timing Exceptions                    : ",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\rv32i_core_build\\iter_002\\cand_standard\\utilization.rpt",
+      "sha256": "b37d32303ef5b3f1dffaeafbf1f54181b3446258d74421d0cf1c356a3794e476",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\n---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\n| Date         : Thu Nov  5 16:46:04 2026\n| Host         : Baah running 64-bit major release  (build 9200)\n| Command      : report_utilization -file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t6-01/tier6_je4m8_82/rv32i_core_build/iter_002/cand_standard/utilization.rpt\n| Design       : rv32i_core\n| Device       : xc7a35tcpg236-1\n| Speed File   : -1\n| Design State : Synthesized\n---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n\nUtilization Design Information\n\nTable of Contents\n-----------------\n1. Slice Logic\n1.1 Summary of Registers by Type\n2. Memory\n3. DSP\n4. IO and GT Specific\n5. Clocking\n6. Specific Feature\n7. Primitives\n8. Black Boxes\n9. Instantiated Netlists\n\n1. Slice Logic\n--------------\n\n+-------------------------+------+-------+------------+-----------+-------+\n|        Site Type        | Used | Fixed | Prohibited | Available | Util% |\n+-------------------------+------+-------+------------+-----------+-------+\n| Slice LUTs*             | 2061 |     0 |          0 |     20800 |  9.91 |\n|   LUT as Logic          | 2061 |     0 |          0 |     20800 |  9.91 |\n|   LUT as Memory         |    0 |     0 |          0 |      9600 |  0.00 |\n| Slice Registers         | 4357 |     0 |          0 |     41600 | 10.47 |\n|   Register as Flip Flop | 4357 |  ",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\rv32i_core_build\\iter_002\\cand_standard\\utilization_routed.rpt",
+      "sha256": "a18771cc9b8a5575b792b8439e467b75a6d14d05eafbb91d426cb7b47cb30f6c",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\n----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\n| Date         : Thu Nov  5 16:49:25 2026\n| Host         : Baah running 64-bit major release  (build 9200)\n| Command      : report_utilization -file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t6-01/tier6_je4m8_82/rv32i_core_build/iter_002/cand_standard/utilization_routed.rpt\n| Design       : rv32i_core\n| Device       : xc7a35tcpg236-1\n| Speed File   : -1\n| Design State : Routed\n----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n\nUtilization Design Information\n\nTable of Contents\n-----------------\n1. Slice Logic\n1.1 Summary of Registers by Type\n2. Slice Logic Distribution\n3. Memory\n4. DSP\n5. IO and GT Specific\n6. Clocking\n7. Specific Feature\n8. Primitives\n9. Black Boxes\n10. Instantiated Netlists\n\n1. Slice Logic\n--------------\n\n+-------------------------+------+-------+------------+-----------+-------+\n|        Site Type        | Used | Fixed | Prohibited | Available | Util% |\n+-------------------------+------+-------+------------+-----------+-------+\n| Slice LUTs              | 2030 |     0 |          0 |     20800 |  9.76 |\n|   LUT as Logic          | 2030 |     0 |          0 |     20800 |  9.76 |\n|   LUT as Memory         |    0 |     0 |          0 |      9600 |  0.00 |\n| Slice Registers         | 4357 |     0 |          0 |     41600 |",
+      "truncated": true
+    }
+  ],
+  "report_manifest": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\rv32i_core_build\\iter_002\\cand_standard\\power.rpt",
+      "sha256": "d4610150caff2dad982c7d101a71e7dec0b31d14cb6c325c947d0498681776b8"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\rv32i_core_build\\iter_002\\cand_standard\\timing.rpt",
+      "sha256": "5f087d12bc89830d0c6226e00855fdae626051b2638e2660176aad0e33a4e13c"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\rv32i_core_build\\iter_002\\cand_standard\\timing_reg2reg.rpt",
+      "sha256": "fd3226c4a042013aafbe5e28bf11fa46150016ad6bbf8f8871fe400c6cc67764"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\rv32i_core_build\\iter_002\\cand_standard\\timing_routed.rpt",
+      "sha256": "7ec9392d22007ede10890e777dc8228e6af1255ebaa812dc4297ec8e1bdec209"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\rv32i_core_build\\iter_002\\cand_standard\\utilization.rpt",
+      "sha256": "b37d32303ef5b3f1dffaeafbf1f54181b3446258d74421d0cf1c356a3794e476"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\rv32i_core_build\\iter_002\\cand_standard\\utilization_routed.rpt",
+      "sha256": "a18771cc9b8a5575b792b8439e467b75a6d14d05eafbb91d426cb7b47cb30f6c"
+    }
+  ],
+  "tool_exit_evidence": {
+    "history_count": 5,
+    "latest_by_tool": {
+      "vivado": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\rv32i_core_build\\iter_002\\cand_standard\\vivado_synth_output.log",
+        "output_log_sha256": "4e456cddfe72508a66af9e2852c649f5e6100e39dbb406ff35c5514f20e26887",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xelab": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\rv32i_core_build\\iter_002\\cand_standard\\xelab.log",
+        "output_log_sha256": "d1e454cfa46e7e62b33bb6ff769314b86a699605a4198393d50568f5455634ac",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xsim": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\rv32i_core_build\\iter_002\\cand_standard\\xsim.log",
+        "output_log_sha256": "a74b8c9a80cc4476fe288c43680cd53491e4490c96a4f44c2ad3b038474b184f",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xvlog": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\rv32i_core_build\\iter_002\\cand_standard\\xvlog.log",
+        "output_log_sha256": "42c76d3f749b98eb43a3a134368a07ef5d438daf97463fc76703d963e24090ee",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      }
+    },
+    "missing_required_tools": [],
+    "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\rv32i_core_build\\iter_002\\cand_standard\\tool_exit_records.log",
+    "records": [
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\rv32i_core_build\\iter_002\\cand_standard",
+        "driver_returncode": 0,
+        "elapsed_seconds": 2.403058500000043,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xvlog.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\rv32i_core_build\\iter_002\\cand_standard\\xvlog.log",
+        "output_log_sha256": "a5a36555c0d8c9b61246f7de96b01017d9fd04411da4605d6dbc68ac444c575f",
+        "pid": 13012,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xvlog"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\rv32i_core_build\\iter_002\\cand_standard",
+        "driver_returncode": 0,
+        "elapsed_seconds": 2.2957031999976607,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xvlog.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\rv32i_core_build\\iter_002\\cand_standard\\xvlog.log",
+        "output_log_sha256": "42c76d3f749b98eb43a3a134368a07ef5d438daf97463fc76703d963e24090ee",
+        "pid": 23560,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xvlog"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\rv32i_core_build\\iter_002\\cand_standard",
+        "driver_returncode": 0,
+        "elapsed_seconds": 5.218499300011899,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xelab.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\rv32i_core_build\\iter_002\\cand_standard\\xelab.log",
+        "output_log_sha256": "d1e454cfa46e7e62b33bb6ff769314b86a699605a4198393d50568f5455634ac",
+        "pid": 25964,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xelab"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\rv32i_core_build\\iter_002\\cand_standard",
+        "driver_returncode": 0,
+        "elapsed_seconds": 4.6296326000010595,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xsim.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\rv32i_core_build\\iter_002\\cand_standard\\xsim.log",
+        "output_log_sha256": "a74b8c9a80cc4476fe288c43680cd53491e4490c96a4f44c2ad3b038474b184f",
+        "pid": 32796,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xsim"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\rv32i_core_build\\iter_002\\cand_standard",
+        "driver_returncode": 0,
+        "elapsed_seconds": 427.6512616999971,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/vivado.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\rv32i_core_build\\iter_002\\cand_standard\\vivado_synth_output.log",
+        "output_log_sha256": "4e456cddfe72508a66af9e2852c649f5e6100e39dbb406ff35c5514f20e26887",
+        "pid": 30972,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "vivado"
+      }
+    ],
+    "schema_valid": true,
+    "sha256": "c8ceddcb89176d8ce462cdac74d8a1b966b5bbd0d2b054a22b265e98490f6ef5",
+    "status": "recorded",
+    "truncated": false
+  },
+  "verification_logs": [
+    {
+      "head": "INFO: [VRFC 10-2263] Analyzing Verilog file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t6-01/tier6_je4m8_82/rv32i_core_build/iter_002/cand_standard/rv32i_core.v\" into library work\r\nINFO: [VRFC 10-311] analyzing module rv_imem\r\nINFO: [VRFC 10-311] analyzing module rv_decode\r\nINFO: [VRFC 10-311] analyzing module rv_regfile\r\nINFO: [VRFC 10-311] analyzing module rv_alu\r\nINFO: [VRFC 10-311] analyzing module rv_dmem\r\nINFO: [VRFC 10-311] analyzing module rv_ctrl\r\nINFO: [VRFC 10-311] analyzing module rv32i_core\r\nINFO: [VRFC 10-2263] Analyzing Verilog file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t6-01/tier6_je4m8_82/rv32i_core_build/inputs/testbench_path.v\" into library work\r\nINFO: [VRFC 10-311] analyzing module rv32i_core_tb\r\n\r\n",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\rv32i_core_build\\iter_002\\cand_standard\\xvlog.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "42c76d3f749b98eb43a3a134368a07ef5d438daf97463fc76703d963e24090ee",
+      "tail": "",
+      "truncated": false
+    },
+    {
+      "head": "Vivado Simulator v2025.2\r\nCopyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\nCopyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\nRunning: C:/AMDDesignTools/2025.2/Vivado/bin/unwrapped/win64.o/xelab.exe rv32i_core_tb -s rv32i_core_tb_snap --debug off \r\nMulti-threading is on. Using 10 slave threads.\r\nStarting static elaboration\r\nPass Through NonSizing Optimizer\r\nCompleted static elaboration\r\nStarting simulation data flow analysis\r\nCompleted simulation data flow analysis\r\nTime Resolution for simulation is 1ps\r\nCompiling module work.rv_imem\r\nCompiling module work.rv_decode\r\nCompiling module work.rv_regfile\r\nCompiling module work.rv_alu\r\nCompiling module work.rv_dmem\r\nCompiling module work.rv_ctrl\r\nCompiling module work.rv32i_core\r\nCompiling module work.rv32i_core_tb\r\nBuilt simulation snapshot rv32i_core_tb_snap\r\n\r\n",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\rv32i_core_build\\iter_002\\cand_standard\\xelab.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "d1e454cfa46e7e62b33bb6ff769314b86a699605a4198393d50568f5455634ac",
+      "tail": "",
+      "truncated": false
+    },
+    {
+      "head": "\r\n****** xsim v2025.2 (64-bit)\r\n  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025\r\n  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025\r\n  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025\r\n  **** Start of session at: Thu Nov  5 16:42:41 2026\r\n    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\n    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n\r\nsource xsim.dir/rv32i_core_tb_snap/xsim_script.tcl\r\n# xsim {rv32i_core_tb_snap} -autoloadwcfg -runall\r\nTime resolution is 1 ps\r\nrun -all\r\nPROGRESS hand programs done cycle=2075 retired=420\r\nCOVERAGE cycles=13937 programs=45 retired=2556 halts=88 loads=149 stores=141 nops=74 x0_writes=113 f_stalls=164 run_low_in_decode=122 busy_resets=45 pulses=2\r\nTEST PASSED\r\n$finish called at time : 139375 ns : File \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t6-01/tier6_je4m8_82/rv32i_core_build/inputs/testbench_path.v\" Line 491\r\nexit\r\nINFO: [Common 17-206] Exiting xsim at Thu Nov  5 16:42:43 2026...\r\n\r\n",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\rv32i_core_build\\iter_002\\cand_standard\\sim_log.txt",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "a74b8c9a80cc4476fe288c43680cd53491e4490c96a4f44c2ad3b038474b184f",
+      "tail": "",
+      "truncated": false
+    },
+    {
+      "head": "\r\n****** Vivado v2025.2 (64-bit)\r\n  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025\r\n  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025\r\n  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025\r\n  **** Start of session at: Thu Nov  5 16:42:46 2026\r\n    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\n    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n\r\nsource C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t6-01/tier6_je4m8_82/rv32i_core_build/iter_002/cand_standard/synth.tcl\r\n# set_msg_config -id {VRFC 10-3609} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-9873} -new_severity ERROR\r\n# set_msg_config -id {Designutils 20-1307} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-327} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-3352} -new_severity ERROR\r\n# set_part xc7a35tcpg236-1\r\nINFO: [Coretcl 2-1500] The part has been set to 'xc7a35tcpg236-1' for the current project only. Run set_part -help for more details. To evaluate different speed grades in the current design, use the set_speed_grade command, or use the open_checkpoint -part command to change the part used by an existing checkpoint design.\r\nset_part: Time (s): cpu = 00:00:30 ; elapsed = 00:00:25 . Memory (MB): peak = 529.500 ; gain = 224.195\r\n# read_verilog \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t6-01/tier6_je4m8_82/rv32i_core_build/iter_002/cand_standard/rv32i_core.v\"\r\n# set fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t6-01/tier6_je4m8_82/rv32i_core_build/iter_002/cand_standard/timing.xdc\" w]\r\n# puts $fp {create_clock -period 10.000 -name clk [get_ports clk]}\r\n# puts $fp {set_property HD.CLK_SRC BUFGCTRL_X0Y0 [get_ports clk]}\r\n# close $fp\r\n# read_xdc \"C:/Users/prince.baah/Downloads/autortl-work/l",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t6-01\\tier6_je4m8_82\\rv32i_core_build\\iter_002\\cand_standard\\vivado_synth_output.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "4e456cddfe72508a66af9e2852c649f5e6100e39dbb406ff35c5514f20e26887",
+      "tail": "Downloads/autortl-work/logs/signoff4-t6-01/tier6_je4m8_82/rv32i_core_build/iter_002/cand_standard/methodology.rpt\" }\r\nCommand: report_methodology -file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t6-01/tier6_je4m8_82/rv32i_core_build/iter_002/cand_standard/methodology.rpt\r\nINFO: [Timing 38-35] Done setting XDC timing constraints.\r\nINFO: [DRC 23-133] Running Methodology with 2 threads\r\nWARNING: [DRC 23-814] Not all possible (connectivity based) DRCs may have been run because this design is seen as Out of Context.\r\nINFO: [Vivado_Tcl 2-1520] The results of Report Methodology are in file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t6-01/tier6_je4m8_82/rv32i_core_build/iter_002/cand_standard/methodology.rpt.\r\nreport_methodology completed successfully\r\n# catch { report_qor_suggestions -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t6-01/tier6_je4m8_82/rv32i_core_build/iter_002/cand_standard/qor_suggestions.rpt\" }\r\nCommand: report_qor_suggestions -file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t6-01/tier6_je4m8_82/rv32i_core_build/iter_002/cand_standard/qor_suggestions.rpt\r\nCongestion Prediction Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.673 . Memory (MB): peak = 2011.281 ; gain = 0.000\r\nINFO: [Implflow 47-1309] PredResultString: 0:53.66:46.34\r\nfeatureProvider Time (s): cpu = 00:00:01 ; elapsed = 00:00:00.336 . Memory (MB): peak = 2011.281 ; gain = 0.000\r\nINFO: [Implflow 47-1274] ML strategy prediction is not supported for 7-series devices.\r\nreport_qor_suggestions completed successfully\r\nreport_qor_suggestions: Time (s): cpu = 00:00:15 ; elapsed = 00:00:09 . Memory (MB): peak = 2011.281 ; gain = 0.000\r\n# puts \"SYNTH_COMPLETE\"\r\nSYNTH_COMPLETE\r\nINFO: [Common 17-206] Exiting Vivado at Thu Nov  5 16:49:51 2026...\r\n\r\n",
+      "truncated": true
+    }
+  ]
+}

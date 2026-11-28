@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Top interface and live child: PASS \u2014 `iterative_divider` preserves the required ports and directly uses `iterative_divider_core`.\n- Behavior and parameter semantics: PASS \u2014 the source implements WIDTH compute steps, captured operands, divide-by-zero results, held outputs, handshake behavior, and synchronous reset; the ladder passes its parameter matrix.\n- Top latency annotation: PASS \u2014 the top declares `// @latency 9`, matching the authoritative current-top latency.\n- Deterministic verification: PASS \u2014 compile, elaboration, and simulation succeed; the required `TEST PASSED` verdict is present.\n- Tool and metric evidence: PASS \u2014 required tool exits succeed, synthesis reports `SYNTH_COMPLETE`, and routed metric reports are retained.\n- Timing closure: PASS \u2014 timing is met with WNS 0.313 ns and WHS 0.135 ns.\n- Objective improvement: PASS \u2014 LUTs decrease from 68 to 67; FFs decrease from 81 to 74.\n## Summary\n- Passed: 7 of 7\n- Failed: 0 of 7\n- Improved over previous best: YES\n## Recommendation\nACCEPT\n## Reason\nThe candidate satisfies the defined behavioral and verification requirements, meets setup and hold timing, and strictly improves the `minimize_luts` objective with fewer LUTs than the previous best.",
+      "recommendation": "ACCEPT",
+      "passed": 7,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}

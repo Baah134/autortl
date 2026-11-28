@@ -1,0 +1,77 @@
+{
+  "candidates": [
+    {
+      "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier3-08\\uart_fifo_build\\iter_005\\cand_standard",
+      "cache_hit": false,
+      "final_code_hash": "cce4cc201f01cfe4",
+      "final_source_sha256": "072a3b7a988b718acb92493ca7e4a18a1ef298cced4cb7c6f15a9b8cba504508",
+      "flow_script": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier3-08\\uart_fifo_build\\iter_005\\cand_standard\\synth.tcl",
+        "sha256": "60d47867928d49fed4ca4db93e7fa9d6f6ed493ebc97014364ab7e1909942ea2"
+      },
+      "generated_code_hash": "cce4cc201f01cfe4",
+      "generated_source_sha256": "072a3b7a988b718acb92493ca7e4a18a1ef298cced4cb7c6f15a9b8cba504508",
+      "instruction": "In `byte_fifo`, replace `occupancy` with one wrap flag per read/write pointer, toggled when its pointer wraps at `DEPTH-1`; define empty from equal pointers with equal flags and full from equal pointers with different flags. Derive `out_valid`, `in_ready`, and the empty `out_data` value from those conditions, while preserving the existing enqueue/dequeue handshakes, ordering, reset, and pointer behavior for supported `DEPTH` values. Keep `uart_tx` and the top interface and cycle behavior unchanged.",
+      "iteration": 5,
+      "metrics": {
+        "bram_used": 0.0,
+        "dsp_used": 0,
+        "dynamic_power_w": 0.012,
+        "ff_used": 25,
+        "lut_used": 38,
+        "sim_passed": true,
+        "timing_met": false,
+        "total_power_w": 0.082,
+        "whs_ns": 0.157,
+        "wns_ns": -0.92
+      },
+      "mutation": "standard",
+      "reason": "",
+      "rungs": 5,
+      "source": {
+        "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier3-08\\uart_fifo_build\\iter_005\\cand_standard\\uart_fifo.v",
+        "sha256": "90b9fe9913b94b5236d06c9a1591d627e73a9f23219df4ae42ef13b60395e480"
+      },
+      "status": "measured"
+    }
+  ],
+  "doctor": {
+    "action": "rtl_surgery",
+    "adopted": true,
+    "identity_count": 3,
+    "input_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier3-08\\uart_fifo_build\\iter_005\\cand_standard\\uart_fifo.v",
+      "sha256": "90b9fe9913b94b5236d06c9a1591d627e73a9f23219df4ae42ef13b60395e480"
+    },
+    "measured_metrics": {
+      "bram_used": 0.0,
+      "dsp_used": 0,
+      "dynamic_power_w": 0.012,
+      "ff_used": 26,
+      "lut_used": 39,
+      "sim_passed": true,
+      "timing_met": true,
+      "total_power_w": 0.082,
+      "whs_ns": 0.082,
+      "wns_ns": 0.072
+    },
+    "proposed_source_text_sha256": "24110ab44f2147326820870f058664dfb7310f38019eaf0c15fa883b1b4ccb8b",
+    "reason": "policy_improvement",
+    "status": "ADOPTED",
+    "tools_ran": true,
+    "trial_flow_script": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier3-08\\uart_fifo_build\\iter_005\\doctor_rtl_surgery_trial\\synth.tcl",
+      "sha256": "984e9080767fc6fbb70995d2bd6bd3fede5630698e64de3fa6968547f5a9c040"
+    },
+    "trial_source": {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier3-08\\uart_fifo_build\\iter_005\\doctor_rtl_surgery_trial\\uart_fifo.v",
+      "sha256": "f5e23b8d6a964be79423bc59f86c7a30995ea473b209b13f9baba4d8568420a4"
+    }
+  },
+  "instruction": "In `byte_fifo`, replace `occupancy` with one wrap flag per read/write pointer, toggled when its pointer wraps at `DEPTH-1`; define empty from equal pointers with equal flags and full from equal pointers with different flags. Derive `out_valid`, `in_ready`, and the empty `out_data` value from those conditions, while preserving the existing enqueue/dequeue handshakes, ordering, reset, and pointer behavior for supported `DEPTH` values. Keep `uart_tx` and the top interface and cycle behavior unchanged.",
+  "is_best": false,
+  "iteration": 5,
+  "recommendation": "REJECT",
+  "schema_version": 1,
+  "selected_source_sha256": "24110ab44f2147326820870f058664dfb7310f38019eaf0c15fa883b1b4ccb8b"
+}

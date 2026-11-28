@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_4:decision:instruction:0",
+  "result": "Keep the top interface and `// @latency 0`, and retain registered `clean` with a 3-bit phase register. Replace binary increment and the `run_count == 3'd7` terminal branch with an explicit 8-state Gray-code cycle starting at `000`, advancing once per sample where `noisy != clean_reg`, and returning to `000` when the eighth differing sample updates `clean_reg`; when `noisy == clean_reg`, reset the phase to `000`. Preserve synchronous active-high reset and exact sample timing, then evaluate against the 3-LUT, 4-FF incumbent under every required verification and routed timing gate.",
+  "artifacts": {}
+}

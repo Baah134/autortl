@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_2:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 2\n## Contract check\n- Top interface and defined behavior: PASS \u2014 candidate retains the top interface and live child; the unchanged trusted testbench passes across WIDTH 1, 2, 4, 8, 13 and 16, including timing, stalls, reset and arithmetic checks.\n- Top latency annotation: PASS \u2014 `// @latency 9` matches the authoritative top latency.\n- Tool and simulation gates: PASS \u2014 xvlog, xelab, xsim and Vivado exited successfully; simulation reports `TEST PASSED` and synthesis reports `SYNTH_COMPLETE`.\n- Routed metric integrity: PASS \u2014 retained routed reports and hashes are provided; candidate reports 38 LUTs, 45 FFs, WNS 0.313 ns and WHS 0.125 ns.\n- Timing closure: PASS \u2014 timing is met, and both setup and hold slack are nonnegative.\n- Improvement over previous best: FAIL \u2014 both designs are timing-feasible; for `minimize_luts`, candidate `(38 LUTs, 45 FFs)` is worse than previous best `(30 LUTs, 40 FFs)`. `improvement_kind` is null and `measured_improvement` is false.\n## Summary\n- Passed: 5 of 6\n- Failed: 1 of 6\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes the behavioral, annotation, tool, routed-metric and timing gates, but it does not improve the selected objective over the timing-feasible previous best: it uses more LUTs and more FFs. The mandatory strict objective improvement is absent.",
+      "recommendation": "REJECT",
+      "passed": 5,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_2:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 2,
+    "instruction": "In `spi_master_core`, remove `cs_n_reg` and its reset, acceptance, and completion assignments, and drive `cs_n` as `!busy_reg`; the contract defines chip select as active exactly while a transfer is busy. Keep `busy_reg` registered so `cs_n` changes only after clock edges, including synchronous reset, transfer start, and completion. Preserve the top\u2019s `// @latency 33` annotation and all other state and transfer logic; retain the candidate only if the frozen verification passes, routed WNS and WHS are nonnegative, and the LUT/FF objective improves over the incumbent.",
+    "candidates": [
+      {
+        "iteration": 2,
+        "mutation": "standard",
+        "instruction": "In `spi_master_core`, remove `cs_n_reg` and its reset, acceptance, and completion assignments, and drive `cs_n` as `!busy_reg`; the contract defines chip select as active exactly while a transfer is busy. Keep `busy_reg` registered so `cs_n` changes only after clock edges, including synchronous reset, transfer start, and completion. Preserve the top\u2019s `// @latency 33` annotation and all other state and transfer logic; retain the candidate only if the frozen verification passes, routed WNS and WHS are nonnegative, and the LUT/FF objective improves over the incumbent.",
+        "generated_source_sha256": "83decb50ad085569e0260deffcc3b16cd8fcd75496481530ce53b00186ca01c2",
+        "final_source_sha256": "83decb50ad085569e0260deffcc3b16cd8fcd75496481530ce53b00186ca01c2",
+        "generated_code_hash": "19d76be1185fbc2e",
+        "final_code_hash": "19d76be1185fbc2e",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.179,
+          "whs_ns": 0.133,
+          "lut_used": 20,
+          "ff_used": 31,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.015,
+          "total_power_w": 0.085
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-03\\tier4_pkqwcvyo\\spi_master_build\\iter_002\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-03\\tier4_pkqwcvyo\\spi_master_build\\iter_002\\cand_standard\\synth.tcl",
+          "sha256": "d3cb49d40d6b16be7a451e84341a970e0edd8bc90f3bafdb5ab7d17c702204ef"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-03\\tier4_pkqwcvyo\\spi_master_build\\iter_002\\cand_standard\\spi_master.v",
+          "sha256": "480ee8f3ad177907b0b0d7151b6631bd729f66aa2f583fc7243975dab1208b9f"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "REJECT",
+    "is_best": false,
+    "selected_source_sha256": "83decb50ad085569e0260deffcc3b16cd8fcd75496481530ce53b00186ca01c2"
+  },
+  "artifacts": {}
+}

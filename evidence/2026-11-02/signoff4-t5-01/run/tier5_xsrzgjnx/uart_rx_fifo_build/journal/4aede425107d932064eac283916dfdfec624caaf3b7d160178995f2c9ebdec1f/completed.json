@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_1:decision:instruction:0",
+  "result": "In `rx_fifo`, replace the `mem[rd_ptr]` combinational output selection with an `out_data` register that is zero after reset, loads `wr_data` on a push into an empty FIFO, and loads the next head byte on a pop when entries remain. Handle simultaneous pop/push at occupancy one by loading the incoming byte, and ensure a pop without a replacement produces zero; otherwise hold the registered head value. Preserve FIFO ordering, full replacement, overflow pulse, all parameter values, and the exact cycle in which each output changes. Keep the existing UART timing and counter behavior intact.",
+  "artifacts": {}
+}

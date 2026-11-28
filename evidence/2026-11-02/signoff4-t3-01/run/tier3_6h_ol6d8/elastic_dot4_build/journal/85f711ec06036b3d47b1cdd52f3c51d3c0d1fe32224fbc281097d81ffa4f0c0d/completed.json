@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_2:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 2\n## Contract check\n- Top interface and latency annotation: PASS \u2014 top `elastic_dot4` retains the contracted interface and declares `// @latency 2`.\n- Defined behavior: PASS \u2014 the unchanged integration testbench reports `TEST PASSED` with required scenario coverage.\n- Tool gates: PASS \u2014 xvlog, xelab, xsim, and Vivado exited successfully; synthesis reported `SYNTH_COMPLETE`.\n- Routed metric integrity: PASS \u2014 retained routed timing and utilization reports are present with matching manifest hashes.\n- Timing closure: PASS \u2014 `timing_met=true`, setup WNS is 0.105 ns, and hold WHS is 0.18 ns.\n- Improvement over previous best: FAIL \u2014 candidate and previous best both report 20 LUTs and 20 FFs; with both timing-feasible, the minimize-LUTs objective requires a strict improvement, and no improvement is recorded.\n## Summary\n- Passed: 5 of 6\n- Failed: 1 of 6\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes the behavioral, annotation, tool, metric, and timing gates, but it does not strictly improve the already timing-feasible previous best on the chosen LUT objective.",
+      "recommendation": "REJECT",
+      "passed": 5,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

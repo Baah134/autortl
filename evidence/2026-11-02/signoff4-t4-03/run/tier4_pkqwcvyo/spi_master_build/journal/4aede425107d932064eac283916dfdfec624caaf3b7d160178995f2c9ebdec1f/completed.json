@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_1:decision:instruction:0",
+  "result": "In `spi_master_core`, remove `rsp_data_reg` and assign `rsp_data` from the registered `rx_shift`; retain its synchronous reset and shift-on-MISO-sample behavior. On the final half-period edge, assert `rsp_valid` as before and rely on the completed shift register value, which was updated at the preceding rising-SCLK edge, to hold the response through stalls until reset or the next accepted command. Preserve the full `HALF_PERIOD` range, all SCLK/MOSI/CS timing, handshakes, reset priority, and the top\u2019s `// @latency 33` annotation.",
+  "artifacts": {}
+}

@@ -1,0 +1,107 @@
+{
+  "entry": "curriculum\\tier6\\aes128_core_build",
+  "top": "aes128_core_tb",
+  "testbench_sha256": "fffabc8b5d9c32649132dd9abe61d1df5c6cecb7fce81b2f8f53ac0ca33468b2",
+  "runs": [
+    {
+      "case": "reference",
+      "why": "control",
+      "expect_pass": true,
+      "verdict": "TEST PASSED",
+      "assertion_detected": false,
+      "as_required": true,
+      "source_sha256": "e20f5c9181827f6d8be4356525e7790c826339a27b1b6f87cd8326982082afd6"
+    },
+    {
+      "case": "sbox_entry_53_wrong",
+      "why": "one S-box entry in the round function is off by one bit (S(53) = ee instead of ed)",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 443 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "abd0d4ad78f4edc28eeeb284d06840e9c5dc7a9855e1300e77e83e55ec805248"
+    },
+    {
+      "case": "shift_rows_rotates_right",
+      "why": "ShiftRows rotates rows 1 and 3 the wrong way",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 979 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "d9fd0a64aead6b5b5ed2026971ef10e41d651b1954d9b23759313b98bc88ffe5"
+    },
+    {
+      "case": "mix_columns_row1_coefficient",
+      "why": "row 1 of MixColumns multiplies a2 by 2 instead of 3",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 979 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "278955449e0c7f16cc33dde359404f9f2566b329cb4499413d913786d2cf6f2d"
+    },
+    {
+      "case": "final_round_mixes_columns",
+      "why": "the final round applies MixColumns",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 979 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "f9c510bca735555a200a8dab75270ac4dd79a6a442fa734975898c347505bbe5"
+    },
+    {
+      "case": "rcon_doubling_not_reduced",
+      "why": "the round constant after 80 is doubled without reduction, giving 00 instead of 1b",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 979 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "7fef0daf52518b17d088d0ecda23960390cac0bee47e04ffc973d73fe26d58cb"
+    },
+    {
+      "case": "key_step_without_rotword",
+      "why": "the key schedule substitutes w3 without RotWord",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 979 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "e6e881136e582bb9e434a1e6b8f12b01cccaf3360426377308768d6ad914b932"
+    },
+    {
+      "case": "key_step_w7_from_w5",
+      "why": "the last key word chains from w5 instead of w6",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 979 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "d9200d781e0ee613d40bc1beef2e19c63cae3ee6c2a4b8ca59e18df71d0d12b6"
+    },
+    {
+      "case": "initial_add_round_key_missing",
+      "why": "the accepted plaintext enters round 1 without the initial AddRoundKey",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 954 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "a4b617fd6630bfb74f7dc3d96266271ddaac358e49563f181f7dbd7cbfb73a40"
+    },
+    {
+      "case": "in_ready_while_busy",
+      "why": "in_ready ignores the block in flight and only waits for the output",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 5767 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "6afc1721c05e66f02c45c1a11c4629bbf23a38191dfade060f6c7b1386f5a6b1"
+    },
+    {
+      "case": "output_dropped_under_backpressure",
+      "why": "out_valid falls after one cycle whether or not out_ready took the block",
+      "expect_pass": false,
+      "verdict": "TEST FAILED: 3234 errors",
+      "assertion_detected": true,
+      "as_required": true,
+      "source_sha256": "d298be2f42014fcc0af116eda3dada137487d9daa8ddfa645cc78ddb9290fe0e"
+    }
+  ],
+  "qualified": true
+}

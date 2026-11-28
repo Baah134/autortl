@@ -1,0 +1,112 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025
+| Date         : Fri Oct 30 10:36:22 2026
+| Host         : Baah running 64-bit major release  (build 9200)
+| Command      : report_timing -from [all_registers] -to [all_registers] -max_paths 1 -file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier2-01/fir8/iter_000/timing_reg2reg.rpt
+| Design       : fir8
+| Device       : 7a35t-cpg236
+| Speed File   : -1  PRODUCTION 1.23 2018-06-13
+| Design State : Routed
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Timing Report
+
+Slack (VIOLATED) :        -9.918ns  (required time - arrival time)
+  Source:                 sum_pipe01/CLK
+                            (rising edge-triggered cell DSP48E1 clocked by clk  {rise@0.000ns fall@3.333ns period=6.667ns})
+  Destination:            sum_pipe0_reg[29]/D
+                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@3.333ns period=6.667ns})
+  Path Group:             clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            6.667ns  (clk rise@6.667ns - clk rise@0.000ns)
+  Data Path Delay:        16.520ns  (logic 15.074ns (91.248%)  route 1.446ns (8.752%))
+  Logic Levels:           14  (CARRY4=8 DSP48E1=5 LUT2=1)
+  Clock Path Skew:        -0.139ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    4.201ns = ( 10.868 - 6.667 ) 
+    Source Clock Delay      (SCD):    4.661ns
+    Clock Pessimism Removal (CPR):    0.322ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk rise edge)        0.000     0.000 r  
+    M18                                               0.000     0.000 r  clk (IN)
+                         net (fo=0)                   0.000     0.000    clk
+    M18                  IBUF (Prop_ibuf_I_O)         0.938     0.938 r  clk_IBUF_inst/O
+                         net (fo=1, routed)           1.972     2.910    clk_IBUF
+    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.096     3.006 r  clk_IBUF_BUFG_inst/O
+                         net (fo=197, routed)         1.656     4.661    clk_IBUF_BUFG
+    DSP48_X0Y4           DSP48E1                                      r  sum_pipe01/CLK
+  -------------------------------------------------------------------    -------------------
+    DSP48_X0Y4           DSP48E1 (Prop_dsp48e1_CLK_PCOUT[47])
+                                                      4.206     8.867 r  sum_pipe01/PCOUT[47]
+                         net (fo=1, routed)           0.002     8.869    sum_pipe01_n_106
+    DSP48_X0Y5           DSP48E1 (Prop_dsp48e1_PCIN[47]_PCOUT[47])
+                                                      1.713    10.582 r  sum_pipe00/PCOUT[47]
+                         net (fo=1, routed)           0.002    10.584    sum_pipe00_n_106
+    DSP48_X0Y6           DSP48E1 (Prop_dsp48e1_PCIN[47]_PCOUT[47])
+                                                      1.713    12.297 r  sum_pipe00__0/PCOUT[47]
+                         net (fo=1, routed)           0.002    12.299    sum_pipe00__0_n_106
+    DSP48_X0Y7           DSP48E1 (Prop_dsp48e1_PCIN[47]_PCOUT[47])
+                                                      1.713    14.012 r  sum_pipe00__1/PCOUT[47]
+                         net (fo=1, routed)           0.002    14.014    sum_pipe00__1_n_106
+    DSP48_X0Y8           DSP48E1 (Prop_dsp48e1_PCIN[47]_PCOUT[47])
+                                                      1.713    15.727 r  sum_pipe00__2/PCOUT[47]
+                         net (fo=1, routed)           0.002    15.729    sum_pipe00__2_n_106
+    DSP48_X0Y9           DSP48E1 (Prop_dsp48e1_PCIN[47]_P[2])
+                                                      1.518    17.247 r  sum_pipe00__3/P[2]
+                         net (fo=1, routed)           0.778    18.025    sum_pipe00__3_n_103
+    SLICE_X11Y20         LUT2 (Prop_lut2_I1_O)        0.124    18.149 r  sum_pipe0[7]_i_16/O
+                         net (fo=1, routed)           0.000    18.149    sum_pipe0[7]_i_16_n_0
+    SLICE_X11Y20         CARRY4 (Prop_carry4_S[0]_CO[3])
+                                                      0.532    18.681 r  sum_pipe0_reg[7]_i_11/CO[3]
+                         net (fo=1, routed)           0.000    18.681    sum_pipe0_reg[7]_i_11_n_0
+    SLICE_X11Y21         CARRY4 (Prop_carry4_CI_CO[3])
+                                                      0.114    18.795 r  sum_pipe0_reg[11]_i_11/CO[3]
+                         net (fo=1, routed)           0.000    18.795    sum_pipe0_reg[11]_i_11_n_0
+    SLICE_X11Y22         CARRY4 (Prop_carry4_CI_CO[3])
+                                                      0.114    18.909 r  sum_pipe0_reg[15]_i_11/CO[3]
+                         net (fo=1, routed)           0.000    18.909    sum_pipe0_reg[15]_i_11_n_0
+    SLICE_X11Y23         CARRY4 (Prop_carry4_CI_CO[3])
+                                                      0.114    19.023 r  sum_pipe0_reg[23]_i_7/CO[3]
+                         net (fo=1, routed)           0.000    19.023    sum_pipe0_reg[23]_i_7_n_0
+    SLICE_X11Y24         CARRY4 (Prop_carry4_CI_CO[3])
+                                                      0.114    19.137 r  sum_pipe0_reg[23]_i_2/CO[3]
+                         net (fo=1, routed)           0.009    19.146    sum_pipe0_reg[23]_i_2_n_0
+    SLICE_X11Y25         CARRY4 (Prop_carry4_CI_O[1])
+                                                      0.334    19.480 r  sum_pipe0_reg[27]_i_2/O[1]
+                         net (fo=3, routed)           0.649    20.129    C[23]
+    SLICE_X10Y26         CARRY4 (Prop_carry4_DI[0]_CO[3])
+                                                      0.729    20.858 r  sum_pipe0_reg[27]_i_1/CO[3]
+                         net (fo=1, routed)           0.000    20.858    sum_pipe0_reg[27]_i_1_n_0
+    SLICE_X10Y27         CARRY4 (Prop_carry4_CI_O[1])
+                                                      0.323    21.181 r  sum_pipe0_reg[31]_i_1/O[1]
+                         net (fo=1, routed)           0.000    21.181    sum_pipe00__4[29]
+    SLICE_X10Y27         FDRE                                         r  sum_pipe0_reg[29]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk rise edge)        6.667     6.667 r  
+    M18                                               0.000     6.667 r  clk (IN)
+                         net (fo=0)                   0.000     6.667    clk
+    M18                  IBUF (Prop_ibuf_I_O)         0.805     7.472 r  clk_IBUF_inst/O
+                         net (fo=1, routed)           1.868     9.340    clk_IBUF
+    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.091     9.431 r  clk_IBUF_BUFG_inst/O
+                         net (fo=197, routed)         1.437    10.868    clk_IBUF_BUFG
+    SLICE_X10Y27         FDRE                                         r  sum_pipe0_reg[29]/C
+                         clock pessimism              0.322    11.190    
+                         clock uncertainty           -0.035    11.155    
+    SLICE_X10Y27         FDRE (Setup_fdre_C_D)        0.109    11.264    sum_pipe0_reg[29]
+  -------------------------------------------------------------------
+                         required time                         11.264    
+                         arrival time                         -21.181    
+  -------------------------------------------------------------------
+                         slack                                 -9.918    
+
+
+
+

@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_3:decision:instruction:0",
+  "result": "Keep the existing 32-bit counter declaration and registered `pwm_out` comparison unchanged. Replace only the counter update with an 8-bit modulo-256 update expressed as a 4-bit low-nibble increment and a 4-bit high-nibble increment enabled when the old low nibble is `4'hF`; preserve reset-to-zero and the current cycle sequence. Leave `pwm_out <= (counter < {24'd0, duty})` and its reset behavior unchanged, and add no numeric latency annotation.",
+  "artifacts": {}
+}

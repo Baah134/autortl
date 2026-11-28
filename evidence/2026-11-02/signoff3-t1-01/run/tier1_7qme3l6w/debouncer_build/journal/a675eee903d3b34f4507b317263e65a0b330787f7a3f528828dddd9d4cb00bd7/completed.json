@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_4:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 4\n## Contract check\n- Interface and edit boundary: PASS \u2014 candidate preserves the `debouncer_top` ports and edits only the top.\n- Behavior and cycle timing: PASS \u2014 the counter updates `clean` after eight consecutive samples differing from its current value; reset is synchronous, active high, and clears `clean` and the count.\n- Top latency annotation: PASS \u2014 `// @latency 0` matches the authoritative known latency.\n- Deterministic and tool gates: PASS \u2014 ladder is ALIVE; simulation passed; xvlog, xelab, xsim, and Vivado exited successfully, with `SYNTH_COMPLETE`.\n- Routed metrics and timing: PASS \u2014 retained routed reports support the metrics; WNS is 0.57 ns and WHS is 0.057 ns, both nonnegative.\n- Objective improvement: PASS \u2014 LUTs tie at 3 while FFs improve from 5 to 4, a lexicographic `minimize_luts` improvement.\n## Summary\n- Passed: 6 of 6\n- Failed: 0 of 6\n- Improved over previous best: YES\n## Recommendation\nACCEPT\n## Reason\nThe candidate meets the defined debouncer behavior and all mandatory verification and timing gates. With LUT count unchanged and FF count reduced, it improves the chosen objective over the previous timing-feasible best.",
+      "recommendation": "ACCEPT",
+      "passed": 6,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}

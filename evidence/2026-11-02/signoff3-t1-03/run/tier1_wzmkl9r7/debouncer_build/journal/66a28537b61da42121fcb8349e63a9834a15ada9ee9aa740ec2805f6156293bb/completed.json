@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_4:model:generator.generate:0",
+  "result": "`timescale 1ns/1ps\n// @latency 0\nmodule debouncer_top (\n    input wire clk,\n    input wire rst,\n    input wire noisy,\n    output wire clean\n);\n    reg clean_reg;\n    reg [2:0] phase;\n\n    assign clean = clean_reg;\n\n    always @(posedge clk) begin\n        if (rst) begin\n            clean_reg <= 1'b0;\n            phase <= 3'b000;\n        end else if (noisy == clean_reg) begin\n            phase <= 3'b000;\n        end else begin\n            case (phase)\n                3'b000: phase <= 3'b001;\n                3'b001: phase <= 3'b011;\n                3'b011: phase <= 3'b010;\n                3'b010: phase <= 3'b110;\n                3'b110: phase <= 3'b111;\n                3'b111: phase <= 3'b101;\n                3'b101: phase <= 3'b100;\n                3'b100: begin\n                    clean_reg <= noisy;\n                    phase <= 3'b000;\n                end\n                default: phase <= 3'b000;\n            endcase\n        end\n    end\nendmodule",
+  "artifacts": {}
+}

@@ -1,6 +1,6 @@
 """Two benches at once never drop a curriculum record.
 
-Taxonomy: concurrent_bench_drops_history.
+Taxonomy: concurrent_bench_drops_history, cross_tier_benches_serialized.
 """
 import json
 
@@ -27,6 +27,61 @@ def test_a_history_change_during_a_campaign_fails_closed(curriculum):  # noqa: F
     summaries = sorted(output.rglob("summary.json"))
     assert len(summaries) == 2 and json.loads(summaries[-1].read_text())["tier"] == 0
     assert not runner.RESULTS.with_name(runner.RESULTS.name + ".lock").exists()
+
+
+def _tier1_line():
+    record = {"tier": 1, "cohort": "other-tier", "qualified": True, "held": False, "full_tier": True,
+              "consecutive_qualifying_runs": 1, "results": [{"entry": "x", "ok": True}]}
+    return (json.dumps(record) + "\n").encode()
+
+
+def _during_next_campaign(orch, change):
+    construct = orch.side_effect
+
+    def other_bench_finishes_meanwhile(cfg, run_dir):
+        if not getattr(other_bench_finishes_meanwhile, "done", False):
+            other_bench_finishes_meanwhile.done = True
+            change()
+        return construct(cfg, run_dir)
+
+    orch.side_effect = other_bench_finishes_meanwhile
+
+
+def test_another_tier_finishing_during_a_campaign_is_kept(curriculum):  # noqa: F811
+    # cross_tier_benches_serialized
+    _, orch, output = curriculum
+    assert runner.run_tier(0, output_root=output) == 0
+    before = runner.RESULTS.read_bytes()
+    _during_next_campaign(orch, lambda: runner.RESULTS.write_bytes(before + _tier1_line()))
+    assert runner.run_tier(0, output_root=output) == 0
+    after = runner.RESULTS.read_bytes()
+    assert after.startswith(before + _tier1_line())  # earlier bytes never re-serialized
+    assert [r["tier"] for r in records()] == [0, 1, 0]
+    assert runner.run_tier(0, output_root=output) == 0
+    tier0 = [r for r in records() if r["tier"] == 0]
+    assert [r["consecutive_qualifying_runs"] for r in tier0] == [1, 2, 3] and tier0[-1]["held"]
+    assert not runner.RESULTS.with_name(runner.RESULTS.name + ".lock").exists()
+
+
+def test_the_same_tier_finishing_during_a_campaign_still_fails_closed(curriculum):  # noqa: F811
+    _, orch, output = curriculum
+    assert runner.run_tier(0, output_root=output) == 0
+    before = runner.RESULTS.read_bytes()
+    other = before + _tier1_line() + before.splitlines(keepends=True)[-1]
+    _during_next_campaign(orch, lambda: runner.RESULTS.write_bytes(other))
+    assert runner.run_tier(0, output_root=output) == 3
+    assert runner.RESULTS.read_bytes() == other
+    assert not runner.RESULTS.with_name(runner.RESULTS.name + ".lock").exists()
+
+
+def test_a_rewritten_history_still_fails_closed(curriculum):  # noqa: F811
+    _, orch, output = curriculum
+    assert runner.run_tier(0, output_root=output) == 0
+    before = runner.RESULTS.read_bytes()
+    rewritten = _tier1_line() + before  # grew, but the start bytes are no longer a prefix
+    _during_next_campaign(orch, lambda: runner.RESULTS.write_bytes(rewritten))
+    assert runner.run_tier(0, output_root=output) == 3
+    assert runner.RESULTS.read_bytes() == rewritten
 
 
 def test_a_held_lock_blocks_the_write(curriculum):  # noqa: F811
@@ -56,6 +111,51 @@ def test_a_stale_lock_is_replaced_but_a_fresh_one_still_blocks(curriculum):  # n
     os.utime(lock, (old, old))
     assert runner.run_tier(0, output_root=output) == 0  # stale_history_lock_blocks_benches
     assert len(records()) == 1 and not lock.exists()
+
+
+def _finished_process_id():
+    import subprocess, sys
+    child = subprocess.Popen([sys.executable, "-c", "pass"])
+    child.wait()
+    return child.pid
+
+
+def test_a_fresh_lock_whose_owner_died_is_replaced_at_once(curriculum):  # noqa: F811
+    # dead_bench_lock_blocks_until_stale: no ten-minute wait after a crashed bench.
+    _, _, output = curriculum
+    lock = runner.RESULTS.with_name(runner.RESULTS.name + ".lock")
+    lock.parent.mkdir(parents=True, exist_ok=True)
+    lock.write_text(str(_finished_process_id()))
+    assert runner.run_tier(0, output_root=output) == 0
+    assert len(records()) == 1 and not lock.exists()
+
+
+def test_a_fresh_lock_whose_owner_runs_still_blocks(curriculum):  # noqa: F811
+    import subprocess, sys
+    _, _, output = curriculum
+    lock = runner.RESULTS.with_name(runner.RESULTS.name + ".lock")
+    lock.parent.mkdir(parents=True, exist_ok=True)
+    owner = subprocess.Popen([sys.executable, "-c", "import time; time.sleep(60)"])
+    try:
+        lock.write_text(str(owner.pid))
+        assert runner.run_tier(0, output_root=output) == 3
+        assert not runner.RESULTS.exists() and lock.read_text() == str(owner.pid)
+        assert owner.poll() is None  # the check never signals or ends the owner
+    finally:
+        owner.kill()
+        owner.wait()
+
+
+def test_process_liveness_and_lock_owner_parsing(tmp_path):
+    import os
+    assert runner._process_running(os.getpid())
+    assert not runner._process_running(_finished_process_id())
+    lock = tmp_path / "x.lock"
+    runner._take_lock(lock)
+    assert runner._lock_owner(lock) == os.getpid()
+    for text in ("", "abc", "0", "-5", "99999999999", "12 34"):
+        lock.write_text(text)
+        assert runner._lock_owner(lock) is None  # unreadable owner: the age rule decides
 
 
 def test_every_entry_records_the_requested_model(curriculum):  # noqa: F811

@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_4:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 4,
+    "instruction": "In `fir16_sym_core`, replace the single `acc3 <= total_acc` operation with two signed 28-bit stage-3 registers: one for `p0_reg` through `p3_reg`, and one for `p4_reg` through `p7_reg`, each using a balanced addition tree. In stage 4, add those registered partial sums, apply the existing +1024 and arithmetic shift by 11, and register the rounded result in `rounded4`; retain stage-5 saturation into `d5`. Keep each register\u2019s existing `ready3` or `ready4` hold behavior, the valid chain, history updates, reset behavior, top interface and `// @latency 5`; preserve signed widths sufficient for the ",
+    "candidates": [
+      {
+        "iteration": 4,
+        "mutation": "standard",
+        "instruction": "In `fir16_sym_core`, replace the single `acc3 <= total_acc` operation with two signed 28-bit stage-3 registers: one for `p0_reg` through `p3_reg`, and one for `p4_reg` through `p7_reg`, each using a balanced addition tree. In stage 4, add those registered partial sums, apply the existing +1024 and arithmetic shift by 11, and register the rounded result in `rounded4`; retain stage-5 saturation into `d5`. Keep each register\u2019s existing `ready3` or `ready4` hold behavior, the valid chain, history updates, reset behavior, top interface and `// @latency 5`; preserve signed widths sufficient for the ",
+        "generated_source_sha256": "5386c2c3c81ddc1301beb6873ce6017c33ff51efec3dbbea891d12ad9320316a",
+        "final_source_sha256": "5386c2c3c81ddc1301beb6873ce6017c33ff51efec3dbbea891d12ad9320316a",
+        "generated_code_hash": "1f3c2bf30de2e9b6",
+        "final_code_hash": "1f3c2bf30de2e9b6",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 1.075,
+          "whs_ns": 0.153,
+          "lut_used": 160,
+          "ff_used": 261,
+          "dsp_used": 9,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.017,
+          "total_power_w": 0.086
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\fir16-ooc-02\\iter_004\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\fir16-ooc-02\\iter_004\\cand_standard\\synth.tcl",
+          "sha256": "e351cdeec8f66cc98e8577c81e0229e6193de2b7f34be9a918fd818b728a09c8"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\fir16-ooc-02\\iter_004\\cand_standard\\fir16_sym.v",
+          "sha256": "02223b935afd450f2d5b54edbff3b82881fef28c9f6de0cbda182f6fa7a852fc"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "ACCEPT",
+    "is_best": true,
+    "selected_source_sha256": "5386c2c3c81ddc1301beb6873ce6017c33ff51efec3dbbea891d12ad9320316a"
+  },
+  "artifacts": {}
+}

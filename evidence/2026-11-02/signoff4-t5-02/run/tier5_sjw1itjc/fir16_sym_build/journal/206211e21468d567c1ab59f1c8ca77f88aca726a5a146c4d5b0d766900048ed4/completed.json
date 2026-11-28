@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_6:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 6,
+    "instruction": "In `fir16_sym_core`, replace the recursive `ready1 = !v1 || ready2` assignment with the equivalent direct expression `ready1 = !(v1 && v2 && v3 && v4 && v5) || out_ready`; keep `ready2` through `ready5` and all slot update conditions unchanged. Preserve the specified ready behavior, handshakes, stalls, reset and cycle behavior, and the top\u2019s `// @latency 5` annotation. The expected benefit is a smaller or shallower ready cone; retain the candidate only if routed LUTs strictly improve over the incumbent and every deterministic gate passes.",
+    "candidates": [
+      {
+        "iteration": 6,
+        "mutation": "standard",
+        "instruction": "In `fir16_sym_core`, replace the recursive `ready1 = !v1 || ready2` assignment with the equivalent direct expression `ready1 = !(v1 && v2 && v3 && v4 && v5) || out_ready`; keep `ready2` through `ready5` and all slot update conditions unchanged. Preserve the specified ready behavior, handshakes, stalls, reset and cycle behavior, and the top\u2019s `// @latency 5` annotation. The expected benefit is a smaller or shallower ready cone; retain the candidate only if routed LUTs strictly improve over the incumbent and every deterministic gate passes.",
+        "generated_source_sha256": "907a9d5cabde272f80684b3f30467d4e7bd06b1c63b087e0118182bedc4cbadf",
+        "final_source_sha256": "907a9d5cabde272f80684b3f30467d4e7bd06b1c63b087e0118182bedc4cbadf",
+        "generated_code_hash": "552037e4360a2fc4",
+        "final_code_hash": "552037e4360a2fc4",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 1.651,
+          "whs_ns": 0.106,
+          "lut_used": 78,
+          "ff_used": 202,
+          "dsp_used": 10,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.017,
+          "total_power_w": 0.085
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-02\\tier5_sjw1itjc\\fir16_sym_build\\iter_006\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-02\\tier5_sjw1itjc\\fir16_sym_build\\iter_006\\cand_standard\\synth.tcl",
+          "sha256": "09155dda10935db863c88bbeb79d36e7a2abf827a0ba112c42c914cd2b33f303"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t5-02\\tier5_sjw1itjc\\fir16_sym_build\\iter_006\\cand_standard\\fir16_sym.v",
+          "sha256": "202c67d17a47fb0610e586259a38a67e3025806b086f010a51b7216a646dcbb6"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "ACCEPT",
+    "is_best": true,
+    "selected_source_sha256": "907a9d5cabde272f80684b3f30467d4e7bd06b1c63b087e0118182bedc4cbadf"
+  },
+  "artifacts": {}
+}

@@ -1,0 +1,49 @@
+{
+  "stage": "iteration_2:proposal_feedback:outcome:0",
+  "result": {
+    "schema_version": 1,
+    "iteration": 2,
+    "instruction": "In `sync_fifo_core`, add a `nonempty` state bit, synchronously clear it on `rst`, and update it from the accepted `push` and `pop` events so it always tracks whether occupancy is nonzero; drive `out_valid` directly from this bit. Keep the occupancy counter and head-data logic, and preserve the current combinational `in_ready = (occupancy < DEPTH) || out_ready` behavior, including full simultaneous pop/push. Preserve the top\u2019s `// @latency 1` annotation and verify reset, empty capture, final pop, stalls, and parameterized depths.",
+    "candidates": [
+      {
+        "iteration": 2,
+        "mutation": "standard",
+        "instruction": "In `sync_fifo_core`, add a `nonempty` state bit, synchronously clear it on `rst`, and update it from the accepted `push` and `pop` events so it always tracks whether occupancy is nonzero; drive `out_valid` directly from this bit. Keep the occupancy counter and head-data logic, and preserve the current combinational `in_ready = (occupancy < DEPTH) || out_ready` behavior, including full simultaneous pop/push. Preserve the top\u2019s `// @latency 1` annotation and verify reset, empty capture, final pop, stalls, and parameterized depths.",
+        "generated_source_sha256": "8056e00b501404a89bf1fdcee16b91742804e7fa13dbacd414e11247d306aa80",
+        "final_source_sha256": "8056e00b501404a89bf1fdcee16b91742804e7fa13dbacd414e11247d306aa80",
+        "generated_code_hash": "9a54fcd4266dce53",
+        "final_code_hash": "9a54fcd4266dce53",
+        "rungs": 5,
+        "status": "measured",
+        "reason": "",
+        "metrics": {
+          "sim_passed": true,
+          "timing_met": true,
+          "wns_ns": 0.104,
+          "whs_ns": 0.096,
+          "lut_used": 23,
+          "ff_used": 15,
+          "dsp_used": 0,
+          "bram_used": 0.0,
+          "dynamic_power_w": 0.014,
+          "total_power_w": 0.084
+        },
+        "cache_hit": false,
+        "artifact_dir": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\sync_fifo_build\\iter_002\\cand_standard",
+        "flow_script": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\sync_fifo_build\\iter_002\\cand_standard\\synth.tcl",
+          "sha256": "b8d0fae127c95efd226b9615ac2c339f6ad65d7c7659df6b5dc5d7eb30129474"
+        },
+        "source": {
+          "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t2-06\\tier2_5ta6370s\\sync_fifo_build\\iter_002\\cand_standard\\sync_fifo.v",
+          "sha256": "8e70ffbc2aff36ebc828b680541277c133b193b4caa5a6c111c3750298c4e3d5"
+        }
+      }
+    ],
+    "doctor": null,
+    "recommendation": "ACCEPT",
+    "is_best": true,
+    "selected_source_sha256": "8056e00b501404a89bf1fdcee16b91742804e7fa13dbacd414e11247d306aa80"
+  },
+  "artifacts": {}
+}

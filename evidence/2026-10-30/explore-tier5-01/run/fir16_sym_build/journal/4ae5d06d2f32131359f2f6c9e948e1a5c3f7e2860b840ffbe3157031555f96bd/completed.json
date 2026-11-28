@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_2:decision:instruction:0",
+  "result": "In `fir16_sym_core`, add a synchronous `full_q` flag that remains equal to `&valid_slots`: clear it on reset and update it each cycle from the next valid-slot vector computed with the existing elastic ready and hold rules. Drive `in_ready` as `!full_q || out_ready`, while preserving the existing slot transfers, accepted-sample history update, and registered data behavior. Keep the top annotation at `// @latency 5`; check that the auxiliary flag exactly tracks slot fullness through stalls, bubbles, simultaneous push/pop, and reset.",
+  "artifacts": {}
+}

@@ -1,0 +1,292 @@
+{
+  "candidate_metrics": {
+    "bram_total": 50.0,
+    "bram_used": 0.0,
+    "dsp_total": 90,
+    "dsp_used": 0,
+    "dynamic_power_w": 0.05,
+    "ff_pct": 0.6298076923076923,
+    "ff_total": 41600,
+    "ff_used": 262,
+    "lut_pct": 6.389423076923077,
+    "lut_total": 20800,
+    "lut_used": 1329,
+    "reg2reg_wns_ns": 3.152,
+    "sim_error": "",
+    "sim_passed": true,
+    "synth_error": "",
+    "timing_met": true,
+    "total_power_w": 0.118,
+    "whs_ns": 0.112,
+    "wns_ns": 3.152
+  },
+  "candidate_source": {
+    "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-07\\aes128_core_build\\iter_003\\cand_standard\\aes128_core.v",
+    "sha256": "9c81ca0be0c45db8151fe02d326de458da43d3ee8eaf2af83911e6c5aa03ca50",
+    "text": "`timescale 1ns/1ps\r\n// @latency 1\r\nmodule aes_ctrl (\r\n    input wire clk,\r\n    input wire rst,\r\n    input wire in_valid,\r\n    output wire in_ready,\r\n    input wire [127:0] key,\r\n    input wire [127:0] pt,\r\n    output wire out_valid,\r\n    input wire out_ready,\r\n    output wire [127:0] ct,\r\n    output wire [127:0] rk,\r\n    output wire [7:0] rcon,\r\n    output wire last,\r\n    input wire [127:0] round_out,\r\n    input wire [127:0] key_next\r\n);\r\n\r\n    reg busy;\r\n    reg out_valid_reg;\r\n    reg [3:0] rnd;\r\n    reg [127:0] ct_reg;\r\n    reg [127:0] rk_reg;\r\n\r\n    assign in_ready = !busy && !out_valid_reg;\r\n    assign out_valid = out_valid_reg;\r\n    assign ct = ct_reg;\r\n    assign rk = rk_reg;\r\n    assign last = (rnd == 4'd10);\r\n\r\n    reg [7:0] rcon_value;\r\n    always @(*) begin\r\n        rcon_value = 8'h00;\r\n        case (rnd)\r\n            4'd0: rcon_value = 8'h01;\r\n            4'd1: rcon_value = 8'h02;\r\n            4'd2: rcon_value = 8'h04;\r\n            4'd3: rcon_value = 8'h08;\r\n            4'd4: rcon_value = 8'h10;\r\n            4'd5: rcon_value = 8'h20;\r\n            4'd6: rcon_value = 8'h40;\r\n            4'd7: rcon_value = 8'h80;\r\n            4'd8: rcon_value = 8'h1b;\r\n            4'd9: rcon_value = 8'h36;\r\n            default: rcon_value = 8'h00;\r\n        endcase\r\n    end\r\n    assign rcon = rcon_value;\r\n\r\n    always @(posedge clk) begin\r\n        if (rst) begin\r\n            busy <= 1'b0;\r\n            out_valid_reg <= 1'b0;\r\n            rnd <= 4'd0;\r\n            ct_reg <= 128'd0;\r\n            rk_reg <= 128'd0;\r\n        end else if (busy) begin\r\n            rk_reg <= key_next;\r\n            if (rnd == 4'd0) begin\r\n                rnd <= 4'd1;\r\n            end else begin\r\n                ct_reg <= round_out;\r\n                if (rnd == 4'd10) begin\r\n                    busy <= 1'b0;\r\n                    out_valid_reg <= 1'b1;\r\n                    rnd <= 4'd0;\r\n                end else begin\r\n                    rnd <= rnd + 1'b1;\r\n                end\r\n            end\r\n        end else if (out_valid_reg) begin\r\n            if (out_ready)\r\n                out_valid_reg <= 1'b0;\r\n        end else if (in_valid) begin\r\n            ct_reg <= pt ^ key;\r\n            rk_reg <= key;\r\n            rnd <= 4'd0;\r\n            busy <= 1'b1;\r\n        end\r\n    end\r\n\r\nendmodule\r\n\r\nmodule aes_sbox_lookup (\r\n    input wire [7:0] value,\r\n    output reg [7:0] result\r\n);\r\n    always @(*) begin\r\n        result = 8'h00;\r\n        case (value)\r\n            8'h00: result = 8'h63; 8'h01: result = 8'h7c;\r\n            8'h02: result = 8'h77; 8'h03: result = 8'h7b;\r\n            8'h04: result = 8'hf2; 8'h05: result = 8'h6b;\r\n            8'h06: result = 8'h6f; 8'h07: result = 8'hc5;\r\n            8'h08: result = 8'h30; 8'h09: result = 8'h01;\r\n            8'h0a: result = 8'h67; 8'h0b: result = 8'h2b;\r\n            8'h0c: result = 8'hfe; 8'h0d: result = 8'hd7;\r\n            8'h0e: result = 8'hab; 8'h0f: result = 8'h76;\r\n            8'h10: result = 8'hca; 8'h11: result = 8'h82;\r\n            8'h12: result = 8'hc9; 8'h13: result = 8'h7d;\r\n            8'h14: result = 8'hfa; 8'h15: result = 8'h59;\r\n            8'h16: result = 8'h47; 8'h17: result = 8'hf0;\r\n            8'h18: result = 8'had; 8'h19: result = 8'hd4;\r\n            8'h1a: result = 8'ha2; 8'h1b: result = 8'haf;\r\n            8'h1c: result = 8'h9c; 8'h1d: result = 8'ha4;\r\n            8'h1e: result = 8'h72; 8'h1f: result = 8'hc0;\r\n            8'h20: result = 8'hb7; 8'h21: result = 8'hfd;\r\n            8'h22: result = 8'h93; 8'h23: result = 8'h26;\r\n            8'h24: result = 8'h36; 8'h25: result = 8'h3f;\r\n            8'h26: result = 8'hf7; 8'h27: result = 8'hcc;\r\n            8'h28: result = 8'h34; 8'h29: result = 8'ha5;\r\n            8'h2a: result = 8'he5; 8'h2b: result = 8'hf1;\r\n            8'h2c: result = 8'h71; 8'h2d: result = 8'hd8;\r\n            8'h2e: result = 8'h31; 8'h2f: result = 8'h15;\r\n            8'h30: result = 8'h04; 8'h31: result = 8'hc7;\r\n            8'h32: result = 8'h23; 8'h33: result = 8'hc3;\r\n            8'h34: result = 8'h18; 8'h35: result = 8'h96;\r\n            8'h36: result = 8'h05; 8'h37: result = 8'h9a;\r\n            8'h38: result = 8'h07; 8'h39: result = 8'h12;\r\n            8'h3a: result = 8'h80; 8'h3b: result = 8'he2;\r\n            8'h3c: result = 8'heb; 8'h3d: result = 8'h27;\r\n            8'h3e: result = 8'hb2; 8'h3f: result = 8'h75;\r\n            8'h40: result = 8'h09; 8'h41: result = 8'h83;\r\n            8'h42: result = 8'h2c; 8'h43: result = 8'h1a;\r\n            8'h44: result = 8'h1b; 8'h45: result = 8'h6e;\r\n            8'h46: result = 8'h5a; 8'h47: result = 8'ha0;\r\n            8'h48: result = 8'h52; 8'h49: result = 8'h3b;\r\n            8'h4a: result = 8'hd6; 8'h4b: result = 8'hb3;\r\n            8'h4c: result = 8'h29; 8'h4d: result = 8'he3;\r\n            8'h4e: result = 8'h2f; 8'h4f: result = 8'h84;\r\n            8'h50: result = 8'h53; 8'h51: result = 8'hd1;\r\n            8'h52: result = 8'h00; 8'h53: result = 8'hed;\r\n            8'h54: result = 8'h20; 8'h55: result = 8'hfc;\r\n            8'h56: result = 8'hb1; 8'h57: result = 8'h5b;\r\n            8'h58: result = 8'h6a; 8'h59: result = 8'hcb;\r\n            8'h5a: result = 8'hbe; 8'h5b: result = 8'h39;\r\n            8'h5c: result = 8'h4a; 8'h5d: result = 8'h4c;\r\n            8'h5e: result = 8'h58; 8'h5f: result = 8'hcf;\r\n            8'h60: result = 8'hd0; 8'h61: result = 8'hef;\r\n            8'h62: result = 8'haa; 8'h63: result = 8'hfb;\r\n            8'h64: result = 8'h43; 8'h65: result = 8'h4d;\r\n            8'h66: result = 8'h33; 8'h67: result = 8'h85;\r\n            8'h68: result = 8'h45; 8'h69: result = 8'hf9;\r\n            8'h6a: result = 8'h02; 8'h6b: result = 8'h7f;\r\n            8'h6c: result = 8'h50; 8'h6d: result = 8'h3c;\r\n            8'h6e: result = 8'h9f; 8'h6f: result = 8'ha8;\r\n            8'h70: result = 8'h51; 8'h71: result = 8'ha3;\r\n            8'h72: result = 8'h40; 8'h73: result = 8'h8f;\r\n            8'h74: result = 8'h92; 8'h75: result = 8'h9d;\r\n            8'h76: result = 8'h38; 8'h77: result = 8'hf5;\r\n            8'h78: result = 8'hbc; 8'h79: result = 8'hb6;\r\n            8'h7a: result = 8'hda; 8'h7b: result = 8'h21;\r\n            8'h7c: result = 8'h10; 8'h7d: result = 8'hff;\r\n            8'h7e: result = 8'hf3; 8'h7f: result = 8'hd2;\r\n            8'h80: result = 8'hcd; 8'h81: result = 8'h0c;\r\n            8'h82: result = 8'h13; 8'h83: result = 8'hec;\r\n            8'h84: result = 8'h5f; 8'h85: result = 8'h97;\r\n            8'h86: result = 8'h44; 8'h87: result = 8'h17;\r\n            8'h88: result = 8'hc4; 8'h89: result = 8'ha7;\r\n            8'h8a: result = 8'h7e; 8'h8b: result = 8'h3d;\r\n            8'h8c: result = 8'h64; 8'h8d: result = 8'h5d;\r\n            8'h8e: result = 8'h19; 8'h8f: result = 8'h73;\r\n            8'h90: result = 8'h60; 8'h91: result = 8'h81;\r\n            8'h92: result = 8'h4f; 8'h93: result = 8'hdc;\r\n            8'h94: result = 8'h22; 8'h95: result = 8'h2a;\r\n            8'h96: result = 8'h90; 8'h97: result = 8'h88;\r\n            8'h98: result = 8'h46; 8'h99: result = 8'hee;\r\n            8'h9a: result = 8'hb8; 8'h9b: result = 8'h14;\r\n            8'h9c: result = 8'hde; 8'h9d: result = 8'h5e;\r\n            8'h9e: result = 8'h0b; 8'h9f: result = 8'hdb;\r\n            8'ha0: result = 8'he0; 8'ha1: result = 8'h32;\r\n            8'ha2: result = 8'h3a; 8'ha3: result = 8'h0a;\r\n            8'ha4: result = 8'h49; 8'ha5: result = 8'h06;\r\n            8'ha6: result = 8'h24; 8'ha7: result = 8'h5c;\r\n            8'ha8: result = 8'hc2; 8'ha9: result = 8'hd3;\r\n            8'haa: result = 8'hac; 8'hab: result = 8'h62;\r\n            8'hac: result = 8'h91; 8'had: result = 8'h95;\r\n            8'hae: result = 8'he4; 8'haf: result = 8'h79;\r\n            8'hb0: result = 8'he7; 8'hb1: result = 8'hc8;\r\n            8'hb2: result = 8'h37; 8'hb3: result = 8'h6d;\r\n            8'hb4: result = 8'h8d; 8'hb5: result = 8'hd5;\r\n            8'hb6: result = 8'h4e; 8'hb7: result = 8'ha9;\r\n            8'hb8: result = 8'h6c; 8'hb9: result = 8'h56;\r\n            8'hba: result = 8'hf4; 8'hbb: result = 8'hea;\r\n            8'hbc: result = 8'h65; 8'hbd: result = 8'h7a;\r\n            8'hbe: result = 8'hae; 8'hbf: result = 8'h08;\r\n            8'hc0: result = 8'hba; 8'hc1: result = 8'h78;\r\n            8'hc2: result = 8'h25; 8'hc3: result = 8'h2e;\r\n            8'hc4: result = 8'h1c; 8'hc5: result = 8'ha6;\r\n            8'hc6: result = 8'hb4; 8'hc7: result = 8'hc6;\r\n            8'hc8: result = 8'he8; 8'hc9: result = 8'hdd;\r\n            8'hca: result = 8'h74; 8'hcb: result = 8'h1f;\r\n            8'hcc: result = 8'h4b; 8'hcd: result = 8'hbd;\r\n            8'hce: result = 8'h8b; 8'hcf: result = 8'h8a;\r\n            8'hd0: result = 8'h70; 8'hd1: result = 8'h3e;\r\n            8'hd2: result = 8'hb5; 8'hd3: result = 8'h66;\r\n            8'hd4: result = 8'h48; 8'hd5: result = 8'h03;\r\n            8'hd6: result = 8'hf6; 8'hd7: result = 8'h0e;\r\n            8'hd8: result = 8'h61; 8'hd9: result = 8'h35;\r\n            8'hda: result = 8'h57; 8'hdb: result = 8'hb9;\r\n            8'hdc: result = 8'h86; 8'hdd: result = 8'hc1;\r\n            8'hde: result = 8'h1d; 8'hdf: result = 8'h9e;\r\n            8'he0: result = 8'he1; 8'he1: result = 8'hf8;\r\n            8'he2: result = 8'h98; 8'he3: result = 8'h11;\r\n            8'he4: result = 8'h69; 8'he5: result = 8'hd9;\r\n            8'he6: result = 8'h8e; 8'he7: result = 8'h94;\r\n            8'he8: result = 8'h9b; 8'he9: result = 8'h1e;\r\n            8'hea: result = 8'h87; 8'heb: result = 8'he9;\r\n            8'hec: result = 8'hce; 8'hed: result = 8'h55;\r\n            8'hee: result = 8'h28; 8'hef: result = 8'hdf;\r\n            8'hf0: result = 8'h8c; 8'hf1: result = 8'ha1;\r\n            8'hf2: result = 8'h89; 8'hf3: result = 8'h0d;\r\n            8'hf4: result = 8'hbf; 8'hf5: result = 8'he6;\r\n            8'hf6: result = 8'h42; 8'hf7: result = 8'h68;\r\n            8'hf8: result = 8'h41; 8'hf9: result = 8'h99;\r\n            8'hfa: result = 8'h2d; 8'hfb: result = 8'h0f;\r\n            8'hfc: result = 8'hb0; 8'hfd: result = 8'h54;\r\n            8'hfe: result = 8'hbb; 8'hff: result = 8'h16;\r\n            default: result = 8'h00;\r\n        endcase\r\n    end\r\nendmodule\r\n\r\n`timescale 1ns/1ps\r\n// @latency 0\r\nmodule aes_round (\r\n    input  wire [127:0] state_in,\r\n    input  wire [127:0] round_key,\r\n    input  wire         final_round,\r\n    output wire [127:0] state_out\r\n);\r\n\r\n    wire [127:0] sub_state;\r\n    reg [127:0] shifted_state;\r\n    reg [127:0] mix_correction;\r\n    integer row;\r\n    integer col;\r\n    genvar byte_index;\r\n\r\n    generate\r\n        for (byte_index = 0; byte_index < 16; byte_index = byte_index + 1) begin : gen_sbox\r\n            aes_sbox_lookup u_sbox (\r\n                .value(state_in[127 - 8*byte_index -: 8]),\r\n                .result(sub_state[127 - 8*byte_index -: 8])\r\n            );\r\n        end\r\n    endgenerate\r\n\r\n    function [7:0] xtime;\r\n        input [7:0] value;\r\n        begin\r\n            if (value[7])\r\n                xtime = (value << 1) ^ 8'h1b;\r\n            else\r\n                xtime = value << 1;\r\n        end\r\n    endfunction\r\n\r\n    function [31:0] mix_column;\r\n        input [31:0] column_in;\r\n        reg [7:0] a0;\r\n        reg [7:0] a1;\r\n        reg [7:0] a2;\r\n        reg [7:0] a3;\r\n        reg [7:0] t;\r\n        begin\r\n            a0 = column_in[31:24];\r\n            a1 = column_in[23:16];\r\n            a2 = column_in[15:8];\r\n            a3 = column_in[7:0];\r\n\r\n            t = a0 ^ a1 ^ a2 ^ a3;\r\n            mix_column[31:24] = a0 ^ t ^ xtime(a0 ^ a1);\r\n            mix_column[23:16] = a1 ^ t ^ xtime(a1 ^ a2);\r\n            mix_column[15:8]  = a2 ^ t ^ xtime(a2 ^ a3);\r\n            mix_column[7:0]   = a3 ^ t ^ xtime(a3 ^ a0);\r\n        end\r\n    endfunction\r\n\r\n    always @(*) begin\r\n        shifted_state = 128'b0;\r\n        mix_correction = 128'b0;\r\n\r\n        for (row = 0; row < 4; row = row + 1) begin\r\n            for (col = 0; col < 4; col = col + 1) begin\r\n                shifted_state[127 - 8*(row + 4*col) -: 8] =\r\n                    sub_state[127 - 8*(row + 4*((col + row) % 4)) -: 8];\r\n            end\r\n        end\r\n\r\n        for (col = 0; col < 4; col = col + 1) begin\r\n            mix_correction[127 - 32*col -: 32] =\r\n                mix_column(shifted_state[127 - 32*col -: 32]) ^\r\n                shifted_state[127 - 32*col -: 32];\r\n        end\r\n    end\r\n\r\n    assign state_out = round_key ^\r\n                       (shifted_state ^ (mix_correction & {128{!final_round}}));\r\n\r\nendmodule\r\n\r\n`timescale 1ns/1ps\r\n// @latency 0\r\nmodule aes_key_step (\r\n    input  wire [127:0] key_in,\r\n    input  wire [7:0]   rcon,\r\n    output wire [127:0] key_out\r\n);\r\n\r\n    wire [31:0] w0;\r\n    wire [31:0] w1;\r\n    wire [31:0] w2;\r\n    wire [31:0] w3;\r\n    wire [31:0] temp;\r\n    wire [31:0] w4;\r\n    wire [31:0] w5;\r\n    wire [31:0] w6;\r\n    wire [31:0] w7;\r\n    wire [7:0] sb0;\r\n    wire [7:0] sb1;\r\n    wire [7:0] sb2;\r\n    wire [7:0] sb3;\r\n\r\n    assign w0 = key_in[127:96];\r\n    assign w1 = key_in[95:64];\r\n    assign w2 = key_in[63:32];\r\n    assign w3 = key_in[31:0];\r\n\r\n    aes_sbox_lookup u_sbox0 (.value(w3[23:16]), .result(sb0));\r\n    aes_sbox_lookup u_sbox1 (.value(w3[15:8]),  .result(sb1));\r\n    aes_sbox_lookup u_sbox2 (.value(w3[7:0]),   .result(sb2));\r\n    aes_sbox_lookup u_sbox3 (.value(w3[31:24]), .result(sb3));\r\n\r\n    assign temp = {sb0, sb1, sb2, sb3} ^ {rcon, 24'b0};\r\n\r\n    assign w4 = w0 ^ temp;\r\n    assign w5 = w1 ^ w4;\r\n    assign w6 = w2 ^ w5;\r\n    assign w7 = w3 ^ w6;\r\n\r\n    assign key_out = {w4, w5, w6, w7};\r\n\r\nendmodule\r\n\r\n`timescale 1ns/1ps\r\nmodule aes128_core (\r\n    input wire clk,\r\n    input wire rst,\r\n    input wire in_valid,\r\n    output wire in_ready,\r\n    input wire [127:0] key,\r\n    input wire [127:0] pt,\r\n    output wire out_valid,\r\n    input wire out_ready,\r\n    output wire [127:0] ct\r\n);\r\n    wire [127:0] w_aes_ctrl_ct;\r\n    wire [127:0] w_aes_ctrl_rk;\r\n    wire w_aes_ctrl_last;\r\n    wire [127:0] w_aes_round_state_out;\r\n    wire [7:0] w_aes_ctrl_rcon;\r\n    wire [127:0] w_aes_key_step_key_out;\r\n\r\n    assign ct = w_aes_ctrl_ct;\r\n\r\n    aes_ctrl u_aes_ctrl (\r\n        .clk(clk),\r\n        .rst(rst),\r\n        .in_valid(in_valid),\r\n        .in_ready(in_ready),\r\n        .key(key),\r\n        .pt(pt),\r\n        .out_valid(out_valid),\r\n        .out_ready(out_ready),\r\n        .ct(w_aes_ctrl_ct),\r\n        .rk(w_aes_ctrl_rk),\r\n        .rcon(w_aes_ctrl_rcon),\r\n        .last(w_aes_ctrl_last),\r\n        .round_out(w_aes_round_state_out),\r\n        .key_next(w_aes_key_step_key_out)\r\n    );\r\n\r\n    aes_round u_aes_round (\r\n        .state_in(w_aes_ctrl_ct),\r\n        .round_key(w_aes_ctrl_rk),\r\n        .final_round(w_aes_ctrl_last),\r\n        .state_out(w_aes_round_state_out)\r\n    );\r\n\r\n    aes_key_step u_aes_key_step (\r\n        .key_in(w_aes_ctrl_rk),\r\n        .rcon(w_aes_ctrl_rcon),\r\n        .key_out(w_aes_key_step_key_out)\r\n    );\r\nendmodule",
+    "truncated": false
+  },
+  "candidate_timing_feasible": true,
+  "first_violated_path_excerpt": null,
+  "flow_and_constraints": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-07\\aes128_core_build\\iter_003\\cand_standard\\synth.tcl",
+      "sha256": "f9a9260fa018071898657991ac995d66eead9d1878c14be6b0afc772329a6303",
+      "text": "set_msg_config -id {VRFC 10-3609} -new_severity ERROR\r\nset_msg_config -id {Synth 8-9873} -new_severity ERROR\r\nset_msg_config -id {Designutils 20-1307} -new_severity ERROR\r\nset_msg_config -id {Synth 8-327} -new_severity ERROR\r\nset_msg_config -id {Synth 8-3352} -new_severity ERROR\r\nset_part xc7a35tcpg236-1\r\nread_verilog \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-07/aes128_core_build/iter_003/cand_standard/aes128_core.v\"\r\nset fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-07/aes128_core_build/iter_003/cand_standard/timing.xdc\" w]\r\nputs $fp {create_clock -period 10.000 -name clk [get_ports clk]}\r\nputs $fp {set_property HD.CLK_SRC BUFGCTRL_X0Y0 [get_ports clk]}\r\nclose $fp\r\nread_xdc \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-07/aes128_core_build/iter_003/cand_standard/timing.xdc\"\r\nsynth_design -top aes128_core -flatten_hierarchy rebuilt -mode out_of_context \r\nreport_utilization -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-07/aes128_core_build/iter_003/cand_standard/utilization.rpt\"\r\nreport_timing_summary -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-07/aes128_core_build/iter_003/cand_standard/timing.rpt\"\r\nopt_design\r\nplace_design\r\n\r\nroute_design\r\nreport_utilization -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-07/aes128_core_build/iter_003/cand_standard/utilization_routed.rpt\"\r\nreport_timing_summary -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-07/aes128_core_build/iter_003/cand_standard/timing_routed.rpt\"\r\ncatch { if {[llength [all_registers]] > 0} { report_timing -from [all_registers] -to [all_registers] -max_paths 1 -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-07/aes128_core_build/iter_003/cand_standard/timing_reg2reg.rpt\" } }\r\nreport_design_analysis -logic_level_distribution -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-07/aes128_core_build/iter_003/cand_standard/design_analysis.rpt\"\r\nreport_power -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-07/aes128_core_build/iter_003/cand_standard/power.rpt\"\r\ncatch { report_methodology -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-07/aes128_core_build/iter_003/cand_standard/methodology.rpt\" }\r\ncatch { report_qor_suggestions -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-07/aes128_core_build/iter_003/cand_standard/qor_suggestions.rpt\" }\r\nputs \"SYNTH_COMPLETE\"\r\n",
+      "truncated": false
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-07\\aes128_core_build\\iter_003\\cand_standard\\timing.xdc",
+      "sha256": "64b6a06a567f5142e3b71c9ec44440c46d1ff02057a9207ab3820113a8e3e958",
+      "text": "create_clock -period 10.000 -name clk [get_ports clk]\r\nset_property HD.CLK_SRC BUFGCTRL_X0Y0 [get_ports clk]\r\n",
+      "truncated": false
+    }
+  ],
+  "improvement_kind": null,
+  "measured_improvement": false,
+  "metric_provenance": "Structured metrics are parsed from retained reports; routed utilization/timing reports take precedence when present. The manifest identifies complete files by hash. Header excerpts are bounded previews, not complete reports or an independent metric source.",
+  "objective": "minimize_luts",
+  "previous_best_metrics": {
+    "bram_total": 50.0,
+    "bram_used": 5.0,
+    "dsp_total": 90,
+    "dsp_used": 0,
+    "dynamic_power_w": 0.043,
+    "ff_pct": 0.6298076923076923,
+    "ff_total": 41600,
+    "ff_used": 262,
+    "lut_pct": 2.951923076923077,
+    "lut_total": 20800,
+    "lut_used": 614,
+    "reg2reg_wns_ns": 2.216,
+    "sim_error": "",
+    "sim_passed": true,
+    "synth_error": "",
+    "timing_met": true,
+    "total_power_w": 0.111,
+    "whs_ns": 0.186,
+    "wns_ns": 2.216
+  },
+  "previous_best_timing_feasible": true,
+  "process_exit_gate": {
+    "passed": true,
+    "policy": "Every required tool's latest actual process exit must be zero with retained matching output; physical-only Doctor may reuse source-bound prior compile/simulation.",
+    "reasons": []
+  },
+  "report_headers": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-07\\aes128_core_build\\iter_003\\cand_standard\\power.rpt",
+      "sha256": "bc85d5f4cc25c1053bbd80723b6c3c987e972795560e2a41002e4a34c04c49b7",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n---------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version     : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date             : Mon Nov  2 11:13:29 2026\r\n| Host             : Baah running 64-bit major release  (build 9200)\r\n| Command          : report_power -file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-07/aes128_core_build/iter_003/cand_standard/power.rpt\r\n| Design           : aes128_core\r\n| Device           : xc7a35tcpg236-1\r\n| Design State     : routed\r\n| Grade            : commercial\r\n| Process          : typical\r\n| Characterization : Production\r\n---------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nPower Report\r\n\r\nTable of Contents\r\n-----------------\r\n1. Summary\r\n1.1 On-Chip Components\r\n1.2 Power Supply Summary\r\n1.3 Confidence Level\r\n2. Settings\r\n2.1 Environment\r\n2.2 Clock Constraints\r\n3. Detailed Reports\r\n3.1 By Hierarchy\r\n\r\n1. Summary\r\n----------\r\n\r\n+--------------------------+--------------+\r\n| Total On-Chip Power (W)  | 0.118        |\r\n| Design Power Budget (W)  | Unspecified* |\r\n| Power Budget Margin (W)  | NA           |\r\n| Dynamic (W)              | 0.050        |\r\n| Device Static (W)        | 0.069        |\r\n| Effective TJA (C/W)      | 5.0          |\r\n| Max Ambient (C)          | 84.4         |\r\n| Junction Temperature (C) | 25.6         |\r\n| Confidence Level         | Medium       |\r\n| Setting File             | ---          |\r\n| Simulation Activity Fil",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-07\\aes128_core_build\\iter_003\\cand_standard\\timing.rpt",
+      "sha256": "c5884429f65ec94d9fb19bafd2fc5a2cd7a853f37591e98b6872c86413edb981",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n-------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date         : Mon Nov  2 11:12:36 2026\r\n| Host         : Baah running 64-bit major release  (build 9200)\r\n| Command      : report_timing_summary -file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-07/aes128_core_build/iter_003/cand_standard/timing.rpt\r\n| Design       : aes128_core\r\n| Device       : 7a35t-cpg236\r\n| Speed File   : -1  PRODUCTION 1.23 2018-06-13\r\n| Design State : Synthesized\r\n-------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nTiming Summary Report\r\n\r\n------------------------------------------------------------------------------------------------\r\n| Timer Settings\r\n| --------------\r\n------------------------------------------------------------------------------------------------\r\n\r\n  Enable Multi Corner Analysis               :  Yes\r\n  Enable Pessimism Removal                   :  Yes\r\n  Pessimism Removal Resolution               :  Nearest Common Node\r\n  Enable Input Delay Default Clock           :  No\r\n  Enable Preset / Clear Arcs                 :  No\r\n  Disable Flight Delays                      :  No\r\n  Ignore I/O Paths                           :  No\r\n  Timing Early Launch at Borrowing Latches   :  No\r\n  Borrow Time for Max Delay Exceptions       :  Yes\r\n  Merge Timing Exceptions                    :  Yes\r\n  Inter-SLR Compensation                     ",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-07\\aes128_core_build\\iter_003\\cand_standard\\timing_reg2reg.rpt",
+      "sha256": "c4ae11fed8835136ab36994a9a0d7e2db5e758c6cc7e18f34408b7714d24478c",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date         : Mon Nov  2 11:13:27 2026\r\n| Host         : Baah running 64-bit major release  (build 9200)\r\n| Command      : report_timing -from [all_registers] -to [all_registers] -max_paths 1 -file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-07/aes128_core_build/iter_003/cand_standard/timing_reg2reg.rpt\r\n| Design       : aes128_core\r\n| Device       : 7a35t-cpg236\r\n| Speed File   : -1  PRODUCTION 1.23 2018-06-13\r\n| Design State : Routed\r\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nTiming Report\r\n\r\nSlack (MET) :             3.152ns  (required time - arrival time)\r\n  Source:                 u_aes_ctrl/rnd_reg[3]/C\r\n                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@5.000ns period=10.000ns})\r\n  Destination:            u_aes_ctrl/ct_reg_reg[16]/D\r\n                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@5.000ns period=10.000ns})\r\n  Path Group:             clk\r\n  Path Type:              Setup (Max at Slow Process Corner)\r\n  Requirement:            10.000ns  (clk rise@10.000ns - clk rise@0.000ns)\r\n  Data Path Delay:        6.780ns  (logic 1.363ns (20.105%)  route 5.417ns (79.8",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-07\\aes128_core_build\\iter_003\\cand_standard\\timing_routed.rpt",
+      "sha256": "2e3d5d6c1bc562464402a47be444056c0821df02051ab589b390b219df42d899",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date         : Mon Nov  2 11:13:27 2026\r\n| Host         : Baah running 64-bit major release  (build 9200)\r\n| Command      : report_timing_summary -file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-07/aes128_core_build/iter_003/cand_standard/timing_routed.rpt\r\n| Design       : aes128_core\r\n| Device       : 7a35t-cpg236\r\n| Speed File   : -1  PRODUCTION 1.23 2018-06-13\r\n| Design State : Routed\r\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nTiming Summary Report\r\n\r\n------------------------------------------------------------------------------------------------\r\n| Timer Settings\r\n| --------------\r\n------------------------------------------------------------------------------------------------\r\n\r\n  Enable Multi Corner Analysis               :  Yes\r\n  Enable Pessimism Removal                   :  Yes\r\n  Pessimism Removal Resolution               :  Nearest Common Node\r\n  Enable Input Delay Default Clock           :  No\r\n  Enable Preset / Clear Arcs                 :  No\r\n  Disable Flight Delays                      :  No\r\n  Ignore I/O Paths                           :  No\r\n  Timing Early Launch at Borrowing Latches   :  No\r\n  Borrow Time for Max Delay Exceptions       :  Yes\r\n  Merge Timing Exceptions                    :  Yes\r\n  Inter-SLR Compensation     ",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-07\\aes128_core_build\\iter_003\\cand_standard\\utilization.rpt",
+      "sha256": "a3b73f635dd052b64dd102a46873175fafeb4793f4055e88c3e051443733e26e",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\n---------------------------------------------------------------------------------------------------------------------------------------------------------------------\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\n| Date         : Mon Nov  2 11:12:27 2026\n| Host         : Baah running 64-bit major release  (build 9200)\n| Command      : report_utilization -file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-07/aes128_core_build/iter_003/cand_standard/utilization.rpt\n| Design       : aes128_core\n| Device       : xc7a35tcpg236-1\n| Speed File   : -1\n| Design State : Synthesized\n---------------------------------------------------------------------------------------------------------------------------------------------------------------------\n\nUtilization Design Information\n\nTable of Contents\n-----------------\n1. Slice Logic\n1.1 Summary of Registers by Type\n2. Memory\n3. DSP\n4. IO and GT Specific\n5. Clocking\n6. Specific Feature\n7. Primitives\n8. Black Boxes\n9. Instantiated Netlists\n\n1. Slice Logic\n--------------\n\n+-------------------------+------+-------+------------+-----------+-------+\n|        Site Type        | Used | Fixed | Prohibited | Available | Util% |\n+-------------------------+------+-------+------------+-----------+-------+\n| Slice LUTs*             | 1334 |     0 |          0 |     20800 |  6.41 |\n|   LUT as Logic          | 1334 |     0 |          0 |     20800 |  6.41 |\n|   LUT as Memory         |    0 |     0 |          0 |      9600 |  0.00 |\n| Slice Registers         |  262 |     0 |          0 |     41600 |  0.63 |\n|   Register as Flip Flop |  262 |     0 |          0 |     41600 |  0.",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-07\\aes128_core_build\\iter_003\\cand_standard\\utilization_routed.rpt",
+      "sha256": "e768588666c53006f92e7b365496e1b98b676dc6fa8fff2371b442e12260dd99",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\n----------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\n| Date         : Mon Nov  2 11:13:26 2026\n| Host         : Baah running 64-bit major release  (build 9200)\n| Command      : report_utilization -file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-07/aes128_core_build/iter_003/cand_standard/utilization_routed.rpt\n| Design       : aes128_core\n| Device       : xc7a35tcpg236-1\n| Speed File   : -1\n| Design State : Routed\n----------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n\nUtilization Design Information\n\nTable of Contents\n-----------------\n1. Slice Logic\n1.1 Summary of Registers by Type\n2. Slice Logic Distribution\n3. Memory\n4. DSP\n5. IO and GT Specific\n6. Clocking\n7. Specific Feature\n8. Primitives\n9. Black Boxes\n10. Instantiated Netlists\n\n1. Slice Logic\n--------------\n\n+-------------------------+------+-------+------------+-----------+-------+\n|        Site Type        | Used | Fixed | Prohibited | Available | Util% |\n+-------------------------+------+-------+------------+-----------+-------+\n| Slice LUTs              | 1329 |     0 |          0 |     20800 |  6.39 |\n|   LUT as Logic          | 1329 |     0 |          0 |     20800 |  6.39 |\n|   LUT as Memory         |    0 |     0 |          0 |      9600 |  0.00 |\n| Slice Registers         |  262 |     0 |          0 |     41600 |  0.63 |\n|   Register as Flip Flop ",
+      "truncated": true
+    }
+  ],
+  "report_manifest": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-07\\aes128_core_build\\iter_003\\cand_standard\\power.rpt",
+      "sha256": "bc85d5f4cc25c1053bbd80723b6c3c987e972795560e2a41002e4a34c04c49b7"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-07\\aes128_core_build\\iter_003\\cand_standard\\timing.rpt",
+      "sha256": "c5884429f65ec94d9fb19bafd2fc5a2cd7a853f37591e98b6872c86413edb981"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-07\\aes128_core_build\\iter_003\\cand_standard\\timing_reg2reg.rpt",
+      "sha256": "c4ae11fed8835136ab36994a9a0d7e2db5e758c6cc7e18f34408b7714d24478c"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-07\\aes128_core_build\\iter_003\\cand_standard\\timing_routed.rpt",
+      "sha256": "2e3d5d6c1bc562464402a47be444056c0821df02051ab589b390b219df42d899"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-07\\aes128_core_build\\iter_003\\cand_standard\\utilization.rpt",
+      "sha256": "a3b73f635dd052b64dd102a46873175fafeb4793f4055e88c3e051443733e26e"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-07\\aes128_core_build\\iter_003\\cand_standard\\utilization_routed.rpt",
+      "sha256": "e768588666c53006f92e7b365496e1b98b676dc6fa8fff2371b442e12260dd99"
+    }
+  ],
+  "tool_exit_evidence": {
+    "history_count": 5,
+    "latest_by_tool": {
+      "vivado": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-07\\aes128_core_build\\iter_003\\cand_standard\\vivado_synth_output.log",
+        "output_log_sha256": "bc0e6cbaedb8e0005eaf4626881123983463a273383ae08dd9cc0d5a03ba144c",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xelab": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-07\\aes128_core_build\\iter_003\\cand_standard\\xelab.log",
+        "output_log_sha256": "9e79556189a52bb09b0ce799ffd4ed72b7c6510b4d2979d9680443627c43a432",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xsim": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-07\\aes128_core_build\\iter_003\\cand_standard\\xsim.log",
+        "output_log_sha256": "f838abeb62f20259afaf202feae54ad989ad6c8a6f5e266fb49c2021ba6b18ac",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xvlog": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-07\\aes128_core_build\\iter_003\\cand_standard\\xvlog.log",
+        "output_log_sha256": "88755fc73469df51cca581095ca0219c2eeaddc025b6ff4753e7b09d5c7b945e",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      }
+    },
+    "missing_required_tools": [],
+    "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-07\\aes128_core_build\\iter_003\\cand_standard\\tool_exit_records.log",
+    "records": [
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-07\\aes128_core_build\\iter_003\\cand_standard",
+        "driver_returncode": 0,
+        "elapsed_seconds": 1.8092649999998685,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xvlog.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-07\\aes128_core_build\\iter_003\\cand_standard\\xvlog.log",
+        "output_log_sha256": "9eb2fc72f9b16609206818438ed95c4112fa2ab0b1168b916c97bef130bd84ee",
+        "pid": 27572,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xvlog"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-07\\aes128_core_build\\iter_003\\cand_standard",
+        "driver_returncode": 0,
+        "elapsed_seconds": 1.9956789999996545,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xvlog.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-07\\aes128_core_build\\iter_003\\cand_standard\\xvlog.log",
+        "output_log_sha256": "88755fc73469df51cca581095ca0219c2eeaddc025b6ff4753e7b09d5c7b945e",
+        "pid": 28264,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xvlog"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-07\\aes128_core_build\\iter_003\\cand_standard",
+        "driver_returncode": 0,
+        "elapsed_seconds": 2.118001800001366,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xelab.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-07\\aes128_core_build\\iter_003\\cand_standard\\xelab.log",
+        "output_log_sha256": "9e79556189a52bb09b0ce799ffd4ed72b7c6510b4d2979d9680443627c43a432",
+        "pid": 31712,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xelab"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-07\\aes128_core_build\\iter_003\\cand_standard",
+        "driver_returncode": 0,
+        "elapsed_seconds": 3.341020899999421,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xsim.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-07\\aes128_core_build\\iter_003\\cand_standard\\xsim.log",
+        "output_log_sha256": "f838abeb62f20259afaf202feae54ad989ad6c8a6f5e266fb49c2021ba6b18ac",
+        "pid": 30960,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xsim"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-07\\aes128_core_build\\iter_003\\cand_standard",
+        "driver_returncode": 0,
+        "elapsed_seconds": 147.52594610000233,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/vivado.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-07\\aes128_core_build\\iter_003\\cand_standard\\vivado_synth_output.log",
+        "output_log_sha256": "bc0e6cbaedb8e0005eaf4626881123983463a273383ae08dd9cc0d5a03ba144c",
+        "pid": 2012,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "vivado"
+      }
+    ],
+    "schema_valid": true,
+    "sha256": "d7f5bdea406691e8ccc50edda2b876b62f23a8f099fdc8e14bb13eb132b0cd43",
+    "status": "recorded",
+    "truncated": false
+  },
+  "verification_logs": [
+    {
+      "head": "INFO: [VRFC 10-2263] Analyzing Verilog file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-07/aes128_core_build/iter_003/cand_standard/aes128_core.v\" into library work\r\nINFO: [VRFC 10-311] analyzing module aes_ctrl\r\nINFO: [VRFC 10-311] analyzing module aes_sbox_lookup\r\nINFO: [VRFC 10-311] analyzing module aes_round\r\nINFO: [VRFC 10-311] analyzing module aes_key_step\r\nINFO: [VRFC 10-311] analyzing module aes128_core\r\nINFO: [VRFC 10-2263] Analyzing Verilog file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-07/aes128_core_build/inputs/testbench_path.v\" into library work\r\nINFO: [VRFC 10-311] analyzing module aes128_core_tb\r\n\r\n",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-07\\aes128_core_build\\iter_003\\cand_standard\\xvlog.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "88755fc73469df51cca581095ca0219c2eeaddc025b6ff4753e7b09d5c7b945e",
+      "tail": "",
+      "truncated": false
+    },
+    {
+      "head": "Vivado Simulator v2025.2\r\nCopyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\nCopyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\nRunning: C:/AMDDesignTools/2025.2/Vivado/bin/unwrapped/win64.o/xelab.exe aes128_core_tb -s aes128_core_tb_snap --debug off \r\nMulti-threading is on. Using 10 slave threads.\r\nStarting static elaboration\r\nPass Through NonSizing Optimizer\r\nCompleted static elaboration\r\nStarting simulation data flow analysis\r\nCompleted simulation data flow analysis\r\nTime Resolution for simulation is 1ps\r\nCompiling module work.aes_ctrl\r\nCompiling module work.aes_sbox_lookup\r\nCompiling module work.aes_round_default\r\nCompiling module work.aes_key_step\r\nCompiling module work.aes128_core\r\nCompiling module work.aes128_core_tb\r\nBuilt simulation snapshot aes128_core_tb_snap\r\n\r\n",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-07\\aes128_core_build\\iter_003\\cand_standard\\xelab.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "9e79556189a52bb09b0ce799ffd4ed72b7c6510b4d2979d9680443627c43a432",
+      "tail": "",
+      "truncated": false
+    },
+    {
+      "head": "\r\n****** xsim v2025.2 (64-bit)\r\n  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025\r\n  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025\r\n  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025\r\n  **** Start of session at: Mon Nov  2 11:11:02 2026\r\n    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\n    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n\r\nsource xsim.dir/aes128_core_tb_snap/xsim_script.tcl\r\n# xsim {aes128_core_tb_snap} -autoloadwcfg -runall\r\nTime resolution is 1 ps\r\nrun -all\r\nCOVERAGE cycles=7286 accepted=525 transfers=523 known_answers=15 stalls=455 busy_offers=5513 back_to_back=522 noise=271 busy_resets=1 ov_resets=1 pulses=2\r\nTEST PASSED\r\n$finish called at time : 72865 ns : File \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-07/aes128_core_build/inputs/testbench_path.v\" Line 288\r\nexit\r\nINFO: [Common 17-206] Exiting xsim at Mon Nov  2 11:11:04 2026...\r\n\r\n",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-07\\aes128_core_build\\iter_003\\cand_standard\\sim_log.txt",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "f838abeb62f20259afaf202feae54ad989ad6c8a6f5e266fb49c2021ba6b18ac",
+      "tail": "",
+      "truncated": false
+    },
+    {
+      "head": "\r\n****** Vivado v2025.2 (64-bit)\r\n  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025\r\n  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025\r\n  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025\r\n  **** Start of session at: Mon Nov  2 11:11:06 2026\r\n    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\n    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n\r\nsource C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-07/aes128_core_build/iter_003/cand_standard/synth.tcl\r\n# set_msg_config -id {VRFC 10-3609} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-9873} -new_severity ERROR\r\n# set_msg_config -id {Designutils 20-1307} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-327} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-3352} -new_severity ERROR\r\n# set_part xc7a35tcpg236-1\r\nINFO: [Coretcl 2-1500] The part has been set to 'xc7a35tcpg236-1' for the current project only. Run set_part -help for more details. To evaluate different speed grades in the current design, use the set_speed_grade command, or use the open_checkpoint -part command to change the part used by an existing checkpoint design.\r\nset_part: Time (s): cpu = 00:00:10 ; elapsed = 00:00:07 . Memory (MB): peak = 533.074 ; gain = 226.805\r\n# read_verilog \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-07/aes128_core_build/iter_003/cand_standard/aes128_core.v\"\r\n# set fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-07/aes128_core_build/iter_003/cand_standard/timing.xdc\" w]\r\n# puts $fp {create_clock -period 10.000 -name clk [get_ports clk]}\r\n# puts $fp {set_property HD.CLK_SRC BUFGCTRL_X0Y0 [get_ports clk]}\r\n# close $fp\r\n# read_xdc \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-07/aes128_core_bu",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\explore-tier6-07\\aes128_core_build\\iter_003\\cand_standard\\vivado_synth_output.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "bc0e6cbaedb8e0005eaf4626881123983463a273383ae08dd9cc0d5a03ba144c",
+      "tail": "y Propagation\r\n0 Infos, 0 Warnings, 0 Critical Warnings and 0 Errors encountered.\r\nreport_power completed successfully\r\n# catch { report_methodology -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-07/aes128_core_build/iter_003/cand_standard/methodology.rpt\" }\r\nCommand: report_methodology -file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-07/aes128_core_build/iter_003/cand_standard/methodology.rpt\r\nINFO: [Timing 38-35] Done setting XDC timing constraints.\r\nINFO: [DRC 23-133] Running Methodology with 2 threads\r\nWARNING: [DRC 23-814] Not all possible (connectivity based) DRCs may have been run because this design is seen as Out of Context.\r\nINFO: [Vivado_Tcl 2-1520] The results of Report Methodology are in file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-07/aes128_core_build/iter_003/cand_standard/methodology.rpt.\r\nreport_methodology completed successfully\r\n# catch { report_qor_suggestions -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-07/aes128_core_build/iter_003/cand_standard/qor_suggestions.rpt\" }\r\nCommand: report_qor_suggestions -file C:/Users/prince.baah/Downloads/autortl-work/logs/explore-tier6-07/aes128_core_build/iter_003/cand_standard/qor_suggestions.rpt\r\nCongestion Prediction Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.112 . Memory (MB): peak = 2005.758 ; gain = 0.000\r\nINFO: [Implflow 47-1309] PredResultString: 0:53.20:46.80\r\nfeatureProvider Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.071 . Memory (MB): peak = 2005.758 ; gain = 0.000\r\nINFO: [Implflow 47-1274] ML strategy prediction is not supported for 7-series devices.\r\nreport_qor_suggestions completed successfully\r\n# puts \"SYNTH_COMPLETE\"\r\nSYNTH_COMPLETE\r\nINFO: [Common 17-206] Exiting Vivado at Mon Nov  2 11:13:32 2026...\r\n\r\n",
+      "truncated": true
+    }
+  ]
+}

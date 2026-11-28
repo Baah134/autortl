@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_2:decision:instruction:0",
+  "result": "Keep `clean_reg` registered and preserve synchronous active-high reset, the `// @latency 0` annotation, and the exact eight-sample update behavior. Replace the current incrementing `run_count` pattern with a 3-bit down-counter: reload `3'b111` when `noisy == clean_reg`, decrement while they differ, and update `clean_reg` from `noisy` when the pre-decrement count is zero. Preserve the terminal-cycle timing and hold behavior; retain this candidate only if all gates pass and routed LUT count or the equal-LUT FF tie-break strictly improves over the incumbent.",
+  "artifacts": {}
+}

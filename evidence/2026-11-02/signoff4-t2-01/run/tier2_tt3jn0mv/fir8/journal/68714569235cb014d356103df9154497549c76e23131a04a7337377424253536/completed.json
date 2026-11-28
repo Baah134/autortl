@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_1:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 1\n## Contract check\n- Interface and parameter semantics: PASS \u2014 module ports and signed 16-bit coefficient parameters are preserved; the 32-bit partial sums preserve modular arithmetic.\n- Cycle behavior and reset: PASS \u2014 the transposed FIR computes the same eight-tap sum on the same clock edge, and synchronously clears its state and output on reset.\n- Top latency annotation: PASS \u2014 `// @latency 1` matches the authoritative latency.\n- Deterministic verification: PASS \u2014 ladder is ALIVE; compilation, elaboration, simulation, and the exact `TEST PASSED` verdict are recorded.\n- Metric and receipt integrity: PASS \u2014 routed reports are retained, required tool exits succeeded, and the process exit gate passed.\n- Timing feasibility: PASS \u2014 timing is met with WNS 0.148 ns and WHS 0.182 ns.\n- Promotion over previous best: PASS \u2014 the incumbent was timing-infeasible; this verified candidate recovers timing feasibility, meeting the recorded `timing_recovery` criterion.\n## Summary\n- Passed: 7 of 7\n- Failed: 0\n- Improved over previous best: YES\n## Recommendation\nACCEPT\n## Reason\nThe candidate preserves the FIR\u2019s defined cycle and reset behavior and passes deterministic verification. It recovers timing feasibility from the infeasible previous best; the higher LUT count and power do not negate a valid timing recovery.",
+      "recommendation": "ACCEPT",
+      "passed": 7,
+      "failed": 0
+    }
+  },
+  "artifacts": {}
+}

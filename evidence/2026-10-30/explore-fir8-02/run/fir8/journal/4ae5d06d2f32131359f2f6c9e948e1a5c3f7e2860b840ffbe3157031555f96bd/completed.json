@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_2:decision:instruction:0",
+  "result": "Keep the existing `d[0:7]` delay line and pipeline registers, and add a parameter-conditional symmetric-coefficient path that pairs `d[0]+d[7]`, `d[1]+d[6]`, `d[2]+d[5]`, and `d[3]+d[4]` before multiplying by their common coefficients. Preserve the full 17-bit signed pair sums and 32-bit modulo result semantics, then feed balanced pair products into the existing registered partial sums. Retain the general per-tap product path whenever any coefficient pair differs; preserve synchronous reset behavior, output cycles, and `// @latency 1`. The expected benefit is fewer multipliers and a shorter accumulation chain for the default coefficients; confirm the actual effect with the unchanged simulation and routed timing, hold, and utilization gates.",
+  "artifacts": {}
+}

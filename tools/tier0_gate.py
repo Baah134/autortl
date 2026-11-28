@@ -11,13 +11,17 @@ harness on purpose. This runner:
    run.py. tools/ is outside that set, so this file does not change it.
 2. Runs the full pytest suite as the receipt, and requires exit 0 with the
    source unchanged before and after.
-3. Runs `run.py bench --tier 0` with campaign14's exact budgets and
-   arguments, and requires the source, router statistics and curriculum
-   history prefixes to be unchanged afterwards.
+3. Runs `run.py bench --tier 0` with campaign14's exact budgets, and
+   requires the source, router statistics and curriculum history prefixes
+   to be unchanged afterwards. It passes no target frequency: each entry
+   runs at its meta.yaml frequency, else 100 MHz
+   (gate_frequency_overrides_entry_meta).
 
     python tools/tier0_gate.py --name contract-campaign-15 [--python PY] [--tier 1] [--vivado-bin DIR]
 
---tier 1 runs the same discipline on curriculum tier 1 with TIER_BUDGETS[1].
+--tier N (1 to 6) runs the same discipline on curriculum tier N with
+TIER_BUDGETS[N]; an entry's meta.yaml `budgets` replace the tier's model-call,
+tool-minute and wall-minute limits for that entry (entry_budgets_ignored_by_bench).
 The Vivado bin folder is --vivado-bin, else $AUTORTL_VIVADO_BIN, else
 C:/AMDDesignTools/2025.2/Vivado/bin/.
 
@@ -34,6 +38,7 @@ import subprocess
 import sys
 import time
 from datetime import datetime, timezone
+from autortl.fileio import file_sha256, read_json
 
 ROOT = Path(__file__).resolve().parents[1]
 SELECTION = ("autortl", "llm", "tests", "curriculum", "scripts", "data", ".claude")
@@ -47,23 +52,29 @@ BUDGETS = {"iterations": 1, "best_of_n": 1, "model_calls": 16, "tool_minutes": 2
 TIER_BUDGETS = {0: BUDGETS,
                 1: {"iterations": None, "best_of_n": 1, "model_calls": 30, "tool_minutes": 40, "wall_minutes": 60,
                     "infra_retries": 1}}
+# gate_limited_to_tiers_zero_and_one: tiers 2 to 6 take tier 1's budgets, the same
+# defaults tools/explore.py runs them with. A heavy entry raises its own limits in
+# its meta.yaml `budgets`, which the bench applies to that entry only.
+TIER_BUDGETS.update({tier: dict(TIER_BUDGETS[1]) for tier in range(2, 7)})
 
 
 def sha(path):
-    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+    return file_sha256(Path(path))
 
 
 def identities(root=ROOT):
     """The runtime source identity (same selection as campaign13/14)."""
     result = {}
     for name in SELECTION:
-        for path in (root / name).rglob("*"):
-            rel = path.relative_to(root).parts
-            # Agent worktrees (.claude/worktrees/*) are other checkouts, not this source.
-            if rel[:2] == (".claude", "worktrees"):
-                continue
-            if path.is_file() and path.suffix in SUFFIXES and "__pycache__" not in path.parts:
-                result[path.relative_to(root).as_posix()] = sha(path)
+        for directory, dirs, files in os.walk(root / name, topdown=True, followlinks=False):
+            directory = Path(directory)
+            # Exclude other checkouts before traversal, not after rglob visits them.
+            if directory == root / ".claude":
+                dirs[:] = [entry for entry in dirs if entry != "worktrees"]
+            for filename in files:
+                path = directory / filename
+                if path.is_file() and path.suffix in SUFFIXES and "__pycache__" not in path.parts:
+                    result[path.relative_to(root).as_posix()] = sha(path)
     result["run.py"] = sha(root / "run.py")
     return dict(sorted(result.items()))
 
@@ -83,7 +94,9 @@ def bench_command(python, out, tier=0, model=None, jobs=1, vivado=None):
     args += ["--best-of-n", str(budgets["best_of_n"]), "--max-llm-calls", str(budgets["model_calls"]),
              "--max-vivado-minutes", str(budgets["tool_minutes"]), "--max-wall-minutes", str(budgets["wall_minutes"]),
              "--max-infra-retries", str(budgets["infra_retries"]), "--target-part", "xc7a35tcpg236-1",
-             "--target-freq-mhz", "100", "--output-dir", str(out)]
+             "--output-dir", str(out)]
+    # No --target-freq-mhz (gate_frequency_overrides_entry_meta): each entry runs at
+    # its meta.yaml frequency, else RunConfig's 100 MHz, and records it in its config.
     for name in ("vivado", "xvlog", "xelab", "xsim"):
         args += ["--" + name, vivado_bin(vivado) + name + ".bat"]
     if model:
@@ -93,12 +106,85 @@ def bench_command(python, out, tier=0, model=None, jobs=1, vivado=None):
     return args
 
 
+def implementation_hashes(root=ROOT):
+    """The harness implementation files a run freezes into runtime.json (fsm._prepare_inputs)."""
+    result = {}
+    for directory in (root / "autortl", root / "llm", root / "data", root / ".claude" / "skills"):
+        for path in sorted(directory.rglob("*")):
+            if path.is_file() and path.suffix in (".py", ".yaml", ".md", ".v"):
+                result[path.relative_to(root).as_posix()] = sha(path)
+    return result
+
+
+def recorded_implementation(record):
+    """A history record's frozen implementation hashes, read from its first entry's runtime.json."""
+    for result in record.get("results") or []:
+        path = Path(str(result.get("evidence_dir") or "")) / "runtime.json"
+        try:
+            return read_json(path)["implementation"]
+        except (OSError, ValueError, KeyError, TypeError):
+            continue
+    return None
+
+
+def held_higher_tiers(history, tier, governance_sha256=None, implementation=None):
+    """Tiers above tier whose latest full-tier record is held.
+
+    Held is a state, not an event (stale_held_record_blocks_lower_gates): a tier
+    that was held and later lost it, or that was re-gated on a changed harness,
+    no longer blocks the lower tiers. A subset record never changes it. In the
+    bottom-up sign-off pass every tier above the one being gated is not yet held.
+    A hold recorded under other governance code (held_under_old_governance_blocks)
+    or on other harness implementation files (held_under_old_runtime_blocks) is a
+    hold of another cohort and does not block; when the record's implementation
+    cannot be read it still blocks.
+    """
+    latest = {}
+    for record in history:
+        if record.get("full_tier") is True:
+            latest[record["tier"]] = record
+    def current(record):
+        recorded = (record.get("runtime_identity") or {}).get("governance_sha256")
+        if governance_sha256 is not None and recorded != governance_sha256:
+            return False
+        if implementation is not None:
+            frozen = recorded_implementation(record)
+            if frozen is not None and frozen != implementation:
+                return False
+        return True
+    return sorted(t for t, record in latest.items()
+                  if t > tier and record.get("held") is True and current(record))
+
+
+def entry_settings(tier, root=None):
+    """Each entry's own meta.yaml frequency and budgets, which win over the tier's."""
+    if str(ROOT) not in sys.path:
+        sys.path.insert(0, str(ROOT))
+    from curriculum.runner import _metadata, entry_settings as declared
+    folder = (root or ROOT) / "curriculum" / f"tier{tier}"
+    if not folder.is_dir():
+        return {}
+    return {p.name: declared(_metadata(p)) for p in sorted(folder.iterdir()) if (p / "meta.yaml").is_file()}
+
+
+def positive_int(text):
+    """argparse type: 0 or a negative count is a usage error (gate_jobs_zero_silently_serial)."""
+    try:
+        value = int(text)
+    except ValueError:
+        raise argparse.ArgumentTypeError(f"invalid int value: {text!r}") from None
+    if value < 1:
+        raise argparse.ArgumentTypeError("must be at least 1")
+    return value
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--name", required=True)
     parser.add_argument("--python", default=sys.executable)
     parser.add_argument("--tier", type=int, choices=sorted(TIER_BUDGETS), default=0)
-    parser.add_argument("--jobs", type=int, default=1, help="bench entries run at once (not part of the cohort)")
+    parser.add_argument("--jobs", type=positive_int, default=1,
+                        help="bench entries run at once (not part of the cohort)")
     parser.add_argument("--model", default=None,
                         help="model alias pinned for every role (recorded in the cohort); default: the CLI default")
     parser.add_argument("--vivado-bin", help="Vivado bin folder (default: $AUTORTL_VIVADO_BIN, else %s)" % VIVADO)
@@ -111,9 +197,11 @@ def main(argv=None):
         if path.exists():
             raise SystemExit(f"{path} exists: an earlier attempt is never overwritten")
     sys.path.insert(0, str(ROOT))
-    from curriculum.runner import _history
-    if any(record["tier"] > args.tier and record["held"] for record in _history()):
-        raise SystemExit("a higher held tier requires its own gate")
+    from curriculum import runner
+    held_above = held_higher_tiers(runner._history(), args.tier, sha(runner.__file__), implementation_hashes())
+    if held_above:
+        raise SystemExit("a higher held tier requires its own gate: tier "
+                         + ", ".join(str(t) for t in held_above) + " is held")
     # Fail fast before the long test receipt: a missing tool or a moved model CLI
     # (the Codex app replaces its versioned binary folder when it updates) would
     # otherwise only show up as an infrastructure-blocked bench.
@@ -155,10 +243,15 @@ def main(argv=None):
             "router_stats_offset": len(stats_before), "router_stats_prefix_sha256": hashlib.sha256(stats_before).hexdigest(),
             "history_offset": len(history_before), "history_prefix_sha256": hashlib.sha256(history_before).hexdigest(),
             "tier": args.tier, "model": args.model, "budgets_per_entry": budgets, "no_higher_held_tier": True,
+            # Settings an entry declares itself; they replace budgets_per_entry and the
+            # 100 MHz default for that entry, and the bench records them in its config.
+            "entry_settings": entry_settings(args.tier),
             "scope": (f"Fresh full tier0 runtime merge gate on {len(source)} source identities after harness changes; "
-                      "campaign14's budgets and arguments. Ideal zero min/max I/O, no higher held tier.") if args.tier == 0
+                      "campaign14's budgets, target frequency from each entry's meta.yaml (else 100 MHz). "
+                      "Ideal zero min/max I/O, no higher held tier.") if args.tier == 0
             else (f"Fresh full tier{args.tier} runtime gate on {len(source)} source identities; per-tier budgets, "
-                  "iterations from each entry's meta.yaml. Ideal zero min/max I/O, no higher held tier.")}
+                  "iterations, target frequency and any budgets from each entry's meta.yaml. "
+                  "Ideal zero min/max I/O, no higher held tier.")}
     pre.write_text(json.dumps(plan, indent=2) + "\n", encoding="utf-8")
     print(json.dumps({"prelaunch": str(pre), "budgets_per_entry": budgets}), flush=True)
     tick, code = time.monotonic(), None

@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_2:model:generator.generate:0",
+  "result": "`timescale 1ns/1ps\n// @latency 33\n// Inherited minimum accepted-transfer age from transparent typed child wiring; not measured timing.\nmodule spi_master (\n    input wire clk,\n    input wire rst,\n    input wire [7:0] cmd_data,\n    input wire cmd_valid,\n    output wire cmd_ready,\n    output wire [7:0] rsp_data,\n    output wire rsp_valid,\n    input wire rsp_ready,\n    output wire sclk,\n    output wire mosi,\n    input wire miso,\n    output wire cs_n\n);\n    (* keep_hierarchy = \"yes\" *)\n    spi_master_core #( .HALF_PERIOD(2) ) u_spi_master_core (\n        .clk(clk),\n        .rst(rst),\n        .cmd_data(cmd_data),\n        .cmd_valid(cmd_valid),\n        .cmd_ready(cmd_ready),\n        .rsp_data(rsp_data),\n        .rsp_valid(rsp_valid),\n        .rsp_ready(rsp_ready),\n        .sclk(sclk),\n        .mosi(mosi),\n        .miso(miso),\n        .cs_n(cs_n)\n    );\nendmodule",
+  "artifacts": {}
+}

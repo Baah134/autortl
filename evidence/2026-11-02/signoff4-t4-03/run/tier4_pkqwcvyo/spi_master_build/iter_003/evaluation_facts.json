@@ -1,0 +1,298 @@
+{
+  "candidate_metrics": {
+    "bram_total": 50.0,
+    "bram_used": 0.0,
+    "dsp_total": 90,
+    "dsp_used": 0,
+    "dynamic_power_w": 0.015,
+    "ff_pct": 0.07451923076923077,
+    "ff_total": 41600,
+    "ff_used": 31,
+    "lut_pct": 0.08653846153846154,
+    "lut_total": 20800,
+    "lut_used": 18,
+    "reg2reg_wns_ns": 4.761,
+    "sim_error": "",
+    "sim_passed": true,
+    "synth_error": "",
+    "timing_met": true,
+    "total_power_w": 0.085,
+    "whs_ns": 0.051,
+    "wns_ns": 0.167
+  },
+  "candidate_source": {
+    "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-03\\tier4_pkqwcvyo\\spi_master_build\\iter_003\\cand_standard\\spi_master.v",
+    "sha256": "7a600b43907ab88940f32b8da348bb2f48a3bdeffd3da934a27ec86315cf2183",
+    "text": "`timescale 1ns/1ps\r\n// @latency 33\r\nmodule spi_master_core #(\r\n    parameter integer HALF_PERIOD = 2\r\n) (\r\n    input wire clk,\r\n    input wire rst,\r\n    input wire [7:0] cmd_data,\r\n    input wire cmd_valid,\r\n    output wire cmd_ready,\r\n    output wire [7:0] rsp_data,\r\n    output wire rsp_valid,\r\n    input wire rsp_ready,\r\n    output wire sclk,\r\n    output wire mosi,\r\n    input wire miso,\r\n    output wire cs_n\r\n);\r\n\r\n    reg busy_reg;\r\n    reg rsp_valid_reg;\r\n    reg mosi_reg;\r\n    reg cs_n_reg;\r\n    reg [7:0] tx_shift;\r\n    reg [7:0] rx_shift;\r\n    reg [3:0] div_count;\r\n    reg [4:0] half_index;\r\n\r\n    assign cmd_ready = !busy_reg && !rsp_valid_reg;\r\n    assign rsp_data = rx_shift;\r\n    assign rsp_valid = rsp_valid_reg;\r\n    assign sclk = busy_reg && half_index[0];\r\n    assign mosi = mosi_reg;\r\n    assign cs_n = cs_n_reg;\r\n\r\n    always @(posedge clk) begin\r\n        if (rst) begin\r\n            busy_reg <= 1'b0;\r\n            rsp_valid_reg <= 1'b0;\r\n            mosi_reg <= 1'b0;\r\n            cs_n_reg <= 1'b1;\r\n            tx_shift <= 8'b0;\r\n            rx_shift <= 8'b0;\r\n            div_count <= 4'b0;\r\n            half_index <= 5'b0;\r\n        end else if (busy_reg) begin\r\n            if (div_count == HALF_PERIOD - 1) begin\r\n                div_count <= 4'b0;\r\n\r\n                if (half_index[0] == 1'b0) begin\r\n                    rx_shift <= {rx_shift[6:0], miso};\r\n                end else if (half_index == 5'd15) begin\r\n                    cs_n_reg <= 1'b1;\r\n                    mosi_reg <= 1'b0;\r\n                    busy_reg <= 1'b0;\r\n                    rsp_valid_reg <= 1'b1;\r\n                end else begin\r\n                    mosi_reg <= tx_shift[6];\r\n                    tx_shift <= {tx_shift[6:0], 1'b0};\r\n                end\r\n\r\n                half_index <= half_index + 1'b1;\r\n            end else begin\r\n                div_count <= div_count + 1'b1;\r\n            end\r\n        end else if (rsp_valid_reg) begin\r\n            if (rsp_ready)\r\n                rsp_valid_reg <= 1'b0;\r\n        end else if (cmd_valid) begin\r\n            busy_reg <= 1'b1;\r\n            cs_n_reg <= 1'b0;\r\n            mosi_reg <= cmd_data[7];\r\n            tx_shift <= cmd_data;\r\n            rx_shift <= 8'b0;\r\n            div_count <= 4'b0;\r\n            half_index <= 5'b0;\r\n        end\r\n    end\r\n\r\nendmodule\r\n\r\n`timescale 1ns/1ps\r\n// @latency 33\r\n// Inherited minimum accepted-transfer age from transparent typed child wiring; not measured timing.\r\nmodule spi_master (\r\n    input wire clk,\r\n    input wire rst,\r\n    input wire [7:0] cmd_data,\r\n    input wire cmd_valid,\r\n    output wire cmd_ready,\r\n    output wire [7:0] rsp_data,\r\n    output wire rsp_valid,\r\n    input wire rsp_ready,\r\n    output wire sclk,\r\n    output wire mosi,\r\n    input wire miso,\r\n    output wire cs_n\r\n);\r\n    spi_master_core #(.HALF_PERIOD(2)) u_spi_master_core (\r\n        .clk(clk),\r\n        .rst(rst),\r\n        .cmd_data(cmd_data),\r\n        .cmd_valid(cmd_valid),\r\n        .cmd_ready(cmd_ready),\r\n        .rsp_data(rsp_data),\r\n        .rsp_valid(rsp_valid),\r\n        .rsp_ready(rsp_ready),\r\n        .sclk(sclk),\r\n        .mosi(mosi),\r\n        .miso(miso),\r\n        .cs_n(cs_n)\r\n    );\r\nendmodule",
+    "truncated": false
+  },
+  "candidate_timing_feasible": true,
+  "first_violated_path_excerpt": null,
+  "flow_and_constraints": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-03\\tier4_pkqwcvyo\\spi_master_build\\iter_003\\cand_standard\\synth.tcl",
+      "sha256": "d5a3a8ac5f032ab6a36916f142bb25c367c1120706c209d4c6c176c4e288703e",
+      "text": "set_msg_config -id {VRFC 10-3609} -new_severity ERROR\r\nset_msg_config -id {Synth 8-9873} -new_severity ERROR\r\nset_msg_config -id {Designutils 20-1307} -new_severity ERROR\r\nset_msg_config -id {Synth 8-327} -new_severity ERROR\r\nset_msg_config -id {Synth 8-3352} -new_severity ERROR\r\nset_part xc7a35tcpg236-1\r\nread_verilog \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t4-03/tier4_pkqwcvyo/spi_master_build/iter_003/cand_standard/spi_master.v\"\r\nset fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t4-03/tier4_pkqwcvyo/spi_master_build/iter_003/cand_standard/timing.xdc\" w]\r\nputs $fp {create_clock -period 10.000 -name clk [get_ports clk]}\r\nclose $fp\r\nread_xdc \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t4-03/tier4_pkqwcvyo/spi_master_build/iter_003/cand_standard/timing.xdc\"\r\nsynth_design -top spi_master -flatten_hierarchy rebuilt \r\nset fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t4-03/tier4_pkqwcvyo/spi_master_build/iter_003/cand_standard/timing_io.tcl\" w]\r\nputs $fp {set data_inputs [get_ports -filter {DIRECTION == IN && NAME != clk}]}\r\nputs $fp {if {[llength $data_inputs] > 0} {set_input_delay -clock clk -max 0.000 $data_inputs; set_input_delay -clock clk -min 0.000 $data_inputs}}\r\nputs $fp {if {[llength [all_outputs]] > 0} {set_output_delay -clock clk -max 0.000 [all_outputs]; set_output_delay -clock clk -min 0.000 [all_outputs]}}\r\nclose $fp\r\nsource \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t4-03/tier4_pkqwcvyo/spi_master_build/iter_003/cand_standard/timing_io.tcl\"\r\nreport_utilization -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t4-03/tier4_pkqwcvyo/spi_master_build/iter_003/cand_standard/utilization.rpt\"\r\nreport_timing_summary -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t4-03/tier4_pkqwcvyo/spi_master_build/iter_003/cand_standard/timing.rpt\"\r\nopt_design\r\nplace_design\r\n\r\nroute_design\r\nreport_utilization -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t4-03/tier4_pkqwcvyo/spi_master_build/iter_003/cand_standard/utilization_routed.rpt\"\r\nreport_timing_summary -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t4-03/tier4_pkqwcvyo/spi_master_build/iter_003/cand_standard/timing_routed.rpt\"\r\ncatch { if {[llength [all_registers]] > 0} { report_timing -from [all_registers] -to [all_registers] -max_paths 1 -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t4-03/tier4_pkqwcvyo/spi_master_build/iter_003/cand_standard/timing_reg2reg.rpt\" } }\r\nreport_design_analysis -logic_level_distribution -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t4-03/tier4_pkqwcvyo/spi_master_build/iter_003/cand_standard/design_analysis.rpt\"\r\nreport_power -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t4-03/tier4_pkqwcvyo/spi_master_build/iter_003/cand_standard/power.rpt\"\r\ncatch { report_methodology -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t4-03/tier4_pkqwcvyo/spi_master_build/iter_003/cand_standard/methodology.rpt\" }\r\ncatch { report_qor_suggestions -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t4-03/tier4_pkqwcvyo/spi_master_build/iter_003/cand_standard/qor_suggestions.rpt\" }\r\nputs \"SYNTH_COMPLETE\"\r\n",
+      "truncated": false
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-03\\tier4_pkqwcvyo\\spi_master_build\\iter_003\\cand_standard\\timing.xdc",
+      "sha256": "fa142c09f0fadb5e303ca9fea08c02bc353451533e44aeee9cd9a0231cc8bede",
+      "text": "create_clock -period 10.000 -name clk [get_ports clk]\r\n",
+      "truncated": false
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-03\\tier4_pkqwcvyo\\spi_master_build\\iter_003\\cand_standard\\timing_io.tcl",
+      "sha256": "6b38098841a48bbb3ab15de49d2bf2baf7e4384f599259ff5f3afa2c2b1daf00",
+      "text": "set data_inputs [get_ports -filter {DIRECTION == IN && NAME != clk}]\r\nif {[llength $data_inputs] > 0} {set_input_delay -clock clk -max 0.000 $data_inputs; set_input_delay -clock clk -min 0.000 $data_inputs}\r\nif {[llength [all_outputs]] > 0} {set_output_delay -clock clk -max 0.000 [all_outputs]; set_output_delay -clock clk -min 0.000 [all_outputs]}\r\n",
+      "truncated": false
+    }
+  ],
+  "improvement_kind": "objective",
+  "measured_improvement": true,
+  "metric_provenance": "Structured metrics are parsed from retained reports; routed utilization/timing reports take precedence when present. The manifest identifies complete files by hash. Header excerpts are bounded previews, not complete reports or an independent metric source.",
+  "objective": "minimize_luts",
+  "previous_best_metrics": {
+    "bram_total": 50.0,
+    "bram_used": 0.0,
+    "dsp_total": 90,
+    "dsp_used": 0,
+    "dynamic_power_w": 0.015,
+    "ff_pct": 0.07692307692307693,
+    "ff_total": 41600,
+    "ff_used": 32,
+    "lut_pct": 0.09134615384615384,
+    "lut_total": 20800,
+    "lut_used": 19,
+    "reg2reg_wns_ns": 4.841,
+    "sim_error": "",
+    "sim_passed": true,
+    "synth_error": "",
+    "timing_met": true,
+    "total_power_w": 0.085,
+    "whs_ns": 0.04,
+    "wns_ns": 0.343
+  },
+  "previous_best_timing_feasible": true,
+  "process_exit_gate": {
+    "passed": true,
+    "policy": "Every required tool's latest actual process exit must be zero with retained matching output; physical-only Doctor may reuse source-bound prior compile/simulation.",
+    "reasons": []
+  },
+  "report_headers": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-03\\tier4_pkqwcvyo\\spi_master_build\\iter_003\\cand_standard\\power.rpt",
+      "sha256": "66ee52cfb7a703cb7779a79b7430f75bfb9a6b11a5c953ecf817fa9ed0ff0b8e",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version     : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date             : Tue Nov  3 08:32:47 2026\r\n| Host             : Baah running 64-bit major release  (build 9200)\r\n| Command          : report_power -file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t4-03/tier4_pkqwcvyo/spi_master_build/iter_003/cand_standard/power.rpt\r\n| Design           : spi_master\r\n| Device           : xc7a35tcpg236-1\r\n| Design State     : routed\r\n| Grade            : commercial\r\n| Process          : typical\r\n| Characterization : Production\r\n---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nPower Report\r\n\r\nTable of Contents\r\n-----------------\r\n1. Summary\r\n1.1 On-Chip Components\r\n1.2 Power Supply Summary\r\n1.3 Confidence Level\r\n2. Settings\r\n2.1 Environment\r\n2.2 Clock Constraints\r\n3. Detailed Reports\r\n3.1 By Hierarchy\r\n\r\n1. Summary\r\n----------\r\n\r\n+--------------------------+--------------+\r\n| Total On-Chip Power (W)  | 0.085        |\r\n| Design Power Budget (W)  | Unspecified* |\r\n| Power Budget Margin (W)  | NA           |\r\n| Dynamic (W)              | 0.015        |\r\n| Device Static (W)        | 0.070        |\r\n| Effective TJA (C/W)      | 5.0          |\r\n| Max Ambient (C)          | 84.6         |\r\n| Junction Temperature (C) | 25.4         |\r\n| Confidence Level         | Low          |\r\n| Setting File             | ---   ",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-03\\tier4_pkqwcvyo\\spi_master_build\\iter_003\\cand_standard\\timing.rpt",
+      "sha256": "53539150cea1c7b874e1dac0defb32ca53b00625fde66c51386c825f2652d78c",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date         : Tue Nov  3 08:31:33 2026\r\n| Host         : Baah running 64-bit major release  (build 9200)\r\n| Command      : report_timing_summary -file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t4-03/tier4_pkqwcvyo/spi_master_build/iter_003/cand_standard/timing.rpt\r\n| Design       : spi_master\r\n| Device       : 7a35t-cpg236\r\n| Speed File   : -1  PRODUCTION 1.23 2018-06-13\r\n| Design State : Synthesized\r\n-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nTiming Summary Report\r\n\r\n------------------------------------------------------------------------------------------------\r\n| Timer Settings\r\n| --------------\r\n------------------------------------------------------------------------------------------------\r\n\r\n  Enable Multi Corner Analysis               :  Yes\r\n  Enable Pessimism Removal                   :  Yes\r\n  Pessimism Removal Resolution               :  Nearest Common Node\r\n  Enable Input Delay Default Clock           :  No\r\n  Enable Preset / Clear Arcs                 :  No\r\n  Disable Flight Delays                      :  No\r\n  Ignore I/O Paths                           :  No\r\n  Timing Early Launch at Borrowing Latches   :  No\r\n  Borrow Time for Max Delay Exceptions       :  Yes\r\n  Merge Timing Exceptions                    :  Yes\r\n  Inter-SL",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-03\\tier4_pkqwcvyo\\spi_master_build\\iter_003\\cand_standard\\timing_reg2reg.rpt",
+      "sha256": "4bdf72d44177a289fcdf57dd76583b0eeb79326eadd0e8def69bca50edec6206",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date         : Tue Nov  3 08:32:47 2026\r\n| Host         : Baah running 64-bit major release  (build 9200)\r\n| Command      : report_timing -from [all_registers] -to [all_registers] -max_paths 1 -file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t4-03/tier4_pkqwcvyo/spi_master_build/iter_003/cand_standard/timing_reg2reg.rpt\r\n| Design       : spi_master\r\n| Device       : 7a35t-cpg236\r\n| Speed File   : -1  PRODUCTION 1.23 2018-06-13\r\n| Design State : Routed\r\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nTiming Report\r\n\r\nSlack (MET) :             4.761ns  (required time - arrival time)\r\n  Source:                 u_spi_master_core/half_index_reg[1]/C\r\n                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@5.000ns period=10.000ns})\r\n  Destination:            u_spi_master_core/tx_shift_reg[1]/CE\r\n                            (rising edge-triggered cell FDRE clocked by clk  {rise@0.000ns fall@5.000ns period=10.000ns})\r\n  Path Group:             clk\r\n  Path Type:              Setup (Max at Slow Process Corner)\r\n  Requirement:            10.000ns  (clk rise@10.000ns - clk rise@0.000ns)\r\n  Data Path Delay:    ",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-03\\tier4_pkqwcvyo\\spi_master_build\\iter_003\\cand_standard\\timing_routed.rpt",
+      "sha256": "695dee0df02037bd13d9c75bd03d956e96decc2332f682677d7c45402b7d7746",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\r\n| Date         : Tue Nov  3 08:32:47 2026\r\n| Host         : Baah running 64-bit major release  (build 9200)\r\n| Command      : report_timing_summary -file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t4-03/tier4_pkqwcvyo/spi_master_build/iter_003/cand_standard/timing_routed.rpt\r\n| Design       : spi_master\r\n| Device       : 7a35t-cpg236\r\n| Speed File   : -1  PRODUCTION 1.23 2018-06-13\r\n| Design State : Routed\r\n--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\r\n\r\nTiming Summary Report\r\n\r\n------------------------------------------------------------------------------------------------\r\n| Timer Settings\r\n| --------------\r\n------------------------------------------------------------------------------------------------\r\n\r\n  Enable Multi Corner Analysis               :  Yes\r\n  Enable Pessimism Removal                   :  Yes\r\n  Pessimism Removal Resolution               :  Nearest Common Node\r\n  Enable Input Delay Default Clock           :  No\r\n  Enable Preset / Clear Arcs                 :  No\r\n  Disable Flight Delays                      :  No\r\n  Ignore I/O Paths                           :  No\r\n  Timing Early Launch at Borrowing Latches   :  No\r\n  Borrow Time for Max Delay Exceptions       :  Yes\r\n  Merge Timing Exceptions                    : ",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-03\\tier4_pkqwcvyo\\spi_master_build\\iter_003\\cand_standard\\utilization.rpt",
+      "sha256": "370d57ce84ec3d7ce6e1b75458973536b8c1150de30e12636b4318d15b874f79",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\n---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\n| Date         : Tue Nov  3 08:31:33 2026\n| Host         : Baah running 64-bit major release  (build 9200)\n| Command      : report_utilization -file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t4-03/tier4_pkqwcvyo/spi_master_build/iter_003/cand_standard/utilization.rpt\n| Design       : spi_master\n| Device       : xc7a35tcpg236-1\n| Speed File   : -1\n| Design State : Synthesized\n---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n\nUtilization Design Information\n\nTable of Contents\n-----------------\n1. Slice Logic\n1.1 Summary of Registers by Type\n2. Memory\n3. DSP\n4. IO and GT Specific\n5. Clocking\n6. Specific Feature\n7. Primitives\n8. Black Boxes\n9. Instantiated Netlists\n\n1. Slice Logic\n--------------\n\n+-------------------------+------+-------+------------+-----------+-------+\n|        Site Type        | Used | Fixed | Prohibited | Available | Util% |\n+-------------------------+------+-------+------------+-----------+-------+\n| Slice LUTs*             |   20 |     0 |          0 |     20800 |  0.10 |\n|   LUT as Logic          |   20 |     0 |          0 |     20800 |  0.10 |\n|   LUT as Memory         |    0 |     0 |          0 |      9600 |  0.00 |\n| Slice Registers         |   25 |     0 |          0 |     41600 |  0.06 |\n|   Register as Flip Flop |   25 |  ",
+      "truncated": true
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-03\\tier4_pkqwcvyo\\spi_master_build\\iter_003\\cand_standard\\utilization_routed.rpt",
+      "sha256": "ecea716d4cff3df820f8fe46313747abb021e6a7524a3c693a5d85042683f5aa",
+      "text": "Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\n----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n| Tool Version : Vivado v.2025.2 (win64) Build 6299465 Fri Nov 14 19:35:11 GMT 2025\n| Date         : Tue Nov  3 08:32:47 2026\n| Host         : Baah running 64-bit major release  (build 9200)\n| Command      : report_utilization -file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t4-03/tier4_pkqwcvyo/spi_master_build/iter_003/cand_standard/utilization_routed.rpt\n| Design       : spi_master\n| Device       : xc7a35tcpg236-1\n| Speed File   : -1\n| Design State : Routed\n----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n\nUtilization Design Information\n\nTable of Contents\n-----------------\n1. Slice Logic\n1.1 Summary of Registers by Type\n2. Slice Logic Distribution\n3. Memory\n4. DSP\n5. IO and GT Specific\n6. Clocking\n7. Specific Feature\n8. Primitives\n9. Black Boxes\n10. Instantiated Netlists\n\n1. Slice Logic\n--------------\n\n+-------------------------+------+-------+------------+-----------+-------+\n|        Site Type        | Used | Fixed | Prohibited | Available | Util% |\n+-------------------------+------+-------+------------+-----------+-------+\n| Slice LUTs              |   18 |     0 |          0 |     20800 |  0.09 |\n|   LUT as Logic          |   18 |     0 |          0 |     20800 |  0.09 |\n|   LUT as Memory         |    0 |     0 |          0 |      9600 |  0.00 |\n| Slice Registers         |   31 |     0 |          0 |     41600 |",
+      "truncated": true
+    }
+  ],
+  "report_manifest": [
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-03\\tier4_pkqwcvyo\\spi_master_build\\iter_003\\cand_standard\\power.rpt",
+      "sha256": "66ee52cfb7a703cb7779a79b7430f75bfb9a6b11a5c953ecf817fa9ed0ff0b8e"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-03\\tier4_pkqwcvyo\\spi_master_build\\iter_003\\cand_standard\\timing.rpt",
+      "sha256": "53539150cea1c7b874e1dac0defb32ca53b00625fde66c51386c825f2652d78c"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-03\\tier4_pkqwcvyo\\spi_master_build\\iter_003\\cand_standard\\timing_reg2reg.rpt",
+      "sha256": "4bdf72d44177a289fcdf57dd76583b0eeb79326eadd0e8def69bca50edec6206"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-03\\tier4_pkqwcvyo\\spi_master_build\\iter_003\\cand_standard\\timing_routed.rpt",
+      "sha256": "695dee0df02037bd13d9c75bd03d956e96decc2332f682677d7c45402b7d7746"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-03\\tier4_pkqwcvyo\\spi_master_build\\iter_003\\cand_standard\\utilization.rpt",
+      "sha256": "370d57ce84ec3d7ce6e1b75458973536b8c1150de30e12636b4318d15b874f79"
+    },
+    {
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-03\\tier4_pkqwcvyo\\spi_master_build\\iter_003\\cand_standard\\utilization_routed.rpt",
+      "sha256": "ecea716d4cff3df820f8fe46313747abb021e6a7524a3c693a5d85042683f5aa"
+    }
+  ],
+  "tool_exit_evidence": {
+    "history_count": 5,
+    "latest_by_tool": {
+      "vivado": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-03\\tier4_pkqwcvyo\\spi_master_build\\iter_003\\cand_standard\\vivado_synth_output.log",
+        "output_log_sha256": "9c1357c236af6f773ced7b5042ac0e5c6c8c15d69a272b635082782cbc75608e",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xelab": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-03\\tier4_pkqwcvyo\\spi_master_build\\iter_003\\cand_standard\\xelab.log",
+        "output_log_sha256": "fbe8fd22a7ef3f8af2130162d182dfba5e7b56d7c31737e5cf40eed3b03ceb2d",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xsim": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-03\\tier4_pkqwcvyo\\spi_master_build\\iter_003\\cand_standard\\xsim.log",
+        "output_log_sha256": "f4f466a23b5f3cbb7ebfc20ff68079a1a3bd66cf76951f137334c4ef093bbdf6",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      },
+      "xvlog": {
+        "driver_returncode": 0,
+        "log_status": "verified",
+        "log_verified": true,
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-03\\tier4_pkqwcvyo\\spi_master_build\\iter_003\\cand_standard\\xvlog.log",
+        "output_log_sha256": "2ae161b7470c15ed9219b5ee27ee360162ac504002e879f087fff9c452c38c7d",
+        "returncode": 0,
+        "status": "exited",
+        "successful": true
+      }
+    },
+    "missing_required_tools": [],
+    "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-03\\tier4_pkqwcvyo\\spi_master_build\\iter_003\\cand_standard\\tool_exit_records.log",
+    "records": [
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-03\\tier4_pkqwcvyo\\spi_master_build\\iter_003\\cand_standard",
+        "driver_returncode": 0,
+        "elapsed_seconds": 2.327661100003752,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xvlog.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-03\\tier4_pkqwcvyo\\spi_master_build\\iter_003\\cand_standard\\xvlog.log",
+        "output_log_sha256": "f16b01a88fbe6a91a7bd3de311c5bfa36814890826adcd28902a735623f069d7",
+        "pid": 440,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xvlog"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-03\\tier4_pkqwcvyo\\spi_master_build\\iter_003\\cand_standard",
+        "driver_returncode": 0,
+        "elapsed_seconds": 2.3604544999980135,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xvlog.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-03\\tier4_pkqwcvyo\\spi_master_build\\iter_003\\cand_standard\\xvlog.log",
+        "output_log_sha256": "2ae161b7470c15ed9219b5ee27ee360162ac504002e879f087fff9c452c38c7d",
+        "pid": 22556,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xvlog"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-03\\tier4_pkqwcvyo\\spi_master_build\\iter_003\\cand_standard",
+        "driver_returncode": 0,
+        "elapsed_seconds": 7.471155899998848,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xelab.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-03\\tier4_pkqwcvyo\\spi_master_build\\iter_003\\cand_standard\\xelab.log",
+        "output_log_sha256": "fbe8fd22a7ef3f8af2130162d182dfba5e7b56d7c31737e5cf40eed3b03ceb2d",
+        "pid": 29800,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xelab"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-03\\tier4_pkqwcvyo\\spi_master_build\\iter_003\\cand_standard",
+        "driver_returncode": 0,
+        "elapsed_seconds": 4.752508999998099,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/xsim.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-03\\tier4_pkqwcvyo\\spi_master_build\\iter_003\\cand_standard\\xsim.log",
+        "output_log_sha256": "f4f466a23b5f3cbb7ebfc20ff68079a1a3bd66cf76951f137334c4ef093bbdf6",
+        "pid": 31376,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "xsim"
+      },
+      {
+        "cwd": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-03\\tier4_pkqwcvyo\\spi_master_build\\iter_003\\cand_standard",
+        "driver_returncode": 0,
+        "elapsed_seconds": 202.26531709999836,
+        "executable": "C:/AMDDesignTools/2025.2/Vivado/bin/vivado.bat",
+        "output_log_path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-03\\tier4_pkqwcvyo\\spi_master_build\\iter_003\\cand_standard\\vivado_synth_output.log",
+        "output_log_sha256": "9c1357c236af6f773ced7b5042ac0e5c6c8c15d69a272b635082782cbc75608e",
+        "pid": 28136,
+        "returncode": 0,
+        "schema_version": 1,
+        "status": "exited",
+        "tool": "vivado"
+      }
+    ],
+    "schema_valid": true,
+    "sha256": "244b208d39e7a529d809d83b906f92379e7b95653dbea01821b528d58427198d",
+    "status": "recorded",
+    "truncated": false
+  },
+  "verification_logs": [
+    {
+      "head": "INFO: [VRFC 10-2263] Analyzing Verilog file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t4-03/tier4_pkqwcvyo/spi_master_build/iter_003/cand_standard/spi_master.v\" into library work\r\nINFO: [VRFC 10-311] analyzing module spi_master_core\r\nINFO: [VRFC 10-311] analyzing module spi_master\r\nINFO: [VRFC 10-2263] Analyzing Verilog file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t4-03/tier4_pkqwcvyo/spi_master_build/inputs/testbench_path.v\" into library work\r\nINFO: [VRFC 10-311] analyzing module spi_master_case\r\nINFO: [VRFC 10-311] analyzing module spi_master_tb\r\n\r\n",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-03\\tier4_pkqwcvyo\\spi_master_build\\iter_003\\cand_standard\\xvlog.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "2ae161b7470c15ed9219b5ee27ee360162ac504002e879f087fff9c452c38c7d",
+      "tail": "",
+      "truncated": false
+    },
+    {
+      "head": "Vivado Simulator v2025.2\r\nCopyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\nCopyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\nRunning: C:/AMDDesignTools/2025.2/Vivado/bin/unwrapped/win64.o/xelab.exe spi_master_tb -s spi_master_tb_snap --debug off \r\nMulti-threading is on. Using 10 slave threads.\r\nStarting static elaboration\r\nPass Through NonSizing Optimizer\r\nCompleted static elaboration\r\nStarting simulation data flow analysis\r\nCompleted simulation data flow analysis\r\nTime Resolution for simulation is 1ps\r\nCompiling module work.spi_master_core\r\nCompiling module work.spi_master\r\nCompiling module work.spi_master_case(USE_TOP=1)\r\nCompiling module work.spi_master_core(HALF_PERIOD=1)\r\nCompiling module work.spi_master_case(HALF=1)\r\nCompiling module work.spi_master_core(HALF_PERIOD=3)\r\nCompiling module work.spi_master_case(HALF=3)\r\nCompiling module work.spi_master_core(HALF_PERIOD=8)\r\nCompiling module work.spi_master_case(HALF=8)\r\nCompiling module work.spi_master_tb\r\nBuilt simulation snapshot spi_master_tb_snap\r\n\r\n",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-03\\tier4_pkqwcvyo\\spi_master_build\\iter_003\\cand_standard\\xelab.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "fbe8fd22a7ef3f8af2130162d182dfba5e7b56d7c31737e5cf40eed3b03ceb2d",
+      "tail": "",
+      "truncated": false
+    },
+    {
+      "head": "\r\n****** xsim v2025.2 (64-bit)\r\n  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025\r\n  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025\r\n  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025\r\n  **** Start of session at: Tue Nov  3 08:29:25 2026\r\n    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\n    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n\r\nsource xsim.dir/spi_master_tb_snap/xsim_script.tcl\r\n# xsim {spi_master_tb_snap} -autoloadwcfg -runall\r\nTime resolution is 1 ps\r\nrun -all\r\nCOVERAGE case=1 HALF=1 steps=632 accepted=40 retired=21 aborted_busy=16 aborted_rsp=3 stalled_rsp=26 blocked=384 pulses=5 random=12\r\nCOVERAGE case=0 HALF=2 steps=1435 accepted=56 retired=21 aborted_busy=32 aborted_rsp=3 stalled_rsp=21 blocked=992 pulses=8 random=12\r\nCOVERAGE case=2 HALF=3 steps=2500 accepted=72 retired=21 aborted_busy=48 aborted_rsp=3 stalled_rsp=22 blocked=1859 pulses=12 random=12\r\nCOVERAGE case=3 HALF=8 steps=11613 accepted=152 retired=20 aborted_busy=129 aborted_rsp=3 stalled_rsp=24 blocked=10017 pulses=28 random=12\r\nTEST PASSED\r\n$finish called at time : 116137 ns : File \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t4-03/tier4_pkqwcvyo/spi_master_build/inputs/testbench_path.v\" Line 239\r\nexit\r\nINFO: [Common 17-206] Exiting xsim at Tue Nov  3 08:29:27 2026...\r\n\r\n",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-03\\tier4_pkqwcvyo\\spi_master_build\\iter_003\\cand_standard\\sim_log.txt",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "f4f466a23b5f3cbb7ebfc20ff68079a1a3bd66cf76951f137334c4ef093bbdf6",
+      "tail": "",
+      "truncated": false
+    },
+    {
+      "head": "\r\n****** Vivado v2025.2 (64-bit)\r\n  **** SW Build 6299465 on Fri Nov 14 19:35:11 GMT 2025\r\n  **** IP Build 6300035 on Fri Nov 14 10:48:45 MST 2025\r\n  **** SharedData Build 6298862 on Thu Nov 13 04:50:51 MST 2025\r\n  **** Start of session at: Tue Nov  3 08:29:30 2026\r\n    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.\r\n    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.\r\n\r\nsource C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t4-03/tier4_pkqwcvyo/spi_master_build/iter_003/cand_standard/synth.tcl\r\n# set_msg_config -id {VRFC 10-3609} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-9873} -new_severity ERROR\r\n# set_msg_config -id {Designutils 20-1307} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-327} -new_severity ERROR\r\n# set_msg_config -id {Synth 8-3352} -new_severity ERROR\r\n# set_part xc7a35tcpg236-1\r\nINFO: [Coretcl 2-1500] The part has been set to 'xc7a35tcpg236-1' for the current project only. Run set_part -help for more details. To evaluate different speed grades in the current design, use the set_speed_grade command, or use the open_checkpoint -part command to change the part used by an existing checkpoint design.\r\nset_part: Time (s): cpu = 00:00:29 ; elapsed = 00:00:20 . Memory (MB): peak = 533.266 ; gain = 225.867\r\n# read_verilog \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t4-03/tier4_pkqwcvyo/spi_master_build/iter_003/cand_standard/spi_master.v\"\r\n# set fp [open \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t4-03/tier4_pkqwcvyo/spi_master_build/iter_003/cand_standard/timing.xdc\" w]\r\n# puts $fp {create_clock -period 10.000 -name clk [get_ports clk]}\r\n# close $fp\r\n# read_xdc \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t4-03/tier4_pkqwcvyo/spi_master_build/iter_003/cand_sta",
+      "path": "C:\\Users\\prince.baah\\Downloads\\autortl-work\\logs\\signoff4-t4-03\\tier4_pkqwcvyo\\spi_master_build\\iter_003\\cand_standard\\vivado_synth_output.log",
+      "preview_policy": "At most 1800 characters each from the start and end; hash covers the complete original file. Excerpts do not independently establish successful tool exit.",
+      "sha256": "9c1357c236af6f773ced7b5042ac0e5c6c8c15d69a272b635082782cbc75608e",
+      "tail": "or-less Activity Propagation...\r\n\r\nFinished Running Vector-less Activity Propagation\r\n0 Infos, 0 Warnings, 0 Critical Warnings and 0 Errors encountered.\r\nreport_power completed successfully\r\n# catch { report_methodology -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t4-03/tier4_pkqwcvyo/spi_master_build/iter_003/cand_standard/methodology.rpt\" }\r\nCommand: report_methodology -file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t4-03/tier4_pkqwcvyo/spi_master_build/iter_003/cand_standard/methodology.rpt\r\nINFO: [Timing 38-35] Done setting XDC timing constraints.\r\nINFO: [DRC 23-133] Running Methodology with 2 threads\r\nINFO: [Vivado_Tcl 2-1520] The results of Report Methodology are in file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t4-03/tier4_pkqwcvyo/spi_master_build/iter_003/cand_standard/methodology.rpt.\r\nreport_methodology completed successfully\r\n# catch { report_qor_suggestions -file \"C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t4-03/tier4_pkqwcvyo/spi_master_build/iter_003/cand_standard/qor_suggestions.rpt\" }\r\nCommand: report_qor_suggestions -file C:/Users/prince.baah/Downloads/autortl-work/logs/signoff4-t4-03/tier4_pkqwcvyo/spi_master_build/iter_003/cand_standard/qor_suggestions.rpt\r\nCongestion Prediction Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.012 . Memory (MB): peak = 2012.641 ; gain = 0.000\r\nINFO: [Implflow 47-1309] PredResultString: 1:36.17:63.83\r\nfeatureProvider Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.053 . Memory (MB): peak = 2012.641 ; gain = 0.000\r\nINFO: [Implflow 47-1274] ML strategy prediction is not supported for 7-series devices.\r\nreport_qor_suggestions completed successfully\r\n# puts \"SYNTH_COMPLETE\"\r\nSYNTH_COMPLETE\r\nINFO: [Common 17-206] Exiting Vivado at Tue Nov  3 08:32:49 2026...\r\n\r\n",
+      "truncated": true
+    }
+  ]
+}

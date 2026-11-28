@@ -1,0 +1,13 @@
+{
+  "stage": "iteration_4:model:evaluator.evaluate:0",
+  "result": {
+    "__kind": "evaluation",
+    "value": {
+      "raw": "# EVALUATION \u2014 iteration 4\n## Contract check\n- Defined behavior and deterministic ladder: PASS \u2014 the standard rung is ALIVE and the trusted simulation reports TEST PASSED.\n- Top interface and latency: PASS \u2014 top name and ports are preserved, and `// @latency 5` matches the authoritative known latency.\n- Compile, elaboration, and simulation gates: PASS \u2014 required tools exited successfully; simulation passed.\n- Routed metrics and timing closure: PASS \u2014 retained routed evidence reports WNS 1.695 ns and WHS 0.104 ns, both nonnegative.\n- Improvement over previous best: FAIL \u2014 both designs are timing-feasible, so the `minimize_luts` objective applies; LUTs increased from 79 to 178, with no objective improvement.\n## Summary\n- Passed: 4 of 5\n- Failed: 1 of 5\n- Improved over previous best: NO\n## Recommendation\nREJECT\n## Reason\nThe candidate passes the behavioral, tool, latency, and timing gates, but it cannot replace the timing-feasible previous best under `minimize_luts`: its LUT count is higher, and the modest WNS increase does not satisfy the selected objective. The stall count is 0, so RESTART does not apply.",
+      "recommendation": "REJECT",
+      "passed": 4,
+      "failed": 1
+    }
+  },
+  "artifacts": {}
+}

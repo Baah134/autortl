@@ -41,6 +41,20 @@ def _probe(cmd, timeout=60):
         return None, str(exc)
 
 
+def tool_bins(bin_dir) -> dict:
+    """RunConfig tool fields for a Vivado bin folder: {"vivado_bin": ..., "xvlog_bin": ...}.
+
+    Each tool is <name>.bat (Windows launchers); the bare name is used only when
+    it exists and the .bat does not.
+    """
+    root = Path(bin_dir).resolve()
+    bins = {}
+    for name in TOOLS:
+        bat, bare = root / (name + ".bat"), root / name
+        bins[name + "_bin"] = str(bare if bare.exists() and not bat.exists() else bat)
+    return bins
+
+
 def _resolve(value, name):
     if value:
         return value if Path(value).is_file() or shutil.which(value) else None
@@ -130,7 +144,7 @@ def workspace_check(root):
 
 
 def endpoint_checks():
-    """User endpoints from llm/endpoints.local.yaml (or AUTORTL_ENDPOINTS); all optional."""
+    """User endpoints from endpoints.local.yaml at the repository root (or AUTORTL_ENDPOINTS); all optional."""
     from llm import endpoints
     try:
         defined = endpoints.load()

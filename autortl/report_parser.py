@@ -48,6 +48,21 @@ class VivadoMetrics:
         return VivadoMetrics(**clean)
 
 
+def _distinct_failures(fails: list[str], limit: int = 15) -> str:
+    """First line of each failure kind (digits ignored), with its count.
+
+    repeated_failure_hides_other_rules: one rule repeated 32 times filled the
+    15-line window and hid three other violated rules from the fixer.
+    """
+    kinds: dict[str, list] = {}
+    for line in fails:
+        kinds.setdefault(re.sub(r"\d+", "N", line), [line, 0])[1] += 1
+    shown = [line + (f"  (x{count})" if count > 1 else "") for line, count in list(kinds.values())[:limit]]
+    if len(kinds) > limit:
+        shown.append(f"... {len(kinds) - limit} more failure kinds")
+    return "\n".join(shown)
+
+
 def parse_sim_log(log_path: Path) -> tuple[bool, str]:
     if not log_path.exists():
         return False, "Simulation log not found"
@@ -55,7 +70,7 @@ def parse_sim_log(log_path: Path) -> tuple[bool, str]:
     fails = [l.strip() for l in text.splitlines()
              if l.strip().startswith("FAIL") or "mismatch" in l.lower()]
     if re.search(r"TEST\s+FAILED", text, re.IGNORECASE) or fails:
-        return False, "Testbench failures:\n" + "\n".join(fails[:15]) if fails \
+        return False, "Testbench failures:\n" + _distinct_failures(fails) if fails \
                else "testbench reported failure"
     if re.search(r"\$fatal|\*\*\s*Error|^\s*(?:ERROR|FATAL|CRITICAL WARNING)\s*:",
                  text, re.IGNORECASE | re.MULTILINE):
@@ -118,6 +133,25 @@ def parse_timing_text(text: str, m: VivadoMetrics) -> None:
     m.timing_met = m.wns_ns >= 0.0 and m.whs_ns >= 0.0
 
 
+def apply_no_timing_paths(marker: Path, m: VivadoMetrics) -> None:
+    """Vacuous timing for a design Vivado itself reported as having no timing path.
+
+    The synthesis script writes the marker ("<reason> period_ns <P>") only when
+    get_timing_paths returns nothing (wiring-only or constant designs,
+    empty_netlist_unplaceable). It applies only if the timing report really has
+    no numeric WNS and WHS, so it can never override measured slack: WNS becomes
+    the full period, WHS 0. A malformed marker changes nothing and the metrics
+    gate then fails as before.
+    """
+    if not marker.exists() or m.wns_ns != -999.0 or m.whs_ns != -999.0:
+        return
+    match = re.fullmatch(r"(?:empty_netlist|no_paths) period_ns (\d+(?:\.\d+)?)\s*",
+                         marker.read_text(encoding="utf-8", errors="replace"))
+    if not match or float(match.group(1)) <= 0:
+        return
+    m.wns_ns, m.whs_ns, m.timing_met = float(match.group(1)), 0.0, True
+
+
 def parse_reg2reg(rpt_path: Path, m: VivadoMetrics) -> None:
     """Slack of the first path in a report_timing -from/-to [all_registers] report."""
     if not rpt_path.exists():
@@ -151,6 +185,7 @@ def parse_all(work_dir: Path) -> VivadoMetrics:
     if not timing.exists():
         timing = work_dir / "timing.rpt"
     parse_timing(timing, m)
+    apply_no_timing_paths(work_dir / "no_timing_paths.txt", m)
     parse_reg2reg(work_dir / "timing_reg2reg.rpt", m)
     parse_power(work_dir / "power.rpt", m)
     return m

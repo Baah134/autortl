@@ -1,0 +1,5 @@
+{
+  "stage": "iteration_2:decision:instruction:0",
+  "result": "In `spi_master_core`, remove `cs_n_reg` and its reset, acceptance, and completion assignments, and drive `cs_n` as `!busy_reg`; the contract defines chip select as active exactly while a transfer is busy. Keep `busy_reg` registered so `cs_n` changes only after clock edges, including synchronous reset, transfer start, and completion. Preserve the top\u2019s `// @latency 33` annotation and all other state and transfer logic; retain the candidate only if the frozen verification passes, routed WNS and WHS are nonnegative, and the LUT/FF objective improves over the incumbent.",
+  "artifacts": {}
+}
