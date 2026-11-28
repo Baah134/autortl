@@ -194,6 +194,31 @@ evaluator's report, the repairs, and the winning RTL as a diff against the
 baseline. It uses only the standard library, loads no external resources and
 escapes all text read from run files.
 
+`python tools/replay_run.py --run <run> --out <parent>` replays a recorded run
+from its journal with every model and Vivado entry point replaced by one that
+refuses, then compares the files the harness rebuilds with the recorded ones
+(exit 0: same; 1: a difference, a missing file or a call the journal does not
+hold). Use it as the acceptance test for refactors that must not change
+behaviour: replay recorded runs on the old and the new code. It runs in about
+half a minute per run and needs neither Codex nor Vivado. Give it the original
+run directory, not an archived copy (archives sanitize paths, so their journal
+fails its own hash check), and an `--out` shorter than the run's path: the
+replay directory is padded to the recorded path's length so the fixed-length
+report previews the harness keeps are cut at the same character. Set
+`PYTHONPATH` to another checkout (for example a `git archive` of an older
+commit) to replay on that code.
+
+What replays: on November 28, every sampled run recorded on harness code
+from October 30 onward that did not stop on a budget (13 runs: done,
+baseline_failed and module_failed) rebuilt byte-identical files on the code
+that recorded it, and the release re-hold run did so on both the release and
+the current code. Three kinds of run do not replay. A run that stopped on a
+wall-clock or Vivado-time budget ends in a refused call, because replay does
+not reproduce elapsed time. Runs from before October 30 fail their own
+checks, because their journals did not yet keep every piece of evidence
+those checks re-read. And files that other scripts added to a run directory
+afterwards (study results, proofs) are reported as missing.
+
 Curriculum promotion requires three consecutive qualifying full runs with the
 same experiment cohort. Subset runs cannot promote a tier, and regressions in
 previously passing entries of a held cohort block qualification.

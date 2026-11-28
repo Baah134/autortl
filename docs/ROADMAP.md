@@ -284,7 +284,13 @@ idioms and parallel paths:
    optimize and Doctor paths. Do this together with C1. *Deferred:* it
    rewrites the evidence bookkeeping of the verifier itself; do it only with
    a byte-identical replay of recorded runs as the acceptance test, not
-   beside a running re-hold or benchmark.
+   beside a running re-hold or benchmark. The acceptance test now exists
+   (November 28): `tools/replay_run.py` replays a recorded run offline and
+   compares every rebuilt file (see [USAGE](USAGE.md)). The release re-hold
+   run and 13 runs recorded since October 30 replay byte-identical on their
+   own code, so the refactor can be checked by replaying the re-hold's runs
+   on the old and the new code. It stays deferred until the re-hold and the
+   v1.0.0 tag are done.
 5. `scripts/check_*.py`: five scripts that each parse Vivado paths, build a
    RunConfig and hash outputs. Fold the shared part into one module or into
    `run.py doctor --live`.
