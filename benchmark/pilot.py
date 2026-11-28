@@ -6,7 +6,7 @@ missing) before any grading. The official test and reference are never passed
 to generation. Arm B (mutation-qualification ablation) is not implemented.
 
     python -m benchmark.pilot select   --catalog C.json --commit SHA --out pilot.json
-    python -m benchmark.pilot manifest --dataset D --commit SHA --tasks ID... --out M.json
+    python -m benchmark.pilot manifest --dataset D --commit SHA --tasks ID... [--arms ARM...] --out M.json
     python -m benchmark.pilot run      --manifest M.json --dataset D --task ID --arm full --out DIR
     python -m benchmark.pilot grade    --manifest M.json --dataset D --run DIR --out GRADE_DIR
 """
@@ -16,6 +16,7 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import shutil
 import subprocess
 import sys
 import time
@@ -26,13 +27,25 @@ from . import verilogeval as ve
 from autortl.fileio import file_sha256, read_json
 
 REPO = Path(__file__).resolve().parent.parent
-ARMS = ("single_call", "ablation", "full")
+ARMS = ("single_call", "ablation", "full", "full_xcheck")
 # Nov6 provisional pilot ceilings. single_call uses no tool time; artifacts
 # needs a positive value, so it declares a nominal one second.
 PROVISIONAL_BUDGETS = {
     "single_call": {"model_calls": 1, "tool_seconds": 1.0, "wall_seconds": 2100},
     "ablation": {"model_calls": 16, "tool_seconds": 1500.0, "wall_seconds": 2100},
     "full": {"model_calls": 16, "tool_seconds": 1500.0, "wall_seconds": 2100},
+}
+# Opt-in arms: never in the default arm set above, so a manifest gets their cells
+# only when a registration names them (`manifest --arms`). full_xcheck is arm C
+# plus the request cross-check (V1, docs/V1_REGISTRATION_DRAFT.md), same caps.
+OPT_IN_BUDGETS = {
+    "full_xcheck": dict(PROVISIONAL_BUDGETS["full"]),
+}
+# Harness arm -> (verification_policy, spec_cross_check) its cells must declare.
+HARNESS_ARMS = {
+    "full": ("full", "off"),
+    "ablation": ("skip_generated_tb_mutations", "off"),
+    "full_xcheck": ("full", "request_traces"),
 }
 OUTER_GRACE_S = 300
 # Arm C pilot settings (November14). VerilogEval grades function only and RTL
@@ -142,15 +155,36 @@ def vivado_tools() -> dict:
     return found
 
 
+def grader_compiler(iverilog: str | None = None) -> str:
+    """Absolute Icarus path for the pre-seal grader compile check.
+
+    Resolved like grading (explicit path, else AUTORTL_IVERILOG, else PATH); an
+    unresolved compiler is an infrastructure stop before any run.
+    """
+    name = ve.tool_paths(iverilog)[0]
+    found = shutil.which(name)
+    if not found:
+        raise ve.GraderUnavailable(f"Icarus compiler not found for the grader compile check: {name}")
+    return str(Path(found).resolve())
+
+
 def full_command(request: Path, run_dir: Path, budget: dict, *, python: str = sys.executable,
                  model: str | None = None, best_of_n: int | None = FULL_SETTINGS["best_of_n"],
                  iterations: int | None = FULL_SETTINGS["iterations"],
                  implementation: str | None = FULL_SETTINGS["implementation"],
-                 tools: dict | None = None, verification_policy: str = "full") -> list[str]:
+                 tools: dict | None = None, verification_policy: str = "full",
+                 grader_iverilog: str | None = None, spec_cross_check: str = "off") -> list[str]:
     """`run.py build` from the public prompt alone; never an official --tb.
 
     Arm B passes verification_policy skip_generated_tb_mutations, which skips only
     the generated testbench's mutation qualification (ablation_policy_seam_absent).
+    Arm full_xcheck passes spec_cross_check request_traces (--spec-cross-check,
+    planner_spec_error_shared_by_oracle_and_rtl); the default "off" adds nothing,
+    so every other arm's command is unchanged.
+    grader_iverilog (opt-in, grader_rejects_vendor_attribute) makes every RTL compile
+    check also compile with the grader's Icarus flags, so a rejection reaches the
+    build's bounded repair loop before the winner exists; it compiles only the
+    candidate's own RTL, never the official test or reference.
     """
     cmd = [python, str(REPO / "run.py"), "build", "--spec", str(request), "--top", ve.TOP,
            "--generate-golden", "--output-dir", str(run_dir),
@@ -168,8 +202,12 @@ def full_command(request: Path, run_dir: Path, budget: dict, *, python: str = sy
         cmd += ["--implementation", implementation]
     if verification_policy != "full":
         cmd += ["--verification-policy", verification_policy]
+    if spec_cross_check != "off":
+        cmd += ["--spec-cross-check", spec_cross_check]
     for name, path in (tools or {}).items():
         cmd += [f"--{name}", path]
+    if grader_iverilog:
+        cmd += ["--grader-iverilog", grader_iverilog]
     return cmd
 
 
@@ -178,19 +216,24 @@ def run_full(manifest: dict, task: ve.Task, out_dir: Path, *, trial: int = 0, mo
              iterations: int | None = FULL_SETTINGS["iterations"],
              implementation: str | None = FULL_SETTINGS["implementation"],
              runner=subprocess.run, python: str = sys.executable, tools: dict | None = None,
-             arm: str = "full") -> dict:
+             arm: str = "full", grader_check: bool = False, iverilog: str | None = None) -> dict:
     """Full AutoRTL build; only a DONE run's verified winner is sealed (accepted incumbent).
 
     A run without a DONE winner is recorded missing. Selecting the latest complete
-    candidate from non-DONE runs needs candidate bundles (deferred).
+    candidate from non-DONE runs needs candidate bundles (deferred). A full_xcheck
+    cell also records the run summary's spec_cross_check ({policy, checks}) in its
+    accounting; other arms' records are unchanged.
     """
-    if arm not in ("full", "ablation"):
-        raise ve.AdapterError(f"run_full runs the full or ablation arm, not {arm!r}")
+    if arm not in HARNESS_ARMS:
+        raise ve.AdapterError(f"run_full runs the full or ablation arm (or full_xcheck), not {arm!r}")
     cell = _cell(manifest, task.id, arm, trial)
-    expected = "skip_generated_tb_mutations" if arm == "ablation" else "full"
+    expected, cross_check = HARNESS_ARMS[arm]
     if cell["verification_policy"] != expected:
         raise ve.AdapterError(f"{arm} cell must declare verification_policy {expected}")
+    if cell.get("spec_cross_check", "off") != cross_check:
+        raise ve.AdapterError(f"{arm} cell must declare spec_cross_check {cross_check}")
     tools = vivado_tools() if tools is None else tools  # fail before creating the cell directory
+    grader_iverilog = grader_compiler(iverilog) if grader_check else None
     out_dir = Path(out_dir)
     work = out_dir / "work"
     work.mkdir(parents=True, exist_ok=False)
@@ -202,7 +245,8 @@ def run_full(manifest: dict, task: ve.Task, out_dir: Path, *, trial: int = 0, mo
     run_dir = out_dir / "run"
     cmd = full_command(request, run_dir, cell["budget"], python=python, model=model,
                        best_of_n=best_of_n, iterations=iterations, implementation=implementation,
-                       tools=tools, verification_policy=cell["verification_policy"])
+                       tools=tools, verification_policy=cell["verification_policy"],
+                       grader_iverilog=grader_iverilog, spec_cross_check=cross_check)
     started = time.monotonic()
     outer_timeout = cell["budget"]["wall_seconds"] + OUTER_GRACE_S
     try:
@@ -222,6 +266,9 @@ def run_full(manifest: dict, task: ve.Task, out_dir: Path, *, trial: int = 0, mo
                   "outer_timeout": timed_out, "run_status": summary.get("status"),
                   "llm_calls": used.get("llm_calls"), "tool_seconds": used.get("vivado_seconds"),
                   "tokens": used.get("tokens"), "command": cmd}
+    if cross_check != "off":
+        # What the run itself recorded (absent, e.g. after an outer timeout, stays None).
+        accounting["spec_cross_check"] = summary.get("spec_cross_check")
     status = summary.get("status")
     winner = run_dir / f"{summary.get('top_module') or ve.TOP}_best.v"
     # A DONE summary is written last, after its winner, so it stands even when the
@@ -313,6 +360,9 @@ def main(argv=None) -> int:
     m.add_argument("--model", default="unobserved-cli-default")
     m.add_argument("--runtime-sha256", required=True,
                    help="SHA-256 naming the frozen runtime identity registered for the pilot")
+    m.add_argument("--arms", nargs="+", choices=ARMS,
+                   help="arms that get cells (default: single_call, ablation and full; "
+                        "full_xcheck only when named)")
     m.add_argument("--out", required=True, type=Path)
     r = sub.add_parser("run")
     g = sub.add_parser("grade")
@@ -327,6 +377,10 @@ def main(argv=None) -> int:
     r.add_argument("--iterations", type=int, default=FULL_SETTINGS["iterations"])
     r.add_argument("--implementation", default=FULL_SETTINGS["implementation"])
     r.add_argument("--out", required=True, type=Path)
+    r.add_argument("--grader-check", action="store_true",
+                   help="full/ablation: also compile RTL with the grader's Icarus flags at every "
+                        "compile check, repairing rejections within the build budget (default: off)")
+    r.add_argument("--iverilog", help="Icarus executable for --grader-check (default: AUTORTL_IVERILOG or PATH)")
     g.add_argument("--run", required=True, type=Path)
     g.add_argument("--out", required=True, type=Path)
     g.add_argument("--iverilog")
@@ -339,9 +393,11 @@ def main(argv=None) -> int:
         a.out.write_text(json.dumps(result, indent=2), encoding="utf-8")
     elif a.cmd == "manifest":
         head = _git_head()
+        known = {**PROVISIONAL_BUDGETS, **OPT_IN_BUDGETS}
+        budgets = PROVISIONAL_BUDGETS if a.arms is None else {arm: known[arm] for arm in a.arms}
         manifest = ve.build_manifest(a.dataset, a.tasks, dataset_commit=a.commit, source_commit=head,
                                      runtime_commit=head, runtime_sha256=a.runtime_sha256,
-                                     requested_model=a.model, budgets=PROVISIONAL_BUDGETS)
+                                     requested_model=a.model, budgets=budgets)
         with a.out.open("x", encoding="utf-8") as stream:
             json.dump(manifest, stream, indent=2)
         result = {"manifest": str(a.out), "cells": len(manifest["cells"])}
@@ -353,7 +409,8 @@ def main(argv=None) -> int:
         else:
             result = run_full(manifest, task, a.out, trial=a.trial, model=a.model, arm=a.arm,
                               best_of_n=a.best_of_n, iterations=a.iterations,
-                              implementation=a.implementation)
+                              implementation=a.implementation, grader_check=a.grader_check,
+                              iverilog=a.iverilog)
     else:
         manifest, root = _load(a)
         record = read_json((a.run / "run.json"))

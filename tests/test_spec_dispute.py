@@ -33,6 +33,10 @@ def generated_oracle_build(tmp_path, monkeypatch, planner_outputs, oracle=ORACLE
     o, synthesis = create(tmp_path, monkeypatch)
     prose(tmp_path, o)
     o.cfg.testbench_path = None
+    # These tests pin the oracle-dispute loop alone, whatever the default policy;
+    # tests/test_spec_cross_check.py covers the request cross-check
+    # (planner_spec_error_shared_by_oracle_and_rtl) and both together.
+    o.cfg.spec_cross_check = "off"
     planner = Mock(side_effect=planner_outputs)
     monkeypatch.setattr(o.planner, "make_spec", planner)
     golden = Mock(side_effect=oracle) if isinstance(oracle, list) else Mock(return_value=oracle)
@@ -128,6 +132,21 @@ def test_non_mismatch_oracle_failure_is_not_a_dispute(tmp_path, monkeypatch, ora
     assert planner.call_count == 1 and golden.call_count == fsm.ORACLE_ATTEMPTS
     assert "spec_disputes" not in checkpoint(o)
     synthesis.assert_not_called()
+
+
+@pytest.mark.parametrize("between", ["def init(:", SANDBOX])
+def test_a_malformed_oracle_between_two_mismatches_does_not_break_the_dispute(tmp_path, monkeypatch, between):
+    # dispute_pair_broken_by_malformed_oracle (release re-hold tier 1 debouncer_build): an
+    # attempt that never ran the examples is no evidence about the spec.
+    o, planner, golden, synthesis = generated_oracle_build(
+        tmp_path, monkeypatch, [disputed(), GOOD], [ORACLE, between, ORACLE, ORACLE])
+    result = o.run()
+    assert planner.call_count == 2 and "Repair attempt 1" in planner.call_args_list[1].kwargs["feedback"]
+    assert checkpoint(o)["spec_disputes"][0]["attempts"] == [[MISMATCH], [MISMATCH]]
+    logs = [json.loads(p.read_text(encoding="utf-8"))
+            for p in sorted((o.state.run_dir / "modules").rglob("golden_attempt_*.log"))]
+    assert [log["ran_examples"] for log in logs] == [True, False, True]
+    assert result["status"] == "done"
 
 
 def test_lint_repairs_and_disputes_share_one_counter(tmp_path, monkeypatch):

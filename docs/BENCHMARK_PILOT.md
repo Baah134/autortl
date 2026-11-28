@@ -36,6 +36,27 @@ and `benchmark/pilot.py` (arm runners, grading, CLI). Standard library only.
 | `single_call` | One `llm.client.ask("generator", prompt)` under a one-call budget; a timeout cannot become a second attempt | Extracted `TopModule` sealed `unverified`/`latest_complete`; otherwise missing (`model_blocked`, `budget`, `failed`) |
 | `full` | `run.py build --spec <prompt> --top TopModule --generate-golden` with declared budgets in a fresh directory | DONE winner (plus verified children for frozen_children builds) sealed `accepted`/`accepted_incumbent`; otherwise missing |
 | `ablation` | Same as `full` plus `--verification-policy skip_generated_tb_mutations` (skips only generated-testbench mutation qualification; recorded in events and summary) | Same as `full` |
+| `full_xcheck` (opt-in, V1) | Same as `full` plus `--spec-cross-check request_traces` (the request cross-check, `docs/V1_REGISTRATION_DRAFT.md`); its cells declare `spec_cross_check: request_traces` and `run_full` refuses a mismatch | Same as `full`; the run record also keeps the run summary's `spec_cross_check`, and its graded rows carry `cross_check_policy` and `cross_check_outcomes` |
+
+`full_xcheck` is never in the default arm set: a manifest gets its cells only
+with `python -m benchmark.pilot manifest ... --arms full full_xcheck`. The
+campaign runs it right after `full` for each task; the report adds the paired
+comparison `full_xcheck` minus `full`, a paired false-acceptance difference
+and the cross-check outcome counts only when its rows exist, and
+`benchmark.finish` applies the proposed V1 rule (`benchmark/v1_claim.py`) to a
+run with `full` and `full_xcheck` but without arm A.
+
+Grader compile check (opt-in, `grader_rejects_vendor_attribute`; off in
+final-02 and earlier). `python -m benchmark.pilot run --grader-check` or
+`python -m benchmark.campaign --grader-check` (Icarus from `--iverilog`,
+`AUTORTL_IVERILOG` or PATH, resolved before any cell runs) passes
+`--grader-iverilog <abs path>` to the harness arms' `run.py build`. Every RTL
+compile check then also compiles the candidate's own RTL with the grader's
+Icarus flags, never the official test or reference; a rejection goes back to
+the generator through the existing repair loop within `max_fix_attempts`, and
+a compiler launch failure or timeout is infrastructure. `single_call` is
+unchanged. The flag is in each cell's recorded `accounting.command`; a new
+registration must state whether its harness arms use it.
 
 Both arms receive the same public prompt bytes, checked against the frozen
 manifest. The official `_test.sv`/`_ref.sv` are private manifest files; they

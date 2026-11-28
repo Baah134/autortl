@@ -116,6 +116,43 @@ the harness's 180-second call limit. Flash-low used no tools there and took
   (`agy_endpoint_uses_tools`). Any new Flash run needs a new registration that
   uses the guarded bridge and a model variant that fits the call limit.
 
+## 2026-11-21 — Request cross-check: built behind a switch, off by default
+
+Taxonomy `planner_spec_error_shared_by_oracle_and_rtl` caused most of the
+final-02 gap between the harness and a single model call. v1.1 adds
+`spec_cross_check` (DESIGN.md "Request cross-check"): an independent role call
+writes cycle traces from the original request and the port list only, the
+harness runs them through the planner spec's qualified golden model, and a
+disagreement replans once from the shared `max_fix_attempts` counter.
+
+- **Default `off`.** ROADMAP V1 already fixed the rule: off until measured, and
+  the default changes only if false acceptances fall without blocking correct
+  designs. The check is untested live; every final-02 task counts as tuned, so
+  its effect can only be measured on fresh tasks, and the trace writer can
+  misread the request too. `request_traces` is one flag away for that
+  measurement, and both settings are recorded as benchmark arms.
+- **Traces, not "examples".** The spec's examples hold constant inputs from
+  reset, which cannot express the observed failures (a reset that should not
+  clear an edge register; an input sampled one cycle early). Short traces with
+  per-row inputs, written in physical cycles independent of the planner's
+  latency, can. Comparing them in the generated testbench's own observation
+  phase makes a latency misreading visible.
+- **Second derivation reaches only the oracle.** It runs after oracle
+  qualification and before RTL generation, so a disagreement costs no
+  generator calls, and nothing derived from the trace writer enters the spec
+  except through the planner.
+- **Never fails a design itself.** A disagreement makes the planner re-read the
+  quoted request once; the planner may keep its spec. A second disagreement is
+  recorded (`disagreement_kept`) and the build continues. Turning an unverified
+  second reading into a gate would trade false acceptances for false
+  rejections of correct designs; whether to gate is a later, measured decision.
+- **Interface is shared.** The writer sees the planner's port list (names are
+  needed to write traces). The behavioral reading stays independent; an
+  interface misreading is outside this check.
+- **Benchmark wiring is separate.** `benchmark/pilot.py` (edited by another
+  session) does not set the field, so registered arms keep v1.0.0 behaviour
+  until a new registration names it.
+
 ## 2026-11-25 — flash-03: closed-book Flash-low single call, registered before any cell
 
 A second model on arm A, done properly this time: Gemini 3.8 Flash-low through
@@ -131,6 +168,48 @@ with `final-02` arm A is descriptive (different model, different week), never
 a harness claim. The run starts once a trivial probe answers within 30 s, so
 timeouts measure the model, not the CLI. Harness arms with Flash need their
 own registration later, when Vivado time is free.
+
+## DRAFT, awaiting the owner's approval — Decision rule for the optimisation benchmark (B3)
+
+Not in force. Proposed November 21, 2026 with `docs/B3_REGISTRATION_DRAFT.md`.
+No B3 trial exists. The owner freezes the registration (tasks, model, budgets,
+flow) and this rule together, before any trial; the date of freezing replaces
+"DRAFT" in this heading. Implemented as `benchmark/ppa_report.decide`, whose
+constants are these thresholds.
+
+- **Question:** on designs that both arms get functionally right, does the
+  harness with optimisation (arm C-opt) give smaller routed designs than a
+  single model call (arm A)?
+- **Functional gate first:** a cell enters PPA only if its sealed submission
+  passes the official testbench (upstream-compatible verdict). Failing designs
+  have no area. A task is compared only when each arm has at least one passing
+  trial.
+- **Primary endpoint:** routed LUTs from `benchmark/ppa.py` (out of context,
+  xc7a35tcpg236-1, 10 ns, the harness's OOC template, one Vivado version for
+  every cell; the report refuses mixed flows).
+- **Primary comparison:** geometric-mean LUT ratio C-opt / A over tasks
+  measured in both arms. Per task and arm, the geometric mean of (LUT + 1) over
+  passing trials; 95% task-clustered bootstrap interval (10,000 resamples,
+  seed 20261115).
+- **Verdict:** interval below 1 → `harness_smaller`; above 1 →
+  `single_call_smaller`; inside [1/1.10, 1.10] → `no_material_difference`;
+  otherwise `inconclusive`. Fewer than 10 tasks measured in both arms →
+  `insufficient_pairs` (descriptive only).
+- **Completeness:** more than 10% of an arm's cells stopped by infrastructure
+  downgrades the verdict to `inconclusive`. Infrastructure failures of PPA
+  synthesis write no record and are retried; the report refuses until every
+  passing cell has a sealed record.
+- **Timing (secondary):** share of passing trials that meet setup and hold at
+  10 ns, paired difference C-opt minus A with the same bootstrap, read with
+  the final comparison's ±10 pp rule. A passing design that fails synthesis
+  counts as not closed and is named.
+- **Always reported:** FF ratio and WNS difference (descriptive), per-task
+  ratios, functional pass counts per arm, tasks without a functional pair,
+  model calls and tool time per arm.
+- **Not allowed:** removing tasks or cells after the first trial, rerunning a
+  cell, changing the flow, part, period or a threshold after grading. The
+  candidate tasks were chosen from final-02 results, so the claim names that
+  selection and is not a fresh functional comparison.
 
 ## Continuing contracts
 

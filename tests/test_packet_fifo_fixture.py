@@ -1,6 +1,5 @@
 """Packet fixture checks only; these tests do not measure RTL behavior."""
 import hashlib
-import importlib.util
 import json
 import re
 from pathlib import Path
@@ -14,6 +13,7 @@ from autortl.spec import DesignSpec
 from autortl.static_checks import check
 from autortl.tbgen import expected_outputs, gen_stimulus, generate
 from autortl.verilog_interface import infer_module
+from tests.helpers import load_module
 
 ROOT = Path(__file__).resolve().parents[1] / "curriculum/tier2/packet_fifo_build"
 MATRIX = [(8, 3), (1, 1), (8, 2), (8, 4), (13, 5), (16, 8)]
@@ -32,11 +32,7 @@ def spec():
 
 
 def qualification():
-    loaded = importlib.util.spec_from_file_location(
-        "packet_fifo_qualification_cases", ROOT / "qualification/cases.py")
-    module = importlib.util.module_from_spec(loaded)
-    loaded.loader.exec_module(module)
-    return module
+    return load_module(ROOT / "qualification/cases.py", "packet_fifo_qualification_cases")
 
 
 def test_packet_fixture_is_combined_build_with_no_reference_seed():

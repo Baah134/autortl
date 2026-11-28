@@ -116,6 +116,14 @@ supported schema and limits.
    plus the policy in the run summary. Candidate simulation against that
    testbench still gates promotion, and a supplied trusted or independent
    testbench, immutable inputs, budgets and interface checks are unchanged.
+   Benchmark-only grader compile check (`grader_rejects_vendor_attribute`):
+   `RunConfig.grader_iverilog` / `run.py build|optimize --grader-iverilog`
+   is unset by default. When set, each `xvlog_check` stage that passes also
+   compiles the same design files with Icarus and the VerilogEval grader's
+   flags inside the same journaled stage. A rejection is a DESIGN error for
+   the caller's existing repair loop (bounded by `max_fix_attempts`); a launch
+   failure or timeout is INFRA. Testbench compiles inside `xsim_run` are not
+   checked, and no gate is relaxed.
 8. Reset/X discipline — reset per spec + 2-cycle settle before comparing.
    A requested interface without a reset port is typed as `"reset": null`
    (never an invented rst port); a clocked resetless module declares
@@ -124,7 +132,11 @@ supported schema and limits.
    scoreboard modules are rejected (resetless_sequential_unrepresentable).
 9. Infra-vs-design triage (triage.py) — infra failures never mutate the
    design or enter history. A third kind, target, covers an interface that
-   cannot fit the configured device (see target capacity failures).
+   cannot fit the configured device (see target capacity failures). xelab's
+   failed C compile ([XSIM 43-3409]) is infra; on Windows `xsim_run` first
+   checks that xelab's object path stays under MAX_PATH (260) and otherwise
+   returns infra "host path too long" before running any tool
+   (xelab_c_compile_failure_classified_design).
 10. Metrics integrity gates (metrics_gate.py) — the lut_total:0 class of bug
     is fatal, never a silent score.
 11. TCL injection boundary — LLM output only in .v files; paths sanitised.
@@ -317,11 +329,15 @@ the structural rules, such as a top_name that differs from every module name
 **Disputed examples.** A planner-written spec can pass lint while its behavior
 text and its own examples disagree; both generated oracles then follow the text
 and fail the examples (oracle_example_dispute_ends_build, explore-tier3-05
-uart_tx). When a module's oracle attempts are exhausted and the last two both
-ran and failed only with example mismatches from `qualify_against_examples`
-(`golden.only_example_mismatches`: the spec's examples are valid and every
-line is a mismatch line), the spec is disputed. A sandbox, validation or
-generate_tb error in either attempt is not a dispute. Infrastructure is never
+uart_tx). When a module's oracle attempts are exhausted and the last two that
+ran the examples both failed only with example mismatches from
+`qualify_against_examples` (`golden.only_example_mismatches`: the spec's
+examples are valid and every line is a mismatch line), the spec is disputed.
+An attempt whose oracle does not load never ran the examples: it is logged
+(`ran_examples: false`) and skipped, so it cannot separate two mismatching
+attempts (dispute_pair_broken_by_malformed_oracle, release re-hold tier 1
+debouncer). A sandbox, validation or generate_tb error in an attempt that ran
+is not a mismatch, so it does break the pair and is not a dispute. Infrastructure is never
 a dispute: a GoldenTimeoutError ends the build as build_blocked and a provider
 failure as model_blocked, and neither replans. A disputed spec goes back to the
 planner with the module name, at most 10 distinct mismatch lines (1,500
@@ -344,6 +360,61 @@ from the checkpoint, or when it would integrate, or fail a module of, an earlier
 revision than the checkpoint records, so a resumed run never silently uses a
 pre-dispute spec. A replayed oracle timeout stays build_blocked (infra) and is
 retried by the next resume.
+
+**Request cross-check** (planner_spec_error_shared_by_oracle_and_rtl). Lint and
+disputes only find a spec that disagrees with itself; a spec that misreads the
+request is consistent, so its oracle, generated testbench and RTL all agree and
+the design is accepted (VerilogEval Prob066, Prob139, Prob135). With
+`RunConfig.spec_cross_check` / `run.py build --spec-cross-check request_traces`,
+a second, independent derivation checks a planner-written spec
+(`autortl/cross_check.py`, `Planner.request_traces`). It is `off` by default
+until ROADMAP V1 measures it on fresh tasks (docs/DECISIONS.md); it is saved in
+config.json (resume refuses a change; configs written before it load as `off`),
+and every planner-written build records `spec_cross_check: {policy, checks}` in
+its run summary and a `spec_cross_check` event per check (`skipped_by_policy`
+when off). A supplied JSON spec is law and is never checked.
+
+- *Independence.* One journaled planner-route call, made once per run in the
+  build_spec scope and reused by every revision and resume, receives the
+  original request and the module's interface only: port declarations, the
+  reset port and how the harness drives it (or a resetless module's
+  initialization prefix). It never sees the spec's behavior text, latency,
+  examples, golden model or harness facts. It returns 2-4 traces, each quoting
+  the request sentence it relies on. An unusable answer gets one repair call.
+- *Semantics.* Trace rows are physical clock cycles, independent of the spec's
+  latency: row k holds the inputs during cycle k and the outputs visible before
+  the rising edge that ends it; row 0 follows reset; omitted inputs hold;
+  `expected` may name only the outputs the request determines. Golden step i is
+  observed in cycle i + latency (the generated testbench's own phase), so row k
+  is compared with step k - latency; a planner that samples a cycle early or
+  late (Prob139) disagrees.
+- *Where.* After a module's oracle qualifies against the spec examples and
+  before any RTL is generated, for a single-module fixed_latency spec built
+  with a generated oracle. A trusted-testbench build writes no oracle and needs
+  no check (the testbench already reads the request); multi-module and
+  scoreboard specs are recorded as `skipped`.
+- *Outcomes.* `agree`; `replanned` (comparable rows disagree: the spec goes back
+  to the planner with SPEC_CROSS_CHECK_INSTRUCTION, the disagreeing traces up
+  to their last mismatch row with the quoted request text, at most 1,500
+  characters, and the previous spec; the planner may correct the spec or return
+  it unchanged); `disagreement_kept` (the one cross-check replan per run is
+  spent and the new revision still disagrees) and `repairs_exhausted` (the
+  shared counter is spent) are recorded and the build continues;
+  `unusable`, `traces_incompatible` (a replan changed the interface),
+  `no_comparable_rows`, `golden_error` and `skipped` are recorded and the build
+  continues. The traces are an unverified second reading: they can make the
+  planner look again but never fail a design themselves.
+- *Bounds.* A replan spends one unit of the shared `max_fix_attempts` counter
+  and at most one comes from this check per run. Extra model calls: 1 per
+  planner-written generated-oracle build (2 if the first answer is unusable);
+  on a disagreement, 1 planner call plus a full rebuild of the new revision
+  (oracle, generation and repairs, as for a dispute).
+- *Evidence and resume.* `spec_cross_checks/traces.json` holds the traces and
+  `spec_cross_checks/rev<N>.json` each revision's record (also
+  `spec_cross_checks` in state.json). A resume replays the journaled calls and
+  ends as infra_blocked when a replayed record differs from the checkpoint. An
+  oracle timeout during the check is build_blocked (infra) with no record and
+  no repair; a provider failure is model_blocked.
 
 ## Per-run token accounting
 Backends report usage as `input_tokens`, `cached_input_tokens` and

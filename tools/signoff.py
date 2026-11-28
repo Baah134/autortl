@@ -3,7 +3,11 @@
 For each requested tier, in ascending order, run tools/tier0_gate.py campaigns
 named signoff-t<tier>-<n> until the tier's latest full-tier history record is
 held (three consecutive qualifying campaigns on one cohort, decided by the
-curriculum runner), or until --max-campaigns is reached. Lower tiers are held
+curriculum runner), or until --max-campaigns campaigns have produced a verdict.
+An infrastructure no-verdict (gate exit 3, no history record) is retried and
+never counts toward that cap (signoff_cap_counts_infra_no_verdicts); after
+--max-no-verdicts of them the tier ends with no verdict (exit 3), never as
+"not held". Lower tiers are held
 first because the gate refuses a tier while a higher tier is held
 (stale_held_record_blocks_lower_gates). Every campaign, verdict or not, is
 copied to evidence/<date>/<name>/ with a role report and a SHA-256 manifest.
@@ -41,10 +45,24 @@ def latest_full_record(tier, history=None):
     return full[-1] if full else None
 
 
-def archive(name, dest, root=ROOT, python=sys.executable):
+VERDICT_MARK = "signoff-verdict.json"
+
+
+def archived_had_verdict(dest) -> bool:
+    """Whether an archived campaign recorded a verdict; archives older than the mark count as verdicts."""
+    mark = dest / VERDICT_MARK
+    if not mark.is_file():
+        return True
+    return bool(json.loads(mark.read_text(encoding="utf-8")).get("verdict"))
+
+
+def archive(name, dest, root=ROOT, python=sys.executable, verdict=None):
     """Copy one gate campaign's logs into dest with a role report and manifest."""
     logs = root / "logs"
     dest.mkdir(parents=True, exist_ok=False)
+    if verdict is not None:
+        (dest / VERDICT_MARK).write_text(json.dumps({"verdict": bool(verdict)}) + "\n",
+                                         encoding="utf-8", newline="\n")
     run = logs / name
     if run.is_dir():
         for path in sorted(run.rglob("*")):
@@ -73,7 +91,10 @@ def main(argv=None):
     parser.add_argument("--tiers", type=int, nargs="+", required=True)
     parser.add_argument("--model", default=None)
     parser.add_argument("--date", required=True, help="evidence/<date>/ folder for the archives")
-    parser.add_argument("--max-campaigns", type=int, default=6)
+    parser.add_argument("--max-campaigns", type=int, default=6,
+                        help="campaigns with a verdict per tier; infrastructure no-verdicts do not count")
+    parser.add_argument("--max-no-verdicts", type=int, default=12,
+                        help="infrastructure no-verdicts per tier before it ends with no verdict")
     parser.add_argument("--python", default=sys.executable)
     parser.add_argument("--prefix", default="signoff",
                         help="campaign name prefix; a new pass on changed code uses a new prefix")
@@ -83,10 +104,16 @@ def main(argv=None):
     summary = []
     for tier in args.tiers:
         held = False
-        for n in range(1, args.max_campaigns + 1):
+        verdicts = no_verdicts = n = 0
+        while verdicts < args.max_campaigns:
+            n += 1
             name = f"{args.prefix}-t{tier}-{n:02d}"
             dest = ROOT / "evidence" / args.date / name
             if dest.exists():
+                if archived_had_verdict(dest):
+                    verdicts += 1
+                else:
+                    no_verdicts += 1
                 record = latest_full_record(tier)
                 held = bool(record and record.get("held"))
                 print(f"[signoff] {name}: already archived; tier {tier} held={held}", flush=True)
@@ -102,16 +129,23 @@ def main(argv=None):
             print(f"[signoff] {name}: running", flush=True)
             with console.open("w", encoding="utf-8", errors="replace") as out:
                 code = subprocess.run(cmd, cwd=ROOT, stdout=out, stderr=subprocess.STDOUT).returncode
-            files = archive(name, dest, python=args.python)
             # Trust only a verdict this campaign recorded: a gate that refused to run or
             # an infrastructure no-verdict adds no record (a stale one must not count).
-            if len(full_records(tier)) == before:
+            recorded = len(full_records(tier)) > before
+            files = archive(name, dest, python=args.python, verdict=recorded)
+            if not recorded:
                 print("[signoff] " + json.dumps({"tier": tier, "campaign": name, "gate_exit": code,
                                                  "archived_files": files, "verdict": None}), flush=True)
                 if code not in (0, 3):  # 3 = infrastructure no-verdict; anything else is a refusal
                     print(f"[signoff] {name}: the gate recorded no verdict (exit {code}); stopping", flush=True)
                     return 2
+                no_verdicts += 1
+                if no_verdicts >= args.max_no_verdicts:
+                    print(f"[signoff] tier {tier}: {no_verdicts} infrastructure no-verdicts; the tier has "
+                          f"no verdict (not 'not held'); stopping", flush=True)
+                    return 3
                 continue
+            verdicts += 1
             record = latest_full_record(tier)
             held = bool(record and record.get("held"))
             row = {"tier": tier, "campaign": name, "gate_exit": code, "archived_files": files,
@@ -121,7 +155,8 @@ def main(argv=None):
             if held:
                 break
         if not held:
-            print(f"[signoff] tier {tier} not held after {args.max_campaigns} campaigns; stopping", flush=True)
+            print(f"[signoff] tier {tier} not held after {args.max_campaigns} campaigns with a verdict; "
+                  f"stopping", flush=True)
             return 1
     print("[signoff] all requested tiers held", flush=True)
     return 0

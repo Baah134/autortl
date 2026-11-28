@@ -4,23 +4,22 @@ No Vivado, simulator or model call. Passing this establishes static fixture
 invariants only; testbench qualification needs curriculum/tier6/qualify_tier6.py
 (its recorded results are in each entry's qualification/ folder).
 """
-import importlib.util
 import json
 import math
 import re
 from pathlib import Path
 
 import pytest
-import yaml
 
 from autortl.config import RunConfig
-from autortl.golden import GoldenModel, qualify_against_examples, validate_examples
+from autortl.golden import qualify_against_examples, validate_examples
 from autortl.linter import lint_spec, top_verilog
 from autortl.spec import DesignSpec
 from autortl.static_checks import check
 from autortl.tbgen import generate as generate_tb, shape_errors
 from autortl.verilog_interface import module_declared_latency
 from curriculum import runner
+from tests.helpers import load_module, load_tier_entry, text_oracle, tier_entry_dirs
 
 TIER6 = Path(__file__).resolve().parents[1] / "curriculum" / "tier6"
 ENTRIES = ["aes128_core_build", "cordic_build", "rv32i_core_build"]
@@ -29,24 +28,15 @@ CHIP_IO = 106  # user I/O of xc7a35tcpg236-1
 
 
 def entry_dirs():
-    return sorted(p for p in TIER6.iterdir() if p.is_dir() and p.name != "__pycache__")
+    return tier_entry_dirs(TIER6)
 
 
 def load(name):
-    entry = TIER6 / name
-    meta = yaml.safe_load((entry / "meta.yaml").read_text(encoding="utf-8"))
-    spec = DesignSpec.load(entry / meta["spec"])
-    tb = (entry / meta["tb"]).read_text(encoding="utf-8")
-    reference = (entry / "qualification" / "reference.v").read_text(encoding="utf-8")
-    mutants = json.loads((entry / "qualification" / "mutants.json").read_text(encoding="utf-8"))
-    return entry, meta, spec, tb, reference, mutants
+    return load_tier_entry(TIER6, name)
 
 
 def qualifier():
-    loader = importlib.util.spec_from_file_location("qualify_tier6", TIER6 / "qualify_tier6.py")
-    module = importlib.util.module_from_spec(loader)
-    loader.loader.exec_module(module)
-    return module
+    return load_module(TIER6 / "qualify_tier6.py", "qualify_tier6")
 
 
 def port_names(module):
@@ -607,11 +597,7 @@ ORACLES = {"rv_imem": IMEM_ORACLE, "rv_decode": DECODE_ORACLE, "rv_regfile": REG
 
 
 def oracle(tmp_path, module_name):
-    path = tmp_path / f"{module_name}_test_oracle.py"
-    path.write_text(ORACLES[module_name], encoding="utf-8")
-    model = GoldenModel(path)
-    model.work_parent = tmp_path
-    return model
+    return text_oracle(tmp_path, f"{module_name}_test_oracle.py", ORACLES[module_name])
 
 
 @pytest.mark.parametrize("name", ENTRIES)

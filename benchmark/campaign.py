@@ -4,7 +4,9 @@
                                  [--wait-minutes 20] [--max-wait-hours 12] [--max-cells N]
 
 Order is trial-major (a complete trial 0 over every task before trial 1), tasks
-in manifest order, arms single_call, ablation, full. A cell whose output
+in manifest order, arms single_call, ablation, full, then full_xcheck when the
+manifest registers it (adjacent to full, so both arms of a task share host
+load and quota waits). A cell whose output
 directory exists is never rerun, so the command is safe to restart. A cell
 left with a directory but no sealed record (its process died mid-run) is sealed
 `interrupted` with no submission, so grading is never blocked and the cell is
@@ -27,6 +29,7 @@ infrastructure are excluded from its rates.
 from __future__ import annotations
 
 import argparse
+import functools
 import json
 import sys
 import time
@@ -35,7 +38,9 @@ from pathlib import Path
 from . import artifacts, pilot
 from . import verilogeval as ve
 
-ARM_ORDER = ("single_call", "ablation", "full")
+# Only registered arms are scheduled, so the opt-in full_xcheck changes nothing for
+# a manifest without it.
+ARM_ORDER = ("single_call", "ablation", "full", "full_xcheck")
 EXIT_DONE, EXIT_MODEL_BLOCKED, EXIT_INTERRUPTED = 0, 3, 4
 PROBE_PROMPT = "Reply with the single word OK."
 
@@ -54,12 +59,18 @@ def cell_dir(attempt: Path, cell: tuple[str, str, int]) -> Path:
 
 
 def run_cell(manifest: dict, task: ve.Task, cell: tuple[str, str, int], out_dir: Path,
-             model: str | None = None) -> dict:
-    """Dispatch one cell to its arm runner (pilot settings and budgets from the manifest)."""
+             model: str | None = None, *, grader_check: bool = False,
+             iverilog: str | None = None) -> dict:
+    """Dispatch one cell to its arm runner (pilot settings and budgets from the manifest).
+
+    grader_check (opt-in) applies to the harness arms only; arm A stays one call
+    with no feedback. Each harness cell's recorded command shows whether it ran.
+    """
     _, arm, trial = cell
     if arm == "single_call":
         return pilot.run_single_call(manifest, task, out_dir, trial=trial, model=model)
-    return pilot.run_full(manifest, task, out_dir, trial=trial, model=model, arm=arm)
+    extra = {"grader_check": True, "iverilog": iverilog} if grader_check else {}
+    return pilot.run_full(manifest, task, out_dir, trial=trial, model=model, arm=arm, **extra)
 
 
 def seal_spent(manifest: dict, cell: tuple[str, str, int], out_dir: Path) -> dict | None:
@@ -200,12 +211,20 @@ def main(argv=None) -> int:
                         help="while the model is blocked, probe again every N minutes instead of stopping")
     parser.add_argument("--max-wait-hours", type=float, default=12.0)
     parser.add_argument("--no-probe", action="store_true", help="skip model availability checks")
+    parser.add_argument("--grader-check", action="store_true",
+                        help="harness arms: also compile RTL with the grader's Icarus flags at every "
+                             "compile check (grader_rejects_vendor_attribute; default: off)")
+    parser.add_argument("--iverilog", help="Icarus executable for --grader-check (default: AUTORTL_IVERILOG or PATH)")
     a = parser.parse_args(argv)
     if a.wait_minutes is not None and a.wait_minutes < 1:
         parser.error("--wait-minutes must be at least 1")
     manifest = artifacts.load_manifest(a.manifest, public_root=a.dataset, private_root=a.dataset)
+    # Resolve before any cell runs, so a missing compiler never stops mid-campaign.
+    iverilog = pilot.grader_compiler(a.iverilog) if a.grader_check else None
     result = run_campaign(manifest, a.dataset, a.attempt, model=a.model, max_cells=a.max_cells,
                           max_interrupted=a.max_interrupted,
+                          runner=functools.partial(run_cell, grader_check=a.grader_check,
+                                                   iverilog=iverilog),
                           probe=None if a.no_probe else (lambda: model_available(a.model)),
                           wait_seconds=None if a.wait_minutes is None else a.wait_minutes * 60,
                           max_wait_seconds=a.max_wait_hours * 3600)

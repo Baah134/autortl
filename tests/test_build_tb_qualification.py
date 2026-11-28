@@ -1,17 +1,15 @@
 """Qualification runner unit tests; no vendor processes are launched here."""
 import hashlib
-import importlib.util
 import json
 from pathlib import Path
 from unittest.mock import Mock
 import pytest
 from autortl.triage import FailureKind
 from autortl.verilog_interface import infer_module
+from tests.helpers import load_module
 
 ROOT=Path(__file__).resolve().parents[1]
-SPEC=importlib.util.spec_from_file_location("build_tb_checks",ROOT/"scripts/check_build_tbs.py")
-cli=importlib.util.module_from_spec(SPEC)
-SPEC.loader.exec_module(cli)
+cli=load_module(ROOT/"scripts/check_build_tbs.py","build_tb_checks")
 
 
 def test_controls_and_behavior_faults_are_unique_and_keep_top_interfaces():

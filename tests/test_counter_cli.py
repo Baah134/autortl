@@ -1,18 +1,16 @@
-import importlib.util
 import json
 from pathlib import Path
 from unittest.mock import Mock
 import pytest
 from autortl.report_parser import VivadoMetrics
 from autortl.triage import FailureKind
+from tests.helpers import load_module
 
 
 @pytest.mark.parametrize("stage", ["simulation", "qualification", "implementation", "success"])
 def test_counter_cli_evidence_and_fail_closed(tmp_path, monkeypatch, stage):
     path = Path(__file__).resolve().parents[1] / "scripts/check_counter_cli.py"
-    spec = importlib.util.spec_from_file_location("counter_cli", path)
-    cli = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(cli)
+    cli = load_module(path, "counter_cli")
     out = tmp_path / "evidence"
     monkeypatch.setattr("sys.argv", [str(path), "--bin-dir", str(tmp_path), "--output", str(out)])
     sim = Mock(return_value=(stage != "simulation", "", FailureKind.DESIGN))
@@ -39,9 +37,7 @@ def test_counter_cli_evidence_and_fail_closed(tmp_path, monkeypatch, stage):
 
 def _load_cli():
     path = Path(__file__).resolve().parents[1] / "scripts/check_counter_cli.py"
-    spec = importlib.util.spec_from_file_location("counter_cli", path)
-    cli = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(cli)
+    cli = load_module(path, "counter_cli")
     return cli, path
 
 

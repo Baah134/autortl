@@ -21,6 +21,12 @@ Statistics (protocol: evidence/2026-11-06/parallel-diagnoses-01):
   counted separately. Their cost is still charged.
 - False acceptance: internally accepted but externally failing, over all
   internally accepted submissions of that arm.
+
+Opt-in arm full_xcheck (V1, docs/V1_REGISTRATION_DRAFT.md): the full harness with
+the request cross-check. Only when its rows are present does the summary add the
+paired comparison full_xcheck-full, a paired false-acceptance difference (per
+evaluable cell) and the cross-check outcome counts; a run without it is
+summarized and rendered exactly as before.
 """
 
 from __future__ import annotations
@@ -33,8 +39,11 @@ import sys
 from pathlib import Path
 from autortl.fileio import read_json
 
-ARMS = ("single_call", "ablation", "full")
-ARM_LABEL = {"single_call": "A single call", "ablation": "B ablation", "full": "C full harness"}
+ARMS = ("single_call", "ablation", "full", "full_xcheck")
+ARM_LABEL = {"single_call": "A single call", "ablation": "B ablation", "full": "C full harness",
+             "full_xcheck": "C-xcheck full harness + request cross-check"}
+# Paired comparisons (better, base), in report order; each appears only when both arms do.
+PAIRS = (("full", "single_call"), ("full", "ablation"), ("ablation", "single_call"), ("full_xcheck", "full"))
 BOOTSTRAP_SAMPLES = 10_000
 BOOTSTRAP_SEED = 20261115
 # Infrastructure never counts as a design verdict (AGENTS.md hard rule 4): cells that
@@ -43,6 +52,10 @@ INFRA_TERMINATIONS = ("model_blocked", "interrupted")
 ROW_KEYS = ("task", "arm", "trial", "termination", "internal", "status", "upstream_code",
             "upstream_pass", "mismatches", "samples", "run_status", "llm_calls", "input_tokens",
             "output_tokens", "seconds", "tool_seconds")
+# full_xcheck rows only: the run summary's spec_cross_check policy and the outcome of
+# each recorded check in revision order (autortl/fsm.py _record_cross_check); None
+# when the run wrote no such record (no run summary, or a stop before planning).
+XCHECK_ROW_KEYS = ("cross_check_policy", "cross_check_outcomes")
 
 
 class ReportError(ValueError):
@@ -78,8 +91,20 @@ def grade_attempt(manifest: dict, dataset: Path, attempt: Path, **tools) -> list
                      "run_status": accounting.get("run_status"), "llm_calls": accounting.get("llm_calls"),
                      "input_tokens": tokens.get("input_tokens"), "output_tokens": tokens.get("output_tokens"),
                      "seconds": accounting.get("seconds"), "tool_seconds": accounting.get("tool_seconds")})
+        if arm == "full_xcheck":
+            rows[-1].update(cross_check_fields(accounting.get("spec_cross_check")))
     (grades / "summary.json").write_text(json.dumps(rows, indent=1), encoding="utf-8")
     return rows
+
+
+def cross_check_fields(recorded) -> dict:
+    """Row fields from a run summary's spec_cross_check {"policy", "checks"} (or None)."""
+    if not isinstance(recorded, dict):
+        return {"cross_check_policy": None, "cross_check_outcomes": None}
+    checks = recorded.get("checks")
+    return {"cross_check_policy": recorded.get("policy"),
+            "cross_check_outcomes": None if not isinstance(checks, list)
+            else [c.get("outcome") for c in checks if isinstance(c, dict)]}
 
 
 # --------------------------------------------------------------- statistics
@@ -181,7 +206,7 @@ def summarize(rows: list[dict], catalog: dict | None = None, samples: int = BOOT
             "seconds": sum(r.get("seconds") or 0 for r in every),
             "calls_per_pass": calls / passes if passes else None,
         }
-    for better, base in (("full", "single_call"), ("full", "ablation"), ("ablation", "single_call")):
+    for better, base in PAIRS:
         if better in rates and base in rates:
             if registered[better] != registered[base]:
                 raise ReportError(f"arms {better} and {base} cover different tasks")
@@ -206,6 +231,88 @@ def summarize(rows: list[dict], catalog: dict | None = None, samples: int = BOOT
         for per_arm in out["categories"].values():
             for entry in per_arm.values():
                 entry["pass_rate"] = entry.pop("sum") / entry["tasks"]
+    if "full_xcheck" in rates:
+        if "full" in rates:
+            out["paired_false_acceptance"] = {"full_xcheck-full": _paired_false_acceptance(
+                rows, "full_xcheck", "full", samples)}
+        out["cross_check"] = _cross_check_counts(rows, rates)
+    return out
+
+
+def _evaluable(rows: list[dict], arm: str) -> list[dict]:
+    return [r for r in rows if r["arm"] == arm and r.get("termination") not in INFRA_TERMINATIONS]
+
+
+def _false_accept(row: dict) -> bool:
+    return row.get("internal") == "accepted" and not row["upstream_pass"]
+
+
+def _task_false_acceptance(rows: list[dict], arm: str) -> dict[str, float]:
+    """Per-task false acceptances over that arm's evaluable cells (not over accepted cells)."""
+    by_task: dict[str, list[int]] = {}
+    for row in _evaluable(rows, arm):
+        by_task.setdefault(row["task"], []).append(1 if _false_accept(row) else 0)
+    return {task: sum(v) / len(v) for task, v in by_task.items()}
+
+
+def _paired_false_acceptance(rows: list[dict], better: str, base: str, samples: int) -> dict:
+    """V1 primary endpoint: mean over tasks of FA_t(better) - FA_t(base), task bootstrap.
+
+    FA_t is cells internally accepted and failing upstream over evaluable cells, so
+    every task with an evaluable cell in both arms has a value and the pairing holds.
+    """
+    fa = {arm: _task_false_acceptance(rows, arm) for arm in (better, base)}
+    common = set(fa[better]) & set(fa[base])
+    diff = {t: fa[better][t] - fa[base][t] for t in common}
+    return {"tasks_compared": len(common),
+            "mean_difference": sum(diff.values()) / len(diff),
+            "ci95_task_bootstrap": cluster_bootstrap(diff, samples),
+            "tasks_fewer": sum(v < 0 for v in diff.values()),
+            "tasks_more": sum(v > 0 for v in diff.values()),
+            "tasks_equal": sum(v == 0 for v in diff.values()),
+            # Over every evaluable cell of each arm (the event count of the V1 rule).
+            "tasks_with_false_acceptance": {arm: sum(v > 0 for v in fa[arm].values())
+                                            for arm in (better, base)}}
+
+
+def _cell_name(row: dict) -> str:
+    return f"{row['task']}#{row['trial']}"
+
+
+def _cross_check_counts(rows: list[dict], rates: dict[str, dict[str, float]]) -> dict:
+    """Request cross-check outcomes of the full_xcheck cells, as their runs recorded them.
+
+    blocked_tasks (V1 secondary 2): C-off passes every evaluable trial, C-xcheck none,
+    and some C-xcheck cell of the task recorded replanned or disagreement_kept.
+    """
+    mine = sorted((r for r in rows if r["arm"] == "full_xcheck"), key=lambda r: (r["task"], r["trial"]))
+    outcomes = {_cell_name(r): r.get("cross_check_outcomes") for r in mine}
+
+    def having(name):
+        return sorted(c for c, found in outcomes.items() if found and name in found)
+
+    out = {"cells": len(mine),
+           "policies": _count(r.get("cross_check_policy") for r in mine),
+           "cells_without_record": sorted(c for c, found in outcomes.items() if found is None),
+           "outcomes": _count(o for found in outcomes.values() for o in (found or [])),
+           "cells_by_outcome": _count(o for found in outcomes.values() for o in sorted(set(found or []))),
+           "cells_checked": sum(any(o != "skipped" for o in found or []) for found in outcomes.values()),
+           "replanned_cells": having("replanned"),
+           "disagreement_kept_cells": having("disagreement_kept"),
+           "blocked_tasks": None, "replans_passing": None, "replans_failing_where_off_passed": None}
+    if "full" not in rates:
+        return out
+    off, xcheck = rates["full"], rates["full_xcheck"]
+    disputed = {r["task"]: [] for r in mine}
+    for r in mine:
+        if {"replanned", "disagreement_kept"} & set(r.get("cross_check_outcomes") or []):
+            disputed[r["task"]].append(_cell_name(r))
+    out["blocked_tasks"] = [{"task": t, "cells": disputed[t]} for t in sorted(set(off) & set(xcheck))
+                            if off[t] == 1.0 and xcheck[t] == 0.0 and disputed.get(t)]
+    replanned = [r for r in _evaluable(rows, "full_xcheck") if "replanned" in (r.get("cross_check_outcomes") or [])]
+    out["replans_passing"] = sorted(_cell_name(r) for r in replanned if r["upstream_pass"])
+    out["replans_failing_where_off_passed"] = sorted(
+        _cell_name(r) for r in replanned if not r["upstream_pass"] and off.get(r["task"], 0.0) > 0)
     return out
 
 
@@ -262,6 +369,17 @@ def render_markdown(summary: dict, title: str = "VerilogEval comparison") -> str
         cells = ", ".join(a["false_acceptance_cells"]) or "none"
         lines.append(f"| {ARM_LABEL[arm]} | {a['internally_accepted']} | {a['false_acceptances']} | "
                      f"{_pct(a['false_acceptance_rate'])} | {cells} |")
+    for name, p in (summary.get("paired_false_acceptance") or {}).items():
+        first, second = name.split("-")
+        events = ", ".join(f"{ARM_LABEL[a]} {n}" for a, n in p["tasks_with_false_acceptance"].items())
+        lines += ["", f"Paired false acceptance, {ARM_LABEL[first]} minus {ARM_LABEL[second]}, per evaluable "
+                  "cell (mean over tasks of each task's share of evaluable cells accepted and failing; "
+                  "percentage points):", "",
+                  "| Mean difference | 95% CI | Tasks fewer / equal / more | Tasks with a false acceptance |",
+                  "|---|---|---|---|",
+                  f"| {100 * p['mean_difference']:+.1f} | {100 * p['ci95_task_bootstrap'][0]:+.1f} to "
+                  f"{100 * p['ci95_task_bootstrap'][1]:+.1f} | {p['tasks_fewer']} / {p['tasks_equal']} / "
+                  f"{p['tasks_more']} | {events} |"]
     lines += ["", "Arm A submissions are never internally verified, so it has no accepted set.", "",
               "## Cost", "", "| Arm | Model calls | Calls per pass | Input tokens | Output tokens | Wall hours |",
               "|---|---|---|---|---|---|"]
@@ -282,10 +400,39 @@ def render_markdown(summary: dict, title: str = "VerilogEval comparison") -> str
     for arm, a in summary["arms"].items():
         terms = ", ".join(f"{k} {v}" for k, v in a["terminations"].items())
         lines.append(f"| {ARM_LABEL[arm]} | {a['strict_passes']} | {a['grader_disagreements']} | {terms} |")
+    if summary.get("cross_check"):
+        lines += _render_cross_check(summary["cross_check"])
     lines += ["", "Limits: public tasks do not exclude training contamination; one model and backend; "
               "functional correctness only, no area or timing claim; the single-call arm is one backend "
               "invocation, not a tools-enabled agent baseline.", ""]
     return "\n".join(lines)
+
+
+def _named(cells) -> str:
+    return ", ".join(cells) if cells else "none"
+
+
+def _render_cross_check(x: dict) -> list[str]:
+    lines = ["", f"## Request cross-check ({ARM_LABEL['full_xcheck']})", "",
+             f"{x['cells']} cells; the check ran (an outcome other than skipped) in {x['cells_checked']}. "
+             "Outcomes are counted per recorded check; a replanned cell has one check per spec revision.", "",
+             "| Outcome | Checks | Cells |", "|---|---|---|"]
+    lines += [f"| {name} | {count} | {x['cells_by_outcome'].get(name, 0)} |" for name, count in x["outcomes"].items()]
+    if not x["outcomes"]:
+        lines.append("| none recorded | 0 | 0 |")
+    policies = ", ".join(f"{k} {v}" for k, v in x["policies"].items())
+    lines += ["", f"- Recorded policies: {policies}",
+              f"- Cells without a cross-check record: {_named(x['cells_without_record'])}",
+              f"- Replanned: {_named(x['replanned_cells'])}",
+              f"- Disagreement kept: {_named(x['disagreement_kept_cells'])}"]
+    if x["blocked_tasks"] is not None:
+        blocked = "; ".join(f"{b['task']} ({', '.join(b['cells'])})" for b in x["blocked_tasks"])
+        lines += ["- Blocked tasks (C full harness passes every evaluable trial, C-xcheck none, after a "
+                  f"disagreement): {blocked or 'none'}",
+                  f"- Replanned cells that pass: {_named(x['replans_passing'])}",
+                  "- Replanned cells that fail where C full harness passed at least once: "
+                  f"{_named(x['replans_failing_where_off_passed'])}"]
+    return lines
 
 
 # ---------------------------------------------------------------------- CLI

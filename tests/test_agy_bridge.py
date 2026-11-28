@@ -1,14 +1,13 @@
 """Antigravity bridge: stdin framing, result parsing and error mapping, with agy faked."""
-import importlib.util
 import io
 import json
 import subprocess
 from pathlib import Path
 
+from tests.helpers import load_module
+
 ROOT = Path(__file__).resolve().parents[1]
-spec = importlib.util.spec_from_file_location("agy_bridge", ROOT / "scripts" / "agy_bridge.py")
-bridge = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(bridge)
+bridge = load_module(ROOT / "scripts" / "agy_bridge.py", "agy_bridge")
 
 
 def events(*items):

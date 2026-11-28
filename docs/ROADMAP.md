@@ -46,11 +46,14 @@ tagged release exists on `main` with a licence.
    LF-normalised bytes). No home-directory paths or personal data in committed
    files. `python tools/evidence_audit.py --rev HEAD` must pass.
 
-## 2. Current state (November 15, 2026)
+## 2. Current state (November 27, 2026)
 
-- Branch `codex/contract-context`, local commits ahead of `origin` (not
-  pushed). `main` frozen at `ca61dbc`.
-- Harness: all suites green at the last full run (2,287 harness, 323 tooling).
+- Release PR Baah134/autortl#1 (`codex/contract-context` -> `main`) is open,
+  CI green, awaiting the owner's merge; `main` frozen at `ca61dbc`. The
+  release re-hold of the curriculum tiers runs on the release runtime
+  (tiers 0 and 1 held; tiers 2 to 5 remain; `docs/SESSION_HANDOFF.md`).
+- Post-release work is on `claude/v1.1-integration` (pushed, no PR): suites
+  green there (2,470 harness, 329 tooling, ruff, evidence audit).
 - Benchmark machinery is complete and tested: `benchmark/verilogeval.py`
   (dataset, selection, grader), `pilot.py` (arms A/B/C), `registration.py`
   (final selection), `campaign.py` (runner), `report.py` (grading gate and
@@ -120,7 +123,7 @@ criteria; a task is not done until all are met and committed.
   intervals, paired differences, false-acceptance rate and cost; audit passes;
   no cell rerun; README (task P3) quotes only numbers from this report.
 
-**B2. Decide the claim from the data** — `blocked(B1)`
+**B2. Decide the claim from the data** — `done` November 21 (`claim.json` quoted in README and `docs/RESULTS.md`; recurring planner failure opened as V1)
 - The rule was registered November 20 before grading (`docs/DECISIONS.md`,
   `benchmark/claim.py`): verdict from the C-minus-A paired interval
   (above 0, below 0, inside ±10 pp, or inconclusive), downgraded if more than
@@ -128,7 +131,7 @@ criteria; a task is not done until all are met and committed.
   B2 is now: quote `claim.json` from B1, and if it shows a recurring planner
   failure, open the follow-up (former C4). No post-hoc task removal.
 
-**B3. Optimisation benchmark (where the harness should differ)** — `todo`
+**B3. Optimisation benchmark (where the harness should differ)** — `doing` (machinery and DRAFT registration ready, awaiting the owner: `docs/B3_REGISTRATION_DRAFT.md`)
 - Question: on designs that are functionally correct in both arms, does the
   harness produce smaller or faster routed designs than a single call?
 - Design: take tasks from B1 where arm A and arm C both pass in at least one
@@ -156,8 +159,11 @@ criteria; a task is not done until all are met and committed.
 
 ### Track V — verification research
 
-**V1. Measure and reduce false acceptance** — `todo`
-- Baseline: the false-acceptance rate and cells from B1.
+**V1. Measure and reduce false acceptance** — `todo` (mitigation implemented
+on `claude/v1.1-integration`, not yet measured; DRAFT registration
+`docs/V1_REGISTRATION_DRAFT.md` awaits the owner)
+- Baseline: the same run's `spec_cross_check=off` arm on the same tasks (B1's
+  rate is context only: different harness prompt since November 21).
 - Mitigation to test (one, measured): *independent example derivation*. A
   second planner call, given only the original request (not the first spec),
   produces input/output examples; the build fails spec lint with a dispute if
@@ -165,9 +171,19 @@ criteria; a task is not done until all are met and committed.
   dispute path (`spec_disputes`, DESIGN.md "Disputed examples") is the hook.
   Implement behind a recorded config field (like `verification_policy`), off
   by default until measured.
-- Experiment: rerun the B1 false-acceptance tasks plus Prob135_m2014_q6b, 5
-  trials each, with and without the mitigation; report false acceptances,
-  added calls and any true designs wrongly blocked.
+  *Implemented (November 21):* `spec_cross_check=request_traces`
+  (`run.py build --spec-cross-check request_traces`; DESIGN.md "Request
+  cross-check"). It writes cycle traces rather than constant-input examples,
+  and a disagreement replans once instead of failing lint (a second
+  disagreement is recorded and the build continues), so the experiment also
+  reports `disagreement_kept` cells. The benchmark runner does not set the
+  field yet; the registration for this experiment must.
+- Experiment: fresh VerilogEval tasks only (DECISIONS 2026-11-21: final-02
+  tasks are tuned), with and without the mitigation; report false acceptances,
+  added calls and any true designs wrongly blocked. The B1 false-acceptance
+  tasks plus Prob135_m2014_q6b run only as a labelled, descriptive "tuned"
+  set. Task rule, arms, decision rule, power and budget:
+  `docs/V1_REGISTRATION_DRAFT.md`.
 - Acceptance: taxonomy entry updated from "open" to the measured outcome;
   default changed only if false acceptances fall without blocking correct
   designs.
@@ -177,13 +193,11 @@ criteria; a task is not done until all are met and committed.
 **P1. Licence** — `done` (November 15): MIT, owner-approved; `LICENSE`, README
 section, VerilogEval attribution kept in `tests/fixtures/verilogeval/README.md`.
 
-**P2. Push and integrate** — `doing`: branch push approved and done November 15;
-remaining (owner approval needed for the merge):
-confirm CI is green (`.github/workflows/tests.yml`: harness, evidence audit,
-tooling); open a PR to `main`. The release gate in START_HERE applies: full
+**P2. Push and integrate** — `doing`: PR Baah134/autortl#1 opened November 21,
+CI green; remaining: the owner's merge. The release gate in START_HERE applies: full
 suites, evidence audit, and the final re-hold the owner decides on.
 
-**P3. README rewrite** — structure `done` (November 15, 149 lines); numbers `blocked(B1)`
+**P3. README rewrite** — `done` (structure November 15; numbers November 21 from `benchmark.finish`)
 - Target about 150 lines: one-sentence pitch; a results table with three rows
   (hardware, verifier qualification, benchmark) each linking to evidence; the
   loop diagram; 10-line quick start (`doctor`, `demo.py`, one `build`); what
@@ -196,8 +210,8 @@ suites, evidence audit, and the final re-hold the owner decides on.
 recording of one build and the UART echo. Board access needs the owner's
 explicit authorisation (no JTAG/programming by agents without it).
 
-**P5. Release** — `blocked(P1,P2,P3)`: tag `v1.0.0` on `main` with release
-notes drawn from PROGRESS; attach the benchmark report.
+**P5. Release** — `blocked(P2, re-hold)`: tag `v1.0.0` on the merge commit once
+the re-hold has held every tier; release notes from `docs/RELEASE.md`.
 
 ### Track D — documentation and process
 
@@ -236,7 +250,7 @@ summaries on the recorded FSM tests, no function over 120 lines in `fsm.py`.
 **C2. Public interfaces** — `merged into C6`: export `doctor.resolve_tool` and
 `artifacts.validate_manifest`; stop importing private names in `benchmark/`.
 
-**C3. Tooling** — `done` on branch `c6-dedupe` (November 20: ruff F rules in CI, pinned requirements, `-n auto`; 2,345 tests in 4 m 43 s): `pyproject.toml` (ruff with a small rule set, no
+**C3. Tooling** — `done`, merged with `c6-dedupe` (November 20: ruff F rules in CI, pinned requirements, `-n auto`; 2,345 tests in 4 m 43 s): `pyproject.toml` (ruff with a small rule set, no
 reformat of history), pinned `requirements.txt`, CI Python matched to
 development (3.12 or 3.14, one of them), a `ruff check` CI job. Acceptance:
 CI green, no behaviour change.
@@ -249,7 +263,7 @@ run as a fixture and a taxonomy entry.
 code-only clone in the README; measure checkout time before and after. Do not
 rewrite history.
 
-**C6. Remove repetition** — `doing` in worktree `c6-dedupe` (items 1, 2, 3, 5, 8 and the `_finish_optimize` split done November 15-20; merge after B1)
+**C6. Remove repetition** — `doing` (items 1, 2, 3, 5, 8 and the `_finish_optimize` split merged with `c6-dedupe`, `1d841a53e`; item 6 done November 27; items 4 and 7 remain)
 Literal copy-paste is rare (a 6-line-window scan of `autortl/`, `llm/`, `run.py`
 and `curriculum/` finds only the two synthesis templates). The repetition is in
 idioms and parallel paths:
@@ -267,16 +281,35 @@ idioms and parallel paths:
 4. Evidence retention in `fsm.py`: about 25 `retain_identity`/`identity(...)`
    call sites and hand-written loops at DONE. Collect them in one
    `EvidenceRegister` object (add, verify unchanged, export) used by build,
-   optimize and Doctor paths. Do this together with C1.
+   optimize and Doctor paths. Do this together with C1. *Deferred:* it
+   rewrites the evidence bookkeeping of the verifier itself; do it only with
+   a byte-identical replay of recorded runs as the acceptance test, not
+   beside a running re-hold or benchmark. The acceptance test now exists
+   (November 28): `tools/replay_run.py` replays a recorded run offline and
+   compares every rebuilt file (see [USAGE](USAGE.md)). The release re-hold
+   run and 13 runs recorded since October 30 replay byte-identical on their
+   own code, so the refactor can be checked by replaying the re-hold's runs
+   on the old and the new code. It stays deferred until the re-hold and the
+   v1.0.0 tag are done.
 5. `scripts/check_*.py`: five scripts that each parse Vivado paths, build a
    RunConfig and hash outputs. Fold the shared part into one module or into
    `run.py doctor --live`.
 6. Tests: 16 test files define their own spec/config builders. Move the common
-   ones to `tests/conftest.py` fixtures; no assertion changes.
+   ones to `tests/conftest.py` fixtures; no assertion changes. *Done November
+   27:* the spec/config builders all differ, so they stay; the real copies
+   (module file loaders, tier entry loaders, a text-oracle builder; 28 copies
+   in 16 files) moved to `tests/helpers.py`. Same 2,472 tests collected, same
+   results.
 7. `data/taxonomy.yaml` has about 200 `harness_failures` entries; many are
    one-incident records. Keep entries that code or tests reference by name in
    the taxonomy and move the rest, verbatim, to `docs/archive/INCIDENTS.md`
    with a pointer. Check references with a search before moving any entry.
+   *Dropped November 27:* `harness_failures` is never loaded by code (the
+   `Taxonomy` class reads only `messages` and `methodology`), so its size
+   costs nothing at run time. 94 of its 209 entries are cited by name in
+   code, tests or DESIGN.md, 6 more only in other docs, and 109 are
+   one-incident records cited nowhere else. Moving those to an archive file is cosmetic and would split
+   one searchable incident log in two.
 8. `benchmark/pilot.py`: a harness cell stopped by model quota is sealed
    `interrupted` because the generic infra check runs before the status map.
    Map `status == "model_blocked"` first. (Both labels are already excluded
@@ -312,18 +345,19 @@ fast quality item that can run beside it, or post-release work.
 ### Critical path (finish)
 
 1. **B1** finish, grade, report, archive `final-02` (done November 21).
-2. **B2** quote the claim the registered rule produced (`claim.json`).
-3. **P3** paste the README row `benchmark.finish` prints; release text is
-   drafted in `docs/RELEASE.md`.
-4. **Merge** `c6-dedupe` (full suites first), then **P2** PR to `main` and
-   **P5** tag `v1.0.0` (owner approval).
+2. **B2** quote the claim the registered rule produced (done).
+3. **P3** paste the README row `benchmark.finish` prints (done); release text
+   is drafted in `docs/RELEASE.md`.
+4. **Merge** `c6-dedupe` (done, `1d841a53e`), **P2** PR to `main` (open,
+   awaiting the owner's merge), the release re-hold (running), then **P5** tag
+   `v1.0.0`.
 
 ### Beside the critical path (safe while B1 runs)
 
-- **C6** remove repetition, in worktree `c6-dedupe` (items 1, 2, 3, 5, 8 and
-  the finish-phase split done; merge after B1 because it changes the runtime).
-- **C3** tooling: done on `c6-dedupe` (ruff, pinned requirements, parallel
-  tests: 4 m 43 s instead of 15 to 22 min).
+- **C6** remove repetition: items 1, 2, 3, 5, 8 and the finish-phase split
+  merged with `c6-dedupe` (`1d841a53e`); item 6 done; items 4 and 7 remain.
+- **C3** tooling: merged with `c6-dedupe` (ruff, pinned requirements,
+  parallel tests: 4 m 43 s instead of 15 to 22 min).
 - **D5** lease default 4 hours: done November 20 (`scripts/session.py`).
 
 ### Scaling testing

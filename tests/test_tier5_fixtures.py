@@ -3,22 +3,20 @@
 No Vivado, simulator or model call. Passing this establishes static fixture
 invariants only; testbench qualification needs curriculum/tier5/qualify_tier5.py.
 """
-import importlib.util
-import json
 import re
 from pathlib import Path
 
 import pytest
-import yaml
 
 from autortl.config import RunConfig
-from autortl.golden import GoldenModel, qualify_against_examples, validate_examples
+from autortl.golden import qualify_against_examples, validate_examples
 from autortl.linter import lint_spec, top_verilog
 from autortl.spec import DesignSpec
 from autortl.static_checks import check
 from autortl.tbgen import generate as generate_tb
 from autortl.verilog_interface import module_declared_latency
 from curriculum import runner
+from tests.helpers import load_module, load_tier_entry, text_oracle, tier_entry_dirs
 
 TIER5 = Path(__file__).resolve().parents[1] / "curriculum" / "tier5"
 ENTRIES = ["axil_regs_build", "fir16_sym_build", "uart_rx_fifo_build"]
@@ -26,24 +24,15 @@ REQUIRED_META = {"mode", "top", "spec", "tb", "iterations", "objective", "pass_c
 
 
 def entry_dirs():
-    return sorted(p for p in TIER5.iterdir() if p.is_dir() and p.name != "__pycache__")
+    return tier_entry_dirs(TIER5)
 
 
 def load(name):
-    entry = TIER5 / name
-    meta = yaml.safe_load((entry / "meta.yaml").read_text(encoding="utf-8"))
-    spec = DesignSpec.load(entry / meta["spec"])
-    tb = (entry / meta["tb"]).read_text(encoding="utf-8")
-    reference = (entry / "qualification" / "reference.v").read_text(encoding="utf-8")
-    mutants = json.loads((entry / "qualification" / "mutants.json").read_text(encoding="utf-8"))
-    return entry, meta, spec, tb, reference, mutants
+    return load_tier_entry(TIER5, name)
 
 
 def qualifier():
-    loader = importlib.util.spec_from_file_location("qualify_tier5", TIER5 / "qualify_tier5.py")
-    module = importlib.util.module_from_spec(loader)
-    loader.loader.exec_module(module)
-    return module
+    return load_module(TIER5 / "qualify_tier5.py", "qualify_tier5")
 
 
 def test_tier5_contains_exactly_the_three_build_entries():
@@ -370,11 +359,7 @@ ORACLES = {"uart_rx_core": UART_ORACLE, "rx_fifo": FIFO_ORACLE, "rx_err_count": 
 
 
 def oracle(tmp_path, module_name):
-    path = tmp_path / f"{module_name}_test_oracle.py"
-    path.write_text(ORACLES[module_name], encoding="utf-8")
-    model = GoldenModel(path)
-    model.work_parent = tmp_path
-    return model
+    return text_oracle(tmp_path, f"{module_name}_test_oracle.py", ORACLES[module_name])
 
 
 @pytest.mark.parametrize("name", ENTRIES)

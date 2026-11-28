@@ -5,7 +5,6 @@ qualification/qualification.json (curriculum/tier4/qualify_tier4.py); these
 tests check the static invariants and bind that record to the current files.
 """
 import hashlib
-import importlib.util
 import json
 import re
 from pathlib import Path
@@ -18,6 +17,7 @@ from autortl.linter import lint_spec, top_verilog
 from autortl.spec import DesignSpec
 from autortl.static_checks import check
 from curriculum import runner
+from tests.helpers import load_module
 
 ROOT = Path(__file__).resolve().parents[1]
 ENTRY = ROOT / "curriculum" / "tier3" / "uart_fifo_build"
@@ -44,10 +44,7 @@ def mutants():
 
 
 def qualifier():
-    loader = importlib.util.spec_from_file_location("qualify_tier4", ROOT / "curriculum/tier4/qualify_tier4.py")
-    module = importlib.util.module_from_spec(loader)
-    loader.loader.exec_module(module)
-    return module
+    return load_module(ROOT / "curriculum/tier4/qualify_tier4.py", "qualify_tier4")
 
 
 def spec_port_table():

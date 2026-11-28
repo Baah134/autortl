@@ -1,6 +1,5 @@
 """Static fixture and stimulus validation; these tests do not simulate RTL."""
 import hashlib
-import importlib.util
 import json
 from pathlib import Path
 
@@ -13,6 +12,7 @@ from autortl.spec import DesignSpec
 from autortl.static_checks import check
 from autortl.tbgen import gen_stimulus, generate_scoreboard_tb
 from autortl.verilog_interface import infer_module
+from tests.helpers import load_module
 
 ROOT = Path(__file__).resolve().parents[1] / "curriculum/tier2/skid_buffer_build"
 
@@ -22,10 +22,7 @@ def spec():
 
 
 def qualification():
-    loaded = importlib.util.spec_from_file_location("skid_buffer_qualification_cases", ROOT / "qualification/cases.py")
-    module = importlib.util.module_from_spec(loaded)
-    loaded.loader.exec_module(module)
-    return module
+    return load_module(ROOT / "qualification/cases.py", "skid_buffer_qualification_cases")
 
 
 def test_fixture_is_discoverable_build_with_independent_top_testbench():

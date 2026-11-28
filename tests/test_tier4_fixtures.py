@@ -3,21 +3,19 @@
 No Vivado, simulator or model call. Passing this establishes static fixture
 invariants only; testbench qualification needs curriculum/tier4/qualify_tier4.py.
 """
-import importlib.util
-import json
 import re
 from pathlib import Path
 
 import pytest
-import yaml
 
 from autortl.config import RunConfig
-from autortl.golden import GoldenModel, qualify_against_examples, validate_examples
+from autortl.golden import qualify_against_examples, validate_examples
 from autortl.linter import lint_spec, top_verilog
 from autortl.spec import DesignSpec
 from autortl.static_checks import check
 from autortl.verilog_interface import module_declared_latency
 from curriculum import runner
+from tests.helpers import load_module, load_tier_entry, text_oracle, tier_entry_dirs
 
 TIER4 = Path(__file__).resolve().parents[1] / "curriculum" / "tier4"
 ENTRIES = ["crc16_stream_build", "rr_regfile_build", "spi_master_build"]
@@ -25,24 +23,15 @@ REQUIRED_META = {"mode", "top", "spec", "tb", "iterations", "objective", "pass_c
 
 
 def entry_dirs():
-    return sorted(p for p in TIER4.iterdir() if p.is_dir() and p.name != "__pycache__")
+    return tier_entry_dirs(TIER4)
 
 
 def load(name):
-    entry = TIER4 / name
-    meta = yaml.safe_load((entry / "meta.yaml").read_text(encoding="utf-8"))
-    spec = DesignSpec.load(entry / meta["spec"])
-    tb = (entry / meta["tb"]).read_text(encoding="utf-8")
-    reference = (entry / "qualification" / "reference.v").read_text(encoding="utf-8")
-    mutants = json.loads((entry / "qualification" / "mutants.json").read_text(encoding="utf-8"))
-    return entry, meta, spec, tb, reference, mutants
+    return load_tier_entry(TIER4, name)
 
 
 def qualifier():
-    loader = importlib.util.spec_from_file_location("qualify_tier4", TIER4 / "qualify_tier4.py")
-    module = importlib.util.module_from_spec(loader)
-    loader.loader.exec_module(module)
-    return module
+    return load_module(TIER4 / "qualify_tier4.py", "qualify_tier4")
 
 
 def test_tier4_contains_exactly_the_three_build_entries():
@@ -197,11 +186,7 @@ ORACLES = {"crc16_stream_core": CRC_ORACLE, "spi_master_core": SPI_ORACLE,
 
 
 def oracle(tmp_path, module_name):
-    path = tmp_path / f"{module_name}_test_oracle.py"
-    path.write_text(ORACLES[module_name], encoding="utf-8")
-    model = GoldenModel(path)
-    model.work_parent = tmp_path
-    return model
+    return text_oracle(tmp_path, f"{module_name}_test_oracle.py", ORACLES[module_name])
 
 
 @pytest.mark.parametrize("name", ENTRIES)

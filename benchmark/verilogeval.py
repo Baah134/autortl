@@ -151,6 +151,8 @@ def build_manifest(root: Path, task_ids: list[str], *, dataset_commit: str, sour
     budgets maps each arm to run -> {"model_calls", "tool_seconds", "wall_seconds"};
     only the arms named there get cells. The ablation arm declares
     skip_generated_tb_mutations; every other arm declares full verification.
+    The opt-in full_xcheck arm also declares spec_cross_check request_traces;
+    no other cell carries that key, so other manifests are unchanged.
     """
     from . import artifacts
 
@@ -168,7 +170,8 @@ def build_manifest(root: Path, task_ids: list[str], *, dataset_commit: str, sour
             "private_files": [{"path": p.name, "sha256": sha256_file(p)} for p in (task.test, task.ref)],
         })
     cells = [{"task": t, "trial": trial, "arm": arm, "budget": dict(budgets[arm]),
-              "verification_policy": "skip_generated_tb_mutations" if arm == "ablation" else "full"}
+              "verification_policy": "skip_generated_tb_mutations" if arm == "ablation" else "full",
+              **({"spec_cross_check": "request_traces"} if arm == "full_xcheck" else {})}
              for t in task_ids for trial in range(trials) for arm in sorted(budgets)]
     manifest = {"schema": artifacts.SCHEMA,
                 "identity": {"dataset": {"commit": dataset_commit, "format": "verilogeval"},

@@ -111,6 +111,14 @@ def test_spec_prompt_states_example_values_are_held_integers():
     assert "never a per-cycle list" in prompts.SPEC_PROMPT
 
 
+def test_spec_prompt_states_when_a_latency_0_example_sees_a_register_change():
+    # dispute_pair_broken_by_malformed_oracle: the tier 1 debouncer planner expected clean=1
+    # after 8 cycles although its latency-0 output changes on the 8th edge (visible at 9).
+    text = " ".join(prompts.SPEC_PROMPT.split())
+    assert "first shows its new value with after_cycles k+1" in text
+    assert "with latency 1 it shows at after_cycles k" in text
+
+
 def test_spec_prompt_forbids_behavior_the_request_does_not_state():
     # planner_spec_error_shared_by_oracle_and_rtl (final-02 Prob066 reset, Prob139 sampling phase)
     text = " ".join(prompts.SPEC_PROMPT.split())

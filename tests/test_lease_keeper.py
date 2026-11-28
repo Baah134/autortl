@@ -1,12 +1,11 @@
 """Lease keeper loop with injected renew and sleep; one real refusal through session.py."""
-import importlib.util
 import sys
 from pathlib import Path
 
+from tests.helpers import load_module
+
 ROOT = Path(__file__).resolve().parents[1]
-spec = importlib.util.spec_from_file_location("lease_keeper", ROOT / "scripts" / "lease_keeper.py")
-keeper = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(keeper)
+keeper = load_module(ROOT / "scripts" / "lease_keeper.py", "lease_keeper")
 
 
 def test_renews_until_stop_file_and_rereads_token(tmp_path):
@@ -69,9 +68,7 @@ def test_cli_rejects_tight_interval(tmp_path):
 
 def test_session_cli_default_lease_is_four_hours(monkeypatch):
     """A one-hour lease lapsed during long runs and sleep; start and renew default to 4 h."""
-    spec2 = importlib.util.spec_from_file_location("session_cli", ROOT / "scripts" / "session.py")
-    session = importlib.util.module_from_spec(spec2)
-    spec2.loader.exec_module(session)
+    session = load_module(ROOT / "scripts" / "session.py", "session_cli")
     seen = []
 
     class Store:

@@ -23,6 +23,7 @@ def create(tmp_path, monkeypatch, mutant_kind=FailureKind.DESIGN):
     monkeypatch.setattr(o.generator, "fix", Mock(side_effect=AssertionError("controlled build fixture must explicitly mock a requested repair")))
     monkeypatch.setattr(o.generator, "golden_model", Mock(side_effect=AssertionError("trusted TB must not invoke generated oracle")))
     monkeypatch.setattr(o.planner, "make_spec", Mock(side_effect=AssertionError("typed JSON must not be replanned")))
+    monkeypatch.setattr(o.planner, "request_traces", Mock(side_effect=AssertionError("a request cross-check must be mocked explicitly")))
     monkeypatch.setattr(o.planner, "propose_contract", Mock(return_value="contract"))
     monkeypatch.setattr(o.planner, "plan", Mock(return_value="plan"))
     monkeypatch.setattr(o.evaluator, "review_contract", Mock(return_value="ACCEPT"))

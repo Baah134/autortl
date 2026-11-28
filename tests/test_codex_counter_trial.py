@@ -1,18 +1,16 @@
-import importlib.util
 import json
 from pathlib import Path
 from unittest.mock import Mock
 import pytest
 from autortl.report_parser import VivadoMetrics
 from autortl.triage import FailureKind
+from tests.helpers import load_module
 
 
 @pytest.mark.parametrize("failure", ["none", "simulation", "mutant_infra", "async_mutant_pass", "implementation", "timing"])
 def test_supervised_codex_trial_preserves_stage_gates(tmp_path, monkeypatch, failure):
     path = Path(__file__).resolve().parents[1] / "scripts/check_codex_counter.py"
-    spec = importlib.util.spec_from_file_location("codex_trial", path)
-    trial = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(trial)
+    trial = load_module(path, "codex_trial")
     out = tmp_path / "trial"
     monkeypatch.setattr("sys.argv", [str(path), "--bin-dir", str(tmp_path), "--output", str(out)])
     source = "module counter8(input clk,rst,enable,output reg [7:0] count); always @(posedge clk) if(rst) count<=0; else if(enable) count<=count+1; endmodule"
